@@ -246,6 +246,7 @@
                                                         <components>
                                                             <component type="gridLayout" name="dailyProgressGridLayout"
                                                                        columns="5" rows="1">
+
                                                                 <layoutElement column="1" row="1" width="2">
                                                                     <component type="lookup" name="shift" field="shift"
                                                                                reference="shift">
@@ -257,6 +258,7 @@
                                                                 <layoutElement column="3" row="1" width="2">
                                                                     <component type="input" name="quantity"
                                                                                field="quantity" reference="quantity"/>
+
                                                                 </layoutElement>
                                                                 <layoutElement column="5" row="1">
                                                                     <component type="input" name="unit"
@@ -264,6 +266,8 @@
                                                                         <option type="textRepresentationOnDisabled"
                                                                                 value="true"/>
                                                                     </component>
+                                                                    <component name="efficiencyTime" type="hidden"
+                                                                               field="efficiencyTime" reference="efficiencyTime"/>
                                                                 </layoutElement>
                                                             </component>
                                                         </components>

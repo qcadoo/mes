@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -48,32 +34,28 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressType;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
+import com.qcadoo.mes.productionPerShift.util.ProgressQuantitiesDeviationNotifier;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyOperationDataProvider;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
@@ -125,6 +107,12 @@ public class ProductionPerShiftDetailsHooks {
     @Autowired
     private PpsTimeHelper ppsTimeHelper;
 
+    @Autowired
+    private ProgressQuantitiesDeviationNotifier progressQuantitiesDeviationNotifier;
+
+    @Autowired
+    private NumberService numberService;
+
     private static final Function<LookupComponent, Optional<Entity>> GET_LOOKUP_ENTITY = new Function<LookupComponent, Optional<Entity>>() {
 
         @Override
@@ -172,7 +160,19 @@ public class ProductionPerShiftDetailsHooks {
         setupHasBeenCorrectedCheckbox(view, technology);
         checkOrderDates(view, order);
         markViewAsInitialized(view);
+        deviationNotify(view);
+    }
 
+    private void deviationNotify(ViewDefinitionState view) {
+        AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
+                .getComponentByReference(PROGRESS_ADL_REF);
+        if (!progressForDaysADL.getEntities().isEmpty() && (view.isViewAfterRedirect())) {
+            for (Entity technologyOperation : getEntityFromLookup(view, OPERATION_LOOKUP_REF).asSet()) {
+                for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
+                    progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation);
+                }
+            }
+        }
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {

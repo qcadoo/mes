@@ -46,6 +46,9 @@ public class WorkstationTypeComponentsService {
         Integer quantity = entity.getIntegerField(WorkstationTypeComponentFields.QUANTITY);
         WorkstationTypeComponentQuantity workstationTypeComponentQuantity = new WorkstationTypeComponentQuantity(quantity,
                 resolveDateFrom(from, componentDateFrom), resolveDateTo(to, componentDateTo));
+        if (componentDateTo == null) {
+            workstationTypeComponentQuantity.setToInfinity(true);
+        }
         results.add(workstationTypeComponentQuantity);
     }
 
@@ -73,10 +76,12 @@ public class WorkstationTypeComponentsService {
             final Date from, final Date to) {
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
-                .find().addOrder(SearchOrders.desc(WorkstationTypeComponentFields.DATE_FROM))
+                .find()
+                .addOrder(SearchOrders.asc(WorkstationTypeComponentFields.DATE_FROM))
                 .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine))
                 .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType))
-                .add(SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_TO, from))
+                .add(SearchRestrictions.or(SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_TO, from),
+                        SearchRestrictions.isNull(WorkstationTypeComponentFields.DATE_TO)))
                 .add(SearchRestrictions.lt(WorkstationTypeComponentFields.DATE_FROM, to));
         return scb.list().getEntities();
     }
@@ -115,9 +120,9 @@ public class WorkstationTypeComponentsService {
 
         if (dateTo == null) {
             scb = SearchRestrictions.and(scb, SearchRestrictions.or(SearchRestrictions.ge(
-                    WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions.and(
-                    SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
+                    WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions
+                    .and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                            SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
         } else {
             scb = SearchRestrictions.and(scb, SearchRestrictions.and(
                     SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),

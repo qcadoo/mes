@@ -13,6 +13,8 @@ public class WorkstationTypeComponentQuantity {
 
     private Integer min;
 
+    private boolean toInfinity;
+
     public Integer getDurationInMinuts(){
         return Minutes.minutesBetween(from, to).getMinutes();
     }
@@ -21,7 +23,8 @@ public class WorkstationTypeComponentQuantity {
         this.quantity = quantity;
         this.from = from;
         this.to = to;
-        min =  Minutes.minutesBetween(from, to).getMinutes();
+        this.toInfinity= false;
+        this.min =  Minutes.minutesBetween(from, to).getMinutes();
     }
 
     public Integer getQuantity() {
@@ -42,5 +45,13 @@ public class WorkstationTypeComponentQuantity {
 
     public void setMin(Integer min) {
         this.min = min;
+    }
+
+    public boolean isToInfinity() {
+        return toInfinity;
+    }
+
+    public void setToInfinity(boolean toInfinity) {
+        this.toInfinity = toInfinity;
     }
 }
