@@ -166,10 +166,11 @@ public class ProductionPerShiftDetailsHooks {
     private void deviationNotify(ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
+        ProgressType progressType = resolveProgressType(view);
         if (!progressForDaysADL.getEntities().isEmpty() && (view.isViewAfterRedirect())) {
             for (Entity technologyOperation : getEntityFromLookup(view, OPERATION_LOOKUP_REF).asSet()) {
                 for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
-                    progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation);
+                    progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation, isCorrectedPlan(view));
                 }
             }
         }
@@ -255,8 +256,7 @@ public class ProductionPerShiftDetailsHooks {
         return view.<CheckBoxComponent> tryFindComponentByReference(VIEW_IS_INITIALIZED_CHECKBOX_REF)
                 .transform(new Function<CheckBoxComponent, Boolean>() {
 
-                    @Override
-                    public Boolean apply(final CheckBoxComponent input) {
+                    @Override public Boolean apply(final CheckBoxComponent input) {
                         return input.isChecked();
                     }
                 }).or(false);
@@ -331,6 +331,22 @@ public class ProductionPerShiftDetailsHooks {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
         setProductAndFillProgressForDays(view, progressForDaysADL, orderState, progressType);
+    }
+
+    public boolean isCorrectedPlan(final ViewDefinitionState view){
+        Optional<Entity> maybeTechnologyOperation = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
+        Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(maybeTechnologyOperation);
+        List<Entity> progresses = maybeTechnologyOperation.transform(new Function<Entity, List<Entity>>() {
+
+            @Override
+            public List<Entity> apply(final Entity technologyOperation) {
+                return progressForDayDataProvider.findForOperation(technologyOperation, true);
+            }
+        }).or(Collections.<Entity>emptyList());
+        if(progresses.isEmpty()){
+            return false;
+        }
+        return true;
     }
 
     public void setProductAndFillProgressForDays(final ViewDefinitionState view,
