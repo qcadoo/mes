@@ -40,7 +40,6 @@
 						this.onDeleteButtonClicked = function () {
 						    var selectedEntities = #{productionCountingQuantitySetComponents}.getValue().content.selectedEntities;
 						    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
-						    	console.log("dupa");
 						        #{productionCountingQuantitySetComponents}.fireEvent(null,'removeSelectedProductionCountingQuantitySetComponents',[selectedEntities]);
 						    }
 						};
