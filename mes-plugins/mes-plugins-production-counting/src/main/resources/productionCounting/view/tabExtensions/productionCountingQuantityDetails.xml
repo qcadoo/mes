@@ -34,6 +34,18 @@
                              reference="productionCountingQuantitySetComponents"
                              field="#{form}.productionCountingQuantitySetComponents"
                              source="#{form}.productionCountingQuantitySetComponents">
+				<script>
+					<![CDATA[
+						var that = this;
+						this.onDeleteButtonClicked = function () {
+						    var selectedEntities = #{productionCountingQuantitySetComponents}.getValue().content.selectedEntities;
+						    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+						    	console.log("dupa");
+						        #{productionCountingQuantitySetComponents}.fireEvent(null,'removeSelectedProductionCountingQuantitySetComponents',[selectedEntities]);
+						    }
+						};
+					]]>
+				</script>  
 	          <option type="column" name="productNumber" fields="product" expression="#product['number']" width="100" link="true"/>
 		      <option type="column" name="productName" fields="product" expression="#product['name']" width="100"/>
 	          <option type="column" name="quantityFromSets" fields="quantityFromSets" width="50"/>
@@ -49,6 +61,10 @@
 	          <option type="creatable" value="true"/>
 	          <option type="deletable" value="true"/>
 	          <option type="header" value="false" />
+	          
+	          <listener event="removeSelectedProductionCountingQuantitySetComponents"
+                                  method="onRemoveSelectedProductionCountingQuantitySetComponents"
+                                  class="com.qcadoo.mes.productionCounting.listeners.ProductionCountingQuantityDetailsListenersPC"/>
           </component>
 	</windowTab>
 </windowTabExtension>

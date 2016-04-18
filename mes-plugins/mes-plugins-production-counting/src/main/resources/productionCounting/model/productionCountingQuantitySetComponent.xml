@@ -41,8 +41,4 @@
         <decimal name="outQuantity"/>
 	</fields>
 
-	<hooks>
-		<onDelete class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantitySetComponentHooks" method="onDelete"/>
-	</hooks>
-
 </model>
