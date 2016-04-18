@@ -50,6 +50,8 @@ CREATE TABLE productioncounting_productioncountingquantitysetcomponent
   productioncountingquantity_id bigint,
   product_id bigint,
   quantityfromsets numeric(12,5),
+  plannedquantityfromproduct numeric(12,5),
+  outquantity numeric(12,5),
   CONSTRAINT productioncounting_productioncountingquantitysetcomponent_pkey PRIMARY KEY (id),
   CONSTRAINT productioncountingquantitysc_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id)
       REFERENCES basicproductioncounting_productioncountingquantity (id) DEFERRABLE,
