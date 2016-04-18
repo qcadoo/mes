@@ -196,27 +196,28 @@ public class ProductionTrackingHooks {
     }
 
     private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
-        EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-        for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-            BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+        if (mustRebuildSetTrackingOperationProductsComponents(productionTracking)) {
+            EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+            for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
+                BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
 
-            List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-            List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
-            if (!ids.isEmpty()) {
-                Map<String, Object> parameters = new HashMap<String, Object>() {
-                    {
-                        put("ids", ids);
-                    }
-                };
-                jdbcTemplate.update("DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
+                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+                if (!ids.isEmpty()) {
+                    Map<String, Object> parameters = new HashMap<String, Object>() {
+                        {
+                            put("ids", ids);
+                        }
+                    };
+                    jdbcTemplate.update("DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
+                }
+                trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
+
+                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                setTrackingOperationProductsInComponents.stream().forEach(entity -> {
+                    entity.getDataDefinition().save(entity);
+                });
             }
-            trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
-
-            setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
-                entity.getDataDefinition().save(entity);
-            });
-
         }
     }
 
@@ -252,5 +253,15 @@ public class ProductionTrackingHooks {
                 });
             }
         }
+    }
+
+    private boolean mustRebuildSetTrackingOperationProductsComponents(Entity productionTracking) {
+        if (productionTracking.getId() == null) {
+            return true;
+        }
+
+        Long previousOrderId = productionTracking.getDataDefinition().get(productionTracking.getId()).getBelongsToField(ProductionTrackingFields.ORDER).getId();
+
+        return !previousOrderId.equals(productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getId());
     }
 }
