@@ -74,12 +74,19 @@ public class RecordOperationProductComponentListeners {
 
     private void fillUnits(final ViewDefinitionState view, final Entity productEntity) {
         String unit = productEntity.getStringField(ProductFields.UNIT);
+        String additionalUnit = productEntity.getStringField(ProductFields.ADDITIONAL_UNIT);
         for (String componentReferenceName : UNIT_COMPONENT_REFERENCES) {
             FieldComponent unitComponent = (FieldComponent) view.getComponentByReference(componentReferenceName);
             if (unitComponent != null && StringUtils.isEmpty((String) unitComponent.getFieldValue())) {
                 unitComponent.setFieldValue(unit);
                 unitComponent.requestComponentUpdateState();
             }
+        }
+        if (!StringUtils.isEmpty(additionalUnit)) {
+            FieldComponent givenUnit = (FieldComponent) view.getComponentByReference("givenUnit");
+            givenUnit.setFieldValue(additionalUnit);
+            givenUnit.setEnabled(false);
+            givenUnit.requestComponentUpdateState();
         }
     }
 
@@ -102,8 +109,8 @@ public class RecordOperationProductComponentListeners {
             return;
         }
 
-        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
-                (String) givenQuantityField.getFieldValue(), view.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
+                .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
         if (maybeQuantity.isRight()) {
             if (maybeQuantity.getRight().isPresent()) {
                 BigDecimal givenQuantity = maybeQuantity.getRight().get();
@@ -112,15 +119,15 @@ public class RecordOperationProductComponentListeners {
                     productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, givenQuantity);
                 } else {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, product)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(baseUnit)) {
                         BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
-                                productComponent.getDataDefinition().getField(
-                                        TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
+                                productComponent.getDataDefinition()
+                                        .getField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
                                 "technologies.operationProductInComponent.validate.error.missingUnitConversion");
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
                     }
@@ -131,6 +138,58 @@ public class RecordOperationProductComponentListeners {
             }
         } else {
             productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
+        }
+        form.setEntity(productComponent);
+
+    }
+
+    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
+
+        Entity product = productComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+        if (product == null) {
+            return;
+        }
+        String unit = product.getStringField(ProductFields.UNIT);
+        FieldComponent quantityField = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+        if (StringUtils.isEmpty(unit) || quantityField.getFieldValue() == null) {
+            return;
+        }
+
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse((String) quantityField.getFieldValue(),
+                view.getLocale());
+        if (maybeQuantity.isRight()) {
+            if (maybeQuantity.getRight().isPresent()) {
+                BigDecimal quantity = maybeQuantity.getRight().get();
+                String givenUnit = productComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT);
+                if (givenUnit.equals(unit)) {
+                    productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, quantity);
+                } else {
+                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    if (unitConversions.isDefinedFor(givenUnit)) {
+                        BigDecimal convertedQuantity = unitConversions.convertTo(quantity, givenUnit);
+                        productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, convertedQuantity);
+                    } else {
+                        productComponent.addError(
+                                productComponent.getDataDefinition()
+                                        .getField(TrackingOperationProductInComponentFields.USED_QUANTITY),
+                                "technologies.operationProductInComponent.validate.error.missingUnitConversion");
+                        productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, null);
+                    }
+                }
+
+            } else {
+                productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, null);
+            }
+        } else {
+            productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, null);
         }
         form.setEntity(productComponent);
 

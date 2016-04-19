@@ -25,38 +25,41 @@
 
 -->
 <model name="trackingOperationProductOutComponent"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<belongsTo name="productionTracking" model="productionTracking" required="true"/>
-		<belongsTo name="product" model="product" plugin="basic" required="true"/>
-		<decimal name="plannedQuantity" persistent="false">
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<decimal name="usedQuantity">
-			<validatesRange from="0" exclusively="false"/>
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<decimal name="balance">
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
+    <fields>
+        <belongsTo name="productionTracking" model="productionTracking" required="true"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <decimal name="plannedQuantity" persistent="false">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="balance">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
-		<decimal name="givenQuantity">
-			<validatesRange from="0" exclusively="false"/>
-			<validatesUnscaledValue max="9"/>
-			<validatesScale max="5"/>
-		</decimal>
-		<dictionary name="givenUnit" dictionary="units"/>
-	</fields>
+        <decimal name="givenQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="givenUnit" dictionary="units"/>
+    </fields>
 
-	<hooks>
-		<onView
-				class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
-				method="onView"/>
-	</hooks>
+    <hooks>
+        <onView
+                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
+                method="onView"/>
+
+        <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
+                       method="validatesWith"/>
+    </hooks>
 
 </model>
