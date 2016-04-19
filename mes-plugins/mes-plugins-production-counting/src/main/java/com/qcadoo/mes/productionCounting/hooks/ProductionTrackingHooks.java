@@ -222,35 +222,39 @@ public class ProductionTrackingHooks {
     }
 
     private void generateSetTechnologyInComponents(Entity productionTracking) {
-        EntityList trackingOperationProductInComponents = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-            if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
-                BigDecimal usedQuantity = trackingOperationProductInComponent
-                        .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+        if (mustRebuildSetTrackingOperationProductsComponents(productionTracking)) {
+            EntityList trackingOperationProductInComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
+                if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
+                    BigDecimal usedQuantity = trackingOperationProductInComponent
+                            .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
 
-                List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
-                        .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-                List<Long> ids = setTechnologyInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
-                if (!ids.isEmpty()) {
-                    Map<String, Object> parameters = new HashMap<String, Object>() {
+                    List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
+                            .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
+                    List<Long> ids = setTechnologyInComponents.stream().map(entity -> entity.getId())
+                            .collect(Collectors.toList());
+                    if (!ids.isEmpty()) {
+                        Map<String, Object> parameters = new HashMap<String, Object>() {
 
-                        {
-                            put("ids", ids);
-                        }
-                    };
-                    jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)",
-                            new MapSqlParameterSource(parameters));
+                            {
+                                put("ids", ids);
+                            }
+                        };
+                        jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)",
+                                new MapSqlParameterSource(parameters));
+                    }
+
+                    trackingOperationProductInComponent = setTechnologyInComponentsService
+                            .fillTrackingOperationProductOutComponent(trackingOperationProductInComponent, productionTracking,
+                                    usedQuantity);
+
+                    setTechnologyInComponents = trackingOperationProductInComponent
+                            .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
+                    setTechnologyInComponents.stream().forEach(entity -> {
+                        entity.getDataDefinition().save(entity);
+                    });
                 }
-
-                trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                        trackingOperationProductInComponent, productionTracking, usedQuantity);
-
-                setTechnologyInComponents = trackingOperationProductInComponent
-                        .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-                setTechnologyInComponents.stream().forEach(entity -> {
-                    entity.getDataDefinition().save(entity);
-                });
             }
         }
     }
