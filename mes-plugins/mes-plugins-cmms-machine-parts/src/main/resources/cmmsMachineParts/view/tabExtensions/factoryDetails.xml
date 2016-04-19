@@ -31,7 +31,7 @@
                     view="factoryDetails">
 
     <windowTab name="warehouseTab" reference="warehouseTab">
-        <component type="gridLayout" name="warehouseGridLayout" columns="4" rows="1" hasBorders="false">
+        <component type="gridLayout" name="warehouseGridLayout" columns="3" rows="1" hasBorders="false">
             <layoutElement row="1" column="1">
                 <component type="lookup" name="warehouse" field="#{form}.warehouse"
                            reference="warehouse">
