@@ -58,7 +58,7 @@ public class SetTechnologyInComponentsService {
                 BigDecimal quantityFromSets = productionCountingQuantitySetComponent
                         .getDecimalField(ProductionCountingQuantitySetComponentFields.QUANTITY_FROM_SETS);
 
-                quantityFromSets = quantityFromSets.multiply(usedQuantity).divide(plannedQuantity, RoundingMode.HALF_UP);
+                quantityFromSets = quantityFromSets.multiply(usedQuantity).divide(plannedQuantity, 5, RoundingMode.HALF_EVEN);
                 setTechnologyInComponent.setField(SetTechnologyInComponentsFields.QUANTITY_FROM_SETS, quantityFromSets);
                 setTechnologyInComponent.setField(SetTechnologyInComponentsFields.PRODUCT, productionCountingQuantitySetComponent
                         .getBelongsToField(ProductionCountingQuantitySetComponentFields.PRODUCT));

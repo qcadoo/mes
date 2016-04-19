@@ -31,7 +31,11 @@
 	<fields>
 		<belongsTo name="trackingOperationProductInComponent" model="trackingOperationProductInComponent" plugin="productionCounting"/>
 		<belongsTo name="product" model="product" plugin="basic"/>
-        <decimal name="quantityFromSets" />
+        <decimal name="quantityFromSets">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
 	</fields>
 
 	<hooks>
