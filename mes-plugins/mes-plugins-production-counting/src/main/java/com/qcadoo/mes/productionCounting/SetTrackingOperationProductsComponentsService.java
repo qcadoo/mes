@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,12 +70,27 @@ public class SetTrackingOperationProductsComponentsService {
         return dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER, BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
     }
 
-    public boolean isSet(Entity productionTracking, Entity componentEntity) {
+    public boolean isSet(Entity productionTracking, Entity trackingOperationProductOutComponent) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        boolean isSet = operationComponents.getRoot().getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0).getBooleanField("set");
+        Entity product = trackingOperationProductOutComponent.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-        return isSet;
+        SearchCriteriaBuilder findProductionCountingQuantity = getProductionCountingQuantityDD().find();
+        List<Entity> entities = findProductionCountingQuantity.add(SearchRestrictions.and(
+                SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order),
+                SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))).list().getEntities();
+
+        Optional<Entity> maybeProductionCountingQuantity = entities.stream().filter(entity -> {
+            Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+            return "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+        }).findFirst();
+
+        if (maybeProductionCountingQuantity.isPresent()) {
+            return ProductionCountingQuantitySet.SET.getStringValue().equals(maybeProductionCountingQuantity.get().getStringField(ProductionCountingQuantityFields.SET));
+            
+        } else {
+            return false;
+        }
     }
 }
