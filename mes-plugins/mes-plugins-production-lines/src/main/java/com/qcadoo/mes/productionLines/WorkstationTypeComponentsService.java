@@ -6,10 +6,7 @@ import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
 import com.qcadoo.mes.productionLines.helper.WorkstationTypeComponentQuantity;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +18,8 @@ import java.util.Optional;
 @Service
 public class WorkstationTypeComponentsService {
 
+    private static final String COUNT_ALIAS = "count";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -30,6 +29,20 @@ public class WorkstationTypeComponentsService {
         List<Entity> componentsEntity = findWorkstationTypeComponentsForPeriod(productionLine, workstationType, from, to);
         results = calculateWorkstationTypeComponentQuantity(componentsEntity, from, to);
         return results;
+    }
+
+    public boolean isWorkstationTypeComponentsAfterDate(final Entity productionLine, final Entity workstationType, final Date date) {
+        SearchCriteriaBuilder scb = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT)
+                .find().add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine))
+                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType))
+                .add(SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_FROM, date));
+        scb.setProjection(SearchProjections.alias(SearchProjections.countDistinct("id"), COUNT_ALIAS));
+        scb.addOrder(SearchOrders.desc(COUNT_ALIAS));
+
+        Entity projectionResult = scb.setMaxResults(1).uniqueResult();
+        Long countValue = (Long) projectionResult.getField(COUNT_ALIAS);
+        return countValue > 0;
     }
 
     private List<WorkstationTypeComponentQuantity> calculateWorkstationTypeComponentQuantity(final List<Entity> componentsEntity,
@@ -120,9 +133,9 @@ public class WorkstationTypeComponentsService {
 
         if (dateTo == null) {
             scb = SearchRestrictions.and(scb, SearchRestrictions.or(SearchRestrictions.ge(
-                    WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions
-                    .and(SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                            SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
+                    WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions.and(
+                    SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
+                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
         } else {
             scb = SearchRestrictions.and(scb, SearchRestrictions.and(
                     SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
