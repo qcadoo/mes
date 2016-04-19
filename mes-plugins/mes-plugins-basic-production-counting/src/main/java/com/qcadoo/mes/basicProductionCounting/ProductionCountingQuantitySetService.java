@@ -99,6 +99,9 @@ public class ProductionCountingQuantitySetService {
 
                 for (Entity entity : productionCountingQuantities) {
                     Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+                    if (entityTechnologyOperationComponent == null) {
+                        continue;
+                    }
                     Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                     String entityTypeOfMaterial = entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
                     String role = entity.getStringField(ProductionCountingQuantityFields.ROLE);

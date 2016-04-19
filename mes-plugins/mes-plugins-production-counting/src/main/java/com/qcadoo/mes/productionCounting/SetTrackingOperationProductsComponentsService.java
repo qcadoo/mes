@@ -81,7 +81,6 @@ public class SetTrackingOperationProductsComponentsService {
 
         Optional<Entity> maybeProductionCountingQuantity = entities.stream().filter(entity -> {
             Entity entityTechnologyOperationComponent = entity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-            Entity entityOperation = entityTechnologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
             return "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
         }).findFirst();
