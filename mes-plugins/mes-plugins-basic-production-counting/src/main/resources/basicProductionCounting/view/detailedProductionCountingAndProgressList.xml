@@ -42,9 +42,9 @@
 			<component type="grid" name="productionCountingQuantities" reference="grid"
 				source="#{order}.productionCountingQuantities">
 				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true" width="60"/>
+					expression="#product['number']" link="true" width="70"/>
 				<option type="column" name="productName" fields="product"
-					expression="#product['name']" link="true" width="80"/>
+					expression="#product['name']" link="true" width="100"/>
 				<option type="column" name="nodeNumber" fields="technologyOperationComponent"
 					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')"
 					link="true" width="40"/>
@@ -57,9 +57,9 @@
 				<option type="column" name="role" fields="role" link="true" width="40"/>
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
 					link="true" width="40"/>
-				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
-				<option type="column" name="usedQuantity" fields="usedQuantity" width="40"/>
-				<option type="column" name="producedQuantity" fields="producedQuantity" width="40"/>
+				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
+				<option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
+				<option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
 				<option type="column" name="productUnit" fields="product"
 					expression="#product['unit']" width="20"/>
 
