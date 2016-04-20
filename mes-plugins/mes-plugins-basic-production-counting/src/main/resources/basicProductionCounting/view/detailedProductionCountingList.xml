@@ -71,7 +71,7 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
                 <option type="column" name="productUnit" fields="product"
 					expression="#product['unit']" width="20"/>
-                <option type="column" name="set" fields="set" />
+                <option type="column" name="set" fields="set" width="30"/>
 
                 <option type="order" column="productNumber" direction="asc" />
 
