@@ -159,6 +159,11 @@ public class ProductionTrackingHooks {
 
     private void setInitialState(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED, true);
+
+        if (productionTracking.getField(ProductionTrackingFields.LAST_TRACKING) == null) {
+            productionTracking.setField(ProductionTrackingFields.LAST_TRACKING, false);
+        }
+
         productionTrackingStatesHelper.setInitialState(productionTracking);
     }
 
