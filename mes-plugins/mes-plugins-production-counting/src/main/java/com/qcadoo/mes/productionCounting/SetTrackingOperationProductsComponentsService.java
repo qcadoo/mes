@@ -7,12 +7,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import java.math.BigDecimal;
@@ -62,6 +61,10 @@ public class SetTrackingOperationProductsComponentsService {
         return trackingOperationProductOutComponent;
     }
 
+    public Entity recalculateTrackingOperationProductOutComponent(Entity productionTracking, Entity trackingOperationProductOutComponent, BigDecimal usedQuantity) {
+        return fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
+    }
+
     private DataDefinition getSetTrackingOperationProductInComponentsDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
     }
@@ -87,7 +90,7 @@ public class SetTrackingOperationProductsComponentsService {
 
         if (maybeProductionCountingQuantity.isPresent()) {
             return ProductionCountingQuantitySet.SET.getStringValue().equals(maybeProductionCountingQuantity.get().getStringField(ProductionCountingQuantityFields.SET));
-            
+
         } else {
             return false;
         }

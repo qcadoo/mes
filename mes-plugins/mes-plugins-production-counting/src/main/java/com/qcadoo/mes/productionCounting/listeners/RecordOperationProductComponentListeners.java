@@ -165,7 +165,7 @@ public class RecordOperationProductComponentListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
 
-        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(
+        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.recalculateTrackingOperationProductOutComponent(
                 trackingOperationProductOutComponent.getBelongsToField("productionTracking"), trackingOperationProductOutComponent,
                 usedQuantity.getRight().or(BigDecimal.ZERO));
 
