@@ -106,6 +106,13 @@
                      resource="model/trackingOperationProductInComponentDto.xml"/>
         <model:model model="trackingOperationProductOutComponentDto"
                      resource="model/trackingOperationProductOutComponentDto.xml"/>
+        <model:model model="setTrackingOperationProductInComponents"
+                     resource="model/setTrackingOperationProductInComponents.xml"/>
+        <model:model model="setTechnologyInComponents"
+                     resource="model/setTechnologyInComponents.xml"/>
+
+        <model:model model="productionCountingQuantitySetComponent"
+                     resource="model/productionCountingQuantitySetComponent.xml"/>
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
@@ -232,6 +239,10 @@
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
         </model:model-field>
+        <model:model-field model="productionCountingQuantity" plugin="basicProductionCounting">
+            <model:hasMany name="productionCountingQuantitySetComponents" model="productionCountingQuantitySetComponent"
+                           joinField="productionCountingQuantity" plugin="productionCounting" cascade="delete"/>
+        </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
@@ -248,6 +259,16 @@
         <model:model-hook model="technology" plugin="technologies">
             <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
                             method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
+            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
+                            method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
+            <model:onSave class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
+                            method="onSave"/>
         </model:model-hook>
 
 
@@ -300,9 +321,12 @@
         <view:view resource="view/productionTrackingsForProductList.xml"/>
         <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
 
+        <view:view resource="view/productionCountingQuantitySetDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/productionCountingQuantityDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 
@@ -335,6 +359,9 @@
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
+        <view:view-hook plugin="basicProductionCounting" view="productionCountingQuantityDetails"
+                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityDetailsPC"
+                        method="beforeRender"/>
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form"

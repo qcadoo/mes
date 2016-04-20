@@ -23,14 +23,21 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DetailedProductionCountingListHooks {
@@ -58,4 +65,27 @@ public class DetailedProductionCountingListHooks {
         grid.setEnabled(!isLocked);
     }
 
+    public void onRemoveSelectedProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = ((GridComponent) view.getComponentByReference(L_GRID));
+        List<Entity> selectedEntities = grid.getSelectedEntities();
+        List<Long> ids = new ArrayList<>();
+
+        selectedEntities.forEach(productionCountingQuantity -> {
+            String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
+            if (GlobalTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(typeOfMaterial)) {
+                state.addMessage("basicProductionCounting.productionCountingQuantity.error.cantDeleteFinal", MessageType.INFO);
+            } else {
+                ids.add(productionCountingQuantity.getId());
+                productionCountingQuantity.getDataDefinition().delete(productionCountingQuantity.getId());
+            }
+        });
+
+        if (ids.size() == 1) {
+            state.addMessage("qcadooView.message.deleteMessage", MessageType.SUCCESS);
+            
+        } else if (ids.size() > 1) {
+            state.addMessage("qcadooView.message.deleteMessages", MessageType.SUCCESS, String.valueOf(ids.size()));
+        }
+    }
 }

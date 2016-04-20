@@ -21,28 +21,28 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.constants;
+package com.qcadoo.mes.basicProductionCounting.constants;
 
-public final class TrackingOperationProductInComponentFields {
+public enum ProductionCountingQuantitySet {
+    SET("01set"), INTERMEDIATE("02intermediate");
 
-    private TrackingOperationProductInComponentFields() {
+    private final String code;
 
+    private ProductionCountingQuantitySet(final String code) {
+        this.code = code;
     }
 
-    public static final String PRODUCTION_TRACKING = "productionTracking";
+    public String getStringValue() {
+        return code;
+    }
 
-    public static final String PRODUCT = "product";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
-
-    public static final String GIVEN_QUANTITY = "givenQuantity";
-
-    public static final String GIVEN_UNIT = "givenUnit";
-
-    public static final String SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
+    public static ProductionCountingQuantitySet parseString(final String string) {
+        for (ProductionCountingQuantitySet role : values()) {
+            if (role.getStringValue().equals(string)) {
+                return role;
+            }
+        }
+        throw new IllegalStateException("Unsupported ProductionCountingQuantitySet: " + string);
+    }
 
 }

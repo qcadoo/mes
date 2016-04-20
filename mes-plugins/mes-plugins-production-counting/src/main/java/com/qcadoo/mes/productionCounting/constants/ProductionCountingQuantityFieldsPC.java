@@ -23,26 +23,12 @@
  */
 package com.qcadoo.mes.productionCounting.constants;
 
-public final class TrackingOperationProductInComponentFields {
+public final class ProductionCountingQuantityFieldsPC {
 
-    private TrackingOperationProductInComponentFields() {
+    private ProductionCountingQuantityFieldsPC() {
 
     }
 
-    public static final String PRODUCTION_TRACKING = "productionTracking";
-
-    public static final String PRODUCT = "product";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
-
-    public static final String GIVEN_QUANTITY = "givenQuantity";
-
-    public static final String GIVEN_UNIT = "givenUnit";
-
-    public static final String SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
+    public static final String PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS = "productionCountingQuantitySetComponents";
 
 }
