@@ -30,10 +30,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
@@ -208,18 +208,36 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
                 List<Entity> resources = Lists.newArrayList();
                 if (additionalCode != null) {
-                    resources = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
-                            .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
-                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion)).list().getEntities();
-
-                    resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
-                            .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion)).list().getEntities());
+                    SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
+                            warehouse);
+                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+                    } else {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                    }
+                    resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
+                            .getEntities();
+                    scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse);
+                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+                    } else {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                    }
+                    resources
+                            .addAll(scb
+                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                                    .list().getEntities());
                 }
                 if (resources.isEmpty()) {
-                    resources = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse)
-                            .add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion)).list().getEntities();
+                    SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
+                            warehouse);
+                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+                    } else {
+                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                    }
+                    resources = scb.list().getEntities();
                 }
                 if (result.containsKey(productAndPosition.getKey().getId())) {
                     BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(BigDecimal.ZERO,
@@ -519,22 +537,35 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.asc(TIME)).list().getEntities();
 
-            resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+            scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(TIME)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
-                    .addOrder(SearchOrders.asc(TIME)).list().getEntities();
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.addOrder(SearchOrders.asc(TIME)).list().getEntities();
         }
         return resources;
     }
@@ -545,22 +576,35 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities();
 
-            resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+            scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
-                    .addOrder(SearchOrders.desc(TIME)).list().getEntities();
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.addOrder(SearchOrders.desc(TIME)).list().getEntities();
         }
         return resources;
 
@@ -571,22 +615,35 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
-            resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+            scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
-                    .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
         return resources;
 
@@ -598,22 +655,35 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
-            resources.addAll(getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
+            scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
 
         }
         if (resources.isEmpty()) {
-            resources = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse)
-                    .add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)))
-                    .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
+            SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+            if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+            } else {
+                scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+            }
+            resources = scb.addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
         return resources;
     }
