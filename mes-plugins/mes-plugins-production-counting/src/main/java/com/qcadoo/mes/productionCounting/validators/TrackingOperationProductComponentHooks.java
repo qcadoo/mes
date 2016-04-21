@@ -25,6 +25,9 @@ public class TrackingOperationProductComponentHooks {
         }
         Entity product = trackingOperationProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
         String unit = product.getStringField(ProductFields.UNIT);
+        if (unit.equals(givenUnit)) {
+            return true;
+        }
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                 searchCriteriaBuilder -> searchCriteriaBuilder
                         .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
