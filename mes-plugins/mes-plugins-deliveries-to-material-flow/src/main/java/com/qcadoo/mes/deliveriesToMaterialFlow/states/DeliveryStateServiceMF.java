@@ -108,18 +108,22 @@ public class DeliveryStateServiceMF {
                 Entity product = product(deliveredProduct);
                 String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 if (StringUtils.isEmpty(additionalUnit)) {
-                    documentBuilder.addPosition(product, positionQuantity, price(deliveredProduct, currency),
-                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct));
+                    documentBuilder.addPosition(product, positionQuantity, positionQuantity,
+                            product.getStringField(ProductFields.UNIT), BigDecimal.ONE, price(deliveredProduct, currency),
+                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
                 } else {
 
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
                             product.getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
                                     .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-                    BigDecimal givenQuantity = null;
-                    BigDecimal conversion = null;
+                    BigDecimal givenQuantity;
+                    BigDecimal conversion;
                     if (unitConversions.isDefinedFor(additionalUnit)) {
                         givenQuantity = unitConversions.convertTo(positionQuantity, additionalUnit);
                         conversion = givenQuantity.divide(positionQuantity, numberService.getMathContext());
+                    } else {
+                        conversion = BigDecimal.ONE;
+                        givenQuantity = positionQuantity;
                     }
                     documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
                             conversion, price(deliveredProduct, currency), batch(deliveredProduct),
