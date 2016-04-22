@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -57,11 +49,14 @@ import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -127,9 +122,10 @@ public class ProductionPerShiftListeners {
     }
 
     private void showNotifications(final ViewDefinitionState view) {
+        ProgressType progressType = detailsHooks.resolveProgressType(view);
         for (Entity technologyOperation : getEntityFromLookup(view, OPERATION_LOOKUP_REF).asSet()) {
             for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
-                progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation);
+                progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation, detailsHooks.isCorrectedPlan(view));
                 for (OrderDates orderDates : OrderDates.of(order).asSet()) {
                     nonWorkingShiftsNotifier.checkAndNotify(view, orderDates.getStart().effectiveWithFallback(),
                             technologyOperation, detailsHooks.resolveProgressType(view));
@@ -161,6 +157,7 @@ public class ProductionPerShiftListeners {
     public void changeView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         detailsHooks.disableReasonOfCorrection(view);
         detailsHooks.setProductAndFillProgressForDays(view);
+        showNotifications(view);
     }
 
     public void copyFromPlanned(final ViewDefinitionState view, final ComponentState state, final String[] args) {

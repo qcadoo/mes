@@ -37,4 +37,5 @@ public final class DailyProgressFields {
 
     public static final String LOCKED = "locked";
 
+    public static final String EFFICIENCY_TIME = "efficiencyTime";
 }
