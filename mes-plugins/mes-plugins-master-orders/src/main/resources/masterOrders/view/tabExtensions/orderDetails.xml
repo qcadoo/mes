@@ -31,7 +31,7 @@
 
     <windowTab name="masterOrderTab" reference="masterOrderTab">
         <component type="gridLayout" name="gridLayout" columns="3"
-                   rows="2">
+                   rows="3">
             <layoutElement column="1" row="1">
                 <component type="lookup" name="masterOrder" field="#{form}.masterOrder" reference="masterOrder">
                     <option type="column" name="name" fields="name" link="true" width="200"/>
@@ -51,6 +51,16 @@
                     <option type="orderable" value="number,name"/>
                     <option type="expression" value="#number"/>
                     <option type="fieldCode" value="number"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3">
+                <component type="lookup" name="masterOrderProductComponent" field="#{form}.masterOrderProductComponent"
+                           reference="masterOrderProductComponent" defaultVisible="false">
+
+                    <option type="searchable" value="product"/>
+                    <option type="orderable" value="product"/>
+                    <option type="expression" value="#product['number']"/>
+                    <option type="fieldCode" value="product"/>
                 </component>
             </layoutElement>
         </component>

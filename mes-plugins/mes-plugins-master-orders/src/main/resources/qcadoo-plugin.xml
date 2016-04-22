@@ -83,9 +83,15 @@
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
+            <model:belongsTo name="masterOrderProductComponent" model="masterOrderProduct"
+                             plugin="masterOrders" lazy="true"/>
+        </model:model-field>
+
+        <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProduct" model="product"
                              plugin="basic" lazy="true"/>
         </model:model-field>
+
 
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"

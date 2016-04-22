@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
@@ -77,6 +78,8 @@ public class OrderDetailsHooksMO {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
         Entity masterOrderProduct = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER_PRODUCT);
 
+        Entity masterOrderProductComponent = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER_PRODUCT_COMPONENT);
+
         if (order.getId() == null) {
 
             if (masterOrder != null) {
@@ -84,7 +87,7 @@ public class OrderDetailsHooksMO {
 
                 masterOrder = getMasterOrder(masterOrderId);
 
-                fillMasterOrderFields(view, masterOrder, masterOrderProduct);
+                fillMasterOrderFields(view, masterOrder, masterOrderProduct, masterOrderProductComponent);
             }
         }
         if (masterOrder != null) {
@@ -99,7 +102,8 @@ public class OrderDetailsHooksMO {
         orderTypeField.requestComponentUpdateState();
     }
 
-    private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder, final Entity product) {
+    private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder, final Entity product,
+            Entity productComponent) {
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(OrderFields.NUMBER);
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(OrderFields.COMPANY);
         FieldComponent deadlineField = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
@@ -119,11 +123,15 @@ public class OrderDetailsHooksMO {
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-
-            BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrder.getDecimalField(MasterOrderFields.MASTER_ORDER_QUANTITY));
-
-            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder,
-                    masterOrderProduct));
+            BigDecimal masterOrderQuantity;
+            if (productComponent == null) {
+                masterOrderQuantity = BigDecimalUtils
+                        .convertNullToZero(masterOrder.getDecimalField(MasterOrderFields.MASTER_ORDER_QUANTITY));
+            } else {
+                masterOrderQuantity = productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+            }
+            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(
+                    masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, masterOrderProduct));
 
             BigDecimal plannedQuantity = masterOrderQuantity.subtract(cumulatedOrderQuantity, numberService.getMathContext());
 
@@ -187,8 +195,8 @@ public class OrderDetailsHooksMO {
     }
 
     private Entity getMasterOrder(final Long masterOrderId) {
-        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER).get(
-                masterOrderId);
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER)
+                .get(masterOrderId);
     }
 
 }
