@@ -383,6 +383,7 @@
                                 width="100"/>
                         <option type="column" name="unit" fields="product"
                                 expression="#product['unit']" link="false" width="70"/>
+                        <option type="column" name="set" fields="set" link="false" width="50"/>
 
                         <option type="order" column="number" direction="desc"/>
 

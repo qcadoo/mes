@@ -26,13 +26,20 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import java.math.BigDecimal;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQuantitiesCounter {
+
+    @Autowired
+    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
 
     public TrackingOperationProductOutComponentHooks() {
         super(ProductionCountingQuantityRole.PRODUCED);
@@ -46,6 +53,19 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
     private void fillPlannedQuantity(final Entity trackingOperationProductOutComponent) {
         trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PLANNED_QUANTITY,
                 getPlannedQuantity(trackingOperationProductOutComponent));
+    }
+
+    public void onSave(final DataDefinition trackingOperationProductOutComponentDD,
+             Entity trackingOperationProductOutComponent) {
+
+        Entity productionTracking = trackingOperationProductOutComponent.getBelongsToField("productionTracking");
+        BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+        trackingOperationProductOutComponent = setTrackingOperationProductsComponents.recalculateTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
+
+        List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+        setTrackingOperationProductsInComponents.stream().forEach(entity -> {
+            entity.getDataDefinition().save(entity);
+        });
     }
 
 }

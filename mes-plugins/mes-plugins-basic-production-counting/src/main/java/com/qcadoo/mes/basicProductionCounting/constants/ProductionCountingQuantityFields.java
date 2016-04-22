@@ -49,4 +49,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String IS_NON_COMPONENT = "isNonComponent";
 
+    public static final String SET = "set";
+
 }

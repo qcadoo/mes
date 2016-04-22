@@ -51,6 +51,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
+import java.util.ArrayList;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -64,6 +65,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
 
+    @Autowired
+    private ProductionCountingQuantitySetService productionCountingQuantitySetService;
+
+    @Override
     public void createProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
@@ -102,6 +107,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     private void createProductionCountingQuantities(final Entity order,
             final OperationProductComponentWithQuantityContainer productComponentQuantities,
             final Set<OperationProductComponentHolder> nonComponents) {
+        List<Entity> productionCountingQuantities = new ArrayList<>();
+
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
@@ -114,8 +121,11 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
-            createProductionCountingQuantity(order, technologyOperationComponent, product, role, isNonComponent, plannedQuantity);
+            Entity productionCountingQuantity = createProductionCountingQuantity(order, technologyOperationComponent, product, role, isNonComponent, plannedQuantity);
+            productionCountingQuantities.add(productionCountingQuantity);
         }
+
+        productionCountingQuantitySetService.markIntermediateInProductionCountingQuantities(productionCountingQuantities);
     }
 
     @Override
@@ -153,20 +163,16 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             final String role, boolean isNonComponent) {
         if (isNonComponent) {
             return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
-        } else {
-            if (isRoleProduced(role)) {
-                if (checkIfProductIsFinalProduct(order, technologyOperationComponent, product)) {
-                    return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
-                } else {
-                    if (checkIfProductAlreadyExists(technologyOperationComponent, product)) {
-                        return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
-                    } else {
-                        return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
-                    }
-                }
+        } else if (isRoleProduced(role)) {
+            if (checkIfProductIsFinalProduct(order, technologyOperationComponent, product)) {
+                return ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue();
+            } else if (checkIfProductAlreadyExists(technologyOperationComponent, product)) {
+                return ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue();
             } else {
-                return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
+                return ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue();
             }
+        } else {
+            return ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue();
         }
     }
 
@@ -234,6 +240,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .getTotalNumberOfEntities() == 1);
     }
 
+    @Override
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
@@ -329,9 +336,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                     .find()
                     .add(SearchRestrictions.or(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.USED.getStringValue()), SearchRestrictions.and(SearchRestrictions.eq(
-                            ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
-                            SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                                    ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
+                                    ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
+                                    SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                                            ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
 
             Set<Long> alreadyAddedProducts = Sets.newHashSet();
 

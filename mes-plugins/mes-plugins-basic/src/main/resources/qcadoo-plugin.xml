@@ -253,6 +253,8 @@
 
         <security:role identifier="ROLE_ACTIONS" description="Dostęp do czynności"/>
 
+        <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL" description="Dostęp do terminalu rejestracji produkcji"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

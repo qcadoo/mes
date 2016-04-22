@@ -74,7 +74,6 @@ public class EventCriteriaModifiersCMP {
 
     public void filterCanceledEvents(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventState.CANCELED.getStringValue()))
-                .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.REVIEW.getStringValue()))
                 .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.UDT_REVIEW.getStringValue()))
                 .add(SearchRestrictions.ne(PlannedEventFields.TYPE, PlannedEventType.METER_READING.getStringValue()));
     }

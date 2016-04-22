@@ -42,5 +42,7 @@ public final class TrackingOperationProductOutComponentFields {
     public static final String GIVEN_QUANTITY = "givenQuantity";
 
     public static final String GIVEN_UNIT = "givenUnit";
+    
+    public static final String SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS = "setTrackingOperationProductsInComponents";
 
 }
