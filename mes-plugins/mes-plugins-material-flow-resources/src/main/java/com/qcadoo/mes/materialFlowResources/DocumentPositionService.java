@@ -136,17 +136,19 @@ public class DocumentPositionService {
 
     public Map<String, Object> getGridConfig(Long documentId) {
         try {
-            String query = "select * from materialflowresources_documentpositionparametersitem";
+            String query = "select * from materialflowresources_documentpositionparametersitem order by ordering";
             List<Map<String, Object>> items = jdbcTemplate.queryForList(query, Collections.EMPTY_MAP);
 
             Map<String, Object> config = new HashMap<>();
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument(documentId));
-
+            
+            Map<String, Object> columns = new LinkedHashMap<>();
             for (Map<String, Object> item : items) {
-                config.put("show" + item.get("name").toString().toLowerCase(), item.get("checked"));
+                columns.put(item.get("name").toString(), item.get("checked"));
             }
+            config.put("columns", columns);
 
             return config;
 

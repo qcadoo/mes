@@ -33,7 +33,7 @@
     <component type="window" name="window">
 
         <ribbon>
-        <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -43,6 +43,7 @@
                 <component type="grid" name="grid" reference="grid" source="#{form}.items">
                     <option type="column" name="name" fields="name" link="true" />
                     <option type="column" name="checked" fields="checked" width="50" />
+                    <option type="column" name="editable" fields="editable" width="50" />
 
                     <option type="searchable" value="" />
                     <option type="orderable" value="" />
@@ -52,6 +53,7 @@
                     <option type="correspondingView" value="materialFlowResources/documentPositionParametersItemDetails"/>
                     <option type="correspondingComponent" value="form"/>
                     <option type="correspondingViewInModal" value="true"/>
+                    <option type="order" column="ordering" direction="desc"/>
 
                     <option type="creatable" value="false"/>
                     <option type="deletable" value="false"/>

@@ -31,8 +31,10 @@ CREATE TABLE materialflowresources_documentpositionparametersitem
 (
   id bigint NOT NULL,
   checked boolean DEFAULT true,
+  editable boolean DEFAULT true,
   parameters_id bigint,
   name character varying(255),
+  ordering integer,
   CONSTRAINT materialflowresources_documentpositionparametersitem_pkey PRIMARY KEY (id)
 );
 
@@ -41,15 +43,24 @@ ALTER TABLE materialflowresources_documentpositionparametersitem
       REFERENCES materialflowresources_documentpositionparameters (id) DEFERRABLE;
 
 insert into materialflowresources_documentpositionparameters (id) values (1);
-insert into materialflowresources_documentpositionparametersitem (name, parameters_id) values 
-	('price', 1),
-	('storageLocation', 1),
-	('additionalCode', 1),
-	('productionDate', 1),
-	('expirationDate', 1),
-	('pallet', 1),
-	('typeOfPallet', 1),
-	('batch', 1);
+insert into materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) values         
+        (1,1,'act', 1, false),
+        (2,2,'number', 1, false),
+        (3,3,'product', 1, false),
+	(4,4,'additionalCode', 1, true),
+        (5,5,'quantity', 1, false),
+        (6,6,'unit', 1, false),
+        (7,7,'givenquantity', 1, false),
+        (8,8,'givenunit', 1, false),
+        (9,9,'conversion', 1, false),
+        (10,10,'resource', 1, true),
+	(11,11,'price', 1, true),
+	(12,12,'batch', 1, true),
+	(13,13,'productiondate', 1, true),
+	(14,14,'expirationdate', 1, true),
+	(15,15,'storageLocation', 1, true),
+	(16,16,'palletNumber', 1, true),
+	(17,17,'typeOfPallet', 1, true);
 
 ALTER TABLE basic_parameter ADD COLUMN documentpositionparameters_id bigint;
 
@@ -74,10 +85,6 @@ ALTER TABLE materialflowresources_position
 
 -- resource lookup changes
 -- last touched 23.02.2016 by pako
-
-insert into materialflowresources_documentpositionparametersitem (name, parameters_id) values 
-	('resource', 1);
-
 ALTER TABLE materialflowresources_documentpositionparameters ADD COLUMN suggestresource boolean;
 ALTER TABLE materialflowresources_documentpositionparameters ALTER COLUMN suggestresource SET DEFAULT true;
 -- end

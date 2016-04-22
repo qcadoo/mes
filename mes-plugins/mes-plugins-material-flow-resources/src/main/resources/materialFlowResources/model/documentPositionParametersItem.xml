@@ -31,12 +31,14 @@
         <string name="name" required="true" unique="true" readonly="true" />
         <string name="displayName" persistent="false" readonly="true" />
         <boolean name="checked" default="true" />
+        <boolean name="editable" default="true" />
+        <priority name="ordering" />
         
         <belongsTo name="parameters" model="documentPositionParameters"/>
     </fields>
     <hooks>
         <validatesWith
-                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentPositionParametersItemModelValidators"
-                method="validate"/>
+            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentPositionParametersItemModelValidators"
+            method="validate"/>
     </hooks>
 </model>

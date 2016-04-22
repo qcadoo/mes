@@ -25,52 +25,56 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ParameterListenersMFR {
-    
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
-    
+
     public void redirectToMaterialFlowResourcesParameters(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Long parameterId = (Long) componentState.getFieldValue();
-        
+
         if (parameterId != null) {
             DataDefinition parameterDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
             DataDefinition documentPositionParametersDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS);
-            
+
             Entity parameter = parameterDD.get(parameterId);
             Entity documentPositionParameters = parameter.getBelongsToField("documentPositionParameters");
-            
+
             if (documentPositionParameters == null) {
-                documentPositionParameters = documentPositionParametersDD.create();
-                documentPositionParameters = documentPositionParametersDD.save(documentPositionParameters);
-                
+                documentPositionParameters = documentPositionParametersDD.find().setMaxResults(1).list().getEntities().get(0);
+                if (documentPositionParameters == null) {
+                    documentPositionParameters = documentPositionParametersDD.create();
+                    documentPositionParameters = documentPositionParametersDD.save(documentPositionParameters);
+                }
+
                 parameter.setField("documentPositionParameters", documentPositionParameters);
                 parameter = parameterDD.save(parameter);
             }
-            
+
             String url = "../page/materialFlowResources/materialFlowResourcesParameters.html?context={\"form.id\":\"" + documentPositionParameters.getId() + "\"}";
             view.redirectTo(url, false, true);
         }
     }
-    
+
     public void setChecked(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         changeVisibility(view, true);
     }
-    
+
     public void setUnchecked(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         changeVisibility(view, false);
     }
-    
+
     private void changeVisibility(ViewDefinitionState view, boolean visibility) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-        
+
         for (Entity entity : grid.getEntities()) {
             entity.setField("checked", visibility);
             entity.getDataDefinition().save(entity);
         }
     }
-    
+
 }

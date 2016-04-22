@@ -35,7 +35,7 @@
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
-                <component type="gridLayout" name="parameterInputColumnGridLayout" columns="1" rows="2" hasBorders="false">
+                <component type="gridLayout" name="parameterInputColumnGridLayout" columns="1" rows="3" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="input" name="displayName" reference="displayName" field="displayName">
                             <option type="labelWidth" value="60" />
@@ -44,6 +44,11 @@
                     <layoutElement column="1" row="2">
                         <component type="checkbox" name="checked"
                                    reference="checked" field="checked" >
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="editable"
+                                   reference="editable" field="editable">
                         </component>
                     </layoutElement>
                 </component>

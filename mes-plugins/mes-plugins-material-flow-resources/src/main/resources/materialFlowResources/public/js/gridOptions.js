@@ -508,8 +508,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         ac: getFieldValue('additionalCode', rowId),
                         context: getDocumentId()
                     }
-                }
-                else {
+                } else {
                     params = {
                         product: getFieldValue('product', rowId),
                         conversion: 1,
@@ -527,7 +526,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     if (t.val()) {
                         fillWithAttributesFromResource(t.val(), getRowIdFromElement(t))
                     } else {
-                    	clearResourceRelatedFields(getRowIdFromElement(t));
+                        clearResourceRelatedFields(getRowIdFromElement(t));
                     }
                 }, 500));
             });
@@ -607,8 +606,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     hasAdditionalUnit = units['additionalunit'] !== units['unit'];
                     if (hasAdditionalUnit) {
                         additionalUnitInput.attr('disabled', 'disabled');
-                    }
-                    else {
+                    } else {
                         additionalUnitInput.removeAttr('disabled');
                     }
                     additionalUnitInput.val(additionalUnitValue);
@@ -643,8 +641,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                                 hasAdditionalUnit = units['additionalunit'] !== units['unit'];
                                 if (hasAdditionalUnit) {
                                     additionalUnitInput.attr('disabled', 'disabled');
-                                }
-                                else {
+                                } else {
                                     additionalUnitInput.removeAttr('disabled');
                                 }
                                 additionalUnitInput.val(additionalUnitValue);
@@ -700,8 +697,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     ac: ac,
                     conversion: conversion
                 }
-            }
-            else {
+            } else {
                 params = {
                     context: getDocumentId(),
                     product: productNumber,
@@ -819,7 +815,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductByAdditionalCode(additionalCode, rowId, url) {
-        	var productnumber = getFieldValue('product', rowId);
+            var productnumber = getFieldValue('product', rowId);
             getJsonByQuery(url, {query: additionalCode, productnumber: productnumber}, function (data) {
                 var product = '';
 
@@ -861,8 +857,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateProductFromLocation(location, rowNumber) {
             $.get('/integration/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
                 if (newProduct) {
-                	var productField = updateFieldValue('product', newProduct['name'], rowNumber);
-                	productField.trigger('change');
+                    var productField = updateFieldValue('product', newProduct['name'], rowNumber);
+                    productField.trigger('change');
                 }
 
             }, 'json');
@@ -899,11 +895,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         }
 
+
         function getColModelByIndex(index, c) {
             c = c || $scope.config;
-            return c.colModel.filter(function (element, i) {
+            var col = c.colModel.filter(function (element, i) {
                 return element.index === index;
             })[0];
+            if(!col){
+                console.error(index);
+            }
+            return col;
         }
 
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
@@ -1173,12 +1174,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
             },
-            colNames: ['ID', QCD.translate('qcadooView.gridColumn.document'), QCD.translate('qcadooView.gridColumn.number'), QCD.translate('qcadooView.gridColumn.actions'), QCD.translate('qcadooView.gridColumn.product'), QCD.translate('qcadooView.gridColumn.additionalCode'),
-                QCD.translate('qcadooView.gridColumn.quantity'), QCD.translate('qcadooView.gridColumn.unit'), QCD.translate('qcadooView.gridColumn.givenquantity'),
-                QCD.translate('qcadooView.gridColumn.givenunit'), QCD.translate('qcadooView.gridColumn.conversion'), QCD.translate('qcadooView.gridColumn.price'),
-                QCD.translate('qcadooView.gridColumn.expirationdate'), QCD.translate('qcadooView.gridColumn.productiondate'), QCD.translate('qcadooView.gridColumn.resource'),
-                QCD.translate('qcadooView.gridColumn.batch'), QCD.translate('qcadooView.gridColumn.palletNumber'), QCD.translate('qcadooView.gridColumn.typeOfPallet'),
-                QCD.translate('qcadooView.gridColumn.storageLocation')/*, 'resource_id'*/],
             colModel: [
                 {
                     name: 'id',
@@ -1520,38 +1515,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 return false;
             };
 
-            var hideColumnInGrid = function (columnIndex, responseDate) {
-                if (columnIndex === 'storageLocation' && !responseDate.showstoragelocation) {
-                    return true;
-                }
-                if (columnIndex === 'additionalCode' && !responseDate.showadditionalcode) {
-                    return true;
-                }
-                if (columnIndex === 'productiondate' && !responseDate.showproductiondate) {
-                    return true;
-                }
-                if (columnIndex === 'expirationdate' && !responseDate.showexpirationdate) {
-                    return true;
-                }
-                if (columnIndex === 'palletNumber' && !responseDate.showpallet) {
-                    return true;
-                }
-                if (columnIndex === 'typeOfPallet' && !responseDate.showtypeofpallet) {
-                    return true;
-                }
-                if (columnIndex === 'resource' && !responseDate.showresource) {
-                    return true;
-                }
-                if (columnIndex === 'batch' && !responseDate.showbatch) {
-                    return true;
-                }
-                if (columnIndex === 'price' && !responseDate.showprice) {
-                    return true;
-                }
-
-                return false;
-            };
-
             $http({
                 method: 'GET',
                 url: '../../integration/rest/documentPositions/gridConfig/' + config.document_id + '.html'
@@ -1561,22 +1524,33 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 config.suggestResource = response.data.suggestResource;
                 config.outDocument = response.data.outDocument;
 
-                angular.forEach(config.colModel, function (value, key) {
-                    if (hideColumnInGrid(value.index, response.data)) {
-                        config.colModel[key].hidden = true;
-                        config.colModel[key].editrules = config.colModel[key].editrules || {};
-                        config.colModel[key].editrules.edithidden = true;
+                var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config)];
+                var colNames = ['ID', 'document'];
+
+                angular.forEach(response.data.columns, function (showColumnInGrid, key) {
+                    var gridColModel = getColModelByIndex(key, config);
+
+                    if (!showColumnInGrid) {
+                        gridColModel.hidden = true;
+                        gridColModel.editrules = gridColModel.editrules || {};
+                        gridColModel.editrules.edithidden = true;
                     }
-                    if (readOnlyInType(config.outDocument, value.index, response.data)) {
-                        config.colModel[key].editoptions = config.colModel[key].editoptions || {};
-                        if (config.colModel[key].edittype === 'select') {
-                            config.colModel[key].editoptions.disabled = 'disabled';
+                    if (readOnlyInType(config.outDocument, key, response.data)) {
+                        gridColModel.editoptions = gridColModel.editoptions || {};
+                        if (gridColModel.edittype === 'select') {
+                            gridColModel.editoptions.disabled = 'disabled';
 
                         } else {
-                            config.colModel[key].editoptions.readonly = 'readonly';
+                            gridColModel.editoptions.readonly = 'readonly';
                         }
                     }
+
+                    columns.push(gridColModel);
+                    colNames.push(QCD.translate('qcadooView.gridColumn.' + key));
                 });
+
+                config.colModel = columns;
+                config.colNames = colNames;
 
                 $http({
                     method: 'GET',
@@ -1607,7 +1581,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         var newConfig = {};
                         newConfig = angular.merge(newConfig, config);
                         $scope.config = newConfig;
-
                         $('#gridWrapper').unblock();
 
                     }, errorCallback);

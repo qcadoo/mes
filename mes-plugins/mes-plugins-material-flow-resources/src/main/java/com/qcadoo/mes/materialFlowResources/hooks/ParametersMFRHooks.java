@@ -45,10 +45,14 @@ public class ParametersMFRHooks {
     public void onBeforeRenderItemDetails(final ViewDefinitionState view) {
         FormComponent documentPositionParametersItemForm = (FormComponent) view.getComponentByReference("form");
         FieldComponent displayNameField = (FieldComponent) view.getComponentByReference("displayName");
-        String name = documentPositionParametersItemForm.getPersistedEntityWithIncludedFormValues().getStringField("name");
+        Entity item = documentPositionParametersItemForm.getPersistedEntityWithIncludedFormValues();
+        String name = item.getStringField("name");
         String displayName = translationService.translate(TRANSLATION_PREFIX + name, displayNameField.getLocale());
-
         displayNameField.setFieldValue(displayName);
+        
+        boolean editable = item.getBooleanField("editable");
+        ((FieldComponent)view.getComponentByReference("checked")).setEnabled(editable);
+        ((FieldComponent)view.getComponentByReference("editable")).setEnabled(false);
     }
 
 }
