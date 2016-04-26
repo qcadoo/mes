@@ -124,14 +124,21 @@ public class OrderDetailsHooksMO {
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
             BigDecimal masterOrderQuantity;
+            BigDecimal cumulatedOrderQuantity;
             if (productComponent == null) {
                 masterOrderQuantity = BigDecimalUtils
                         .convertNullToZero(masterOrder.getDecimalField(MasterOrderFields.MASTER_ORDER_QUANTITY));
+
+                cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(
+                        masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, masterOrderProduct));
             } else {
-                masterOrderQuantity = productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+                masterOrderQuantity = BigDecimalUtils
+                        .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+
+                cumulatedOrderQuantity = BigDecimalUtils
+                        .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.CUMMULATED_ORDER_QUANTITY));
+
             }
-            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(
-                    masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, masterOrderProduct));
 
             BigDecimal plannedQuantity = masterOrderQuantity.subtract(cumulatedOrderQuantity, numberService.getMathContext());
 
