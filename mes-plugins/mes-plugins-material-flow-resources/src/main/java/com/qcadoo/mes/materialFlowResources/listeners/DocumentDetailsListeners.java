@@ -187,9 +187,9 @@ public class DocumentDetailsListeners {
         locationTo.setFieldValue(null);
         locationFrom.requestComponentUpdateState();
 
-        showResourceLookupOrBatchInput(view, false, true);
+        // showResourceLookupOrBatchInput(view, false, true);
 
-        clearAttributes(view);
+        // clearAttributes(view);
     }
 
     public void updateAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -234,11 +234,11 @@ public class DocumentDetailsListeners {
     public void showAndSetRequiredForResourceLookup(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         showAndSetRequiredForResourceLookup(view);
-        documentDetailsHooks.setCriteriaModifiersParameters(view);
+        // documentDetailsHooks.setCriteriaModifiersParameters(view);
     }
 
     public void setCriteriaModifiersParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        documentDetailsHooks.setCriteriaModifiersParameters(view);
+        // documentDetailsHooks.setCriteriaModifiersParameters(view);
     }
 
     private void showResourceLookupOrBatchInput(final ViewDefinitionState view, boolean visible, boolean shouldClear) {

@@ -45,4 +45,7 @@ public interface MaterialFlowResourcesConstants {
 
     public static final String MODEL_STORAGE_LOCATION = "storageLocation";
 
+    public static final String MODEL_DOCUMENT_POSITION_PARAMETERS = "documentPositionParameters";
+    
+    public static final String MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM = "documentPositionParametersItem";
 }

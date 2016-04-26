@@ -62,8 +62,11 @@
                     </layoutElement>
                     <layoutElement column="1" row="4" width="5">
                         <component type="input" name="usedQuantity" field="usedQuantity"
-                                   reference="usedQuantity" defaultEnabled="false">
+                               reference="usedQuantity" defaultEnabled="true">
                             <option type="alignment" value="right"/>
+
+                        <listener event="onInputChange" method="calculateQuantityToGiven"
+                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="4">

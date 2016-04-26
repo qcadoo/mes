@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -38,6 +39,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
@@ -51,6 +53,9 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
@@ -64,6 +69,9 @@ public class DeliveryStateServiceMF {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
@@ -92,13 +100,35 @@ public class DeliveryStateServiceMF {
         for (Entity deliveredProduct : deliveredProducts) {
 
             BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-            Optional<BigDecimal> damagedQuantity = Optional.fromNullable(deliveredProduct
-                    .getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
+            Optional<BigDecimal> damagedQuantity = Optional
+                    .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
             BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                documentBuilder.addPosition(product(deliveredProduct), positionQuantity, price(deliveredProduct, currency),
-                        batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct));
+                Entity product = product(deliveredProduct);
+                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+                if (StringUtils.isEmpty(additionalUnit)) {
+                    documentBuilder.addPosition(product, positionQuantity, positionQuantity,
+                            product.getStringField(ProductFields.UNIT), BigDecimal.ONE, price(deliveredProduct, currency),
+                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
+                } else {
+
+                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
+                            product.getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    BigDecimal givenQuantity;
+                    BigDecimal conversion;
+                    if (unitConversions.isDefinedFor(additionalUnit)) {
+                        givenQuantity = unitConversions.convertTo(positionQuantity, additionalUnit);
+                        conversion = givenQuantity.divide(positionQuantity, numberService.getMathContext());
+                    } else {
+                        conversion = BigDecimal.ONE;
+                        givenQuantity = positionQuantity;
+                    }
+                    documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
+                            conversion, price(deliveredProduct, currency), batch(deliveredProduct),
+                            productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
+                }
             }
         }
         Entity createdDocument = documentBuilder.setAccepted().build();
@@ -122,8 +152,8 @@ public class DeliveryStateServiceMF {
 
     private BigDecimal price(Entity deliveredProduct, Entity currency) {
         BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct
-                .getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+        Optional<BigDecimal> pricePerUnit = Optional
+                .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
         if (!pricePerUnit.isPresent()) {
             return null;
         }

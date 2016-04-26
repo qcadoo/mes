@@ -52,6 +52,19 @@
 
         <!--<dictionary name="storageLocation" dictionary="storageLocations" />-->
         <belongsTo name="storageLocation" model="storageLocation"/>
+
+        <!-- new fields -->
+        <decimal name="quantityInAdditionalUnit">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic" />
+        <decimal name="conversion" default="0" />
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
+        <dictionary name="typeOfPallet" dictionary="typeOfPallet"/>
+        <dictionary name="givenUnit" dictionary="units"/>
+
     </fields>
     <hooks>
         <validatesWith
@@ -63,6 +76,5 @@
         <onCreate
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
                 method="onCreate"/>
-        <!-- 		<onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks" method="onDelete"/> -->
     </hooks>
 </model>
