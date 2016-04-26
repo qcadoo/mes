@@ -37,18 +37,45 @@
                            action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
             </group>
             <group name="state">
-                <smallButton name="accept" icon="startIcon16.png"
-                             action="#{form}.fireEvent(createResourcesForDocuments);" state="enabled">
+                <smallButton name="accept" icon="startIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name    : 'createResourcesForDocuments',
+                                        args    : undefined,
+                                        type    : undefined,
+                                        callback : undefined
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>                    
                 </smallButton>
             </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
+                <script>
+<![CDATA[
+                this.addOnChangeListener({
+                    onSetValue: function(value) {
+                        if (!value || !value.content)
+                            return;
+                            
+                        if (value.content.entityId) {
+                            documentIdChanged(value.content.entityId);                            
+                        } 
+                    }
+                });
+            ]]></script>                
+                
+                
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="number" reference="number"
-                                   field="number"/>
+                        <component type="input" name="number" reference="number" field="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="name" reference="name"
@@ -93,11 +120,8 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
-                                      method="showAndSetRequiredForResourceLookup"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
@@ -111,8 +135,8 @@
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                       method="setCriteriaModifiersParameters"/>
@@ -152,175 +176,18 @@
             </component>
         </windowTab>
 
-        <windowTab name="positionsListTab" reference="positionsListTab">
-            <component type="awesomeDynamicList" name="positions"
-                       source="#{form}.positions" reference="positions">
-                <option type="hasBorder" value="true"/>
-                <option type="hasButtons" value="true"/>
-                <components>
-                    <component type="gridLayout" name="positionsLayout"
-                               columns="10" rows="2">
+        <windowTab name="positionsGridTab" reference="positionsGridTab">
 
-                        <layoutElement column="1" row="1">
-                            <component type="input" name="numberLabel"
-                                       field="number" defaultEnabled="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="2" row="1" width="3">
-                            <component type="lookup" name="product" field="product"
-                                       reference="product">
-                                <option type="column" fields="name" name="name" link="true"/>
-
-                                <option type="searchable" value="number,name"/>
-                                <option type="orderable" value="number,name"/>
-
-                                <option type="expression" value="#number + ' - ' + #name"/>
-                                <option type="fieldCode" value="number"/>
-                                <listener event="onSelectedEntityChange"
-                                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
-                                          method="refreshView"/>
-                                <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ProductsCriteriaModifiers"
-                                        method="filterProductsInPosition"/>
-
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="5" row="1" width="2">
-                            <component type="gridLayout" name="quantityLayout"
-                                       columns="5" rows="1" hasBorders="false">
-
-                                <layoutElement column="1" row="1" width="4">
-                                    <component type="input" name="quantity" field="quantity" defaultEnabled="never">
-                                        <option type="alignment" value="right"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="5" row="1">
-                                    <component type="input" name="unit" field="unit"
-                                               hasLabel="false" persistent="false">
-                                        <option type="textRepresentationOnDisabled" value="true"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="7" row="1" width="2">
-                            <component type="input" name="givenQuantity" field="givenQuantity">
-                                <option type="alignment" value="right"/>
-
-                                <listener event="onInputChange" method="calculateQuantity"
-                                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"/>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="9" row="1" width="2">
-                            <component type="select" name="givenUnit" field="givenUnit">
-
-                                <listener event="onSelectedEntityChange" method="calculateQuantity"
-                                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"/>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="1" row="2">
-                            <component type="input" name="price" field="price">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="2" row="2" width="3">
-                            <component type="input" name="batch" field="batch"/>
-                            <component type="lookup" name="resource" field="resource"
-                                       reference="resource" hasLabel="false" defaultVisible="false">
-                                <option type="column" fields="time" name="time" link="true"/>
-                                <option type="column" fields="quantity" name="quantity"
-                                        link="true"/>
-                                <option type="column" fields="product" name="unit"
-                                        expression="#product['unit']"/>
-
-                                <option type="searchable" value="batch,time,quantity"/>
-                                <option type="orderable" value="batch,time,quantity"/>
-
-                                <option type="expression" value="#batch"/>
-                                <option type="fieldCode" value="batch"/>
-
-                                <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
-                                        method="showResourcesForProductInWarehouse"/>
-                            </component>
-                        </layoutElement>
-
-                        <layoutElement column="5" row="2" width="2">
-                            <component type="calendar" name="productionDate" field="productionDate"/>
-                        </layoutElement>
-
-                        <layoutElement column="7" row="2" width="2">
-                            <component type="calendar" name="expirationDate" field="expirationDate"/>
-                        </layoutElement>
-
-                        <layoutElement column="9" row="2" width="2">
-                            <component type="lookup" name="storageLocation" field="storageLocation"
-                                       reference="storageLocation">
-                                <option type="column" fields="location" name="location" link="true"
-                                        expression="#location['number']"/>
-
-                                <option type="searchable" value="number,location"/>
-                                <option type="orderable" value="number,location"/>
-
-                                <option type="expression" value="#number"/>
-                                <option type="fieldCode" value="number"/>
-                                <criteriaModifier
-                                        class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                        method="showStorageLocationsForProductAndLocation"/>
-                            </component>
-                        </layoutElement>
-
-                        <!--                         <layoutElement column="1" row="3" width="4"> -->
-                        <!--                             <component type="gridLayout" name="attributesGridLayout" -->
-                        <!--                                        columns="4" rows="1" hasBorders="false"> -->
-                        <!--                                 <layoutElement column="1" row="1"> -->
-
-                        <!--                                     <component type="awesomeDynamicList" name="additionalAttributes" -->
-                        <!--                                                source="attributeValues" reference="additionalAttributes"> -->
-                        <!--                                         <option type="hasButtons" value="false"/> -->
-                        <!--                                         <option type="hasBorder" value="false"/> -->
-
-                        <!--                                         <components> -->
-                        <!--                                             <component type="gridLayout" name="attributesLayout" -->
-                        <!--                                                        columns="2" rows="1" hasBorders="false"> -->
-                        <!--                                                 <layoutElement column="1" row="1"> -->
-                        <!--                                                     <component type="lookup" name="attributeName" field="attribute" -->
-                        <!--                                                                reference="attributeName" hasLabel="false" -->
-                        <!--                                                                defaultEnabled="never"> -->
-
-                        <!--                                                         <option type="expression" value="#name"/> -->
-                        <!--                                                         <option type="fieldCode" value="name"/> -->
-                        <!--                                                         <option type="textRepresentationOnDisabled" value="true"/> -->
-                        <!--                                                     </component> -->
-                        <!--                                                 </layoutElement> -->
-                        <!--                                                 <layoutElement column="2" row="1"> -->
-                        <!--                                                     <component type="checkbox" name="value" field="value" -->
-                        <!--                                                                hasLabel="false"/> -->
-                        <!--                                                 </layoutElement> -->
-
-                        <!--                                             </component> -->
-                        <!--                                         </components> -->
-                        <!--                                     </component> -->
-                        <!--                                 </layoutElement> -->
-                        <!--                             </component> -->
-                        <!--                         </layoutElement> -->
-
-                    </component>
-
-
-                </components>
-
-                <listener event="onAddRow"
-                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
-                          method="setCriteriaModifiersParameters"/>
+            <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
+                <layoutElement column="1" row="1" minHeight="6">
+                    <component type="staticPage" name="positionsGrid">
+                        <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
+                    </component>                  
+                </layoutElement>
             </component>
         </windowTab>
+
+
         <windowTab name="auditTab">
             <component type="gridLayout" name="gridLayout" columns="3"
                        rows="4">
@@ -353,10 +220,9 @@
         </windowTab>
     </component>
     <hooks>
-
         <beforeRender
-                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
-                method="onBeforeRender"/>
+            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
+            method="onBeforeRender"/>
         <!--         <beforeRender -->
         <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
         <!--                 method="initializeDocument"/> -->

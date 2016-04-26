@@ -147,55 +147,60 @@
 
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-                    method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
         </model:model-hook>
 
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate
-                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-                    method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-                    method="validateTransferDate"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                method="validateTransferDate"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-                    method="validateTransferResources"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                method="validateTransferResources"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:onCreate
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-                    method="updateDate"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                method="updateDate"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:onSave
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-                    method="manageResources"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                method="manageResources"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transformations">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-                    method="checkIfTransformationsDateIsValid"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                method="checkIfTransformationsDateIsValid"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transformations">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-                    method="checkIfTransfersResourcesAreValid"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                method="checkIfTransfersResourcesAreValid"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="location">
             <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
                                  method="hasAlgorithm"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="materialFlow" model="location">
+            <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
+                                 method="isFieldVisible"/>
         </model:model-hook>
 
         <menu:menu-item name="resources" category="materialFlow"
@@ -237,6 +242,7 @@
                         class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR"
                         method="setEnabledForBatchCheckbox"/>
 
+        <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
         <view:view resource="view/documentDetails.xml"/>
@@ -257,6 +263,23 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:resource uri="public/**/*"/>
+        
+        <!--  PARAMETERS -->
+        <view:view resource="view/materialFlowResourcesParameters.xml"/>
+        <view:view resource="view/documentPositionParametersItemDetails.xml"/>
+        
+        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>    
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToMaterialFlowResourcesParameters"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.ParameterListenersMFR"
+                            method="redirectToMaterialFlowResourcesParameters"/>            
+
+        <model:model model="documentPositionParameters" resource="model/documentPositionParameters.xml"/>
+        <model:model model="documentPositionParametersItem" resource="model/documentPositionParametersItem.xml"/>
+        <model:model-field model="parameter" plugin="basic">
+            <model:belongsTo name="documentPositionParameters" model="documentPositionParameters" plugin="materialFlowResources"/>
+        </model:model-field>
+      
     </modules>
 
     <features>

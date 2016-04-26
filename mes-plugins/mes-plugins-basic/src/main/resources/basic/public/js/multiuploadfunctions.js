@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.4
+ * Version: 1.3
  *
  * This file is part of Qcadoo.
  *
@@ -72,7 +72,7 @@ $(function() {
 
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"workstationMultiUploadLocale")
+								"technologyMultiUploadLocale")
 									.getValue().content.value;
 							var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 
@@ -101,7 +101,7 @@ $(function() {
 					function(e, data) {
 						var techId = window.mainController
 								.getComponentByReferenceName(
-										"workstationIdForMultiUpload")
+										"technologyIdForMultiUpload")
 								.getValue();
 						var techIdValue = techId.content;
 						data.formData = {
@@ -111,10 +111,10 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
-							"workstationMultiUploadLocale")
+							"technologyMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {

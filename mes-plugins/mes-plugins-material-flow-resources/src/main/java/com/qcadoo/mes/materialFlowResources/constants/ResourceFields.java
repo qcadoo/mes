@@ -55,4 +55,18 @@ public final class ResourceFields {
 
     public static final String STORAGE_LOCATION = "storageLocation";
 
+    public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
+
+    public static final String ADDITIONAL_CODE = "additionalCode";
+
+    public static final String CONVERSION = "conversion";
+
+    public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String TYPE_OF_PALLET = "typeOfPallet";
+
+    public static final String GIVEN_UNIT = "givenUnit";
+    
+    public static final String NUMBER = "number";
+
 }

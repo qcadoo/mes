@@ -141,6 +141,18 @@ public class DocumentBuilder {
         return this;
     }
 
+    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final Date productionDate, final Date expirationDate, final Entity resource) {
+        Preconditions.checkArgument(product != null, "Product argument is required.");
+        Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
+
+        Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
+                expirationDate, resource);
+        positions.add(position);
+        return this;
+    }
+
     /**
      * Creates position with given field values (with the same base and given unit)
      * 
@@ -186,9 +198,10 @@ public class DocumentBuilder {
      * @return Created position entity
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal price, final String batch, final Date productionDate,
-            final Date expirationDate, final Entity resource) {
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final Date productionDate, final Date expirationDate, final Entity resource) {
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
+        position.setField(PositionFields.CONVERSION, conversion);
         position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.GIVEN_UNIT, givenUnit);
         return position;
@@ -235,16 +248,16 @@ public class DocumentBuilder {
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         document.setField(DocumentFields.POSITIONS, positions);
-        
+
         if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
             createResources();
         }
         Entity savedDocument = documentDD.save(document);
-            
+
         if (!savedDocument.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
-            
+
         return savedDocument;
     }
 
@@ -252,13 +265,13 @@ public class DocumentBuilder {
         DocumentType documentType = DocumentType.of(document);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             resourceManagementService.createResourcesForReceiptDocuments(document);
-            
+
         } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
             resourceManagementService.updateResourcesForReleaseDocuments(document);
-            
+
         } else if (DocumentType.TRANSFER.equals(documentType)) {
             resourceManagementService.moveResourcesForTransferDocument(document);
-            
+
         } else {
             throw new IllegalStateException("Unsupported document type");
         }

@@ -419,6 +419,10 @@
 
         <view:resource uri="public/**/*"/>
 
+
+        <view:resource uri="public/**/*"/>
+
+
     </modules>
 
     <features>

@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.*;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -39,9 +39,16 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.DocumentFieldsCMP;
+import com.qcadoo.mes.cmmsMachineParts.constants.EventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.MachinePartForEventFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -49,6 +56,10 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 
 @Service
 public class EventDocumentsService {
@@ -61,6 +72,12 @@ public class EventDocumentsService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void createDocumentsForMachineParts(final StateChangeContext stateChangeContext) {
 
@@ -92,8 +109,8 @@ public class EventDocumentsService {
                     .map(part -> part.getBelongsToField(MachinePartForEventFields.MACHINE_PART)).distinct()
                     .collect(Collectors.toList());
             Entity warehouse = warehouseDD.get(warehouseId);
-            Map<Long, BigDecimal> quantitiesInWarehouse = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
-                    machineParts, warehouse);
+            Map<Long, BigDecimal> quantitiesInWarehouse = materialFlowResourcesService
+                    .getQuantitiesForProductsAndLocation(machineParts, warehouse);
 
             if (!checkIfResourcesAreSufficient(event, quantitiesInWarehouse, machinePartsForLocation, warehouse)) {
                 resourcesSufficient = false;
@@ -119,18 +136,42 @@ public class EventDocumentsService {
     private Entity createDocumentForLocation(final Entity event, final EventType eventType, final Entity warehouse,
             final Collection<Entity> machinePartsForLocation) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder().internalOutbound(warehouse);
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
         for (Entity machinePartForLocation : machinePartsForLocation) {
-            documentBuilder.addPosition(machinePartForLocation.getBelongsToField(MachinePartForEventFields.MACHINE_PART),
-                    machinePartForLocation.getDecimalField(MachinePartForEventFields.PLANNED_QUANTITY));
+            Entity position = positionDD.create();
+            Entity product = machinePartForLocation.getBelongsToField(MachinePartForEventFields.MACHINE_PART);
+            BigDecimal quantity = machinePartForLocation.getDecimalField(MachinePartForEventFields.PLANNED_QUANTITY);
+
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            BigDecimal conversion = BigDecimal.ONE;
+            if (!StringUtils.isEmpty(additionalUnit)) {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                if (unitConversions.isDefinedFor(additionalUnit)) {
+                    BigDecimal convertedQuantity = unitConversions.convertTo(quantity, additionalUnit);
+                    conversion = convertedQuantity.divide(quantity, numberService.getMathContext());
+                    position.setField(PositionFields.GIVEN_QUANTITY, convertedQuantity);
+                    position.setField(PositionFields.GIVEN_UNIT, additionalUnit);
+                }
+            } else {
+                position.setField(PositionFields.GIVEN_UNIT, unit);
+                position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+            }
+            position.setField(PositionFields.PRODUCT, product);
+            position.setField(PositionFields.CONVERSION, conversion);
+            position.setField(PositionFields.QUANTITY, quantity);
+            documentBuilder.addPosition(position);
         }
-        if(eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT)){
+        if (eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT)) {
             documentBuilder.setField(DocumentFieldsCMP.MAINTENANCE_EVENT, event);
 
-        }else if (eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)){
+        } else if (eventType.getModelName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
             documentBuilder.setField(DocumentFieldsCMP.PLANNED_EVENT, event);
 
-        }
-        else{
+        } else {
             throw new IllegalArgumentException(String.format("Unsupported model type: '%s'", eventType.getModelName()));
         }
         return documentBuilder.setAccepted().build();
