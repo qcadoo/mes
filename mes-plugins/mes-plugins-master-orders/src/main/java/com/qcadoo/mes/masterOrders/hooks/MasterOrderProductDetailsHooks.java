@@ -58,8 +58,8 @@ public class MasterOrderProductDetailsHooks {
         if (product != null) {
             unit = product.getStringField(UNIT);
         }
-        for (String reference : Arrays
-                .asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit", "producedOrderQuantityUnit")) {
+        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
+                "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
@@ -73,12 +73,12 @@ public class MasterOrderProductDetailsHooks {
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity masterProductOrder = form.getEntity();
-        if (masterProductOrder == null) {
+        if (masterProductOrder == null || !masterProductOrder.isValid()) {
             return;
         }
         Entity masterOrder = masterProductOrder.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
-                MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
+                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
             return;
         }
         BigDecimal cumulatedQuantity = masterProductOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
