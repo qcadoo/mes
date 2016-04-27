@@ -136,7 +136,7 @@ public class OrderDetailsHooksMO {
                         .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
 
                 cumulatedOrderQuantity = BigDecimalUtils
-                        .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.CUMMULATED_ORDER_QUANTITY));
+                        .convertNullToZero(productComponent.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY));
 
             }
 

@@ -23,17 +23,13 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -47,20 +43,23 @@ import com.qcadoo.view.api.components.LookupComponent;
 @Service
 public class MasterOrderProductDetailsHooks {
 
+    private static final String L_FORM = "form";
+
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void fillUnitField(final ViewDefinitionState view) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
+        LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderProductFields.PRODUCT);
         Entity product = productField.getEntity();
         String unit = null;
 
         if (product != null) {
-            unit = product.getStringField(UNIT);
+            unit = product.getStringField(ProductFields.UNIT);
         }
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
                 "producedOrderQuantityUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
+
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
@@ -71,21 +70,27 @@ public class MasterOrderProductDetailsHooks {
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity masterProductOrder = form.getEntity();
-        if (masterProductOrder == null || !masterProductOrder.isValid()) {
-            return;
-        }
-        Entity masterOrder = masterProductOrder.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
-                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            return;
-        }
-        BigDecimal cumulatedQuantity = masterProductOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
-        BigDecimal masterQuantity = masterProductOrder.getDecimalField(MASTER_ORDER_QUANTITY);
+        FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrderProduct = masterOrderProductForm.getEntity();
 
-        if (cumulatedQuantity != null && masterQuantity != null && cumulatedQuantity.compareTo(masterQuantity) == -1) {
-            form.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO, false);
+        if ((masterOrderProduct == null) || !masterOrderProduct.isValid()) {
+            return;
+        }
+
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
+                MasterOrderType.MANY_PRODUCTS.getStringValue())) {
+            return;
+        }
+
+        BigDecimal cumulatedQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
+        BigDecimal masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+
+        if ((cumulatedQuantity != null) && (masterOrderQuantity != null) && (cumulatedQuantity.compareTo(masterOrderQuantity) == -1)) {
+            masterOrderProductForm.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
+                    MessageType.INFO, false);
         }
     }
+
 }

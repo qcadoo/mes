@@ -29,7 +29,7 @@ public final class MasterOrderProductFields {
 
     }
 
-    public static final String CUMMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
+    public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
 
     public static final String PRODUCT = "product";
 
