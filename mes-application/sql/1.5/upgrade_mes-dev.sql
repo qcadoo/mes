@@ -86,7 +86,7 @@ ALTER TABLE materialflowresources_position
 -- resource lookup changes
 -- last touched 23.02.2016 by pako
 ALTER TABLE materialflowresources_documentpositionparameters ADD COLUMN suggestresource boolean;
-ALTER TABLE materialflowresources_documentpositionparameters ALTER COLUMN suggestresource SET DEFAULT true;
+ALTER TABLE materialflowresources_documentpositionparameters ALTER COLUMN suggestresource SET DEFAULT false;
 -- end
 
 -- added helper for master orders
