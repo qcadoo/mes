@@ -147,7 +147,6 @@ public class DocumentDetailsListeners {
         } else {
             documentToCreateResourcesFor.setNotValid();
             formComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
-            window.setActiveTab("positionsListTab");
         }
 
         if (!documentToCreateResourcesFor.isValid()) {
