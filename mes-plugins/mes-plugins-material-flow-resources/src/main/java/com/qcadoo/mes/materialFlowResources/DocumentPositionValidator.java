@@ -47,8 +47,8 @@ public class DocumentPositionValidator {
     }
 
     private Map<String, Object> validateAndMap(DocumentPositionDTO position) {
-        Preconditions.checkNotNull(position, "qcadooView.required.documentPosition");
-        Preconditions.checkNotNull(position.getDocument(), "qcadooView.required.documentPosition.document");
+        Preconditions.checkNotNull(position, "documentGrid.required.documentPosition");
+        Preconditions.checkNotNull(position.getDocument(), "documentGrid.required.documentPosition.document");
 
         DocumentDTO document = jdbcTemplate.queryForObject("SELECT * FROM materialflowresources_document WHERE id = :id",
                 Collections.singletonMap("id", position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
@@ -57,15 +57,15 @@ public class DocumentPositionValidator {
         Map<String, Object> params = null;
 
         if (isGridReadOnly(document)) {
-            errors.add("qcadooView.error.position.documentAccepted");
+            errors.add("documentGrid.error.position.documentAccepted");
 
         } else {
 
             if (Strings.isNullOrEmpty(position.getProduct())) {
-                errors.add("qcadooView.error.position.product.required");
+                errors.add("documentGrid.error.position.product.required");
             }
             if (Strings.isNullOrEmpty(position.getUnit())) {
-                errors.add("qcadooView.error.position.unit.required");
+                errors.add("documentGrid.error.position.unit.required");
             }
 
             errors.addAll(validateConversion(position));
@@ -113,17 +113,17 @@ public class DocumentPositionValidator {
         List<String> errors = new ArrayList<>();
 
         if (requirePrice && (position.getPrice() == null || BigDecimal.ZERO.compareTo(position.getPrice()) == 0)) {
-            errors.add("qcadooView.error.position.price.required");
+            errors.add("documentGrid.error.position.price.required");
         }
         if (requireBatch && (position.getBatch() == null || position.getBatch().trim().isEmpty())) {
-            errors.add("qcadooView.error.position.batch.required");
+            errors.add("documentGrid.error.position.batch.required");
         }
         if (requireProductionDate && position.getProductiondate() == null) {
-            errors.add("qcadooView.error.position.productionDate.required");
+            errors.add("documentGrid.error.position.productionDate.required");
         }
 
         if (requireExpirationDate && position.getExpirationdate() == null) {
-            errors.add("qcadooView.error.position.expirationDate.required");
+            errors.add("documentGrid.error.position.expirationDate.required");
         }
 
         return errors;
@@ -143,7 +143,7 @@ public class DocumentPositionValidator {
             if (WarehouseAlgorithm.MANUAL.getStringValue().compareTo(algorithm) == 0) {
                 boolean isValid = position.getResource() != null;
                 if (!isValid) {
-                    return Arrays.asList("qcadooView.error.position.batch.required");
+                    return Arrays.asList("documentGrid.error.position.batch.required");
                 }
             }
         }
@@ -155,7 +155,7 @@ public class DocumentPositionValidator {
         Date productionDate = position.getProductiondate();
         Date expirationDate = position.getExpirationdate();
         if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
-            return Arrays.asList("qcadooView.error.position.expirationDate.lessThenProductionDate");
+            return Arrays.asList("documentGrid.error.position.expirationDate.lessThenProductionDate");
         }
 
         return Arrays.asList();
@@ -171,10 +171,10 @@ public class DocumentPositionValidator {
 
     private Collection<? extends String> validateQuantity(DocumentPositionDTO position) {
         if (position.getQuantity() == null) {
-            return Arrays.asList("qcadooView.error.position.quantity.required");
+            return Arrays.asList("documentGrid.error.position.quantity.required");
 
         } else if (BigDecimal.ZERO.compareTo(position.getQuantity()) >= 0) {
-            return Arrays.asList("qcadooView.error.position.quantity.invalid");
+            return Arrays.asList("documentGrid.error.position.quantity.invalid");
         }
 
         return validateBigDecimal(position.getQuantity(), "quantity", 5, 9);
@@ -182,10 +182,10 @@ public class DocumentPositionValidator {
 
     private Collection<? extends String> validateGivenquantity(DocumentPositionDTO position) {
         if (position.getGivenquantity() == null) {
-            return Arrays.asList("qcadooView.error.position.givenquantity.required");
+            return Arrays.asList("documentGrid.error.position.givenquantity.required");
 
         } else if (BigDecimal.ZERO.compareTo(position.getGivenquantity()) >= 0) {
-            return Arrays.asList("qcadooView.error.position.givenquantity.invalid");
+            return Arrays.asList("documentGrid.error.position.givenquantity.invalid");
         }
 
         return validateBigDecimal(position.getGivenquantity(), "givenquantity", 5, 9);
@@ -193,7 +193,7 @@ public class DocumentPositionValidator {
 
     private Collection<? extends String> validatePrice(DocumentPositionDTO position) {
         if (position.getPrice() != null && BigDecimal.ZERO.compareTo(position.getPrice()) > 0) {
-            return Arrays.asList("qcadooView.error.position.price.invalid");
+            return Arrays.asList("documentGrid.error.position.price.invalid");
         }
 
         if (position.getPrice() != null) {
@@ -205,11 +205,11 @@ public class DocumentPositionValidator {
 
     private Collection<? extends String> validateConversion(DocumentPositionDTO position) {
         if (position.getConversion() == null) {
-            return Arrays.asList("qcadooView.error.position.conversion.required");
+            return Arrays.asList("documentGrid.error.position.conversion.required");
 
         } else {
             if (BigDecimal.ZERO.compareTo(position.getConversion()) >= 0) {
-                return Arrays.asList("qcadooView.error.position.conversion.invalid");
+                return Arrays.asList("documentGrid.error.position.conversion.invalid");
             }
 
             return validateBigDecimal(position.getConversion(), "conversion", 5, 7);
@@ -229,7 +229,7 @@ public class DocumentPositionValidator {
                         filters, Long.class);
 
             } catch (EmptyResultDataAccessException e) {
-                return Arrays.asList("qcadooView.error.position.additionalCode.doesntMatch");
+                return Arrays.asList("documentGrid.error.position.additionalCode.doesntMatch");
             }
         }
         return Arrays.asList();
@@ -352,13 +352,13 @@ public class DocumentPositionValidator {
             precision -= scale;
             scale = 0;
         }
-        String fieldName = translationService.translate("qcadooView.gridColumn." + field, LocaleContextHolder.getLocale());
+        String fieldName = translationService.translate("documentGrid.gridColumn." + field, LocaleContextHolder.getLocale());
 
         if (scale > maxScale) {
-            errors.add(String.format(translationService.translate("qcadooView.error.position.bigdecimal.invalidScale", LocaleContextHolder.getLocale()), fieldName, maxScale));
+            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale", LocaleContextHolder.getLocale()), fieldName, maxScale));
         }
         if ((precision - scale) > maxPrecision) {
-            errors.add(String.format(translationService.translate("qcadooView.error.position.bigdecimal.invalidPrecision", LocaleContextHolder.getLocale()), fieldName, maxPrecision));
+            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision", LocaleContextHolder.getLocale()), fieldName, maxPrecision));
         }
 
         return errors;

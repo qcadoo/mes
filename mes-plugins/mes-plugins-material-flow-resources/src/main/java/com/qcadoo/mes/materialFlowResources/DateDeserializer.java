@@ -24,7 +24,7 @@ public class DateDeserializer extends JsonDeserializer<Date> {
         try {
             return format.parse(date);
         } catch (Exception e) {
-            throw new RuntimeException("qcadooView.validate.field.error.invalidDateFormat");
+            throw new RuntimeException("documentGrid.validate.field.error.invalidDateFormat");
         }
     }
 

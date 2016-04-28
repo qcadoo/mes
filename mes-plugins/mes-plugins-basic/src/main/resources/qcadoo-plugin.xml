@@ -69,8 +69,8 @@
     </dependencies>
 
     <modules>
-        <localization:translation-group name="dashboard"
-                                        prefix="basic.dashboard"/>
+        <localization:translation-group name="dashboard" prefix="basic.dashboard"/>
+        <localization:translation-group name="documentGrid" prefix="documentGrid"/>
 
         <localization:translation path="locales"
                                   basename="basic"/>

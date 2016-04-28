@@ -18,8 +18,8 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.' + scope.$parent.recordName);
-                    var cancelHeader = QCD.translate('qcadooView.gridHeader.cancel');
+                    var positionsHeader = QCD.translate('documentGrid.gridHeader.' + scope.$parent.recordName);
+                    var cancelHeader = QCD.translate('documentGrid.gridHeader.cancel');
                     var cancelButton = '<div id="cancel_button" class="headerActionButton" onclick="return cancelGrid();"> <a href="#"><span>' +
                             '<div id="cancel_icon"></div>' +
                             '<div class="hasIcon">' + cancelHeader + '</div></div>';
@@ -132,9 +132,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
         
         function getSpecificTranslationOrDefault(value, recordName) {
-        	var translation = QCD.translate('qcadooView.gridColumn.' + recordName + '.' + value);
+        	var translation = QCD.translate('documentGrid.gridColumn.' + recordName + '.' + value);
         	if(translation.startsWith('[') && translation.endsWith(']')) {
-        		translation = QCD.translate('qcadooView.gridColumn.' + value);
+        		translation = QCD.translate('documentGrid.gridColumn.' + value);
         	}
         	return translation;
         }

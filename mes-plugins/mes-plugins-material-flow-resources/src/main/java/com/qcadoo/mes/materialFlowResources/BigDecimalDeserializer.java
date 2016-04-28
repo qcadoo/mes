@@ -16,7 +16,7 @@ public class BigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
         try {
             return delegate.deserialize(jsonParser, deserializationContext);
         } catch (Exception e) {
-            throw new RuntimeException("qcadooView.validate.field.error.invalidNumericFormat");
+            throw new RuntimeException("documentGrid.validate.field.error.invalidNumericFormat");
         }
     }
 

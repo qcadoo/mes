@@ -129,8 +129,8 @@ myApp.directive('ngJqGrid', function ($window) {
                     element.append(angular.element('<div id="jqGridPager"></div>'));
                     $(table).jqGrid(newValue);
 
-                    var positionsHeader = QCD.translate('qcadooView.gridHeader.positions');
-                    var newHeader = QCD.translate('qcadooView.gridHeader.new');
+                    var positionsHeader = QCD.translate('documentGrid.gridHeader.positions');
+                    var newHeader = QCD.translate('documentGrid.gridHeader.new');
                     var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled ' + (newValue.readOnly ? 'disabled-button"' : '" onclick="return addNewRow();"') + '> <a href="#"><span>' +
                             '<div class="icon" id="add_new_icon""></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
@@ -261,22 +261,6 @@ function validateSerializeData(data) {
     } else {
         elements = $('.error-grid', '#gridContainer');
     }
-    /*
-     angular.forEach(elements, function (el, key) {
-     var name = $(el).attr('name');
-     delete data[name];
-     });
-     */
-    angular.forEach(data, function (el, key) {
-        if ('typeOfPallet' === key) {
-            /*var emptyItem = translateMessages('qcadooView.typeOfPallet.emptyItem');
-             if(emptyItem === data[key]){
-             delete data[key];
-             }*/
-        }
-    });
-
-
 
     return JSON.stringify(data);
 }
@@ -447,13 +431,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             autoCompleteResult = false;
                             response([{
                                     id: 0,
-                                    code: QCD.translate('qcadooView.autocomplete.noResults')
+                                    code: QCD.translate('documentGrid.autocomplete.noResults')
                                 }]);
                         } else if (data.entities.length === 0) {
                             autoCompleteResult = false;
                             response([{
                                     id: 0,
-                                    code: QCD.translate('qcadooView.autocomplete.tooManyResults') + ' (' + data.numberOfResults + ')'
+                                    code: QCD.translate('documentGrid.autocomplete.tooManyResults') + ' (' + data.numberOfResults + ')'
                                 }]);
                         } else {
                             autoCompleteResult = true;
@@ -1094,7 +1078,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function errorfunc(rowID, response) {
             var message = JSON.parse(response.responseText).message;
             message = translateMessages(message);
-            showMessage('failure', QCD.translate('qcadooView.notification.failure'), message);
+            showMessage('failure', QCD.translate('documentGrid.notification.failure'), message);
             return true;
         }
 
@@ -1103,12 +1087,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#add_grid").show();
             $("#edit_grid").show();
             $("#del_grid").show();
-            showMessage('success', QCD.translate('qcadooView.notification.success'), QCD.translate('qcadooView.message.saveMessage'));
+            showMessage('success', QCD.translate('documentGrid.notification.success'), QCD.translate('documentGrid.message.saveMessage'));
             return true;
         }
 
         function errorCallback(response) {
-            showMessage('failure', QCD.translate('qcadooView.notification.failure'), response.data.message);
+            showMessage('failure', QCD.translate('documentGrid.notification.failure'), response.data.message);
         }
 
         function aftersavefunc() {
@@ -1546,7 +1530,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     columns.push(gridColModel);
-                    colNames.push(QCD.translate('qcadooView.gridColumn.' + key));
+                    colNames.push(QCD.translate('documentGrid.gridColumn.' + key));
                 });
 
                 config.colModel = columns;
@@ -1562,15 +1546,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
                     });
 
-                    getColModelByIndex('typeOfPallet', config).editoptions.value = ':' + translateMessages('qcadooView.emptyItem') + ";" + selectOptionsTypeOfPallets.join(';');
-                    getColModelByIndex('typeOfPallet', config).searchoptions.value = ':' + translateMessages('qcadooView.allItem') + ";" + selectOptionsTypeOfPallets.join(';');
+                    getColModelByIndex('typeOfPallet', config).editoptions.value = ':' + translateMessages('documentGrid.emptyItem') + ";" + selectOptionsTypeOfPallets.join(';');
+                    getColModelByIndex('typeOfPallet', config).searchoptions.value = ':' + translateMessages('documentGrid.allItem') + ";" + selectOptionsTypeOfPallets.join(';');
 
                     $http({
                         method: 'GET',
                         url: '../../rest/units'
 
                     }).then(function successCallback(response) {
-                        selectOptionsUnits = [':' + translateMessages('qcadooView.allItem')];
+                        selectOptionsUnits = [':' + translateMessages('documentGrid.allItem')];
                         angular.forEach(response.data, function (value, key) {
                             selectOptionsUnits.push(value.key + ':' + value.value);
                         });

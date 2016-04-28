@@ -86,7 +86,7 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
         globaltypeofmaterial.put("formatter", getGlobalTypeOfMaterialFormatter(LocaleContextHolder.getLocale()));
         globaltypeofmaterial.put("stype", "select");
 
-        String searchOptionsValue = ":" + translationService.translate("qcadooView.allItem", LocaleContextHolder.getLocale()) + ";";
+        String searchOptionsValue = ":" + translationService.translate("documentGrid.allItem", LocaleContextHolder.getLocale()) + ";";
         searchOptionsValue += getGlobalTypeOfMaterialTranslatedValues(LocaleContextHolder.getLocale()).entrySet().stream().map(entry -> {
             return entry.getKey() + ":" + entry.getValue();
         }).collect(Collectors.joining(";"));
@@ -102,7 +102,7 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
 
         category.put("stype", "select");
 
-        String categorySearchOptionsValue = ":" + translationService.translate("qcadooView.allItem", LocaleContextHolder.getLocale()) + ";";
+        String categorySearchOptionsValue = ":" + translationService.translate("documentGrid.allItem", LocaleContextHolder.getLocale()) + ";";
         categorySearchOptionsValue += dictionaryService.getKeys("categories").stream().map(item -> {
             return item + ":" + item;
         }).collect(Collectors.joining(";"));

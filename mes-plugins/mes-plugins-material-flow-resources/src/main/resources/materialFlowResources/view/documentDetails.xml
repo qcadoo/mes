@@ -182,6 +182,7 @@
                 <layoutElement column="1" row="1" minHeight="6">
                     <component type="staticPage" name="positionsGrid">
                         <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
+                        <option type="messagesGroup" value="documentGrid" />
                     </component>                  
                 </layoutElement>
             </component>

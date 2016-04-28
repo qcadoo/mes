@@ -37,7 +37,7 @@ public abstract class BasicLookupController<R> {
         ModelAndView mav = new ModelAndView();
 
         mav.addObject("userLogin", securityService.getCurrentUserName());
-        mav.addObject("translationsMap", translationService.getMessagesGroup("commons", locale));
+        mav.addObject("translationsMap", translationService.getMessagesGroup("documentGrid", locale));
         mav.addObject("recordName", recordName);
 
         mav.setViewName("basic/" + view);
