@@ -64,6 +64,12 @@
 
 var myApp = angular.module('gridApp', []);
 
+function gridRunner(action) {
+    QCD.components.elements.utils.LoadingIndicator.blockElement(parent.$('body'));
+    action();
+    QCD.components.elements.utils.LoadingIndicator.unblockElement(parent.$('body'));
+}
+
 function parseAndValidateInputNumber($element) {
     function countEmptyElements(arr) {
         var counterOfEmptyElements = 0;
@@ -885,7 +891,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var col = c.colModel.filter(function (element, i) {
                 return element.index === index;
             })[0];
-            if(!col){
+            if (!col) {
                 console.error(index);
             }
             return col;
@@ -925,7 +931,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
 
-                $(this).data("timeout", setTimeout(function () {
+                $(this).data("timeout", setTimeout(gridRunner(function () {
                     parseAndValidateInputNumber(t);
 
                     var rowId = getRowIdFromElement(t);
@@ -943,7 +949,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     updateFieldValue('givenquantity', newGivenQuantity, rowId);
-                }, 500));
+                }, 500)));
             });
 
             return $input;
@@ -960,7 +966,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
 
                 $(this).data("timeout", setTimeout(function () {
-                    parseAndValidateInputNumber(t);
+                    gridRunner(function(){parseAndValidateInputNumber(t);});
                 }, 500));
 
             });
@@ -977,7 +983,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                 window.clearTimeout(t.data("timeout"));
 
-                $(this).data("timeout", setTimeout(function () {
+                $(this).data("timeout", setTimeout(gridRunner(function () {
                     parseAndValidateInputNumber(t);
 
                     var rowId = getRowIdFromElement(t);
@@ -993,7 +999,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     updateFieldValue('quantity', newQuantity, rowId);
-                }, 500));
+                }, 500)));
             });
 
             return $input;
@@ -1009,7 +1015,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 conversionModified = true;
                 window.clearTimeout(t.data("timeout"));
 
-                $(this).data("timeout", setTimeout(function () {
+                $(this).data("timeout", setTimeout(gridRunner(function () {
                     parseAndValidateInputNumber(t);
 
                     var rowId = getRowIdFromElement(t);
@@ -1030,7 +1036,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
                         updateResource(product, t.val(), ac);
                     }
-                }, 500));
+                }, 500)));
 
             });
 
