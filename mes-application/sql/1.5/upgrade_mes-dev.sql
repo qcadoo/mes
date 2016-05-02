@@ -105,3 +105,9 @@ ALTER TABLE orders_order
 ALTER TABLE productionpershift_dailyprogress ADD COLUMN efficiencytime integer;
 
 -- end
+
+-- last touched 02.05.2016 by kasi
+-- delete simpleMaterialBalance view
+DELETE FROM qcadooview_item WHERE name='simpleMaterialBalance';
+DELETE FROM qcadooview_view WHERE name='simpleMaterialBalanceList';
+-- end
