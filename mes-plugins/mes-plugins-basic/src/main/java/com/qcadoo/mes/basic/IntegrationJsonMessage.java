@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.basic;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
-
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
 
 public class IntegrationJsonMessage {
 
@@ -35,7 +34,7 @@ public class IntegrationJsonMessage {
     public String toJsonString() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.enableDefaultTyping();
-        objectMapper.configure(SerializationConfig.Feature.FAIL_ON_EMPTY_BEANS, false);
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         return objectMapper.writeValueAsString(this);
     }
 
