@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="resourceDetails" windowWidth="680" windowHeight="480" modelName="resource">
+      name="resourceDetails" modelName="resource">
 
     <component type="window" name="window" reference="window">
         <ribbon>
@@ -90,14 +90,16 @@
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                    method="showStorageLocationsForProductAndLocation"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                method="showStorageLocationsForProductAndLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
+                            <listener event="onInputChange" class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
+                                                          method="onQuantityChange" />
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="5" width="1">
@@ -107,12 +109,26 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6" width="5">
+                        <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
+                                   reference="quantityInAdditionalUnit">
+                            <option type="alignment" value="right"/>
+                            <listener event="onInputChange" class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
+                                                          method="onQuantityInAdditionalUnitChange" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="6" width="1">
+                        <component type="input" name="givenUnit" reference="givenUnit"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7" width="5">
                         <component type="input" name="price" field="price"
                                    reference="price" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
-                    </layoutElement>
-                    <layoutElement column="6" row="6" width="1">
+                    </layoutElement>                    
+                    <layoutElement column="6" row="7" width="1">
                         <component type="input" name="priceCurrency" reference="priceCurrency"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
@@ -139,6 +155,11 @@
                         <component type="calendar" name="expirationDate" field="expirationDate"
                                    reference="expirationDate" defaultEnabled="false">
                             <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="7" row="5" width="5">
+                        <component type="input" name="conversion" field="conversion"
+                                   reference="conversion" defaultEnabled="false">
                         </component>
                     </layoutElement>
                 </component>

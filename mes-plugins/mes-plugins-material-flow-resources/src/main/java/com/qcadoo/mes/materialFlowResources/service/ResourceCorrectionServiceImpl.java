@@ -46,28 +46,32 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private NumberGeneratorService numberGeneratorService;
 
     @Override
-    public boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, Entity newStorageLocation) {
-
-        Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resourceId);
-        if (isCorrectionNeeded(resource, newQuantity, newStorageLocation)) {
+    public boolean createCorrectionForResource(final Entity resource, final BigDecimal newQuantity, Entity newStorageLocation) {
+        Entity oldResource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
+        if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation)) {
 
             Entity correction = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION).create();
-            correction.setField(ResourceCorrectionFields.BATCH, batch(resource));
-            correction.setField(ResourceCorrectionFields.LOCATION, location(resource));
-            correction.setField(ResourceCorrectionFields.OLD_QUANTITY, oldQuantity(resource));
+            correction.setField(ResourceCorrectionFields.BATCH, batch(oldResource));
+            correction.setField(ResourceCorrectionFields.LOCATION, location(oldResource));
+            correction.setField(ResourceCorrectionFields.OLD_QUANTITY, oldQuantity(oldResource));
             correction.setField(ResourceCorrectionFields.NEW_QUANTITY, newQuantity);
-            correction.setField(ResourceCorrectionFields.OLD_STORAGE_LOCATION, oldStorageLocation(resource));
+            correction.setField(ResourceCorrectionFields.OLD_STORAGE_LOCATION, oldStorageLocation(oldResource));
             correction.setField(ResourceCorrectionFields.NEW_STORAGE_LOCATION, newStorageLocation);
-            correction.setField(ResourceCorrectionFields.PRODUCT, product(resource));
-            correction.setField(ResourceCorrectionFields.TIME, time(resource));
+            correction.setField(ResourceCorrectionFields.PRODUCT, product(oldResource));
+            correction.setField(ResourceCorrectionFields.TIME, time(oldResource));
             correction.setField(ResourceCorrectionFields.NUMBER, numberGeneratorService.generateNumber(
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION));
 
-            correction.setField(ResourceCorrectionFields.RESOURCE, resource);
+            correction.setField(ResourceCorrectionFields.RESOURCE, oldResource);
 
             correction.getDataDefinition().save(correction);
+
+            resource.setField(ResourceFields.QUANTITY, newQuantity);
+            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource));
+            resource.getDataDefinition().save(resource);
+
             return true;
         }
         return false;
@@ -104,5 +108,12 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     private Entity oldStorageLocation(final Entity resource) {
         return resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
+    }
+
+    private BigDecimal calculateQuantityInAdditionalUnit(Entity resource) {
+        BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
+        BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+
+        return quantity.multiply(conversion);
     }
 }
