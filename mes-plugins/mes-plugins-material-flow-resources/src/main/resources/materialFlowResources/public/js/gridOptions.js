@@ -550,6 +550,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function getFieldValue(field, rowId) {
+            return getField(field, rowId).val();
+        }
+
+        function getField(field, rowId) {
             var productInput = $('#product');
             var selector = null;
 
@@ -567,7 +571,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 element = $('input', element);
             }
 
-            return element.val();
+            return element;
         }
 
         var available_additionalunits = null;
@@ -921,6 +925,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 touchManuallyQuantityField(rowId);
                 firstLoad = false;
             }
+
+            var conversionReadonly = getColModelByIndex('conversion').editoptions.readonly === 'readonly' || (getFieldValue('unit', rowId) === getFieldValue('givenunit', rowId));
+            getField('conversion', rowId).attr('readonly', conversionReadonly)
         }
 
         function quantity_createElement(value, options) {
@@ -966,7 +973,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 window.clearTimeout(t.data("timeout"));
 
                 $(this).data("timeout", setTimeout(function () {
-                    gridRunner(function(){parseAndValidateInputNumber(t);});
+                    gridRunner(function () {
+                        parseAndValidateInputNumber(t);
+                    });
                 }, 500));
 
             });
@@ -989,6 +998,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     var rowId = getRowIdFromElement(t);
 
                     var conversion = getFieldValue('conversion', rowId);
+                    ;
+
                     var newQuantity = null;
                     if (quantities[rowId]) {
                         newQuantity = roundTo(t.val() * (1 / conversion));

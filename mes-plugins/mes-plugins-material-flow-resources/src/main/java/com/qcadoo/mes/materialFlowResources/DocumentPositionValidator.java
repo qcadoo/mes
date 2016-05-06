@@ -225,7 +225,7 @@ public class DocumentPositionValidator {
                 filters.put("productNumber", position.getProduct());
                 Long additionalCodeId = jdbcTemplate.queryForObject(
                         "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
-                                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
+                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
                         filters, Long.class);
 
             } catch (EmptyResultDataAccessException e) {
@@ -244,7 +244,7 @@ public class DocumentPositionValidator {
         params.put("quantity", vo.getQuantity());
         params.put("givenquantity", vo.getGivenquantity());
         params.put("givenunit", vo.getGivenunit());
-        params.put("conversion", vo.getConversion());
+        params.put("conversion", vo.getUnit().equals(vo.getGivenunit()) ? 1 : vo.getConversion());
         params.put("expirationdate", vo.getExpirationdate());
         params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors));
         params.put("typeofpallet", vo.getTypeOfPallet());
