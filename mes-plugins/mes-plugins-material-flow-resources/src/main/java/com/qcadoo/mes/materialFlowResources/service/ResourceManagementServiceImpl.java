@@ -177,8 +177,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
-        newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
-                resource.getField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT));
+
+        String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+        BigDecimal quantityInAdditionalUnit = convertToGivenUnit(quantity, resource.getBelongsToField(ResourceFields.PRODUCT),
+                givenUnit);
+        newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
         setResourceAttributesFromResource(newResource, resource);
         return resourceDD.save(newResource);
@@ -376,6 +379,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
+                String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+                BigDecimal quantityInAdditionalUnit = convertToGivenUnit(resourceQuantity, product, givenUnit);
+                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
 
                 resource.getDataDefinition().save(resource);
@@ -397,6 +403,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         String baseUnit = product.getStringField(ProductFields.UNIT);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+        if (!baseUnit.equals(givenUnit)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                return unitConversions.convertTo(quantity, givenUnit);
+            }
+        }
+        return quantity;
+    }
+
+    private BigDecimal convertToGivenUnit(BigDecimal quantity, Entity product, String givenUnit) {
+        String baseUnit = product.getStringField(ProductFields.UNIT);
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
                     searchCriteriaBuilder -> searchCriteriaBuilder
@@ -483,6 +502,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
+                String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+                BigDecimal quantityInAdditionalUnit = convertToGivenUnit(resourceQuantity, product, givenUnit);
+                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
 
                 resource.getDataDefinition().save(resource);
