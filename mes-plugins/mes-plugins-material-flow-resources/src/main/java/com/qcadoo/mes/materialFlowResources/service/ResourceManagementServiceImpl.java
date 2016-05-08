@@ -356,10 +356,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.RESOURCE, resource);
             newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
             newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
-            newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
+            newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-            newPosition.setField(PositionFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
+            // newPosition.setField(PositionFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
             setPositionAttributesFromResource(newPosition, resource);
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
