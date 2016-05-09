@@ -24,12 +24,6 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.Locale;
-
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,24 +58,14 @@ public class ResourceDetailsListeners {
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParse(newQuantity, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
-            if (!validateDecimal(newQuantity, view.getLocale())) {
-                char separator = ((DecimalFormat) DecimalFormat.getInstance(view.getLocale())).getDecimalFormatSymbols()
-                        .getDecimalSeparator();
-                quantityInput.addMessage("materialFlowResources.error.invalidSeparator", MessageType.FAILURE, separator + "");
-                return;
-
-            }
             Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
             BigDecimal correctQuantity = quantity.getRight().get();
             if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                boolean corrected = resourceCorrectionService.createCorrectionForResource(resource.getId(), correctQuantity,
-                        newStorageLocation);
+                boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity, newStorageLocation);
                 if (!corrected) {
                     resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
-                } else {
-
-                    resource.setField(ResourceFields.IS_CORRECTED, true);
-                    resource.getDataDefinition().save(resource);
+                    
+                } else {                    
                     resourceForm.performEvent(view, "reset");
                     quantityInput.requestComponentUpdateState();
                     resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
@@ -93,18 +77,5 @@ public class ResourceDetailsListeners {
             quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
         }
 
-    }
-
-    // FIXME for english locale should also prevent user from using "," as decimal separator, not grouping separator
-    private boolean validateDecimal(final String decimal, final Locale locale) {
-        String trimedValue = StringUtils.trim(decimal);
-        ParsePosition parsePosition = new ParsePosition(0);
-        DecimalFormat formatter = (DecimalFormat) NumberFormat.getNumberInstance(locale);
-        formatter.setParseBigDecimal(true);
-        
-        if (parsePosition.getIndex() != (trimedValue.length())) {
-            return false;
-        }
-        return true;
     }
 }
