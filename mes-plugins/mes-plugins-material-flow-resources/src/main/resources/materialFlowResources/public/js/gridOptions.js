@@ -934,30 +934,36 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
+            var quantityValue = value;
+            var quantityValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
                 window.clearTimeout(t.data("timeout"));
 
-                $(this).data("timeout", setTimeout(gridRunner(function () {
-                    parseAndValidateInputNumber(t);
+                quantityValueNew = t.val();
+                if (quantityValue !== quantityValueNew) {
+                    quantityValue = quantityValueNew;
+                    $(this).data("timeout", setTimeout(gridRunner(function () {
+                        parseAndValidateInputNumber(t);
 
-                    var rowId = getRowIdFromElement(t);
+                        var rowId = getRowIdFromElement(t);
 
-                    var conversion = getFieldValue('conversion', rowId);
-                    var newGivenQuantity = null;
-                    var quantity = t.val();
+                        var conversion = getFieldValue('conversion', rowId);
+                        var newGivenQuantity = null;
 
-                    if (quantities[rowId]) {
-                        newGivenQuantity = roundTo(quantity * conversion);
-                    }
-                    newGivenQuantity = roundTo(newGivenQuantity);
-                    if (!newGivenQuantity || t.hasClass('error-grid')) {
-                        newGivenQuantity = '';
-                    }
+                        if (quantities[rowId]) {
+                            newGivenQuantity = roundTo(quantityValueNew * conversion);
+                        }
+                        newGivenQuantity = roundTo(newGivenQuantity);
+                        if (!newGivenQuantity || t.hasClass('error-grid')) {
+                            newGivenQuantity = '';
+                        }
 
-                    updateFieldValue('givenquantity', newGivenQuantity, rowId);
-                }, 500)));
+                        updateFieldValue('givenquantity', newGivenQuantity, rowId);
+                    }, 500)));
+                }
             });
+
 
             return $input;
         }
@@ -987,30 +993,34 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
+            var givenquantityValue = value;
+            var givenquantityValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
                 window.clearTimeout(t.data("timeout"));
+                givenquantityValueNew = t.val();
+                if (givenquantityValue !== givenquantityValueNew) {
+                    givenquantityValue = givenquantityValueNew;
+                    $(this).data("timeout", setTimeout(gridRunner(function () {
+                        parseAndValidateInputNumber(t);
 
-                $(this).data("timeout", setTimeout(gridRunner(function () {
-                    parseAndValidateInputNumber(t);
+                        var rowId = getRowIdFromElement(t);
 
-                    var rowId = getRowIdFromElement(t);
+                        var conversion = getFieldValue('conversion', rowId);
 
-                    var conversion = getFieldValue('conversion', rowId);
-                    ;
+                        var newQuantity = null;
+                        if (quantities[rowId]) {
+                            newQuantity = roundTo(givenquantityValueNew * (1 / conversion));
+                        }
+                        newQuantity = roundTo(newQuantity);
+                        if (!newQuantity || t.hasClass('error-grid')) {
+                            newQuantity = '';
+                        }
 
-                    var newQuantity = null;
-                    if (quantities[rowId]) {
-                        newQuantity = roundTo(t.val() * (1 / conversion));
-                    }
-                    newQuantity = roundTo(newQuantity);
-                    if (!newQuantity || t.hasClass('error-grid')) {
-                        newQuantity = '';
-                    }
-
-                    updateFieldValue('quantity', newQuantity, rowId);
-                }, 500)));
+                        updateFieldValue('quantity', newQuantity, rowId);
+                    }, 500)));
+                }
             });
 
             return $input;
@@ -1021,34 +1031,39 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $input.val(value);
             $input.attr('readonly', getColModelByIndex('conversion').editoptions.readonly === 'readonly');
 
+            var conversionValue = value;
+            var conversionValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
                 conversionModified = true;
                 window.clearTimeout(t.data("timeout"));
 
-                $(this).data("timeout", setTimeout(gridRunner(function () {
-                    parseAndValidateInputNumber(t);
+                conversionValueNew = t.val();
+                if (conversionValue !== conversionValueNew) {
+                    conversionValue = conversionValueNew;
+                    $(this).data("timeout", setTimeout(gridRunner(function () {
+                        parseAndValidateInputNumber(t);
 
-                    var rowId = getRowIdFromElement(t);
+                        var rowId = getRowIdFromElement(t);
 
-                    var quantity = getFieldValue('quantity', rowId);
-                    var newGivenQuantity = null;
-                    if (quantities[rowId]) {
-                        newGivenQuantity = roundTo(t.val() * quantity);
-                    }
-                    newGivenQuantity = roundTo(newGivenQuantity);
-                    if (!newGivenQuantity || t.hasClass('error-grid')) {
-                        newGivenQuantity = '';
-                    }
+                        var quantity = getFieldValue('quantity', rowId);
+                        var newGivenQuantity = null;
+                        if (quantities[rowId]) {
+                            newGivenQuantity = roundTo(t.val() * quantity);
+                        }
+                        newGivenQuantity = roundTo(newGivenQuantity);
+                        if (!newGivenQuantity || t.hasClass('error-grid')) {
+                            newGivenQuantity = '';
+                        }
 
-                    updateFieldValue('givenquantity', newGivenQuantity, rowId);
-                    if ($scope.config.outDocument && $scope.config.suggestResource) {
-                        var product = getFieldValue('product', getRowIdFromElement(t))
-                        var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
-                        updateResource(product, t.val(), ac);
-                    }
-                }, 500)));
-
+                        updateFieldValue('givenquantity', newGivenQuantity, rowId);
+                        if ($scope.config.outDocument && $scope.config.suggestResource) {
+                            var product = getFieldValue('product', getRowIdFromElement(t))
+                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
+                            updateResource(product, t.val(), ac);
+                        }
+                    }, 500)));
+                }
             });
 
             return $input;
