@@ -1558,13 +1558,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     url: '../../rest/typeOfPallets'
 
                 }).then(function successCallback(response) {
-                    var selectOptionsTypeOfPallets = [];
+                    var selectOptionsTypeOfPallets = [':' + translateMessages('documentGrid.allItem')];
+                    var selectOptionsTypeOfPalletsEdit = [':' + translateMessages('documentGrid.emptyItem')];
                     angular.forEach(response.data, function (value, key) {
                         selectOptionsTypeOfPallets.push(value.key + ':' + value.value);
+                        selectOptionsTypeOfPalletsEdit.push(value.key + ':' + value.value);
                     });
 
-                    getColModelByIndex('typeOfPallet', config).editoptions.value = ':' + translateMessages('documentGrid.emptyItem') + ";" + selectOptionsTypeOfPallets.join(';');
-                    getColModelByIndex('typeOfPallet', config).searchoptions.value = ':' + translateMessages('documentGrid.allItem') + ";" + selectOptionsTypeOfPallets.join(';');
+                    getColModelByIndex('typeOfPallet', config).editoptions.value = selectOptionsTypeOfPalletsEdit.join(';');
+                    getColModelByIndex('typeOfPallet', config).searchoptions.value = selectOptionsTypeOfPallets.join(';');
 
                     $http({
                         method: 'GET',
