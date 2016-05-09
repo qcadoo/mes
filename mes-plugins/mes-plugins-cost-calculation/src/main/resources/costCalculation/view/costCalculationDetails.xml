@@ -132,13 +132,13 @@
 									} else {
 										pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
 										saveRibbonItem.enable();
-										cancelRibbonItem.enabled()
+										cancelRibbonItem.enable()
 									}
 								} else {
 									copyRibbonItem.disable("#{translate(recordNotCreated)}");
 									pdfRibbonItem.disable("#{translate(recordNotCreated)}");
 									saveRibbonItem.enable();
-									cancelRibbonItem.enabled()
+									cancelRibbonItem.enable()
 								}
 							}
 					]]>
