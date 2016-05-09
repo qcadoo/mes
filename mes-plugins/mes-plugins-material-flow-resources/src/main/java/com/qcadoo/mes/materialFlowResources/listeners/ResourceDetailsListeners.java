@@ -55,7 +55,7 @@ public class ResourceDetailsListeners {
 
         LookupComponent storageLocation = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         Entity newStorageLocation = storageLocation.getEntity();
-        Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParse(newQuantity, view.getLocale());
+        Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
             Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
