@@ -76,7 +76,10 @@ public class DocumentPositionService {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String.format("INSERT INTO materialflowresources_position (%s) VALUES (%s)", keys, values);
+        String query = String
+                .format("INSERT INTO materialflowresources_position (%s, type, state) "
+                        + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id))",
+                        keys, values);
 
         jdbcTemplate.update(query, params);
     }
@@ -87,7 +90,11 @@ public class DocumentPositionService {
         String set = params.keySet().stream().map(key -> {
             return key + "=:" + key;
         }).collect(Collectors.joining(", "));
-        String query = String.format("UPDATE materialflowresources_position SET %s WHERE id = :id ", set);
+        String query = String
+                .format("UPDATE materialflowresources_position "
+                        + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
+                        + "WHERE id = :id ",
+                        set);
 
         jdbcTemplate.update(query, params);
     }
