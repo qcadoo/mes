@@ -878,6 +878,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function touchManuallyQuantityField(rowId) {
             var productInput = $('#product');
+            quantityValue = undefined;
 
             if (productInput.length) {
                 // edit form
@@ -930,11 +931,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             getField('conversion', rowId).attr('readonly', conversionReadonly)
         }
 
+        var quantityValue;
         function quantity_createElement(value, options) {
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
-            var quantityValue = value;
+            quantityValue = value;
             var quantityValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
