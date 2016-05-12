@@ -32,6 +32,7 @@
         <string name="number"/>
         <string name="name"/>
         <string name="workstationNumber"/>
+        <string name="type"/>
         <string name="workstationTypeNumber"/>
         <date name="productionDate"/>
         <date name="lastRepairsDate"/>
