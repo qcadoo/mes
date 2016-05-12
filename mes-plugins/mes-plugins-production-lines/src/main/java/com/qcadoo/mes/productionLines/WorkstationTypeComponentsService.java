@@ -135,11 +135,11 @@ public class WorkstationTypeComponentsService {
             scb = SearchRestrictions.and(scb, SearchRestrictions.or(SearchRestrictions.ge(
                     WorkstationTypeComponentFields.DATE_FROM, dateFrom), SearchRestrictions.and(
                     SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
+                    SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_TO, dateFrom))));
         } else {
             scb = SearchRestrictions.and(scb, SearchRestrictions.and(
                     SearchRestrictions.le(WorkstationTypeComponentFields.DATE_FROM, dateFrom),
-                    SearchRestrictions.ge(WorkstationTypeComponentFields.DATE_TO, dateFrom)));
+                    SearchRestrictions.gt(WorkstationTypeComponentFields.DATE_TO, dateFrom)));
         }
         if (workstationTypeComponent.getId() != null) {
             scb = SearchRestrictions.and(scb, SearchRestrictions.ne("id", workstationTypeComponent.getId()));
