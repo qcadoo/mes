@@ -1,4 +1,4 @@
-
+﻿
 ALTER TABLE materialflowresources_resource ADD COLUMN quantityinadditionalunit numeric(14,5);
 
 ALTER TABLE materialflowresources_resource ADD COLUMN additionalcode_id bigint;
@@ -109,4 +109,23 @@ ALTER TABLE productionpershift_dailyprogress ADD COLUMN efficiencytime integer;
 -- delete simpleMaterialBalance view
 DELETE FROM qcadooview_item WHERE name='simpleMaterialBalance';
 DELETE FROM qcadooview_view WHERE name='simpleMaterialBalanceList';
+-- end
+
+-- last touched 11.05.2016 by bafl
+-- add "Type" column
+DROP VIEW basic_subassemblyListDto;
+create or replace view basic_subassemblyListDto as
+select
+    s.id, s.active, s.type, s.number, s.name, workstation.number as workstationNumber, workstationType.number as workstationTypeNumber,
+    date(s.productionDate) as productionDate, date(event.maxDate) as lastRepairsDate
+    from basic_subassembly s
+    left join basic_workstation workstation on (s.workstation_id = workstation.id)
+    join basic_workstationType workstationType on (s.workstationtype_id = workstationType.id)
+    left join (
+        select subassembly_id as subassemblyId, max(date) as maxDate
+        from cmmsmachineparts_plannedevent e
+        where e.state = '05realized' and e.basedon = '01date' and e.type = '02repairs'
+        group by subassemblyId
+    ) event
+    on event.subassemblyId = s.id;
 -- end

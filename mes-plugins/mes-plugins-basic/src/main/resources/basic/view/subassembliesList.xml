@@ -132,14 +132,16 @@
                     width="100"/>
             <option type="column" name="workstation" fields="workstationNumber"
                     link="true"/>
+            <option type="column" name="type" fields="type"
+                    link="false"/>
             <option type="column" name="workstationType" fields="workstationTypeNumber"
-                    link="true"/>
+                    link="false"/>
             <option type="column" name="productionDate" fields="productionDate"/>
             <option type="column" name="lastRepairsDate" fields="lastRepairsDate"/>
             <option type="order" column="number" direction="asc"/>
 
-            <option type="searchable" value="name,number,workstationType,workstation,productionDate,lastRepairsDate"/>
-            <option type="orderable" value="name,number,workstationType,workstation,productionDate,lastRepairsDate"/>
+            <option type="searchable" value="name,number,type,workstationType,workstation,productionDate,lastRepairsDate"/>
+            <option type="orderable" value="name,number,type,workstationType,workstation,productionDate,lastRepairsDate"/>
 
             <option type="correspondingView" value="basic/subassemblyDetails"/>
             <option type="correspondingComponent" value="form"/>
