@@ -148,6 +148,7 @@ myApp.directive('ngJqGrid', function ($window) {
                     $('#t_grid .t_grid__container').append(addNewRowButton);
 
                     $(table).jqGrid('filterToolbar');
+                    mainController.getComponentByReferenceName("positionsGrid").setComponentChanged(false);
 
                     function translateAndShowMessages(response) {
                         var messages = translateMessages(JSON.parse(response.responseText).message);
@@ -312,8 +313,19 @@ function translateMessages(messages) {
     return message;
 }
 
+function saveAllRows() {
+    var grid = $("#grid");
+    var ids = grid.jqGrid('getDataIDs');
+
+    for (var i = 0; i < ids.length; i++) {
+        grid.saveRow(ids[i]);
+    }
+}
+
 function documentIdChanged(id) {
+    saveAllRows();
     angular.element($("#GridController")).scope().documentIdChanged(id);
+    return false;
 }
 
 function addNewRow() {
@@ -890,7 +902,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         }
 
-
         function getColModelByIndex(index, c) {
             c = c || $scope.config;
             var col = c.colModel.filter(function (element, i) {
@@ -1117,10 +1128,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function successfunc(rowID, response) {
-            $("#add_new_row").removeClass("disableButton");
-            $("#add_grid").show();
-            $("#edit_grid").show();
-            $("#del_grid").show();
+            prepareViewOnEndEdit();
             showMessage('success', QCD.translate('documentGrid.notification.success'), QCD.translate('documentGrid.message.saveMessage'));
             return true;
         }
@@ -1131,6 +1139,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function aftersavefunc() {
             $("#grid").trigger("reloadGrid");
+        }
+
+        function prepareViewOnStartEdit() {
+            mainController.getComponentByReferenceName("positionsGrid").setComponentChanged(true);
+            $("#add_new_row").addClass("disableButton");
+            $("#add_grid").hide();
+            $("#edit_grid").hide();
+            $("#del_grid").hide();
+        }
+
+        function prepareViewOnEndEdit() {
+            mainController.getComponentByReferenceName("positionsGrid").setComponentChanged(false);
+            $("#add_new_row").removeClass("disableButton");
+            $("#add_grid").show();
+            $("#edit_grid").show();
+            $("#del_grid").show();
         }
 
         function cancelEditing(myGrid) {
@@ -1231,23 +1255,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         url: '../../integration/rest/documentPositions/' + 1 + '.html',
                         delbutton: false,
                         onEdit: function (id) {
-
                             if (typeof (lastSel) !== "undefined" && id !== lastSel) {
                                 cancelEditing(id);
                             }
-
-                            $("#add_new_row").addClass("disableButton");
-                            $("#add_grid").hide();
-                            $("#edit_grid").hide();
-                            $("#del_grid").hide();
+                            prepareViewOnStartEdit();
                             gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
                             lastSel = id;
                         },
                         afterRestore: function () {
-                            $("#add_new_row").removeClass("disableButton");
-                            $("#add_grid").show();
-                            $("#edit_grid").show();
-                            $("#del_grid").show();
+                            prepareViewOnEndEdit();
                         }
                     }
                 },
@@ -1622,10 +1638,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         $scope.addNewRow = function () {
-            $("#add_new_row").addClass("disableButton");
-            $("#add_grid").hide();
-            $("#edit_grid").hide();
-            $("#del_grid").hide();
+            prepareViewOnStartEdit();
             jQuery('#grid').addRow(gridAddOptions);
         }
 

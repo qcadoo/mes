@@ -180,7 +180,7 @@
 
             <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
                 <layoutElement column="1" row="1" minHeight="6">
-                    <component type="staticPage" name="positionsGrid">
+                    <component type="staticPage" name="positionsGrid" reference="positionsGrid">
                         <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
                         <option type="messagesGroup" value="documentGrid" />
                     </component>                  
