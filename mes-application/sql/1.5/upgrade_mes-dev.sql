@@ -116,7 +116,7 @@ DELETE FROM qcadooview_view WHERE name='simpleMaterialBalanceList';
 DROP VIEW basic_subassemblyListDto;
 create or replace view basic_subassemblyListDto as
 select
-    s.id, s.active, s.type, s.number, s.name, workstation.number as workstationNumber, workstationType.number as workstationTypeNumber,
+    s.id, s.active, s.number, s.name, workstation.number as workstationNumber, s.type, workstationType.number as workstationTypeNumber,
     date(s.productionDate) as productionDate, date(event.maxDate) as lastRepairsDate
     from basic_subassembly s
     left join basic_workstation workstation on (s.workstation_id = workstation.id)
