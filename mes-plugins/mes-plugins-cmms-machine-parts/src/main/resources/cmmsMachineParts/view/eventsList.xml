@@ -415,7 +415,7 @@
 
                 <option type="hasPredefinedFilters" value="true"/>
                 <option type="defaultPredefinedFilterName" value="open"/>
-
+                <option type="autoRefresh" value="true"/>
                 <predefinedFilters>
 
                     <predefinedFilter name="all">
