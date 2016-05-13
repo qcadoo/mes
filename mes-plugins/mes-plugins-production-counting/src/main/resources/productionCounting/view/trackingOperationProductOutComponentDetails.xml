@@ -66,7 +66,7 @@
                             <option type="alignment" value="right"/>
 
                         <listener event="onInputChange" method="calculateQuantityToGiven"
-                                  class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                                  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="4">
@@ -77,14 +77,14 @@
                         <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
                             <option type="alignment" value="right"/>
                             <listener event="onInputChange" method="givenQuantityChanged"
-                                      class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="5">
                         <component type="select" name="givenUnit" reference="givenUnit"
                                    hasLabel="false" field="givenUnit">
                             <listener event="onSelectedEntityChange" method="calculateQuantity"
-                                      class="com.qcadoo.mes.productionCounting.listeners.RecordOperationProductComponentListeners"/>
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -116,7 +116,7 @@
 
     <hooks>
         <beforeRender
-            class="com.qcadoo.mes.productionCounting.hooks.RecordOperationProductOutComponentHooks"
+            class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentDetailsHooks"
             method="onBeforeRender"/>
     </hooks>
 
