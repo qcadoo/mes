@@ -41,9 +41,4 @@ public final class TechnologyOperationComponentFieldsWP {
 
     public static final String DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS = "dontPrintOutputProductsInWorkPlans";
 
-    public static final String TECHNOLOGY_OPERATION_INPUT_COLUMNS = "technologyOperationInputColumns";
-
-    public static final String TECHNOLOGY_OPERATION_OUTPUT_COLUMNS = "technologyOperationOutputColumns";
-
-    public static final String MANUAL_ORDER_FOR_PRODUCTS = "manualOrderForProducts";
 }

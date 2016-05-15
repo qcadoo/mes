@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order.column;
 
-import com.qcadoo.model.api.Entity;
-
 import java.util.Locale;
 
+import com.qcadoo.model.api.Entity;
+
 public interface OrderColumn {
-    public String getIdentifier();
 
-    public String getName(Locale locale);
+    String getIdentifier();
 
-    public String getDescription(Locale locale);
+    String getName(Locale locale);
 
-    public String getColumnValue(Entity order);
+    String getDescription(Locale locale);
+
+    String getColumnValue(Entity order);
 
 }

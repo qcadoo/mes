@@ -23,15 +23,20 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
-import com.lowagie.text.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Image;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component
 public class OperationBarcode {
@@ -57,4 +62,5 @@ public class OperationBarcode {
         barcodeTable.addCell(barcodeImage);
         document.add(barcodeTable);
     }
+
 }

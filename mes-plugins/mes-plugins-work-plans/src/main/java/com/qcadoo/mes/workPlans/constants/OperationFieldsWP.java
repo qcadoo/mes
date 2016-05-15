@@ -41,9 +41,4 @@ public final class OperationFieldsWP {
 
     public static final String DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS = "dontPrintOutputProductsInWorkPlans";
 
-    public static final String OPERATION_INPUT_COLUMNS = "operationInputColumns";
-
-    public static final String OPERATION_OUTPUT_COLUMNS = "operationOutputColumns";
-
-    public static final String MANUAL_ORDER_FOR_PRODUCTS = "manualOrderForProducts";
 }

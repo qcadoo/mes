@@ -44,7 +44,7 @@ public final class OrderIdOperationNumberOperationComponentIdMap {
 
     public void put(Long orderId, String operationNumber, Long operationComponentId) {
         Multimap<String, Long> innerMap = map.get(orderId);
-        if(innerMap == null) {
+        if (innerMap == null) {
             innerMap = HashMultimap.create();
             map.put(orderId, innerMap);
         }

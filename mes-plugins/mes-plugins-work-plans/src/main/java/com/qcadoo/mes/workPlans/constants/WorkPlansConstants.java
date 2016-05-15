@@ -52,14 +52,6 @@ public final class WorkPlansConstants {
 
     public static final String MODEL_PARAMETER_OUTPUT_COLUMN = "parameterOutputColumn";
 
-    public static final String MODEL_OPERATION_INPUT_COLUMN = "operationInputColumn";
-
-    public static final String MODEL_OPERATION_OUTPUT_COLUMN = "operationOutputColumn";
-
-    public static final String MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN = "technologyOperationInputColumn";
-
-    public static final String MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN = "technologyOperationOutputColumn";
-
     // VIEW
     public static final String VIEW_WORK_PLAN_DETAILS = "workPlanDetails";
 

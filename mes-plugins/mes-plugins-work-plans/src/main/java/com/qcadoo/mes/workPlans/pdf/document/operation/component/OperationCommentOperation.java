@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
@@ -30,15 +35,12 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationCommentOperation {
 
     private final TranslationService translationService;
+
     private final PdfHelper pdfHelper;
 
     @Autowired
@@ -49,6 +51,7 @@ public class OperationCommentOperation {
 
     public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
         String commentContent = operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
+
         if (commentContent == null) {
             return;
         }
@@ -61,4 +64,5 @@ public class OperationCommentOperation {
         table.setSpacingBefore(9);
         document.add(table);
     }
+
 }

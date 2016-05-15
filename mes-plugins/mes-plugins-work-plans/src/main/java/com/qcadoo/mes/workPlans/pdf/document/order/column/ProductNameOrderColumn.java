@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order.column;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component("productNameOrderColumn")
 public class ProductNameOrderColumn extends AbstractOrderColumn {
@@ -48,4 +49,5 @@ public class ProductNameOrderColumn extends AbstractOrderColumn {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         return product.getStringField(ProductFields.NAME) + " (" + product.getStringField(ProductFields.NUMBER) + ")";
     }
+
 }

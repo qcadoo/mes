@@ -23,16 +23,17 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.order.component.OrderTable;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OrderSection {
@@ -44,7 +45,8 @@ public class OrderSection {
         this.orderTable = orderTable;
     }
 
-    public void print(Entity workPlan, GroupingContainer groupingContainer, Document document, Locale locale) throws DocumentException {
+    public void print(Entity workPlan, GroupingContainer groupingContainer, Document document, Locale locale)
+            throws DocumentException {
         if (printingOrdersEnabled(workPlan)) {
             orderTable.print(groupingContainer, document, locale);
         }
@@ -53,4 +55,5 @@ public class OrderSection {
     private boolean printingOrdersEnabled(Entity workPlan) {
         return !workPlan.getBooleanField(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS);
     }
+
 }

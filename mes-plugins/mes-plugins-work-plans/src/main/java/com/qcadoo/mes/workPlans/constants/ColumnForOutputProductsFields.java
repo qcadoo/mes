@@ -41,8 +41,4 @@ public final class ColumnForOutputProductsFields {
 
     public static final String PARAMETER_OUTPUT_COLUMNS = "parameterOutputColumns";
 
-    public static final String OPERATION_OUTPUT_COLUMNS = "operationOutputColumns";
-
-    public static final String TECHNOLOGY_OPERATION_OUTPUT_COLUMNS = "technologyOperationOutputColumns";
-
 }

@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
@@ -30,24 +35,21 @@ import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationOrderHeader {
 
     private PdfHelper pdfHelper;
+
     private OperationOrderInfoHeader operationOrderInfoHeader;
+
     private OperationOrderInfoWorkstation operationOrderInfoWorkstation;
+
     private OperationOrderInfoOperation operationOrderInfoOperation;
 
     @Autowired
-    public OperationOrderHeader(PdfHelper pdfHelper,
-                                OperationOrderInfoHeader operationOrderInfoHeader,
-                                OperationOrderInfoWorkstation operationOrderInfoWorkstation,
-                                OperationOrderInfoOperation operationOrderInfoOperation) {
+    public OperationOrderHeader(PdfHelper pdfHelper, OperationOrderInfoHeader operationOrderInfoHeader,
+            OperationOrderInfoWorkstation operationOrderInfoWorkstation, OperationOrderInfoOperation operationOrderInfoOperation) {
 
         this.pdfHelper = pdfHelper;
         this.operationOrderInfoHeader = operationOrderInfoHeader;
@@ -55,7 +57,8 @@ public class OperationOrderHeader {
         this.operationOrderInfoOperation = operationOrderInfoOperation;
     }
 
-    public void print(Entity order, GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale) throws DocumentException {
+    public void print(Entity order, GroupingContainer groupingContainer, Entity operationComponent, Document document,
+            Locale locale) throws DocumentException {
         PdfPTable operationTable = pdfHelper.createPanelTable(3);
 
         operationOrderInfoOperation.print(operationComponent, operationTable, locale);
@@ -74,11 +77,11 @@ public class OperationOrderHeader {
     }
 
     boolean isOrderInfoEnabled(final Entity operationComponent) {
-        return !operationComponent
-                .getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS);
+        return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS);
     }
 
     boolean isWorkstationInfoEnabled(final Entity operationComponent) {
         return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS);
     }
+
 }
