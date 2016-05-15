@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import java.util.Date;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.Locale;
 
 @Component
 public class DocumentHeader {

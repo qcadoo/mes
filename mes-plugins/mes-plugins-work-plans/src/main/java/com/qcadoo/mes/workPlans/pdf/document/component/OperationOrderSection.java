@@ -23,44 +23,55 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
-import com.qcadoo.mes.workPlans.pdf.document.operation.component.*;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationAdditionalFields;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationBarcode;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationCommentOperation;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationOrderHeader;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductInTable;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductInTableHeader;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTable;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTableHeader;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationOrderSection {
 
     private ParameterService parameterService;
+
     private OperationProductInTableHeader operationProductInTableHeader;
+
     private OperationProductOutTableHeader operationProductOutTableHeader;
+
     private OperationBarcode operationBarcode;
+
     private OperationProductOutTable operationProductOutTable;
+
     private OperationProductInTable operationProductInTable;
+
     private OperationCommentOperation operationComment;
+
     private OperationOrderHeader operationOrderHeader;
+
     private OperationAdditionalFields operationAdditionalFields;
 
     @Autowired
-    public OperationOrderSection(ParameterService parameterService,
-                                 OperationProductInTableHeader operationProductInTableHeader,
-                                 OperationProductOutTableHeader operationProductOutTableHeader,
-                                 OperationBarcode operationBarcode,
-                                 OperationProductOutTable operationProductOutTable,
-                                 OperationProductInTable operationProductInTable,
-                                 OperationCommentOperation operationComment,
-                                 OperationOrderHeader operationOrderHeader,
-                                 OperationAdditionalFields operationAdditionalFields) {
-
+    public OperationOrderSection(ParameterService parameterService, OperationProductInTableHeader operationProductInTableHeader,
+            OperationProductOutTableHeader operationProductOutTableHeader, OperationBarcode operationBarcode,
+            OperationProductOutTable operationProductOutTable, OperationProductInTable operationProductInTable,
+            OperationCommentOperation operationComment, OperationOrderHeader operationOrderHeader,
+            OperationAdditionalFields operationAdditionalFields) {
         this.parameterService = parameterService;
         this.operationProductInTableHeader = operationProductInTableHeader;
         this.operationProductOutTableHeader = operationProductOutTableHeader;
@@ -70,13 +81,13 @@ public class OperationOrderSection {
         this.operationComment = operationComment;
         this.operationOrderHeader = operationOrderHeader;
         this.operationAdditionalFields = operationAdditionalFields;
-
     }
 
-    public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent, Document document, Locale locale) throws DocumentException {
+    public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent,
+            Document document, Locale locale) throws DocumentException {
         operationOrderHeader.print(order, groupingContainer, operationComponent, document, locale);
 
-        if(isCommentEnabled(operationComponent)) {
+        if (isCommentEnabled(operationComponent)) {
             operationComment.print(operationComponent, document, locale);
         }
 
@@ -90,14 +101,12 @@ public class OperationOrderSection {
 
         }
 
-        if(isInputProductTableEnabled(operationComponent)){
+        if (isInputProductTableEnabled(operationComponent)) {
             operationProductInTableHeader.print(document, locale);
             operationProductInTable.print(groupingContainer, operationComponent, document, locale);
         }
 
         operationAdditionalFields.print(operationComponent, document, locale);
-
-
     }
 
     private boolean isOutputProductTableEnabled(Entity operationComponent) {
@@ -115,4 +124,5 @@ public class OperationOrderSection {
     private boolean isCommentEnabled(final Entity operationComponent) {
         return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS);
     }
+
 }

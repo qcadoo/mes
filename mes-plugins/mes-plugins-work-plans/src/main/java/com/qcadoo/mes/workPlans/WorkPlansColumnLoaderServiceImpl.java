@@ -251,8 +251,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (L_TRUE.equals(columnAttributes.get(L_ACTIVE))) {
             addParameterInputColumn(columnForInputProducts);
-            addOperationInputColumn(columnForInputProducts);
-            addTechnologyOperationInputColumn(columnForInputProducts);
         }
     }
 
@@ -267,8 +265,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (L_TRUE.equals(columnAttributes.get(L_ACTIVE))) {
             addParameterOutputColumn(columnForOutputProducts);
-            addOperationOutputColumn(columnForOutputProducts);
-            addTechnologyOperationOutputColumn(columnForOutputProducts);
         }
     }
 
@@ -354,95 +350,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         } else {
             throw new IllegalStateException("Saved entity - parameterOutputColumn - has validation errors - "
                     + columnForOutputProducts.toString());
-        }
-    }
-
-    private void addOperationInputColumn(final Entity columnForInputProducts) {
-        for (Entity operation : getOperations()) {
-            Entity operationInputColumn = workPlansService.getOperationInputColumnDD().create();
-
-            operationInputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-            operationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
-
-            operationInputColumn = operationInputColumn.getDataDefinition().save(operationInputColumn);
-
-            if (operationInputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to operation input columns {operationInputColumn = "
-                            + operationInputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - operationInputColumn - has validation errors - "
-                        + columnForInputProducts.toString());
-            }
-        }
-    }
-
-    private void addOperationOutputColumn(final Entity columnForOutputProducts) {
-        for (Entity operation : getOperations()) {
-            Entity operationOutputColumn = workPlansService.getOperationOutputColumnDD().create();
-
-            operationOutputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-            operationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
-
-            operationOutputColumn = operationOutputColumn.getDataDefinition().save(operationOutputColumn);
-
-            if (operationOutputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to operation output columns {operationOutputColumn = "
-                            + operationOutputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - operationOutputColumn - has validation errors - "
-                        + columnForOutputProducts.toString());
-            }
-        }
-    }
-
-    private void addTechnologyOperationInputColumn(final Entity columnForInputProducts) {
-        for (Entity technologyOperationComponent : getTechnologyOperationComponents()) {
-            Entity technologyOperationInputColumn = workPlansService.getTechnologyOperationInputColumnDD().create();
-
-            technologyOperationInputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent);
-            technologyOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
-
-            technologyOperationInputColumn = technologyOperationInputColumn.getDataDefinition().save(
-                    technologyOperationInputColumn);
-
-            if (technologyOperationInputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to technology operation input columns {technologyOperationInputColumn = "
-                            + technologyOperationInputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - technologyOperationInputColumn - has validation errors - "
-                        + columnForInputProducts.toString());
-            }
-        }
-    }
-
-    private void addTechnologyOperationOutputColumn(final Entity columnForOutputProducts) {
-        for (Entity technologyOperationComponent : getTechnologyOperationComponents()) {
-            Entity technologyOperationOutputColumn = workPlansService.getTechnologyOperationOutputColumnDD().create();
-
-            technologyOperationOutputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent);
-            technologyOperationOutputColumn
-                    .setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
-
-            technologyOperationOutputColumn = technologyOperationOutputColumn.getDataDefinition().save(
-                    technologyOperationOutputColumn);
-
-            if (technologyOperationOutputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to technology operation output columns {technologyOperationOutputColumn = "
-                            + technologyOperationOutputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - technologyOperationOutputColumn - has validation errors - "
-                        + columnForOutputProducts.toString());
-            }
         }
     }
 

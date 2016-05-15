@@ -23,7 +23,21 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order.component;
 
-import com.lowagie.text.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -34,20 +48,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.List;
 
 @Component
 public class OrderTable {
 
     private TranslationService translationService;
+
     private PdfHelper pdfHelper;
 
     @Autowired
-    public OrderTable(TranslationService translationService, PdfHelper pdfHelper){
+    public OrderTable(TranslationService translationService, PdfHelper pdfHelper) {
         this.translationService = translationService;
         this.pdfHelper = pdfHelper;
     }
@@ -61,7 +71,7 @@ public class OrderTable {
         List<String> headers = new ArrayList<String>(columnCount);
         fill(locale, orderColumnToAlignment, headers, headerAlignments);
 
-        PdfPTable orderTable = pdfHelper.createTableWithHeader(columnCount,headers, false, headerAlignments);
+        PdfPTable orderTable = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = orderTable.getDefaultCell();
         for (Entity order : groupingContainer.getOrders()) {
             for (Map.Entry<OrderColumn, ColumnAlignment> e : orderColumnToAlignment.entrySet()) {
@@ -74,9 +84,9 @@ public class OrderTable {
         document.add(Chunk.NEWLINE);
     }
 
-    private void fill(Locale locale, Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-                      List<String> headers, Map<String, HeaderAlignment> headerAlignments) {
-        //for optimization method fills two collections simultaneously
+    private void fill(Locale locale, Map<OrderColumn, ColumnAlignment> orderColumnToAlignment, List<String> headers,
+            Map<String, HeaderAlignment> headerAlignments) {
+        // for optimization method fills two collections simultaneously
         for (Map.Entry<OrderColumn, ColumnAlignment> entry : orderColumnToAlignment.entrySet()) {
             String name = entry.getKey().getName(locale);
             headerAlignments.put(name, headerAlignment(entry.getValue()));
