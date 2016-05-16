@@ -115,11 +115,13 @@
 							<layoutElement column="1" row="1">
 								<component type="checkbox" name="includeTpz" reference="includeTpz"
 									field="#{form}.includeTpz" hasDescription="true">
+									<option type="labelWidth" value="80" />
 								</component>
 							</layoutElement>
 							<layoutElement column="1" row="2">
 								<component type="checkbox" name="includeAdditionalTime" reference="includeAdditionalTime"
 									field="#{form}.includeAdditionalTime" hasDescription="true">
+									<option type="labelWidth" value="80" />
 								</component>
 							</layoutElement>
 						</component>
