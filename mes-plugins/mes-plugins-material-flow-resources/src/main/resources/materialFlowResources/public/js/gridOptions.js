@@ -1399,9 +1399,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             if (getColModelByIndex('expirationdate').editoptions.readonly !== 'readonly') {
                                 var options = $.datepicker.regional[window.locale];
                                 options.showOn = 'button';
-                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
-                                options.buttonImageOnly = true;
-                                options.buttonText = 'Wybierz';
+//                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+//                                options.buttonImageOnly = true;
+                                options.buttonText = '';
                                 options.altField = element;
                                 $(element).datepicker(options);
                                 $(element).mask("2999-19-39");
@@ -1425,9 +1425,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             if (getColModelByIndex('productiondate').editoptions.readonly !== 'readonly') {
                                 var options = $.datepicker.regional[window.locale];
                                 options.showOn = 'button';
-                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
-                                options.buttonImageOnly = true;
-                                options.buttonText = 'Wybierz';
+//                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
+//                                options.buttonImageOnly = true;
+                                options.buttonText = '';
                                 options.altField = element;
                                 $(element).datepicker(options);
                                 $(element).mask("2999-19-39");

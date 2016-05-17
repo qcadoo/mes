@@ -40,7 +40,7 @@
                 that.sc.css({
                     top: that.offset().top + that.outerHeight(),
                     left: that.offset().left,
-                    width: that.outerWidth()
+                    width: that.outerWidth()+20
                 });
                 if (!resize) {
                     that.sc.show();

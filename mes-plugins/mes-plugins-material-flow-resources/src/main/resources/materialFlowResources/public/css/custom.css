@@ -46,7 +46,6 @@
 }
 
 input.eac-square {
-    padding: .5em .3em;
     margin-bottom: 3px;
     display:table-cell;
     border: 1px solid #aaaaaa;
@@ -247,13 +246,6 @@ input[readonly]{
     font-size: 12px;
 }
 
-.ui-datepicker-trigger {
-    position: relative;
-    cursor: pointer;
-    left: -23px;
-    top: 8px;
-}
-
 .FormData {
     height: 30px;
 }
@@ -320,19 +312,9 @@ input[readonly]{
 .editable__searchBtn:hover{
     background-position: -60px 1px;
 }
-.ui-jqgrid-btable td > .hasDatepicker + .ui-datepicker-trigger,
-.DataTD .hasDatepicker + .ui-datepicker-trigger{
-    top: 1px;
-}
 .ui-jqdialog-content .EditTable .FormElement .eac-square{
     width: calc(100% - 25px);
     float: left;
-}
-.DataTD .hasDatepicker + .ui-datepicker-trigger{
-    position: absolute;
-    right: 7px;
-    top: 16px;
-    left: auto;
 }
 .DataTD{
     position: relative;
@@ -346,3 +328,42 @@ input[readonly]{
     box-sizing: border-box;
 }
 
+#TblGrid_grid td {
+    vertical-align: middle !important;
+    height: 41px;
+}
+
+#TblGrid_grid input, #TblGrid_grid select {
+    width: calc(100% - 4px);
+    display:table-cell;
+    border: 1px solid #aaaaaa;
+    color: #222222;
+    padding: 0;
+}
+
+#TblGrid_grid input.eac-square {    
+    width: calc(100% - 25px);
+}
+
+#TblGrid_grid input.hasDatepicker {    
+    width: calc(100% - 25px);
+}
+
+#TblGrid_grid input, #TblGrid_grid button, #TblGrid_grid select {
+    float: left;
+}
+
+#TblGrid_grid button.ui-datepicker-trigger {
+    height: 24px;
+    width: 20px;
+    float: left;
+    display: inline-block;
+    background:#ffffff url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -1px -20px;
+    vertical-align: middle;
+    border: solid #a1a1a1 1px;
+    border-left: 0;
+}
+
+#TblGrid_grid button.ui-datepicker-trigger:hover{
+    background-position: -61px -20px;
+}
