@@ -129,3 +129,10 @@ select
     ) event
     on event.subassemblyId = s.id;
 -- end
+
+-- orders_dto view
+-- last touched 17.05.2016 by kama
+
+CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
+
+-- end

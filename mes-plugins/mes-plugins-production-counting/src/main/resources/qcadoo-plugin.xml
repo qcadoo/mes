@@ -118,6 +118,9 @@
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
         </model:model-field>
+        <model:model-field model="orderDto" plugin="orders">
+            <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"/>
+        </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="registerProductionTime"/>
         </model:model-field>
@@ -271,7 +274,7 @@
 
         <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
             <model:onSave class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
-                            method="onSave"/>
+                          method="onSave"/>
         </model:model-hook>
 
 
@@ -363,7 +366,8 @@
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
         <view:view-hook plugin="basicProductionCounting" view="productionCountingQuantityDetails"
-                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityDetailsPC"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityDetailsPC"
                         method="beforeRender"/>
 
         <view:view-listener plugin="basic" view="productDetails"
