@@ -175,5 +175,5 @@ DROP TABLE IF EXISTS orders_orderdto;
 CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
 
 ALTER TABLE productflowthrudivision_warehouseissue ADD COLUMN order_id bigint;
-ALTER TABLE productflowthrudivision_warehouseissue ADD CONSTRAINT warehouseissue_order_fkey FOREIGN KEY (order_id) REFERENCES orders_orderdto (id) DEFERRABLE;
+
 -- end
