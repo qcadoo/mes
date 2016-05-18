@@ -31,6 +31,6 @@
         <aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.ProductionTrackingListenerAspect"/>
 
         <aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.ProductionCountingOrderStatesListenerAspect"/>
-        <aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.TechnologyStateChangeListenerAspectPC"/>
+        <aspect name="com.qcadoo.mes.productionCounting.states.aop.listener.TechnologyStateChangeListenerPCAspect"/>
     </aspects>
 </aspectj>

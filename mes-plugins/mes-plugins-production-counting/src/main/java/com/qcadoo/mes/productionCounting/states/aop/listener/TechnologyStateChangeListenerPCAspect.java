@@ -21,7 +21,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Aspect
 @Configurable
 @RunIfEnabled(ProductionCountingConstants.PLUGIN_IDENTIFIER)
-public class TechnologyStateChangeListenerAspectPC extends AbstractStateListenerAspect {
+public class TechnologyStateChangeListenerPCAspect extends AbstractStateListenerAspect {
 
     @Autowired
     private TechnologyValidationServicePC technologyValidationServicePC;
