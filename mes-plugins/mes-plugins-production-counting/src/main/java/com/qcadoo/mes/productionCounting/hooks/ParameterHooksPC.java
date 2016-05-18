@@ -63,6 +63,9 @@ public class ParameterHooksPC {
         if (parameter.getField(ParameterFieldsPC.AUTO_CLOSE_ORDER) == null) {
             parameter.setField(ParameterFieldsPC.AUTO_CLOSE_ORDER, false);
         }
+        if (parameter.getField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS) == null) {
+            parameter.setField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS, false);
+        }
     }
 
     public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {
@@ -71,6 +74,7 @@ public class ParameterHooksPC {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
+
         return true;
     }
 
