@@ -367,3 +367,37 @@ input[readonly]{
 #TblGrid_grid button.ui-datepicker-trigger:hover{
     background-position: -61px -20px;
 }
+
+#Act_Buttons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url('/qcadooView/public/css/core/menu/images/q_row3_bg.png');
+    background-position: top;
+    background-repeat: repeat-x;
+    width: 100%;
+    padding-left: 20px;
+}
+
+#edithdgrid {
+    height: 70px;
+}
+
+#Act_Buttons .ui-icon-closethick, #Act_Buttons .ui-icon-close, #Act_Buttons .ui-icon-disk {
+    display: none !important;
+}
+
+
+#Act_Buttons #sData, #Act_Buttons #cData {
+    background-repeat: no-repeat;
+    width: 15px;
+    height: 30px;
+}
+
+#Act_Buttons #cData {
+    background-image: url('/qcadooView/public/img/core/icons/cancelIcon24.png');    
+}
+
+#Act_Buttons #sData {
+    background-image: url('/qcadooView/public/img/core/icons/saveIcon24.png');
+}
