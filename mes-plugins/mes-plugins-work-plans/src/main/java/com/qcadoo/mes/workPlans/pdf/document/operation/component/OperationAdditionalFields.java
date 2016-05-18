@@ -34,7 +34,8 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -74,7 +75,9 @@ public class OperationAdditionalFields {
     }
 
     private String imagePath(Entity technologyOperationComponent) {
-        return technologyOperationComponent.getStringField(TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN);
+        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+        return operation.getStringField(OperationFieldsWP.IMAGE_URL_IN_WORK_PLAN);
     }
 
 }

@@ -170,10 +170,38 @@ UPDATE basic_parameter SET consumptionofrawmaterialsbasedonstandards = false WHE
 
 -- end
 
+
 -- orders_dto view
 -- last touched 17.05.2016 by kama
 
 CREATE SEQUENCE orders_orderdto_id_seq;
+
 CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
+
+-- end
+
+
+-- last touched 17.05.2016 by lupo
+
+ALTER TABLE basic_parameter DROP COLUMN hidedetailsinworkplans;
+
+ALTER TABLE technologies_operation DROP COLUMN hidedescriptioninworkplans;
+ALTER TABLE technologies_operation DROP COLUMN hidedetailsinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN hidetechnologyandorderinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN dontprintinputproductsinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN dontprintoutputproductsinworkplans;
+
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidedescriptioninworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidedetailsinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidetechnologyandorderinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN imageurlinworkplan;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintinputproductsinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintoutputproductsinworkplans;
+
+DROP TABLE workplans_operationinputcolumn;
+DROP TABLE workplans_operationoutputcolum;
+
+DROP TABLE workplans_technologyoperationinputcolumn;
+DROP TABLE workplans_technologyoperationoutputcolumn;
 
 -- end

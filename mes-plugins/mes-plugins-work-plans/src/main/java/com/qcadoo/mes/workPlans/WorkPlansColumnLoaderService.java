@@ -31,16 +31,6 @@ public interface WorkPlansColumnLoaderService {
     void setParameterDefaultValues();
 
     /**
-     * Sets operation default values
-     */
-    void setOperationDefaultValues();
-
-    /**
-     * Sets technology operation component default values
-     */
-    void setTechnologyOperationComponentDefaultValues();
-
-    /**
      * Fills columns for orders
      * 
      * @param plugin

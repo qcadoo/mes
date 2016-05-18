@@ -33,7 +33,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationAdditionalFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationBarcode;
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationCommentOperation;
@@ -87,7 +86,7 @@ public class OperationOrderSection {
             Document document, Locale locale) throws DocumentException {
         operationOrderHeader.print(order, groupingContainer, operationComponent, document, locale);
 
-        if (isCommentEnabled(operationComponent)) {
+        if (isCommentEnabled()) {
             operationComment.print(operationComponent, document, locale);
         }
 
@@ -95,13 +94,13 @@ public class OperationOrderSection {
             operationBarcode.print(pdfWriter, operationComponent, document);
         }
 
-        if (isOutputProductTableEnabled(operationComponent)) {
+        if (isOutputProductTableEnabled()) {
             operationProductOutTableHeader.print(document, locale);
             operationProductOutTable.print(groupingContainer, operationComponent, document, locale);
 
         }
 
-        if (isInputProductTableEnabled(operationComponent)) {
+        if (isInputProductTableEnabled()) {
             operationProductInTableHeader.print(document, locale);
             operationProductInTable.print(groupingContainer, operationComponent, document, locale);
         }
@@ -109,20 +108,20 @@ public class OperationOrderSection {
         operationAdditionalFields.print(operationComponent, document, locale);
     }
 
-    private boolean isOutputProductTableEnabled(Entity operationComponent) {
-        return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS);
+    private boolean isOutputProductTableEnabled() {
+        return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS);
     }
 
-    boolean isInputProductTableEnabled(final Entity operationComponent) {
-        return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS);
+    boolean isInputProductTableEnabled() {
+        return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS);
     }
 
     private boolean isBarcodeEnabled() {
         return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_BARCODE_OPERATION_COMPONENT_IN_WORK_PLAN);
     }
 
-    private boolean isCommentEnabled(final Entity operationComponent) {
-        return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS);
+    private boolean isCommentEnabled() {
+        return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS);
     }
 
 }
