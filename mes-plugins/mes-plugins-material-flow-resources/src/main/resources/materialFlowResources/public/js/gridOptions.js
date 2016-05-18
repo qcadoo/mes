@@ -1649,8 +1649,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $.jgrid.edit.addCaption = '';
         $.jgrid.edit.editCaption = '';
-        $.jgrid.edit.bSubmit = '<span>' + $.jgrid.edit.bSubmit + '</span>';
-        $.jgrid.edit.bSubmit = '<span>' + $.jgrid.edit.bCancel + '</span>';
+        $.jgrid.edit.bSubmit = '<label>' + $.jgrid.edit.bSubmit + '</label>';
+        $.jgrid.edit.bCancel = '<label>' + $.jgrid.edit.bCancel + '</label>';
 
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {

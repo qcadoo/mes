@@ -181,6 +181,7 @@ div.headerActionButton a span div.hasIcon {
     font-size: 11px;
     background: #ebebeb;
     padding: 0;
+    border-color: black;
 }
 
 #edithdgrid {
@@ -304,13 +305,13 @@ input[readonly]{
     width: 20px;
     float: left;
     display: inline-block;
-    background:#ffffff url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -20px 1px;
+    background:#ffffff url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -21px 1px;
     vertical-align: middle;
     border: solid #a1a1a1 1px;
     border-left: 0;
 }
 .editable__searchBtn:hover{
-    background-position: -60px 1px;
+    background-position: -61px 1px;
 }
 .ui-jqdialog-content .EditTable .FormElement .eac-square{
     width: calc(100% - 25px);
@@ -338,7 +339,12 @@ input[readonly]{
     display:table-cell;
     border: 1px solid #aaaaaa;
     color: #222222;
-    padding: 0;
+    padding: 0 0 0 6px;
+}
+
+#TblGrid_grid input[type=customNumber] {
+    padding: 0 6px 0 0;    
+    text-align: right;
 }
 
 #TblGrid_grid input.eac-square {    
@@ -380,7 +386,7 @@ input[readonly]{
 }
 
 #edithdgrid {
-    height: 70px;
+    height: 45px;
 }
 
 #Act_Buttons .ui-icon-closethick, #Act_Buttons .ui-icon-close, #Act_Buttons .ui-icon-disk {
@@ -390,8 +396,11 @@ input[readonly]{
 
 #Act_Buttons #sData, #Act_Buttons #cData {
     background-repeat: no-repeat;
-    width: 15px;
     height: 30px;
+    padding-left: 40px;
+    background-position: 10px;
+    width: 50px;    
+    vertical-align: sub;
 }
 
 #Act_Buttons #cData {
@@ -400,4 +409,10 @@ input[readonly]{
 
 #Act_Buttons #sData {
     background-image: url('/qcadooView/public/img/core/icons/saveIcon24.png');
+}
+
+#Act_Buttons label {
+    vertical-align: middle;
+    margin: 5px 0 0 5px;
+    display: inline-block;
 }
