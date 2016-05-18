@@ -177,3 +177,51 @@ CREATE SEQUENCE orders_orderdto_id_seq;
 CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
 
 -- end
+
+
+-- last touched 17.05.2016 by lupo
+
+CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS
+	SELECT
+		trackingoperationproductincomponent.id AS id,
+		productiontracking.id::integer AS productiontracking_id,
+		product.id::integer AS product_id,
+		product.number AS productnumber,
+		product.unit AS productunit,
+		CASE WHEN productiontracking.technologyoperationcomponent_id IS NULL THEN (
+			SELECT SUM(productioncountingquantity_1.plannedquantity) AS sum
+		) ELSE (
+			SELECT SUM(productioncountingquantity_2.plannedquantity) AS sum
+		) END AS plannedquantity,
+		trackingoperationproductincomponent.usedquantity AS usedquantity,
+        batch.number AS batchnumber
+	FROM productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+	LEFT JOIN productioncounting_productiontracking productiontracking
+		ON productiontracking.id = trackingoperationproductincomponent.productiontracking_id
+	LEFT JOIN basic_product product
+		ON product.id = trackingoperationproductincomponent.product_id
+	LEFT JOIN advancedgenealogy_batch batch ON batch.id = trackingoperationproductincomponent.batch_id
+	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1
+		ON (
+			productioncountingquantity_1.order_id = productiontracking.order_id
+			AND productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id
+   			AND productioncountingquantity_1.role::text = '01used'::text
+   		)
+   	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2
+   		ON (
+   			productioncountingquantity_2.order_id = productiontracking.order_id
+   			AND productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id
+			AND productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id
+			AND productioncountingquantity_2.role::text = '01used'::text
+		)
+	GROUP BY
+		trackingoperationproductincomponent.id,
+		productiontracking.id,
+		product.id,
+		product.number,
+		product.unit,
+		trackingoperationproductincomponent.usedquantity,
+		productiontracking.technologyoperationcomponent_id,
+		batch.number;
+
+-- end
