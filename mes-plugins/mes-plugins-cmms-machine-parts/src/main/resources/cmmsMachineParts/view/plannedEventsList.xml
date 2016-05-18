@@ -413,6 +413,7 @@
                             showMaintenanceEvent.enable();
                         }
                         else {
+                            cancelEvent.disable();
                            showMaintenanceEvent.disable();
                            plannedEvent.disable();
                         }
