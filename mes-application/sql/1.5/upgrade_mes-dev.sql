@@ -169,3 +169,11 @@ ALTER TABLE basic_parameter ALTER COLUMN consumptionofrawmaterialsbasedonstandar
 UPDATE basic_parameter SET consumptionofrawmaterialsbasedonstandards = false WHERE consumptionofrawmaterialsbasedonstandards IS null;
 
 -- end
+
+-- orders_dto view
+-- last touched 17.05.2016 by kama
+
+CREATE SEQUENCE orders_orderdto_id_seq;
+CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
+
+-- end
