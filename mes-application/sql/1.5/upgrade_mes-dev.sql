@@ -129,3 +129,29 @@ select
     ) event
     on event.subassemblyId = s.id;
 -- end
+
+
+-- last touched 17.05.2016 by lupo
+
+ALTER TABLE basic_parameter DROP COLUMN hidedetailsinworkplans;
+
+ALTER TABLE technologies_operation DROP COLUMN hidedescriptioninworkplans;
+ALTER TABLE technologies_operation DROP COLUMN hidedetailsinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN hidetechnologyandorderinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN dontprintinputproductsinworkplans;
+ALTER TABLE technologies_operation DROP COLUMN dontprintoutputproductsinworkplans;
+
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidedescriptioninworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidedetailsinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN hidetechnologyandorderinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN imageurlinworkplan;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintinputproductsinworkplans;
+ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintoutputproductsinworkplans;
+
+DROP TABLE workplans_operationinputcolumn;
+DROP TABLE workplans_operationoutputcolum;
+
+DROP TABLE workplans_technologyoperationinputcolumn;
+DROP TABLE workplans_technologyoperationoutputcolumn;
+
+-- end

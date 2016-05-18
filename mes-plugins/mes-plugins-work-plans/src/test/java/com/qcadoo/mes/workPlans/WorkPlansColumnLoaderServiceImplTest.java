@@ -23,13 +23,9 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Before;
@@ -40,10 +36,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -126,154 +119,9 @@ public class WorkPlansColumnLoaderServiceImplTest {
 
         // then
         verify(parameter).setField(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
-        verify(parameter).setField(ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
         verify(parameter).setField(ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
         verify(parameter).setField(ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
         verify(parameter).setField(ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
-    }
-
-    @Test
-    public void shouldSetOperationDefaultValuesIfOperationsIsntNull() {
-        // given
-        when(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION))
-                .thenReturn(operationDD);
-        when(operationDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(operations);
-
-        Entity operation1 = mock(Entity.class);
-        Entity operation2 = mock(Entity.class);
-        Entity operation3 = mock(Entity.class);
-
-        DataDefinition operation1DD = mock(DataDefinition.class);
-        DataDefinition operation2DD = mock(DataDefinition.class);
-        DataDefinition operation3DD = mock(DataDefinition.class);
-
-        @SuppressWarnings("unchecked")
-        Iterator<Entity> operationsIterator = mock(Iterator.class);
-        when(operationsIterator.hasNext()).thenReturn(true, true, true, false);
-        when(operationsIterator.next()).thenReturn(operation1, operation2, operation3);
-
-        when(operations.iterator()).thenReturn(operationsIterator);
-
-        when(operation1.isValid()).thenReturn(true);
-        when(operation2.isValid()).thenReturn(true);
-        when(operation3.isValid()).thenReturn(true);
-
-        when(operation1.getDataDefinition()).thenReturn(operation1DD);
-        when(operation2.getDataDefinition()).thenReturn(operation2DD);
-        when(operation3.getDataDefinition()).thenReturn(operation3DD);
-
-        // when
-        workPlansColumnLoaderServiceImpl.setOperationDefaultValues();
-
-        // then
-        for (Entity operation : Arrays.asList(operation1, operation2, operation3)) {
-            verify(operation).setField(OperationFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
-            verify(operation).setField(OperationFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
-            verify(operation).setField(OperationFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
-            verify(operation).setField(OperationFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
-            verify(operation).setField(OperationFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
-        }
-    }
-
-    @Test
-    public void shouldntSetOperationDefaultValuesIfOperationsIsNull() {
-        // given
-        when(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION))
-                .thenReturn(operationDD);
-        when(operationDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(null);
-
-        // when
-        workPlansColumnLoaderServiceImpl.setOperationDefaultValues();
-
-        // then
-        verify(operation, never()).setField(OperationFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
-        verify(operation, never()).setField(OperationFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
-        verify(operation, never()).setField(OperationFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
-        verify(operation, never()).setField(OperationFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
-        verify(operation, never()).setField(OperationFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
-    }
-
-    @Test
-    public void shouldSetTechnologyOperationComponentDefaultValuesIfTechnologyOperationComponentsIsntNull() {
-        // given
-        when(
-                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).thenReturn(technologyOperationComponentDD);
-        when(technologyOperationComponentDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(technologyOperationComponents);
-
-        Entity technologyOperationComponent1 = mock(Entity.class);
-        Entity technologyOperationComponent2 = mock(Entity.class);
-        Entity technologyOperationComponent3 = mock(Entity.class);
-
-        DataDefinition technologyOperationComponent1DD = mock(DataDefinition.class);
-        DataDefinition technologyOperationComponent2DD = mock(DataDefinition.class);
-        DataDefinition technologyOperationComponent3DD = mock(DataDefinition.class);
-
-        @SuppressWarnings("unchecked")
-        Iterator<Entity> operationsIterator = mock(Iterator.class);
-        when(operationsIterator.hasNext()).thenReturn(true, true, true, false);
-        when(operationsIterator.next()).thenReturn(technologyOperationComponent1, technologyOperationComponent2,
-                technologyOperationComponent3);
-
-        when(technologyOperationComponents.iterator()).thenReturn(operationsIterator);
-
-        when(technologyOperationComponent1.isValid()).thenReturn(true);
-        when(technologyOperationComponent2.isValid()).thenReturn(true);
-        when(technologyOperationComponent3.isValid()).thenReturn(true);
-
-        when(technologyOperationComponent1.getDataDefinition()).thenReturn(technologyOperationComponent1DD);
-        when(technologyOperationComponent2.getDataDefinition()).thenReturn(technologyOperationComponent2DD);
-        when(technologyOperationComponent3.getDataDefinition()).thenReturn(technologyOperationComponent3DD);
-
-        // when
-        workPlansColumnLoaderServiceImpl.setTechnologyOperationComponentDefaultValues();
-
-        // then
-        for (Entity technologyOperationCoponent : Arrays.asList(technologyOperationComponent1, technologyOperationComponent2,
-                technologyOperationComponent3)) {
-            verify(technologyOperationCoponent).setField(TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
-                    false);
-            verify(technologyOperationCoponent).setField(TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
-            verify(technologyOperationCoponent).setField(
-                    TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
-            verify(technologyOperationCoponent).setField(
-                    TechnologyOperationComponentFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
-            verify(technologyOperationCoponent).setField(
-                    TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
-        }
-    }
-
-    @Test
-    public void shouldntSetTechnologyOperationComponentDefaultValuesIfTechnologyOperationComponentsIsNull() {
-        // given
-        when(
-                dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)).thenReturn(technologyOperationComponentDD);
-        when(technologyOperationComponentDD.find()).thenReturn(searchCriteria);
-        when(searchCriteria.list()).thenReturn(searchResult);
-        when(searchResult.getEntities()).thenReturn(null);
-
-        // when
-        workPlansColumnLoaderServiceImpl.setTechnologyOperationComponentDefaultValues();
-
-        // then
-
-        verify(technologyOperationComponent, never()).setField(
-                TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
-        verify(technologyOperationComponent, never()).setField(TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS,
-                false);
-        verify(technologyOperationComponent, never()).setField(
-                TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
-        verify(technologyOperationComponent, never()).setField(
-                TechnologyOperationComponentFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);
-        verify(technologyOperationComponent, never()).setField(
-                TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS, false);
     }
 
     @Ignore

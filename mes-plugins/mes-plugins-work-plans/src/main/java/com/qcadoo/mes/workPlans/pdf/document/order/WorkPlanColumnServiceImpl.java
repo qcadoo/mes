@@ -54,7 +54,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
 
     public static final String L_IDENTIFIER = "identifier";
 
-    public static final String L_ALIGMENT = "aligment";
+    public static final String L_ALIGNMENT = "alignment";
 
     private final ApplicationContext applicationContext;
 
@@ -178,7 +178,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
             columnDefinitionModel = ParameterInputColumnFields.COLUMN_FOR_INPUT_PRODUCTS;
         } else if (ProductDirection.OUT.equals(productDirection)) {
             columnComponents = getParameterOutputColumns();
-            columnDefinitionModel = ParameterInputColumnFields.COLUMN_FOR_INPUT_PRODUCTS;
+            columnDefinitionModel = ParameterOutputColumnFields.COLUMN_FOR_OUTPUT_PRODUCTS;
         } else {
             throw new IllegalStateException("Wrong product direction");
         }
@@ -213,7 +213,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
     }
 
     private String getAlignment(final Entity column) {
-        return column.getStringField(L_ALIGMENT);
+        return column.getStringField(L_ALIGNMENT);
     }
 
 }

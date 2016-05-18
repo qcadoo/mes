@@ -29,16 +29,6 @@ public final class OperationFieldsWP {
 
     }
 
-    public static final String HIDE_DESCRIPTION_IN_WORK_PLANS = "hideDescriptionInWorkPlans";
-
-    public static final String HIDE_DETAILS_IN_WORK_PLANS = "hideDetailsInWorkPlans";
-
-    public static final String HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS = "hideTechnologyAndOrderInWorkPlans";
-
     public static final String IMAGE_URL_IN_WORK_PLAN = "imageUrlInWorkPlan";
-
-    public static final String DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS = "dontPrintInputProductsInWorkPlans";
-
-    public static final String DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS = "dontPrintOutputProductsInWorkPlans";
 
 }
