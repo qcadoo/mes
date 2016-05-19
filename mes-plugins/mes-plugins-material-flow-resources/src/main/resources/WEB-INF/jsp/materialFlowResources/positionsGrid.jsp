@@ -38,8 +38,6 @@ String ctx = request.getContextPath();
     <script src="/basic/public/js/jquery.jqGrid.min.js"></script>
     <script src="/materialFlowResources/public/js/angular.js"></script>
 
-    <script src="/materialFlowResources/public/js/gridOptions.js"></script>
-
     <c:choose>
         <c:when test="${pageContext.request.locale.language == 'pl'}">
             <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
@@ -48,6 +46,9 @@ String ctx = request.getContextPath();
             <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
         </c:otherwise>
     </c:choose>
+
+    <script src="/materialFlowResources/public/js/gridOptions.js"></script>
+    
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
     <script src="/materialFlowResources/public/js/jquery.blockUI.js"></script>
 
