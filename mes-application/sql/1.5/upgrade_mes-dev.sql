@@ -247,7 +247,7 @@ ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintinput
 ALTER TABLE technologies_technologyoperationcomponent DROP COLUMN dontprintoutputproductsinworkplans;
 
 DROP TABLE workplans_operationinputcolumn;
-DROP TABLE workplans_operationoutputcolum;
+DROP TABLE workplans_operationoutputcolumn;
 
 DROP TABLE workplans_technologyoperationinputcolumn;
 DROP TABLE workplans_technologyoperationoutputcolumn;
