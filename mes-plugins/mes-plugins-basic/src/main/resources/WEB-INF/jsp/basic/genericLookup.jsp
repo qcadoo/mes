@@ -15,7 +15,7 @@ String ctx = request.getContextPath();
     <script src="/basic/public/js/genericLookupOptions.js?ver=${buildNumber}"></script>
 
     <c:choose>
-        <c:when test="${pageContext.request.locale.language == 'pl'}">
+        <c:when test="${locale == 'pl'}">
             <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
         </c:when>
         <c:otherwise>

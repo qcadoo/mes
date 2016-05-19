@@ -39,7 +39,7 @@ String ctx = request.getContextPath();
     <script src="/materialFlowResources/public/js/angular.js"></script>
 
     <c:choose>
-        <c:when test="${pageContext.request.locale.language == 'pl'}">
+        <c:when test="${locale == 'pl'}">
             <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
         </c:when>
         <c:otherwise>
