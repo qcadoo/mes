@@ -131,4 +131,5 @@ public class OperationProductInTable {
     private HeaderAlignment headerAlignment(ColumnAlignment value) {
         return ColumnAlignment.LEFT.equals(value) ? HeaderAlignment.LEFT : HeaderAlignment.RIGHT;
     }
+
 }

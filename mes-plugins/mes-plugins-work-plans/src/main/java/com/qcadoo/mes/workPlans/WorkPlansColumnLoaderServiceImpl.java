@@ -23,25 +23,23 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.columnExtension.ColumnExtensionService;
-import com.qcadoo.mes.columnExtension.constants.OperationType;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.workPlans.constants.OperationFieldsWP;
-import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
-import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.columnExtension.ColumnExtensionService;
+import com.qcadoo.mes.columnExtension.constants.OperationType;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderService {
@@ -88,8 +86,8 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         Entity parameter = parameterService.getParameter();
 
         for (String fieldName : Lists.newArrayList(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
-                ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS,
-                ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN, ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
+                ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN,
+                ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
                 ParameterFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS)) {
             if (fieldName.equals(ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN)) {
                 continue;
@@ -103,61 +101,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         if (parameter.isValid() && LOG.isDebugEnabled()) {
             LOG.debug("Parameter saved {parameter = " + parameter.toString() + "}");
         }
-    }
-
-    public void setOperationDefaultValues() {
-        List<Entity> operations = getOperations();
-
-        if (operations != null) {
-            for (Entity operation : operations) {
-                for (String fieldName : Lists.newArrayList(OperationFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
-                        OperationFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, OperationFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS,
-                        OperationFieldsWP.IMAGE_URL_IN_WORK_PLAN, OperationFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
-                        OperationFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS)) {
-                    if (fieldName.equals(OperationFieldsWP.IMAGE_URL_IN_WORK_PLAN)) {
-                        continue;
-                    }
-
-                    operation.setField(fieldName, false);
-                }
-
-                operation.getDataDefinition().save(operation);
-
-                if (operation.isValid() && LOG.isDebugEnabled()) {
-                    LOG.debug("Operation saved {operation = " + operation.toString() + "}");
-                }
-            }
-        }
-    }
-
-    public void setTechnologyOperationComponentDefaultValues() {
-        List<Entity> technologyOperationComponents = getTechnologyOperationComponents();
-
-        if (technologyOperationComponents != null) {
-            for (Entity technologyOperationComponent : technologyOperationComponents) {
-                for (String workPlanParameter : Lists.newArrayList(
-                        TechnologyOperationComponentFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS,
-                        TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS,
-                        TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS,
-                        TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN,
-                        TechnologyOperationComponentFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS,
-                        TechnologyOperationComponentFieldsWP.DONT_PRINT_OUTPUT_PRODUCTS_IN_WORK_PLANS)) {
-                    if (workPlanParameter.equals(TechnologyOperationComponentFieldsWP.IMAGE_URL_IN_WORK_PLAN)) {
-                        continue;
-                    }
-
-                    technologyOperationComponent.setField(workPlanParameter, false);
-                }
-
-                technologyOperationComponent.getDataDefinition().save(technologyOperationComponent);
-
-                if (technologyOperationComponent.isValid() && LOG.isDebugEnabled()) {
-                    LOG.debug("Technology Operation Component saved {technologyOperationComponent = "
-                            + technologyOperationComponent.toString() + "}");
-                }
-            }
-        }
-
     }
 
     public void fillColumnsForOrders(final String plugin) {
@@ -251,8 +194,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (L_TRUE.equals(columnAttributes.get(L_ACTIVE))) {
             addParameterInputColumn(columnForInputProducts);
-            addOperationInputColumn(columnForInputProducts);
-            addTechnologyOperationInputColumn(columnForInputProducts);
         }
     }
 
@@ -267,8 +208,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
 
         if (L_TRUE.equals(columnAttributes.get(L_ACTIVE))) {
             addParameterOutputColumn(columnForOutputProducts);
-            addOperationOutputColumn(columnForOutputProducts);
-            addTechnologyOperationOutputColumn(columnForOutputProducts);
         }
     }
 
@@ -357,95 +296,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
         }
     }
 
-    private void addOperationInputColumn(final Entity columnForInputProducts) {
-        for (Entity operation : getOperations()) {
-            Entity operationInputColumn = workPlansService.getOperationInputColumnDD().create();
-
-            operationInputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-            operationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
-
-            operationInputColumn = operationInputColumn.getDataDefinition().save(operationInputColumn);
-
-            if (operationInputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to operation input columns {operationInputColumn = "
-                            + operationInputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - operationInputColumn - has validation errors - "
-                        + columnForInputProducts.toString());
-            }
-        }
-    }
-
-    private void addOperationOutputColumn(final Entity columnForOutputProducts) {
-        for (Entity operation : getOperations()) {
-            Entity operationOutputColumn = workPlansService.getOperationOutputColumnDD().create();
-
-            operationOutputColumn.setField(TechnologiesConstants.MODEL_OPERATION, operation);
-            operationOutputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
-
-            operationOutputColumn = operationOutputColumn.getDataDefinition().save(operationOutputColumn);
-
-            if (operationOutputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to operation output columns {operationOutputColumn = "
-                            + operationOutputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - operationOutputColumn - has validation errors - "
-                        + columnForOutputProducts.toString());
-            }
-        }
-    }
-
-    private void addTechnologyOperationInputColumn(final Entity columnForInputProducts) {
-        for (Entity technologyOperationComponent : getTechnologyOperationComponents()) {
-            Entity technologyOperationInputColumn = workPlansService.getTechnologyOperationInputColumnDD().create();
-
-            technologyOperationInputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent);
-            technologyOperationInputColumn.setField(WorkPlansConstants.MODEL_COLUMN_FOR_INPUT_PRODUCTS, columnForInputProducts);
-
-            technologyOperationInputColumn = technologyOperationInputColumn.getDataDefinition().save(
-                    technologyOperationInputColumn);
-
-            if (technologyOperationInputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to technology operation input columns {technologyOperationInputColumn = "
-                            + technologyOperationInputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - technologyOperationInputColumn - has validation errors - "
-                        + columnForInputProducts.toString());
-            }
-        }
-    }
-
-    private void addTechnologyOperationOutputColumn(final Entity columnForOutputProducts) {
-        for (Entity technologyOperationComponent : getTechnologyOperationComponents()) {
-            Entity technologyOperationOutputColumn = workPlansService.getTechnologyOperationOutputColumnDD().create();
-
-            technologyOperationOutputColumn.setField(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent);
-            technologyOperationOutputColumn
-                    .setField(WorkPlansConstants.MODEL_COLUMN_FOR_OUTPUT_PRODUCTS, columnForOutputProducts);
-
-            technologyOperationOutputColumn = technologyOperationOutputColumn.getDataDefinition().save(
-                    technologyOperationOutputColumn);
-
-            if (technologyOperationOutputColumn.isValid()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Column added to technology operation output columns {technologyOperationOutputColumn = "
-                            + technologyOperationOutputColumn.toString() + "}");
-                }
-            } else {
-                throw new IllegalStateException("Saved entity - technologyOperationOutputColumn - has validation errors - "
-                        + columnForOutputProducts.toString());
-            }
-        }
-    }
-
     private List<Entity> getWorkPlans() {
         List<Entity> workPlans = workPlansService.getWorkPlanDD().find().list().getEntities();
 
@@ -453,29 +303,6 @@ public class WorkPlansColumnLoaderServiceImpl implements WorkPlansColumnLoaderSe
             return Lists.newArrayList();
         } else {
             return workPlans;
-        }
-    }
-
-    private List<Entity> getOperations() {
-        List<Entity> operations = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION).find().list().getEntities();
-
-        if (operations == null) {
-            return Lists.newArrayList();
-        } else {
-            return operations;
-        }
-    }
-
-    private List<Entity> getTechnologyOperationComponents() {
-        List<Entity> technologyOperationComponents = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                .list().getEntities();
-
-        if (technologyOperationComponents == null) {
-            return Lists.newArrayList();
-        } else {
-            return technologyOperationComponents;
         }
     }
 

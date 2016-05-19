@@ -23,16 +23,19 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.qcadoo.report.api.FontUtils;
-import org.springframework.stereotype.Component;
 
 @Component
 public class OperationSectionHeader {
 
-    public OperationSectionHeader() {}
+    public OperationSectionHeader() {
+
+    }
 
     public void print(Document document, String title) throws DocumentException {
         document.add(titleParagraph(title));

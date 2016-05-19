@@ -23,26 +23,25 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.DivisionFields;
-import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationOrderInfoWorkstation {
 
     private TranslationService translationService;
-    private PdfHelper pdfHelper;
 
+    private PdfHelper pdfHelper;
 
     @Autowired
     public OperationOrderInfoWorkstation(TranslationService translationService, PdfHelper pdfHelper) {
@@ -73,4 +72,5 @@ public class OperationOrderInfoWorkstation {
     private Entity extractWorkstationTypeFromToc(final Entity operationComponent) {
         return operationComponent.getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
     }
+
 }

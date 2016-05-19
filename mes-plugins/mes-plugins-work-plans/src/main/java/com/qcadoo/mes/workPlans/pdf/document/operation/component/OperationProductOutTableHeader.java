@@ -23,18 +23,19 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Paragraph;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.report.api.FontUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
-public class OperationProductOutTableHeader  {
+public class OperationProductOutTableHeader {
 
     private TranslationService translationService;
 
@@ -43,7 +44,8 @@ public class OperationProductOutTableHeader  {
         this.translationService = translationService;
     }
 
-    public OperationProductOutTableHeader() {}
+    public OperationProductOutTableHeader() {
+    }
 
     public void print(Document document, Locale locale) throws DocumentException {
         document.add(paragraph(title(locale)));
@@ -56,4 +58,5 @@ public class OperationProductOutTableHeader  {
     private String title(Locale locale) {
         return translationService.translate("workPlans.workPlan.report.productsOutTable", locale);
     }
+
 }

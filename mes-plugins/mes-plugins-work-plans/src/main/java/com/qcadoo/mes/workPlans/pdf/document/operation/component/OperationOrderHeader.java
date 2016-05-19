@@ -23,62 +23,63 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.mes.workPlans.constants.TechnologyOperationComponentFieldsWP;
-import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.api.pdf.PdfHelper;
+import java.util.Locale;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.pdf.PdfHelper;
 
 @Component
 public class OperationOrderHeader {
 
+    private ParameterService parameterService;
+
     private PdfHelper pdfHelper;
+
     private OperationOrderInfoHeader operationOrderInfoHeader;
+
     private OperationOrderInfoWorkstation operationOrderInfoWorkstation;
+
     private OperationOrderInfoOperation operationOrderInfoOperation;
 
     @Autowired
-    public OperationOrderHeader(PdfHelper pdfHelper,
-                                OperationOrderInfoHeader operationOrderInfoHeader,
-                                OperationOrderInfoWorkstation operationOrderInfoWorkstation,
-                                OperationOrderInfoOperation operationOrderInfoOperation) {
-
+    public OperationOrderHeader(ParameterService parameterService, PdfHelper pdfHelper,
+            OperationOrderInfoHeader operationOrderInfoHeader, OperationOrderInfoWorkstation operationOrderInfoWorkstation,
+            OperationOrderInfoOperation operationOrderInfoOperation) {
+        this.parameterService = parameterService;
         this.pdfHelper = pdfHelper;
         this.operationOrderInfoHeader = operationOrderInfoHeader;
         this.operationOrderInfoWorkstation = operationOrderInfoWorkstation;
         this.operationOrderInfoOperation = operationOrderInfoOperation;
     }
 
-    public void print(Entity order, GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale) throws DocumentException {
+    public void print(Entity order, GroupingContainer groupingContainer, Entity operationComponent, Document document,
+            Locale locale) throws DocumentException {
         PdfPTable operationTable = pdfHelper.createPanelTable(3);
 
         operationOrderInfoOperation.print(operationComponent, operationTable, locale);
 
-        if (groupingContainer.hasManyOrders() && isOrderInfoEnabled(operationComponent)) {
+        if (groupingContainer.hasManyOrders() && isOrderInfoEnabled()) {
             operationOrderInfoHeader.print(order, operationTable, locale);
         }
 
-        if (isWorkstationInfoEnabled(operationComponent)) {
-            operationOrderInfoWorkstation.print(operationComponent, operationTable, locale);
-        }
+        operationOrderInfoWorkstation.print(operationComponent, operationTable, locale);
 
         operationTable.setSpacingAfter(18);
         operationTable.setSpacingBefore(9);
         document.add(operationTable);
     }
 
-    boolean isOrderInfoEnabled(final Entity operationComponent) {
-        return !operationComponent
-                .getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS);
+    boolean isOrderInfoEnabled() {
+        return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS);
     }
 
-    boolean isWorkstationInfoEnabled(final Entity operationComponent) {
-        return !operationComponent.getBooleanField(TechnologyOperationComponentFieldsWP.HIDE_DETAILS_IN_WORK_PLANS);
-    }
 }

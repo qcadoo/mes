@@ -41,8 +41,4 @@ public final class ColumnForInputProductsFields {
 
     public static final String PARAMETER_INPUT_COLUMNS = "parameterInputColumns";
 
-    public static final String OPERATION_INPUT_COLUMNS = "operationInputColumns";
-
-    public static final String TECHNOLOGY_OPERATION_INPUT_COLUMNS = "technologyOperationInputColumns";
-
 }

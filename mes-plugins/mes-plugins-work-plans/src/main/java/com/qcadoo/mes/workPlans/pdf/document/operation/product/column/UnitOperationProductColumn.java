@@ -59,4 +59,5 @@ public class UnitOperationProductColumn extends AbstractOperationProductColumn {
     private Entity product(Entity operationProduct) {
         return operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
     }
+
 }

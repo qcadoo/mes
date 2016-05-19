@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -30,15 +35,12 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationOrderInfoOperation {
 
     private PdfHelper pdfHelper;
+
     private TranslationService translationService;
 
     @Autowired
@@ -62,4 +64,5 @@ public class OperationOrderInfoOperation {
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.number", locale), operationNumber);
     }
+
 }

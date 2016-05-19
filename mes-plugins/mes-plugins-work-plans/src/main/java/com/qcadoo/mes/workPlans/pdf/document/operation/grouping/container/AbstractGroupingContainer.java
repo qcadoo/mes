@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
@@ -31,22 +37,24 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationP
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
-import java.util.*;
-
 public abstract class AbstractGroupingContainer implements GroupingContainer {
 
     protected String titleAppend;
 
     private final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment;
+
     private final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment;
+
     private final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment;
+
     private final ListMultimap<String, OrderOperationComponent> map = LinkedListMultimap.create();
+
     private final Set<Entity> orders = new HashSet<>();
 
     protected AbstractGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-                                        Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-                                        Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-                                        String titleAppend) {
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            String titleAppend) {
 
         this.orderColumnToAlignment = orderColumnToAlignment;
         this.operationComponentIdProductInColumnToAlignment = operationComponentIdProductInColumnToAlignment;
@@ -88,4 +96,5 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
     public Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationComponentIdProductOutColumnToAlignment() {
         return operationComponentIdProductOutColumnToAlignment;
     }
+
 }

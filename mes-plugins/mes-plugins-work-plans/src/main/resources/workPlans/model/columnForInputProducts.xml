@@ -48,12 +48,6 @@
 		<hasMany name="parameterInputColumns" plugin="workPlans"
 			model="parameterInputColumn" joinField="columnForInputProducts"
 			cascade="delete" />
-		<hasMany name="operationInputColumns" plugin="workPlans"
-			model="operationInputColumn" joinField="columnForInputProducts"
-			cascade="delete" />
-		<hasMany name="technologyOperationInputColumns" plugin="workPlans"
-			model="technologyOperationInputColumn" joinField="columnForInputProducts"
-			cascade="delete" />
 	</fields>
 
 	<hooks />

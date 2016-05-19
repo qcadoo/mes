@@ -48,12 +48,6 @@
 		<hasMany name="parameterOutputColumns" plugin="workPlans"
 			model="parameterOutputColumn" joinField="columnForOutputProducts"
 			cascade="delete" />
-		<hasMany name="orderOutputColumns" plugin="workPlans"
-			model="operationOutputColumn" joinField="columnForOutputProducts"
-			cascade="delete" />
-		<hasMany name="technologyOperationOutputColumns" plugin="workPlans"
-			model="technologyOperationOutputColumn" joinField="columnForOutputProducts"
-			cascade="delete" />
 	</fields>
 
 	<hooks />
