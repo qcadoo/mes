@@ -138,7 +138,7 @@ myApp.directive('ngJqGrid', function ($window) {
                     var positionsHeader = QCD.translate('documentGrid.gridHeader.positions');
                     var newHeader = QCD.translate('documentGrid.gridHeader.new');
                     var addNewRowButton = '<div id="add_new_row" class="headerActionButton headerButtonEnabled ' + (newValue.readOnly ? 'disabled-button"' : '" onclick="return addNewRow();"') + '> <a href="#"><span>' +
-                            '<div class="icon" id="add_new_icon""></div>' +
+                            '<div class="icon" id="add_new_icon"></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
 
                     var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
