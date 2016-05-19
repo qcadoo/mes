@@ -378,9 +378,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
-
-                String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
-                BigDecimal quantityInAdditionalUnit = convertToGivenUnit(resourceQuantity, product, givenUnit);
+                BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
+                BigDecimal quantityInAdditionalUnit = resourceQuantity.multiply(resourceConversion);
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
 
