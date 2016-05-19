@@ -68,7 +68,24 @@
                             documentIdChanged(value.content.entityId);                            
                         } 
                     }
-                });
+                });             
+                
+                var isCanClose;
+                var controllerCanClose = controller.canClose;
+                controller.canClose = function(){
+                    isCanClose = controllerCanClose();
+                    return isCanClose;
+                }
+                
+                var formComponent = window.mainController.getComponentByReferenceName("form");
+                var formPerformRefresh = formComponent.performRefresh;
+                formComponent.performRefresh = function(){
+                    formPerformRefresh();
+                    if(isCanClose){
+                        viewRefresh();
+                    }
+                }   
+                
             ]]></script>                
                 
                 

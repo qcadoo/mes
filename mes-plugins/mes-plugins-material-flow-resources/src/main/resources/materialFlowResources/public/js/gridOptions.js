@@ -322,6 +322,10 @@ function saveAllRows() {
     }
 }
 
+function viewRefresh(){
+    angular.element($("#GridController")).scope().cancelEditing();
+}
+
 function documentIdChanged(id) {
     saveAllRows();
     angular.element($("#GridController")).scope().documentIdChanged(id);
@@ -1157,7 +1161,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $("#del_grid").show();
         }
 
-        function cancelEditing(myGrid) {
+        function cancelEditing() {
             var lrid;
             if (typeof lastSel !== "undefined") {
                 // cancel editing of the previous selected row if it was in editing state.
@@ -1172,6 +1176,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $("tr#" + lrid + " div.ui-inline-save, " + "tr#" + lrid + " div.ui-inline-cancel").hide();
             }
         }
+        $scope.cancelEditing = cancelEditing;
 
         $scope.resize = function () {
             jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
