@@ -1652,6 +1652,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         // dont close inline edit after fail validations
         $.extend($.jgrid.inlineEdit, {restoreAfterError: false});
 
+        $.jgrid.edit = $.jgrid.edit || {};
         $.jgrid.edit.addCaption = '';
         $.jgrid.edit.editCaption = '';
         $.jgrid.edit.bSubmit = '<label>' + $.jgrid.edit.bSubmit + '</label>';
