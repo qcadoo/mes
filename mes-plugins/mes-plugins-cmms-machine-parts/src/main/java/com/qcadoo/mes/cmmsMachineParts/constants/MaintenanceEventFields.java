@@ -25,12 +25,16 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class MaintenanceEventFields {
 
+    private MaintenanceEventFields() {
+
+    }
+
     public static final String STATE_CHANGES = "stateChanges";
 
     public static final String MACHINE_PARTS_FOR_EVENT = "machinePartsForEvent";
 
     public static final String PLANNED_EVENTS = "plannedEvents";
-    
+
     public static final String STAFF_WORK_TIMES = "staffWorkTimes";
 
     public static final String DESCRIPTION = "description";
@@ -68,8 +72,5 @@ public final class MaintenanceEventFields {
     public static final String SOURCE_COST = "sourceCost";
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
-
-    private MaintenanceEventFields() {
-    }
 
 }

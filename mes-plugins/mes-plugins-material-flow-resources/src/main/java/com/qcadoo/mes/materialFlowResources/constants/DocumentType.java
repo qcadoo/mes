@@ -54,6 +54,8 @@ public enum DocumentType {
                 return documentType;
             }
         }
+
         throw new IllegalArgumentException("Couldn't parse DocumentType from string '" + type + "'");
     }
+
 }

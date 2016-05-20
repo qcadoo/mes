@@ -30,4 +30,5 @@ public final class DeliveriesToMaterialFlowConstants {
     }
 
     public static final String PLUGIN_IDENTIFIER = "deliveriesToMaterialFlow";
+
 }

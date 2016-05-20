@@ -25,6 +25,10 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class MachinePartForEventFields {
 
+    private MachinePartForEventFields() {
+
+    }
+
     public static final String MACHINE_PART = "machinePart";
 
     public static final String ISSUED_QUANTITY = "issuedQuantity";
@@ -47,6 +51,4 @@ public final class MachinePartForEventFields {
 
     public static final String PLANNED_EVENT = "plannedEvent";
 
-    private MachinePartForEventFields() {
-    }
 }

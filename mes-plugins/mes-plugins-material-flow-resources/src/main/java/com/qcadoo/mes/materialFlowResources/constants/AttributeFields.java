@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlowResources.constants;
 public final class AttributeFields {
 
     private AttributeFields() {
+
     }
 
     public static final String LOCATION = "location";
@@ -37,4 +38,5 @@ public final class AttributeFields {
     public static final String NAME = "name";
 
     public static final String DEFAULT_VALUE = "defaultValue";
+
 }

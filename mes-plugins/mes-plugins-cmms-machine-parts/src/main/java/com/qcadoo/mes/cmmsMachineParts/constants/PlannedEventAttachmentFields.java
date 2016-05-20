@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-
 public final class PlannedEventAttachmentFields {
 
     private PlannedEventAttachmentFields() {
+
     }
 
     public static final String PLANNED_EVENT = "plannedEvent";
@@ -38,4 +38,5 @@ public final class PlannedEventAttachmentFields {
     public static final String SIZE = "size";
 
     public static final String EXT = "ext";
+
 }

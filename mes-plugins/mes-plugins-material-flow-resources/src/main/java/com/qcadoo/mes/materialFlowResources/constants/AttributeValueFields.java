@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlowResources.constants;
 public final class AttributeValueFields {
 
     private AttributeValueFields() {
+
     }
 
     public static final String ATTRIBUTE = "attribute";

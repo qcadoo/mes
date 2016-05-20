@@ -21,16 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.constants;
+package com.qcadoo.mes.deliveriesToMaterialFlow.constants;
 
-public final class DocumentFieldsCMP {
+public final class DocumentDtoFieldsDTMF {
 
-    private DocumentFieldsCMP() {
+    private DocumentDtoFieldsDTMF() {
 
     }
 
-    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+    public static final String DELIVERY_ID = "delivery_id";
 
-    public static final String PLANNED_EVENT = "plannedEvent";
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
 
 }

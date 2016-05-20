@@ -25,9 +25,6 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public enum FaultTypeAppliesTo {

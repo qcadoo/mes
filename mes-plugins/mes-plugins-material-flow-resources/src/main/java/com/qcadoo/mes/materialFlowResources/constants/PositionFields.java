@@ -70,4 +70,5 @@ public final class PositionFields {
     public static final String PALLET_NUMBER = "palletNumber";
 
     public static final String TYPE_OF_PALLET = "typeOfPallet";
+
 }

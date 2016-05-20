@@ -23,14 +23,18 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public final class DocumentFieldsCMP {
+public final class DocumentDtoFieldsCMP {
 
-    private DocumentFieldsCMP() {
+    private DocumentDtoFieldsCMP() {
 
     }
 
-    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+    public static final String MAINTENANCE_EVENT_ID = "maintenanceEvent_id";
 
-    public static final String PLANNED_EVENT = "plannedEvent";
+    public static final String MAINTENANCE_EVENT_NUMBER = "maintenanceEventNumber";
+
+    public static final String PLANNED_EVENT_ID = "plannedEvent_id";
+
+    public static final String PLANNED_EVENT_NUMBER = "plannedEventNumber";
 
 }

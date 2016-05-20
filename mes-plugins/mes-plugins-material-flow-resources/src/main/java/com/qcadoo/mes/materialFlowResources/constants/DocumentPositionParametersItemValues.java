@@ -30,12 +30,19 @@ public final class DocumentPositionParametersItemValues {
     }
 
     public static final String STORAGE_LOCATION = "storageLocation";
+
     public static final String ADDITIONAL_CODE = "additionalCode";
+
     public static final String PRODUCTION_DATE = "productionDate";
+
     public static final String EXPIRATION_DATE = "expirationDate";
+
     public static final String PALLET = "pallet";
+
     public static final String TYPE_OF_PALLET = "typeOfPallet";
+
     public static final String BATCH = "batch";
+
     public static final String PRICE = "price";
 
 }

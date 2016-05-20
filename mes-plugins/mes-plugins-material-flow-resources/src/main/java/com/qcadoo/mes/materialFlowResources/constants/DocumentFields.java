@@ -30,25 +30,25 @@ public final class DocumentFields {
     }
 
     public static final String NUMBER = "number";
-    
+
     public static final String NAME = "name";
+
+    public static final String TYPE = "type";
 
     public static final String TIME = "time";
 
-    public static final String USER = "user";
+    public static final String STATE = "state";
 
     public static final String LOCATION_FROM = "locationFrom";
 
     public static final String LOCATION_TO = "locationTo";
 
-    public static final String POSITIONS = "positions";
+    public static final String COMPANY = "company";
 
-    public static final String TYPE = "type";
-
-    public static final String STATE = "state";
+    public static final String USER = "user";
 
     public static final String DESCRIPTION = "description";
 
-    public static final String COMPANY = "company";
+    public static final String POSITIONS = "positions";
 
 }

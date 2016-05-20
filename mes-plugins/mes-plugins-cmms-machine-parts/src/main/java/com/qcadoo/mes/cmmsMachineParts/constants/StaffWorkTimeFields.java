@@ -26,6 +26,7 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 public final class StaffWorkTimeFields {
 
     private StaffWorkTimeFields() {
+
     }
 
     public static final String MAINTENANCE_EVNET = "maintenanceEvent";

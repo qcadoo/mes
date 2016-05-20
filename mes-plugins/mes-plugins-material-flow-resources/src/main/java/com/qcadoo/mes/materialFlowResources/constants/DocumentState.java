@@ -53,6 +53,8 @@ public enum DocumentState {
                 return documentState;
             }
         }
+
         throw new IllegalArgumentException("Couldn't parse DocumentState from string '" + type + "'");
     }
+
 }

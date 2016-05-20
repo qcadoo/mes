@@ -49,4 +49,5 @@ public enum WarehouseAlgorithm {
             return FIFO;
         }
     }
+
 }

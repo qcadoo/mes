@@ -66,7 +66,7 @@ public final class ResourceFields {
     public static final String TYPE_OF_PALLET = "typeOfPallet";
 
     public static final String GIVEN_UNIT = "givenUnit";
-    
+
     public static final String NUMBER = "number";
 
 }

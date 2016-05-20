@@ -25,11 +25,12 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class ParameterFieldsCMP {
 
+    private ParameterFieldsCMP() {
+
+    }
+
     public static final String POSSIBLE_WORK_TIME_DEVIATION = "possibleWorkTimeDeviation";
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
-
-    private ParameterFieldsCMP() {
-    }
 
 }
