@@ -72,7 +72,7 @@ $(function() {
 
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"technologyMultiUploadLocale")
+								"workstationMultiUploadLocale")
 									.getValue().content.value;
 							var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 
@@ -101,7 +101,7 @@ $(function() {
 					function(e, data) {
 						var techId = window.mainController
 								.getComponentByReferenceName(
-										"technologyIdForMultiUpload")
+										"workstationIdForMultiUpload")
 								.getValue();
 						var techIdValue = techId.content;
 						data.formData = {
@@ -114,7 +114,7 @@ $(function() {
 						var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
-							"technologyMultiUploadLocale")
+							"workstationMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {
