@@ -23,15 +23,21 @@
  */
 package com.qcadoo.mes.materialFlowResources.constants;
 
-public interface MaterialFlowResourcesConstants {
+public final class MaterialFlowResourcesConstants {
 
-    String PLUGIN_IDENTIFIER = "materialFlowResources";
+    private MaterialFlowResourcesConstants() {
+
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "materialFlowResources";
 
     // MODEL
 
     public static final String MODEL_RESOURCE = "resource";
 
     public static final String MODEL_DOCUMENT = "document";
+
+    public static final String MODEL_DOCUMENT_DTO = "documentDto";
 
     public static final String MODEL_POSITION = "position";
 
@@ -46,6 +52,7 @@ public interface MaterialFlowResourcesConstants {
     public static final String MODEL_STORAGE_LOCATION = "storageLocation";
 
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS = "documentPositionParameters";
-    
+
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM = "documentPositionParametersItem";
+
 }

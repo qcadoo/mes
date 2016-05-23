@@ -21,16 +21,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class DocumentFieldsCMP {
+public final class DocumentDtoFields {
 
-    private DocumentFieldsCMP() {
+    private DocumentDtoFields() {
 
     }
 
-    public static final String MAINTENANCE_EVENT = "maintenanceEvent";
+    public static final String NUMBER = "number";
 
-    public static final String PLANNED_EVENT = "plannedEvent";
+    public static final String NAME = "name";
+
+    public static final String TYPE = "type";
+
+    public static final String TIME = "time";
+
+    public static final String STATE = "state";
+
+    public static final String LOCATION_FROM_ID = "locationFrom_id";
+
+    public static final String LOCATION_FROM_NAME = "locationFromName";
+
+    public static final String LOCATION_TO_ID = "locationTo_id";
+
+    public static final String LOCATION_TO_NAME = "locationToName";
+
+    public static final String COMPANY_ID = "company_id";
+
+    public static final String COMPANY_NAME = "companyName";
+
+    public static final String USER_ID = "user_id";
+
+    public static final String USER_NAME = "userName";
 
 }

@@ -71,6 +71,7 @@
 
         <model:model model="resource" resource="model/resource.xml"/>
         <model:model model="document" resource="model/document.xml"/>
+        <model:model model="documentDto" resource="model/documentDto.xml"/>
         <model:model model="position" resource="model/position.xml"/>
         <model:model model="warehouseStock" resource="model/warehouseStock.xml"/>
         <model:model model="warehouseStockListDto" resource="model/warehouseStockListDto.xml"/>
@@ -276,6 +277,7 @@
 
         <model:model model="documentPositionParameters" resource="model/documentPositionParameters.xml"/>
         <model:model model="documentPositionParametersItem" resource="model/documentPositionParametersItem.xml"/>
+
         <model:model-field model="parameter" plugin="basic">
             <model:belongsTo name="documentPositionParameters" model="documentPositionParameters" plugin="materialFlowResources"/>
         </model:model-field>

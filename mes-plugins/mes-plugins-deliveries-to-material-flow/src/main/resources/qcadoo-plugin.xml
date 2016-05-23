@@ -66,6 +66,13 @@
                              plugin="deliveries"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:integer name="delivery_id"/>
+        </model:model-field>
+        <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:string name="deliveryNumber"/>
+        </model:model-field>
+
         <model:model-field plugin="deliveries" model="delivery">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="delivery" cascade="nullify"/>
@@ -92,7 +99,7 @@
 
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">
-            <view:column name="delivery" fields="delivery" expression="#delivery['number']" orderable="true"
+            <view:column name="deliveryNumber" fields="deliveryNumber" orderable="true"
                          searchable="true" width="45"/>
         </view:view-grid-column>
 
@@ -115,6 +122,5 @@
         <end-user/>
         <internal-integration/>
     </features>
-
 
 </plugin>

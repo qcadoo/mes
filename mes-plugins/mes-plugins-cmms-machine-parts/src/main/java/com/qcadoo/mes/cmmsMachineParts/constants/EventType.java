@@ -29,18 +29,26 @@ import com.qcadoo.model.api.Entity;
 
 public enum EventType {
     MAINTENANCE_EVENT {
-        @Override public String getModelName() {
+
+        @Override
+        public String getModelName() {
             return CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT;
         }
-        @Override public String getMachinePartsName() {
+
+        @Override
+        public String getMachinePartsName() {
             return MaintenanceEventFields.MACHINE_PARTS_FOR_EVENT;
         }
     },
     PLANNED_EVENT {
-        @Override public String getModelName() {
+
+        @Override
+        public String getModelName() {
             return CmmsMachinePartsConstants.MODEL_PLANNED_EVENT;
         }
-        @Override public String getMachinePartsName() {
+
+        @Override
+        public String getMachinePartsName() {
             return PlannedEventFields.MACHINE_PARTS_FOR_EVENT;
         }
     };
@@ -57,6 +65,7 @@ public enum EventType {
     }
 
     public abstract String getModelName();
+
     public abstract String getMachinePartsName();
 
 }
