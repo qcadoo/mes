@@ -252,7 +252,7 @@ public class DeliveryDetailsHooks {
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
         Entity location = locationField.getEntity();
 
-        if (location == null) {
+        if (location == null && !view.isViewAfterReload()) {
             Entity defaultLocation = parameterService.getParameter().getBelongsToField(DeliveryFields.LOCATION);
 
             if (defaultLocation == null) {

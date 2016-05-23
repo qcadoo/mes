@@ -53,6 +53,8 @@ public enum ProductsToUpdate {
                 return productsToUpdate;
             }
         }
+
         throw new IllegalArgumentException("Couldn't parse ProductsToUpdate from string '" + type + "'");
     }
+
 }

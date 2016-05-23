@@ -25,6 +25,10 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class PlannedEventFields {
 
+    private PlannedEventFields() {
+
+    }
+
     public static final String STATE_CHANGES = "stateChanges";
 
     public static final String OWNER = "owner";
@@ -108,8 +112,5 @@ public final class PlannedEventFields {
     public static final String SOURCE_COST = "sourceCost";
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
-
-    private PlannedEventFields() {
-    }
 
 }

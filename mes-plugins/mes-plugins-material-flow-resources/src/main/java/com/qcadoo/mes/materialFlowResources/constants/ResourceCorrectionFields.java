@@ -25,6 +25,10 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class ResourceCorrectionFields {
 
+    private ResourceCorrectionFields() {
+
+    }
+
     public static final String NUMBER = "number";
 
     public static final String LOCATION = "location";
@@ -44,8 +48,5 @@ public final class ResourceCorrectionFields {
     public static final String TIME = "time";
 
     public static final String RESOURCE = "resource";
-
-    private ResourceCorrectionFields() {
-    }
 
 }

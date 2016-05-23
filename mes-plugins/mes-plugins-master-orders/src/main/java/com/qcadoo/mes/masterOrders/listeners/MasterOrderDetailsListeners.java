@@ -65,7 +65,8 @@ public class MasterOrderDetailsListeners {
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     public void onProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
@@ -143,9 +144,12 @@ public class MasterOrderDetailsListeners {
         parameters.put("form.masterOrder", masterOrderId);
 
         if (masterOrderTypeValue.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-            Entity entity = masterOrderProductsGrid.getSelectedEntities().get(0).getBelongsToField(MasterOrderProductFields.PRODUCT);
-            parameters.put("form.masterOrderProduct", entity.getId());
+            GridComponent masterOrderProductsGrid = (GridComponent) view
+                    .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+            Entity entity = masterOrderProductsGrid.getSelectedEntities().get(0);
+            Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
+            parameters.put("form.masterOrderProduct", product.getId());
+            parameters.put("form.masterOrderProductComponent", entity.getId());
         }
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");

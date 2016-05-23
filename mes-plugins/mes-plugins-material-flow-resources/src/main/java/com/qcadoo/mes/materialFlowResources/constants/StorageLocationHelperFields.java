@@ -2,7 +2,9 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class StorageLocationHelperFields {
 
-    private StorageLocationHelperFields() {}
+    private StorageLocationHelperFields() {
+
+    }
 
     public static final String LOCATION = "location";
 

@@ -23,14 +23,15 @@
  */
 package com.qcadoo.mes.workPlans.criteriaModifiers;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class WorkPlansCriteriaModifiers {
@@ -39,11 +40,16 @@ public class WorkPlansCriteriaModifiers {
 
     public void showAtachmentsForTechnologies(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         List<Long> technologyIDs = Lists.newArrayList();
-        if (!filterValue.has(TECHNOLOGY_IDS) ||  technologyIDs.isEmpty()) {
-            scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.eq("t.id", 0l));
-        } else {
+
+        if (filterValue.has(TECHNOLOGY_IDS)) {
             technologyIDs = filterValue.getListOfLongs(TECHNOLOGY_IDS);
-            scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.in("t.id", technologyIDs));
         }
+
+        if (technologyIDs.isEmpty()) {
+            technologyIDs.add(0L);
+        }
+
+        scb.createAlias(TechnologyAttachmentFields.TECHNOLOGY, "t").add(SearchRestrictions.in("t.id", technologyIDs));
     }
+
 }

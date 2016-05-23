@@ -12,9 +12,11 @@ UPDATE productionlines_workstationtypecomponent SET datefrom = '1970-01-01 00:00
 
 -- #QCADOO-433
 -- add name field
+
 alter table materialflowresources_document  add column name character varying(255);
 
 -- add functions and trigger
+
 CREATE OR REPLACE FUNCTION generate_document_number(_translated_type text)
   RETURNS text AS
 $$
@@ -29,8 +31,8 @@ BEGIN
 	_pattern := '#translated_type/#seq';
 
 	_sequence_name := 'materialflowresources_document_number_' || lower(_translated_type);
-	
-	SELECT sequence_name into _tmp FROM information_schema.sequences where sequence_schema = 'public' 
+
+	SELECT sequence_name into _tmp FROM information_schema.sequences where sequence_schema = 'public'
 		and sequence_name = _sequence_name;
 	if _tmp is null then
 		execute 'CREATE SEQUENCE ' || _sequence_name || ';';
@@ -42,15 +44,14 @@ BEGIN
 	if _seq like '%#%' then
 		_seq := _sequence_value;
 	end if;
-	
+
 	_number := _pattern;
 	_number := replace(_number, '#translated_type', _translated_type);
 	_number := replace(_number, '#seq', _seq);
-	
+
 	RETURN _number;
 END;
 $$ LANGUAGE 'plpgsql';
-
 
 CREATE OR REPLACE FUNCTION generate_and_set_document_number_trigger()
   RETURNS trigger AS
@@ -60,7 +61,7 @@ BEGIN
 	IF NEW.name is null THEN
 		NEW.name := NEW.number;
 	END IF;
-	
+
 	return NEW;
 END;
 $$ LANGUAGE 'plpgsql';
@@ -72,6 +73,7 @@ CREATE TRIGGER materialflowresources_document_trigger_number
   EXECUTE PROCEDURE generate_and_set_document_number_trigger();
 
 -- migrate old data
+
 CREATE OR REPLACE FUNCTION migrate_document_numbers()
   RETURNS void AS
 $$
@@ -84,14 +86,14 @@ BEGIN
             WHEN type='03internalOutbound' THEN 'RW'
             WHEN type='04release' THEN 'WZ'
             WHEN type='05transfer' THEN 'MM'
-       END as translated_type,* from materialflowresources_document x where 
+       END as translated_type,* from materialflowresources_document x where
 	(order_id is null and number in (select number from materialflowresources_document group by number having count(number)>1))
 	OR (number like '~~~%')
 	)
     LOOP
 	_number := generate_document_number(row.translated_type);
-	update materialflowresources_document set number = _number, name = _number where id = row.id;    
-            
+	update materialflowresources_document set number = _number, name = _number where id = row.id;
+
     END LOOP;
 
     update materialflowresources_document set name = number where name is null;
@@ -108,7 +110,8 @@ alter table materialflowresources_document alter column type set not null;
 alter table materialflowresources_document alter column number set not null;
 alter table materialflowresources_document add unique(number);
 
---end #QCADOO-433
+-- end #QCADOO-433
+
 
 -- Table: qcadooplugin_plugin
 -- by kasi
@@ -116,7 +119,8 @@ alter table materialflowresources_document add unique(number);
 ALTER TABLE qcadooplugin_plugin ADD COLUMN license character varying(255);
 update qcadooplugin_plugin set version = '1.3.0';
 
---end
+-- end
+
 
 -- start
 
@@ -204,7 +208,7 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto
 		trackingoperationproductincomponent.id,
 		productiontracking.id,
 		product.id,
-		product.name,
+		product.number,
 		product.unit,
 		trackingoperationproductincomponent.usedquantity,
 		productiontracking.technologyoperationcomponent_id,
@@ -353,8 +357,10 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto
 
 -- end
 
+
 -- alerts
 -- by kasi
+
 CREATE TABLE qcadooview_alert
 (
   id bigint NOT NULL,
@@ -376,4 +382,5 @@ CREATE TABLE qcadooview_viewedalert
   CONSTRAINT alert_user_fkey FOREIGN KEY (user_id)
       REFERENCES qcadoosecurity_user (id) DEFERRABLE
 );
+
 --

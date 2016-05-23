@@ -155,8 +155,8 @@ public class WorkPlanPdfForDivision {
         List<Entity> orders = getMainOrdersForOperationComponents(orderOperationComponents);
         for (Entity order : orders) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-            Paragraph mainOrder = new Paragraph(
-                    new Phrase(prepareMainOrderSummary(order, product, locale), FontUtils.getDejavuBold9Dark()));
+            Paragraph mainOrder = new Paragraph(new Phrase(prepareMainOrderSummary(order, product, locale),
+                    FontUtils.getDejavuBold9Dark()));
             mainOrder.setIndentationLeft(3f);
             document.add(mainOrder);
         }
@@ -175,10 +175,10 @@ public class WorkPlanPdfForDivision {
         Entity order = orderOperationComponent.getOrder();
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
-        Map<OperationProductColumn, ColumnAlignment> inputProductColumnAlignmentMap = inputProductsMap
-                .get(operationComponent.getId());
-        Map<OperationProductColumn, ColumnAlignment> outputProductColumnAlignmentMap = outputProductsMap
-                .get(operationComponent.getId());
+        Map<OperationProductColumn, ColumnAlignment> inputProductColumnAlignmentMap = inputProductsMap.get(operationComponent
+                .getId());
+        Map<OperationProductColumn, ColumnAlignment> outputProductColumnAlignmentMap = outputProductsMap.get(operationComponent
+                .getId());
 
         PdfPTable table = pdfHelper.createPanelTable(3);
 
@@ -198,11 +198,10 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell,
-                addMaterialComponents(operationProductInComponents(operationComponent), order),
+        addOperationProductsTable(inputCell, addMaterialComponents(operationProductInComponents(operationComponent), order),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
-        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent),
-                outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
+        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent), outputProductColumnAlignmentMap,
+                ProductDirection.OUT, locale);
 
         codeCell.addElement(createBarcode(pdfWriter, operationComponent));
 
@@ -224,9 +223,8 @@ public class WorkPlanPdfForDivision {
 
         PdfPCell numberCell = new PdfPCell();
         numberCell.setBorder(Rectangle.NO_BORDER);
-        Paragraph operationName = new Paragraph(
-                operation.getStringField(OperationFields.NUMBER) + " - " + operation.getStringField(OperationFields.NAME),
-                FontUtils.getDejavuBold7Dark());
+        Paragraph operationName = new Paragraph(operation.getStringField(OperationFields.NUMBER) + " - "
+                + operation.getStringField(OperationFields.NAME), FontUtils.getDejavuBold7Dark());
         numberCell.addElement(operationName);
 
         PdfPCell descriptionCell = new PdfPCell();
@@ -249,15 +247,13 @@ public class WorkPlanPdfForDivision {
         cell.addElement(operationTable);
     }
 
-    private void addOrderSummary(PdfPCell cell, Entity order, Entity product, Entity operationComponent)
-            throws DocumentException {
+    private void addOrderSummary(PdfPCell cell, Entity order, Entity product, Entity operationComponent) throws DocumentException {
         Entity operation = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
         PdfPTable orderTable = pdfHelper.createPanelTable(3);
         PdfPCell operationCell = new PdfPCell();
         operationCell.setBorder(Rectangle.NO_BORDER);
-        Paragraph operationName = new Paragraph(
-                operation.getStringField(OperationFields.NUMBER) + " - " + operation.getStringField(OperationFields.NAME),
-                FontUtils.getDejavuBold7Dark());
+        Paragraph operationName = new Paragraph(operation.getStringField(OperationFields.NUMBER) + " - "
+                + operation.getStringField(OperationFields.NAME), FontUtils.getDejavuBold7Dark());
         operationCell.addElement(operationName);
 
         PdfPCell numberCell = new PdfPCell();
@@ -268,10 +264,9 @@ public class WorkPlanPdfForDivision {
 
         PdfPCell quantityCell = new PdfPCell();
         quantityCell.setBorder(Rectangle.NO_BORDER);
-        Paragraph quantity = new Paragraph(
-                numberService.formatWithMinimumFractionDigits(order.getDecimalField(OrderFields.PLANNED_QUANTITY), 0) + " "
-                        + product.getStringField(ProductFields.UNIT),
-                FontUtils.getDejavuBold7Dark());
+        Paragraph quantity = new Paragraph(numberService.formatWithMinimumFractionDigits(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY), 0)
+                + " " + product.getStringField(ProductFields.UNIT), FontUtils.getDejavuBold7Dark());
         quantity.setAlignment(Element.ALIGN_CENTER);
         quantityCell.addElement(quantity);
 
@@ -486,4 +481,5 @@ public class WorkPlanPdfForDivision {
         Collections.reverse(sorted);
         return sorted;
     }
+
 }

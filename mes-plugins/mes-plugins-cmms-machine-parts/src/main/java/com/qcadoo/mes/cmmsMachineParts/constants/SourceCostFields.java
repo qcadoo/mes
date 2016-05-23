@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-
 public final class SourceCostFields {
 
     private SourceCostFields() {
+
     }
 
     public static final String NAME = "name";

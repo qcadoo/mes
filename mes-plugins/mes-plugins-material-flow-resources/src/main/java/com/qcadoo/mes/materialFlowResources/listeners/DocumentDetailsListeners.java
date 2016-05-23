@@ -26,9 +26,12 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -81,6 +84,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     private static final String L_RESOURCE = "resource";
 
@@ -147,7 +153,6 @@ public class DocumentDetailsListeners {
         } else {
             documentToCreateResourcesFor.setNotValid();
             formComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
-            window.setActiveTab("positionsListTab");
         }
 
         if (!documentToCreateResourcesFor.isValid()) {
@@ -158,7 +163,18 @@ public class DocumentDetailsListeners {
         } else {
             formComponent.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
+        updatePositions(documentToCreateResourcesFor);
         formComponent.setEntity(documentToCreateResourcesFor);
+    }
+
+    private void updatePositions(Entity document) {
+        String query = "UPDATE materialflowresources_position "
+                + "SET type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
+                + "WHERE document_id = :document_id ";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("document_id", document.getId());
+        jdbcTemplate.update(query, params);
     }
 
     @Transactional
@@ -187,9 +203,9 @@ public class DocumentDetailsListeners {
         locationTo.setFieldValue(null);
         locationFrom.requestComponentUpdateState();
 
-        showResourceLookupOrBatchInput(view, false, true);
+        // showResourceLookupOrBatchInput(view, false, true);
 
-        clearAttributes(view);
+        // clearAttributes(view);
     }
 
     public void updateAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -234,11 +250,11 @@ public class DocumentDetailsListeners {
     public void showAndSetRequiredForResourceLookup(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         showAndSetRequiredForResourceLookup(view);
-        documentDetailsHooks.setCriteriaModifiersParameters(view);
+        // documentDetailsHooks.setCriteriaModifiersParameters(view);
     }
 
     public void setCriteriaModifiersParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        documentDetailsHooks.setCriteriaModifiersParameters(view);
+        // documentDetailsHooks.setCriteriaModifiersParameters(view);
     }
 
     private void showResourceLookupOrBatchInput(final ViewDefinitionState view, boolean visible, boolean shouldClear) {

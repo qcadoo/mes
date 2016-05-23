@@ -26,18 +26,42 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class TrackingOperationProductOutComponentDetailsHooks {
 
-    @Autowired
-    private ProductionCountingService productionCountingService;
+    private static final String L_FORM = "form";
 
-    public void fillFieldsFromProduct(final ViewDefinitionState view) {
-        productionCountingService.fillFieldsFromProduct(view,
-                productionCountingService.getTrackingOperationProductOutComponentDD());
+    public static final String L_SET_TAB = "setTab";
+
+    @Autowired
+    private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
+
+    @Autowired
+    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
+
+        FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm
+                .getPersistedEntityWithIncludedFormValues();
+
+        hideOrShowSetTab(view, trackingOperationProductOutComponent);
+    }
+
+    private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductOutComponent) {
+        view.getComponentByReference(L_SET_TAB).setVisible(
+                setTrackingOperationProductsComponents.isSet(trackingOperationProductOutComponent
+                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING),
+                        trackingOperationProductOutComponent));
     }
 
 }

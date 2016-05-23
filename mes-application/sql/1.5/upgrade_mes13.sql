@@ -64,7 +64,7 @@ CREATE TABLE productioncounting_productioncountingquantitysetcomponent
 
 -- #NBLS-160
 
-ALTER TABLE basic_parameter ADD COLUMN consumptionOfRawMaterialsBasedOnStandards boolean default false;
+ALTER TABLE basic_parameter ADD COLUMN consumptionofrawmaterialsbasedonstandards boolean DEFAULT false;
 
 -- end
 

@@ -104,11 +104,11 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
     }
 
     private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsOut(Entity workPlan) {
-        return workPlanColumnService.operationProductsOut(workPlan);
+        return workPlanColumnService.getOperationProductOutputColumns(workPlan);
     }
 
     private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsIn(Entity workPlan) {
-        return workPlanColumnService.operationProductsIn(workPlan);
+        return workPlanColumnService.getOperationProductInputColumns(workPlan);
     }
 
     private Map<OrderColumn, ColumnAlignment> orderColumns(Entity workPlan) {

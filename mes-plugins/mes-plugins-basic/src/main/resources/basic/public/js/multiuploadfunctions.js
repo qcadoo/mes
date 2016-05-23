@@ -2,7 +2,7 @@
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
- * Version: 1.4
+ * Version: 1.3
  *
  * This file is part of Qcadoo.
  *
@@ -111,7 +111,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"workstationMultiUploadLocale")

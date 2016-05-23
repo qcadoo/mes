@@ -28,6 +28,7 @@ import com.qcadoo.model.api.Entity;
 public class OrderOperationComponent {
 
     private Entity order;
+
     private Entity operationComponent;
 
     public OrderOperationComponent(Entity order, Entity operationComponent) {
@@ -50,4 +51,5 @@ public class OrderOperationComponent {
     public void setOperationComponent(Entity operationComponent) {
         this.operationComponent = operationComponent;
     }
+
 }

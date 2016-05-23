@@ -23,11 +23,13 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory;
 
+import java.util.Locale;
+
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
 
-import java.util.Locale;
-
 public interface GroupingContainerFactory {
-    public GroupingContainer create(Entity workPlan, Locale locale);
+
+    GroupingContainer create(Entity workPlan, Locale locale);
+
 }

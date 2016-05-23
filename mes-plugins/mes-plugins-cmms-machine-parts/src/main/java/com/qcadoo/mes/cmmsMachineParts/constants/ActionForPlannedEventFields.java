@@ -25,6 +25,10 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class ActionForPlannedEventFields {
 
+    private ActionForPlannedEventFields() {
+
+    }
+
     public static final String PLANNED_EVENT = "plannedEvent";
 
     public static final String ACTION = "action";
@@ -41,6 +45,4 @@ public final class ActionForPlannedEventFields {
 
     public static final String REASON = "reason";
 
-    private ActionForPlannedEventFields() {
-    }
 }

@@ -25,10 +25,12 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class DocumentFieldsCMP {
 
+    private DocumentFieldsCMP() {
+
+    }
+
     public static final String MAINTENANCE_EVENT = "maintenanceEvent";
 
     public static final String PLANNED_EVENT = "plannedEvent";
 
-    private DocumentFieldsCMP() {
-    }
 }

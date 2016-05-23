@@ -47,9 +47,8 @@ public class WorkstationTypeComponentHooks {
             DateTime dateFrom = new DateTime(entity.getDateField(WorkstationTypeComponentFields.DATE_FROM));
             Entity previousComponent = maybePreviousComponent.get();
             Date originalDateTo = previousComponent.getDateField(WorkstationTypeComponentFields.DATE_TO);
-            DateTime dateTo = dateFrom.minusMinutes(1);
-            if (originalDateTo == null || originalDateTo.compareTo(dateTo.toDate()) != 0) {
-                previousComponent.setField(WorkstationTypeComponentFields.DATE_TO, dateTo.toDate());
+            if (originalDateTo == null || originalDateTo.compareTo(dateFrom.toDate()) != 0) {
+                previousComponent.setField(WorkstationTypeComponentFields.DATE_TO, dateFrom.toDate());
                 Entity savedPrevious = dataDefinition.save(previousComponent);
                 if (!savedPrevious.isValid()) {
                     savedPrevious.getErrors().entrySet().stream()

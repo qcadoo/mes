@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveriesToMaterialFlow.constants;
 public final class DeliveredProductFieldsDTMF {
 
     private DeliveredProductFieldsDTMF() {
+
     }
 
     public static final String BATCH = "batch";

@@ -26,18 +26,38 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
+import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class TrackingOperationProductInComponentDetailsHooks {
 
-    @Autowired
-    private ProductionCountingService productionCountingService;
+    private static final String L_FORM = "form";
 
-    public void fillFieldsFromProduct(final ViewDefinitionState view) {
-        productionCountingService.fillFieldsFromProduct(view,
-                productionCountingService.getTrackingOperationProductInComponentDD());
+    public static final String L_SET_TAB = "setTab";
+
+    @Autowired
+    private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
+
+    @Autowired
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
+
+        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity trackingOperationProductInComponent = trackingOperationProductInComponentForm
+                .getPersistedEntityWithIncludedFormValues();
+
+        hideOrShowSetTab(view, trackingOperationProductInComponent);
+    }
+
+    private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductInComponent) {
+        view.getComponentByReference(L_SET_TAB).setVisible(
+                setTechnologyInComponentsService.isSet(trackingOperationProductInComponent));
     }
 
 }

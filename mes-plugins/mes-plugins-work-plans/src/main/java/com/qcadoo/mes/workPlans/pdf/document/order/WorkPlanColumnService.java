@@ -34,8 +34,8 @@ public interface WorkPlanColumnService {
 
     Map<OrderColumn, ColumnAlignment> getOrderColumns(Entity workPlan);
 
-    Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsIn(Entity workPlan);
+    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductInputColumns(Entity workPlan);
 
-    Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsOut(Entity workPlan);
+    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductOutputColumns(Entity workPlan);
 
 }

@@ -50,7 +50,6 @@ public enum ActionForPlannedEventState {
         } else {
             return NONE;
         }
-
     }
 
 }

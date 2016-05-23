@@ -62,4 +62,13 @@ public final class PositionFields {
     public static final String GIVEN_QUANTITY = "givenQuantity";
 
     public static final String GIVEN_UNIT = "givenUnit";
+
+    public static final String ADDITIONAL_CODE = "additionalCode";
+
+    public static final String CONVERSION = "conversion";
+
+    public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String TYPE_OF_PALLET = "typeOfPallet";
+
 }

@@ -29,6 +29,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
@@ -58,21 +59,27 @@ public class TrackingOperationProductInComponentHooks extends AbstractPlannedQua
     }
 
     public void onSave(final DataDefinition trackingOperationProductInComponentDD, Entity trackingOperationProductInComponent) {
+        fillSetTechnologyInComponents(trackingOperationProductInComponent);
+    }
 
+    private void fillSetTechnologyInComponents(Entity trackingOperationProductInComponent) {
         if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
-            BigDecimal usedQuantity = trackingOperationProductInComponent
-                    .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
             Entity productionTracking = trackingOperationProductInComponent
                     .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-            trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                    trackingOperationProductInComponent, productionTracking, usedQuantity);
+            BigDecimal givenQuantity = trackingOperationProductInComponent
+                    .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
 
-            List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductInComponent
+            trackingOperationProductInComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
+                    trackingOperationProductInComponent, productionTracking, givenQuantity);
+
+            List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
                     .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-            setTrackingOperationProductsInComponents.stream().forEach(entity -> {
-                entity.getDataDefinition().save(entity);
+
+            setTechnologyInComponents.stream().forEach(setTechnologyInComponent -> {
+                setTechnologyInComponent.getDataDefinition().save(setTechnologyInComponent);
             });
         }
     }
+
 }

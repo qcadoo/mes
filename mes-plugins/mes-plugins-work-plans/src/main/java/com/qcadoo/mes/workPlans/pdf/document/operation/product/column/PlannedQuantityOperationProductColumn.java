@@ -50,13 +50,13 @@ public class PlannedQuantityOperationProductColumn extends AbstractOperationProd
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        return String
-                .valueOf(numberService.format(numberService
-                        .setScale(operationProduct.getDecimalField(OperationProductInComponentFields.QUANTITY))));
+        return String.valueOf(numberService.format(numberService.setScale(operationProduct
+                .getDecimalField(OperationProductInComponentFields.QUANTITY))));
     }
 
     @Override
     public ProductDirection[] getDirection() {
         return ProductDirection.values();
     }
+
 }

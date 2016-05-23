@@ -29,5 +29,5 @@ import com.qcadoo.model.api.Entity;
 
 public interface ResourceCorrectionService {
 
-    boolean createCorrectionForResource(final Long resourceId, final BigDecimal newQuantity, final Entity newStorageLocation);
+    boolean createCorrectionForResource(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation);
 }

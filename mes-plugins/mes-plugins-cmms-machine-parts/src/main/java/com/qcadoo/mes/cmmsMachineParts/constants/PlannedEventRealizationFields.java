@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-
 public final class PlannedEventRealizationFields {
 
     private PlannedEventRealizationFields() {

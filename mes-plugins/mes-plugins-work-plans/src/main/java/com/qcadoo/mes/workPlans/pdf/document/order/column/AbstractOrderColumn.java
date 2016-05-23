@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order.column;
 
-import com.qcadoo.localization.api.TranslationService;
-
 import java.util.Locale;
+
+import com.qcadoo.localization.api.TranslationService;
 
 public abstract class AbstractOrderColumn implements OrderColumn {
 

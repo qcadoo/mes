@@ -38,8 +38,8 @@
         <enum name="state" values="01draft,02accepted" default="01draft" required="true"/>
         <belongsTo name="locationFrom" model="location" plugin="materialFlow"/>
         <belongsTo name="locationTo" model="location" plugin="materialFlow"/>
-        <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true"/>
         <belongsTo name="company" model="company" plugin="basic"/>
+        <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true"/>
         <string name="description">
             <validatesLength max="2048"/>
         </string>

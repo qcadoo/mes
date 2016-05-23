@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -59,29 +60,27 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         fillHeaderData(workbook, sheet, 0, locale, (Map<String, Object>) filters.get("filtersMap"));
         fillHeaderRow(workbook, sheet, 4, locale);
         int rowCounter = 5;
-        fillUsages(workbook, sheet, usages, rowCounter++, locale);
+        fillUsages(workbook, sheet, usages, rowCounter, locale);
         setColumnsWidths(sheet);
     }
 
     private void fillSums(List<WorkerCostsDTO> workerCosts) {
         Map<String, List<WorkerCostsDTO>> groups = workerCosts.stream().collect(
                 Collectors.groupingBy(WorkerCostsDTO::getSourceCost));
-        for (String workerCost : groups.keySet()) {
-            List<WorkerCostsDTO> group = groups.get(workerCost);
-            sumGroup(group);
-            Integer sum = group.stream().filter(g -> g.getWorkerTimeSum() != null).mapToInt(WorkerCostsDTO::getWorkerTimeSum)
-                    .sum();
-            group.get(0).setCostSourceTimeSum(sum);
+        for (Entry<String, List<WorkerCostsDTO>> group : groups.entrySet()) {
+            sumGroup(group.getValue());
+            Integer sum = group.getValue().stream().filter(g -> g.getWorkerTimeSum() != null)
+                    .mapToInt(WorkerCostsDTO::getWorkerTimeSum).sum();
+            group.getValue().get(0).setCostSourceTimeSum(sum);
         }
     }
 
 
     private void sumGroup(List<WorkerCostsDTO> group) {
         Map<String, List<WorkerCostsDTO>> groups = group.stream().collect(Collectors.groupingBy(WorkerCostsDTO::getWorker));
-        for (String worker : groups.keySet()) {
-            List<WorkerCostsDTO> subGroup = groups.get(worker);
-            Integer sum = subGroup.stream().mapToInt(WorkerCostsDTO::getWorkTime).sum();
-            subGroup.get(0).setWorkerTimeSum(sum);
+        for (Entry<String, List<WorkerCostsDTO>> subGroup : groups.entrySet()) {
+            Integer sum = subGroup.getValue().stream().mapToInt(WorkerCostsDTO::getWorkTime).sum();
+            subGroup.getValue().get(0).setWorkerTimeSum(sum);
         }
     }
 

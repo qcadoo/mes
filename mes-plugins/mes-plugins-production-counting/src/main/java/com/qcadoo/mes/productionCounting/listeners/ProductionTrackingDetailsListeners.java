@@ -23,8 +23,20 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -35,21 +47,15 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -68,6 +74,9 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private StaffTimeCalculator staffTimeCalculator;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
@@ -90,7 +99,8 @@ public class ProductionTrackingDetailsListeners {
         laborTimeInput.setFieldValue(totalLabor);
     }
 
-    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long productionRecordId = productionRecordForm.getEntityId();
 
@@ -100,23 +110,40 @@ public class ProductionTrackingDetailsListeners {
 
         Entity productionRecord = productionRecordForm.getEntity().getDataDefinition().get(productionRecordId);
 
-        copyPlannedQuantityToUsedQuantity(productionRecord
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS));
-        copyPlannedQuantityToUsedQuantity(productionRecord
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS));
+        copyPlannedQuantityToUsedQuantity(
+                productionRecord.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS));
+        copyPlannedQuantityToUsedQuantity(
+                productionRecord.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS));
     }
 
     private void copyPlannedQuantityToUsedQuantity(List<Entity> recordOperationProductComponents) {
         for (Entity recordOperationProductComponent : recordOperationProductComponents) {
-            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponent
-                    .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
+            Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(
+                    recordOperationProductComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
                     numberService.setScale(plannedQuantity));
-            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
-                    numberService.setScale(plannedQuantity));
-            recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT,
-                    recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
-                            .getStringField(ProductFields.UNIT));
+
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String baseUnit = product.getStringField(ProductFields.UNIT);
+            if (StringUtils.isEmpty(additionalUnit)) {
+                recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
+                        numberService.setScale(plannedQuantity));
+                recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, baseUnit);
+            } else {
+                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                if (unitConversions.isDefinedFor(additionalUnit)) {
+                    BigDecimal convertedQuantity = unitConversions.convertTo(plannedQuantity, additionalUnit);
+                    recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
+                            convertedQuantity);
+                } else {
+                    recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
+                            numberService.setScale(plannedQuantity));
+                }
+                recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, additionalUnit);
+            }
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
     }

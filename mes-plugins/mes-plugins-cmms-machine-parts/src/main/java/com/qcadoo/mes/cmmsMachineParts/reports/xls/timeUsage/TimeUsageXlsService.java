@@ -1,5 +1,25 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -13,19 +33,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
-import org.apache.poi.hssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service public class TimeUsageXlsService {
 
@@ -99,11 +106,11 @@ import java.util.stream.Collectors;
     private List<TimeUsageGroupDTO> group(List<TimeUsageDTO> usages) {
         List<TimeUsageGroupDTO> groups = Lists.newLinkedList();
         Map<String, List<TimeUsageDTO>> workerMap = usages.stream().collect(Collectors.groupingBy(TimeUsageDTO::getWorker));
-        for (String worker : workerMap.keySet()) {
-            List<TimeUsageDTO> entry = workerMap.get(worker);
-            Map<Date, List<TimeUsageDTO>> dateMap = entry.stream().collect(Collectors.groupingBy(TimeUsageDTO::getStartDate));
+        for (Entry<String, List<TimeUsageDTO>> entry : workerMap.entrySet()) {
+            Map<Date, List<TimeUsageDTO>> dateMap = entry.getValue().stream()
+                    .collect(Collectors.groupingBy(TimeUsageDTO::getStartDate));
             for (Date date : dateMap.keySet()) {
-                TimeUsageGroupDTO timeUsageGroup = new TimeUsageGroupDTO(date, worker, dateMap.get(date));
+                TimeUsageGroupDTO timeUsageGroup = new TimeUsageGroupDTO(date, entry.getKey(), dateMap.get(date));
                 groups.add(timeUsageGroup);
             }
         }

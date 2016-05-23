@@ -25,6 +25,8 @@ package com.qcadoo.mes.masterOrders.constants;
 
 public final class OrderFieldsMO {
 
+    public static final String MASTER_ORDER_PRODUCT_COMPONENT = "masterOrderProductComponent";
+
     private OrderFieldsMO() {
 
     }

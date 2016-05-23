@@ -36,7 +36,6 @@ public class ParameterHooksWP {
     private void addFieldsForParameter(final Entity parameter) {
         parameter.setField(ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.HIDE_DESCRIPTION_IN_WORK_PLANS, false);
-        parameter.setField(ParameterFieldsWP.HIDE_DETAILS_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS, false);
         parameter.setField(ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN, false);
         parameter.setField(ParameterFieldsWP.DONT_PRINT_INPUT_PRODUCTS_IN_WORK_PLANS, false);

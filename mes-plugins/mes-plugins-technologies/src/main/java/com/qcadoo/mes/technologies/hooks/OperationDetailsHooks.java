@@ -23,23 +23,19 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class OperationDetailsHooks {
@@ -47,6 +43,8 @@ public class OperationDetailsHooks {
     private static final String L_WORKSTATION_LOOKUP = "workstationLookup";
 
     public static final String L_FORM = "form";
+
+    private static final String L_PRODUCT_IN_OUT_COMPONENTS_TAB = "productInOutComponents";
 
     private static final List<String> L_WORKSTATIONS_TAB_FIELDS = Arrays.asList(OperationFields.ASSIGNED_TO_OPERATION,
             OperationFields.QUANTITY_OF_WORKSTATIONS);
@@ -57,6 +55,14 @@ public class OperationDetailsHooks {
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
         setWorkstationsCriteriaModifiers(view);
+        hideProductInOutComponents(view);
+    }
+
+    private void hideProductInOutComponents(final ViewDefinitionState view) {
+        ComponentState tabComponent = view.getComponentByReference(L_PRODUCT_IN_OUT_COMPONENTS_TAB);
+        if (tabComponent != null) {
+            tabComponent.setVisible(false);
+        }
     }
 
     private void setProductionLineCriteriaModifiers(final ViewDefinitionState view) {

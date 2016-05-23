@@ -88,7 +88,7 @@ CREATE OR REPLACE VIEW orders_orderlistdto AS SELECT o.id, o.active, o.number, o
 
 DROP TABLE IF EXISTS basic_subassemblylistdto;
 
-CREATE OR REPLACE VIEW basic_subassemblyListDto AS SELECT s.id, s.active, s.number, s.name, workstation.number AS workstationNumber, workstationType.number AS workstationTypeNumber, date(s.productionDate) AS productionDate, date(event.maxDate) AS lastRepairsDate FROM basic_subassembly s LEFT JOIN basic_workstation workstation ON (s.workstation_id = workstation.id) JOIN basic_workstationType workstationType ON (s.workstationtype_id = workstationType.id) LEFT JOIN ( SELECT subassembly_id AS subassemblyId, MAX(date) AS maxDate FROM cmmsmachineparts_plannedevent e WHERE e.state = '05realized' AND e.basedon = '01date' AND e.type = '02repairs' GROUP BY subassemblyId ) event ON event.subassemblyId = s.id;
+CREATE OR REPLACE VIEW basic_subassemblyListDto AS SELECT s.id, s.active, s.number, s.name, workstation.number AS workstationNumber, s.type, workstationType.number AS workstationTypeNumber, date(s.productionDate) AS productionDate, date(event.maxDate) AS lastRepairsDate FROM basic_subassembly s LEFT JOIN basic_workstation workstation ON (s.workstation_id = workstation.id) JOIN basic_workstationType workstationType ON (s.workstationtype_id = workstationType.id) LEFT JOIN ( SELECT subassembly_id AS subassemblyId, MAX(date) AS maxDate FROM cmmsmachineparts_plannedevent e WHERE e.state = '05realized' AND e.basedon = '01date' AND e.type = '02repairs' GROUP BY subassemblyId ) event ON event.subassemblyId = s.id;
 
 -- end
 
@@ -182,5 +182,41 @@ CREATE TRIGGER cmmsmachineparts_maintenanceevent_trigger_number BEFORE INSERT ON
 DROP TABLE IF EXISTS technologies_technologydto;
 
 CREATE OR REPLACE VIEW technologies_technologydto AS SELECT technology.id, technology.name, technology.number, technology.externalsynchronized, technology.master, technology.state, product.number AS productnumber, product.globaltypeofmaterial AS productglobaltypeofmaterial, tg.number AS technologygroupnumber, division.name AS divisionname, product.name AS productname, technology.technologytype, technology.active FROM technologies_technology technology LEFT JOIN basic_product product ON technology.product_id = product.id LEFT JOIN basic_division division ON technology.division_id = division.id LEFT JOIN technologies_technologygroup tg ON technology.technologygroup_id = tg.id;
+
+-- end
+
+CREATE OR REPLACE FUNCTION prepare_documentpositionparameters() RETURNS VOID AS $$ BEGIN insert into materialflowresources_documentpositionparameters (id) values (1); insert into materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) values         (1,1,'act', 1, false),(2,2,'number', 1, false),(3,3,'product', 1, false),(4,4,'additionalCode', 1, true),(5,5,'quantity', 1, false),(6,6,'unit', 1, false),(7,7,'givenquantity', 1, false),(8,8,'givenunit', 1, false),(9,9,'conversion', 1, false),(10,10,'resource', 1, true),(11,11,'price', 1, true),(12,12,'batch', 1, true),(13,13,'productiondate', 1, true),(14,14,'expirationdate', 1, true),(15,15,'storageLocation', 1, true),(16,16,'palletNumber', 1, true),(17,17,'typeOfPallet', 1, true); END; $$ LANGUAGE 'plpgsql'; 
+SELECT * FROM prepare_documentpositionparameters();
+DROP FUNCTION prepare_documentpositionparameters();
+
+-- VIEW: orders_orderdto
+
+ALTER TABLE productflowthrudivision_warehouseissue DROP COLUMN order_id;
+
+DROP TABLE IF EXISTS orders_orderdto;
+
+CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
+
+ALTER TABLE productflowthrudivision_warehouseissue ADD COLUMN order_id bigint;
+
+-- end
+
+
+-- VIEW: productflowthrudivision_producttoissuedt
+
+CREATE OR REPLACE VIEW productflowthrudivision_producttoissuedto_internal AS SELECT row_number() OVER () AS id, resource.location_id, resource.product_id::integer AS product_id, sum(resource.quantity) AS quantity FROM materialflowresources_resource resource GROUP BY resource.location_id, resource.product_id;
+
+DROP TABLE IF EXISTS productflowthrudivision_producttoissuedto;
+
+CREATE OR REPLACE VIEW productflowthrudivision_producttoissuedto AS SELECT producttoissue.id, issue.number AS issuenumber, locationfrom.number AS locationfromnumber, locationto.number AS locationtonumber, o.number AS ordernumber, issue.orderstartdate, issue.state, product.number AS productnumber, product.name AS productname, producttoissue.demandquantity, o.plannedquantity AS orderquantity, ROUND( producttoissue.demandquantity / o.plannedquantity::numeric,5) AS quantityperunit, producttoissue.issuequantity AS issuedquantity, CASE WHEN (producttoissue.demandquantity - producttoissue.issuequantity) < 0::numeric THEN 0::numeric ELSE producttoissue.demandquantity - producttoissue.issuequantity END AS quantitytoissue, CASE WHEN locationfrom.externalnumber IS NULL AND warehousestockfrom.quantity IS NULL THEN 0::numeric WHEN locationfrom.externalnumber IS NULL AND warehousestockfrom.quantity IS NOT NULL THEN warehousestockfrom.quantity WHEN locationfrom.externalnumber IS NOT NULL AND warehousestockfromexternal.locationsquantity IS NULL THEN 0::numeric WHEN locationfrom.externalnumber IS NOT NULL AND warehousestockfromexternal.locationsquantity IS NOT NULL THEN warehousestockfromexternal.locationsquantity ELSE warehousestockfrom.quantity END AS quantityinlocationfrom, CASE WHEN locationfrom.externalnumber IS NULL AND warehousestockfrom.quantity IS NULL THEN 0::numeric WHEN locationfrom.externalnumber IS NULL AND warehousestockfrom.quantity IS NOT NULL THEN warehousestockfrom.quantity WHEN locationfrom.externalnumber IS NOT NULL AND warehousestocktoexternal.locationsquantity IS NULL THEN 0::numeric WHEN locationfrom.externalnumber IS NOT NULL AND warehousestocktoexternal.locationsquantity IS NOT NULL THEN warehousestocktoexternal.locationsquantity ELSE warehousestockfrom.quantity END AS quantityinlocationto, product.unit, CASE WHEN producttoissue.demandquantity <= producttoissue.issuequantity THEN true ELSE false END AS issued, product.id AS productid FROM productflowthrudivision_productstoissue producttoissue LEFT JOIN productflowthrudivision_warehouseissue issue ON producttoissue.warehouseissue_id = issue.id LEFT JOIN materialflow_location locationfrom ON issue.placeofissue_id = locationfrom.id LEFT JOIN materialflow_location locationto ON producttoissue.location_id = locationto.id LEFT JOIN orders_order o ON issue.order_id = o.id LEFT JOIN basic_product product ON producttoissue.product_id = product.id LEFT JOIN productflowthrudivision_producttoissuedto_internal warehousestockfrom ON warehousestockfrom.product_id = producttoissue.product_id AND warehousestockfrom.location_id = locationfrom.id LEFT JOIN productflowthrudivision_producttoissuedto_internal warehousestockto ON warehousestockto.product_id = producttoissue.product_id AND warehousestockto.location_id = locationto.id LEFT JOIN productflowthrudivision_productandquantityhelper warehousestockfromexternal ON warehousestockfromexternal.product_id = producttoissue.product_id AND warehousestockfromexternal.location_id = locationfrom.id LEFT JOIN productflowthrudivision_productandquantityhelper warehousestocktoexternal ON warehousestocktoexternal.product_id = producttoissue.product_id AND warehousestocktoexternal.location_id = locationto.id WHERE issue.state::text = ANY (ARRAY['01draft'::character varying::text, '02inProgress'::character varying::text]);
+
+-- end
+
+
+-- VIEW: materialflowresources_documentdto
+
+DROP TABLE IF EXISTS materialflowresources_documentdto;
+
+CREATE OR REPLACE VIEW materialflowresources_documentdto AS SELECT document.id AS id, document.number AS number, document.name AS name, document.type AS type, document.time AS time, document.state AS state, document.active AS active, locationfrom.id::integer AS locationfrom_id, locationfrom.name AS locationfromname, locationto.id::integer AS locationto_id, locationto.name AS locationtoname, company.id::integer AS company_id, company.name AS companyname, securityuser.id::integer AS user_id, securityuser.firstname || ' ' || securityuser.lastname AS username, maintenanceevent.id::integer AS maintenanceevent_id, maintenanceevent.number AS maintenanceeventnumber, plannedevent.id::integer AS plannedevent_id, plannedevent.number AS plannedeventnumber, delivery.id::integer AS delivery_id, delivery.number AS deliverynumber, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, suborder.id::integer AS suborder_id, suborder.number AS subordernumber FROM materialflowresources_document document LEFT JOIN materialflow_location locationfrom ON locationfrom.id = document.locationfrom_id LEFT JOIN materialflow_location locationto ON locationto.id = document.locationto_id LEFT JOIN basic_company company ON company.id = document.company_id LEFT JOIN qcadoosecurity_user securityuser ON securityuser.id = document.user_id LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON maintenanceevent.id = document.maintenanceevent_id LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON plannedevent.id = document.plannedevent_id LEFT JOIN deliveries_delivery delivery ON delivery.id = document.delivery_id LEFT JOIN orders_order ordersorder ON ordersorder.id = document.order_id LEFT JOIN subcontractorportal_suborder suborder ON suborder.id = document.suborder_id;
 
 -- end

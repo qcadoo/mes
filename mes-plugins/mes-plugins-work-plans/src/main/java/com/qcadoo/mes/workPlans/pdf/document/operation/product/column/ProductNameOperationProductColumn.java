@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component("productNameOperationProductColumn")
 public class ProductNameOperationProductColumn extends AbstractOperationProductColumn {
@@ -66,4 +67,5 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
     private Entity product(Entity operationProduct) {
         return operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
     }
+
 }

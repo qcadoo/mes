@@ -145,48 +145,6 @@ public class WorkPlansServiceImpl implements WorkPlansService {
     }
 
     @Override
-    public final Entity getOperationInputColumn(final Long operationInputColumnId) {
-        return getOperationInputColumnDD().get(operationInputColumnId);
-    }
-
-    @Override
-    public DataDefinition getOperationInputColumnDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_OPERATION_INPUT_COLUMN);
-    }
-
-    @Override
-    public final Entity getOperationOutputColumn(final Long operationOutputColumnId) {
-        return getOperationOutputColumnDD().get(operationOutputColumnId);
-    }
-
-    @Override
-    public DataDefinition getOperationOutputColumnDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_OPERATION_OUTPUT_COLUMN);
-    }
-
-    @Override
-    public final Entity getTechnologyOperationInputColumn(final Long workPlanId) {
-        return getTechnologyOperationInputColumnDD().get(workPlanId);
-    }
-
-    @Override
-    public DataDefinition getTechnologyOperationInputColumnDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_INPUT_COLUMN);
-    }
-
-    @Override
-    public final Entity getTechnologyOperationOutputColumn(final Long workPlanId) {
-        return getTechnologyOperationOutputColumnDD().get(workPlanId);
-    }
-
-    @Override
-    public DataDefinition getTechnologyOperationOutputColumnDD() {
-        return dataDefinitionService.get(WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_TECHNOLOGY_OPERATION_OUTPUT_COLUMN);
-    }
-
-    @Override
     public final Entity generateWorkPlanEntity(final List<Entity> orders) {
         Entity workPlan = getWorkPlanDD().create();
 

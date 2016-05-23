@@ -3,6 +3,7 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 public final class SourceCostReportFilterFields {
 
     private SourceCostReportFilterFields() {
+
     }
 
     public static final String FROM_DATE = "fromDate";

@@ -219,7 +219,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="productInOutComponents">
+        <windowTab name="productInOutComponents" reference="productInOutComponents">
             <component type="gridLayout" name="productInOutComponentsGridLayout"
                        columns="2" rows="1">
                 <layoutElement column="1" row="1">

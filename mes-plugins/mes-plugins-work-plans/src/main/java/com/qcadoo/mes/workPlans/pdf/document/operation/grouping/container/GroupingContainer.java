@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.common.collect.ListMultimap;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
@@ -30,9 +33,6 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOper
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
-
-import java.util.List;
-import java.util.Map;
 
 public interface GroupingContainer {
 
@@ -49,4 +49,5 @@ public interface GroupingContainer {
     Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationComponentIdProductInColumnToAlignment();
 
     Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationComponentIdProductOutColumnToAlignment();
+
 }

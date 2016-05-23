@@ -40,8 +40,7 @@ public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer 
     public WorkstationTypeGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
             Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
             Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            String titleAppend,
-            String nullWorkstationTitle) {
+            String titleAppend, String nullWorkstationTitle) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
         this.nullWorkstationTitle = nullWorkstationTitle;

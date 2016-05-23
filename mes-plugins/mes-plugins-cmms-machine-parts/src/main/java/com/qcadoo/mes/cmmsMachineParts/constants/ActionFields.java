@@ -25,6 +25,10 @@ package com.qcadoo.mes.cmmsMachineParts.constants;
 
 public final class ActionFields {
 
+    private ActionFields() {
+
+    }
+
     public static final String IS_DEFAULT = "isDefault";
 
     public static final String NAME = "name";
@@ -37,6 +41,4 @@ public final class ActionFields {
 
     public static final String SUBASSEMBLIES = "subassemblies";
 
-    private ActionFields() {
-    }
 }
