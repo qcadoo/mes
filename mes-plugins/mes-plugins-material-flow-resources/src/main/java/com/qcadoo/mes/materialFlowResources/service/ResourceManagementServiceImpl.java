@@ -90,7 +90,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            createResource(warehouse, position, date);
+            createResource(document, warehouse, position, date);
         }
     }
 
@@ -129,14 +129,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ATRRIBUTE_VALUES, newAttributes);
     }
 
-    public Entity createResource(final Entity warehouse, final Entity position, final Object date) {
+    public Entity createResource(final Entity document, final Entity warehouse, final Entity position, final Object date) {
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         Entity user = document.getBelongsToField(DocumentFields.USER);
         resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
