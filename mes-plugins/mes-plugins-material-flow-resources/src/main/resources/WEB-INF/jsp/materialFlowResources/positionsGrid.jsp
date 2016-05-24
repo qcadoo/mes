@@ -57,7 +57,6 @@ String ctx = request.getContextPath();
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css?ver=${buildNumber}">
-    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/jquery.auto-complete.css?ver=${buildNumber}">
 
         <script type="text/javascript">
             var QCD = QCD || {};
