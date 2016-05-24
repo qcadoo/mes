@@ -61,6 +61,10 @@ import com.qcadoo.model.api.units.UnitConversionService;
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
 
+    private static final String _FIRST_NAME = "firstName";
+
+    private static final String L_LAST_NAME = "lastName";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -132,6 +136,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        Entity user = document.getBelongsToField(DocumentFields.USER);
+        resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
         resource.setField(ResourceFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
@@ -144,6 +151,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ADDITIONAL_CODE, position.getField(PositionFields.ADDITIONAL_CODE));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
+
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, position.getField(PositionFields.QUANTITY));
@@ -157,12 +165,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return resourceDD.save(resource);
     }
 
-    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
-
+    public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
+            Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
         Entity newResource = resourceDD.create();
+        if (position != null) {
+
+            Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+            Entity user = document.getBelongsToField(DocumentFields.USER);
+            newResource.setField(ResourceFields.USER_NAME,
+                    user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
+        }
         newResource.setField(ResourceFields.TIME, date);
         newResource.setField(ResourceFields.LOCATION, warehouse);
         newResource.setField(ResourceFields.PRODUCT, resource.getBelongsToField(PositionFields.PRODUCT));
@@ -185,6 +200,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         setResourceAttributesFromResource(newResource, resource);
         return resourceDD.save(newResource);
+    }
+
+    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
+        return createResource(null, warehouse, resource, quantity, date);
     }
 
     private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
@@ -493,7 +512,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
                 resource.getDataDefinition().delete(resource.getId());
 
-                createResource(warehouseTo, resource, resourceQuantity, date);
+                createResource(position, warehouseTo, resource, resourceQuantity, date);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                     return;
@@ -508,7 +527,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().save(resource);
 
-                createResource(warehouseTo, resource, quantity, date);
+                createResource(position, warehouseTo, resource, quantity, date);
 
                 return;
             }

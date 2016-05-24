@@ -29,7 +29,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <!-- number generated in database trigger -->
-        <string name="number" unique="true" readonly="true" />
+        <string name="number" unique="true" readonly="true"/>
         <belongsTo name="location" model="location" plugin="materialFlow"
                    required="true"/>
         <belongsTo name="product" model="product" plugin="basic"
@@ -59,11 +59,12 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic" />
-        <decimal name="conversion" default="0" />
-        <belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
+        <decimal name="conversion" default="0"/>
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
         <dictionary name="typeOfPallet" dictionary="typeOfPallet"/>
         <dictionary name="givenUnit" dictionary="units"/>
+        <string name="userName"/>
 
     </fields>
     <hooks>
