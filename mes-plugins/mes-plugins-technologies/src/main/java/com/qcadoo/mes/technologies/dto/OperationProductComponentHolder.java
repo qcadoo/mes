@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.technologies.dto;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class OperationProductComponentHolder {
 
@@ -39,11 +38,16 @@ public class OperationProductComponentHolder {
 
     private final Long technologyOperationComponentId;
 
+    private final Long productionCountingQuantityId;
+
     private final DataDefinition productDD;
 
     private final DataDefinition technologyOperationComponentDD;
 
     private final OperationProductComponentEntityType entityType;
+
+    private final ProductMaterialType productMaterialType;
+
 
     public OperationProductComponentHolder(final Entity operationProductComponent) {
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
@@ -57,10 +61,12 @@ public class OperationProductComponentHolder {
         this.productDD = product.getDataDefinition();
         this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
         this.entityType = entityType;
+        this.productMaterialType = ProductMaterialType.NONE;
+        this.productionCountingQuantityId = null;
     }
 
-    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,
-            final OperationProductComponentEntityType entityType) {
+    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent, final Entity productionCountingQuantity,
+            final OperationProductComponentEntityType entityType, final ProductMaterialType productMaterialType) {
 
         Long productId = product.getId();
         Long technologyOperationComponentId = (technologyOperationComponent == null) ? null : technologyOperationComponent
@@ -74,6 +80,9 @@ public class OperationProductComponentHolder {
         this.productDD = productDD;
         this.technologyOperationComponentDD = technologyOperationComponentDD;
         this.entityType = entityType;
+        this.productMaterialType = productMaterialType;
+        this.productionCountingQuantityId = (productionCountingQuantity == null) ? null : productionCountingQuantity
+                .getId();
     }
 
     public OperationProductComponentHolder(final Long productId, final Long technologyOperationComponentId,
@@ -84,6 +93,8 @@ public class OperationProductComponentHolder {
         this.productDD = productDD;
         this.technologyOperationComponentDD = technologyOperationComponentDD;
         this.entityType = entityType;
+        this.productMaterialType = ProductMaterialType.NONE;
+        this.productionCountingQuantityId = null;
     }
 
     public Long getProductId() {
@@ -128,6 +139,14 @@ public class OperationProductComponentHolder {
 
     public boolean isEntityTypeSame(final OperationProductComponentEntityType operationProductComponentEntityType) {
         return operationProductComponentEntityType.equals(getEntityType());
+    }
+
+    public ProductMaterialType getProductMaterialType() {
+        return productMaterialType;
+    }
+
+    public Long getProductionCountingQuantityId() {
+        return productionCountingQuantityId;
     }
 
     @Override

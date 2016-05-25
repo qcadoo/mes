@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
@@ -42,9 +34,17 @@ import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductMaterialType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ProductQuantitiesServiceImplBPCOverrideUtil {
@@ -106,8 +106,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
 
             OperationProductComponentEntityType entityType = getEntityType(role);
 
+            ProductMaterialType productMaterialType = ProductMaterialType.parseString(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL));
             OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
-                    technologyOperationComponent, entityType);
+                    technologyOperationComponent, productionCountingQuantity, entityType, productMaterialType);
 
             productComponentWithQuantities.put(operationProductComponentHolder, plannedQuantity);
         }
@@ -144,9 +145,11 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
             String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
             OperationProductComponentEntityType entityType = getEntityType(role);
+            ProductMaterialType productMaterialType = ProductMaterialType.parseString(
+                    productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL));
 
             OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
-                    technologyOperationComponent, entityType);
+                    technologyOperationComponent, productionCountingQuantity, entityType, productMaterialType);
 
             nonComponents.add(operationProductComponentHolder);
         }
