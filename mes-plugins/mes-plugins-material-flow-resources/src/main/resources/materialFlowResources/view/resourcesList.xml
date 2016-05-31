@@ -49,6 +49,7 @@
                     expression="#product['unit']" width="50"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
             <option type="column" name="givenUnit" fields="givenUnit" width="50"/>
+            <option type="column" name="conversion" fields="conversion"/>
             <option type="column" name="price" fields="price" width="60"/>
             <option type="column" name="value" fields="value" width="60"/>
             <option type="column" name="time" fields="time"/>
@@ -59,7 +60,6 @@
                     expression="#storageLocation['number']"/>
 
             <option type="column" name="additionalCode" fields="additionalCode" expression="#additionalCode['code']"/>
-            <option type="column" name="conversion" fields="conversion"/>
             <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']"/>
             <option type="column" name="typeOfPallet" fields="typeOfPallet"/>
             <option type="column" name="userName" fields="userName"/>
