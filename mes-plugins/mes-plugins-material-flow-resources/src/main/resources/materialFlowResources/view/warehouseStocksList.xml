@@ -24,40 +24,43 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_WAREHOUSE_STATES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_WAREHOUSE_STATES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="warehouseStocksList"
-      modelName="warehouseStockListDto"
+      modelName="resourceStockDto"
       menuAccessible="true">
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete" />
+            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
-            <option type="column" name="locationNumber" fields="locationNumber" />
-            <option type="column" name="locationName" fields="locationName" />
-            <option type="column" name="productNumber" fields="productNumber" />
-            <option type="column" name="productName" fields="productName"  width="250"/>
-            <option type="column" name="quantity" fields="quantity" width="100" />
-            <option type="column" name="unit" fields="productUnit"  width="100" />
+            <option type="column" name="locationNumber" fields="locationNumber"/>
+            <option type="column" name="locationName" fields="locationName"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
+            <option type="column" name="productName" fields="productName" width="250"/>
+            <option type="column" name="quantity" fields="quantity" width="100"/>
+            <option type="column" name="reservedQuantity" fields="reservedQuantity" width="100"/>
+            <option type="column" name="availableQuantity" fields="availableQuantity" width="100"/>
+            <option type="column" name="unit" fields="productUnit" width="100"/>
 
-            <option type="order" column="locationName" direction="asc" />
+            <option type="order" column="locationName" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit" />
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit"/>
 
-            <option type="fullscreen" value="true" />
-            <option type="multiselect" value="true" />
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
             <rowStyleResolver
                     class="com.qcadoo.mes.materialFlowResources.rowStyleResolvers.WarehouseStocksListResolver"
-                    method="fillRowStyles" />
+                    method="fillRowStyles"/>
         </component>
 
-        <option type="fixedHeight" value="true" />
-        <option type="header" value="false" />
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
     </component>
 </view>

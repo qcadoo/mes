@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="resourceStockDto"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+       activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+    <fields>
+        <decimal name="quantity"/>
+        <decimal name="reservedQuantity"/>
+        <decimal name="availableQuantity"/>
+        <string name="locationNumber"/>
+        <string name="locationName"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productUnit"/>
+        <decimal name="minimumState"/>
+        <decimal name="orderedQuantity"/>
+        <integer name="product_id"/>
+    </fields>
+    <masterModel plugin="materialFlowResources" model="resourceStock"/>
+</model>
