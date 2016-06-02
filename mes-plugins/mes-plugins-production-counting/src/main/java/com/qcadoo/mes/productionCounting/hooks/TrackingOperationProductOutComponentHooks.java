@@ -34,6 +34,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
@@ -43,6 +44,7 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -64,18 +66,40 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
     @Autowired
     private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponentsService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductionCountingService productionCountingService;
+
     public TrackingOperationProductOutComponentHooks() {
         super(ProductionCountingQuantityRole.PRODUCED);
     }
 
     public void onView(final DataDefinition trackingOperationProductOutComponentDD,
             final Entity trackingOperationProductOutComponent) {
-        fillPlannedQuantity(trackingOperationProductOutComponent);
+        fillQuantities(trackingOperationProductOutComponent);
     }
 
-    private void fillPlannedQuantity(final Entity trackingOperationProductOutComponent) {
+    private void fillQuantities(final Entity trackingOperationProductOutComponent) {
+
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        Entity productionTracking = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity operation = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        BigDecimal plannedQuantity = getPlannedQuantity(trackingOperationProductOutComponent);
+        BigDecimal producedSum = productionCountingService.getUsedQuantitySumForProduct(product, order, operation);
+        BigDecimal wastesSum = productionCountingService.getWastesSumForProduct(product, order, operation);
+        BigDecimal remainingQuantity = plannedQuantity.subtract(producedSum);
         trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PLANNED_QUANTITY,
-                getPlannedQuantity(trackingOperationProductOutComponent));
+                plannedQuantity);
+        trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.WASTES_SUM, wastesSum);
+        trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.PRODUCED_SUM, producedSum);
+        trackingOperationProductOutComponent.setField(TrackingOperationProductOutComponentFields.REMAINING_QUANTITY,
+                remainingQuantity);
+
     }
 
     public void onSave(final DataDefinition trackingOperationProductOutComponentDD, Entity trackingOperationProductOutComponent) {
@@ -116,10 +140,10 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        return (parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS) && (TypeOfProductionRecording.FOR_EACH.getStringValue()
-                .equals(typeOfProductionRecording) || (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording) && product
-                .getId().equals(orderProduct.getId()))));
+        return (parameterService.getParameter().getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
+                && (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)
+                        || (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
+                                && product.getId().equals(orderProduct.getId()))));
     }
 
     private void fillQuantities(Entity trackingOperationProductInComponent, final BigDecimal ratio) {
@@ -131,8 +155,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
 
         if (givenQuantity == null) {
             trackingOperationProductInComponent.addError(
-                    trackingOperationProductInComponent.getDataDefinition().getField(
-                            TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
+                    trackingOperationProductInComponent.getDataDefinition()
+                            .getField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
                     "technologies.operationProductInComponent.validate.error.missingUnitConversion");
         }
 
@@ -141,8 +165,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
                 numberService.setScale(givenQuantity));
 
-        trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(
-                trackingOperationProductInComponent);
+        trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition()
+                .save(trackingOperationProductInComponent);
     }
 
     private BigDecimal calculateGivenQuantity(final Entity trackingOperationProductInComponent, final BigDecimal usedQuantity) {
@@ -150,7 +174,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
 
         Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
-        String givenUnit = trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT);
+        String givenUnit = trackingOperationProductInComponent
+                .getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT);
 
         String unit = product.getStringField(ProductFields.UNIT);
 
@@ -158,8 +183,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
             givenQuantity = usedQuantity;
         } else {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                            UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
             if (unitConversions.isDefinedFor(givenUnit)) {
                 givenQuantity = unitConversions.convertTo(usedQuantity, givenUnit);

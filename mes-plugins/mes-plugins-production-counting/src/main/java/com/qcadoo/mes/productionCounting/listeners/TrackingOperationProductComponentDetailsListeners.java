@@ -57,7 +57,7 @@ public class TrackingOperationProductComponentDetailsListeners {
     private UnitConversionService unitConversionService;
 
     private static final Set<String> UNIT_COMPONENT_REFERENCES = Sets.newHashSet("plannedQuantityUNIT", "usedQuantityUNIT",
-            "givenUnit");
+            "givenUnit", "producedSumUNIT", "wastesSumUNIT", "remainingQuantityUNIT", "wastesQuantityUNIT");
 
     private static final String L_FORM = "form";
 
@@ -129,8 +129,8 @@ public class TrackingOperationProductComponentDetailsListeners {
             return;
         }
 
-        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
-                (String) givenQuantityField.getFieldValue(), view.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
+                .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
         if (maybeQuantity.isRight()) {
             if (maybeQuantity.getRight().isPresent()) {
                 BigDecimal givenQuantity = maybeQuantity.getRight().get();
@@ -139,15 +139,15 @@ public class TrackingOperationProductComponentDetailsListeners {
                     productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, givenQuantity);
                 } else {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, product)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(baseUnit)) {
                         BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
-                                productComponent.getDataDefinition().getField(
-                                        TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
+                                productComponent.getDataDefinition()
+                                        .getField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
                                 "technologies.operationProductInComponent.validate.error.missingUnitConversion");
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
                     }
@@ -163,7 +163,8 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     }
 
-    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
@@ -190,15 +191,15 @@ public class TrackingOperationProductComponentDetailsListeners {
                     productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, quantity);
                 } else {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, product)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(givenUnit)) {
                         BigDecimal convertedQuantity = unitConversions.convertTo(quantity, givenUnit);
                         productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
-                                productComponent.getDataDefinition().getField(
-                                        TrackingOperationProductInComponentFields.USED_QUANTITY),
+                                productComponent.getDataDefinition()
+                                        .getField(TrackingOperationProductInComponentFields.USED_QUANTITY),
                                 "technologies.operationProductInComponent.validate.error.missingUnitConversion");
                         productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, null);
                     }
@@ -217,8 +218,8 @@ public class TrackingOperationProductComponentDetailsListeners {
     private void calculateQuantityFromSets(ViewDefinitionState view) {
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
 
-        Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils.tryParse(
-                (String) usedQuantityField.getFieldValue(), view.getLocale());
+        Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils
+                .tryParse((String) usedQuantityField.getFieldValue(), view.getLocale());
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
@@ -239,8 +240,8 @@ public class TrackingOperationProductComponentDetailsListeners {
         if (setTechnologyInComponentsService.isSet(trackingOperationProductOutComponent)) {
             FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
 
-            Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils.tryParse(
-                    (String) usedQuantityField.getFieldValue(), view.getLocale());
+            Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils
+                    .tryParse((String) usedQuantityField.getFieldValue(), view.getLocale());
 
             Entity productionTracking = trackingOperationProductOutComponent
                     .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);

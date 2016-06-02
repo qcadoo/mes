@@ -115,14 +115,14 @@ public final class ProductionTrackingListenerService {
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionTracking, new Addition());
-        setOrderDoneQuantity(productionTracking);
+        setOrderDoneAndWastesQuantity(productionTracking, new Addition());
         closeOrder(stateChangeContext);
     }
 
     public void onChangeFromAcceptedToDeclined(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
         updateBasicProductionCounting(productionTracking, new Substraction());
-        setOrderDoneQuantity(productionTracking);
+        setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
 
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
@@ -210,13 +210,33 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-    private void setOrderDoneQuantity(final Entity productionTracking) {
+    private void setOrderDoneAndWastesQuantity(final Entity productionTracking, final Operation operation) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
         order.setField(OrderFields.DONE_QUANTITY,
                 basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
 
+        order.setField(OrderFields.WASTES_QUANTITY, getWastesQuantity(productionTracking, order, operation));
         order.getDataDefinition().save(order);
+    }
+
+    private BigDecimal getWastesQuantity(final Entity productionTracking, final Entity order, final Operation operation) {
+        Entity mainProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        Entity mainTrackingOperationProductOutComponent = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, mainProduct))
+                .setMaxResults(1).uniqueResult();
+        BigDecimal mainWastesQuantity = mainTrackingOperationProductOutComponent
+                .getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
+        BigDecimal orderWastesQuantity = order.getDecimalField(OrderFields.WASTES_QUANTITY);
+        if (orderWastesQuantity == null) {
+            orderWastesQuantity = BigDecimal.ZERO;
+        }
+        if (mainWastesQuantity != null) {
+
+            return operation.perform(orderWastesQuantity, mainWastesQuantity);
+        }
+        return orderWastesQuantity;
     }
 
     private void updateBasicProductionCounting(final Entity productionTracking, final Operation operation) {
