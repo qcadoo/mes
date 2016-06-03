@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,8 @@ public class OrderedProductDetailsListeners {
             FieldComponent conversionField = (FieldComponent) view.getComponentByReference("conversion");
 
             if (!StringUtils.isEmpty(additionalUnit)) {
-                String conversion = numberService.format(getConversion(product, unit, additionalUnit));
+                String conversion = numberService
+                        .formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit), 0);
                 conversionField.setFieldValue(conversion);
                 conversionField.setEnabled(true);
                 conversionField.requestComponentUpdateState();
@@ -130,7 +132,9 @@ public class OrderedProductDetailsListeners {
         if (conversion != null && orderedQuantity != null) {
             FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference("additionalQuantity");
             BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-            additionalQuantity.setFieldValue(numberService.format(newAdditionalQuantity));
+            newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
+                    RoundingMode.HALF_UP);
+            additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
             additionalQuantity.requestComponentUpdateState();
         }
 
@@ -145,8 +149,10 @@ public class OrderedProductDetailsListeners {
             try {
                 entity.getDecimalField(fieldName);
             } catch (IllegalArgumentException e) {
-                form.findFieldComponentByName(fieldName).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
+                if (!OrderedProductFields.ORDERED_QUANTITY.equals(fieldName)) {
+                    form.findFieldComponentByName(fieldName).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
                         MessageType.FAILURE);
+                }
                 valid = true;
             }
         }
@@ -164,7 +170,9 @@ public class OrderedProductDetailsListeners {
         if (conversion != null && additionalQuantity != null) {
             FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference("orderedQuantity");
             BigDecimal newOrderedQuantity = additionalQuantity.divide(conversion, numberService.getMathContext());
-            orderedQuantity.setFieldValue(numberService.format(newOrderedQuantity));
+            newOrderedQuantity = newOrderedQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
+                    RoundingMode.HALF_UP);
+            orderedQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newOrderedQuantity, 0));
             orderedQuantity.requestComponentUpdateState();
             deliveriesService.recalculatePrice(view, OrderedProductFields.ORDERED_QUANTITY);
         }
