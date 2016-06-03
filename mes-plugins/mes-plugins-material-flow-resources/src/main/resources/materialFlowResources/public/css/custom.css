@@ -307,7 +307,8 @@ input[type="number"] {
     color: #464646;
     font-family: "Lucida Grande", Arial;
     border: solid #a1a1a1 1px;
-    border-bottom: solid #d7d7d7 1px;
+    border-bottom: solid #d7d7d7 1px;    
+    background: #ffffff;
 }
 .editable__searchBtn{
     height: 24px;
