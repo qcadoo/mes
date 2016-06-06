@@ -68,8 +68,8 @@ import com.qcadoo.view.api.crud.CrudService;
     private static final Integer L_SCALE = 2;
 
     private static final List<String> EXTS = Lists
-            .newArrayList("JPG", "JPEG", "PNG", "PDF", "DOC", "DOCX", "XLS", "XLSX", "GIF", "DWG", "IPT", "IAM", "IDW", "ODT",
-                    "ODS");
+            .newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF", "XLS", "XLSX", "DWG", "IPT",
+                    "IAM", "IDW", "DOC", "DOCX", "TXT", "CSV", "XML", "ODT", "ODS", "TIFF", "TIF");
 
     @ResponseBody @RequestMapping(value = "/multiUploadFilesForEvent", method = RequestMethod.POST) public void upload(
             MultipartHttpServletRequest request, HttpServletResponse response) {
