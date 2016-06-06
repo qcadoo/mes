@@ -33,31 +33,30 @@ String ctx = request.getContextPath();
 %>
 
 <div id="gridWrapper">
-    <script src="/materialFlowResources/public/js/jquery.auto-complete.js"></script>
+    <script src="/materialFlowResources/public/js/jquery.auto-complete.js?ver=${buildNumber}"></script>
 
-    <script src="/basic/public/js/jquery.jqGrid.min.js"></script>
-    <script src="/materialFlowResources/public/js/angular.js"></script>
+    <script src="/basic/public/js/jquery.jqGrid.min.js?ver=${buildNumber}"></script>
+    <script src="/materialFlowResources/public/js/angular.js?ver=${buildNumber}"></script>
 
     <c:choose>
         <c:when test="${locale == 'pl'}">
-            <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js"></script>
+            <script type="text/ecmascript" src="/basic/public/js/grid.locale-pl.js?ver=${buildNumber}"></script>
         </c:when>
         <c:otherwise>
-            <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js"></script>
+            <script type="text/ecmascript" src="/basic/public/js/grid.locale-en.js?ver=${buildNumber}"></script>
         </c:otherwise>
     </c:choose>
 
-    <script src="/materialFlowResources/public/js/gridOptions.js"></script>
+    <script src="/materialFlowResources/public/js/gridOptions.js?ver=${buildNumber}"></script>
     
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
-    <script src="/materialFlowResources/public/js/jquery.blockUI.js"></script>
+    <script src="/materialFlowResources/public/js/jquery.blockUI.js?ver=${buildNumber}"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css?ver=${buildNumber}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css?ver=${buildNumber}" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css">
-    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/jquery.auto-complete.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/materialFlowResources/public/css/custom.css?ver=${buildNumber}">
 
         <script type="text/javascript">
             var QCD = QCD || {};

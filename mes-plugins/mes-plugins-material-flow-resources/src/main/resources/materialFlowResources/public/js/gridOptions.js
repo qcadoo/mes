@@ -141,7 +141,7 @@ myApp.directive('ngJqGrid', function ($window) {
                             '<div class="icon" id="add_new_icon"></div>' +
                             '<div class="hasIcon">' + newHeader + '</div></div>';
 
-                    var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
+                    var gridTitle = '<div class="gridTitle">' + positionsHeader + ' <span id="rows-num">(0)</span></div>';
 
                     $('#t_grid').append('<div class="t_grid__container"></div>');
                     $('#t_grid .t_grid__container').append(gridTitle);
@@ -168,34 +168,34 @@ myApp.directive('ngJqGrid', function ($window) {
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: true, add: true, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
                                 // options for the Edit Dialog
-                                {
-                                    ajaxEditOptions: {contentType: "application/json"},
-                                    mtype: 'PUT',
-                                    closeAfterEdit: true,
-                                    resize: false,
-                                    viewPagerButtons: false,
-                                    serializeEditData: function (data) {
-                                        delete data.oper;
+                                        {
+                                            ajaxEditOptions: {contentType: "application/json"},
+                                            mtype: 'PUT',
+                                            closeAfterEdit: true,
+                                            resize: false,
+                                            viewPagerButtons: false,
+                                            serializeEditData: function (data) {
+                                                delete data.oper;
 
-                                        return validateSerializeData(data);
-                                    },
-                                    onclickSubmit: function (params, postdata) {
-                                        params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
-                                    },
-                                    errorTextFormat: function (response) {
-                                        return translateAndShowMessages(response);
-                                    },
-                                    beforeShowForm: function (form) {
-                                        var dlgDiv = $("#editmodgrid");
-                                        var dlgWidth = 800;
-                                        var dlgHeight = dlgDiv.height();
-                                        var parentWidth = $(window).width();
-                                        var parentHeight = $(window).height();
-                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
-                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
-                                        dlgDiv[0].style.width = dlgWidth + "px";
-                                    },
-                                },
+                                                return validateSerializeData(data);
+                                            },
+                                            onclickSubmit: function (params, postdata) {
+                                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                            },
+                                            errorTextFormat: function (response) {
+                                                return translateAndShowMessages(response);
+                                            },
+                                            beforeShowForm: function (form) {
+                                                var dlgDiv = $("#editmodgrid");
+                                                var dlgWidth = 800;
+                                                var dlgHeight = dlgDiv.height();
+                                                var parentWidth = $(window).width();
+                                                var parentHeight = $(window).height();
+                                                dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                dlgDiv[0].style.width = dlgWidth + "px";
+                                            },
+                                        },
                                         // options for the Add Dialog
                                                 {
                                                     ajaxEditOptions: {
@@ -322,7 +322,7 @@ function saveAllRows() {
     }
 }
 
-function viewRefresh(){
+function viewRefresh() {
     angular.element($("#GridController")).scope().cancelEditing();
 }
 
@@ -498,6 +498,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var isReadonly = getColModelByIndex(name).editoptions.readonly === 'readonly';
             $ac.attr('readonly', isReadonly);
+            $ac.attr('disabled', isReadonly);
             button.attr('disabled', isReadonly);
 
             return wrapper;
@@ -892,6 +893,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             }
         }
 
+        function numberFormatter(cellvalue, options, rowObject) {
+            var val = cellvalue || '';
+            return '<span class="number-cell">' + val + '</span>';
+        }
+
+        function numberUnformat(cellvalue, options, cell) {
+            var val = $('span', cell).text();
+            return val || '';
+        }
+
         function touchManuallyQuantityField(rowId) {
             var productInput = $('#product');
             quantityValue = undefined;
@@ -1179,9 +1190,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.cancelEditing = cancelEditing;
 
         $scope.resize = function () {
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 25, true);
-            jQuery('#grid').setGridHeight($("#window\\.positionsGridTab").height() - 150);
-        }
+            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true);
+        };
         $("#window\\.positionsGridTab").resize($scope.resize);
 
         var gridEditOptions = {
@@ -1244,7 +1254,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     search: false,
                     width: 50,
                     hidden: false,
-                    editable: false
+                    editable: false,
+                    formatter: numberFormatter
                 },
                 {
                     name: 'act',
@@ -1308,9 +1319,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'custom',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
                     editoptions: {
                         custom_element: quantity_createElement,
-                        custom_value: input_value
+                        custom_value: input_value,
                     },
                     formoptions: {
                         rowpos: 4,
@@ -1336,6 +1349,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'custom',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
                     editoptions: {
                         custom_element: givenquantity_createElement,
                         custom_value: input_value
@@ -1368,6 +1383,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'custom',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
                     editoptions: {
                         custom_element: conversion_createElement,
                         custom_value: input_value
@@ -1383,6 +1400,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: true,
                     edittype: 'custom',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
                     editoptions: {
                         custom_element: price_createElement,
                         custom_value: input_value
@@ -1524,7 +1543,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                     }
                 }
-
+                $('#rows-num').text('(' + rows.length + ')');
             },
             onSelectRow: function (id) {
             },

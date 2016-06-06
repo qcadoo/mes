@@ -140,7 +140,7 @@ div.headerActionButton a {
 #add_new_icon, #cancel_icon {
     background-repeat: no-repeat;
     background-position: left;
-    width: 14px;
+    width: 17px;
     margin-left: 3px;
     padding-right: 0;
 }
@@ -220,8 +220,12 @@ input[type="number"] {
     border: 1px solid #aaaaaa;
 }
 
-input[readonly]{
-    background: #dddddd;
+.ui-jqgrid-view input[readonly], .EditTable input[readonly]{
+    color: #959595 !important; 
+    background-color: #f5f5f5 !important; 
+    border: solid #cccccc 1px;
+    border-bottom: solid #e8e8e8 1px;
+    border-right: 0;
 }
 
 .error-grid {
@@ -269,8 +273,8 @@ input[readonly]{
 .disableButton{
     pointer-events:none;
 }
-.editable input,
-.ui-jqgrid-btable td > input{
+
+.editable input, .ui-jqgrid-btable td > input{
     width: calc(100% - 20px);
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -290,12 +294,17 @@ input[readonly]{
     border-bottom: solid #d7d7d7 1px;
     border-right: 0;
     float: left;
-    }
+}
+
+.ui-jqgrid-btable input {
+    width: calc(100% - 4px);
+}
+
 .editable select,
 .ui-jqgrid-btable td > select{
     width: 100%;
     height: 24px;
-     color: #464646;
+    color: #464646;
     font-family: "Lucida Grande", Arial;
     border: solid #a1a1a1 1px;
     border-bottom: solid #d7d7d7 1px;
@@ -309,10 +318,20 @@ input[readonly]{
     vertical-align: middle;
     border: solid #a1a1a1 1px;
     border-left: 0;
+    border-bottom: solid #d7d7d7 1px;
 }
+
 .editable__searchBtn:hover{
     background-position: -61px 1px;
 }
+
+.editable__searchBtn[disabled=disabled] {
+    background: #f5f5f5 url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -21px 1px;
+    border: solid #cccccc 1px;
+    border-bottom: solid #e8e8e8 1px;
+    border-left: 0;
+}
+
 .ui-jqdialog-content .EditTable .FormElement .eac-square{
     width: calc(100% - 25px);
     float: left;
@@ -320,8 +339,8 @@ input[readonly]{
 .DataTD{
     position: relative;
 }
-.DataTD input,
-.DataTD select{
+
+.DataTD input, .DataTD select{
     width: 100%;
     height: 24px;
     -webkit-box-sizing: border-box;
@@ -334,32 +353,32 @@ input[readonly]{
     height: 41px;
 }
 
-#TblGrid_grid input, #TblGrid_grid select {
-    width: calc(100% - 4px);
+.EditTable input, .EditTable select {
     display:table-cell;
     border: 1px solid #aaaaaa;
     color: #222222;
     padding: 0 0 0 6px;
+    width: calc(100% - 4px);
 }
 
-#TblGrid_grid input[type=customNumber] {
+input[type=customNumber] {
     padding: 0 6px 0 0;    
     text-align: right;
 }
 
-#TblGrid_grid input.eac-square {    
+input.eac-square {    
     width: calc(100% - 25px);
 }
 
-#TblGrid_grid input.hasDatepicker {    
-    width: calc(100% - 25px);
+input.hasDatepicker {    
+    width: calc(100% - 25px) !important;
 }
 
 #TblGrid_grid input, #TblGrid_grid button, #TblGrid_grid select {
     float: left;
 }
 
-#TblGrid_grid button.ui-datepicker-trigger {
+button.ui-datepicker-trigger {
     height: 24px;
     width: 20px;
     float: left;
@@ -368,9 +387,10 @@ input[readonly]{
     vertical-align: middle;
     border: solid #a1a1a1 1px;
     border-left: 0;
+    border-bottom: solid #d7d7d7 1px;
 }
 
-#TblGrid_grid button.ui-datepicker-trigger:hover{
+button.ui-datepicker-trigger:hover{
     background-position: -61px -20px;
 }
 
@@ -415,4 +435,104 @@ input[readonly]{
     vertical-align: middle;
     margin: 5px 0 0 5px;
     display: inline-block;
+}
+
+.ui-jqgrid tr.jqgrow td {
+    padding: 1px 2px 1px 6px;
+}
+
+.ui-jqgrid tr.jqgrow td .number-cell {
+    padding: 1px 6px 1px 2px;
+    float: right;
+}
+
+.ui-jqgrid .ui-icon-asc, .ui-jqgrid .ui-icon-desc {
+    width: 16px;
+    height: 16px;
+    display: none;
+    background: transparent
+        url('/qcadooView/public/css/crud/images/grid/sortArrows.png')
+        no-repeat 0 -16px;
+    vertical-align: top;
+    margin-left: 5px;
+
+}
+
+.ui-jqgrid .ui-icon-asc {
+    display: inline-block;
+    background-position: 0 0;
+}
+
+.ui-jqgrid .ui-icon-desc {
+    display: inline-block;
+    background-position: 0 -16px;
+}
+
+.ui-jqgrid-sortable {
+    height: 100% !important;
+    padding-top: 7px;
+}
+
+.autocomplete-suggestions {
+    color: black;    
+    line-height: 20px;    
+    background: #e1e1e1;
+    text-align: left; 
+    cursor: default; 
+    box-shadow: -1px 1px 3px rgba(0,0,0,.1);
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;       
+    line-height: 23px; 
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    font-size: 11px; 
+    color: #333; 
+    position: absolute; 
+    display: none; 
+    z-index: 9999; 
+    max-height: 254px; 
+    overflow: hidden; 
+    overflow-y: auto; 
+    box-sizing: border-box;
+}
+
+.autocomplete-suggestion, .autocomplete-no-result { 
+    border: solid #959595 1px;
+    border-bottom: solid #959595 2px;
+    border-top: none;
+    position: relative; 
+    padding: 0 .6em; 
+    line-height: 23px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    font-size: 11px; 
+    color: #333; 
+}
+
+.autocomplete-suggestion b, .autocomplete-no-result b { 
+    font-weight: normal; 
+    color: #1f8dd6; 
+}
+
+.autocomplete-suggestion.selected { 
+    background: #FFDB67;
+    cursor: pointer;
+}
+
+#t_grid {
+    background: #f2f2f2;
+    line-height: 28px;
+    border-bottom: solid #9b9b9b 1px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 0;
+    height: 30px;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.gridTitle span {
+    color: #9b9b9b;
+    font-size: 12px;
+    font-weight: normal;    
 }

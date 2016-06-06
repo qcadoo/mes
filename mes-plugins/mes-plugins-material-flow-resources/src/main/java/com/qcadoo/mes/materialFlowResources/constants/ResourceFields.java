@@ -29,6 +29,8 @@ public final class ResourceFields {
 
     }
 
+    public static final String USER_NAME = "userName";
+
     public static final String LOCATION = "location";
 
     public static final String PRODUCT = "product";

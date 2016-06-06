@@ -61,6 +61,10 @@ import com.qcadoo.model.api.units.UnitConversionService;
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
 
+    private static final String _FIRST_NAME = "firstName";
+
+    private static final String L_LAST_NAME = "lastName";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -71,6 +75,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private UnitConversionService unitConversionService;
 
     public ResourceManagementServiceImpl() {
+
     }
 
     public ResourceManagementServiceImpl(DataDefinitionService dataDefinitionService, NumberService numberService,
@@ -85,53 +90,70 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public void createResourcesForReceiptDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
+
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-            createResource(warehouse, position, date);
+            createResource(document, warehouse, position, date);
         }
     }
 
     private void setResourceAttributesFromPosition(final Entity resource, final Entity position) {
         List<Entity> attributes = position.getHasManyField(PositionFields.ATRRIBUTE_VALUES);
+
         for (Entity attribute : attributes) {
             attribute.setField(AttributeValueFields.RESOURCE, resource);
         }
+
         resource.setField(ResourceFields.ATRRIBUTE_VALUES, attributes);
     }
 
     private void setPositionAttributesFromResource(final Entity position, final Entity resource) {
         List<Entity> attributes = resource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
+
         List<Entity> newAttributes = Lists.newArrayList();
+
         DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
+
         for (Entity attribute : attributes) {
             List<Entity> newAttribute = attributeDD.copy(attribute.getId());
+
             newAttribute.get(0).setField(AttributeValueFields.POSITION, position);
             newAttribute.get(0).setField(AttributeValueFields.RESOURCE, null);
+
             newAttributes.addAll(newAttribute);
         }
+
         position.setField(PositionFields.ATRRIBUTE_VALUES, newAttributes);
     }
 
     private void setResourceAttributesFromResource(final Entity resource, final Entity baseResource) {
         List<Entity> attributes = baseResource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
+
         List<Entity> newAttributes = Lists.newArrayList();
+
         DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
+
         for (Entity attribute : attributes) {
             List<Entity> newAttribute = attributeDD.copy(attribute.getId());
+
             newAttribute.get(0).setField(AttributeValueFields.RESOURCE, resource);
+
             newAttributes.addAll(newAttribute);
         }
+
         resource.setField(ResourceFields.ATRRIBUTE_VALUES, newAttributes);
     }
 
-    public Entity createResource(final Entity warehouse, final Entity position, final Object date) {
-
+    public Entity createResource(final Entity document, final Entity warehouse, final Entity position, final Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
+        Entity user = document.getBelongsToField(DocumentFields.USER);
+
+        resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
         resource.setField(ResourceFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
@@ -144,6 +166,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ADDITIONAL_CODE, position.getField(PositionFields.ADDITIONAL_CODE));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
+
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, position.getField(PositionFields.QUANTITY));
@@ -153,16 +176,30 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, position.getField(PositionFields.GIVEN_QUANTITY));
             resource.setField(ResourceFields.CONVERSION, position.getField(PositionFields.CONVERSION));
         }
+
         setResourceAttributesFromPosition(resource, position);
+
         return resourceDD.save(resource);
     }
 
-    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
-
+    public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
+            Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
         Entity newResource = resourceDD.create();
+
+        if (position != null) {
+            Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+
+            if (document != null) {
+                Entity user = document.getBelongsToField(DocumentFields.USER);
+
+                newResource.setField(ResourceFields.USER_NAME,
+                        user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
+            }
+        }
+
         newResource.setField(ResourceFields.TIME, date);
         newResource.setField(ResourceFields.LOCATION, warehouse);
         newResource.setField(ResourceFields.PRODUCT, resource.getBelongsToField(PositionFields.PRODUCT));
@@ -179,16 +216,22 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
         String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+
         BigDecimal quantityInAdditionalUnit = convertToGivenUnit(quantity, resource.getBelongsToField(ResourceFields.PRODUCT),
                 givenUnit);
+
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
         setResourceAttributesFromResource(newResource, resource);
+
         return resourceDD.save(newResource);
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
-            final Entity warehouse) {
+    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
+        return createResource(null, warehouse, resource, quantity, date);
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product, final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -197,69 +240,84 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     public Multimap<Long, BigDecimal> getQuantitiesInWarehouse(final Entity warehouse,
             Multimap<Entity, Entity> productsAndPositions) {
-
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
+
         String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
+
         for (Map.Entry<Entity, Entity> productAndPosition : productsAndPositions.entries()) {
             Entity resource = productAndPosition.getValue().getBelongsToField(PositionFields.RESOURCE);
 
             if (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && resource != null) {
                 result.put(productAndPosition.getKey().getId(), resource.getDecimalField(ResourceFields.QUANTITY));
             } else {
-
                 Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
                 BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
+
                 List<Entity> resources = Lists.newArrayList();
+
                 if (additionalCode != null) {
                     SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
                             warehouse);
+
                     if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
                     } else {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
+
                     resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
                             .getEntities();
+
                     scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse);
+
                     if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
                     } else {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
-                    resources
-                            .addAll(scb
-                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                                    .list().getEntities());
+
+                    resources.addAll(scb
+                            .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).list().getEntities());
                 }
+
                 if (resources.isEmpty()) {
                     SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
                             warehouse);
+
                     if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
                     } else {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
+
                     resources = scb.list().getEntities();
                 }
+
                 if (result.containsKey(productAndPosition.getKey().getId())) {
-                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(BigDecimal.ZERO,
-                            BigDecimal::add);
+                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream()
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
                     result.put(productAndPosition.getKey().getId(),
                             (resources.stream().map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO,
                                     BigDecimal::add)).add(currentQuantity));
                 } else {
-                    result.put(productAndPosition.getKey().getId(), resources.stream()
-                            .map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add));
+                    result.put(
+                            productAndPosition.getKey().getId(),
+                            resources.stream().map(res -> res.getDecimalField(ResourceFields.QUANTITY))
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add));
                 }
             }
         }
+
         return result;
     }
 
     public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, Entity position) {
         BigDecimal quantity = BigDecimal.ZERO;
+
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+
         if (resource != null) {
             quantity = resource.getDecimalField(ResourceFields.QUANTITY);
         } else {
@@ -267,23 +325,29 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                     .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
                     .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product)).list().getEntities();
+
             for (Entity res : resources) {
                 quantity = quantity.add(res.getDecimalField(ResourceFields.QUANTITY));
             }
         }
+
         return quantity;
     }
 
     private Multimap<Entity, Entity> getProductsAndPositionsFromDocument(final Entity document) {
         Multimap<Entity, Entity> map = ArrayListMultimap.create();
+
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+
         positions.stream().forEach(position -> map.put(position.getBelongsToField(PositionFields.PRODUCT), position));
+
         return map;
     }
 
     private BigDecimal getQuantityOfProductFromMultimap(final Multimap<Long, BigDecimal> quantitiesForWarehouse,
             final Entity product) {
         List<BigDecimal> quantities = Lists.newArrayList(quantitiesForWarehouse.get(product.getId()));
+
         return quantities.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
@@ -292,17 +356,22 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm;
+
         boolean enoughResources = true;
 
         StringBuilder errorMessage = new StringBuilder();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = getQuantitiesInWarehouse(warehouse,
                 getProductsAndPositionsFromDocument(document));
+
         List<Entity> generatedPositions = Lists.newArrayList();
+
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+
             BigDecimal quantityInWarehouse;
+
             if (resource != null) {
                 warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
                 warehouseAlgorithm = WarehouseAlgorithm.MANUAL;
@@ -310,6 +379,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
                 warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
             }
+
             if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
                 quantityInWarehouse = getQuantityOfProductInWarehouse(warehouse, product, position);
             } else {
@@ -317,9 +387,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
 
             generatedPositions.addAll(updateResources(warehouse, position, warehouseAlgorithm));
+
             enoughResources = enoughResources && position.isValid();
+
             if (!position.isValid()) {
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
+
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
                 errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
@@ -339,16 +412,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private List<Entity> updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
+
         List<Entity> newPositions = Lists.newArrayList();
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouse, product, position, warehouseAlgorithm);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
             Entity newPosition = positionDD.create();
+
             newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
             newPosition.setField(PositionFields.GIVEN_QUANTITY, position.getDecimalField(PositionFields.GIVEN_QUANTITY));
             newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
@@ -363,14 +440,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
             // newPosition.setField(PositionFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
+
             setPositionAttributesFromResource(newPosition, resource);
+
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
 
                 resource.getDataDefinition().delete(resource.getId());
+
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
+
                 BigDecimal givenResourceQuantity = convertToGivenUnit(resourceQuantity, position);
+
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
+
                 newPositions.add(newPosition);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -378,23 +461,29 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
+
                 BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
                 BigDecimal quantityInAdditionalUnit = resourceQuantity.multiply(resourceConversion);
+
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
 
                 resource.getDataDefinition().save(resource);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+
                 BigDecimal givenQuantity = convertToGivenUnit(quantity, position);
+
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
                 newPositions.add(newPosition);
+
                 return newPositions;
             }
         }
 
         position.addError(position.getDataDefinition().getField(PositionFields.QUANTITY),
                 "materialFlow.error.position.quantity.notEnough");
+
         return Lists.newArrayList(position);
     }
 
@@ -402,27 +491,33 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         String baseUnit = product.getStringField(ProductFields.UNIT);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
+
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, product)));
+
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
             }
         }
+
         return quantity;
     }
 
     private BigDecimal convertToGivenUnit(BigDecimal quantity, Entity product, String givenUnit) {
         String baseUnit = product.getStringField(ProductFields.UNIT);
+
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, product)));
+
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
             }
         }
+
         return quantity;
     }
 
@@ -432,17 +527,21 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
-                .parseString(warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM));
+
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
+                .getStringField(LocationFieldsMFR.ALGORITHM));
+
         boolean enoughResources = true;
 
         StringBuilder errorMessage = new StringBuilder();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = getQuantitiesInWarehouse(warehouseFrom,
                 getProductsAndPositionsFromDocument(document));
+
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             BigDecimal quantityInWarehouse;
+
             if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
                 quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product, position);
             } else {
@@ -451,8 +550,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
             enoughResources = enoughResources && position.isValid();
+
             if (!position.isValid()) {
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
+
                 errorMessage.append(product.getStringField(ProductFields.NAME));
                 errorMessage.append(" - ");
                 errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
@@ -470,6 +571,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
         String warehouseName = warehouseFrom.getStringField(LocationFields.NAME);
+
         if ((errorMessage.toString().length() + warehouseName.length()) < 255) {
             document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
                     warehouseName);
@@ -480,20 +582,21 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, Object date,
             WarehouseAlgorithm warehouseAlgorithm) {
-
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position,
-                warehouseAlgorithm);
+
+        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position, warehouseAlgorithm);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
+
                 resource.getDataDefinition().delete(resource.getId());
 
-                createResource(warehouseTo, resource, resourceQuantity, date);
+                createResource(position, warehouseTo, resource, resourceQuantity, date);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                     return;
@@ -502,13 +605,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
                 String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+
                 BigDecimal quantityInAdditionalUnit = convertToGivenUnit(resourceQuantity, product, givenUnit);
+
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
 
                 resource.getDataDefinition().save(resource);
 
-                createResource(warehouseTo, resource, quantity, date);
+                createResource(position, warehouseTo, resource, quantity, date);
 
                 return;
             }
@@ -522,9 +627,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
+
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
 
         Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
+
         if (resource != null) {
             resources.add(resource);
         } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
@@ -545,6 +652,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private List<Entity> getResourcesForLocationAndProductMANUAL(final Entity warehouse, final Entity product,
             final Entity position, final Entity additionalCode) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+
         if (resource != null) {
             return Lists.newArrayList(resource);
         } else {
@@ -554,81 +662,92 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position) {
-
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.asc(TIME)).list().getEntities();
 
             scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .addOrder(SearchOrders.asc(TIME)).list().getEntities());
-
+                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).addOrder(SearchOrders.asc(TIME))
+                    .list().getEntities());
         }
+
         if (resources.isEmpty()) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.addOrder(SearchOrders.asc(TIME)).list().getEntities();
         }
+
         return resources;
     }
 
     private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position) {
-
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities();
 
             scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities());
-
         }
+
         if (resources.isEmpty()) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.addOrder(SearchOrders.desc(TIME)).list().getEntities();
         }
-        return resources;
 
+        return resources;
     }
 
     private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
@@ -637,75 +756,88 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (additionalCode != null) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
             scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
                     .addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
-
         }
+
         if (resources.isEmpty()) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.addOrder(SearchOrders.asc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
+
         return resources;
 
     }
 
     private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position) {
-
         List<Entity> resources = Lists.newArrayList();
 
         if (additionalCode != null) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
 
             scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
                     .addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities());
-
         }
+
         if (resources.isEmpty()) {
             SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
+
             if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
             }
+
             resources = scb.addOrder(SearchOrders.desc(ResourceFields.EXPIRATION_DATE)).list().getEntities();
         }
+
         return resources;
     }
 
