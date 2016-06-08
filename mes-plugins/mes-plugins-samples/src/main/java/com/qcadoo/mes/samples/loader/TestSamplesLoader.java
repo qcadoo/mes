@@ -340,6 +340,8 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         orderedProduct.setField("description", values.get("description"));
         orderedProduct.setField("pricePerUnit", values.get("priceperunit"));
         orderedProduct.setField("totalPrice", values.get("totalprice"));
+        orderedProduct.setField("additionalQuantity", values.get("additionalquantity"));
+        orderedProduct.setField("conversion", values.get("conversion"));
         if (isEnabledOrEnabling(L_SUPPLY_NEGOTIATIONS)) {
             orderedProduct.setField("offer", getOfferByNumber(values.get("offer")));
         }
