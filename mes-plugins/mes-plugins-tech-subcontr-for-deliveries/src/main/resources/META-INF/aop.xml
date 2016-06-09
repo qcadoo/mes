@@ -28,7 +28,6 @@
 <aspectj>
 	<aspects>
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveredProductDetailsHooksTSFDOverrideAspect" />
-		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveredProductHooksTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveryDetailsListenersTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.OrderedProductHooksTSFDOverrideAspect" />
 		<aspect name="com.qcadoo.mes.techSubcontrForDeliveries.aop.DeliveryColumnFetcherTSFDOverrideAspect" />

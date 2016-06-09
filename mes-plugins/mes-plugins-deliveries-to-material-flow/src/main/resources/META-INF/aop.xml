@@ -29,4 +29,7 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.deliveriesToMaterialFlow.states.aop.listener.DeliveryStateServiceMFAspect" />
 	</aspects>
+	<aspects>
+		<aspect name="com.qcadoo.mes.deliveriesToMaterialFlow.aop.DeliveredProductValidationAspect" />
+	</aspects>
 </aspectj>
