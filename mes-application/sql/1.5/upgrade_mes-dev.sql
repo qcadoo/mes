@@ -1,5 +1,5 @@
--- new ordered product fields
-﻿-- last touched 1.06.2016 by pako
+﻿-- new ordered product fields
+-- last touched 1.06.2016 by pako
 
 ALTER TABLE deliveries_orderedproduct ADD COLUMN additionalquantity numeric(12,5);
 ALTER TABLE deliveries_orderedproduct ADD COLUMN conversion numeric(12,5);
