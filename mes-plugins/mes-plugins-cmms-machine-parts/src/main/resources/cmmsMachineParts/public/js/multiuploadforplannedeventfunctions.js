@@ -27,7 +27,7 @@ $(function() {
 					{
 						
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?)$/i,
+						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -74,7 +74,7 @@ $(function() {
 							.getComponentByReferenceName(
 								"eventMultiUploadLocale")
 									.getValue().content.value;
-							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|dwg|ipt|iam|idw|docx?)$/i;
+							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
 
 							$.each(data.files, function(index, file) {
 								if (filetype.test(file.name)) {
@@ -109,7 +109,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"eventMultiUploadLocale")
