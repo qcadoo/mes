@@ -23,25 +23,20 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
 
 public class DocumentBuilder {
 
@@ -236,6 +231,13 @@ public class DocumentBuilder {
     public DocumentBuilder setField(String field, Object value) {
         document.setField(field, value);
         return this;
+    }
+
+    /**
+     * Use this method to get document type.
+     */
+    public DocumentType getDocumentType() {
+        return DocumentType.valueOf(document.getStringField(DocumentFields.TYPE));
     }
 
     /**
