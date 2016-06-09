@@ -43,7 +43,11 @@
 		<decimal name="totalPrice" >
 			<validatesRange from="0" />
 		</decimal>
-		
+
+		<belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
+		<dictionary name="palletType" dictionary="typeOfPallet" />
+		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"  />
+		<belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
 		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks>

@@ -33,6 +33,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -51,6 +52,17 @@ public class DeliveredProductDetailsHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
+
+    public void beforeRender(final ViewDefinitionState view) {
+        fillOrderedQuantities(view);
+        fillUnitFields(view);
+        fillCurrencyFields(view);
+        setDeliveredQuantityFieldRequired(view);
+        setFilters(view);
+    }
 
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
@@ -109,4 +121,7 @@ public class DeliveredProductDetailsHooks {
         delivedQuantity.requestComponentUpdateState();
     }
 
+    private void setFilters(ViewDefinitionState view) {
+        deliveredProductDetailsListeners.onSelectedEntityChange(view, null, null);
+    }
 }
