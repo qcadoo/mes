@@ -237,7 +237,7 @@ public class DocumentBuilder {
      * Use this method to get document type.
      */
     public DocumentType getDocumentType() {
-        return DocumentType.valueOf(document.getStringField(DocumentFields.TYPE));
+        return DocumentType.parseString(document.getStringField(DocumentFields.TYPE));
     }
 
     /**
