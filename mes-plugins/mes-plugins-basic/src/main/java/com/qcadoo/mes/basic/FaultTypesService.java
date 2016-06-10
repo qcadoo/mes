@@ -21,17 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts;
+package com.qcadoo.mes.basic;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.FaultTypeAppliesTo;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeAppliesTo;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class FaultTypesService {
@@ -63,10 +64,13 @@ public class FaultTypesService {
             return checkIfFaultTypeAppliesToEntity(faultType, entity.getBelongsToField(WorkstationFields.WORKSTATION_TYPE),
                     FaultTypeFields.WORKSTATION_TYPES);
         }
+
         Entity defaultType = getDefaultFaultType();
+
         if (defaultType == null) {
             return false;
         }
+
         return faultType.getId().equals(defaultType.getId());
     }
 
@@ -75,7 +79,8 @@ public class FaultTypesService {
     }
 
     public Entity getDefaultFaultType() {
-        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE)
-                .find().add(SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)).setMaxResults(1).uniqueResult();
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FAULT_TYPE).find()
+                .add(SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)).setMaxResults(1).uniqueResult();
     }
+
 }

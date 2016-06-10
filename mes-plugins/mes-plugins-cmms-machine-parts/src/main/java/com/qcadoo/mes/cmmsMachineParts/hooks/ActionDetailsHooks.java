@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionAppliesTo;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -96,18 +95,19 @@ public class ActionDetailsHooks {
             item.requestUpdate(true);
         }
 
-        GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATIONS);
-        GridComponent subassembliesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.SUBASSEMBLIES);
-        GridComponent workstationTypesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATION_TYPES);
+        GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(ActionFields.WORKSTATIONS);
+        GridComponent subassembliesGrid = (GridComponent) view.getComponentByReference(ActionFields.SUBASSEMBLIES);
+        GridComponent workstationTypesGrid = (GridComponent) view.getComponentByReference(ActionFields.WORKSTATION_TYPES);
 
         workstationsGrid.setEnabled(false);
         subassembliesGrid.setEnabled(false);
         workstationTypesGrid.setEnabled(false);
 
-        FieldComponent nameField = (FieldComponent) view.getComponentByReference(FaultTypeFields.NAME);
-        FieldComponent appliesToField = (FieldComponent) view.getComponentByReference(FaultTypeFields.APPLIES_TO);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(ActionFields.NAME);
+        FieldComponent appliesToField = (FieldComponent) view.getComponentByReference(ActionFields.APPLIES_TO);
 
         nameField.setEnabled(false);
         appliesToField.setEnabled(false);
     }
+
 }

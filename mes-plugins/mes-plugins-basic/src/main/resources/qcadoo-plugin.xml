@@ -255,6 +255,8 @@
 
         <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL" description="Dostęp do terminalu rejestracji produkcji"/>
 
+        <security:role identifier="ROLE_REPAIR_ORDERS" description="Dostęp do zleceń naprawy"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -287,6 +289,8 @@
         <model:model model="palletNumber" resource="model/palletNumber.xml"/>
         <model:model model="palletNumberHelper" resource="model/palletNumberHelper.xml"/>
 
+        <model:model model="faultType" resource="model/faultType.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -318,6 +322,9 @@
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
         <menu:menu-item name="palletNumberHelpers" category="basic" view="palletNumberHelpersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
+
+        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
+                        defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -387,6 +394,9 @@
 
         <view:view resource="view/palletNumberHelpersList.xml"/>
         <view:view resource="view/palletNumberHelperDetails.xml"/>
+
+        <view:view resource="view/faultTypesList.xml"/>
+        <view:view resource="view/faultTypeDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 

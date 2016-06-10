@@ -26,13 +26,9 @@ package com.qcadoo.mes.basic.constants;
 
 public final class SubassemblyFields {
 
-
-    public static final String WORKSTATION_TYPE = "workstationType";
-
     private SubassemblyFields() {
-    }
 
-    public static final String ATTACHMENTS = "attachments";
+    }
 
     public static final String NUMBER = "number";
 
@@ -40,5 +36,24 @@ public final class SubassemblyFields {
 
     public static final String WORKSTATION = "workstation";
 
+    public static final String WORKSTATION_TYPE = "workstationType";
+
+    public static final String serialNumber = "serialNumber";
+
+    public static final String SERIES = "series";
+
+    public static final String PRODUCER = "producer";
+
+    public static final String PRODUCTION_DATE = "productionDate";
+
+    public static final String LAST_REPAIRS_DATE = "lastRepairsDate";
+
+    public static final String COMPANIES = "companies";
+
+    public static final String ATTACHMENTS = "attachments";
+
     public static final String TYPE = "type";
+
+    public static final String FAULT_TYPES = "faultTypes";
+
 }

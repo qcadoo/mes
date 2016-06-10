@@ -21,12 +21,12 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.hooks;
+package com.qcadoo.mes.basic.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeAppliesTo;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
+import com.qcadoo.mes.basic.constants.FaultTypeAppliesTo;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -35,6 +35,7 @@ public class FaultTypeHooks {
 
     public void onSave(final DataDefinition faultTypeDD, final Entity faultType) {
         FaultTypeAppliesTo appliesTo = FaultTypeAppliesTo.from(faultType);
+
         if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0) {
             clearFields(faultType, false, true);
         } else if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0) {
@@ -49,8 +50,10 @@ public class FaultTypeHooks {
             faultType.setField(FaultTypeFields.WORKSTATIONS, null);
             faultType.setField(FaultTypeFields.SUBASSEMBLIES, null);
         }
+
         if (clearWorkstationTypes) {
             faultType.setField(FaultTypeFields.WORKSTATION_TYPES, null);
         }
     }
+
 }

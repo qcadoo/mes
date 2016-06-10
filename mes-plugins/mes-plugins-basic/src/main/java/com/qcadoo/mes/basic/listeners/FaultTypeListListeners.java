@@ -21,44 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
-import com.qcadoo.plugin.api.Module;
+import com.qcadoo.mes.basic.hooks.FaultTypeListHooks;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
-@Component
-public class BasicOnStartupService extends Module {
-
-    @Autowired
-    private CountryLoader countryLoader;
+@Service
+public class FaultTypeListListeners {
 
     @Autowired
-    private CurrencyLoader currencyLoader;
+    private FaultTypeListHooks faultTypeListHooks;
 
-    @Autowired
-    private ReportColumnWidthLoader reportColumnWidthLoader;
-
-    @Autowired
-    private TypeOfPalletLoader typeOfPalletLoader;
-
-    @Autowired
-    private DefaultFaultTypesLoaderModule defaultFaultTypesLoaderModule;
-
-    @Autowired
-    private ExchangeRatesUpdateService exchangeRatesUpdateService;
-
-    @Override
-    @Transactional
-    public void multiTenantEnable() {
-        countryLoader.loadCountries();
-        currencyLoader.loadCurrencies();
-        reportColumnWidthLoader.loadReportColumnWidths();
-        typeOfPalletLoader.loadTypeOfPallets();
-        defaultFaultTypesLoaderModule.loadFaultTypes();
-        exchangeRatesUpdateService.update();
+    public void disableActionsWhenDefault(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        faultTypeListHooks.onBeforeRender(view);
     }
 
 }

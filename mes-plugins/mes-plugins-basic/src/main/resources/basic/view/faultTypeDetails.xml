@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_FAULT_TYPES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_FAULT_TYPES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="faultTypeDetails" modelName="faultType">
 
@@ -46,8 +47,9 @@
                     <layoutElement column="1" row="2">
                         <component type="select" name="appliesTo" field="appliesTo"
                                    reference="appliesTo">
+
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.cmmsMachineParts.listeners.FaultTypeDetailsListeners"
+                                      class="com.qcadoo.mes.basic.listeners.FaultTypeDetailsListeners"
                                       method="toggleAndClearGrids"/>
                         </component>
                     </layoutElement>
@@ -63,10 +65,10 @@
             <component type="flowGridLayout" name="gridLayout" columns="2"
                        rows="3">
                 <layoutElement row="1" column="1" minHeight='3'>
-
                     <component type="lookup" name="workstationsLookup" reference="workstationsLookup"
                                field="#{form}.workstations" defaultVisible="false" persistent="false"
                                hasLabel="false">
+
                         <option type="column" name="name" fields="name" link="true"
                                 width="100"/>
 
@@ -80,7 +82,6 @@
                         <option type="multiselect" value="true"/>
 
                     </component>
-
                     <component type="grid" name="workstations" reference="workstations"
                                source="#{form}.workstations">
 
@@ -102,7 +103,6 @@
                     </component>
                 </layoutElement>
                 <layoutElement row="1" column="2" minHeight='3'>
-
                     <component type="lookup" name="subassembliesLookup" reference="subassembliesLookup"
                                field="#{form}.subassemblies" defaultVisible="false" persistent="false"
                                hasLabel="false">
@@ -119,7 +119,6 @@
                         <option type="multiselect" value="true"/>
 
                     </component>
-
                     <component type="grid" name="subassemblies" reference="subassemblies"
                                source="#{form}.subassemblies">
 
@@ -167,7 +166,6 @@
 
                     <component type="grid" name="workstationTypes" reference="workstationTypes"
                                source="#{form}.workstationTypes">
-
                         <option type="column" name="number" fields="number" width="50"/>
                         <option type="column" name="name" fields="name" width="100"/>
 
@@ -191,6 +189,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeDetailsHooks" method="onBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.FaultTypeDetailsHooks" method="onBeforeRender"/>
     </hooks>
+
 </view>

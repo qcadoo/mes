@@ -42,7 +42,6 @@ import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -118,7 +117,7 @@ public class DefaultActionsLoaderModule extends Module {
             }
         } else {
             throw new IllegalStateException("Saved action entity have validation errors - "
-                    + values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
+                    + values.get(ActionFields.NAME.toLowerCase(Locale.ENGLISH)));
         }
     }
 
@@ -134,4 +133,5 @@ public class DefaultActionsLoaderModule extends Module {
         return DefaultActionsLoaderModule.class.getResourceAsStream("/cmmsMachineParts/model/data/defaultActions" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
+
 }
