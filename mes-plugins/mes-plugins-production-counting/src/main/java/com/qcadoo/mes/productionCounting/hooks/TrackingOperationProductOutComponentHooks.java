@@ -179,6 +179,10 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
 
         String unit = product.getStringField(ProductFields.UNIT);
 
+        if (givenUnit == null) {
+            givenUnit = unit;
+        }
+
         if (givenUnit.equals(unit)) {
             givenQuantity = usedQuantity;
         } else {
