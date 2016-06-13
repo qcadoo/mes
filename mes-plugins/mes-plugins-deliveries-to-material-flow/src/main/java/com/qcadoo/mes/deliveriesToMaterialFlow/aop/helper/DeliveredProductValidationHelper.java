@@ -42,8 +42,12 @@ public class DeliveredProductValidationHelper {
         SearchCriteriaBuilder scb = deliveredProductDD.find()
                 .add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY)))
                 .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)))
-                .add(SearchRestrictions.eq(PALLET_NUMBER, deliveredProduct.getField(PALLET_NUMBER)))
+                .add(SearchRestrictions.belongsTo(PALLET_NUMBER, deliveredProduct.getBelongsToField(PALLET_NUMBER)))
                 .add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
+        Long deliveredProductId = deliveredProduct.getId();
+        if (deliveredProductId != null) {
+            scb.add(SearchRestrictions.idNe(deliveredProductId));
+        }
         Entity result = scb.setMaxResults(1).uniqueResult();
         if (result != null) {
             deliveredProduct.addError(deliveredProductDD.getField(PRODUCT),

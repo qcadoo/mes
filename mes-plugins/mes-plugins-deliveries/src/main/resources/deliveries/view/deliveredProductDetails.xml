@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="deliveredProductDetails" modelName="deliveredProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	windowWidth="720" windowHeight="440">
+	windowWidth="720" windowHeight="480">
 
 	<component type="window" name="window">
 
@@ -249,7 +249,7 @@
 						<option type="fieldCode" value="number" />
 						<criteriaModifier
                             class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductCriteriaModifiers"
-                            method="restrictStorageLocationForProduct" />
+                            method="restrictStorageLocation" />
 					</component>
 				</layoutElement>
 			</component>

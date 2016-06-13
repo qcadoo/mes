@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
@@ -41,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class DeliveredProductDetailsHooks {
@@ -122,6 +124,36 @@ public class DeliveredProductDetailsHooks {
     }
 
     private void setFilters(ViewDefinitionState view) {
-        deliveredProductDetailsListeners.onSelectedEntityChange(view, null, null);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity deliveredProductEntity = form.getEntity();
+        Entity delivery = deliveredProductEntity.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+
+        LookupComponent storageLocationsLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
+        LookupComponent additionalCodeLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
+
+        if (product != null) {
+            filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());
+        }
+        if (location != null) {
+            filterBy(storageLocationsLookup, DeliveryFields.LOCATION, location.getId());
+        } else {
+            storageLocationsLookup.setFieldValue(null);
+            storageLocationsLookup.setEnabled(false);
+            storageLocationsLookup.requestComponentUpdateState();
+        }
     }
+
+    private void filterBy(LookupComponent component, String field, Long id) {
+        component.setEnabled(true);
+        FilterValueHolder filterValueHolder = component.getFilterValue();
+        filterValueHolder.put(field, id);
+        component.setFilterValue(filterValueHolder);
+        component.requestComponentUpdateState();
+    }
+
 }
