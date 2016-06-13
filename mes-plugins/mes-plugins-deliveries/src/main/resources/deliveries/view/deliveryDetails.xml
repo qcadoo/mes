@@ -668,9 +668,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="number,name,unit,deliveredQuantity,damagedQuantity"/>
+                                value="number,name,unit,deliveredQuantity,damagedQuantity,additionalCode,storageLocation,palletNumber"/>
                         <option type="orderable"
-                                value="succession,number,name,unit,deliveredQuantity,damagedQuantity"/>
+                                value="succession,number,name,unit,deliveredQuantity,damagedQuantity,additionalCode,storageLocation,palletNumber"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

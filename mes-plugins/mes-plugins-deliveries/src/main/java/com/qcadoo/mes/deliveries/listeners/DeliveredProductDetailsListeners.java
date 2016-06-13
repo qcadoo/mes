@@ -48,21 +48,18 @@ public class DeliveredProductDetailsListeners {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         Entity product = productLookup.getEntity();
 
-        LookupComponent storageLocationsLookup = (LookupComponent) view
-                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
         LookupComponent additionalCodeLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
 
         if (product != null) {
-            filterByProduct(storageLocationsLookup, product.getId());
             filterByProduct(additionalCodeLookup, product.getId());
         } else {
-            clearAndDisable(storageLocationsLookup);
             clearAndDisable(additionalCodeLookup);
         }
     }
 
     private void filterByProduct(LookupComponent component, Long id) {
+        component.setFieldValue(null);
         component.setEnabled(true);
         FilterValueHolder filterValueHolder = component.getFilterValue();
         filterValueHolder.put(DeliveredProductFields.PRODUCT, id);
