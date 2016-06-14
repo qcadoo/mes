@@ -139,8 +139,9 @@ public class DeliveredProductDetailsHooks {
         if (product != null) {
             filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());
         }
-        if (location != null) {
-            filterBy(storageLocationsLookup, DeliveryFields.LOCATION, location.getId());
+        if (product != null && location != null) {
+            filterBy(storageLocationsLookup, "location", location.getId());
+            filterBy(storageLocationsLookup, "product", product.getId());
         } else {
             storageLocationsLookup.setFieldValue(null);
             storageLocationsLookup.setEnabled(false);

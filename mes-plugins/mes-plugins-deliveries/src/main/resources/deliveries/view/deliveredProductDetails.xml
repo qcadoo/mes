@@ -236,13 +236,11 @@
 					<component type="lookup" name="storageLocation" reference="storageLocation"
 						field="#{form}.storageLocation">
 
-			            <option type="column" name="locationNumber" fields="location"
-			                    expression="#location['number']" />
-			            <option type="column" name="locationName" fields="location"
+			            <option type="column" name="location" fields="location"
 			                    expression="#location['name']" />
 
-						<option type="searchable" value="number,locationNumber,locationName" />
-						<option type="orderable" value="number,locationNumber,locationName" />
+						<option type="searchable" value="number,location" />
+						<option type="orderable" value="number,location" />
 
 						<option type="expression"
 							value="#number" />
