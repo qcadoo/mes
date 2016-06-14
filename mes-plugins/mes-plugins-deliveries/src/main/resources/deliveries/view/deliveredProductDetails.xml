@@ -253,12 +253,46 @@
 			</component>
 		</windowTab>
 		
-	</component>
+        <windowTab name="reservationsTab">
+<!--            <component type="flowGridLayout" name="gridsLayout" columns="5" rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" width="3" minHeight="6">
+                    <component type="grid" name="substituteComponents"
+                               source="#{form}.substituteComponents" defaultAuthorizationRole="ROLE_PRODUCTS">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true" width="50"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true" width="100"/>
+                        <option type="column" name="producer" fields="product"
+                                expression="#product['producer']?.get('name')" link="true" width="100"/>
+
+                        <option type="column" name="quantity" fields="quantity"
+                                width="40"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" link="false" width="30"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="correspondingView" value="basic/productSubstituteComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+                        <option type="orderable" value="number,name,producer,quantity"/>
+                        <option type="searchable" value="number,name,producer,quantity"/>
+
+                        <option type="paginable" value="false"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>-->
+        </windowTab>
+    </component>
 	
-	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
-			method="beforeRender" />
-	</hooks>
+    <hooks>
+        <beforeRender
+            class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
+            method="beforeRender" />
+    </hooks>
 	
 </view>

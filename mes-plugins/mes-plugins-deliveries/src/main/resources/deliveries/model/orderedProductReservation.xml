@@ -24,40 +24,24 @@
     ***************************************************************************
 
 -->
-<model name="orderedProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="orderedProductReservation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-        <belongsTo name="delivery" model="delivery" required="true" />
-        <belongsTo name="product" model="product" plugin="basic"
-                           required="true" />
+    <fields>        
+        <belongsTo name="orderedProduct" model="orderedProduct" plugin="deliveries" required="true" />
+        <belongsTo name="location" model="location" plugin="materialFlow" required="true" />
         <decimal name="orderedQuantity" required="true" >
             <validatesRange from="0" exclusively="false" />
         </decimal>
         <decimal name="additionalQuantity" required="true" >
             <validatesRange from="0" exclusively="false" />
-        </decimal>
-        <decimal name="conversion" required="true" >
-            <validatesRange from="0" exclusively="false" />
-        </decimal>
-        <decimal name="pricePerUnit">
-            <validatesRange from="0" />
-        </decimal>
-        <decimal name="totalPrice" >
-            <validatesRange from="0" />
-        </decimal>
-        <string name="description">
-            <validatesLength max="2048" />
-        </string>
-        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-        <hasMany name="reservations" joinField="orderedProduct"
-                 model="orderedProductReservation"/>
-        
-        <priority name="succession" scope="delivery" />
+        </decimal>  
+        <string name="orderedQuantityUnit" persistent="false" />      
+        <string name="additionalQuantityUnit" persistent="false" />      
     </fields>
     <hooks>
-        <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" method="onSave"/>
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
-                               method="checkIfOrderedProductAlreadyExists" />
+        <onView class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"  method="onView"/>
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"
+                       method="validate" />
     </hooks>
 </model>
