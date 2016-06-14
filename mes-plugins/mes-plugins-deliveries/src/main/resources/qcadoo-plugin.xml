@@ -88,6 +88,7 @@
         <model:model model="delivery" resource="model/delivery.xml"/>
         <model:model model="deliveredProduct" resource="model/deliveredProduct.xml"/>
         <model:model model="orderedProduct" resource="model/orderedProduct.xml"/>
+        <model:model model="orderedProductReservation" resource="model/orderedProductReservation.xml"/>
         <model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml"/>
         <model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml"/>
 
@@ -206,6 +207,7 @@
         <view:view resource="view/deliveryDetails.xml"/>
         <view:view resource="view/deliveredProductDetails.xml"/>
         <view:view resource="view/orderedProductDetails.xml"/>
+        <view:view resource="view/orderedProductReservationDetails.xml"/>
         <view:view resource="view/supplyItems.xml"/>
         <view:view resource="view/supplyParameters.xml"/>
         <view:view resource="view/parameterOrderColumnDetails.xml"/>

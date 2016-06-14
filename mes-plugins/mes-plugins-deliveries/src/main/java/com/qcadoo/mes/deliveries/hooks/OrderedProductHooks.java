@@ -31,16 +31,29 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Service
 public class OrderedProductHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private NumberService numberService;
+
+    public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        calculateOrderedProductPricePerUnit(orderedProductDD, orderedProduct);
+        calculateReservationQuantities(orderedProductDD, orderedProduct);
+    }
 
     public void calculateOrderedProductPricePerUnit(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
@@ -63,6 +76,20 @@ public class OrderedProductHooks {
             orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.productAlreadyExists");
 
             return false;
+        }
+    }
+
+    private void calculateReservationQuantities(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        EntityList reservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+        if (reservations != null) {
+            BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
+            for (Entity reservation : reservations) {
+                BigDecimal orderedQuantity = reservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY);
+                BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+                newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, RoundingMode.HALF_UP);
+                reservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
+                reservation.getDataDefinition().save(reservation);
+            }
         }
     }
 
