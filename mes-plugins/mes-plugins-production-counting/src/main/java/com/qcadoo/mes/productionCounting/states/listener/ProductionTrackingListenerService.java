@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -44,11 +33,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -60,6 +45,16 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 
 @Service
 public final class ProductionTrackingListenerService {
@@ -132,8 +127,8 @@ public final class ProductionTrackingListenerService {
                 ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
                 && !checkIfUsedQuantitiesWereFilled(productionTracking,
                         ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
-            stateChangeContext.addValidationError(
-                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            stateChangeContext
+                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -175,8 +170,8 @@ public final class ProductionTrackingListenerService {
             stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
-                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
@@ -212,12 +207,18 @@ public final class ProductionTrackingListenerService {
 
     private void setOrderDoneAndWastesQuantity(final Entity productionTracking, final Operation operation) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity mainProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        Entity mainTrackingOperationProductOutComponent = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, mainProduct))
+                .setMaxResults(1).uniqueResult();
+        if (mainTrackingOperationProductOutComponent != null) {
+            order.setField(OrderFields.DONE_QUANTITY,
+                    basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
 
-        order.setField(OrderFields.DONE_QUANTITY,
-                basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
-
-        order.setField(OrderFields.WASTES_QUANTITY, getWastesQuantity(productionTracking, order, operation));
-        order.getDataDefinition().save(order);
+            order.setField(OrderFields.WASTES_QUANTITY, getWastesQuantity(productionTracking, order, operation));
+            order.getDataDefinition().save(order);
+        }
     }
 
     private BigDecimal getWastesQuantity(final Entity productionTracking, final Entity order, final Operation operation) {
@@ -313,8 +314,7 @@ public final class ProductionTrackingListenerService {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId()
-                    .equals(product.getId())) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
                 return basicProductionCounting;
             }
         }
