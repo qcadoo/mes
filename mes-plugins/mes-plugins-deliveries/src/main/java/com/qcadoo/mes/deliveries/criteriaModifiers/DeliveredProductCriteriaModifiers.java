@@ -25,8 +25,6 @@ package com.qcadoo.mes.deliveries.criteriaModifiers;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -35,12 +33,19 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class DeliveredProductCriteriaModifiers {
 
+    private static final String PRODUCT = "product";
+
+    private static final String LOCATION = "location";
+
     public void restrictStorageLocation(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
 
-        if (filterValueHolder.has(DeliveryFields.LOCATION)) {
-            Long locationId = filterValueHolder.getLong(DeliveryFields.LOCATION);
-            searchCriteriaBuilder.createCriteria("location", "location", JoinType.INNER).add(SearchRestrictions.idEq(locationId));
+        if (filterValueHolder.has(LOCATION) && filterValueHolder.has(PRODUCT)) {
+            Long locationId = filterValueHolder.getLong(LOCATION);
+            Long productId = filterValueHolder.getLong(PRODUCT);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(LOCATION + ".id", locationId)).add(
+                    SearchRestrictions.or(SearchRestrictions.isNull(PRODUCT + ".id"),
+                            SearchRestrictions.eq(PRODUCT + ".id", productId)));
         }
     }
 }
