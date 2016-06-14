@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="orderedProductReservationDetails" modelName="orderedProductReservation"
+<view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="deliveredProductReservationDetails" modelName="deliveredProductReservation"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       windowWidth="800" windowHeight="500">
@@ -35,9 +35,9 @@
         </ribbon>
 
         <windowTab name="mainTab">
-            <component type="form" name="orderedProductReservationDetails" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3" rows="3" hasBorders="false">
-                    <layoutElement column="1" row="1" width="2">
+            <component type="form" name="deliveredProductReservationDetails" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="1" rows="3">
+                    <layoutElement column="1" row="1" width="1">
                         <component type="lookup" name="location" reference="location" field="location">
                             <option type="column" name="name" fields="name" link="true" />
 
@@ -47,20 +47,20 @@
                             <option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
                             <option type="fieldCode" value="number" />
                             <criteriaModifier
-                                class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                method="showWarehousesOnly"/>
+                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                    method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>   
                     
-                    <layoutElement column="1" row="2" width="3">                        
-                        <component type="gridLayout" name="gridLayoutOrderedQuantity" columns="3" rows="1" hasBorders="false">
-                            <layoutElement column="1" row="1" width="2">
+<!--                    <layoutElement column="1" row="2" width="1">                        
+                        <component type="gridLayout" name="gridLayoutOrderedQuantity" columns="2" rows="1" hasBorders="false">
+                            <layoutElement column="1" row="1" width="1">
                                 <component type="input" name="orderedQuantity" reference="orderedQuantity" field="orderedQuantity">
                                     <listener event="onInputChange" method="quantityChange"
                                               class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
                                 </component>
                             </layoutElement>
-                            <layoutElement column="3" row="1" width="1">
+                            <layoutElement column="2" row="1" width="1">
                                 <component type="input" name="orderedQuantityUnit" defaultEnabled="never" hasLabel="false" reference="orderedQuantityUnit">
                                     <option type="textRepresentationOnDisabled" value="true" />
                                 </component>                        
@@ -68,22 +68,22 @@
                         </component>   
                     </layoutElement>  
                     
-                    <layoutElement column="1" row="3" width="3">                              
-                        <component type="gridLayout" name="gridLayoutAdditionalQuantity" columns="3" rows="1" hasBorders="false">                                         
-                            <layoutElement column="1" row="1" width="2">
+                    <layoutElement column="1" row="3" width="1">                              
+                        <component type="gridLayout" name="gridLayoutAdditionalQuantity" columns="2" rows="1" hasBorders="false">                                         
+                            <layoutElement column="1" row="1" width="1">
                                 <component type="input" name="additionalQuantity" reference="additionalQuantity" field="additionalQuantity">
                                     <listener event="onInputChange" method="additionalQuantityChange"
                                               class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
                                 </component>
                             </layoutElement>
                         
-                            <layoutElement column="3" row="1" width="1">
+                            <layoutElement column="2" row="1" width="1">
                                 <component type="input" name="additionalQuantityUnit" defaultEnabled="never" hasLabel="false" reference="additionalQuantityUnit">
                                     <option type="textRepresentationOnDisabled" value="true" />
                                 </component>                        
                             </layoutElement> 
                         </component>
-                    </layoutElement>             
+                    </layoutElement>             -->
                     
                     
                 </component>

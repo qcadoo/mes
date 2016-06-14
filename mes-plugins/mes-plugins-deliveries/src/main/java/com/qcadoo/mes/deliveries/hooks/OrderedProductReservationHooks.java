@@ -27,7 +27,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
@@ -39,6 +38,7 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjection;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import java.math.BigDecimal;
 
 @Service
@@ -86,17 +86,19 @@ public class OrderedProductReservationHooks {
 
     private boolean locationUnique(Entity orderedProductReservation) {
         Entity location = orderedProductReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
+        Entity orderedProduct = orderedProductReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT);
         if (location != null) {
             SearchCriterion criterion;
 
             SearchCriterion criterionLocation = SearchRestrictions.belongsTo(OrderedProductReservationFields.LOCATION, location);
+            SearchCriterion criterionOrderedProduct = SearchRestrictions.belongsTo(OrderedProductReservationFields.ORDERED_PRODUCT, orderedProduct);
 
             if (orderedProductReservation.getId() == null) {
-                criterion = criterionLocation;
+                criterion = SearchRestrictions.and(criterionLocation, criterionOrderedProduct);
 
             } else {
                 SearchCriterion criterionId = SearchRestrictions.idNe(orderedProductReservation.getId());
-                criterion = SearchRestrictions.and(criterionLocation, criterionId);
+                criterion = SearchRestrictions.and(criterionLocation, criterionOrderedProduct, criterionId);
             }
 
             boolean locationUnique = orderedProductReservation.getDataDefinition().count(criterion) == 0;
@@ -119,7 +121,7 @@ public class OrderedProductReservationHooks {
 
         SearchCriteriaBuilder searchCriteriaBuilder = orderedProductReservation.getDataDefinition().find();
         SearchProjection sumOfQuantityProjection = SearchProjections.alias(SearchProjections.sum(OrderedProductReservationFields.ORDERED_QUANTITY), "sumOfQuantity");
-        searchCriteriaBuilder.setProjection(sumOfQuantityProjection);
+        searchCriteriaBuilder.setProjection(SearchProjections.list().add(sumOfQuantityProjection).add(SearchProjections.rowCount()));
 
         SearchCriterion criterion;
         SearchCriterion criterionOrderedProduct = SearchRestrictions.belongsTo(OrderedProductReservationFields.ORDERED_PRODUCT, orderedProduct);
@@ -134,9 +136,10 @@ public class OrderedProductReservationHooks {
         searchCriteriaBuilder.add(criterion);
         searchCriteriaBuilder.addOrder(SearchOrders.asc("sumOfQuantity"));
 
-        Entity res = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+        SearchResult resList = searchCriteriaBuilder.setMaxResults(1).list();
 
-        BigDecimal sumOfQuantity = res == null ? BigDecimal.ZERO : res.getDecimalField("sumOfQuantity");
+        BigDecimal sumOfQuantity = resList.getTotalNumberOfEntities() == 0 ? BigDecimal.ZERO : resList.getEntities().get(0).getDecimalField("sumOfQuantity");
+        sumOfQuantity = sumOfQuantity == null ? BigDecimal.ZERO : sumOfQuantity;
 
         boolean sumIsNotExceeded = productOrderedQuantity.compareTo(reservationOrderedQuantity.add(sumOfQuantity)) >= 0;
 
