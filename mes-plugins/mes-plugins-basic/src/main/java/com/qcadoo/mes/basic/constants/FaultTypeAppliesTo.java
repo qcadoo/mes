@@ -25,16 +25,10 @@ package com.qcadoo.mes.basic.constants;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.qcadoo.model.api.Entity;
-
 public enum FaultTypeAppliesTo {
     WORKSTATION_OR_SUBASSEMBLY("01workstationOrSubassembly"), WORKSTATION_TYPE("02workstationType"), NONE("");
 
     private final String appliesTo;
-
-    public static FaultTypeAppliesTo from(final Entity entity) {
-        return parseString(entity.getStringField(FaultTypeFields.APPLIES_TO));
-    }
 
     private FaultTypeAppliesTo(final String appliesTo) {
         this.appliesTo = appliesTo;

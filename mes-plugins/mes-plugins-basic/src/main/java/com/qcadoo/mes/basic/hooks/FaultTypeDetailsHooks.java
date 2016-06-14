@@ -46,7 +46,7 @@ public class FaultTypeDetailsHooks {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity faultType = form.getPersistedEntityWithIncludedFormValues();
-        FaultTypeAppliesTo appliesTo = FaultTypeAppliesTo.from(faultType);
+        String appliesTo = faultType.getStringField(FaultTypeFields.APPLIES_TO);
 
         toggleGridsEnable(view, appliesTo, false);
 
@@ -55,7 +55,7 @@ public class FaultTypeDetailsHooks {
         }
     }
 
-    public void toggleGridsEnable(final ViewDefinitionState view, final FaultTypeAppliesTo appliesTo, final boolean shouldClear) {
+    public void toggleGridsEnable(final ViewDefinitionState view, final String appliesTo, final boolean shouldClear) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
         GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATIONS);
@@ -64,7 +64,7 @@ public class FaultTypeDetailsHooks {
 
         boolean idNotNull = form.getEntityId() != null;
 
-        if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0 && idNotNull) {
+        if (FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY.getStringValue().equals(appliesTo) && idNotNull) {
             workstationsGrid.setEnabled(true);
             subassembliesGrid.setEnabled(true);
             workstationTypesGrid.setEnabled(false);
@@ -72,7 +72,7 @@ public class FaultTypeDetailsHooks {
             if (shouldClear) {
                 workstationTypesGrid.setEntities(Lists.newArrayList());
             }
-        } else if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0 && idNotNull) {
+        } else if (FaultTypeAppliesTo.WORKSTATION_TYPE.getStringValue().equals(appliesTo) && idNotNull) {
             workstationsGrid.setEnabled(false);
             subassembliesGrid.setEnabled(false);
             workstationTypesGrid.setEnabled(true);

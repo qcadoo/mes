@@ -34,11 +34,11 @@ import com.qcadoo.model.api.Entity;
 public class FaultTypeHooks {
 
     public void onSave(final DataDefinition faultTypeDD, final Entity faultType) {
-        FaultTypeAppliesTo appliesTo = FaultTypeAppliesTo.from(faultType);
+        String appliesTo = faultType.getStringField(FaultTypeFields.APPLIES_TO);
 
-        if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0) {
+        if (FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY.getStringValue().equals(appliesTo)) {
             clearFields(faultType, false, true);
-        } else if (appliesTo.compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0) {
+        } else if (FaultTypeAppliesTo.WORKSTATION_TYPE.getStringValue().equals(appliesTo)) {
             clearFields(faultType, true, false);
         } else {
             clearFields(faultType, true, true);

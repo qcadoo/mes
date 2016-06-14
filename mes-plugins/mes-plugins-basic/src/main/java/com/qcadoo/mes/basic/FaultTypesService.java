@@ -41,9 +41,8 @@ public class FaultTypesService {
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkIfFaultTypeAppliesToOthers(final Entity faultType) {
-
-        return FaultTypeAppliesTo.from(faultType).compareTo(FaultTypeAppliesTo.NONE) == 0
-                || faultType.getId().equals(getDefaultFaultType().getId());
+        return (FaultTypeAppliesTo.NONE.getStringValue().equals(faultType.getStringField(FaultTypeFields.APPLIES_TO)) || faultType
+                .getId().equals(getDefaultFaultType().getId()));
     }
 
     public boolean checkIfFaultTypeAppliesToWorkstation(final Entity faultType, final Entity workstation) {
@@ -56,11 +55,14 @@ public class FaultTypesService {
 
     public boolean checkIfFaultTypeAppliesToWorkstationOrSubassembly(final Entity faultType, final Entity entity,
             final String fieldName) {
-        if (FaultTypeAppliesTo.from(faultType).compareTo(FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY) == 0) {
+
+        if (FaultTypeAppliesTo.WORKSTATION_OR_SUBASSEMBLY.getStringValue().equals(
+                faultType.getStringField(FaultTypeFields.APPLIES_TO))) {
             return checkIfFaultTypeAppliesToEntity(faultType, entity, fieldName)
                     || checkIfFaultTypeAppliesToEntity(faultType, entity.getBelongsToField(WorkstationFields.WORKSTATION_TYPE),
                             FaultTypeFields.WORKSTATION_TYPES);
-        } else if (FaultTypeAppliesTo.from(faultType).compareTo(FaultTypeAppliesTo.WORKSTATION_TYPE) == 0) {
+        } else if (FaultTypeAppliesTo.WORKSTATION_TYPE.getStringValue().equals(
+                faultType.getStringField(FaultTypeFields.APPLIES_TO))) {
             return checkIfFaultTypeAppliesToEntity(faultType, entity.getBelongsToField(WorkstationFields.WORKSTATION_TYPE),
                     FaultTypeFields.WORKSTATION_TYPES);
         }

@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,7 +30,6 @@ import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.FaultTypeAppliesTo;
@@ -57,8 +55,6 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class EventCriteriaModifiersCMP {
-
-    private static final String L_OTHER = "Inne";
 
     public static final String EVENT_CONTEXT_FILTER_PARAMETER_FACTORY = "maintenanceEventContextFactory";
 
@@ -181,10 +177,13 @@ public class EventCriteriaModifiersCMP {
 
             scb.createAlias(FaultTypeFields.WORKSTATION_TYPES, FaultTypeFields.WORKSTATION_TYPES, JoinType.LEFT)
                     .createAlias(alias, alias, JoinType.LEFT)
-                    .add(SearchRestrictions.or(searchCriterion, SearchRestrictions.eq(FaultTypeFields.NAME, L_OTHER)));
+                    .add(SearchRestrictions.or(searchCriterion,
+                            SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                            SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
+        } else {
+            scb.add(SearchRestrictions.or(SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                    SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         }
-
-        scb.add(SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()));
     }
 
     private List<String> getFaultTypeAppliesToStringValues() {

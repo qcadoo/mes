@@ -26,7 +26,7 @@ package com.qcadoo.mes.basic.listeners;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.FaultTypeAppliesTo;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.mes.basic.hooks.FaultTypeDetailsHooks;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -45,7 +45,7 @@ public class FaultTypeDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity faultType = form.getPersistedEntityWithIncludedFormValues();
-        FaultTypeAppliesTo appliesTo = FaultTypeAppliesTo.from(faultType);
+        String appliesTo = faultType.getStringField(FaultTypeFields.APPLIES_TO);
 
         faultTypeDetailsHooks.toggleGridsEnable(view, appliesTo, true);
     }
