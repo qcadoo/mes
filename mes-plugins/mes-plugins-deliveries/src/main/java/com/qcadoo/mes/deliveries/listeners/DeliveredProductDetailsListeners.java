@@ -50,11 +50,15 @@ public class DeliveredProductDetailsListeners {
 
         LookupComponent additionalCodeLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
+        LookupComponent storageLocationLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
 
         if (product != null) {
             filterByProduct(additionalCodeLookup, product.getId());
+            filterByProduct(storageLocationLookup, product.getId());
         } else {
             clearAndDisable(additionalCodeLookup);
+            clearAndDisable(storageLocationLookup);
         }
     }
 
