@@ -179,9 +179,11 @@ public class EventCriteriaModifiersCMP {
                     .createAlias(alias, alias, JoinType.LEFT)
                     .add(SearchRestrictions.or(searchCriterion,
                             SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                            SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
                             SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         } else {
             scb.add(SearchRestrictions.or(SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                    SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
                     SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         }
     }
