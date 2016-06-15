@@ -236,9 +236,7 @@
                     <component type="lookup" name="storageLocation" reference="storageLocation"
                                                    field="#{form}.storageLocation">
 
-                        <option type="column" name="locationNumber" fields="location"
-                                            expression="#location['number']" />
-                        <option type="column" name="locationName" fields="location"
+                        <option type="column" name="location" fields="location"
                                             expression="#location['name']" />
 
                         <option type="searchable" value="number,locationNumber,locationName" />
