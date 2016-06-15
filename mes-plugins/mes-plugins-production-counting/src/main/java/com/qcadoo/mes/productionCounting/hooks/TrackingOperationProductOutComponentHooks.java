@@ -32,6 +32,7 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -114,11 +115,15 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         if (checkIfShouldfillTrackingOperationProductInComponentsQuantities(productionTracking, product)) {
             BigDecimal usedQuantity = trackingOperationProductOutComponent
                     .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+            BigDecimal wastesQuantity = trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
 
-            if (usedQuantity != null) {
+            if ((usedQuantity != null) || (wastesQuantity != null)) {
                 BigDecimal plannedQuantity = getPlannedQuantity(trackingOperationProductOutComponent);
 
-                BigDecimal ratio = usedQuantity.divide(plannedQuantity, numberService.getMathContext());
+                BigDecimal quantity = BigDecimalUtils.convertNullToZero(usedQuantity).add(BigDecimalUtils.convertNullToZero(wastesQuantity), numberService.getMathContext());
+
+                BigDecimal ratio = quantity.divide(plannedQuantity, numberService.getMathContext());
 
                 List<Entity> trackingOperationProductInComponents = productionTracking
                         .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
