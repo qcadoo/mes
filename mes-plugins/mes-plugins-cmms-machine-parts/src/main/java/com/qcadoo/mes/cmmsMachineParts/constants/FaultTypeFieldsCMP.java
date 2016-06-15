@@ -23,22 +23,12 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.constants;
 
-public final class FaultTypeFields {
+public final class FaultTypeFieldsCMP {
 
-    private FaultTypeFields() {
+    private FaultTypeFieldsCMP() {
 
     }
 
-    public static final String IS_DEFAULT = "isDefault";
-
-    public static final String NAME = "name";
-
-    public static final String APPLIES_TO = "appliesTo";
-
-    public static final String WORKSTATIONS = "workstations";
-
-    public static final String WORKSTATION_TYPES = "workstationTypes";
-
-    public static final String SUBASSEMBLIES = "subassemblies";
+    public static final String MAINTENANCE_EVENTS = "maintenanceEvents";
 
 }

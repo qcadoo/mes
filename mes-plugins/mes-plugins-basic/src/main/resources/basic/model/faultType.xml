@@ -27,6 +27,7 @@
 <model name="faultType"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="name" required="true" unique="true"/>
         <enum name="appliesTo" values="01workstationOrSubassembly,02workstationType"
@@ -38,12 +39,11 @@
         <manyToMany name="subassemblies" model="subassembly" plugin="basic" cascade="nullify" joinField="faultTypes"
                     copyable="true"/>
 
-        <hasMany name="maintenanceEvents" model="maintenanceEvent" joinField="faultType" cascade="nullify"
-                 copyable="false"/>
-
         <boolean name="isDefault" default="false"/>
     </fields>
+
     <hooks>
-        <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeHooks" method="onSave"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.FaultTypeHooks" method="onSave"/>
     </hooks>
+
 </model>

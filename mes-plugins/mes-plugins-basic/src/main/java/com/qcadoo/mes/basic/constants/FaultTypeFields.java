@@ -21,21 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.listeners;
+package com.qcadoo.mes.basic.constants;
 
-import com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeListHooks;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public final class FaultTypeFields {
 
-@Service
-public class FaultTypeListListeners {
+    private FaultTypeFields() {
 
-    @Autowired
-    private FaultTypeListHooks faultTypeListHooks;
-
-    public void disableActionsWhenDefault(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-       faultTypeListHooks.onBeforeRender(view);
     }
+
+    public static final String NAME = "name";
+
+    public static final String APPLIES_TO = "appliesTo";
+
+    public static final String WORKSTATIONS = "workstations";
+
+    public static final String WORKSTATION_TYPES = "workstationTypes";
+
+    public static final String SUBASSEMBLIES = "subassemblies";
+
+    public static final String IS_DEFAULT = "isDefault";
+
 }

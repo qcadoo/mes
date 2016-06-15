@@ -82,8 +82,7 @@
         <view:view resource="view/companyProductsFamilyDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
 
-        <view:view resource="view/faultTypesList.xml"/>
-        <view:view resource="view/faultTypeDetails.xml"/>
+
 
         <view:view resource="view/actionsList.xml"/>
         <view:view resource="view/actionDetails.xml"/>
@@ -117,8 +116,6 @@
 
         <menu:menu-item name="machineParts" category="basic" view="machinePartsList"
                         defaultAuthorizationRole="ROLE_MACHINE_PARTS"/>
-        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
-                        defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
 
         <menu:menu-item name="plannedEvents" category="maintenance" view="plannedEventsList"
                         defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"/>
@@ -150,7 +147,6 @@
 
         <model:model model="machinePartAttachment" resource="model/machinePartAttachment.xml"/>
         <model:model model="eventAttachment" resource="model/eventAttachment.xml"/>
-        <model:model model="faultType" resource="model/faultType.xml"/>
         <model:model model="maintenanceEvent" resource="model/maintenanceEvent.xml"/>
         <model:model model="maintenanceEventListDto" resource="model/maintenanceEventListDto.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
@@ -209,10 +205,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstation">
-            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
-                              joinField="workstations"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="workstation">
             <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
                               joinField="workstations"/>
         </model:model-field>
@@ -220,19 +212,9 @@
             <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
                            joinField="workstation" copyable="false"/>
         </model:model-field>
-
-        <model:model-field plugin="basic" model="workstationType">
-            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
-                              joinField="workstationTypes"/>
-        </model:model-field>
         <model:model-field plugin="basic" model="workstationType">
             <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
                               joinField="workstationTypes"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="subassembly">
-            <model:manyToMany name="faultTypes" model="faultType" plugin="cmmsMachineParts" cascade="nullify"
-                              joinField="subassemblies"/>
         </model:model-field>
         <model:model-field plugin="basic" model="subassembly">
             <model:manyToMany name="actions" model="action" plugin="cmmsMachineParts" cascade="nullify"
@@ -264,6 +246,11 @@
         <model:model-field plugin="basic" model="division">
             <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" cascade="nullify"
                            joinField="division" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="faultType">
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" joinField="faultType" cascade="nullify"
+                     copyable="false"/>
         </model:model-field>
 
         <model:model-field plugin="states" model="message">
@@ -420,9 +407,6 @@
 
         <custom:custom
                 class="com.qcadoo.mes.cmmsMachineParts.DefaultActionsLoaderModule"/>
-
-        <custom:custom
-                class="com.qcadoo.mes.cmmsMachineParts.DefaultFaultTypesLoaderModule"/>
     </modules>
 
 </plugin>

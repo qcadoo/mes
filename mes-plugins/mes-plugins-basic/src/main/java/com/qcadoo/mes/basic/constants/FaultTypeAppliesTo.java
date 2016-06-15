@@ -23,22 +23,31 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class WorkstationTypeFields {
+import org.apache.commons.lang3.StringUtils;
 
-    private WorkstationTypeFields() {
+public enum FaultTypeAppliesTo {
+    WORKSTATION_OR_SUBASSEMBLY("01workstationOrSubassembly"), WORKSTATION_TYPE("02workstationType"), NONE("");
 
+    private final String appliesTo;
+
+    private FaultTypeAppliesTo(final String appliesTo) {
+        this.appliesTo = appliesTo;
     }
 
-    public static final String NUMBER = "number";
+    public String getStringValue() {
+        return appliesTo;
+    }
 
-    public static final String NAME = "name";
+    public static FaultTypeAppliesTo parseString(final String appliesTo) {
+        if (StringUtils.isEmpty(appliesTo)) {
+            return NONE;
+        } else if ("01workstationOrSubassembly".equals(appliesTo)) {
+            return WORKSTATION_OR_SUBASSEMBLY;
+        } else if ("02workstationType".equals(appliesTo)) {
+            return WORKSTATION_TYPE;
+        }
 
-    public static final String DESCRIPTION = "description";
-
-    public static final String SUBASSEMBLY = "subassembly";
-
-    public static final String SUBASSEMBLIES = "subassemblies";
-
-    public static final String FAULT_TYPES = "faultTypes";
+        throw new IllegalStateException("Unsupported AppliesTo: " + appliesTo);
+    }
 
 }
