@@ -1,3 +1,4 @@
+
 package com.qcadoo.mes.newstates;
 
 import com.google.common.base.Optional;
