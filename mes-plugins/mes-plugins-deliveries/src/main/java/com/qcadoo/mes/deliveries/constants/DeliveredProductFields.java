@@ -42,4 +42,12 @@ public final class DeliveredProductFields {
     public static final String PRICE_PER_UNIT = "pricePerUnit";
 
     public static final String TOTAL_PRICE = "totalPrice";
+
+    public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String PALLET_TYPE = "palletType";
+
+    public static final String STORAGE_LOCATION = "storageLocation";
+
+    public static final String ADDITIONAL_CODE = "additionalCode";
 }

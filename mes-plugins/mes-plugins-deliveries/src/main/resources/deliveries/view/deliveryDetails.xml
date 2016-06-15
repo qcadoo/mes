@@ -659,12 +659,18 @@
                                 width="80"/>
                         <option type="column" name="totalPrice" fields="totalPrice"
                                 width="80"/>
+                        <option type="column" name="additionalCode" fields="additionalCode"
+                                expression="#additionalCode['code']" width="80"/>
+                        <option type="column" name="storageLocation" fields="storageLocation"
+                                expression="#storageLocation['number']" width="80"/>
+                        <option type="column" name="palletNumber" fields="palletNumber"
+                                expression="#palletNumber['number']" width="80"/>
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="number,name,unit,deliveredQuantity,damagedQuantity"/>
+                                value="number,name,unit,deliveredQuantity,damagedQuantity,additionalCode,storageLocation,palletNumber"/>
                         <option type="orderable"
-                                value="succession,number,name,unit,deliveredQuantity,damagedQuantity"/>
+                                value="succession,number,name,unit,deliveredQuantity,damagedQuantity,additionalCode,storageLocation,palletNumber"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
