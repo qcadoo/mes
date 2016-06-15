@@ -90,35 +90,29 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private ParameterService parameterService;
 
-    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onChangeFromDraftToAny(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
-        stateChangeContext.setOwner(productionTracking);
     }
 
-    public void validationOnAccept(final StateChangeContext stateChangeContext) {
-        checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
-        checkIfExistsFinalRecord(stateChangeContext);
-        checkIfTimesIsSet(stateChangeContext);
+    public void validationOnAccept(final Entity productionTracking) {
+        checkIfRecordOperationProductComponentsWereFilled(productionTracking);
+        checkIfExistsFinalRecord(productionTracking);
+        checkIfTimesIsSet(productionTracking);
     }
 
-    public void onLeavingDraft(final StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onLeavingDraft(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
-        stateChangeContext.setOwner(productionTracking);
     }
 
-    public void onAccept(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void onAccept(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Addition());
         setOrderDoneAndWastesQuantity(productionTracking, new Addition());
         closeOrder(stateChangeContext);
     }
 
-    public void onChangeFromAcceptedToDeclined(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
@@ -165,19 +159,19 @@ public final class ProductionTrackingListenerService {
         }
 
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.finalExists");
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.finalExists");
         }
     }
 
-    public void closeOrder(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void closeOrder(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ORDER);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderClosingHelper.orderShouldBeClosed(productionTracking)) {
             return;
         }
         if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
+            //FIXME to raczej info powinno być
+            productionTracking.addGlobalError("productionCounting.order.orderIsAlreadyClosed"/*, StateMessageType.INFO*/, false);
             return;
         }
         final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
@@ -185,11 +179,14 @@ public final class ProductionTrackingListenerService {
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
+            //FIXME
+            productionTracking.addGlobalError("productionCounting.order.orderClosed", /*StateMessageType.INFO,*/ false);
         } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
-            stateChangeContext.addMessage("productionCounting.order.orderWillBeClosedAfterExtSync", StateMessageType.INFO, false);
+            //FIXME
+            productionTracking.addGlobalError("productionCounting.order.orderWillBeClosedAfterExtSync", /*StateMessageType.INFO,*/ false);
         } else {
-            stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
+            //FIXME
+            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", /*StateMessageType.FAILURE,*/ false);
 
             List<ErrorMessage> errors = Lists.newArrayList();
 
@@ -210,7 +207,7 @@ public final class ProductionTrackingListenerService {
                     errorMessages.append(", ");
                 }
 
-                stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
+                productionTracking.addGlobalError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
     }
@@ -299,22 +296,20 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-    public void checkIfTimesIsSet(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
-        Entity orderEntity = productionRecord.getBelongsToField(ProductionTrackingFields.ORDER);
+    public void checkIfTimesIsSet(final Entity productionTracking) {
+        Entity orderEntity = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity parameter = parameterService.getParameter();
         if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
                 && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
-            Integer machineTimie = productionRecord.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+            Integer machineTimie = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
             if (machineTimie == null || machineTimie == 0) {
-                stateChangeContext.addFieldValidationError(ProductionTrackingFields.MACHINE_TIME,
+                productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.MACHINE_TIME),
                         "qcadooView.validate.field.error.missing");
             }
-            Integer laborTime = productionRecord.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+            Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
             if (laborTime == null || laborTime == 0) {
-                stateChangeContext.addFieldValidationError(ProductionTrackingFields.LABOR_TIME,
+                productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.LABOR_TIME),
                         "qcadooView.validate.field.error.missing");
-
             }
         }
 

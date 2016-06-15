@@ -219,9 +219,12 @@
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="true"/>
 
-			<listener event="changeState"
+<!--			<listener event="changeState"
 					  class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-					  method="changeState"/>
+					  method="changeState"/>-->
+                <listener event="changeState"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="changeTrackingState"/>
 		</component>
 
 		<option type="fixedHeight" value="true"/>
