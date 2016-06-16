@@ -64,6 +64,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -166,7 +167,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         SearchCriterion hasStateChangeFromDraftToAccepted = and(
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.SOURCE_STATE, ProductionTrackingStateStringValues.DRAFT),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE, ProductionTrackingStateStringValues.ACCEPTED));
+                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE,
+                        ProductionTrackingStateStringValues.ACCEPTED));
 
         SearchCriterion isAlreadyAccepted = and(eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED),
                 eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()),
@@ -217,7 +219,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
 
-        if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order == null)
+                || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 
@@ -294,13 +297,14 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
         FieldComponent amountOfProductProducedField = (FieldComponent) view
                 .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
+        FieldComponent wastesQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.WASTES_QUANTITY);
 
         Long orderId = orderForm.getEntityId();
 
         if (orderId == null) {
             doneQuantityField.setEnabled(false);
             amountOfProductProducedField.setEnabled(false);
-
+            wastesQuantityField.setEnabled(false);
             return;
         }
 
@@ -313,14 +317,17 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
             if (checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
                 doneQuantityField.setEnabled(true);
+                wastesQuantityField.setEnabled(true);
                 amountOfProductProducedField.setEnabled(false);
             } else {
                 doneQuantityField.setEnabled(false);
+                wastesQuantityField.setEnabled(false);
                 amountOfProductProducedField.setEnabled(false);
             }
 
         } else {
             doneQuantityField.setEnabled(false);
+            wastesQuantityField.setEnabled(false);
             amountOfProductProducedField.setEnabled(false);
         }
     }
@@ -503,5 +510,39 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         }
 
         return value;
+    }
+
+    @Override
+    public BigDecimal getWastesSumForProduct(Entity product, Entity order, Entity operation) {
+        return getFieldSum(product, order, operation, TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
+    }
+
+    @Override
+    public BigDecimal getUsedQuantitySumForProduct(Entity product, Entity order, Entity operation) {
+        return getFieldSum(product, order, operation, TrackingOperationProductOutComponentFields.USED_QUANTITY);
+    }
+
+    private BigDecimal getFieldSum(final Entity product, final Entity order, final Entity operation, String fieldToSum) {
+
+        DataDefinition trackingOpocDD = getTrackingOperationProductOutComponentDD();
+        String hql = "SELECT coalesce(SUM(opoc." + fieldToSum + "), 0) AS sum "
+                + "FROM #productionCounting_trackingOperationProductOutComponent opoc " + "JOIN opoc.productionTracking AS pt "
+                + "WHERE pt.order = :order_id AND opoc.product = :product_id AND pt.state = '02accepted' AND " + fieldToSum
+                + " IS NOT NULL ";
+        if (operation != null) {
+            hql = hql + "AND pt.technologyOperationComponent = :toc_id ";
+        }
+        SearchQueryBuilder scb = trackingOpocDD.find(hql);
+        scb.setLong("order_id", order.getId());
+        scb.setLong("product_id", product.getId());
+        if (operation != null) {
+            scb.setLong("toc_id", operation.getId());
+        }
+        Entity result = scb.setMaxResults(1).uniqueResult();
+        if (result == null) {
+            return BigDecimal.ZERO;
+        }
+        return result.getDecimalField("sum");
+
     }
 }

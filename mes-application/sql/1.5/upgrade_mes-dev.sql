@@ -1,4 +1,4 @@
--- new ordered product fields
+﻿-- new ordered product fields
 -- last touched 01.06.2016 by pako
 
 ALTER TABLE deliveries_orderedproduct ADD COLUMN additionalquantity numeric(12,5);
@@ -8,6 +8,14 @@ ALTER TABLE deliveries_orderedproduct
   ADD CONSTRAINT orderedproduct_additionalcode_fkey FOREIGN KEY (additionalcode_id)
       REFERENCES basic_additionalcode (id) DEFERRABLE;
 UPDATE deliveries_orderedproduct SET additionalquantity = orderedquantity, conversion = 1;
+
+-- end
+
+-- wastes
+-- last touched 03.06.2016 by kama
+
+ALTER TABLE productioncounting_trackingoperationproductoutcomponent ADD COLUMN wastesquantity numeric(14,5);
+ALTER TABLE orders_order ADD COLUMN wastesquantity numeric(12,5);
 
 -- end
 
