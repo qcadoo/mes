@@ -41,7 +41,7 @@
         <string name="productionLineNumber"/>
         <string name="workstationNumber"/>
         <string name="subassemblyNumber"/>
-        <string name="faultTypeNumber"/>
+        <string name="faultTypeName"/>
         <string name="createUser"/>
         <datetime name="createDate"/>
 

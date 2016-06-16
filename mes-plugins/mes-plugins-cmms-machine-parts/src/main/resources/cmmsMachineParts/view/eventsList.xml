@@ -389,7 +389,7 @@
                         link="true"/>
                 <option type="column" name="subassembly" fields="subassemblyNumber"
                         link="true"/>
-                <option type="column" name="faultType" fields="faultTypeNumber"
+                <option type="column" name="faultType" fields="faultTypeName"
                         link="false"/>
                 <option type="column" name="description" fields="description" link="true"/>
                 <option type="column" name="createDate" fields="createDate" link="false"/>

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
@@ -25,8 +26,8 @@ public class StorageLocationCriteriaModifiers {
         }
         if (filterValue.has(L_LOCATION)) {
             Long locationId = filterValue.getLong(L_LOCATION);
-            scb.createAlias(StorageLocationFields.LOCATION, L_LOCATION, JoinType.INNER).add(
-                    SearchRestrictions.eq(L_LOCATION + ".id", locationId));
+            scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowConstants.MODEL_LOCATION, locationId));
         }
     }
 }

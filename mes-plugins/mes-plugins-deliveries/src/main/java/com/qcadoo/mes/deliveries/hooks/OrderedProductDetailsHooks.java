@@ -23,17 +23,26 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class OrderedProductDetailsHooks {
@@ -43,10 +52,59 @@ public class OrderedProductDetailsHooks {
     @Autowired
     private DeliveriesService deliveriesService;
 
+    @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
+    private NumberService numberService;
+
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
 
         deliveriesService.fillUnitFields(view, OrderedProductFields.PRODUCT, referenceNames);
+        fillAdditionalUnit(view);
+        fillAdditionalCodesLookup(view);
+    }
+
+    private void fillAdditionalUnit(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (product != null) {
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            FieldComponent conversionField = (FieldComponent) view.getComponentByReference("conversion");
+            if (StringUtils.isEmpty(additionalUnit)) {
+                conversionField.setFieldValue(BigDecimal.ONE);
+                conversionField.setEnabled(false);
+                conversionField.requestComponentUpdateState();
+
+                additionalUnit = product.getStringField(ProductFields.UNIT);
+            }
+            FieldComponent field = (FieldComponent) view.getComponentByReference("additionalQuantityUnit");
+            field.setFieldValue(additionalUnit);
+            field.requestComponentUpdateState();
+        }
+
+    }
+
+    private void fillAdditionalCodesLookup(ViewDefinitionState view) {
+        LookupComponent additionalCodeLookup = (LookupComponent) view
+                .getComponentByReference(OrderedProductFields.ADDITIONAL_CODE);
+
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (product != null) {
+            additionalCodeLookup.setEnabled(true);
+            FilterValueHolder filterValueHolder = additionalCodeLookup.getFilterValue();
+            filterValueHolder.put(AdditionalCodeFields.PRODUCT, product.getId());
+            additionalCodeLookup.setFilterValue(filterValueHolder);
+            additionalCodeLookup.requestComponentUpdateState();
+        } else {
+            additionalCodeLookup.setFieldValue(null);
+            additionalCodeLookup.setEnabled(false);
+            additionalCodeLookup.requestComponentUpdateState();
+        }
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {

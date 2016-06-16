@@ -27,6 +27,7 @@
 <model name="order" activable="true" versionable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -149,8 +150,8 @@
         <belongsTo name="recipe" plugin="orders" model="recipe"/>
 
         <string name="workerToChange"/>
-
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
                        method="validatesWith"/>
@@ -167,5 +168,6 @@
         <onDelete class="com.qcadoo.mes.orders.hooks.OrderHooks" method="onDelete"/>
 
     </hooks>
+
     <identifier expression="#number + ' - ' + #name"/>
 </model>

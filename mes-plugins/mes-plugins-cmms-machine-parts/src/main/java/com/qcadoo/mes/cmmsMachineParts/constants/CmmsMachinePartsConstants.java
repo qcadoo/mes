@@ -45,8 +45,6 @@ public final class CmmsMachinePartsConstants {
 
     public static final String MODEL_PLANNED_EVENT_ATTACHMENT = "plannedEventAttachment";
 
-    public static final String MODEL_FAULT_TYPE = "faultType";
-
     public static final String MODEL_MAINTENANCE_EVENT = "maintenanceEvent";
 
     public static final String MODEL_MAINTENANCE_EVENT_STATE_CHANGE = "maintenanceEventStateChange";

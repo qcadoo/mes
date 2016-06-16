@@ -164,6 +164,8 @@ public class DeliveryDetailsListeners {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+        deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
+                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
 
         if (copyQuantityAndPrice) {
             deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,

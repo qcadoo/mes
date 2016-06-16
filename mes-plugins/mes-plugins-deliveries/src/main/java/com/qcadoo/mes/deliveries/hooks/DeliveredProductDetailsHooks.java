@@ -32,7 +32,9 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -40,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class DeliveredProductDetailsHooks {
@@ -51,6 +54,17 @@ public class DeliveredProductDetailsHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
+
+    public void beforeRender(final ViewDefinitionState view) {
+        fillOrderedQuantities(view);
+        fillUnitFields(view);
+        fillCurrencyFields(view);
+        setDeliveredQuantityFieldRequired(view);
+        setFilters(view);
+    }
 
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
@@ -107,6 +121,40 @@ public class DeliveredProductDetailsHooks {
         FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
         delivedQuantity.setRequired(true);
         delivedQuantity.requestComponentUpdateState();
+    }
+
+    private void setFilters(ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity deliveredProductEntity = form.getEntity();
+        Entity delivery = deliveredProductEntity.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+
+        LookupComponent storageLocationsLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
+        LookupComponent additionalCodeLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
+
+        if (product != null) {
+            filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());
+        }
+        if (product != null && location != null) {
+            filterBy(storageLocationsLookup, "location", location.getId());
+            filterBy(storageLocationsLookup, "product", product.getId());
+        } else {
+            storageLocationsLookup.setFieldValue(null);
+            storageLocationsLookup.setEnabled(false);
+            storageLocationsLookup.requestComponentUpdateState();
+        }
+    }
+
+    private void filterBy(LookupComponent component, String field, Long id) {
+        component.setEnabled(true);
+        FilterValueHolder filterValueHolder = component.getFilterValue();
+        filterValueHolder.put(field, id);
+        component.setFilterValue(filterValueHolder);
+        component.requestComponentUpdateState();
     }
 
 }

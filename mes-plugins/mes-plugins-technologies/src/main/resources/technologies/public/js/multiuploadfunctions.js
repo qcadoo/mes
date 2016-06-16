@@ -27,7 +27,7 @@ $(function() {
 					{
 						
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods|tiff|tif)$/i,
+						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -41,7 +41,7 @@ $(function() {
 							var techIdValue = techId.content;
 							if(!techIdValue.value || 0 === techIdValue.value){
 							    $.each(data.files, function (index, file) {
-									if(locale === "pl_PL"){
+									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
 											"Technologia niezapisana",
 											"Pominięto wgranie pliku: "
@@ -74,11 +74,11 @@ $(function() {
 							.getComponentByReferenceName(
 								"technologyMultiUploadLocale")
 									.getValue().content.value;
-							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods|tiff|tif)$/i;
+							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
 
 							$.each(data.files, function(index, file) {
 								if (filetype.test(file.name)) {
-								if(locale === "pl_PL"){
+								if(locale === "pl_PL" || locale === "pl"){
 									showMessage("success", "Wgrywanie zakończone",
 											"Wgrano plik: " + file.name);
 								} else {
@@ -111,14 +111,14 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|docx|dwg|ipt|iam|idw|odt|ods|tiff|tif)$/i;
+						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"technologyMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {
-								if(locale === "pl_PL"){
+								if(locale === "pl_PL" || locale === "pl"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
 										"Niedopuszczalny typ pliku: "

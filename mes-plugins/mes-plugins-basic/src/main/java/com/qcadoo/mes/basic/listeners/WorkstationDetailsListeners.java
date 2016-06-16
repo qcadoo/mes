@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.WorkstationAttachmentFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -55,24 +56,31 @@ public class WorkstationDetailsListeners {
     private FileService fileService;
 
     public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("attachments");
+        GridComponent grid = (GridComponent) view.getComponentByReference(WorkstationFields.ATTACHMENTS);
+
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
             state.addMessage("basic.workstationDetails.window.ribbon.atachments.nonSelectedAtachment",
                     ComponentState.MessageType.INFO);
+
             return;
         }
-        DataDefinition attachmentDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
-        List<File> atachments = Lists.newArrayList();
-        for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
-            Entity attachment = attachmentDD.get(confectionProtocolId);
-            File file = new File(attachment.getStringField(WorkstationFields.ATTACHMENT));
-            atachments.add(file);
+
+        DataDefinition workstationAttachmentDD = getWorkstationAttachmentDD();
+
+        List<File> attachements = Lists.newArrayList();
+
+        for (Long workstationAttachmentId : grid.getSelectedEntitiesIds()) {
+            Entity workstationAttachment = workstationAttachmentDD.get(workstationAttachmentId);
+
+            File attachment = new File(workstationAttachment.getStringField(WorkstationAttachmentFields.ATTACHMENT));
+
+            attachements.add(attachment);
         }
 
         File zipFile = null;
+
         try {
-            zipFile = fileService.compressToZipFile(atachments, false);
+            zipFile = fileService.compressToZipFile(attachements, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
             return;
@@ -80,4 +88,9 @@ public class WorkstationDetailsListeners {
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
+
+    private DataDefinition getWorkstationAttachmentDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_ATTACHMENT);
+    }
+
 }

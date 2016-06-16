@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="orderedProductDetails" modelName="orderedProduct"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	windowWidth="640" windowHeight="440">
+	windowWidth="740" windowHeight="500">
 
 	<component type="window" name="window">
 
@@ -56,7 +56,7 @@
 								value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
 							<option type="fieldCode" value="number" />
 
-							<listener
+							<listener event="onSelectedEntityChange"
 								class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
 								method="fillUnitFields" />
 							<listener
@@ -66,14 +66,14 @@
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="gridLayout" name="gridLayoutOrderedQuantity"
-							hasBorders="false" columns="4" rows="1">
+							hasBorders="false" columns="4" rows="3">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="orderedQuantity"
 									reference="orderedQuantity" field="orderedQuantity">
 									<option type="alignment" value="right" />
 									<option type="labelWidth" value="45" />
 									
-									<listener event="onInputChange" method="calculatePrice"
+									<listener event="onInputChange" method="quantityChange"
 										class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 								</component>
 							</layoutElement>
@@ -81,6 +81,32 @@
 								<component type="input" name="orderedQuantityUnit"
 									defaultEnabled="never" hasLabel="false" reference="orderedQuantityUnit">
 									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="2" width="3">
+								<component type="input" name="additionalQuantity"
+									reference="additionalQuantity" field="additionalQuantity">
+									<option type="alignment" value="right" />
+									<option type="labelWidth" value="45" />
+									
+									<listener event="onInputChange" method="additionalQuantityChange"
+										class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="2">
+								<component type="input" name="additionalQuantityUnit"
+									defaultEnabled="never" hasLabel="false" reference="additionalQuantityUnit">
+									<option type="textRepresentationOnDisabled" value="true" />
+								</component>
+							</layoutElement>
+							<layoutElement column="1" row="3" width="3">
+								<component type="input" name="conversion"
+									reference="conversion" field="conversion">
+									<option type="alignment" value="right" />
+									<option type="labelWidth" value="45" />
+									
+									<listener event="onInputChange" method="quantityChange"
+										class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners" />
 								</component>
 							</layoutElement>
 						</component>
@@ -146,6 +172,27 @@
 				
 				<option type="header" value="true" />
 				<option type="expression" value="#name" />
+			</component>
+		</windowTab>
+		<windowTab name="additionalCodeTab">
+			<component type="gridLayout" name="gridLayoutAdditionalCode" columns="2"
+					rows="1">
+				<layoutElement column="1" row="1">
+					<component type="lookup" name="additionalCode" reference="additionalCode"
+						field="#{form}.additionalCode">
+		
+						<option type="searchable" value="code" />
+						<option type="orderable" value="code" />
+		
+						<option type="expression"
+							value="#code" />
+						<option type="fieldCode" value="code" />
+						
+						<criteriaModifier
+								class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
+								method="restrictAdditionalCodesForProduct" />
+					</component>
+				</layoutElement>
 			</component>
 		</windowTab>
 
