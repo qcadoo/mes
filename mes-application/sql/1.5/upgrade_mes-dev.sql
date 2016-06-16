@@ -65,7 +65,7 @@ CREATE OR replace VIEW cmmsmachineparts_maintenanceeventlistdto AS
 -- end
 
 -- new delivered product fields
-﻿-- last touched 9.06.2016 by pako
+-- last touched 9.06.2016 by pako
 
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN palletnumber_id bigint;
 ALTER TABLE deliveries_deliveredproduct ADD COLUMN pallettype character varying(255);
