@@ -42,7 +42,6 @@ import com.qcadoo.view.api.components.GridComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.qcadoo.mes.states.constants.StateChangeStatus.*;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
@@ -73,9 +72,9 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         final List<Entity> entities = viewClientUtil.getEntitiesFromComponent(viewContext);
         for (Entity entity : entities) {
             DataDefinition dd = entity.getDataDefinition();
-            Optional<Entity> optionalMasterModel = dd.tryGetMasterModelEntity(entity.getId());
-            if (optionalMasterModel.isPresent()) {
-                entity = optionalMasterModel.get();
+            Entity optionalMasterModel = dd.tryGetMasterModelEntity(entity.getId());
+            if (optionalMasterModel != null) {
+                entity = optionalMasterModel;
             }
             changeState(viewContext, targetState, entity);
         }
