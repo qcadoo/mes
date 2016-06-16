@@ -29,8 +29,11 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class DeliveredProductDetailsListeners {
@@ -40,6 +43,39 @@ public class DeliveredProductDetailsListeners {
 
     @Autowired
     private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
+
+    public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        LookupComponent additionalCodeLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
+        LookupComponent storageLocationLookup = (LookupComponent) view
+                .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
+
+        if (product != null) {
+            filterByProduct(additionalCodeLookup, product.getId());
+            filterByProduct(storageLocationLookup, product.getId());
+        } else {
+            clearAndDisable(additionalCodeLookup);
+            clearAndDisable(storageLocationLookup);
+        }
+    }
+
+    private void filterByProduct(LookupComponent component, Long id) {
+        component.setFieldValue(null);
+        component.setEnabled(true);
+        FilterValueHolder filterValueHolder = component.getFilterValue();
+        filterValueHolder.put(DeliveredProductFields.PRODUCT, id);
+        component.setFilterValue(filterValueHolder);
+        component.requestComponentUpdateState();
+    }
+
+    private void clearAndDisable(LookupComponent component) {
+        component.setFieldValue(null);
+        component.setEnabled(false);
+        component.requestComponentUpdateState();
+    }
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillUnitFields(view);

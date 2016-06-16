@@ -27,6 +27,7 @@
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
        activable="true" auditable="false" deletable="false" insertable="false" updatable="false">
+
     <fields>
         <string name="number"/>
         <string name="name"/>
@@ -34,5 +35,6 @@
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
 
     </fields>
+
     <masterModel plugin="orders" model="order"/>
 </model>

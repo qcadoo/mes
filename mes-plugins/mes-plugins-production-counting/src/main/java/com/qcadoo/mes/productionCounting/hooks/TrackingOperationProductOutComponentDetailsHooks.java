@@ -58,9 +58,10 @@ public class TrackingOperationProductOutComponentDetailsHooks {
     }
 
     private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductOutComponent) {
-        view.getComponentByReference(L_SET_TAB).setVisible(
-                setTrackingOperationProductsComponents.isSet(trackingOperationProductOutComponent
-                        .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING),
+        view.getComponentByReference(L_SET_TAB)
+                .setVisible(setTrackingOperationProductsComponents.isSet(
+                        trackingOperationProductOutComponent
+                                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING),
                         trackingOperationProductOutComponent));
     }
 

@@ -233,7 +233,7 @@
                         <option type="fieldCode" value="name"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="1" height="6" width="2">
+                <layoutElement column="2" row="1" height="8" width="2">
                     <component type="gridLayout" name="technologyGridLayout"
                                columns="1" rows="1">
                         <layoutElement column="1" row="1">
@@ -265,6 +265,7 @@
                                         value="technologies/technologyOperationComponentDetails"/>
                                 <option type="correspondingComponent" value="form"/>
 
+                                <option type="fixedHeight" value="true"/>
                                 <option type="fullscreen" value="true"/>
                                 <option type="multiselect" value="true"/>
                             </component>

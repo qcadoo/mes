@@ -1337,7 +1337,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     stype: 'select',
                     editoptions: {readonly: 'readonly'},
                     searchoptions: {},
-                    width: 60,
                     formoptions: {
                         rowpos: 5,
                         colpos: 1

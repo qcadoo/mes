@@ -437,7 +437,7 @@
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
                         <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" link="false" width="70"/>
+                                expression="#product['unit']" link="false" width="50"/>
 
                         <option type="correspondingView"
                                 value="productionCounting/trackingOperationProductInComponentDetails"/>
@@ -465,13 +465,24 @@
                         <option type="column" name="number" fields="product"
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
-                                expression="#product['name']" link="true" width="200"/>
+                                expression="#product['name']" link="true" width="220"/>
                         <option type="column" name="plannedQuantity" fields="plannedQuantity"
                                 width="100"/>
+
+
+                        <option type="column" name="producedSum" fields="producedSum"
+                                width="100"/>
+                        <option type="column" name="wastesSum" fields="wastesSum"
+                                width="100"/>
+
+                        <option type="column" name="remainingQuantity" fields="remainingQuantity"
+                                width="100"/>
+
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
+                        <option type="column" name="wastesQuantity" fields="wastesQuantity" width="70"/>
                         <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" link="false" width="70"/>
+                                expression="#product['unit']" link="false" width="50"/>
 
                         <option type="correspondingView"
                                 value="productionCounting/trackingOperationProductOutComponentDetails"/>
@@ -480,8 +491,10 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,usedQuantity,unit"/>
-                        <option type="orderable" value="number,name,usedQuantity,unit"/>
+                        <option type="searchable"
+                                value="number,name,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity"/>
+                        <option type="orderable"
+                                value="number,name,usedQuantity,unit,producedSum,wastesSum,remainingQuantity,wastesQuantity"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>

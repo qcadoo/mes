@@ -1,4 +1,8 @@
-package com.qcadoo.mes.cmmsMachineParts.hooks;
+package com.qcadoo.mes.basic.hooks;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -6,9 +10,6 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class FaultTypeListHooks {
@@ -28,6 +29,7 @@ public class FaultTypeListHooks {
 
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         List<Entity> selectedFaults = grid.getSelectedEntities();
+
         for (Entity selectedFault : selectedFaults) {
             if (selectedFault.getBooleanField("isDefault")) {
                 copyButton.setEnabled(false);
@@ -37,10 +39,13 @@ public class FaultTypeListHooks {
                 return;
             }
         }
+
         boolean enabled = !selectedFaults.isEmpty();
+
         copyButton.setEnabled(enabled);
         deleteButton.setEnabled(enabled);
         copyButton.requestUpdate(true);
         deleteButton.requestUpdate(true);
     }
+
 }

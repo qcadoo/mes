@@ -21,33 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-public final class DeliveredProductFields {
+import org.springframework.stereotype.Service;
 
-    private DeliveredProductFields() {
+import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
+@Service
+public class OrderedProductCriteriaModifiers {
+
+    public void restrictAdditionalCodesForProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+
+        if (filterValueHolder.has(AdditionalCodeFields.PRODUCT)) {
+            Long productId = filterValueHolder.getLong(AdditionalCodeFields.PRODUCT);
+            searchCriteriaBuilder.createCriteria(AdditionalCodeFields.PRODUCT, AdditionalCodeFields.PRODUCT, JoinType.INNER).add(
+                    SearchRestrictions.idEq(productId));
+        }
     }
-
-    public static final String PRODUCT = "product";
-
-    public static final String DELIVERY = "delivery";
-
-    public static final String DAMAGED_QUANTITY = "damagedQuantity";
-
-    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
-
-    public static final String SUCCESSION = "succession";
-
-    public static final String PRICE_PER_UNIT = "pricePerUnit";
-
-    public static final String TOTAL_PRICE = "totalPrice";
-
-    public static final String PALLET_NUMBER = "palletNumber";
-
-    public static final String PALLET_TYPE = "palletType";
-
-    public static final String STORAGE_LOCATION = "storageLocation";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
 }

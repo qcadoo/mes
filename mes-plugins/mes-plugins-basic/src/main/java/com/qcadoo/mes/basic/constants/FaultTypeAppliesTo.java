@@ -21,33 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.basic.constants;
 
-public final class DeliveredProductFields {
+import org.apache.commons.lang3.StringUtils;
 
-    private DeliveredProductFields() {
+public enum FaultTypeAppliesTo {
+    WORKSTATION_OR_SUBASSEMBLY("01workstationOrSubassembly"), WORKSTATION_TYPE("02workstationType"), NONE("");
 
+    private final String appliesTo;
+
+    private FaultTypeAppliesTo(final String appliesTo) {
+        this.appliesTo = appliesTo;
     }
 
-    public static final String PRODUCT = "product";
+    public String getStringValue() {
+        return appliesTo;
+    }
 
-    public static final String DELIVERY = "delivery";
+    public static FaultTypeAppliesTo parseString(final String appliesTo) {
+        if (StringUtils.isEmpty(appliesTo)) {
+            return NONE;
+        } else if ("01workstationOrSubassembly".equals(appliesTo)) {
+            return WORKSTATION_OR_SUBASSEMBLY;
+        } else if ("02workstationType".equals(appliesTo)) {
+            return WORKSTATION_TYPE;
+        }
 
-    public static final String DAMAGED_QUANTITY = "damagedQuantity";
+        throw new IllegalStateException("Unsupported AppliesTo: " + appliesTo);
+    }
 
-    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
-
-    public static final String SUCCESSION = "succession";
-
-    public static final String PRICE_PER_UNIT = "pricePerUnit";
-
-    public static final String TOTAL_PRICE = "totalPrice";
-
-    public static final String PALLET_NUMBER = "palletNumber";
-
-    public static final String PALLET_TYPE = "palletType";
-
-    public static final String STORAGE_LOCATION = "storageLocation";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
 }

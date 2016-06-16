@@ -25,15 +25,17 @@ package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
+import com.qcadoo.mes.basic.constants.FaultTypeAppliesTo;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
@@ -54,8 +56,6 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class EventCriteriaModifiersCMP {
 
-    private static final String L_OTHER = "Inne";
-
     public static final String EVENT_CONTEXT_FILTER_PARAMETER_FACTORY = "maintenanceEventContextFactory";
 
     public static final String EVENT_CONTEXT_FILTER_PARAMETER_DIVISION = "maintenanceEventContextDivision";
@@ -68,8 +68,8 @@ public class EventCriteriaModifiersCMP {
     }
 
     public void filterRevokedAndPlannedEvents(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.REVOKED.getStringValue()))
-                .add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.PLANNED.getStringValue()));
+        scb.add(SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.REVOKED.getStringValue())).add(
+                SearchRestrictions.ne(MaintenanceEventFields.STATE, MaintenanceEventState.PLANNED.getStringValue()));
     }
 
     public void filterCanceledEvents(final SearchCriteriaBuilder scb) {
@@ -85,6 +85,7 @@ public class EventCriteriaModifiersCMP {
         if (filterValue.has(MaintenanceEventFields.FACTORY)) {
             DataDefinition factoryDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_FACTORY);
+
             scb.add(SearchRestrictions.belongsTo(DivisionFields.FACTORY, factoryDataDefinition,
                     filterValue.getLong(MaintenanceEventFields.FACTORY)));
         }
@@ -93,27 +94,32 @@ public class EventCriteriaModifiersCMP {
     public void selectWorkstation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(MaintenanceEventFields.DIVISION)) {
             Long divisionId = filterValue.getLong(MaintenanceEventFields.DIVISION);
-            scb.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER)
-                    .add(SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
+
+            scb.createAlias(WorkstationFields.DIVISION, WorkstationFields.DIVISION, JoinType.INNER).add(
+                    SearchRestrictions.eq(WorkstationFields.DIVISION + ".id", divisionId));
         }
         if (filterValue.has(MaintenanceEventFields.PRODUCTION_LINE)) {
             Long productionLineId = filterValue.getLong(MaintenanceEventFields.PRODUCTION_LINE);
-            scb.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER)
-                    .add(SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
+
+            scb.createAlias(WorkstationFieldsPL.PRODUCTION_LINE, WorkstationFieldsPL.PRODUCTION_LINE, JoinType.INNER).add(
+                    SearchRestrictions.eq(WorkstationFieldsPL.PRODUCTION_LINE + ".id", productionLineId));
         }
     }
 
     public void selectProductionLine(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(MaintenanceEventFields.DIVISION)) {
             Long divisionId = filterValue.getLong(MaintenanceEventFields.DIVISION);
-            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION)
-                    .get(divisionId);
+
+            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION).get(
+                    divisionId);
+
             List<Long> productionLinesIds = division.getHasManyField(DivisionFieldsPL.PRODUCTION_LINES).stream()
                     .map(Entity::getId).collect(Collectors.toList());
 
             if (productionLinesIds.isEmpty()) {
                 return;
             }
+
             scb.add(SearchRestrictions.in("id", productionLinesIds));
         }
     }
@@ -122,6 +128,7 @@ public class EventCriteriaModifiersCMP {
         if (filterValue.has(MaintenanceEventFields.WORKSTATION)) {
             DataDefinition workstationDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_WORKSTATION);
+
             scb.add(SearchRestrictions.belongsTo(SubassemblyFields.WORKSTATION, workstationDataDefinition,
                     filterValue.getLong(MaintenanceEventFields.WORKSTATION)));
         }
@@ -130,36 +137,59 @@ public class EventCriteriaModifiersCMP {
     public void selectFaultType(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(MaintenanceEventFields.SUBASSEMBLY)) {
             addSubassemblyCriteria(scb, filterValue);
-
         } else if (filterValue.has(MaintenanceEventFields.WORKSTATION)) {
             addWorkstationCriteria(scb, filterValue);
+        } else {
+            addDefaultCriteria(scb, filterValue);
         }
-
     }
 
     private void addSubassemblyCriteria(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         Long subassemblyId = filterValue.getLong(MaintenanceEventFields.SUBASSEMBLY);
-        addCriteriaForElementAndWorkstationType(scb, filterValue, subassemblyId, FaultTypeFields.SUBASSEMBLIES);
+
+        addCriteriaRestrictions(scb, filterValue, subassemblyId, FaultTypeFields.SUBASSEMBLIES);
     }
 
     private void addWorkstationCriteria(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         Long workstationId = filterValue.getLong(MaintenanceEventFields.WORKSTATION);
-        addCriteriaForElementAndWorkstationType(scb, filterValue, workstationId, FaultTypeFields.WORKSTATIONS);
+
+        addCriteriaRestrictions(scb, filterValue, workstationId, FaultTypeFields.WORKSTATIONS);
     }
 
-    private void addCriteriaForElementAndWorkstationType(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue,
-            Long elementId, String alias) {
-        SearchCriterion criterion;
-        if (filterValue.has(WorkstationFields.WORKSTATION_TYPE)) {
-            Long workstationTypeId = filterValue.getLong(WorkstationFields.WORKSTATION_TYPE);
-            criterion = SearchRestrictions.or(SearchRestrictions.eq(FaultTypeFields.WORKSTATION_TYPES + ".id", workstationTypeId),
-                    SearchRestrictions.eq(alias + ".id", elementId));
+    private void addDefaultCriteria(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        addCriteriaRestrictions(scb, filterValue, null, null);
+    }
+
+    private void addCriteriaRestrictions(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue, Long elementId,
+            String alias) {
+        SearchCriterion searchCriterion;
+
+        if (filterValue.has(MaintenanceEventFields.SUBASSEMBLY) || filterValue.has(MaintenanceEventFields.WORKSTATION)) {
+            if (filterValue.has(WorkstationFields.WORKSTATION_TYPE)) {
+                Long workstationTypeId = filterValue.getLong(WorkstationFields.WORKSTATION_TYPE);
+
+                searchCriterion = SearchRestrictions.or(
+                        SearchRestrictions.eq(FaultTypeFields.WORKSTATION_TYPES + ".id", workstationTypeId),
+                        SearchRestrictions.eq(alias + ".id", elementId));
+            } else {
+                searchCriterion = SearchRestrictions.eq(alias + ".id", elementId);
+            }
+
+            scb.createAlias(FaultTypeFields.WORKSTATION_TYPES, FaultTypeFields.WORKSTATION_TYPES, JoinType.LEFT)
+                    .createAlias(alias, alias, JoinType.LEFT)
+                    .add(SearchRestrictions.or(searchCriterion,
+                            SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                            SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
+                            SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         } else {
-            criterion = SearchRestrictions.eq(alias + ".id", elementId);
+            scb.add(SearchRestrictions.or(SearchRestrictions.in(FaultTypeFields.APPLIES_TO, getFaultTypeAppliesToStringValues()),
+                    SearchRestrictions.isNull(FaultTypeFields.APPLIES_TO),
+                    SearchRestrictions.eq(FaultTypeFields.IS_DEFAULT, true)));
         }
-        scb.createAlias(FaultTypeFields.WORKSTATION_TYPES, FaultTypeFields.WORKSTATION_TYPES, JoinType.LEFT)
-                .createAlias(alias, alias, JoinType.LEFT)
-                .add(SearchRestrictions.or(criterion, SearchRestrictions.eq(FaultTypeFields.NAME, L_OTHER)));
+    }
+
+    private List<String> getFaultTypeAppliesToStringValues() {
+        return Stream.of(FaultTypeAppliesTo.values()).map(FaultTypeAppliesTo::getStringValue).collect(Collectors.toList());
     }
 
     public void showEventsFromContext(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {

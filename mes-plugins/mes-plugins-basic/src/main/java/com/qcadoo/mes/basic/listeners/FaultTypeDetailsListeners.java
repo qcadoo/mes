@@ -21,39 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.constants;
+package com.qcadoo.mes.basic.listeners;
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
+import com.qcadoo.mes.basic.hooks.FaultTypeDetailsHooks;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
-public enum FaultTypeAppliesTo {
-    WORKSTATION_OR_SUBASSEMBLY("01workstationOrSubassembly"), WORKSTATION_TYPE("02workstationType"), NONE("");
+@Service
+public class FaultTypeDetailsListeners {
 
-    private final String appliesTo;
+    @Autowired
+    private FaultTypeDetailsHooks faultTypeDetailsHooks;
 
-    public static FaultTypeAppliesTo from(final Entity entity) {
-        return parseString(entity.getStringField(FaultTypeFields.APPLIES_TO));
-    }
+    private static final String L_FORM = "form";
 
-    private FaultTypeAppliesTo(final String appliesTo) {
-        this.appliesTo = appliesTo;
-    }
+    public void toggleAndClearGrids(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
-    public String getStringValue() {
-        return appliesTo;
-    }
+        Entity faultType = form.getPersistedEntityWithIncludedFormValues();
+        String appliesTo = faultType.getStringField(FaultTypeFields.APPLIES_TO);
 
-    public static FaultTypeAppliesTo parseString(final String appliesTo) {
-        if (StringUtils.isEmpty(appliesTo)) {
-            return NONE;
-        } else if ("01workstationOrSubassembly".equals(appliesTo)) {
-            return WORKSTATION_OR_SUBASSEMBLY;
-        } else if ("02workstationType".equals(appliesTo)) {
-            return WORKSTATION_TYPE;
-        }
-
-        throw new IllegalStateException("Unsupported AppliesTo: " + appliesTo);
+        faultTypeDetailsHooks.toggleGridsEnable(view, appliesTo, true);
     }
 
 }

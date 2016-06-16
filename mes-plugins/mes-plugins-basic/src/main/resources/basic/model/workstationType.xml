@@ -40,6 +40,8 @@
         <!-- <manyToMany name="divisions" model="division" joinField="workstationTypes" /> -->
         <boolean name="subassembly"/>
         <hasMany name="subassemblies" model="subassembly" joinField="workstationType" cascade="nullify"/>
+
+        <manyToMany name="faultTypes" model="faultType" joinField="workstationTypes" cascade="nullify"/>
     </fields>
 
     <hooks/>
