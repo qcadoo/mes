@@ -27,6 +27,7 @@
 <model name="maintenanceEvent" auditable="true" versionable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <!-- number generated in database trigger -->
         <string name="number" unique="true"/>
@@ -51,7 +52,7 @@
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
         <belongsTo name="sourceCost" model="sourceCost"/>
 
-        <belongsTo name="faultType" model="faultType" required="true"/>
+        <belongsTo name="faultType" plugin="basic" model="faultType" required="true"/>
 
         <hasMany name="staffWorkTimes" model="staffWorkTime"
                  joinField="maintenanceEvent" copyable="false" cascade="delete"/>
@@ -73,13 +74,13 @@
 
         <hasMany name="plannedEvents" plugin="cmmsMachineParts" model="plannedEvent" joinField="maintenanceEvent"
                  cascade="nullify"/>
-
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.cmmsMachineParts.validators.MaintenanceEventValidators"
                        method="validate"/>
         <onCreate class="com.qcadoo.mes.cmmsMachineParts.hooks.MaintenanceEventHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.cmmsMachineParts.hooks.MaintenanceEventHooks" method="onSave"/>
-
     </hooks>
+
 </model>

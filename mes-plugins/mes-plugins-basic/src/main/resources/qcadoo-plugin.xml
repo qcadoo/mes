@@ -33,19 +33,19 @@
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
-		http://schema.qcadoo.org/plugin.xsd
-		http://schema.qcadoo.org/modules/security
-	    http://schema.qcadoo.org/modules/security.xsd
-		http://schema.qcadoo.org/modules/model 
-		http://schema.qcadoo.org/modules/model.xsd 
-		http://schema.qcadoo.org/modules/view 
-		http://schema.qcadoo.org/modules/view.xsd 
-		http://schema.qcadoo.org/modules/localization 
-		http://schema.qcadoo.org/modules/localization.xsd
-		http://schema.qcadoo.org/modules/menu
-		http://schema.qcadoo.org/modules/menu.xsd
-		http://schema.qcadoo.org/modules/custom
-		http://schema.qcadoo.org/modules/custom.xsd">
+            http://schema.qcadoo.org/plugin.xsd
+            http://schema.qcadoo.org/modules/security
+            http://schema.qcadoo.org/modules/security.xsd
+            http://schema.qcadoo.org/modules/model
+            http://schema.qcadoo.org/modules/model.xsd
+            http://schema.qcadoo.org/modules/view
+            http://schema.qcadoo.org/modules/view.xsd
+            http://schema.qcadoo.org/modules/localization
+            http://schema.qcadoo.org/modules/localization.xsd
+            http://schema.qcadoo.org/modules/menu
+            http://schema.qcadoo.org/modules/menu.xsd
+            http://schema.qcadoo.org/modules/custom
+            http://schema.qcadoo.org/modules/custom.xsd">
 
     <information>
         <name>MES - Basic</name>
@@ -255,6 +255,8 @@
 
         <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL" description="Dostęp do terminalu rejestracji produkcji"/>
 
+        <security:role identifier="ROLE_REPAIR_ORDERS" description="Dostęp do zleceń naprawy"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -287,6 +289,8 @@
         <model:model model="palletNumber" resource="model/palletNumber.xml"/>
         <model:model model="palletNumberHelper" resource="model/palletNumberHelper.xml"/>
 
+        <model:model model="faultType" resource="model/faultType.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -318,6 +322,9 @@
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
         <menu:menu-item name="palletNumberHelpers" category="basic" view="palletNumberHelpersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
+
+        <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
+                        defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -387,6 +394,9 @@
 
         <view:view resource="view/palletNumberHelpersList.xml"/>
         <view:view resource="view/palletNumberHelperDetails.xml"/>
+
+        <view:view resource="view/faultTypesList.xml"/>
+        <view:view resource="view/faultTypeDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
 

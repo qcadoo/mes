@@ -53,7 +53,10 @@
         <manyToMany name="companies" model="company" joinField="workstations" cascade="nullify"/>
         <hasMany name="attachments" model="workstationAttachment" joinField="workstation" cascade="delete"/>
         <hasMany name="subassemblies" model="subassembly" joinField="workstation" cascade="nullify"/>
-        <hasMany name="subassembliesHelpers" model="subassemblyToWorkstationHelper" joinField="workstation" cascade="nullify"/>
+        <hasMany name="subassembliesHelpers" model="subassemblyToWorkstationHelper" joinField="workstation"
+                 cascade="nullify"/>
+
+        <manyToMany name="faultTypes" model="faultType" joinField="workstations" cascade="nullify"/>
     </fields>
 
     <hooks>

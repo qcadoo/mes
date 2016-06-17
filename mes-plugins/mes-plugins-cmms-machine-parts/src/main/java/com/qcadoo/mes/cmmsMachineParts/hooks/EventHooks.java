@@ -23,7 +23,8 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import com.google.common.base.Strings;
+import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -31,10 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
@@ -48,7 +50,6 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
-import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -131,7 +132,8 @@ public class EventHooks {
             String numberFieldValue = (String) numberField.getFieldValue();
 
             if (Strings.isNullOrEmpty(numberFieldValue)) {
-                DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
+                DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                        CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
                 Entity maintenanceEvent = maintenanceEventDD.get(formComponent.getEntityId());
 
                 numberField.setFieldValue(maintenanceEvent.getField(MaintenanceEventFields.NUMBER));
@@ -316,31 +318,26 @@ public class EventHooks {
         workstation.setEnabled(enabled);
     }
 
-    private void toggleEnabledForProductionLine(final ViewDefinitionState view,
-            final Entity eventEntity) {
+    private void toggleEnabledForProductionLine(final ViewDefinitionState view, final Entity eventEntity) {
         boolean enabled = eventEntity.getBelongsToField(MaintenanceEventFields.DIVISION) != null;
         LookupComponent productionLine = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.PRODUCTION_LINE);
         productionLine.setEnabled(enabled);
     }
 
-    private void toggleEnabledForFactory(final ViewDefinitionState view, final Entity eventEntity,
-            String contextField) {
+    private void toggleEnabledForFactory(final ViewDefinitionState view, final Entity eventEntity, String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField)
-                .getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
+        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.FACTORY) == null;
         LookupComponent factoryLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FACTORY);
         factoryLookup.setEnabled(enabled);
     }
 
-    private void toggleEnabledForDivision(final ViewDefinitionState view, final Entity eventEntity,
-            String contextField) {
+    private void toggleEnabledForDivision(final ViewDefinitionState view, final Entity eventEntity, String contextField) {
         if (eventEntity.getBelongsToField(contextField) == null) {
             return;
         }
-        boolean enabled = eventEntity.getBelongsToField(contextField)
-                .getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
+        boolean enabled = eventEntity.getBelongsToField(contextField).getBelongsToField(MaintenanceEventContextFields.DIVISION) == null;
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.DIVISION);
         divisionLookup.setEnabled(enabled);
     }
@@ -502,4 +499,5 @@ public class EventHooks {
             }
         }
     }
+
 }

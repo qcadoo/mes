@@ -34,6 +34,12 @@
 		<decimal name="orderedQuantity" required="true" >
 			<validatesRange from="0" exclusively="false" />
 		</decimal>
+		<decimal name="additionalQuantity" required="true" >
+			<validatesRange from="0" exclusively="false" />
+		</decimal>
+		<decimal name="conversion" required="true" >
+			<validatesRange from="0" exclusively="false" />
+		</decimal>
 		<decimal name="pricePerUnit">
 			<validatesRange from="0" />
 		</decimal>
@@ -43,7 +49,8 @@
 		<string name="description">
 			<validatesLength max="2048" />
 		</string>
-		
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
+        
 		<priority name="succession" scope="delivery" />
 	</fields>
 	<hooks>

@@ -185,8 +185,6 @@
 					fields="technologyOperationComponentNumber" width="120"/>
 			<option type="column" name="shiftName" fields="shiftName"
 					width="80"/>
-			<option type="column" name="staffName" fields="staffName"
-					width="100"/>
 			<option type="column" name="divisionNumber" fields="divisionNumber"
 					width="80"/>
 			<option type="column" name="state" fields="state"

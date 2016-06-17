@@ -49,7 +49,7 @@
                             <option type="searchable" value="name, number, description"/>
                             <option type="orderable" value="name, number, description"/>
                             <option type="expression"
-                                    value="#number + ' - ' + #name + ' - ' + #description"/>
+                                    value="#description + ' - ' + #number + ' - ' + #name"/>
                             <option type="fieldCode" value="description"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"

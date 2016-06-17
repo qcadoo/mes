@@ -63,14 +63,13 @@ public class OrderProductQuantityHooks {
         if (form.getEntityId() == null) {
             return;
         }
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                form.getEntityId());
+        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .get(form.getEntityId());
 
-        if (!blockAbilityToChangeApprovalOrder()
-                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
-                        || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue()) || order.getStringField(
-                        STATE).equals(OrderState.PENDING.getStringValue()))) {
+        if (!blockAbilityToChangeApprovalOrder() && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue()))) {
             List<String> references = Arrays.asList(PLANNED_QUANTITY);
             changedEnabledFields(view, references, true);
 
@@ -81,10 +80,9 @@ public class OrderProductQuantityHooks {
                     COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
             changedEnabledFields(view, references, false);
         }
-        if (!blockAbilityToChangeApprovalOrder()
-                && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
-                        || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue()) || order.getStringField(
-                        STATE).equals(OrderState.INTERRUPTED.getStringValue()))) {
+        if (!blockAbilityToChangeApprovalOrder() && (order.getStringField(STATE).equals(OrderState.ACCEPTED.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
+                || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue()))) {
 
             List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
                     COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
@@ -108,7 +106,7 @@ public class OrderProductQuantityHooks {
     }
 
     public void fillProductUnit(final ViewDefinitionState state) {
-        List<String> references = Arrays.asList("unitCCQ", "unitCPQ", "unitAOPP", "unitRAOPTP");
+        List<String> references = Arrays.asList("unitCCQ", "unitCPQ", "unitAOPP", "unitRAOPTP", "wastesQuantityUnit");
         fillProductUnit(state, references);
     }
 
@@ -120,8 +118,8 @@ public class OrderProductQuantityHooks {
             if (productState.getFieldValue() == null) {
                 unitState.setFieldValue("");
             } else {
-                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                        (Long) productState.getFieldValue());
+                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                        .get((Long) productState.getFieldValue());
                 unitState.setFieldValue(product.getStringField("unit"));
             }
         }

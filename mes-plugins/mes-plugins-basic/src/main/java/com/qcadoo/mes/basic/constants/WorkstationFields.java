@@ -25,7 +25,6 @@ package com.qcadoo.mes.basic.constants;
 
 public final class WorkstationFields {
 
-
     private WorkstationFields() {
 
     }
@@ -40,10 +39,26 @@ public final class WorkstationFields {
 
     public static final String DIVISION = "division";
 
-    public static final String ATTACHMENT = "attachment";
+    public static final String SERIAL_NUMBER = "serialNumber";
+
+    public static final String UDT_NUMBER = "udtNumber";
+
+    public static final String SERIES = "series";
+
+    public static final String PRODUCER = "producer";
+
+    public static final String PRODUCTION_DATE = "productionDate";
+
+    public static final String WNK_NUMBER = "wnkNumber";
+
+    public static final String COMPANIES = "companies";
+
+    public static final String ATTACHMENTS = "attachments";
 
     public static final String SUBASSEMBLIES = "subassemblies";
 
     public static final String SUBASSEMBLIES_HELPERS = "subassembliesHelpers";
+
+    public static final String FAULT_TYPES = "faultTypes";
 
 }

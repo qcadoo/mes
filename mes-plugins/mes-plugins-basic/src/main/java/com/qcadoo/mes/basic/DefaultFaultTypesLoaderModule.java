@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts;
+package com.qcadoo.mes.basic;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,16 +40,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.FaultTypeFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.Module;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class DefaultFaultTypesLoaderModule extends Module {
+public class DefaultFaultTypesLoaderModule {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultFaultTypesLoaderModule.class);
 
@@ -59,8 +58,7 @@ public class DefaultFaultTypesLoaderModule extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Override
-    public void enable() {
+    public void loadFaultTypes() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Fault types table will be populated ...");
@@ -128,11 +126,12 @@ public class DefaultFaultTypesLoaderModule extends Module {
     }
 
     private DataDefinition getFaultTypeDataDefinition() {
-        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_FAULT_TYPE);
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FAULT_TYPE);
     }
 
     private InputStream getFaultTypesXmlFile() throws IOException {
-        return DefaultFaultTypesLoaderModule.class.getResourceAsStream("/cmmsMachineParts/model/data/defaultFaultTypes" + "_"
+        return DefaultFaultTypesLoaderModule.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
+
 }

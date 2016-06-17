@@ -35,6 +35,10 @@ public final class OrderedProductFields {
 
     public static final String ORDERED_QUANTITY = "orderedQuantity";
 
+    public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
+
+    public static final String CONVERSION = "conversion";
+
     public static final String SUCCESSION = "succession";
 
     public static final String DESCRIPTION = "description";
@@ -42,5 +46,7 @@ public final class OrderedProductFields {
     public static final String PRICE_PER_UNIT = "pricePerUnit";
 
     public static final String TOTAL_PRICE = "totalPrice";
+
+    public static final String ADDITIONAL_CODE = "additionalCode";
 
 }

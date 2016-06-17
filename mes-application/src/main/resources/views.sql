@@ -70,7 +70,7 @@ CREATE TABLE jointable_coverageorderhelper_orderdto (coverageorderhelper_id bigi
 
 DROP TABLE IF EXISTS orders_orderPlanningListDto;
 
-CREATE OR REPLACE VIEW orders_orderPlanningListDto AS SELECT o.id, o.active, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered, product.number AS productNumber, tech.number AS technologyNumber, product.unit, line.number AS productionLineNumber, master.number AS masterOrderNumber, division.name AS divisionName FROM orders_order o JOIN basic_product product ON (o.product_id = product.id) LEFT JOIN technologies_technology tech ON (o.technology_id = tech.id) JOIN productionLines_productionLine line ON (o.productionline_id = line.id) LEFT JOIN masterOrders_masterOrder  master ON (o.masterorder_id = master.id) LEFT JOIN basic_division division ON (tech.division_id = division.id)
+CREATE OR REPLACE VIEW orders_orderPlanningListDto AS SELECT o.id, o.active, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered, product.number AS productNumber, tech.number AS technologyNumber, product.unit, line.number AS productionLineNumber, master.number AS masterOrderNumber, division.name AS divisionName FROM orders_order o JOIN basic_product product ON (o.product_id = product.id) LEFT JOIN technologies_technology tech ON (o.technology_id = tech.id) JOIN productionLines_productionLine line ON (o.productionline_id = line.id) LEFT JOIN masterOrders_masterOrder  master ON (o.masterorder_id = master.id) LEFT JOIN basic_division division ON (tech.division_id = division.id);
 
 -- end
 
@@ -109,14 +109,14 @@ CREATE OR REPLACE VIEW goodfood_labeldto AS SELECT label.id AS id, staff.name AS
 
 -- events views
 
-DROP TABLE IF EXISTS cmmsmachineparts_plannedEventListDto;
+DROP TABLE IF EXISTS cmmsmachineparts_plannedeventlistdto;
 
-CREATE OR REPLACE VIEW cmmsmachineparts_plannedEventListDto AS SELECT e.id, e.number, e.type, owner.name || ' ' || owner.surname  AS ownerName, e.description, factory.number AS factoryNumber, factory.id AS factory_id, division.number AS divisionNumber, division.id AS division_id, productionLine.number AS productionLineNumber, workstation.number AS workstationNumber, subassembly.number AS subassemblyNumber, e.date, e.counter, e.createUser, e.createDate, e.state, context.id AS plannedEventContext_id FROM cmmsmachineparts_plannedevent e LEFT JOIN basic_staff owner ON (e.owner_id = owner.id) JOIN basic_factory factory ON (e.factory_id = factory.id) JOIN basic_division division ON (e.division_id = division.id) LEFT JOIN productionLines_productionLine productionLine ON (e.productionline_id = productionLine.id) LEFT JOIN basic_workstation workstation ON (e.workstation_id = workstation.id) LEFT JOIN basic_subassembly subassembly ON (e.subassembly_id = subassembly.id) LEFT JOIN cmmsmachineparts_plannedeventcontext context ON (e.plannedeventcontext_id = context.id);
+CREATE OR REPLACE VIEW cmmsmachineparts_plannedeventlistdto AS SELECT plannedevent.id AS id, plannedevent.number AS number, plannedevent.type AS type, plannedevent.description AS description, plannedevent.date::TIMESTAMP WITHOUT time ZONE AS date, plannedevent.counter AS counter, plannedevent.createUser AS createuser, plannedevent.createDate AS createdate, plannedevent.state AS state, context.id AS plannedeventcontext_id, sourcecost.id AS sourcecost_id, staff.name || ' ' || staff.surname AS ownername, factory.id ::integer AS factory_id, factory.number AS factorynumber, division.id::integer AS division_id, division.number AS divisionnumber, workstation.id AS workstation_id, workstation.number AS workstationnumber, subassembly.id AS subassembly_id, subassembly.number AS subassemblynumber, company.id AS company_id, productionLine.number AS productionlinenumber FROM cmmsmachineparts_plannedevent plannedevent LEFT JOIN cmmsmachineparts_plannedeventcontext context ON plannedevent.plannedeventcontext_id = context.id LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON plannedevent.sourcecost_id = sourcecost.id LEFT JOIN basic_staff staff ON plannedevent.owner_id = staff.id LEFT JOIN basic_factory factory ON plannedevent.factory_id = factory.id LEFT JOIN basic_division division ON plannedevent.division_id = division.id LEFT JOIN basic_workstation workstation ON plannedevent.workstation_id = workstation.id LEFT JOIN basic_subassembly subassembly ON plannedevent.subassembly_id = subassembly.id LEFT JOIN basic_company company ON plannedevent.company_id = company.id LEFT JOIN productionLines_productionLine productionLine ON plannedevent.productionline_id = productionline.id;
 
 
-DROP TABLE IF EXISTS cmmsmachineparts_maintenanceEventListDto;
+DROP TABLE IF EXISTS cmmsmachineparts_maintenanceeventlistdto;
 
-CREATE OR REPLACE VIEW cmmsmachineparts_maintenanceEventListDto AS SELECT e.id, e.number, e.type, staff.name || ' ' || staff.surname  AS personReceivingName, e.description, faultType.name AS faultTypeNumber, factory.number AS factoryNumber, division.number AS divisionNumber, factory.id AS factory_id, division.id AS division_id, productionLine.number AS productionLineNumber, workstation.number AS workstationNumber, subassembly.number AS subassemblyNumber, e.createUser, e.createDate, e.state, context.id AS maintenanceEventContext_id FROM cmmsmachineparts_maintenanceevent e LEFT JOIN basic_staff staff ON (e.personreceiving_id = staff.id) JOIN cmmsmachineparts_faulttype faultType ON (e.faulttype_id = faultType.id) JOIN basic_factory factory ON (e.factory_id = factory.id) JOIN basic_division division ON (e.division_id = division.id) LEFT JOIN productionLines_productionLine productionLine ON (e.productionline_id = productionLine.id) LEFT JOIN basic_workstation workstation ON (e.workstation_id = workstation.id) LEFT JOIN basic_subassembly subassembly ON (e.subassembly_id = subassembly.id) LEFT JOIN cmmsmachineparts_maintenanceeventcontext context ON (e.maintenanceeventcontext_id = context.id);
+CREATE OR replace VIEW cmmsmachineparts_maintenanceeventlistdto AS SELECT maintenanceevent.id AS id, maintenanceevent.number AS number, maintenanceevent.type AS type, maintenanceevent.createuser AS createuser, maintenanceevent.createdate As createdate, maintenanceevent.state AS state, maintenanceevent.description AS description, context.id AS maintenanceeventcontext_id, staff.name || ' ' || staff.surname as personreceivingname, factory.id::integer as factory_id, factory.number as factorynumber, division.id::integer as division_id, division.number as divisionnumber, workstation.number as workstationnumber, subassembly.number as subassemblynumber, faultType.name AS faulttypename, productionLine.number as productionlinenumber FROM cmmsmachineparts_maintenanceevent maintenanceevent LEFT JOIN cmmsmachineparts_maintenanceeventcontext context ON maintenanceevent.maintenanceeventcontext_id = context.id LEFT JOIN basic_staff staff ON maintenanceevent.personreceiving_id = staff.id LEFT JOIN basic_factory factory ON maintenanceevent.factory_id = factory.id LEFT JOIN basic_division division ON maintenanceevent.division_id = division.id LEFT JOIN basic_workstation workstation ON maintenanceevent.workstation_id = workstation.id LEFT JOIN basic_subassembly subassembly ON maintenanceevent.subassembly_id = subassembly.id LEFT JOIN basic_faulttype faultType ON maintenanceevent.faulttype_id = faultType.id LEFT JOIN productionLines_productionLine productionLine ON maintenanceevent.productionline_id = productionLine.id;
 
 -- end
 
@@ -185,13 +185,16 @@ CREATE OR REPLACE VIEW technologies_technologydto AS SELECT technology.id, techn
 
 -- end
 
-CREATE OR REPLACE FUNCTION prepare_documentpositionparameters() RETURNS VOID AS $$ BEGIN insert into materialflowresources_documentpositionparameters (id) values (1); insert into materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) values         (1,1,'act', 1, false),(2,2,'number', 1, false),(3,3,'product', 1, false),(4,4,'additionalCode', 1, true),(5,5,'quantity', 1, false),(6,6,'unit', 1, false),(7,7,'givenquantity', 1, false),(8,8,'givenunit', 1, false),(9,9,'conversion', 1, false),(10,10,'resource', 1, true),(11,11,'price', 1, true),(12,12,'batch', 1, true),(13,13,'productiondate', 1, true),(14,14,'expirationdate', 1, true),(15,15,'storageLocation', 1, true),(16,16,'palletNumber', 1, true),(17,17,'typeOfPallet', 1, true); END; $$ LANGUAGE 'plpgsql'; 
+CREATE OR REPLACE FUNCTION prepare_documentpositionparameters() RETURNS VOID AS $$ BEGIN insert into materialflowresources_documentpositionparameters (id) values (1); insert into materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) values         (1,1,'act', 1, false),(2,2,'number', 1, false),(3,3,'product', 1, false),(4,4,'additionalCode', 1, true),(5,5,'quantity', 1, false),(6,6,'unit', 1, false),(7,7,'givenquantity', 1, false),(8,8,'givenunit', 1, false),(9,9,'conversion', 1, false),(10,10,'resource', 1, true),(11,11,'price', 1, true),(12,12,'batch', 1, true),(13,13,'productiondate', 1, true),(14,14,'expirationdate', 1, true),(15,15,'storageLocation', 1, true),(16,16,'palletNumber', 1, true),(17,17,'typeOfPallet', 1, true); END; $$ LANGUAGE 'plpgsql';
+
 SELECT * FROM prepare_documentpositionparameters();
+
 DROP FUNCTION prepare_documentpositionparameters();
 
 -- VIEW: orders_orderdto
 
 ALTER TABLE productflowthrudivision_warehouseissue DROP COLUMN order_id;
+ALTER TABLE repairs_repairorder DROP COLUMN order_id;
 
 DROP TABLE IF EXISTS orders_orderdto;
 
@@ -218,5 +221,24 @@ CREATE OR REPLACE VIEW productflowthrudivision_producttoissuedto AS SELECT produ
 DROP TABLE IF EXISTS materialflowresources_documentdto;
 
 CREATE OR REPLACE VIEW materialflowresources_documentdto AS SELECT document.id AS id, document.number AS number, document.name AS name, document.type AS type, document.time AS time, document.state AS state, document.active AS active, locationfrom.id::integer AS locationfrom_id, locationfrom.name AS locationfromname, locationto.id::integer AS locationto_id, locationto.name AS locationtoname, company.id::integer AS company_id, company.name AS companyname, securityuser.id::integer AS user_id, securityuser.firstname || ' ' || securityuser.lastname AS username, maintenanceevent.id::integer AS maintenanceevent_id, maintenanceevent.number AS maintenanceeventnumber, plannedevent.id::integer AS plannedevent_id, plannedevent.number AS plannedeventnumber, delivery.id::integer AS delivery_id, delivery.number AS deliverynumber, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, suborder.id::integer AS suborder_id, suborder.number AS subordernumber FROM materialflowresources_document document LEFT JOIN materialflow_location locationfrom ON locationfrom.id = document.locationfrom_id LEFT JOIN materialflow_location locationto ON locationto.id = document.locationto_id LEFT JOIN basic_company company ON company.id = document.company_id LEFT JOIN qcadoosecurity_user securityuser ON securityuser.id = document.user_id LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON maintenanceevent.id = document.maintenanceevent_id LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON plannedevent.id = document.plannedevent_id LEFT JOIN deliveries_delivery delivery ON delivery.id = document.delivery_id LEFT JOIN orders_order ordersorder ON ordersorder.id = document.order_id LEFT JOIN subcontractorportal_suborder suborder ON suborder.id = document.suborder_id;
+
+-- end
+
+
+-- VIEW: repairs_repairorderdto
+
+ALTER TABLE repairs_repairorder ADD COLUMN order_id bigint;
+
+DROP TABLE IF EXISTS repairs_repairorderdto;
+
+CREATE OR REPLACE VIEW repairs_repairorderdto AS SELECT repairorder.id AS id, repairorder.number AS number, repairorder.state AS state, repairorder.createdate AS createdate, repairorder.startdate AS startdate, repairorder.enddate AS enddate, repairorder.quantitytorepair AS quantitytorepair, repairorder.quantityrepaired AS quantityrepaired, repairorder.lack AS lack, repairorder.active AS active, orderdto.id::integer AS order_id, orderdto.number AS ordernumber, division.id::integer AS division_id, division.number AS divisionnumber, shift.id::integer AS shift_id, shift.name AS shiftname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname FROM repairs_repairorder repairorder LEFT JOIN orders_orderdto orderdto ON orderdto.id = repairorder.order_id LEFT JOIN basic_division division ON division.id = repairorder.division_id LEFT JOIN basic_shift shift ON shift.id = repairorder.shift_id LEFT JOIN basic_product product ON product.id = repairorder.product_id;
+
+CREATE SEQUENCE repairs_repairorder_number_seq;
+
+CREATE OR REPLACE FUNCTION generate_repairorder_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('repairs_repairorder_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_repairorder_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_repairorder_number(); return NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER repairs_repairorder_trigger_number BEFORE INSERT ON repairs_repairorder FOR EACH ROW EXECUTE PROCEDURE generate_and_set_repairorder_number_trigger();
 
 -- end

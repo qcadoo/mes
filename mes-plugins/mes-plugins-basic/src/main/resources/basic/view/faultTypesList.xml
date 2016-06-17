@@ -23,7 +23,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_FAULT_TYPES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_FAULT_TYPES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="faultTypesList" modelName="faultType" menuAccessible="true">
 
@@ -44,14 +45,15 @@
             <option type="multiselect" value="true"/>
             <option type="fullscreen" value="true"/>
 
-            <option type="correspondingView" value="cmmsMachineParts/faultTypeDetails"/>
+            <option type="correspondingView" value="basic/faultTypeDetails"/>
             <option type="correspondingComponent" value="form"/>
 
             <option type="order" column="name" direction="asc"/>
             <option type="fullscreen" value="true"/>
+
             <listener event="select"
                       method="disableActionsWhenDefault"
-                      class="com.qcadoo.mes.cmmsMachineParts.listeners.FaultTypeListListeners"/>
+                      class="com.qcadoo.mes.basic.listeners.FaultTypeListListeners"/>
         </component>
 
 
@@ -60,7 +62,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.FaultTypeListHooks" method="onBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.FaultTypeListHooks" method="onBeforeRender"/>
     </hooks>
 
 </view>

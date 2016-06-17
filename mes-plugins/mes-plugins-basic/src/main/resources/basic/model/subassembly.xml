@@ -35,7 +35,7 @@
             <validatesLength max="1024"/>
         </string>
         <belongsTo name="workstationType" model="workstationType" required="true"/>
-        <belongsTo name="workstation" model="workstation" copyable="false" />
+        <belongsTo name="workstation" model="workstation" copyable="false"/>
 
         <string name="serialNumber"/>
         <string name="series"/>
@@ -44,7 +44,9 @@
         <date name="lastRepairsDate"/>
         <manyToMany name="companies" model="company" joinField="subassemblies" cascade="nullify"/>
         <hasMany name="attachments" model="subassemblyAttachment" joinField="subassembly" cascade="delete"/>
-        <dictionary name="type" dictionary="typeOfSubassembly" copyable="false" />
+        <dictionary name="type" dictionary="typeOfSubassembly" copyable="false"/>
+
+        <manyToMany name="faultTypes" model="faultType" joinField="subassemblies" cascade="nullify"/>
     </fields>
 
     <hooks>

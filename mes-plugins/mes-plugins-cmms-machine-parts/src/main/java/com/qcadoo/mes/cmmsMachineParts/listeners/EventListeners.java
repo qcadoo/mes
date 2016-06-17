@@ -37,8 +37,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.cmmsMachineParts.FaultTypesService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -98,7 +98,7 @@ public class EventListeners {
 
         EntityTree tree = factoryStructureForEventHooks.getGeneratedTree();
         Optional<Entity> maybeElement = tree.stream().filter(element -> element.getId() == factoryStructureId).findFirst();
-       
+
         if (!maybeElement.isPresent()) {
             viewDefinitionState.addMessage("cmmsMachineParts.error.elementNotSelected", ComponentState.MessageType.FAILURE);
             return;
