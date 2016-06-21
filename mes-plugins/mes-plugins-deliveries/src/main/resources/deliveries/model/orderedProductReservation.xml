@@ -41,7 +41,6 @@
     </fields>
     <hooks>
         <onView class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"  method="onView"/>
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"
-                       method="validate" />
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationHooks"  method="validate" />
     </hooks>
 </model>

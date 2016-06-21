@@ -50,4 +50,12 @@ public final class DeliveredProductFields {
     public static final String STORAGE_LOCATION = "storageLocation";
 
     public static final String ADDITIONAL_CODE = "additionalCode";
+
+    public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
+
+    public static final String CONVERSION = "conversion";
+
+    public static final String IS_WASTE = "isWaste";
+
+    public static final String ADDITIONAL_UNIT = "additionalUnit";
 }

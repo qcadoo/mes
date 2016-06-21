@@ -23,34 +23,22 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class DeliveriesConstants {
+public final class DeliveredProductMultiFields {
 
-    private DeliveriesConstants() {
+    private DeliveredProductMultiFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "deliveries";
+    public static final String DELIVERY = "delivery";
 
-    public static final String MODEL_DELIVERY = "delivery";
+    public static final String DELIVERED_PRODUCT_MULTI_POSITIONS = "deliveredProductMultiPositions";
 
-    public static final String MODEL_DELIVERY_STATE_CHANGE = "deliveryStateChange";
+    public static final String DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
 
-    public static final String MODEL_DELIVERED_PRODUCT = "deliveredProduct";
+    public static final String PALLET_NUMBER = "palletNumber";
 
-    public static final String MODEL_ORDERED_PRODUCT = "orderedProduct";
+    public static final String PALLET_TYPE = "palletType";
 
-    public static final String MODEL_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
-
-    public static final String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
-
-    public static final String MODEL_COMPANY_PRODUCT = "companyProduct";
-
-    public static final String MODEL_COMPANY_PRODUCTS_FAMILY = "companyProductsFamily";
-
-    public static final String MODEL_PARAMETER_DELIVERY_ORDER_COLUMN = "parameterDeliveryOrderColumn";
-
-    public static final String MODEL_DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
-
-    public static final String MODEL_DELIVERED_PRODUCT_MULTI_POSITION = "deliveredProductMultiPosition";
+    public static final String STORAGE_LOCATION = "storageLocation";
 
 }

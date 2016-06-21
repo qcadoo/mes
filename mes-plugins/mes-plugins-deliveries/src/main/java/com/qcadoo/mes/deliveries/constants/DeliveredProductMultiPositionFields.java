@@ -23,34 +23,28 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class DeliveriesConstants {
+public final class DeliveredProductMultiPositionFields {
 
-    private DeliveriesConstants() {
+    private DeliveredProductMultiPositionFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "deliveries";
+    public static final String DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
 
-    public static final String MODEL_DELIVERY = "delivery";
+    public static final String PRODUCT = "product";
 
-    public static final String MODEL_DELIVERY_STATE_CHANGE = "deliveryStateChange";
+    public static final String QUANTITY = "quantity";
 
-    public static final String MODEL_DELIVERED_PRODUCT = "deliveredProduct";
+    public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
 
-    public static final String MODEL_ORDERED_PRODUCT = "orderedProduct";
+    public static final String CONVERSION = "conversion";
 
-    public static final String MODEL_COLUMN_FOR_DELIVERIES = "columnForDeliveries";
+    public static final String IS_WASTE = "isWaste";
 
-    public static final String MODEL_COLUMN_FOR_ORDERS = "columnForOrders";
+    public static final String EXPIRATION_DATE = "expirationDate";
 
-    public static final String MODEL_COMPANY_PRODUCT = "companyProduct";
+    public static final String UNIT = "unit";
 
-    public static final String MODEL_COMPANY_PRODUCTS_FAMILY = "companyProductsFamily";
-
-    public static final String MODEL_PARAMETER_DELIVERY_ORDER_COLUMN = "parameterDeliveryOrderColumn";
-
-    public static final String MODEL_DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
-
-    public static final String MODEL_DELIVERED_PRODUCT_MULTI_POSITION = "deliveredProductMultiPosition";
+    public static final String ADDITIONAL_UNIT = "additionalUnit";
 
 }

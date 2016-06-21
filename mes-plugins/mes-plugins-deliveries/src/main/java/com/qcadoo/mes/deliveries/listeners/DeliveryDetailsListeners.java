@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +35,10 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -43,8 +46,11 @@ import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -88,6 +94,9 @@ public class DeliveryDetailsListeners {
     @Autowired
     private DeliveryReportPdf deliveryReportPdf;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
     }
@@ -124,6 +133,71 @@ public class DeliveryDetailsListeners {
     public final void copyProductsWithQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         copyOrderedProductToDelivered(view, true);
+    }
+
+    public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deleteOldEntries();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity delivery = form.getPersistedEntityWithIncludedFormValues();
+        Entity deliveredProductMultiEntity = createDeliveredProductMultiEntity(delivery, view);
+        String url = "../page/deliveries/deliveredProductAddMulti.html?context={\"form.id\":\""
+                + deliveredProductMultiEntity.getId() + "\"}";
+        view.openModal(url);
+    }
+
+    private void deleteOldEntries() {
+        DataDefinition deliveredProductMulti = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI);
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        List<Entity> oldEntries = deliveredProductMulti.find().add(SearchRestrictions.lt("updateDate", cal.getTime())).list()
+                .getEntities();
+        oldEntries.stream().forEach(e -> e.getDataDefinition().delete(e.getId()));
+    }
+
+    private Entity createDeliveredProductMultiEntity(Entity delivery, ViewDefinitionState view) {
+        Entity deliveredProductMulti = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
+        deliveredProductMulti.setField("delivery", delivery);
+        List<Entity> orderedProducts = getSelectedProducts(view);
+        List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
+        DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                "deliveredProductMultiPosition");
+        for (Entity orderedProduct : orderedProducts) {
+            Entity deliveredProductMultiPosition = createDeliveredProductMultiPosition(orderedProduct,
+                    deliveredProductMultiPositionDD);
+            deliveredProductMultiPosition.setField("deliveredProductMulti", deliveredProductMulti);
+            deliveredProductMultiPosition = deliveredProductMultiPositionDD.save(deliveredProductMultiPosition);
+            deliveredProductMultiPositions.add(deliveredProductMultiPosition);
+        }
+        deliveredProductMulti.setField("deliveredProductMultiPositions", deliveredProductMultiPositions);
+        return deliveredProductMulti.getDataDefinition().save(deliveredProductMulti);
+    }
+
+    private List<Entity> getSelectedProducts(ViewDefinitionState view) {
+        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference("orderedProducts");
+        return orderdProductGrid.getSelectedEntities();
+    }
+
+    private Entity createDeliveredProductMultiPosition(Entity orderedProduct, DataDefinition deliveredProductMultiPositionDD) {
+        Entity deliveredProductMuliPosition = deliveredProductMultiPositionDD.create();
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        String unit = product.getStringField(ProductFields.UNIT);
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        if (additionalUnit == null) {
+            additionalUnit = unit;
+        }
+
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.QUANTITY,
+                orderedProduct.getField(OrderedProductFields.ORDERED_QUANTITY));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
+                orderedProduct.getField(OrderedProductFields.ADDITIONAL_QUANTITY));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION,
+                orderedProduct.getField(OrderedProductFields.CONVERSION));
+        return deliveredProductMuliPosition;
     }
 
     private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {

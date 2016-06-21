@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.3
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="deliveredProductAddMulti" modelName="deliveredProductMulti" modelPlugin="deliveries">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
+            <group name="action">
+                <bigButton name="createDeliveriedProducts" icon="iconProducts24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+										#{form}.performEvent('createDeliveriedProducts', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+
+        <windowTab name="mainTab">
+            <component type="form" name="product" reference="form">
+
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="2" hasBorders="false">
+				<layoutElement column="1" row="1">
+                    <component type="lookup" name="palletNumber" reference="palletNumber"
+                        field="#{form}.palletNumber">
+
+                        <option type="searchable" value="number" />
+                        <option type="orderable" value="number" />
+
+                        <option type="expression"
+                            value="#number" />
+                        <option type="fieldCode" value="number" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="select" name="palletType" field="#{form}.palletType"
+                               reference="palletType"/>
+                </layoutElement>
+                <layoutElement column="3" row="1">
+                    <component type="lookup" name="storageLocation" reference="storageLocation"
+                        field="#{form}.storageLocation">
+
+                        <option type="column" name="locationNumber" fields="location"
+                                expression="#location['number']" />
+                        <option type="column" name="locationName" fields="location"
+                                expression="#location['name']" />
+
+                        <option type="searchable" value="number,locationNumber,locationName" />
+                        <option type="orderable" value="number,locationNumber,locationName" />
+
+                        <option type="expression"
+                            value="#number" />
+                        <option type="fieldCode" value="number" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="3">
+                	<component type="awesomeDynamicList" name="deliveredProductMultiPositions"
+                		source="#{form}.deliveredProductMultiPositions" reference="deliveredProductMultiPositions">
+                		<components>
+	                		<component type="gridLayout" name="positions"
+	                			columns="5" rows="2">
+	                			<layoutElement column="1" row="1" width="2">
+	                                <component type="lookup" name="product" field="product"
+	                                           reference="product">
+										<option type="column" name="name" fields="name" link="true"/>
+			
+			                            <option type="searchable" value="number,name"/>
+			                            <option type="orderable" value="number,name"/>
+			
+			                            <option type="expression" value="#number + ' - ' + #name"/>
+			                            <option type="fieldCode" value="number"/>
+	                                	<listener event="onSelectedEntityChange" method="fillUnits"
+ 											class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners" />
+                                    </component>
+	                            </layoutElement>
+	                			<layoutElement column="3" row="1" width="2">
+	                                <component type="calendar" name="expirationDate" field="expirationDate"
+	                                           reference="expirationDate"/>
+	                            </layoutElement>
+	                			<layoutElement column="5" row="1">
+	                                <component type="checkbox" name="isWaste" field="isWaste"
+	                                           reference="isWaste"/>
+	                            </layoutElement>
+	                            
+	                            <layoutElement column="1" row="2">
+                                <component type="input" name="quantity"
+                                           reference="quantity" field="quantity">
+                                    <option type="alignment" value="right" />
+                                    <option type="labelWidth" value="45" />
+                                    <listener event="onInputChange"
+                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
+                                           method="quantityChanged"/>
+                                </component>
+	                            </layoutElement>
+	                            <layoutElement column="2" row="2">
+	                                <component type="input" name="unit" field="unit"
+	                                           defaultEnabled="never" hasLabel="false" reference="unit">
+	                                    <option type="textRepresentationOnDisabled" value="true" />
+	                                </component>
+	                            </layoutElement>
+	                            <layoutElement column="3" row="2">
+	                                <component type="input" name="additionalQuantity"
+	                                           reference="additionalQuantity" field="additionalQuantity">
+	                                    <option type="alignment" value="right" />
+	                                    <option type="labelWidth" value="45" />
+	                                    <listener event="onInputChange"
+                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
+                                           method="additionalQuantityChanged"/>
+	                                </component>
+	                            </layoutElement>
+	                            <layoutElement column="4" row="2">
+	                                <component type="input" name="additionalUnit" field="additionalUnit"
+	                                           defaultEnabled="never" hasLabel="false" reference="additionalUnit">
+	                                    <option type="textRepresentationOnDisabled" value="true" />
+	                                </component>
+	                            </layoutElement>
+	                            <layoutElement column="5" row="2">
+	                                <component type="input" name="conversion"
+	                                           reference="conversion" field="conversion">
+	                                    <option type="alignment" value="right" />
+	                                    <option type="labelWidth" value="45" />
+	                                    <listener event="onInputChange"
+                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
+                                           method="quantityChanged"/>
+	                                </component>
+	                            </layoutElement>
+                            
+	                		</component>
+                		</components>
+                	</component>
+                </layoutElement>
+                    
+
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="' '"/>
+                
+                <listener event="createDeliveriedProducts" class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
+                          method="createDeliveriedProducts"/>
+            </component>
+        </windowTab>
+
+
+    </component>
+
+    <hooks>
+    	<beforeRender
+            class="com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks"
+            method="beforeRender" />
+    </hooks>
+</view>
