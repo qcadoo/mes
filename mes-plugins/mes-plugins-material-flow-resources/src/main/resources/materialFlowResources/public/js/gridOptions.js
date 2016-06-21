@@ -543,8 +543,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function fillWithAttributesFromResource(resource, rowId) {
             $.get('/integration/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
                 updateFieldValue('batch', resource['batch'], rowId);
-                updateFieldValue('productiondate', resource['productionDate'], rowId);
-                updateFieldValue('expirationdate', resource['expirationDate'], rowId);
+                updateFieldValue('productionDate', resource['productionDate'], rowId);
+                updateFieldValue('expirationDate', resource['expirationDate'], rowId);
                 updateFieldValue('storageLocation', resource['storageLocation'], rowId);
                 updateFieldValue('palletNumber', resource['palletNumber'], rowId);
                 updateFieldValue('additionalCode', resource['additionalCode'], rowId);
@@ -554,7 +554,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productiondate', 'expirationdate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet'];
+            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
@@ -1411,15 +1411,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'expirationdate',
-                    index: 'expirationdate',
+                    name: 'expirationDate',
+                    index: 'expirationDate',
                     width: 150,
                     editable: true,
                     required: true,
                     edittype: "text",
                     editoptions: {
                         dataInit: function (element) {
-                            if (getColModelByIndex('expirationdate').editoptions.readonly !== 'readonly') {
+                            if (getColModelByIndex('expirationDate').editoptions.readonly !== 'readonly') {
                                 var options = $.datepicker.regional[window.locale];
                                 options.showOn = 'button';
 //                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
@@ -1437,15 +1437,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
-                    name: 'productiondate',
-                    index: 'productiondate',
+                    name: 'productionDate',
+                    index: 'productionDate',
                     width: 150,
                     editable: true,
                     required: true,
                     edittype: "text",
                     editoptions: {
                         dataInit: function (element) {
-                            if (getColModelByIndex('productiondate').editoptions.readonly !== 'readonly') {
+                            if (getColModelByIndex('productionDate').editoptions.readonly !== 'readonly') {
                                 var options = $.datepicker.regional[window.locale];
                                 options.showOn = 'button';
 //                                options.buttonImage = '/qcadooView/public/css/crud/images/form/f_calendar.png';
@@ -1561,7 +1561,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
-                if (outDocument && (columnIndex === 'expirationdate' || columnIndex === 'productiondate' ||
+                if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
                         columnIndex === 'batch' || columnIndex === 'price' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
