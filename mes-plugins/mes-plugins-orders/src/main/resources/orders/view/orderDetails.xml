@@ -24,19 +24,20 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderDetails" modelName="order">
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderDetails" modelName="order">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardFormTemplate" />
-			<group name="status">
-				<smallButton name="acceptOrder" icon="startIcon16.png"
-					state="disabled">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="acceptOrder" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (this.state == "accept") {
@@ -794,7 +795,7 @@
                        columns="3" rows="3">
                 <layoutElement column="1" row="1" height="3">
                     <component type="gridLayout" name="prodQuantityTablayout"
-                               columns="1" rows="3">
+                               columns="1" rows="4">
                         <layoutElement column="1" row="1">
                             <component type="borderLayout" name="commissionedAmount">
                                 <component type="gridLayout" name="commissionedAmountGridLayout"
@@ -856,6 +857,29 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="3">
+                            <component type="gridLayout" name="wastesQuantityGridLayout"
+                                       columns="4" rows="1" reference="wastesQuantityGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="wastesQuantity"
+                                               reference="wastesQuantity"
+                                               field="#{form}.wastesQuantity" defaultEnabled="false">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
+
+                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
+                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="wastesQuantityUnit" reference="wastesQuantityUnit"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4">
                             <component type="gridLayout"
                                        name="remainingAmountOfProductToProduceGridLayout" columns="4"
                                        rows="1" reference="remainingAmountOfProductToProduceGridLayout"
@@ -935,8 +959,8 @@
 
                 <option type="searchable" value="dateAndTime,previousState,currentState,datesChanged"/>
                 <option type="orderable" value="dateAndTime,previousState,currentState,datesChanged"/>
-                
-                <option type="fullscreen" value="true" />
+
+                <option type="fullscreen" value="true"/>
                 <option type="fixedHeight" value="true"/>
 
                 <option type="correspondingView" value="orders/orderStateChangeDetails"/>

@@ -110,7 +110,8 @@ public interface ProductionCountingService {
     /**
      * Gets production trackings for order
      *
-     * @param order order
+     * @param order
+     *            order
      * @return production trackings
      */
     List<Entity> getProductionTrackingsForOrder(final Entity order);
@@ -118,7 +119,8 @@ public interface ProductionCountingService {
     /**
      * Is type of production recording basic
      *
-     * @param typeOfProductionRecording type of production recording
+     * @param typeOfProductionRecording
+     *            type of production recording
      * @return boolean
      */
     boolean isTypeOfProductionRecordingBasic(final String typeOfProductionRecording);
@@ -126,7 +128,8 @@ public interface ProductionCountingService {
     /**
      * Is type of production recording for each
      *
-     * @param typeOfProductionRecording type of production recording
+     * @param typeOfProductionRecording
+     *            type of production recording
      * @return boolean
      */
     boolean isTypeOfProductionRecordingForEach(final String typeOfProductionRecording);
@@ -134,7 +137,8 @@ public interface ProductionCountingService {
     /**
      * Is type of production recording cumulated
      *
-     * @param typeOfProductionRecording type of production recording
+     * @param typeOfProductionRecording
+     *            type of production recording
      * @return boolean
      */
     boolean isTypeOfProductionRecordingCumulated(final String typeOfProductionRecording);
@@ -142,7 +146,8 @@ public interface ProductionCountingService {
     /**
      * Check if type of production recording is empty or basic
      *
-     * @param typeOfProductionRecording type of production recording
+     * @param typeOfProductionRecording
+     *            type of production recording
      * @return boolean
      */
     boolean checkIfTypeOfProductionRecordingIsEmptyOrBasic(final String typeOfProductionRecording);
@@ -150,7 +155,8 @@ public interface ProductionCountingService {
     /**
      * Is calculate operation cost mode hourly
      *
-     * @param calculateOperationCostMode calculate operation cost mode
+     * @param calculateOperationCostMode
+     *            calculate operation cost mode
      * @return boolean
      */
     boolean isCalculateOperationCostModeHourly(final String calculateOperationCostMode);
@@ -158,7 +164,8 @@ public interface ProductionCountingService {
     /**
      * Is calculate operation cost mode piecework
      *
-     * @param calculateOperationCostMode calculate operation cost mode
+     * @param calculateOperationCostMode
+     *            calculate operation cost mode
      * @return boolean
      */
     boolean isCalculateOperationCostModePiecework(final String calculateOperationCostMode);
@@ -166,8 +173,10 @@ public interface ProductionCountingService {
     /**
      * Validates order
      *
-     * @param productionTrackingReportOrBalanceDD production tracking report or production balance data definition
-     * @param productionTrackingReportOrBalance   production tracking report or production balance
+     * @param productionTrackingReportOrBalanceDD
+     *            production tracking report or production balance data definition
+     * @param productionTrackingReportOrBalance
+     *            production tracking report or production balance
      * @return boolean
      */
     boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
@@ -176,10 +185,14 @@ public interface ProductionCountingService {
     /**
      * Sets components state
      *
-     * @param view                        view
-     * @param componentReferenceNames     component reference names
-     * @param isEnabled                   is enabled
-     * @param requestComponentUpdateState request component update state
+     * @param view
+     *            view
+     * @param componentReferenceNames
+     *            component reference names
+     * @param isEnabled
+     *            is enabled
+     * @param requestComponentUpdateState
+     *            request component update state
      */
     void setComponentsState(final ViewDefinitionState view, final List<String> componentReferenceNames, final boolean isEnabled,
             final boolean requestComponentUpdateState);
@@ -187,10 +200,14 @@ public interface ProductionCountingService {
     /**
      * Sets components visibility
      *
-     * @param view                        view
-     * @param componentReferenceNames     component reference names
-     * @param isVisible                   is visible
-     * @param requestComponentUpdateState request component update state
+     * @param view
+     *            view
+     * @param componentReferenceNames
+     *            component reference names
+     * @param isVisible
+     *            is visible
+     * @param requestComponentUpdateState
+     *            request component update state
      */
     void setComponentsVisibility(final ViewDefinitionState view, final List<String> componentReferenceNames,
             final boolean isVisible, final boolean requestComponentUpdateState);
@@ -198,33 +215,42 @@ public interface ProductionCountingService {
     /**
      * Changes done quantity and amount of produced quantity field state
      *
-     * @param view view
+     * @param view
+     *            view
      */
     void changeDoneQuantityAndAmountOfProducedQuantityFieldState(final ViewDefinitionState view);
 
     /**
      * Fills fields from product
      *
-     * @param view                                view
-     * @param trackingOperationProductComponentDD tracking operation product component data definition
+     * @param view
+     *            view
+     * @param trackingOperationProductComponentDD
+     *            tracking operation product component data definition
      */
     void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition trackingOperationProductComponentDD);
 
     /**
      * Fills product field
      *
-     * @param view view
+     * @param view
+     *            view
      */
     void fillProductField(final ViewDefinitionState view);
 
     /**
      * Fills production trackings grid
      *
-     * @param view view
+     * @param view
+     *            view
      */
     void fillProductionTrackingsGrid(final ViewDefinitionState view);
 
     BigDecimal getRegisteredProductValueForOperationProductIn(final Entity operationProduct, final BigDecimal planed);
 
     BigDecimal getRegisteredProductValueForOperationProductOut(final Entity operationProduct, final BigDecimal planed);
+
+    BigDecimal getWastesSumForProduct(final Entity product, final Entity order, final Entity operation);
+
+    BigDecimal getUsedQuantitySumForProduct(final Entity product, final Entity order, final Entity operation);
 }

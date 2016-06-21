@@ -50,21 +50,31 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="producedSum" persistent="false"/>
+        <decimal name="wastesSum" persistent="false"/>
+        <decimal name="remainingQuantity" persistent="false"/>
+
+        <decimal name="wastesQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
         <dictionary name="givenUnit" dictionary="units"/>
         <hasMany name="setTrackingOperationProductsInComponents"
-                         joinField="trackingOperationProductOutComponent" model="setTrackingOperationProductInComponents"
-                         cascade="delete"/>
+                 joinField="trackingOperationProductOutComponent" model="setTrackingOperationProductInComponents"
+                 cascade="delete"/>
     </fields>
 
     <hooks>
         <onView
-            class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
-            method="onView"/>
+                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
+                method="onView"/>
         <onSave
-            class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
-            method="onSave"/>
+                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductOutComponentHooks"
+                method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
-                       method="validatesWith"/>            
+                       method="validatesWith"/>
     </hooks>
 
 </model>

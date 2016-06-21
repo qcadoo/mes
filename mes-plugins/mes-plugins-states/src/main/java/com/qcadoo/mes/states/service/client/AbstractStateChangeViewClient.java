@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.states.service.client;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.CANCELED;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.FAILURE;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -42,12 +32,19 @@ import com.qcadoo.mes.states.exception.StateTransitionNotAlloweException;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
+import static com.qcadoo.mes.states.constants.StateChangeStatus.*;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
 
 public abstract class AbstractStateChangeViewClient implements StateChangeViewClient {
 
@@ -74,6 +71,11 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     public final void changeState(final ViewContextHolder viewContext, final String targetState) {
         final List<Entity> entities = viewClientUtil.getEntitiesFromComponent(viewContext);
         for (Entity entity : entities) {
+            DataDefinition dd = entity.getDataDefinition();
+            Entity optionalMasterModel = dd.tryGetMasterModelEntity(entity.getId());
+            if (optionalMasterModel != null) {
+                entity = optionalMasterModel;
+            }
             changeState(viewContext, targetState, entity);
         }
     }
