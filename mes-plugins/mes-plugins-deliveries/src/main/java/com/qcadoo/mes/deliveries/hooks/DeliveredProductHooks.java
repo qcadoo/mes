@@ -35,16 +35,32 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DeliveredProductHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        createDefaultReservations(deliveredProduct);
+    }
 
     public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);
@@ -89,6 +105,37 @@ public class DeliveredProductHooks {
         }
 
         return true;
+    }
+
+    private void createDefaultReservations(Entity deliveredProduct) {
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        if (product != null) {
+            List<Entity> deliveredProductReservations = new ArrayList<>();
+            Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+            Entity orderedProduct = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).find().add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product)).uniqueResult();
+            if (orderedProduct != null) {
+                EntityList reservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+                for (Entity reservation : reservations) {
+                    DataDefinition deliveredProductReservationDD = getDeliveredProductReservationDD();
+                    Entity deliveredProductReservation = deliveredProductReservationDD.create();
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY, 0);
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY_UNIT,
+                            reservation.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.DELIVERED_QUANTITY, 0);
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.DELIVERED_QUANTITY_UNIT,
+                            reservation.getStringField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT));
+                    deliveredProductReservation.setField(DeliveredProductReservationFields.LOCATION, reservation.getBelongsToField(OrderedProductReservationFields.LOCATION));
+
+                    deliveredProductReservations.add(deliveredProductReservation);
+                }
+            }
+            deliveredProduct.setField(DeliveredProductFields.RESERVATIONS, deliveredProductReservations);
+        }
+    }
+
+    private DataDefinition getDeliveredProductReservationDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_RESERVATION);
     }
 
 }

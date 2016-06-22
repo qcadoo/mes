@@ -58,4 +58,6 @@ public final class DeliveredProductFields {
     public static final String IS_WASTE = "isWaste";
 
     public static final String ADDITIONAL_UNIT = "additionalUnit";
+
+    public static final String RESERVATIONS = "reservations";
 }

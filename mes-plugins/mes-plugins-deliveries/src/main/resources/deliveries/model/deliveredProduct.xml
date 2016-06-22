@@ -61,14 +61,12 @@
 
         <priority name="succession" scope="delivery" />
         <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
-                 model="deliveredProductReservation" copyable="true" />
+                 model="deliveredProductReservation" plugin="deliveries" copyable="true" />
     </fields>
     <hooks>
-        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" 
-                method="calculateDeliveredProductPricePerUnit"/>
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                       method="checkIfDeliveredProductAlreadyExists" />
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                       method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="calculateDeliveredProductPricePerUnit"/>
+        <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="onCreate"/>
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredProductAlreadyExists" />
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
     </hooks>
 </model>
