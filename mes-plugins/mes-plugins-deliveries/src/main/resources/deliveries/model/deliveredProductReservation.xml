@@ -30,18 +30,17 @@
     <fields>        
         <belongsTo name="deliveredProduct" model="deliveredProduct" plugin="deliveries" required="true" />
         <belongsTo name="location" model="location" plugin="materialFlow" required="true" />
-<!--        <decimal name="orderedQuantity" required="true" >
+        <decimal name="deliveredQuantity" required="true" >
             <validatesRange from="0" exclusively="false" />
         </decimal>
         <decimal name="additionalQuantity" required="true" >
             <validatesRange from="0" exclusively="false" />
         </decimal>  
-        <string name="orderedQuantityUnit" persistent="false" />      
-        <string name="additionalQuantityUnit" persistent="false" />      -->
+        <string name="deliveredQuantityUnit" persistent="false" />      
+        <string name="additionalQuantityUnit" persistent="false" />      
     </fields>
     <hooks>
         <onView class="com.qcadoo.mes.deliveries.hooks.DeliveredProductReservationHooks"  method="onView"/>
-        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductReservationHooks"
-                       method="validate" />
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductReservationHooks" method="validate" />
     </hooks>
 </model>

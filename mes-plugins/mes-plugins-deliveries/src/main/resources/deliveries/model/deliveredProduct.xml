@@ -30,7 +30,7 @@
     <fields>
         <belongsTo name="delivery" model="delivery" required="true" />
         <belongsTo name="product" model="product" plugin="basic"
-                           required="true" />
+                   required="true" />
         <decimal name="deliveredQuantity">
             <validatesRange from="0" />
         </decimal>
@@ -49,26 +49,26 @@
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"  />
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
 		
-		<decimal name="additionalQuantity">
-			<validatesRange from="0" />
-		</decimal>
-		<decimal name="conversion">
-			<validatesRange from="0" />
-		</decimal>
-		<boolean name="isWaste"/>
+        <decimal name="additionalQuantity">
+            <validatesRange from="0" />
+        </decimal>
+        <decimal name="conversion">
+            <validatesRange from="0" />
+        </decimal>
+        <boolean name="isWaste"/>
 		
-		<dictionary name="additionalUnit" dictionary="units" required="true"/>
+        <dictionary name="additionalUnit" dictionary="units" required="false" />
 
         <priority name="succession" scope="delivery" />
-        <hasMany name="reservations" joinField="deliveredProduct"
+        <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
                  model="deliveredProductReservation" copyable="true" />
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" 
-                        method="calculateDeliveredProductPricePerUnit"/>
+                method="calculateDeliveredProductPricePerUnit"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                               method="checkIfDeliveredProductAlreadyExists" />
+                       method="checkIfDeliveredProductAlreadyExists" />
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                               method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
+                       method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
     </hooks>
 </model>

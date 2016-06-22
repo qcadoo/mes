@@ -52,16 +52,16 @@
                         </component>
                     </layoutElement>   
                     
-<!--                    <layoutElement column="1" row="2" width="1">                        
-                        <component type="gridLayout" name="gridLayoutOrderedQuantity" columns="2" rows="1" hasBorders="false">
+                    <layoutElement column="1" row="2" width="1">                        
+                        <component type="gridLayout" name="gridLayoutDeliveredQuantity" columns="2" rows="1" hasBorders="false">
                             <layoutElement column="1" row="1" width="1">
-                                <component type="input" name="orderedQuantity" reference="orderedQuantity" field="orderedQuantity">
+                                <component type="input" name="deliveredQuantity" reference="deliveredQuantity" field="deliveredQuantity">
                                     <listener event="onInputChange" method="quantityChange"
-                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
+                                              class="com.qcadoo.mes.deliveries.listeners.DeliveredProductReservationDetailsListeners" />
                                 </component>
                             </layoutElement>
                             <layoutElement column="2" row="1" width="1">
-                                <component type="input" name="orderedQuantityUnit" defaultEnabled="never" hasLabel="false" reference="orderedQuantityUnit">
+                                <component type="input" name="deliveredQuantityUnit" defaultEnabled="never" hasLabel="false" reference="deliveredQuantityUnit">
                                     <option type="textRepresentationOnDisabled" value="true" />
                                 </component>                        
                             </layoutElement>
@@ -73,7 +73,7 @@
                             <layoutElement column="1" row="1" width="1">
                                 <component type="input" name="additionalQuantity" reference="additionalQuantity" field="additionalQuantity">
                                     <listener event="onInputChange" method="additionalQuantityChange"
-                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
+                                              class="com.qcadoo.mes.deliveries.listeners.DeliveredProductReservationDetailsListeners" />
                                 </component>
                             </layoutElement>
                         
@@ -83,7 +83,7 @@
                                 </component>                        
                             </layoutElement> 
                         </component>
-                    </layoutElement>             -->
+                    </layoutElement>             
                     
                     
                 </component>

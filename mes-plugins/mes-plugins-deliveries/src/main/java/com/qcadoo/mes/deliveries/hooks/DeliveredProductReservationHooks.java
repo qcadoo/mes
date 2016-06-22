@@ -24,43 +24,33 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjection;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import java.math.BigDecimal;
 
 @Service
 public class DeliveredProductReservationHooks {
 
     public void onView(final DataDefinition deliveredProductReservationDD, final Entity deliveredProductReservation) {
-//        Entity orderedProduct = orderedProductReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT);
-//        if (orderedProduct != null) {
-//            Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-//
-//            if (product != null) {
-//                String unit = product.getStringField(ProductFields.UNIT);
-//                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-//
-//                if (additionalUnit == null) {
-//                    additionalUnit = unit;
-//                }
-//
-//                orderedProductReservation.setField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT, unit);
-//                orderedProductReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT, additionalUnit);
-//            }
-//        }
+        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
+        if (deliveredProduct != null) {
+            Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+            if (product != null) {
+                String unit = product.getStringField(ProductFields.UNIT);
+                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+                if (additionalUnit == null) {
+                    additionalUnit = unit;
+                }
+
+                deliveredProductReservation.setField(DeliveredProductReservationFields.DELIVERED_QUANTITY_UNIT, unit);
+                deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY_UNIT, additionalUnit);
+            }
+        }
     }
 
     public boolean validate(final DataDefinition deliveredProductReservationDD, final Entity deliveredProductReservation) {
@@ -148,5 +138,4 @@ public class DeliveredProductReservationHooks {
 //
 //        return sumIsNotExceeded;
 //    }
-
 }
