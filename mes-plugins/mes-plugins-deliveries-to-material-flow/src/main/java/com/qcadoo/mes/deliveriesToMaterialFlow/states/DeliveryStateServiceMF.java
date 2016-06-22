@@ -110,7 +110,9 @@ public class DeliveryStateServiceMF {
                 if (StringUtils.isEmpty(additionalUnit)) {
                     documentBuilder.addPosition(product, positionQuantity, positionQuantity,
                             product.getStringField(ProductFields.UNIT), BigDecimal.ONE, price(deliveredProduct, currency),
-                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
+                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct), null,
+                            storageLocation(deliveredProduct), palletNumber(deliveredProduct), typeOfPallet(deliveredProduct),
+                            additionalCode(deliveredProduct));
                 } else {
 
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
@@ -127,7 +129,9 @@ public class DeliveryStateServiceMF {
                     }
                     documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
                             conversion, price(deliveredProduct, currency), batch(deliveredProduct),
-                            productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
+                            productionDate(deliveredProduct), expirationDate(deliveredProduct), null,
+                            storageLocation(deliveredProduct), palletNumber(deliveredProduct), typeOfPallet(deliveredProduct),
+                            additionalCode(deliveredProduct));
                 }
             }
         }
@@ -179,6 +183,22 @@ public class DeliveryStateServiceMF {
 
     private Date expirationDate(Entity deliveredProduct) {
         return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
+    }
+
+    private String typeOfPallet(Entity deliveredProduct) {
+        return deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
+    }
+
+    private Entity additionalCode(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+    }
+
+    private Entity palletNumber(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+    }
+
+    private Entity storageLocation(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
     }
 
     private Date productionDate(Entity deliveredProduct) {

@@ -24,12 +24,14 @@
 package com.qcadoo.mes.deliveries.hooks;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -38,6 +40,9 @@ import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -56,20 +61,63 @@ public class DeliveredProductDetailsHooks {
     private DeliveriesService deliveriesService;
 
     @Autowired
+    private UnitConversionService unitConversionService;
+
+    @Autowired
     private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
 
     public void beforeRender(final ViewDefinitionState view) {
         fillOrderedQuantities(view);
         fillUnitFields(view);
+        fillConversionAndAdditionalQuantity(view);
         fillCurrencyFields(view);
         setDeliveredQuantityFieldRequired(view);
         setFilters(view);
     }
 
-    public void fillUnitFields(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
+    private void fillConversionAndAdditionalQuantity(ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity formEntity = form.getEntity();
+        Entity product = formEntity.getBelongsToField("product");
+        if (product == null) {
+            return;
+        }
+        ComponentState unitComponent = view.getComponentByReference("orderedQuantityUnit");
+        String unit = (String) unitComponent.getFieldValue();
+        ComponentState additionalUnitComponent = view.getComponentByReference("additionalQuantityUnit");
+        String additionalUnit = (String) additionalUnitComponent.getFieldValue();
+        BigDecimal quantity = getOrderedProductQuantity(formEntity);
+        ComponentState additionalQuantityComponent = view.getComponentByReference("additionalQuantity");
+        ComponentState conversionComponent = view.getComponentByReference("conversion");
+        if (unit.equals(additionalUnit)) {
+            additionalQuantityComponent.setFieldValue(quantity);
+            conversionComponent.setFieldValue(BigDecimal.ONE);
+        } else {
+            BigDecimal conversion = getConversion(product, unit, additionalUnit);
+            conversionComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(conversion, 0));
+            BigDecimal newAdditionalQuantity = quantity.multiply(conversion, numberService.getMathContext());
+            newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
+                    RoundingMode.HALF_UP);
+            additionalQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+        }
+    }
 
-        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, referenceNames);
+    private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            return unitConversions.asUnitToConversionMap().get(additionalUnit);
+        } else {
+            return BigDecimal.ZERO;
+        }
+    }
+
+    public void fillUnitFields(final ViewDefinitionState view) {
+        List<String> unitNames = Lists.newArrayList("damagedQuantityUnit", "deliveredQuantityUnit", "orderedQuantityUnit");
+        List<String> additionalUnitNames = Lists.newArrayList("additionalQuantityUnit");
+
+        deliveriesService.fillUnitFields(view, DeliveredProductFields.PRODUCT, unitNames, additionalUnitNames);
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {

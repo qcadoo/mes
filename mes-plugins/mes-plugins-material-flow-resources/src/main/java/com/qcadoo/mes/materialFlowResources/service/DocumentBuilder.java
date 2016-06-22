@@ -23,20 +23,25 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
 
 public class DocumentBuilder {
 
@@ -148,6 +153,19 @@ public class DocumentBuilder {
         return this;
     }
 
+    public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
+            final Entity palletNumber, final String typeOfPallet, final Entity additionalCode) {
+        Preconditions.checkArgument(product != null, "Product argument is required.");
+        Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
+
+        Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
+                expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode);
+        positions.add(position);
+        return this;
+    }
+
     /**
      * Creates position with given field values (with the same base and given unit)
      * 
@@ -199,6 +217,19 @@ public class DocumentBuilder {
         position.setField(PositionFields.CONVERSION, conversion);
         position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.GIVEN_UNIT, givenUnit);
+        return position;
+    }
+
+    public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
+            final Entity palletNumber, final String typeOfPallet, final Entity additionalCode) {
+        Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
+                expirationDate, resource);
+        position.setField(PositionFields.STORAGE_LOCATION, storageLocation);
+        position.setField(PositionFields.PALLET_NUMBER, palletNumber);
+        position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
+        position.setField(PositionFields.ADDITIONAL_CODE, additionalCode);
         return position;
     }
 

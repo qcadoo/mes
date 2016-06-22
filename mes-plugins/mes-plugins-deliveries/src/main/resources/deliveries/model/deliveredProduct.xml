@@ -57,7 +57,7 @@
         </decimal>
         <boolean name="isWaste"/>
 		
-        <dictionary name="additionalUnit" dictionary="units" required="false" />
+		<dictionary name="additionalUnit" dictionary="units"/>
 
         <priority name="succession" scope="delivery" />
         <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"

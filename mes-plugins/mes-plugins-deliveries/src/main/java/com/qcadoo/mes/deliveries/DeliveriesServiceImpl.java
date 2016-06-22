@@ -257,19 +257,31 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+            final List<String> additionalUnitNames) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
         Entity product = productLookup.getEntity();
 
         String unit = "";
+        String additionalUnit = "";
 
         if (product != null) {
             unit = product.getStringField(ProductFields.UNIT);
+            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (additionalUnit == null) {
+                additionalUnit = unit;
+            }
         }
 
         for (String referenceName : referenceNames) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
             field.setFieldValue(unit);
+            field.requestComponentUpdateState();
+        }
+
+        for (String additionalUnitName : additionalUnitNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(additionalUnitName);
+            field.setFieldValue(additionalUnit);
             field.requestComponentUpdateState();
         }
     }
@@ -545,5 +557,4 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         showProduct.requestUpdate(true);
         window.requestRibbonRender();
     }
-
 }

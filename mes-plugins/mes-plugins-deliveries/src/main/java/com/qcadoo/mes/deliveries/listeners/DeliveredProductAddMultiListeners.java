@@ -79,7 +79,10 @@ public class DeliveredProductAddMultiListeners {
         Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         EntityList deliveredProductMultiPositions = deliveredProductMulti
                 .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
-
+        if (deliveredProductMultiPositions.isEmpty()) {
+            view.addMessage("deliveries.deliveredProductMulti.error.emptyPositions", MessageType.FAILURE);
+            return;
+        }
         DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
         List<Entity> deliveredProducts = Lists.newArrayList(delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));

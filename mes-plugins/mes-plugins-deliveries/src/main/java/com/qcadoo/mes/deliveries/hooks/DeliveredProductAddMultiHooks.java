@@ -23,12 +23,15 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -54,7 +57,23 @@ public class DeliveredProductAddMultiHooks {
                 conversion.setEnabled(false);
                 conversion.requestComponentUpdateState();
             }
+
+            boldRequired(formComponent);
         }
+
+        FieldComponent palletNumber = (FieldComponent) view.getComponentByReference(DeliveredProductMultiFields.PALLET_NUMBER);
+        palletNumber.setRequired(true);
+        FieldComponent storageLocation = (FieldComponent) view
+                .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
+        storageLocation.setRequired(true);
+    }
+
+    private void boldRequired(final FormComponent formComponent) {
+        Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.EXPIRATION_DATE,
+                DeliveredProductMultiPositionFields.QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
+                .forEach(f -> {
+                    formComponent.findFieldComponentByName(f).setRequired(true);
+                });
     }
 
 }

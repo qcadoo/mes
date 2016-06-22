@@ -37,7 +37,6 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -53,20 +52,18 @@ public class OrderedProductDetailsHooks {
     private DeliveriesService deliveriesService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
-
-    @Autowired
     private NumberService numberService;
 
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
+        List<String> additionalUnitNames = Lists.newArrayList("additionalQuantityUnit");
 
-        deliveriesService.fillUnitFields(view, OrderedProductFields.PRODUCT, referenceNames);
-        fillAdditionalUnit(view);
+        deliveriesService.fillUnitFields(view, OrderedProductFields.PRODUCT, referenceNames, additionalUnitNames);
+        fillConversion(view);
         fillAdditionalCodesLookup(view);
     }
 
-    private void fillAdditionalUnit(final ViewDefinitionState view) {
+    private void fillConversion(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
         Entity product = productLookup.getEntity();
 
@@ -77,12 +74,7 @@ public class OrderedProductDetailsHooks {
                 conversionField.setFieldValue(BigDecimal.ONE);
                 conversionField.setEnabled(false);
                 conversionField.requestComponentUpdateState();
-
-                additionalUnit = product.getStringField(ProductFields.UNIT);
             }
-            FieldComponent field = (FieldComponent) view.getComponentByReference("additionalQuantityUnit");
-            field.setFieldValue(additionalUnit);
-            field.requestComponentUpdateState();
         }
 
     }
