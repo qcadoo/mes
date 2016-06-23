@@ -88,7 +88,6 @@ public class OrderedProductHooks {
                 BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
                 newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, RoundingMode.HALF_UP);
                 reservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
-                reservation.getDataDefinition().save(reservation);
             }
         }
     }

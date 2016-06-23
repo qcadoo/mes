@@ -226,6 +226,9 @@
                 <bigButton name="assignStorageLocations"
                            icon="copyIcon24.png" 
                            action="#{form}.fireEvent(assignStorageLocations);"/>
+                <bigButton name="recalculateReservations"
+                           icon="generateIcon24.png" 
+                           action="#{form}.fireEvent(recalculateReservations);"/>
             </group>
             <group name="relatedDelivery">
                 <bigButton name="createRelatedDelivery" icon="genealogyIcon24.png"
@@ -540,6 +543,9 @@
                 <listener event="assignStorageLocations"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="assignStorageLocations"/>
+                <listener event="recalculateReservations"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                          method="recalculateReservations"/>
                 <listener event="createRelatedDelivery"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="createRelatedDelivery"/>

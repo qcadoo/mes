@@ -86,17 +86,19 @@ public class DeliveredProductReservationHooks {
 
     private boolean locationUnique(Entity deliveredProductReservation) {
         Entity location = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.LOCATION);
+        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
         if (location != null) {
             SearchCriterion criterion;
 
             SearchCriterion criterionLocation = SearchRestrictions.belongsTo(DeliveredProductReservationFields.LOCATION, location);
+            SearchCriterion criterionDeliveredProduct = SearchRestrictions.belongsTo(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
 
             if (deliveredProductReservation.getId() == null) {
-                criterion = criterionLocation;
+                criterion = SearchRestrictions.and(criterionLocation, criterionDeliveredProduct);
 
             } else {
                 SearchCriterion criterionId = SearchRestrictions.idNe(deliveredProductReservation.getId());
-                criterion = SearchRestrictions.and(criterionLocation, criterionId);
+                criterion = SearchRestrictions.and(criterionLocation, criterionDeliveredProduct, criterionId);
             }
 
             boolean locationUnique = deliveredProductReservation.getDataDefinition().count(criterion) == 0;
@@ -114,7 +116,10 @@ public class DeliveredProductReservationHooks {
 
     private boolean sumIsNotExceeded(Entity deliveredProductReservation) {
         Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
-        BigDecimal productDeliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
+        BigDecimal productDeliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+        if (productDeliveredQuantity == null) {
+            return true;
+        }
         BigDecimal reservationDeliveredQuantity = deliveredProductReservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
 
         SearchCriteriaBuilder searchCriteriaBuilder = deliveredProductReservation.getDataDefinition().find();

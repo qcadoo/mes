@@ -37,6 +37,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -97,6 +98,9 @@ public class DeliveryDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ReservationService reservationService;
+
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
     }
@@ -133,6 +137,13 @@ public class DeliveryDetailsListeners {
     public final void copyProductsWithQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         copyOrderedProductToDelivered(view, true);
+    }
+
+    public final void recalculateReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Long deliveryId = form.getEntityId();
+        reservationService.recalculateReservationsForDelivery(deliveryId);
+        view.addMessage("deliveries.delivery.recalculateReservations", MessageType.SUCCESS);
     }
 
     public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
