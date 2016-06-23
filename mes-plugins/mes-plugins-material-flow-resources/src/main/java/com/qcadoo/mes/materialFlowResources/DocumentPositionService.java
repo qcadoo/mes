@@ -429,7 +429,6 @@ public class DocumentPositionService {
 
     public boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
             boolean useAdditionalCode) {
-
         // boolean addMethodOfDisposalCondition = false;
         //
         // String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
