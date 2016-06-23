@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialFlowResources;
 
 import java.math.BigDecimal;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -430,14 +429,16 @@ public class DocumentPositionService {
 
     public boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
             boolean useAdditionalCode) {
-        boolean addMethodOfDisposalCondition = false;
 
-        String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
-        Date date = jdbcTemplate.queryForObject(query, paramMap, Date.class);
-        if (date != null) {
-            addMethodOfDisposalCondition = true;
-        }
-        return addMethodOfDisposalCondition;
+        // boolean addMethodOfDisposalCondition = false;
+        //
+        // String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
+        // Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
+        // if(date != null){
+        // addMethodOfDisposalCondition = true;
+        // }
+        // return addMethodOfDisposalCondition;
+        return true;
     }
 
 }
