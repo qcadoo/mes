@@ -78,6 +78,7 @@ public class MaintenanceEventContextService {
         } else {
             maintenanceEventContextEntity = confirmContext(maintenanceEventContextEntity, args);
         }
+
         formComponent.setEntity(maintenanceEventContextEntity);
     }
 
@@ -94,10 +95,15 @@ public class MaintenanceEventContextService {
     private Entity confirmContext(Entity maintenanceEventContextEntity, String[] args) {
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, true);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
+
         Long maintenanceEventContextEntityId = maintenanceEventContextEntity.getId();
+
         Map<String, Object> parameters = new HashMap<>();
+
         parameters.put("contextId", maintenanceEventContextEntityId);
+
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
         if (args.length > 0 && args[0].equals(L_PLANNED_EVENT)) {
             String sql = "update cmmsmachineparts_plannedevent set plannedeventcontext_id = :contextId";
 
@@ -108,6 +114,7 @@ public class MaintenanceEventContextService {
 
             jdbcTemplate.update(sql, namedParameters);
         }
+
         return maintenanceEventContextEntity;
     }
 
@@ -126,6 +133,7 @@ public class MaintenanceEventContextService {
         } else {
             Long id = maintenanceEventContextEntity.getId();
             maintenanceEventContextEntity = maintenanceEventContextEntityFromDb;
+
             if (id == null) {
                 maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, false);
             }
@@ -176,9 +184,11 @@ public class MaintenanceEventContextService {
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup customActions = ribbon.getGroupByName("customActions");
+
         if (customActions == null) {
             return;
         }
+
         for (RibbonActionItem ribbonActionItem : customActions.getItems()) {
             ribbonActionItem.setEnabled(enabled);
             ribbonActionItem.requestUpdate(true);
@@ -191,16 +201,19 @@ public class MaintenanceEventContextService {
         FilterValueHolder filterValueHolder = gridComponent.getFilterValue();
 
         Entity factoryEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.FACTORY);
+
         if (factoryEntity != null) {
-            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_FACTORY,
+            filterValueHolder.put(EventCriteriaModifiersCMP.L_MAINTENANCE_EVENT_CONTEXT_FACTORY,
                     Math.toIntExact(factoryEntity.getId()));
         }
 
         Entity divisionEntity = maintenanceEventContext.getBelongsToField(MaintenanceEventContextFields.DIVISION);
+
         if (divisionEntity != null) {
-            filterValueHolder.put(EventCriteriaModifiersCMP.EVENT_CONTEXT_FILTER_PARAMETER_DIVISION,
+            filterValueHolder.put(EventCriteriaModifiersCMP.L_MAINTENANCE_EVENT_CONTEXT_DIVISION,
                     Math.toIntExact(divisionEntity.getId()));
         }
+
         gridComponent.setFilterValue(filterValueHolder);
     }
 
@@ -212,12 +225,15 @@ public class MaintenanceEventContextService {
 
         for (Entity eventEntity : grid.getSelectedEntities()) {
             eventEntity.setField(MaintenanceEventFields.MAINTENANCE_EVENT_CONTEXT, form.getEntityId());
+
             maintenanceEventDD.save(eventEntity);
         }
     }
 
     public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
         FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(L_FORM);
+
         return prepareContextEntity(formComponent.getEntity());
     }
+
 }
