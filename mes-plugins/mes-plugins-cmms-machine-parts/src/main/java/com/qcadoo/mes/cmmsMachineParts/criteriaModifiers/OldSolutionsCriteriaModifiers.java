@@ -33,24 +33,27 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class OldSolutionsCriteriaModifiers {
 
-    public void showSolutionsDivision(final SearchCriteriaBuilder scb) {
-        showSolutionsLine(scb);
-        scb.add(SearchRestrictions.isNull(MaintenanceEventFields.PRODUCTION_LINE));
+    public void showSolutionsDivision(final SearchCriteriaBuilder searchCriteriaBuilder) {
+
+        searchCriteriaBuilder.add(SearchRestrictions.isNull(MaintenanceEventFields.PRODUCTION_LINE));
     }
 
-    public void showSolutionsLine(final SearchCriteriaBuilder scb) {
-        showSolutionsWorkstation(scb);
-        scb.add(SearchRestrictions.isNull(MaintenanceEventFields.WORKSTATION));
+    public void showSolutionsLine(final SearchCriteriaBuilder searchCriteriaBuilder) {
+        showSolutionsWorkstation(searchCriteriaBuilder);
+
+        searchCriteriaBuilder.add(SearchRestrictions.isNull(MaintenanceEventFields.WORKSTATION));
     }
 
-    public void showSolutionsWorkstation(final SearchCriteriaBuilder scb) {
-        showSolutionsSubassembly(scb);
-        scb.add(SearchRestrictions.isNull(MaintenanceEventFields.SUBASSEMBLY));
+    public void showSolutionsWorkstation(final SearchCriteriaBuilder searchCriteriaBuilder) {
+        showSolutionsSubassembly(searchCriteriaBuilder);
+
+        searchCriteriaBuilder.add(SearchRestrictions.isNull(MaintenanceEventFields.SUBASSEMBLY));
     }
 
-    public void showSolutionsSubassembly(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.in(MaintenanceEventFields.STATE, MaintenanceEventState.EDITED.getStringValue(),
-                MaintenanceEventState.CLOSED.getStringValue()));
-        scb.add(SearchRestrictions.isNotNull(MaintenanceEventFields.SOLUTION_DESCRIPTION));
+    public void showSolutionsSubassembly(final SearchCriteriaBuilder searchCriteriaBuilder) {
+        searchCriteriaBuilder.add(SearchRestrictions.in(MaintenanceEventFields.STATE,
+                MaintenanceEventState.EDITED.getStringValue(), MaintenanceEventState.CLOSED.getStringValue()));
+        searchCriteriaBuilder.add(SearchRestrictions.isNotNull(MaintenanceEventFields.SOLUTION_DESCRIPTION));
     }
+
 }

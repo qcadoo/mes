@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.cmmsMachineParts.constants.ProductFieldsCMP;
 import com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP;
 import com.qcadoo.model.api.Entity;
@@ -30,7 +32,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductHooksCMP {
@@ -46,7 +47,8 @@ public class ProductHooksCMP {
         Entity product = form.getPersistedEntityWithIncludedFormValues();
 
         FilterValueHolder holder = parentLookup.getFilterValue();
-        holder.put(ProductCriteriaModifiersCMP.MACHINE_PART_FILTER_PARAMETER, product.getBooleanField(ProductFieldsCMP.MACHINE_PART));
+        holder.put(ProductCriteriaModifiersCMP.L_MACHINE_PART, product.getBooleanField(ProductFieldsCMP.MACHINE_PART));
         parentLookup.setFilterValue(holder);
     }
+
 }
