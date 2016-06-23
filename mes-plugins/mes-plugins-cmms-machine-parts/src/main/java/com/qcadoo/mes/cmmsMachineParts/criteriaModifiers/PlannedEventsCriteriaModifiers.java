@@ -34,11 +34,13 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class PlannedEventsCriteriaModifiers {
 
-    public void filterRealizedAndCancelledEvents(SearchCriteriaBuilder scb, FilterValueHolder filter) {
-        if (filter.has(PlannedEventFields.NUMBER)) {
-            scb.add(SearchRestrictions.ne(PlannedEventFields.NUMBER, filter.getString(PlannedEventFields.NUMBER)));
+    public void filterRealizedAndCancelledEvents(SearchCriteriaBuilder searchCriteriaBuilder, FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(PlannedEventFields.NUMBER)) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne(PlannedEventFields.NUMBER,
+                    filterValueHolder.getString(PlannedEventFields.NUMBER)));
         }
-        scb.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.REALIZED)).add(
+
+        searchCriteriaBuilder.add(SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.REALIZED)).add(
                 SearchRestrictions.ne(PlannedEventFields.STATE, PlannedEventStateStringValues.CANCELED));
     }
 
