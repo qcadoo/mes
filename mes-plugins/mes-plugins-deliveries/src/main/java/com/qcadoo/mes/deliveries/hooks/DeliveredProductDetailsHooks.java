@@ -26,10 +26,13 @@ package com.qcadoo.mes.deliveries.hooks;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
@@ -38,6 +41,8 @@ import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -54,6 +59,9 @@ public class DeliveredProductDetailsHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     @Autowired
     private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
@@ -99,6 +107,39 @@ public class DeliveredProductDetailsHooks {
         }
 
         orderedQuantity.requestComponentUpdateState();
+    }
+
+    public void fillConversion(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (product != null) {
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            FieldComponent conversionField = (FieldComponent) view.getComponentByReference("conversion");
+            if (StringUtils.isEmpty(additionalUnit)) {
+                conversionField.setFieldValue(BigDecimal.ONE);
+                conversionField.setEnabled(false);
+                conversionField.requestComponentUpdateState();
+            } else {
+                String conversion = numberService
+                        .formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit), 0);
+                conversionField.setFieldValue(conversion);
+                conversionField.setEnabled(true);
+                conversionField.requestComponentUpdateState();
+            }
+        }
+    }
+
+    private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            return unitConversions.asUnitToConversionMap().get(additionalUnit);
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 
     private BigDecimal getOrderedProductQuantity(final Entity deliveredProduct) {

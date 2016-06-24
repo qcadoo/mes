@@ -120,7 +120,7 @@ public class ReservationService {
 
     private Entity findOrderedProductForProduct(Entity deliveredProduct) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        String additionalCode = deliveredProduct.getStringField(DeliveredProductFields.ADDITIONAL_CODE);
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
         SearchCriteriaBuilder findOrderedProduct = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).find();
@@ -128,7 +128,7 @@ public class ReservationService {
         if (additionalCode == null) {
             findOrderedProduct.add(SearchRestrictions.isNull(OrderedProductFields.ADDITIONAL_CODE));
         } else {
-            findOrderedProduct.add(SearchRestrictions.eq(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
+            findOrderedProduct.add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
 
         }
         Entity orderedProductForProduct = findOrderedProduct.uniqueResult();

@@ -89,11 +89,12 @@ public class DeliveredProductAddMultiHooks {
         Entity deliveredProductMultiEntity = form.getPersistedEntityWithIncludedFormValues();
         Entity delivery = deliveredProductMultiEntity.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
-        LookupComponent storageLocationComponent = (LookupComponent) view.getComponentByReference("storageLocation");
-        FilterValueHolder filterValueHolder = storageLocationComponent.getFilterValue();
-        filterValueHolder.put("location", location.getId());
-        storageLocationComponent.setFilterValue(filterValueHolder);
-        storageLocationComponent.requestComponentUpdateState();
+        if (location != null) {
+            LookupComponent storageLocationComponent = (LookupComponent) view.getComponentByReference("storageLocation");
+            FilterValueHolder filterValueHolder = storageLocationComponent.getFilterValue();
+            filterValueHolder.put("location", location.getId());
+            storageLocationComponent.setFilterValue(filterValueHolder);
+            storageLocationComponent.requestComponentUpdateState();
+        }
     }
 }

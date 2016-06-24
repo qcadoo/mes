@@ -52,7 +52,7 @@
         <decimal name="additionalQuantity">
             <validatesRange from="0" />
         </decimal>
-        <decimal name="conversion">
+        <decimal name="conversion" required="true">
             <validatesRange from="0" />
         </decimal>
         <boolean name="isWaste"/>

@@ -70,6 +70,7 @@ public class DeliveredProductDetailsListeners {
             clearAndDisable(additionalCodeLookup);
             clearAndDisable(storageLocationLookup);
         }
+        fillConversion(view, state, args);
     }
 
     private void filterByProduct(LookupComponent component, Long id) {
@@ -97,6 +98,10 @@ public class DeliveredProductDetailsListeners {
 
     public void fillOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveredProductDetailsHooks.fillOrderedQuantities(view);
+    }
+
+    public void fillConversion(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveredProductDetailsHooks.fillConversion(view);
     }
 
     public void calculatePriceFromTotalPrice(final ViewDefinitionState view, final ComponentState state, final String[] args) {
