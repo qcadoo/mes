@@ -32,19 +32,20 @@
 
 		<belongsTo name="product" model="product" plugin="basic"/>
 		<decimal name="quantity">
-			<validatesRange from="0" />
+			<validatesRange from="0" exclusively="true" />
 		</decimal>
 		<decimal name="additionalQuantity">
-			<validatesRange from="0" />
+			<validatesRange from="0" exclusively="true" />
 		</decimal>
 		<decimal name="conversion">
-			<validatesRange from="0" />
+			<validatesRange from="0" exclusively="true" />
 		</decimal>
 		<boolean name="isWaste"/>
 		<date name="expirationDate"/>
 		
 		<string name="unit"/>
 		<string name="additionalUnit" />
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
 	</fields>
 	<hooks>
 	</hooks>

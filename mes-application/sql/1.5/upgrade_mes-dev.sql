@@ -112,11 +112,14 @@ CREATE TABLE deliveries_deliveredproductmultiposition
   expirationdate date,
   unit character varying(255),
   additionalunit character varying(255),
+  additionalcode_id bigint,
   CONSTRAINT deliveries_deliveredproductmultiposition_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveredproductmp+deliveredproductmulti_fkey FOREIGN KEY (deliveredproductmulti_id)
+  CONSTRAINT deliveredproductmp_deliveredproductmulti_fkey FOREIGN KEY (deliveredproductmulti_id)
       REFERENCES deliveries_deliveredproductmulti (id) DEFERRABLE,
   CONSTRAINT deliveredproductmp_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE
+      REFERENCES basic_product (id) DEFERRABLE,
+  CONSTRAINT deliveredproductmp_additionalcode_fkey FOREIGN KEY (additionalcode_id)
+      REFERENCES basic_additionalcode (id) DEFERRABLE
 );
 
 -- end

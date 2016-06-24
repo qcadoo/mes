@@ -75,26 +75,28 @@
                     <component type="lookup" name="storageLocation" reference="storageLocation"
                         field="#{form}.storageLocation">
 
-                        <option type="column" name="locationNumber" fields="location"
-                                expression="#location['number']" />
-                        <option type="column" name="locationName" fields="location"
+                        <option type="column" name="location" fields="location"
                                 expression="#location['name']" />
 
-                        <option type="searchable" value="number,locationNumber,locationName" />
-                        <option type="orderable" value="number,locationNumber,locationName" />
+                        <option type="searchable" value="number,location" />
+                        <option type="orderable" value="number,location" />
 
                         <option type="expression"
                             value="#number" />
                         <option type="fieldCode" value="number" />
+                        <criteriaModifier
+                            class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductMultiCriteriaModifiers"
+                            method="restrictStorageLocation" />
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="3">
                 	<component type="awesomeDynamicList" name="deliveredProductMultiPositions"
                 		source="#{form}.deliveredProductMultiPositions" reference="deliveredProductMultiPositions">
+                		<option type="hasBorder" value="false"/>
                 		<components>
 	                		<component type="gridLayout" name="positions"
-	                			columns="5" rows="2">
-	                			<layoutElement column="1" row="1" width="2">
+	                			columns="11" rows="2">
+	                			<layoutElement column="1" row="1" width="4">
 	                                <component type="lookup" name="product" field="product"
 	                                           reference="product">
 										<option type="column" name="name" fields="name" link="true"/>
@@ -104,20 +106,35 @@
 			
 			                            <option type="expression" value="#number + ' - ' + #name"/>
 			                            <option type="fieldCode" value="number"/>
-	                                	<listener event="onSelectedEntityChange" method="fillUnits"
+	                                	<listener event="onSelectedEntityChange" method="productChanged"
  											class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners" />
                                     </component>
 	                            </layoutElement>
-	                			<layoutElement column="3" row="1" width="2">
+	                			<layoutElement column="5" row="1" width="4">
 	                                <component type="calendar" name="expirationDate" field="expirationDate"
 	                                           reference="expirationDate"/>
 	                            </layoutElement>
-	                			<layoutElement column="5" row="1">
+	                			<layoutElement column="9" row="1" width="3">
 	                                <component type="checkbox" name="isWaste" field="isWaste"
 	                                           reference="isWaste"/>
 	                            </layoutElement>
 	                            
-	                            <layoutElement column="1" row="2">
+	                            <layoutElement column="1" row="2" width="3">
+	                            	<component type="lookup" name="additionalCode" reference="additionalCode"
+                                                           field="additionalCode">
+			        
+			                            <option type="searchable" value="code" />
+			                            <option type="orderable" value="code" />
+				        
+			                            <option type="expression"
+			                                        value="#code" />
+			                            <option type="fieldCode" value="code" />
+			                            <criteriaModifier
+			                                class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
+			                                method="restrictAdditionalCodesForProduct" />
+			                        </component>
+	                            </layoutElement>
+	                            <layoutElement column="4" row="2"  width="2">
                                 <component type="input" name="quantity"
                                            reference="quantity" field="quantity">
                                     <option type="alignment" value="right" />
@@ -127,13 +144,13 @@
                                            method="quantityChanged"/>
                                 </component>
 	                            </layoutElement>
-	                            <layoutElement column="2" row="2">
+	                            <layoutElement column="6" row="2">
 	                                <component type="input" name="unit" field="unit"
 	                                           defaultEnabled="never" hasLabel="false" reference="unit">
 	                                    <option type="textRepresentationOnDisabled" value="true" />
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="3" row="2">
+	                            <layoutElement column="7" row="2"  width="2">
 	                                <component type="input" name="additionalQuantity"
 	                                           reference="additionalQuantity" field="additionalQuantity">
 	                                    <option type="alignment" value="right" />
@@ -143,13 +160,13 @@
                                            method="additionalQuantityChanged"/>
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="4" row="2">
+	                            <layoutElement column="9" row="2">
 	                                <component type="input" name="additionalUnit" field="additionalUnit"
 	                                           defaultEnabled="never" hasLabel="false" reference="additionalUnit">
 	                                    <option type="textRepresentationOnDisabled" value="true" />
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="5" row="2">
+	                            <layoutElement column="10" row="2"  width="2">
 	                                <component type="input" name="conversion"
 	                                           reference="conversion" field="conversion">
 	                                    <option type="alignment" value="right" />
@@ -162,6 +179,8 @@
                             
 	                		</component>
                 		</components>
+						<listener event="onAddRow" method="onAddRow"
+							class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners" />
                 	</component>
                 </layoutElement>
                     

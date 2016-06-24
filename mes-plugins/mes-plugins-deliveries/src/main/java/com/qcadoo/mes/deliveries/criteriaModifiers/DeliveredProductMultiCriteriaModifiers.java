@@ -21,32 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.constants;
+package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-public final class DeliveredProductMultiPositionFields {
+import org.springframework.stereotype.Service;
 
-    private DeliveredProductMultiPositionFields() {
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
+
+@Service
+public class DeliveredProductMultiCriteriaModifiers {
+
+    private static final String LOCATION = "location";
+
+    public void restrictStorageLocation(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+
+        if (filterValueHolder.has(LOCATION)) {
+            Long locationId = filterValueHolder.getLong(LOCATION);
+            searchCriteriaBuilder.add(SearchRestrictions.eq(LOCATION + ".id", locationId));
+        }
     }
-
-    public static final String DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
-
-    public static final String CONVERSION = "conversion";
-
-    public static final String IS_WASTE = "isWaste";
-
-    public static final String EXPIRATION_DATE = "expirationDate";
-
-    public static final String UNIT = "unit";
-
-    public static final String ADDITIONAL_UNIT = "additionalUnit";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
 }

@@ -32,10 +32,14 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class DeliveredProductAddMultiHooks {
@@ -46,8 +50,8 @@ public class DeliveredProductAddMultiHooks {
     public void beforeRender(final ViewDefinitionState view) {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");
-        List<FormComponent> formComponenets = deliveredProductMultiPositions.getFormComponents();
-        for (FormComponent formComponent : formComponenets) {
+        List<FormComponent> formComponents = deliveredProductMultiPositions.getFormComponents();
+        for (FormComponent formComponent : formComponents) {
             FieldComponent conversion = formComponent.findFieldComponentByName("conversion");
             FieldComponent unitComponent = formComponent.findFieldComponentByName("unit");
             FieldComponent additionalUnitComponent = formComponent.findFieldComponentByName("additionalUnit");
@@ -66,14 +70,30 @@ public class DeliveredProductAddMultiHooks {
         FieldComponent storageLocation = (FieldComponent) view
                 .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
         storageLocation.setRequired(true);
+
+        setStorageLocationFilter(view);
     }
 
-    private void boldRequired(final FormComponent formComponent) {
-        Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.EXPIRATION_DATE,
-                DeliveredProductMultiPositionFields.QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
+    public void boldRequired(final FormComponent formComponent) {
+        Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.QUANTITY,
+                DeliveredProductMultiPositionFields.CONVERSION).stream()
                 .forEach(f -> {
-                    formComponent.findFieldComponentByName(f).setRequired(true);
-                });
+            FieldComponent component = formComponent.findFieldComponentByName(f);
+            component.setRequired(true);
+            component.requestComponentUpdateState();
+        });
     }
 
+    private void setStorageLocationFilter(ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity deliveredProductMultiEntity = form.getPersistedEntityWithIncludedFormValues();
+        Entity delivery = deliveredProductMultiEntity.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+
+        LookupComponent storageLocationComponent = (LookupComponent) view.getComponentByReference("storageLocation");
+        FilterValueHolder filterValueHolder = storageLocationComponent.getFilterValue();
+        filterValueHolder.put("location", location.getId());
+        storageLocationComponent.setFilterValue(filterValueHolder);
+        storageLocationComponent.requestComponentUpdateState();
+    }
 }

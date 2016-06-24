@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_REQUIREMENTS" name="deliveredProductDetails" modelName="deliveredProduct"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      windowWidth="800" windowHeight="480">
+      windowWidth="800" windowHeight="515">
 
     <component type="window" name="window">
 
@@ -89,7 +89,7 @@
                         <component type="borderLayout" name="quantityBorderLayout">
                             <option type="label" value="quantityLabel" />
                             <component type="gridLayout" name="quantityGridLayout"
-                                                                   hasBorders="false" columns="11" rows="2">
+                                                                   hasBorders="false" columns="11" rows="3">
                                 <layoutElement column="1" row="1" width="4">
                                     <component type="gridLayout" name="orderedQuantityGridLayout"
                                                                                    hasBorders="false" columns="4" rows="1">
@@ -109,31 +109,6 @@
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="5" row="1" width="4">
-                                    <component type="gridLayout" name="additionalQuantityGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
-                                        <layoutElement column="1" row="1" width="3">
-                                            <component type="input" name="additionalQuantity" defaultEnabled="never"
-                                                field="additionalQuantity" reference="additionalQuantity">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
-                                            </component>
-                                        </layoutElement>
-                                        <layoutElement column="4" row="1">
-                                            <component type="input" name="additionalQuantityUnit"
-                                                reference="additionalQuantityUnit" defaultEnabled="never" hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
-                                            </component>
-                                        </layoutElement>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="9" row="1" width="3">
-                                    <component type="input" name="conversion" field="conversion"
-                                        reference="conversion" defaultEnabled="never">
-                                        <option type="alignment" value="right" />
-                                        <option type="labelWidth" value="45" />
-                                    </component>
-                                </layoutElement>
                                 <layoutElement column="1" row="2" width="4">
                                     <component type="gridLayout" name="deliveredQuantityGridLayout"
                                                                                    hasBorders="false" columns="4" rows="1">
@@ -146,6 +121,8 @@
 												
                                                 <listener event="onInputChange" method="calculatePrice"
                                                                                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                <listener event="onInputChange" method="quantityChange"
+                                              		class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
@@ -158,6 +135,35 @@
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="5" row="2" width="4">
+                                    <component type="gridLayout" name="additionalQuantityGridLayout"
+                                                                                   hasBorders="false" columns="4" rows="1">
+                                        <layoutElement column="1" row="1" width="3">
+                                            <component type="input" name="additionalQuantity"
+                                                field="additionalQuantity" reference="additionalQuantity">
+                                                <option type="alignment" value="right" />
+                                                <option type="labelWidth" value="45" />
+                                                <listener event="onInputChange" method="additionalQuantityChange"
+                                              		class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="4" row="1">
+                                            <component type="input" name="additionalQuantityUnit"
+                                                reference="additionalQuantityUnit" defaultEnabled="never" hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true" />
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="9" row="2" width="3">
+                                    <component type="input" name="conversion" field="conversion"
+                                        reference="conversion">
+                                        <option type="alignment" value="right" />
+                                        <option type="labelWidth" value="45" />
+                                        <listener event="onInputChange" method="quantityChange"
+                                        	class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="3" width="4">
                                     <component type="gridLayout" name="damagedQuantityGridLayout"
                                                                                    hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
@@ -176,7 +182,7 @@
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="9" row="2" width="3">
+                                <layoutElement column="5" row="3" width="3">
                                     <component type="checkbox" name="isWaste"
                                         reference="isWaste" defaultEnabled="never">
                                         <option type="labelWidth" value="45" />
@@ -268,8 +274,8 @@
                         <option type="column" name="location" fields="location"
                                             expression="#location['name']" />
 
-                        <option type="searchable" value="number,locationNumber,locationName" />
-                        <option type="orderable" value="number,locationNumber,locationName" />
+                        <option type="searchable" value="number,location" />
+                        <option type="orderable" value="number,location" />
 
                         <option type="expression"
                                                         value="#number" />

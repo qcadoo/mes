@@ -35,12 +35,14 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -55,6 +57,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Component
 public class DeliveredProductAddMultiListeners {
@@ -68,8 +72,12 @@ public class DeliveredProductAddMultiListeners {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private DeliveredProductAddMultiHooks deliveredProductAddMultiHooks;
+
     public void createDeliveriedProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
+        state.performEvent(view, "save");
         Entity deliveredProductMulti = form.getPersistedEntityWithIncludedFormValues();
         if (!validate(deliveredProductMulti)) {
             form.setEntity(deliveredProductMulti);
@@ -115,20 +123,9 @@ public class DeliveredProductAddMultiListeners {
                 .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
         Multimap<Long, Date> positionsMap = ArrayListMultimap.create();
         for (Entity position : deliveredProductMultiPositions) {
-            Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.QUANTITY,
-                    DeliveredProductMultiPositionFields.CONVERSION)
-                    .stream()
-                    .forEach(
-                            f -> {
-                        if (position.getField(f) == null) {
-                            position.addError(positionDataDefinition.getField(f),
-                                            "qcadooView.validate.field.error.missing");
-                }
-            });
-            if (position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE) == null) {
-                position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.EXPIRATION_DATE),
-                        "qcadooView.validate.field.error.missing");
-            }
+            checkMissing(position, DeliveredProductMultiPositionFields.PRODUCT, positionDataDefinition);
+            checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, positionDataDefinition);
+            checkMissingOrZero(position, DeliveredProductMultiPositionFields.CONVERSION, positionDataDefinition);
             if (position.isValid()) {
                 Long productId = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT).getId();
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
@@ -142,6 +139,20 @@ public class DeliveredProductAddMultiListeners {
             isValid = isValid && position.isValid();
         }
         return isValid;
+    }
+
+    private void checkMissing(Entity position, String fieldname, DataDefinition positionDataDefinition) {
+        if (position.getField(fieldname) == null) {
+            position.addError(positionDataDefinition.getField(fieldname), "qcadooView.validate.field.error.missing");
+        }
+    }
+
+    private void checkMissingOrZero(Entity position, String fieldname, DataDefinition positionDataDefinition) {
+        if (position.getField(fieldname) == null) {
+            position.addError(positionDataDefinition.getField(fieldname), "qcadooView.validate.field.error.missing");
+        } else if (BigDecimal.ZERO.compareTo(position.getDecimalField(fieldname)) >= 0) {
+            position.addError(positionDataDefinition.getField(fieldname), "qcadooView.validate.field.error.outOfRange.toSmall");
+        }
     }
 
     private Entity createDeliveredProduct(Entity position, DataDefinition deliveredProductDD) {
@@ -158,6 +169,8 @@ public class DeliveredProductAddMultiListeners {
                 position.getBooleanField(DeliveredProductMultiPositionFields.IS_WASTE));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_UNIT,
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
+        deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
+                position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE));
         return deliveredProduct;
     }
 
@@ -170,29 +183,40 @@ public class DeliveredProductAddMultiListeners {
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.STORAGE_LOCATION));
     }
 
-    public void fillUnits(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");
         List<FormComponent> formComponenets = deliveredProductMultiPositions.getFormComponents();
         for (FormComponent formComponent : formComponenets) {
             Entity formEntity = formComponent.getEntity();
-            Entity product = formEntity.getBelongsToField("product");
+            Entity product = formEntity.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+            LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
+            deliveredProductAddMultiHooks.boldRequired(formComponent);
             if (product != null) {
-                String unit = product.getStringField("unit");
-                formEntity.setField("unit", unit);
-                String additionalUnit = product.getStringField("additionalUnit");
+                String unit = product.getStringField(ProductFields.UNIT);
+                formEntity.setField(DeliveredProductMultiPositionFields.UNIT, unit);
+                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 FieldComponent conversionComponent = formComponent.findFieldComponentByName("conversion");
                 if (additionalUnit != null) {
                     conversionComponent.setEnabled(true);
-                    formEntity.setField("additionalUnit", additionalUnit);
+                    formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
                     BigDecimal conversion = getConversion(product, unit, additionalUnit);
-                    formEntity.setField("conversion", conversion);
+                    formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
                 } else {
                     conversionComponent.setEnabled(false);
-                    formEntity.setField("conversion", BigDecimal.ONE);
-                    formEntity.setField("additionalUnit", unit);
+                    formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, BigDecimal.ONE);
+                    formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
                 }
                 formComponent.setEntity(formEntity);
+                additionalCodeComponent.setEnabled(true);
+                FilterValueHolder filterValueHolder = additionalCodeComponent.getFilterValue();
+                filterValueHolder.put("product", product.getId());
+                additionalCodeComponent.setFilterValue(filterValueHolder);
+                additionalCodeComponent.requestComponentUpdateState();
+            } else {
+                additionalCodeComponent.setFieldValue(null);
+                additionalCodeComponent.setEnabled(false);
+                additionalCodeComponent.requestComponentUpdateState();
             }
         }
     }
@@ -243,5 +267,13 @@ public class DeliveredProductAddMultiListeners {
                 quantity.requestComponentUpdateState();
             }
         }
+    }
+
+    public void onAddRow(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        AwesomeDynamicListComponent adlState = (AwesomeDynamicListComponent) state;
+        for (FormComponent formComponent : adlState.getFormComponents()) {
+            deliveredProductAddMultiHooks.boldRequired(formComponent);
+        }
+        productChanged(view, state, args);
     }
 }

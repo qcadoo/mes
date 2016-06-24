@@ -171,12 +171,13 @@ public class DeliveryDetailsListeners {
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
         deliveredProductMulti.setField("delivery", delivery);
         List<Entity> orderedProducts = getSelectedProducts(view);
+        List<Entity> deliveredProducts = ((GridComponent) view.getComponentByReference("deliveredProducts")).getEntities();
         List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
         DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 "deliveredProductMultiPosition");
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProductMultiPosition = createDeliveredProductMultiPosition(orderedProduct,
-                    deliveredProductMultiPositionDD);
+                    deliveredProductMultiPositionDD, deliveredProducts);
             deliveredProductMultiPosition.setField("deliveredProductMulti", deliveredProductMulti);
             deliveredProductMultiPosition = deliveredProductMultiPositionDD.save(deliveredProductMultiPosition);
             deliveredProductMultiPositions.add(deliveredProductMultiPosition);
@@ -190,7 +191,8 @@ public class DeliveryDetailsListeners {
         return orderdProductGrid.getSelectedEntities();
     }
 
-    private Entity createDeliveredProductMultiPosition(Entity orderedProduct, DataDefinition deliveredProductMultiPositionDD) {
+    private Entity createDeliveredProductMultiPosition(Entity orderedProduct, DataDefinition deliveredProductMultiPositionDD,
+            List<Entity> deliveredProducts) {
         Entity deliveredProductMuliPosition = deliveredProductMultiPositionDD.create();
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
         String unit = product.getStringField(ProductFields.UNIT);
@@ -198,17 +200,36 @@ public class DeliveryDetailsListeners {
         if (additionalUnit == null) {
             additionalUnit = unit;
         }
+        Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
+        BigDecimal alreadyAssignedQuantity = countAlreadyAssignedQuantity(orderedProduct, additionalCode, deliveredProducts);
+        BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY).subtract(
+                alreadyAssignedQuantity);
+        if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
+            quantity = BigDecimal.ONE;
+        }
 
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.QUANTITY,
-                orderedProduct.getField(OrderedProductFields.ORDERED_QUANTITY));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_QUANTITY));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
+                orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION,
                 orderedProduct.getField(OrderedProductFields.CONVERSION));
         return deliveredProductMuliPosition;
+    }
+
+    public BigDecimal countAlreadyAssignedQuantity(final Entity orderedProduct, final Entity additionalCode,
+            List<Entity> deliveredProducts) {
+        Entity product = orderedProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        BigDecimal alreadyAssignedQuantity = deliveredProducts
+                .stream()
+                .filter(p -> product.getId().equals(p.getBelongsToField(DeliveredProductFields.PRODUCT).getId())
+                        && additionalCode.getId().equals(p.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE).getId()))
+                .map(p -> p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+        return alreadyAssignedQuantity;
     }
 
     private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {
