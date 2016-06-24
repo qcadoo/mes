@@ -183,6 +183,18 @@ public interface DeliveriesService {
      *            product lookup reference name
      * @param referenceNames
      *            reference names to unit fields
+     */
+    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
+
+    /**
+     * Fills unit fields
+     * 
+     * @param view
+     *            view
+     * @param productName
+     *            product lookup reference name
+     * @param referenceNames
+     *            reference names to unit fields
      * @param additionalUnitNames
      *            reference names to additional unit fields
      */

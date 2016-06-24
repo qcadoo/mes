@@ -257,26 +257,37 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
-            final List<String> additionalUnitNames) {
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
         Entity product = productLookup.getEntity();
 
         String unit = "";
-        String additionalUnit = "";
 
         if (product != null) {
             unit = product.getStringField(ProductFields.UNIT);
-            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-            if (additionalUnit == null) {
-                additionalUnit = unit;
-            }
         }
 
         for (String referenceName : referenceNames) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
+        }
+    }
+
+    @Override
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+            final List<String> additionalUnitNames) {
+        fillUnitFields(view, productName, referenceNames);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
+        Entity product = productLookup.getEntity();
+
+        String additionalUnit = "";
+
+        if (product != null) {
+            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (additionalUnit == null) {
+                additionalUnit = product.getStringField(ProductFields.UNIT);
+            }
         }
 
         for (String additionalUnitName : additionalUnitNames) {
