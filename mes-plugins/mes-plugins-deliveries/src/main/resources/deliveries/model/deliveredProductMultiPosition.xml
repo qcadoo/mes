@@ -31,12 +31,8 @@
 		<belongsTo name="deliveredProductMulti" model="deliveredProductMulti"/>
 
 		<belongsTo name="product" model="product" plugin="basic"/>
-		<decimal name="quantity">
-			<validatesRange from="0" exclusively="true" />
-		</decimal>
-		<decimal name="additionalQuantity">
-			<validatesRange from="0" exclusively="true" />
-		</decimal>
+		<decimal name="quantity" />
+		<decimal name="additionalQuantity"/>
 		<decimal name="conversion">
 			<validatesRange from="0" exclusively="true" />
 		</decimal>

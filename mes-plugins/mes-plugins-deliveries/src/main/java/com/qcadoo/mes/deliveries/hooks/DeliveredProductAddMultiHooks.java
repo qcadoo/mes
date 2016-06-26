@@ -53,8 +53,11 @@ public class DeliveredProductAddMultiHooks {
         List<FormComponent> formComponents = deliveredProductMultiPositions.getFormComponents();
         for (FormComponent formComponent : formComponents) {
             FieldComponent conversion = formComponent.findFieldComponentByName("conversion");
+            LookupComponent productComponent = (LookupComponent) formComponent.findFieldComponentByName("product");
             FieldComponent unitComponent = formComponent.findFieldComponentByName("unit");
             FieldComponent additionalUnitComponent = formComponent.findFieldComponentByName("additionalUnit");
+            LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
+            filterAdditionalCode(productComponent.getEntity(), additionalCodeComponent);
             String unit = (String) unitComponent.getFieldValue();
             String additionalUnit = (String) additionalUnitComponent.getFieldValue();
             if (unit.equals(additionalUnit)) {
@@ -76,7 +79,7 @@ public class DeliveredProductAddMultiHooks {
 
     public void boldRequired(final FormComponent formComponent) {
         Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.QUANTITY,
-                DeliveredProductMultiPositionFields.CONVERSION).stream()
+                DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
                 .forEach(f -> {
             FieldComponent component = formComponent.findFieldComponentByName(f);
             component.setRequired(true);
@@ -95,6 +98,20 @@ public class DeliveredProductAddMultiHooks {
             filterValueHolder.put("location", location.getId());
             storageLocationComponent.setFilterValue(filterValueHolder);
             storageLocationComponent.requestComponentUpdateState();
+        }
+    }
+
+    public void filterAdditionalCode(Entity product, LookupComponent additionalCodeComponent) {
+        if (product != null) {
+            additionalCodeComponent.setEnabled(true);
+            FilterValueHolder filterValueHolder = additionalCodeComponent.getFilterValue();
+            filterValueHolder.put("product", product.getId());
+            additionalCodeComponent.setFilterValue(filterValueHolder);
+            additionalCodeComponent.requestComponentUpdateState();
+        } else {
+            additionalCodeComponent.setFieldValue(null);
+            additionalCodeComponent.setEnabled(false);
+            additionalCodeComponent.requestComponentUpdateState();
         }
     }
 }

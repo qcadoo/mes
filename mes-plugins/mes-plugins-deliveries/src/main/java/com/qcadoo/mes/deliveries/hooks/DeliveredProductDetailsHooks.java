@@ -71,6 +71,8 @@ public class DeliveredProductDetailsHooks {
         fillUnitFields(view);
         fillCurrencyFields(view);
         setDeliveredQuantityFieldRequired(view);
+        setAdditionalQuantityFieldRequired(view);
+        lockConversion(view);
         setFilters(view);
     }
 
@@ -131,6 +133,17 @@ public class DeliveredProductDetailsHooks {
         }
     }
 
+    public BigDecimal getDefaultConversion(Entity product) {
+        if (product != null) {
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            if (StringUtils.isNotEmpty(additionalUnit) && !unit.equals(additionalUnit)) {
+                return getConversion(product, unit, additionalUnit);
+            }
+        }
+        return BigDecimal.ONE;
+    }
+
     private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                 searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
@@ -163,6 +176,21 @@ public class DeliveredProductDetailsHooks {
         FieldComponent delivedQuantity = (FieldComponent) view.getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
         delivedQuantity.setRequired(true);
         delivedQuantity.requestComponentUpdateState();
+    }
+
+    public void setAdditionalQuantityFieldRequired(final ViewDefinitionState view) {
+        FieldComponent delivedQuantity = (FieldComponent) view
+                .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
+        delivedQuantity.setRequired(true);
+        delivedQuantity.requestComponentUpdateState();
+    }
+
+    private void lockConversion(ViewDefinitionState view) {
+        String unit = (String) view.getComponentByReference("deliveredQuantityUnit").getFieldValue();
+        String additionalUnit = (String) view.getComponentByReference("additionalQuantityUnit").getFieldValue();
+        if (additionalUnit != null && additionalUnit.equals(unit)) {
+            view.getComponentByReference("conversion").setEnabled(false);
+        }
     }
 
     private void setFilters(ViewDefinitionState view) {

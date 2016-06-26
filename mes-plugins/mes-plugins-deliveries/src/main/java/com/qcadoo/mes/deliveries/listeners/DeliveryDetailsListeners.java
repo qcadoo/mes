@@ -43,6 +43,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
@@ -76,6 +77,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private DeliveryDetailsHooks deliveryDetailsHooks;
+
+    @Autowired
+    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
     @Autowired
     private NumberService numberService;
@@ -151,6 +155,7 @@ public class DeliveryDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity delivery = form.getPersistedEntityWithIncludedFormValues();
         Entity deliveredProductMultiEntity = createDeliveredProductMultiEntity(delivery, view);
+        deliveredProductMultiEntity.getDataDefinition().save(deliveredProductMultiEntity);
         String url = "../page/deliveries/deliveredProductAddMulti.html?context={\"form.id\":\""
                 + deliveredProductMultiEntity.getId() + "\"}";
         view.openModal(url);
@@ -205,19 +210,19 @@ public class DeliveryDetailsListeners {
         BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY).subtract(
                 alreadyAssignedQuantity);
         if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
-            quantity = BigDecimal.ONE;
+            quantity = BigDecimal.ZERO;
         }
+        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
+        BigDecimal additionalQuantity = conversion.multiply(quantity);
 
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY,
-                orderedProduct.getField(OrderedProductFields.ADDITIONAL_QUANTITY));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION,
-                orderedProduct.getField(OrderedProductFields.CONVERSION));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
         return deliveredProductMuliPosition;
     }
 
@@ -227,9 +232,15 @@ public class DeliveryDetailsListeners {
         BigDecimal alreadyAssignedQuantity = deliveredProducts
                 .stream()
                 .filter(p -> product.getId().equals(p.getBelongsToField(DeliveredProductFields.PRODUCT).getId())
-                        && additionalCode.getId().equals(p.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE).getId()))
+                        && additionalCodesTheSame(additionalCode, p))
                 .map(p -> p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
         return alreadyAssignedQuantity;
+    }
+
+    private boolean additionalCodesTheSame(Entity additionalCode, Entity deliveredProduct) {
+        Entity deliveredProductAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+        return (additionalCode == null && deliveredProductAdditionalCode == null)
+                || (additionalCode != null && additionalCode.getId().equals(deliveredProductAdditionalCode.getId()));
     }
 
     private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {
@@ -268,14 +279,19 @@ public class DeliveryDetailsListeners {
 
     private Entity createDeliveredProduct(final Entity orderedProduct, final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
-        deliveredProduct.setField(DeliveredProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+        deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
+        BigDecimal conversion = deliveredProductDetailsHooks.getDefaultConversion(product);
+        deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
 
         if (copyQuantityAndPrice) {
-            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
-                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY)));
+            BigDecimal deliverdQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY, numberService.setScale(deliverdQuantity));
+            deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY,
+                    numberService.setScale(deliverdQuantity.multiply(conversion)));
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
                     numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,

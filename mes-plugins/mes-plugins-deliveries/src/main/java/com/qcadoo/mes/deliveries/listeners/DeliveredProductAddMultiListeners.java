@@ -58,7 +58,6 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Component
 public class DeliveredProductAddMultiListeners {
@@ -125,15 +124,16 @@ public class DeliveredProductAddMultiListeners {
         for (Entity position : deliveredProductMultiPositions) {
             checkMissing(position, DeliveredProductMultiPositionFields.PRODUCT, positionDataDefinition);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, positionDataDefinition);
+            checkMissingOrZero(position, DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, positionDataDefinition);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.CONVERSION, positionDataDefinition);
             if (position.isValid()) {
-                Long productId = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT).getId();
+                Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
-                if (positionsMap.containsEntry(productId, expirationDate)) {
+                if (positionsMap.containsEntry(product.getId(), expirationDate)) {
                     position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.PRODUCT),
                             "deliveries.deliveredProductMulti.error.productExists");
                 } else {
-                    positionsMap.put(productId, expirationDate);
+                    positionsMap.put(product.getId(), expirationDate);
                 }
             }
             isValid = isValid && position.isValid();
@@ -192,6 +192,7 @@ public class DeliveredProductAddMultiListeners {
             Entity product = formEntity.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
             LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
             deliveredProductAddMultiHooks.boldRequired(formComponent);
+            deliveredProductAddMultiHooks.filterAdditionalCode(product, additionalCodeComponent);
             if (product != null) {
                 String unit = product.getStringField(ProductFields.UNIT);
                 formEntity.setField(DeliveredProductMultiPositionFields.UNIT, unit);
@@ -208,15 +209,6 @@ public class DeliveredProductAddMultiListeners {
                     formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
                 }
                 formComponent.setEntity(formEntity);
-                additionalCodeComponent.setEnabled(true);
-                FilterValueHolder filterValueHolder = additionalCodeComponent.getFilterValue();
-                filterValueHolder.put("product", product.getId());
-                additionalCodeComponent.setFilterValue(filterValueHolder);
-                additionalCodeComponent.requestComponentUpdateState();
-            } else {
-                additionalCodeComponent.setFieldValue(null);
-                additionalCodeComponent.setEnabled(false);
-                additionalCodeComponent.requestComponentUpdateState();
             }
         }
     }
