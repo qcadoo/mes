@@ -7,7 +7,6 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
-import com.qcadoo.mes.states.service.StateChangeService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentMessagesHolder;
@@ -58,9 +57,12 @@ public class StateExecutorService {
             Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
+                formComponent.performEvent(view, "save", new String[0]);
                 Entity entity = formComponent.getPersistedEntityWithIncludedFormValues();
-                entity = changeState(serviceMarker, entity, args[0]);
-                formComponent.setEntity(entity);
+                if (entity.isValid()) {
+                    entity = changeState(serviceMarker, entity, args[0]);
+                    formComponent.setEntity(entity);
+                }
             }
         }
     }
@@ -72,7 +74,7 @@ public class StateExecutorService {
             if (componentMessagesHolder != null) {
                 if (entity.isValid()) {
                     componentMessagesHolder.addMessage("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
-                    
+
                 } else {
                     componentMessagesHolder.addMessage("states.messages.change.failure", ComponentState.MessageType.FAILURE);
                 }
@@ -110,7 +112,7 @@ public class StateExecutorService {
         }
         entity = changeState(entity, targetState);
         saveStateChangeEntity(describer, sourceState, targetState, entity);
-        
+
         entity = hookOnBeforeSave(entity, services, sourceState, targetState);
         if (!entity.isValid()) {
             // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
