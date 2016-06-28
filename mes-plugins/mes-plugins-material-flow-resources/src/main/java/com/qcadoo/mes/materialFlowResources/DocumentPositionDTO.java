@@ -37,11 +37,11 @@ public class DocumentPositionDTO {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
     @JsonDeserialize(using = DateDeserializer.class)
-    private Date expirationdate;
+    private Date expirationDate;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
     @JsonDeserialize(using = DateDeserializer.class)
-    private Date productiondate;
+    private Date productionDate;
 
     private String palletNumber;
 
@@ -137,20 +137,20 @@ public class DocumentPositionDTO {
         this.conversion = conversion;
     }
 
-    public Date getExpirationdate() {
-        return expirationdate;
+    public Date getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setExpirationdate(Date expirationdate) {
-        this.expirationdate = expirationdate;
+    public void setExpirationDate(Date expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
-    public Date getProductiondate() {
-        return productiondate;
+    public Date getProductionDate() {
+        return productionDate;
     }
 
-    public void setProductiondate(Date productiondate) {
-        this.productiondate = productiondate;
+    public void setProductionDate(Date productionDate) {
+        this.productionDate = productionDate;
     }
 
     public String getPalletNumber() {
@@ -213,8 +213,8 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.givenquantity);
         hash = 67 * hash + Objects.hashCode(this.givenunit);
         hash = 67 * hash + Objects.hashCode(this.conversion);
-        hash = 67 * hash + Objects.hashCode(this.expirationdate);
-        hash = 67 * hash + Objects.hashCode(this.productiondate);
+        hash = 67 * hash + Objects.hashCode(this.expirationDate);
+        hash = 67 * hash + Objects.hashCode(this.productionDate);
         hash = 67 * hash + Objects.hashCode(this.palletNumber);
         hash = 67 * hash + Objects.hashCode(this.typeOfPallet);
         hash = 67 * hash + Objects.hashCode(this.storageLocation);
@@ -260,10 +260,10 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.conversion, other.conversion)) {
             return false;
         }
-        if (!Objects.equals(this.expirationdate, other.expirationdate)) {
+        if (!Objects.equals(this.expirationDate, other.expirationDate)) {
             return false;
         }
-        if (!Objects.equals(this.productiondate, other.productiondate)) {
+        if (!Objects.equals(this.productionDate, other.productionDate)) {
             return false;
         }
         if (!Objects.equals(this.palletNumber, other.palletNumber)) {
@@ -291,8 +291,8 @@ public class DocumentPositionDTO {
     public String toString() {
         return "DocumentPositionDTO{" + "id=" + id + ", document=" + document + ", product=" + product + ", additional_code="
                 + additionalCode + ", quantity=" + quantity + ", unit=" + unit + ", givenquantity=" + givenquantity
-                + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationdate=" + expirationdate
-                + ", productiondate=" + productiondate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
+                + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationDate=" + expirationDate
+                + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
                 + '}';
     }

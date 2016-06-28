@@ -15,28 +15,25 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.qcadoo.localization.api.TranslationService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.LocationType;
-import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Service
 public class LocationValidators {
@@ -66,7 +63,7 @@ public class LocationValidators {
 
         for (String name : requiredFields) {
             String camelCaseName = "require" + name.substring(0, 1).toUpperCase() + name.substring(1);
-            if (location.getBooleanField(camelCaseName) && !items.get(name.toLowerCase()).getBooleanField("checked")) {
+            if (location.getBooleanField(camelCaseName) && !items.get(name).getBooleanField("checked")) {
                 String fieldTranslatedName = translationService.translate("materialFlowResources.materialFlowResourcesParameters.documentPositionParameters." + name, LocaleContextHolder.getLocale());
                 String errorMessage = translationService.translate("materialFlowResources.error.documentLocationPositionItemIsHidden", LocaleContextHolder.getLocale());
                 errorMessage = String.format(errorMessage, fieldTranslatedName);

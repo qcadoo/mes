@@ -118,11 +118,11 @@ public class DocumentPositionValidator {
         if (requireBatch && (position.getBatch() == null || position.getBatch().trim().isEmpty())) {
             errors.add("documentGrid.error.position.batch.required");
         }
-        if (requireProductionDate && position.getProductiondate() == null) {
+        if (requireProductionDate && position.getProductionDate() == null) {
             errors.add("documentGrid.error.position.productionDate.required");
         }
 
-        if (requireExpirationDate && position.getExpirationdate() == null) {
+        if (requireExpirationDate && position.getExpirationDate() == null) {
             errors.add("documentGrid.error.position.expirationDate.required");
         }
 
@@ -152,8 +152,8 @@ public class DocumentPositionValidator {
     }
 
     private List<String> validateDates(final DocumentPositionDTO position) {
-        Date productionDate = position.getProductiondate();
-        Date expirationDate = position.getExpirationdate();
+        Date productionDate = position.getProductionDate();
+        Date expirationDate = position.getExpirationDate();
         if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
             return Arrays.asList("documentGrid.error.position.expirationDate.lessThenProductionDate");
         }
@@ -245,12 +245,12 @@ public class DocumentPositionValidator {
         params.put("givenquantity", vo.getGivenquantity());
         params.put("givenunit", vo.getGivenunit());
         params.put("conversion", vo.getUnit().equals(vo.getGivenunit()) ? 1 : vo.getConversion());
-        params.put("expirationdate", vo.getExpirationdate());
+        params.put("expirationDate", vo.getExpirationDate());
         params.put("palletnumber_id", tryGetPalletNumberIdByNumber(vo.getPalletNumber(), errors));
         params.put("typeofpallet", vo.getTypeOfPallet());
         params.put("storagelocation_id", tryGetStorageLocationIdByNumber(vo.getStorageLocation(), errors));
         params.put("document_id", vo.getDocument());
-        params.put("productiondate", vo.getProductiondate());
+        params.put("productionDate", vo.getProductionDate());
         params.put("price", vo.getPrice());
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
         params.put("batch", vo.getBatch().trim());
