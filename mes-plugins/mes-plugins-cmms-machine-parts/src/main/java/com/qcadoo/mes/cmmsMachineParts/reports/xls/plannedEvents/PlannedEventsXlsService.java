@@ -8,6 +8,7 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventRealizationDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.NumberService;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
@@ -22,6 +23,8 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+
+import static com.qcadoo.model.api.BigDecimalUtils.*;
 
 @Service
 public class PlannedEventsXlsService {
@@ -252,7 +255,7 @@ public class PlannedEventsXlsService {
                     valueCell.setCellStyle(numberStyle);
                     valueCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getMachinePartPlannedQuantity() != null) {
-                        valueCell.setCellValue(part.getValue().setScale(5).doubleValue());
+                        valueCell.setCellValue(convertNullToZero(part.getValue()).setScale(5).doubleValue());
                     }
                     first = false;
 
@@ -275,7 +278,7 @@ public class PlannedEventsXlsService {
                     valueCell.setCellStyle(numberStyle);
                     valueCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     if (part.getMachinePartPlannedQuantity() != null) {
-                        valueCell.setCellValue(part.getValue().setScale(5).doubleValue());
+                        valueCell.setCellValue(convertNullToZero(part.getValue()).setScale(5).doubleValue());
                     }
                 }
             }
