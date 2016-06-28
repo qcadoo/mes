@@ -48,7 +48,6 @@ public class StateExecutorService {
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
-                // FIXME encja pobierana 2 razy??
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
                 changeState(serviceMarker, entity, args[0]);
             });
@@ -99,7 +98,7 @@ public class StateExecutorService {
 
         StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
 
-        String sourceState = entity.getStringField(describer.getSourceStateFieldName());
+        String sourceState = entity.getStringField(describer.getOwnerStateFieldName());
 
         if (!canChangeState(describer, entity, targetState)) {
             return entity;
@@ -146,7 +145,6 @@ public class StateExecutorService {
         stateChangeEntity.setField(describer.getWorkerFieldName(), securityService.getCurrentUserName());
         stateChangeEntity.setField(describer.getPhaseFieldName(), 0);
         stateChangeEntity.setField(describer.getOwnerFieldName(), owner);
-        stateChangeEntity.setField(describer.getSourceStateFieldName(), owner.getStringField(describer.getOwnerStateFieldName()));
         stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.SUCCESSFUL.getStringValue());
 
         return stateChangeEntity;
@@ -201,5 +199,17 @@ public class StateExecutorService {
         AnnotationAwareOrderComparator.sort(services);
 
         return services;
+    }
+
+    public <M extends StateService> void buildInitial(Class<M> serviceMarker, Entity entity, String initialState) {
+        List<M> services = lookupChangeStateServices(serviceMarker);
+
+        StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
+
+        Entity stateChangeEntity = saveStateChangeEntity(describer, null, initialState, entity);
+
+        entity.setField(describer.getOwnerStateFieldName(), initialState);
+        entity.setField(describer.getOwnerStateChangesFieldName(), Lists.newArrayList(stateChangeEntity));
+
     }
 }
