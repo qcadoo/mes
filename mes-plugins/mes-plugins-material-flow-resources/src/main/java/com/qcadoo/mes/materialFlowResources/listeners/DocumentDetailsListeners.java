@@ -27,6 +27,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -38,10 +39,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -87,6 +90,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     private static final String L_RESOURCE = "resource";
 
@@ -179,6 +185,7 @@ public class DocumentDetailsListeners {
 
     @Transactional
     public void createResources(Entity documentToCreateResourcesFor) {
+        deleteReservations(documentToCreateResourcesFor);
         DocumentType documentType = DocumentType.of(documentToCreateResourcesFor);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             resourceManagementService.createResourcesForReceiptDocuments(documentToCreateResourcesFor);
@@ -191,6 +198,19 @@ public class DocumentDetailsListeners {
         }
         if (!documentToCreateResourcesFor.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+    }
+
+    private void deleteReservations(Entity document) {
+
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("id", position.getId());
+            params.put("document_id", document.getId());
+            params.put("product_id", position.getBelongsToField(PositionFields.PRODUCT).getId());
+            params.put("quantity", position.getDecimalField(PositionFields.QUANTITY));
+            reservationsService.deleteReservation(params);
         }
     }
 

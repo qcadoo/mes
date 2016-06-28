@@ -30,8 +30,8 @@ import com.qcadoo.model.api.Entity;
 
 public enum DocumentType {
 
-    RECEIPT("01receipt"), INTERNAL_INBOUND("02internalInbound"), INTERNAL_OUTBOUND("03internalOutbound"), RELEASE("04release"), TRANSFER(
-            "05transfer");
+    RECEIPT("01receipt"), INTERNAL_INBOUND("02internalInbound"), INTERNAL_OUTBOUND("03internalOutbound"), RELEASE(
+            "04release"), TRANSFER("05transfer");
 
     private final String value;
 
@@ -56,6 +56,11 @@ public enum DocumentType {
         }
 
         throw new IllegalArgumentException("Couldn't parse DocumentType from string '" + type + "'");
+    }
+
+    public static boolean isOutbound(String type) {
+        return (DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(type) || DocumentType.RELEASE.getStringValue().equals(type)
+                || DocumentType.TRANSFER.getStringValue().equals(type));
     }
 
 }

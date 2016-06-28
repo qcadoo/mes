@@ -27,7 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.materialFlowResources.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -40,6 +42,9 @@ public class PositionModelHooks {
     @Autowired
     private MaterialFlowResourcesService materialFlowResourceService;
 
+    @Autowired
+    private ReservationsService reservationsService;
+
     public void onSave(final DataDefinition positionDD, final Entity position) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
         if (resource != null) {
@@ -50,8 +55,11 @@ public class PositionModelHooks {
 
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         if (document != null) {
-            position.setField(PositionFields.TYPE, document.getField(DocumentFields.TYPE));
-            position.setField(PositionFields.STATE, document.getField(DocumentFields.STATE));
+            DocumentType type = DocumentType.of(document);
+            DocumentState state = DocumentState.of(document);
+
+            position.setField(PositionFields.TYPE, type.getStringValue());
+            position.setField(PositionFields.STATE, state.getStringValue());
         }
 
     }

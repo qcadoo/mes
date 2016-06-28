@@ -15,14 +15,15 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ParametersMFRHooks {
@@ -49,10 +50,10 @@ public class ParametersMFRHooks {
         String name = item.getStringField("name");
         String displayName = translationService.translate(TRANSLATION_PREFIX + name, displayNameField.getLocale());
         displayNameField.setFieldValue(displayName);
-        
+
         boolean editable = item.getBooleanField("editable");
-        ((FieldComponent)view.getComponentByReference("checked")).setEnabled(editable);
-        ((FieldComponent)view.getComponentByReference("editable")).setEnabled(false);
+        ((FieldComponent) view.getComponentByReference("checked")).setEnabled(editable);
+        ((FieldComponent) view.getComponentByReference("editable")).setEnabled(false);
     }
 
 }
