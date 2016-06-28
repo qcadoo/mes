@@ -115,6 +115,8 @@ function parseAndValidateInputNumber($element) {
         $element.addClass('error-grid');
         $element.val(rawValue);
     }
+    
+    return $element.val();
 }
 
 myApp.directive('ngJqGrid', function ($window) {
@@ -972,7 +974,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (quantityValue !== quantityValueNew) {
                     quantityValue = quantityValueNew;
                     $(this).data("timeout", setTimeout(gridRunner(function () {
-                        parseAndValidateInputNumber(t);
+                        quantityValueNew = parseAndValidateInputNumber(t);
 
                         var rowId = getRowIdFromElement(t);
 
