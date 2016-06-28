@@ -55,3 +55,24 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
 
 -- end
 
+-- NBLS-250
+CREATE TABLE repairs_repairorderstatechange
+(
+  id bigint NOT NULL,
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  phase integer,
+  worker character varying(255),
+  repairorder_id bigint,
+  shift_id bigint,
+  CONSTRAINT repairs_repairorderstatechange_pkey PRIMARY KEY (id),
+
+  CONSTRAINT repairorderstatechange_repairorder FOREIGN KEY (repairorder_id)
+      REFERENCES repairs_repairorder (id) DEFERRABLE,
+
+  CONSTRAINT repairorderstatechange_shift FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+);
+
+-- end
