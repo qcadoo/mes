@@ -25,8 +25,8 @@ package com.qcadoo.mes.technologies.constants;
 
 public enum MrpAlgorithm {
 
-    ONLY_COMPONENTS("01onlyComponents"), ALL_PRODUCTS_IN("02allProductsIn"), COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS(
-            "03componentsAndSubcontractorsProducts");
+    ONLY_MATERIALS("00onlyMaterials"), ONLY_COMPONENTS("01onlyComponents"), ALL_PRODUCTS_IN(
+            "02allProductsIn"), COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS("03componentsAndSubcontractorsProducts");
 
     private final String typeOfProductionRecording;
 
@@ -39,7 +39,9 @@ public enum MrpAlgorithm {
     }
 
     public static MrpAlgorithm parseString(final String string) {
-        if ("01onlyComponents".equals(string)) {
+        if ("00onlyMaterials".equals(string)) {
+            return ONLY_MATERIALS;
+        } else if ("01onlyComponents".equals(string)) {
             return ONLY_COMPONENTS;
         } else if ("02allProductsIn".equals(string)) {
             return ALL_PRODUCTS_IN;
