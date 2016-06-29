@@ -43,39 +43,50 @@ public class ActionCriteriaModifiers {
     @Autowired
     private TranslationService translationService;
 
-    public void filterActionsForObejct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (filterValue.has(PlannedEventFields.SUBASSEMBLY)) {
-            addSubassemblyCriteria(scb, filterValue);
-
-        } else if (filterValue.has(PlannedEventFields.WORKSTATION)) {
-            addWorkstationCriteria(scb, filterValue);
+    public void filterActionsForObejct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(PlannedEventFields.SUBASSEMBLY)) {
+            addSubassemblyCriteria(searchCriteriaBuilder, filterValueHolder);
+        } else if (filterValueHolder.has(PlannedEventFields.WORKSTATION)) {
+            addWorkstationCriteria(searchCriteriaBuilder, filterValueHolder);
         }
-
     }
 
-    private void addSubassemblyCriteria(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long subassemblyId = filterValue.getLong(PlannedEventFields.SUBASSEMBLY);
-        addCriteriaForElementAndWorkstationType(scb, filterValue, subassemblyId, ActionFields.SUBASSEMBLIES);
+    private void addSubassemblyCriteria(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+        Long subassemblyId = filterValueHolder.getLong(PlannedEventFields.SUBASSEMBLY);
+
+        addCriteriaForElementAndWorkstationType(searchCriteriaBuilder, filterValueHolder, subassemblyId,
+                ActionFields.SUBASSEMBLIES);
     }
 
-    private void addWorkstationCriteria(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long workstationId = filterValue.getLong(PlannedEventFields.WORKSTATION);
-        addCriteriaForElementAndWorkstationType(scb, filterValue, workstationId, ActionFields.WORKSTATIONS);
+    private void addWorkstationCriteria(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+        Long workstationId = filterValueHolder.getLong(PlannedEventFields.WORKSTATION);
+
+        addCriteriaForElementAndWorkstationType(searchCriteriaBuilder, filterValueHolder, workstationId,
+                ActionFields.WORKSTATIONS);
     }
 
-    private void addCriteriaForElementAndWorkstationType(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue,
-            Long elementId, String alias) {
-        SearchCriterion criterion;
+    private void addCriteriaForElementAndWorkstationType(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder, Long elementId, String alias) {
+        SearchCriterion searchCriterion;
+
         String other = translationService.translate("cmmsMachineParts.action.name.other", LocaleContextHolder.getLocale());
-        if (filterValue.has(WorkstationFields.WORKSTATION_TYPE)) {
-            Long workstationTypeId = filterValue.getLong(WorkstationFields.WORKSTATION_TYPE);
-            criterion = SearchRestrictions.or(SearchRestrictions.eq(ActionFields.WORKSTATION_TYPES + ".id", workstationTypeId),
+
+        if (filterValueHolder.has(WorkstationFields.WORKSTATION_TYPE)) {
+            Long workstationTypeId = filterValueHolder.getLong(WorkstationFields.WORKSTATION_TYPE);
+
+            searchCriterion = SearchRestrictions.or(
+                    SearchRestrictions.eq(ActionFields.WORKSTATION_TYPES + ".id", workstationTypeId),
                     SearchRestrictions.eq(alias + ".id", elementId));
         } else {
-            criterion = SearchRestrictions.eq(alias + ".id", elementId);
+            searchCriterion = SearchRestrictions.eq(alias + ".id", elementId);
         }
-        scb.createAlias(ActionFields.WORKSTATION_TYPES, ActionFields.WORKSTATION_TYPES, JoinType.LEFT)
+
+        searchCriteriaBuilder.createAlias(ActionFields.WORKSTATION_TYPES, ActionFields.WORKSTATION_TYPES, JoinType.LEFT)
                 .createAlias(alias, alias, JoinType.LEFT)
-                .add(SearchRestrictions.or(criterion, SearchRestrictions.eq(ActionFields.NAME, other)));
+                .add(SearchRestrictions.or(searchCriterion, SearchRestrictions.eq(ActionFields.NAME, other)));
     }
+
 }

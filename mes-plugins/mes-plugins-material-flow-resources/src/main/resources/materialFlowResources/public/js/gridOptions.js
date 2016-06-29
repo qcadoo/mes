@@ -115,6 +115,8 @@ function parseAndValidateInputNumber($element) {
         $element.addClass('error-grid');
         $element.val(rawValue);
     }
+    
+    return $element.val();
 }
 
 myApp.directive('ngJqGrid', function ($window) {
@@ -972,7 +974,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (quantityValue !== quantityValueNew) {
                     quantityValue = quantityValueNew;
                     $(this).data("timeout", setTimeout(gridRunner(function () {
-                        parseAndValidateInputNumber(t);
+                        quantityValueNew = parseAndValidateInputNumber(t);
 
                         var rowId = getRowIdFromElement(t);
 
@@ -1001,17 +1003,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $input.val(value);
             $input.attr('readonly', getColModelByIndex('price').editoptions.readonly === 'readonly');
 
+            var priceValue = value;
+            var priceValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
 
                 window.clearTimeout(t.data("timeout"));
+                priceValueNew = t.val();
+                if (priceValue !== priceValueNew) {
+                    priceValue = priceValueNew;
 
-                $(this).data("timeout", setTimeout(function () {
-                    gridRunner(function () {
-                        parseAndValidateInputNumber(t);
-                    });
-                }, 500));
-
+                    $(this).data("timeout", setTimeout(function () {
+                        gridRunner(function () {
+                            parseAndValidateInputNumber(t);
+                        });
+                    }, 500));
+                }
             });
 
             return $input;

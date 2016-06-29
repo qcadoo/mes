@@ -48,10 +48,12 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -349,11 +351,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 for (Entity operationProductOutComponent : operationComponent
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
-                    if (operationProductOutComponent
-                            .getBelongsToField(OperationProductOutComponentFields.PRODUCT)
-                            .getId()
-                            .equals(operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT)
-                                    .getId())) {
+                    if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(
+                            operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
                         isntComponent = true;
 
                         BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
@@ -418,8 +417,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private boolean isTechnologyOperationComponentEntityTypeReferenceTechnology(final Entity operationComponent) {
-        return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
+        return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue()
+                .equals(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
     }
 
     @Override
@@ -455,14 +454,22 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
         if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false);
-        } else {
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true);
+        } else {
+            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true, true);
         }
     }
 
     private Map<Long, BigDecimal> getProductWithoutSubcontractingProduct(
             final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
             final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents) {
+        return getProductWithoutSubcontractingProduct(productComponentWithQuantities, nonComponents, onlyComponents, false);
+    }
+
+    private Map<Long, BigDecimal> getProductWithoutSubcontractingProduct(
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents, final boolean onlyMaterials) {
         Map<Long, BigDecimal> productWithQuantities = Maps.newHashMap();
 
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : productComponentWithQuantities
@@ -472,11 +479,29 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             if (onlyComponents && nonComponents.contains(operationProductComponentHolder)) {
                 continue;
             }
+            if (onlyMaterials) {
+                Entity product = operationProductComponentHolder.getProduct();
+                if (hasAcceptedMasterTechnology(product)) {
+                    continue;
+                }
+            }
 
             addProductQuantitiesToList(productComponentWithQuantity, productWithQuantities);
         }
 
         return productWithQuantities;
+    }
+
+    private boolean hasAcceptedMasterTechnology(final Entity product) {
+        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY);
+        Entity masterTechnology = technologyDD.find()
+                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product),
+                        (SearchRestrictions.eq("state", "02accepted"))))
+                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
+
+        return masterTechnology != null;
+
     }
 
     @Override
@@ -545,8 +570,9 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public Entity getTechnologyOperationComponent(final Long technologyOperationComponentId) {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
+        return dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .get(technologyOperationComponentId);
     }
 
     @Override
