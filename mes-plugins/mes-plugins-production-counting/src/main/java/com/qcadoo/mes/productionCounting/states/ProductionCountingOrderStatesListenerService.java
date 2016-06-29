@@ -84,8 +84,8 @@ public class ProductionCountingOrderStatesListenerService {
         final List<Entity> technologyOperationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         int productionTrackingsNumber = 0;
-        for (Entity technologyOperationComponent : technologyOperationComponents) {
 
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
             if (checkIfOrderHasFinalProductionTrackings(order, technologyOperationComponent)) {
                 productionTrackingsNumber++;
             }
