@@ -34,6 +34,8 @@ import org.springframework.stereotype.Component;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -43,8 +45,12 @@ import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
+import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -87,6 +93,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private DeliveryReportPdf deliveryReportPdf;
+
+    @Autowired
+    private UnitConversionService unitConversionService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -276,13 +285,33 @@ public class DeliveryDetailsListeners {
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity) {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
-        newOrderedProduct.setField(OrderedProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        BigDecimal conversion = getConversion(product);
+
+        newOrderedProduct.setField(OrderedProductFields.PRODUCT, product);
         newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
-        newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
-                orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
-        newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
-                orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
+        newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE, orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
+        newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
+        newOrderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, BigDecimalUtils.convertNullToZero(orderedQuantity).multiply(conversion, numberService.getMathContext()));
+
         return newOrderedProduct;
+    }
+
+    public BigDecimal getConversion(Entity product) {
+        String unit = product.getStringField(ProductFields.UNIT);
+        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+        if (additionalUnit == null) {
+            return BigDecimal.ONE;
+        }
+        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
+        if (unitConversions.isDefinedFor(additionalUnit)) {
+            return unitConversions.asUnitToConversionMap().get(additionalUnit);
+        } else {
+            return BigDecimal.ZERO;
+        }
     }
 
     private BigDecimal getLackQuantity(final Entity orderedProduct, final Entity deliveredProduct) {
