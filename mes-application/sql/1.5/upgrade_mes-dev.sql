@@ -24,6 +24,8 @@ CREATE TABLE materialflowresources_resourcestock
       REFERENCES materialflow_location (id) DEFERRABLE
 );
 
+CREATE SEQUENCE materialflowresources_orderedquantitystock_id_seq;
+
 CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
     SELECT COALESCE(SUM(orderedproduct.orderedquantity), 0::numeric) AS orderedquantity,
     resource.id AS resource_id
@@ -33,6 +35,8 @@ CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
         AND delivery.location_id = resource.location_id
         AND (delivery.state::text = ANY (ARRAY['01draft'::character varying::text, '02prepared'::character varying::text, '03duringCorrection'::character varying::text, '05approved'::character varying::text])))
     GROUP BY resource.id;
+
+CREATE SEQUENCE materialflowresources_resourcestockdto_internal_id_seq;
 
 CREATE OR REPLACE VIEW materialflowresources_resourcestockdto_internal AS
     SELECT row_number() OVER () AS id, resource.location_id, resource.product_id::integer, resource.quantity AS quantity,
@@ -45,34 +49,13 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto_internal AS
     LEFT JOIN materialflowresources_orderedquantitystock orderedquantity ON (orderedquantity.resource_id = resource.id)
     GROUP BY resource.location_id, resource.product_id, orderedquantity.orderedquantity, reservedQuantity, availableQuantity, quantity;
 
+CREATE SEQUENCE materialflowresources_resourcestockdto_id_seq;
+
 CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
     SELECT internal.*, location.number AS locationNumber, location.name AS locationName, product.number AS productNumber,
     product.name AS productName, product.unit AS productUnit
     FROM materialflowresources_resourcestockdto_internal internal
     JOIN materialflow_location location ON (location.id = internal.location_id)
     JOIN basic_product product ON (product.id = internal.product_id);
-
-
--- end
-
--- NBLS-250
-CREATE TABLE repairs_repairorderstatechange
-(
-  id bigint NOT NULL,
-  dateandtime timestamp without time zone,
-  sourcestate character varying(255),
-  targetstate character varying(255),
-  phase integer,
-  worker character varying(255),
-  repairorder_id bigint,
-  shift_id bigint,
-  CONSTRAINT repairs_repairorderstatechange_pkey PRIMARY KEY (id),
-
-  CONSTRAINT repairorderstatechange_repairorder FOREIGN KEY (repairorder_id)
-      REFERENCES repairs_repairorder (id) DEFERRABLE,
-
-  CONSTRAINT repairorderstatechange_shift FOREIGN KEY (shift_id)
-      REFERENCES basic_shift (id) DEFERRABLE
-);
 
 -- end
