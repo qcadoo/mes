@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
  
 =======
 ﻿-- rename fields in settings
@@ -58,4 +59,6 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
     JOIN basic_product product ON (product.id = internal.product_id);
 
 -- end
+>>>>>>> SC#NBLS-251 Added sql and fixed validation.
+=======
 >>>>>>> SC#NBLS-251 Added sql and fixed validation.
