@@ -35,5 +35,7 @@
     </fields>
     <hooks>
         <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onDelete"/>
+        <onSave class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onSave"/>
+        <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCreate"/>
     </hooks>
 </model>

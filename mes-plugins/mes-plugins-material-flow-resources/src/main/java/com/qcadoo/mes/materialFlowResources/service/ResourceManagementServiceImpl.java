@@ -41,7 +41,6 @@ import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
@@ -79,7 +78,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private ResourceStockService resourceStockService;
 
     @Autowired
-    private ReservationsService reservationsService;
+    private ReservationsServiceImpl reservationsService;
 
     public ResourceManagementServiceImpl() {
 
@@ -585,7 +584,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
         } else {
-            updateReservations(document);
+            deleteReservations(document);
         }
 
     }

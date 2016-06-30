@@ -1,12 +1,16 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -19,6 +23,9 @@ public class ResourceStockServiceImpl implements ResourceStockService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public void addResourceStock(final Entity resource) {
@@ -96,4 +103,32 @@ public class ResourceStockServiceImpl implements ResourceStockService {
                 MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK);
     }
 
+    public void updateResourceStock(Map<String, Object> params, BigDecimal quantityToAdd) {
+        params.put("quantity_to_add", quantityToAdd);
+        String query = "UPDATE materialflowresources_resourcestock SET reservedquantity = reservedquantity + :quantity_to_add, "
+                + "availablequantity = availablequantity - :quantity_to_add WHERE product_id = :product_id AND "
+                + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id)";
+        jdbcTemplate.update(query, params);
+
+    }
+
+    public void updateResourceStock(Entity position, BigDecimal quantityToAdd) {
+        updateResourceStock(position.getBelongsToField(PositionFields.PRODUCT),
+                position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM),
+                quantityToAdd);
+
+    }
+
+    public void updateResourceStock(Entity product, Entity location, BigDecimal quantityToAdd) {
+        Optional<Entity> maybeResourceStock = getResourceStockForProductAndLocation(product, location);
+        if (maybeResourceStock.isPresent()) {
+            Entity resourceStock = maybeResourceStock.get();
+            BigDecimal reservedQuantity = resourceStock.getDecimalField(ResourceStockFields.RESERVED_QUANTITY);
+            BigDecimal availableQuantity = resourceStock.getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
+            resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, availableQuantity.subtract(quantityToAdd));
+            resourceStock.setField(ResourceStockFields.RESERVED_QUANTITY, reservedQuantity.add(quantityToAdd));
+            resourceStock.getDataDefinition().save(resourceStock);
+        }
+
+    }
 }

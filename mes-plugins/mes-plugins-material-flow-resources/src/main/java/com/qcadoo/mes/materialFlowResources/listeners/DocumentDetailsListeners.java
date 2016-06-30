@@ -42,7 +42,7 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.ReservationsService;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -90,7 +90,7 @@ public class DocumentDetailsListeners {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationsService reservationsService;
+    private ReservationsServiceImpl reservationsService;
 
     private static final String L_RESOURCE = "resource";
 

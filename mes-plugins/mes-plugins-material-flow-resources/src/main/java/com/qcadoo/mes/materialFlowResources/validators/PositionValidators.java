@@ -30,7 +30,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlowResources.ReservationsService;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -46,7 +46,7 @@ import com.qcadoo.model.api.Entity;
 public class PositionValidators {
 
     @Autowired
-    private ReservationsService reservationsService;
+    private ReservationsServiceImpl reservationsService;
 
     @Autowired
     private ResourceStockService resourceStockService;

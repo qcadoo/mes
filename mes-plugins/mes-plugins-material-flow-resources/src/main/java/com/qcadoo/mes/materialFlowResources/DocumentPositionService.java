@@ -28,6 +28,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
 
 @Repository
 public class DocumentPositionService {
@@ -48,7 +49,7 @@ public class DocumentPositionService {
     private DocumentPositionResourcesHelper positionResourcesHelper;
 
     @Autowired
-    private ReservationsService reservationsService;
+    private ReservationsServiceImpl reservationsService;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
                                                      int perPage, DocumentPositionDTO position) {
