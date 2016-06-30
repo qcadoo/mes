@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -33,7 +44,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -45,21 +60,9 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 
 @Service
 public final class ProductionTrackingListenerService {
-
-    private static final String L_USED_QUANTITY = "usedQuantity";
 
     private static final String L_PRODUCT = "product";
 
@@ -123,18 +126,27 @@ public final class ProductionTrackingListenerService {
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
 
-        if (!checkIfUsedQuantitiesWereFilled(productionTracking,
-                ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
-                && !checkIfUsedQuantitiesWereFilled(productionTracking,
-                        ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking) && !checkIfUsedQuantitiesWereFilled(productionTracking)) {
             stateChangeContext
                     .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
-    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
-        final SearchCriteriaBuilder searchBuilder = productionTracking.getHasManyField(modelName).find()
-                .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
+    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
+                .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY));
+
+        return (searchBuilder.list().getTotalNumberOfEntities() != 0);
+    }
+
+    public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)
+                .find()
+                .add(SearchRestrictions.or(
+                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
