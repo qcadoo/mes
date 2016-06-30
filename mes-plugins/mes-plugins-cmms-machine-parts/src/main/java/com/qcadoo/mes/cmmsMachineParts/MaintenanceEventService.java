@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
@@ -37,7 +31,14 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MaintenanceEventService {
@@ -108,5 +109,16 @@ public class MaintenanceEventService {
             return Optional.empty();
         }
         return Optional.of(plannedEvents.get(0));
+    }
+
+    public boolean existsNewEventsToNotification() {
+        Entity entity = getMaintenanceEventDD().find()
+                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), "countrows"))
+                .add(SearchRestrictions.eq(MaintenanceEventFields.SOUND_NOTIFICATIONS, true))
+                .addOrder(SearchOrders.asc("countrows")).setFirstResult(0).setMaxResults(1).uniqueResult();
+        if (entity.getLongField("countrows") > 0) {
+            return true;
+        }
+        return false;
     }
 }

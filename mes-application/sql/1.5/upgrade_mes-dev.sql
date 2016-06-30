@@ -55,6 +55,16 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
 
 -- end
 
+-- TABLE cmmsmachineparts_maintenanceevent
+-- last touched 23.06.2016 by kasi
+
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN soundnotifications boolean;
+ALTER TABLE cmmsmachineparts_maintenanceevent ALTER COLUMN soundnotifications SET DEFAULT false;
+
+-- end
+
+SELECT add_role('ROLE_EVENTS_NOTIFICATION','Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe');
+
 -- NBLS-250
 CREATE TABLE repairs_repairorderstatechange
 (
