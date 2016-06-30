@@ -1,5 +1,21 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
@@ -10,16 +26,6 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -76,10 +82,10 @@ public class DocumentPositionService {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String
-                .format("INSERT INTO materialflowresources_position (%s, type, state) "
+        String query = String.format(
+                "INSERT INTO materialflowresources_position (%s, type, state) "
                         + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id))",
-                        keys, values);
+                keys, values);
 
         jdbcTemplate.update(query, params);
     }
@@ -90,11 +96,9 @@ public class DocumentPositionService {
         String set = params.keySet().stream().map(key -> {
             return key + "=:" + key;
         }).collect(Collectors.joining(", "));
-        String query = String
-                .format("UPDATE materialflowresources_position "
-                        + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
-                        + "WHERE id = :id ",
-                        set);
+        String query = String.format("UPDATE materialflowresources_position "
+                + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
+                + "WHERE id = :id ", set);
 
         jdbcTemplate.update(query, params);
     }
@@ -150,7 +154,7 @@ public class DocumentPositionService {
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument(documentId));
-            
+
             Map<String, Object> columns = new LinkedHashMap<>();
             for (Map<String, Object> item : items) {
                 columns.put(item.get("name").toString(), item.get("checked"));
@@ -179,8 +183,7 @@ public class DocumentPositionService {
 
     public void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, palletnumber.number as palletnumber, "
-                + "location.number as storagelocationnumber\n"
-                + "	FROM materialflowresources_position p\n"
+                + "location.number as storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
                 + "	left join basic_product product on (p.product_id = product.id)\n"
                 + "	left join basic_additionalcode additionalcode on (p.additionalcode_id = additionalcode.id)\n"
                 + "	left join basic_palletnumber palletnumber on (p.palletnumber_id = palletnumber.id)\n"
@@ -357,16 +360,15 @@ public class DocumentPositionService {
             if (useAdditionalCode) {
                 paramMap.put("add_code", additionalCode);
             }
-            String query = positionResourcesHelper
-                    .getResourceQuery(document, true,
-                            addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode),
-                            useAdditionalCode);
+            String query = positionResourcesHelper.getResourceQuery(document, true,
+                    addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
 
         }
     }
 
-    public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion, String additionalCode) {
+    public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion,
+            String additionalCode) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
@@ -411,13 +413,14 @@ public class DocumentPositionService {
 
     public boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
             boolean useAdditionalCode) {
-        boolean addMethodOfDisposalCondition = false;
-
-        String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
-        Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
-        if(date != null){
-            addMethodOfDisposalCondition = true;
-        }
-        return addMethodOfDisposalCondition;
+        // boolean addMethodOfDisposalCondition = false;
+        //
+        // String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
+        // Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
+        // if(date != null){
+        // addMethodOfDisposalCondition = true;
+        // }
+        // return addMethodOfDisposalCondition;
+        return true;
     }
 }
