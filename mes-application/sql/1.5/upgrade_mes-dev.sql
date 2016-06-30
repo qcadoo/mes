@@ -55,7 +55,7 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
 
 -- end
 
--- NBLS-250
+-- NBLS-250git a
 CREATE TABLE repairs_repairorderstatechange
 (
   id bigint NOT NULL,

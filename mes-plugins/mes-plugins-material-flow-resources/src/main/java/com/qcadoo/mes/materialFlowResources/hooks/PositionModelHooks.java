@@ -61,6 +61,7 @@ public class PositionModelHooks {
             position.setField(PositionFields.TYPE, type.getStringValue());
             position.setField(PositionFields.STATE, state.getStringValue());
         }
+        reservationsService.updateReservation(position);
 
     }
 
@@ -71,6 +72,7 @@ public class PositionModelHooks {
             position.setField(PositionFields.ATRRIBUTE_VALUES,
                     materialFlowResourceService.getAttributesForPosition(position, warehouse));
         }
+        reservationsService.createReservation(position);
     }
 
 }

@@ -30,11 +30,10 @@
     <fields>
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
-        <decimal name="quantity" required="true">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
+        <decimal name="quantity" required="true"/>
         <belongsTo name="position" model="position"/>
     </fields>
+    <hooks>
+        <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onDelete"/>
+    </hooks>
 </model>

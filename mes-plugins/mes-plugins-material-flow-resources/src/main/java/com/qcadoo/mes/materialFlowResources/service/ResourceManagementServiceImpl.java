@@ -41,6 +41,7 @@ import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
@@ -76,6 +77,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private ResourceStockService resourceStockService;
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     public ResourceManagementServiceImpl() {
 
@@ -411,7 +415,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!enoughResources) {
             addDocumentError(document, warehouse, errorMessage);
         } else {
+            deleteReservations(document);
             document.setField(DocumentFields.POSITIONS, generatedPositions);
+        }
+    }
+
+    private void deleteReservations(Entity document) {
+
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
+
+            reservationsService.deleteReservation(position);
         }
     }
 
@@ -570,8 +584,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
+        } else {
+            updateReservations(document);
         }
 
+    }
+
+    private void updateReservations(Entity document) {
+
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
+            reservationsService.updateReservation(position);
+        }
     }
 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {

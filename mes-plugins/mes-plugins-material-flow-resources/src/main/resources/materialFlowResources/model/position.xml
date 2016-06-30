@@ -78,5 +78,8 @@
                        method="validateDates"/>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
                        method="validateResources"/>
+
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
+                       method="validateAvailableQuantity"/>
     </hooks>
 </model>
