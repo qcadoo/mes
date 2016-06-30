@@ -106,7 +106,6 @@ CREATE TABLE materialflowresources_reservation
       REFERENCES materialflowresources_position (id) DEFERRABLE
 );
 
-ALTER TABLE materialflowresources_documentpositionparameters ADD COLUMN draftmakesreservation boolean;
-ALTER TABLE materialflowresources_documentpositionparameters ALTER COLUMN draftmakesreservation SET DEFAULT true;
+ALTER TABLE materialflowresources_documentpositionparameters ADD COLUMN draftmakesreservation boolean DEFAULT true;
 
 -- end
