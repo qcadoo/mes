@@ -132,12 +132,16 @@ public class DocumentPositionValidator {
 
     private BigDecimal getAvailableQuantityForProductAndLocation(DocumentPositionDTO position, Long productId, Long locationId) {
 
+        Long positionId = 0L;
+        if (position != null) {
+            positionId = position.getId();
+        }
         String query = "SELECT availableQuantity FROM materialflowresources_resourcestock "
                 + "WHERE product_id = :product_id AND location_id = :location_id";
         Map<String, Object> params = Maps.newHashMap();
         params.put("product_id", productId);
         params.put("location_id", locationId);
-        params.put("position_id", position.getId());
+        params.put("position_id", positionId);
         BigDecimal availableQuantity = jdbcTemplate.query(query, params, new ResultSetExtractor<BigDecimal>() {
 
             @Override
@@ -146,7 +150,7 @@ public class DocumentPositionValidator {
             }
         });
 
-        if (position.getId() != 0L) {
+        if (positionId != null && positionId != 0L) {
             String queryForOldQuantity = "SELECT quantity FROM materialflowresources_position WHERE id = :position_id";
             BigDecimal quantity = jdbcTemplate.query(queryForOldQuantity, params, new ResultSetExtractor<BigDecimal>() {
 
