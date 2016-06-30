@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -40,14 +31,7 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.DataDefinition;
@@ -57,16 +41,20 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
 
 @Service
 public class EventHooks {
@@ -117,6 +105,30 @@ public class EventHooks {
         setEventCriteriaModifiers(view);
         lockNumberField(view);
         fetchNumberFromDatabase(view);
+        manageSoundNotificationsField(view);
+    }
+
+    private void manageSoundNotificationsField(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity event = form.getPersistedEntityWithIncludedFormValues();
+        String type = event.getStringField(MaintenanceEventFields.TYPE);
+        String eventState = event.getStringField(MaintenanceEventFields.STATE);
+        boolean canEnableSoundNotificationsField = canEnableSoundNotificationsField(view, type, eventState);
+        CheckBoxComponent soundNotificationComponent = (CheckBoxComponent) view
+                .getComponentByReference(MaintenanceEventFields.SOUND_NOTIFICATIONS);
+        if (form.getEntityId() == null && view.isViewAfterRedirect() && canEnableSoundNotificationsField) {
+            soundNotificationComponent.setChecked(true);
+        } else if(MaintenanceEventType.PROPOSAL.getStringValue().equals(type)){
+            soundNotificationComponent.setChecked(false);
+        }
+        soundNotificationComponent.setEnabled(canEnableSoundNotificationsField);
+        soundNotificationComponent.requestComponentUpdateState();
+    }
+
+    private boolean canEnableSoundNotificationsField(ViewDefinitionState view, String type, String eventState) {
+        return (MaintenanceEventType.FAILURE.getStringValue().equals(type) || MaintenanceEventType.ISSUE.getStringValue().equals(
+                type))
+                && MaintenanceEventState.NEW.getStringValue().equals(eventState);
     }
 
     private void lockNumberField(final ViewDefinitionState view) {
