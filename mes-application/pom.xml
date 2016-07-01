@@ -14,6 +14,10 @@
 
     <name>Qcadoo MES :: Application</name>
 
+    <properties>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
@@ -376,7 +380,7 @@
                                     buildApplicationVersion = ${project.version}
                                     buildFrameworkVersion = ${qcadoo.version}
                                     buildVersionForUser = ${qcadoo.buildVersionForUser}
-                                    buildTime =
+                                    buildTime = ${maven.build.timestamp}
                                     ${buildNumber}
                                     buildRevision = ${buildRevision}
                                 </echo>

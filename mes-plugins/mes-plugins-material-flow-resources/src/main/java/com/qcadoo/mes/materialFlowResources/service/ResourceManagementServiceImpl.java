@@ -74,6 +74,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Autowired
     private UnitConversionService unitConversionService;
 
+    @Autowired
+    private ResourceStockService resourceStockService;
+
     public ResourceManagementServiceImpl() {
 
     }
@@ -179,6 +182,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         setResourceAttributesFromPosition(resource, position);
 
+        resourceStockService.addResourceStock(resource);
         return resourceDD.save(resource);
     }
 
@@ -224,6 +228,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         setResourceAttributesFromResource(newResource, resource);
 
+        resourceStockService.addResourceStock(newResource);
         return resourceDD.save(newResource);
     }
 
@@ -231,7 +236,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return createResource(null, warehouse, resource, quantity, date);
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product, final Entity warehouse) {
+    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
+            final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -276,9 +282,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
 
-                    resources.addAll(scb
-                            .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).list().getEntities());
+                    resources
+                            .addAll(scb
+                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                                    .list().getEntities());
                 }
 
                 if (resources.isEmpty()) {
@@ -295,17 +303,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
 
                 if (result.containsKey(productAndPosition.getKey().getId())) {
-                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream()
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(BigDecimal.ZERO,
+                            BigDecimal::add);
 
                     result.put(productAndPosition.getKey().getId(),
                             (resources.stream().map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO,
                                     BigDecimal::add)).add(currentQuantity));
                 } else {
-                    result.put(
-                            productAndPosition.getKey().getId(),
-                            resources.stream().map(res -> res.getDecimalField(ResourceFields.QUANTITY))
-                                    .reduce(BigDecimal.ZERO, BigDecimal::add));
+                    result.put(productAndPosition.getKey().getId(), resources.stream()
+                            .map(res -> res.getDecimalField(ResourceFields.QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add));
                 }
             }
         }
@@ -421,6 +427,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
 
+        resourceStockService.removeResourceStock(product, warehouse, quantity);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
@@ -445,7 +452,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (quantity.compareTo(resourceQuantity) >= 0) {
                 quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
-
                 resource.getDataDefinition().delete(resource.getId());
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceQuantity));
@@ -469,7 +475,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
 
                 resource.getDataDefinition().save(resource);
-
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
                 BigDecimal givenQuantity = convertToGivenUnit(quantity, position);
@@ -494,8 +499,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                            UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
@@ -510,8 +515,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                            UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
@@ -528,8 +533,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
 
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
-                .getStringField(LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
+                .parseString(warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM));
 
         boolean enoughResources = true;
 
@@ -584,10 +589,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             WarehouseAlgorithm warehouseAlgorithm) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
-        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position, warehouseAlgorithm);
+        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position,
+                warehouseAlgorithm);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
 
+        resourceStockService.removeResourceStock(product, warehouseFrom, quantity);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
@@ -686,8 +693,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).addOrder(SearchOrders.asc(TIME))
-                    .list().getEntities());
+                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                    .addOrder(SearchOrders.asc(TIME)).list().getEntities());
         }
 
         if (resources.isEmpty()) {

@@ -14,10 +14,11 @@ public class DocumentPositionResourcesHelper {
         queryBuilder.append("select number, batch from materialflowresources_resource");
         appendWhereClause(queryBuilder, query, useAdditionalCode);
         if (addMethodOfDisposal) {
-            queryBuilder.append(" AND ");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-            appendWhereClause(queryBuilder, query, useAdditionalCode);
-            queryBuilder.append(")");
+            // queryBuilder.append(" AND ");
+            // queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
+            // appendWhereClause(queryBuilder, query, useAdditionalCode);
+            // queryBuilder.append(")");
+            queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(document));
         }
 
         return queryBuilder.toString();
@@ -33,8 +34,8 @@ public class DocumentPositionResourcesHelper {
     private void appendWhereClause(StringBuilder queryBuilder, boolean query, boolean useAdditionalCode) {
         queryBuilder.append(" WHERE conversion = :conversion");
         queryBuilder.append(" AND product_id = (SELECT id FROM basic_product WHERE number = :product)");
-        queryBuilder
-                .append(" AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder.append(
+                " AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         if (query) {
             queryBuilder.append(" AND number ilike :query ");
         }

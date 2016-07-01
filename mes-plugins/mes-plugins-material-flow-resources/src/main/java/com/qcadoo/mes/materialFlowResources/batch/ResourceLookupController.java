@@ -66,30 +66,32 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
 
     protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder
-                .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
+        queryBuilder.append(
+                "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
         queryBuilder.append("FROM materialflowresources_resource r ");
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
         queryBuilder.append("LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id ");
         queryBuilder.append("LEFT JOIN basic_product bp on bp.number = :product ");
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.product_id = bp.id ");
-        queryBuilder
-                .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder.append(
+                " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion ");
         if (useAdditionalCode) {
-            queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
+            // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
         if (addMethodOfDisposal) {
-            queryBuilder.append(" AND ");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
-            queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
-            queryBuilder
-                    .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-            queryBuilder.append(" AND conversion = :conversion");
-            if (useAdditionalCode) {
-                queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
-            }
-            queryBuilder.append(" )");
+            // queryBuilder.append(" AND ");
+            // queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
+            // queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
+            // queryBuilder
+            // .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from
+            // materialflowresources_document WHERE id = :context)");
+            // queryBuilder.append(" AND conversion = :conversion");
+            // if (useAdditionalCode) {
+            // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
+            // }
+            // queryBuilder.append(" )");
+            queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         }
         queryBuilder.append(") as resources");
         return queryBuilder.toString();

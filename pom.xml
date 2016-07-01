@@ -40,7 +40,7 @@
   </modules>
 
   <properties>
-    <qcadoo.buildVersionForUser>1.5.25</qcadoo.buildVersionForUser>
+    <qcadoo.buildVersionForUser>1.5.27</qcadoo.buildVersionForUser>
     <qcadoo.version>${project.version}</qcadoo.version>
     <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
     <qcadoo.saas.version>1.5-SNAPSHOT</qcadoo.saas.version>

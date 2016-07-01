@@ -73,4 +73,6 @@ public final class MaintenanceEventFields {
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
 
+    public static final String SOUND_NOTIFICATIONS = "soundNotifications";
+
 }

@@ -24,15 +24,22 @@
     ***************************************************************************
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans 
-		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd 
-		http://www.springframework.org/schema/context 
-		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
-
-	<context:component-scan base-package="com.qcadoo.mes.states" />
-	<context:component-scan base-package="com.qcadoo.mes.newstates" />
-
-</beans>
+<model name="resourceStockDto"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+       activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+    <fields>
+        <decimal name="quantity"/>
+        <decimal name="reservedQuantity"/>
+        <decimal name="availableQuantity"/>
+        <string name="locationNumber"/>
+        <string name="locationName"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productUnit"/>
+        <decimal name="minimumState"/>
+        <decimal name="orderedQuantity"/>
+        <integer name="product_id"/>
+    </fields>
+    <masterModel plugin="materialFlowResources" model="resourceStock"/>
+</model>

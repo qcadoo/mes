@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
-
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -35,14 +34,14 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class DocumentsCriteriaModifier {
 
-    private static final String L_ORDER = "order";
+    private static final String L_ORDER_NUMBER = "orderNumber";
 
     public void hideDraftDocumentsWithOrder(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (!filterValue.has(L_ORDER)) {
+        if (!filterValue.has(L_ORDER_NUMBER)) {
             return;
         }
 
-        scb.add(SearchRestrictions.not(SearchRestrictions.and(SearchRestrictions.isNotNull(L_ORDER),
+        scb.add(SearchRestrictions.not(SearchRestrictions.and(SearchRestrictions.isNotNull(L_ORDER_NUMBER),
                 SearchRestrictions.eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()))));
     }
 }

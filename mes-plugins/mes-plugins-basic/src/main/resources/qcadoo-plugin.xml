@@ -159,6 +159,7 @@
         <security:role identifier="ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION"
                        description="Dostęp do zakładek części, czas pracy, opis rozwiązania"/>
         <security:role identifier="ROLE_EVENTS_LIST_EXPORT" description="Dostęp do eksportu"/>
+        <security:role identifier="ROLE_EVENTS_NOTIFICATION" description="Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
 
         <!-- end -->
 

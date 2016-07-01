@@ -422,7 +422,10 @@
                         </component>
 
                     </layoutElement>
-
+                    <layoutElement column="2" row="7">
+                        <component type="checkbox" name="soundNotifications"
+                                   field="soundNotifications" reference="soundNotifications"/>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"
