@@ -24,8 +24,6 @@ CREATE TABLE materialflowresources_resourcestock
       REFERENCES materialflow_location (id) DEFERRABLE
 );
 
-CREATE SEQUENCE materialflowresources_orderedquantitystock_id_seq;
-
 CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
     SELECT COALESCE(SUM(orderedproduct.orderedquantity), 0::numeric) AS orderedquantity,
     resource.id AS resource_id
@@ -35,8 +33,6 @@ CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
         AND delivery.location_id = resource.location_id
         AND (delivery.state::text = ANY (ARRAY['01draft'::character varying::text, '02prepared'::character varying::text, '03duringCorrection'::character varying::text, '05approved'::character varying::text])))
     GROUP BY resource.id;
-
-CREATE SEQUENCE materialflowresources_resourcestockdto_internal_id_seq;
 
 CREATE OR REPLACE VIEW materialflowresources_resourcestockdto_internal AS
     SELECT row_number() OVER () AS id, resource.location_id, resource.product_id::integer, resource.quantity AS quantity,
