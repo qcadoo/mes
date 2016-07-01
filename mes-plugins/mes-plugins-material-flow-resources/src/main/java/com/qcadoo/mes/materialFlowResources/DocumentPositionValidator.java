@@ -151,15 +151,24 @@ public class DocumentPositionValidator {
         });
 
         if (positionId != null && positionId != 0L) {
-            String queryForOldQuantity = "SELECT quantity FROM materialflowresources_position WHERE id = :position_id";
-            BigDecimal quantity = jdbcTemplate.query(queryForOldQuantity, params, new ResultSetExtractor<BigDecimal>() {
+            String queryForOld = "SELECT product_id, quantity FROM materialflowresources_position WHERE id = :position_id";
+            Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
+                    new ResultSetExtractor<Map<String, Object>>() {
 
-                @Override
-                public BigDecimal extractData(ResultSet rs) throws SQLException, DataAccessException {
-                    return rs.next() ? rs.getBigDecimal("quantity") : BigDecimal.ZERO;
-                }
-            });
-            availableQuantity = quantity.add(availableQuantity);
+                        @Override
+                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                            Map<String, Object> result = Maps.newHashMap();
+                            if (rs.next()) {
+                                result.put("product_id", rs.getLong("product_id"));
+                                result.put("quantity", rs.getBigDecimal("quantity"));
+                            }
+                            return result;
+                        }
+                    });
+            if (productId.compareTo((Long) oldPosition.get("product_id")) == 0) {
+
+                availableQuantity = ((BigDecimal) oldPosition.get("quantity")).add(availableQuantity);
+            }
         }
         return availableQuantity;
     }

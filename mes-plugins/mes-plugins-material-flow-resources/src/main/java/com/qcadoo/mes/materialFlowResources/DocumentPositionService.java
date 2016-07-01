@@ -52,7 +52,7 @@ public class DocumentPositionService {
     private ReservationsServiceImpl reservationsService;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
-                                                     int perPage, DocumentPositionDTO position) {
+            int perPage, DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id as document, product.number as product, product.unit, additionalcode.code as additionalcode, "
                 + "palletnumber.number as palletnumber, location.number as storagelocation, resource.number as resource \n"
                 + "	FROM materialflowresources_position p\n"
@@ -116,8 +116,8 @@ public class DocumentPositionService {
                 + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
                 + "WHERE id = :id ", set);
 
-        jdbcTemplate.update(query, params);
         reservationsService.updateReservation(params);
+        jdbcTemplate.update(query, params);
     }
 
     public List<AbstractDTO> getStorageLocations(String q, String product, String document) {
@@ -364,7 +364,7 @@ public class DocumentPositionService {
     }
 
     public List<AbstractDTO> getResources(Long document, String q, String product, BigDecimal conversion,
-                                          boolean useAdditionalCode, String additionalCode) {
+            boolean useAdditionalCode, String additionalCode) {
 
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
@@ -385,7 +385,7 @@ public class DocumentPositionService {
     }
 
     public DataResponse getResourcesResponse(Long document, String q, String product, BigDecimal conversion,
-                                             String additionalCode) {
+            String additionalCode) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
@@ -429,7 +429,7 @@ public class DocumentPositionService {
     }
 
     public boolean addMethodOfDisposalCondition(Long document, Map<String, Object> paramMap, boolean useQuery,
-                                                boolean useAdditionalCode) {
+            boolean useAdditionalCode) {
         boolean addMethodOfDisposalCondition = false;
 
         String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
@@ -439,6 +439,5 @@ public class DocumentPositionService {
         }
         return addMethodOfDisposalCondition;
     }
-
 
 }

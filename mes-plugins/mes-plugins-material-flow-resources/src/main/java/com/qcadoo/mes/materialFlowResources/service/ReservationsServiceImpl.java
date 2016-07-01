@@ -1,14 +1,19 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -131,7 +136,31 @@ public class ReservationsServiceImpl implements ReservationsService {
                 + "product_id = :product_id, quantity = :quantity WHERE position_id = :id";
 
         jdbcTemplate.update(query, params);
+
         resourceStockService.updateResourceStock(params, quantityToAdd);
+        if (params.get("id") != null) {
+            String queryForOld = "SELECT product_id, quantity FROM materialflowresources_position WHERE id = :id";
+            Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
+                    new ResultSetExtractor<Map<String, Object>>() {
+
+                        @Override
+                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                            Map<String, Object> result = Maps.newHashMap();
+                            if (rs.next()) {
+                                result.put("product_id", rs.getLong("product_id"));
+                                result.put("quantity", rs.getBigDecimal("quantity"));
+                            }
+                            return result;
+                        }
+                    });
+            Long oldProductId = (Long) oldPosition.get("product_id");
+            BigDecimal oldPositionQuantity = (BigDecimal) oldPosition.get("quantity");
+            if (oldProductId.compareTo((Long) params.get("product_id")) != 0) {
+                Map<String, Object> paramsForOld = Maps.newHashMap(params);
+                paramsForOld.put("product_id", oldProductId);
+                resourceStockService.updateResourceStock(paramsForOld, oldPositionQuantity.negate());
+            }
+        }
 
     }
 
@@ -151,11 +180,6 @@ public class ReservationsServiceImpl implements ReservationsService {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
         BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
-        // Optional<Entity> maybeResourceStock = resourceStockService.getResourceStockForProductAndLocation(product, location);
-        // if (maybeResourceStock.isPresent()) {
-        // Entity resourceStock = maybeResourceStock.get();
-        // BigDecimal oldQuantity = resourceStock.getDecimalField(ResourceStockFields.RESERVED_QUANTITY);
-        // BigDecimal quantityToAdd = newQuantity.subtract(oldQuantity);
 
         Entity existingReservation = getReservationForPosition(position);
         if (existingReservation != null) {
@@ -163,9 +187,7 @@ public class ReservationsServiceImpl implements ReservationsService {
             existingReservation.setField(ReservationFields.PRODUCT, product);
             existingReservation.setField(ReservationFields.LOCATION, location);
             existingReservation.getDataDefinition().save(existingReservation);
-            // updateResourceStock(position, quantityToAdd);
         }
-        // }
 
     }
 
@@ -204,9 +226,7 @@ public class ReservationsServiceImpl implements ReservationsService {
 
         Entity reservation = getReservationForPosition(position);
         if (reservation != null) {
-            // BigDecimal quantityToAdd = position.getDecimalField(PositionFields.QUANTITY).negate();
             reservation.getDataDefinition().delete(reservation.getId());
-            // updateResourceStock(position, quantityToAdd);
         }
 
     }
