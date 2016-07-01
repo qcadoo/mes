@@ -28,6 +28,7 @@ public class TechnologyStateChangeListenerPCAspect extends AbstractStateListener
 
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
+
     }
 
     @RunInPhase(TechnologyStateChangePhase.PRE_VALIDATION)
@@ -37,4 +38,5 @@ public class TechnologyStateChangeListenerPCAspect extends AbstractStateListener
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
         technologyValidationServicePC.validateTypeOfProductionRecordingForTechnology(stateChangeContext);
     }
+
 }
