@@ -24,6 +24,8 @@ CREATE TABLE materialflowresources_resourcestock
       REFERENCES materialflow_location (id) DEFERRABLE
 );
 
+CREATE SEQUENCE materialFlowResources_resourcestockdto_id_seq;
+
 CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
     SELECT COALESCE(SUM(orderedproduct.orderedquantity), 0::numeric) AS orderedquantity,
     resource.id AS resource_id
