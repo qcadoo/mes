@@ -9,7 +9,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -26,9 +25,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class ReservationsServiceImpl implements ReservationsService {
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -41,8 +37,12 @@ public class ReservationsServiceImpl implements ReservationsService {
 
     @Override
     public boolean reservationsEnabled() {
-        return parameterService.getParameter().getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS)
-                .getBooleanField(ParameterFieldsMFR.DRAFT_MAKES_RESERVATION);
+        Entity documentPositionParameters = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult();
+        if (documentPositionParameters != null) {
+            return documentPositionParameters.getBooleanField(ParameterFieldsMFR.DRAFT_MAKES_RESERVATION);
+        }
+        return false;
     }
 
     @Override
