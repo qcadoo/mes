@@ -23,23 +23,35 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.google.common.base.Strings;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class DocumentValidators {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private PositionValidators positionValidators;
+
     public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
         validateDocumentName(dataDefinition, entity);
         hasWarehouses(dataDefinition, entity);
+        validateAvailableQuantities(entity);
 
         return entity.isValid();
     }
@@ -81,8 +93,21 @@ public class DocumentValidators {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (Strings.isNullOrEmpty(documentName)) {
-            document.addError(documentDD.getField(DocumentFields.NAME),
-                    "materialFlow.error.document.name.required");
+            document.addError(documentDD.getField(DocumentFields.NAME), "materialFlow.error.document.name.required");
         }
+    }
+
+    private boolean validateAvailableQuantities(final Entity document) {
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
+        List<Entity> posistions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : posistions) {
+            if (!positionValidators.validateAvailableQuantity(positionDD, position, document)) {
+                document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
+                return false;
+            }
+        }
+        return true;
+
     }
 }
