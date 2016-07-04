@@ -70,6 +70,8 @@
                          cascade="delete" copyable="true" />
         <hasMany name="deliveredProducts" joinField="delivery" model="deliveredProduct"
                          cascade="delete" />
+        <hasMany name="deliveredProductMultis" joinField="delivery" model="deliveredProductMulti"
+                 cascade="delete" />
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"

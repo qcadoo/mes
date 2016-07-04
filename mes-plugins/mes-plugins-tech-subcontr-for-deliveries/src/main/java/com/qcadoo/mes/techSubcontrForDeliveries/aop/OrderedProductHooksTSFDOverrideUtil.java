@@ -23,19 +23,19 @@
  */
 package com.qcadoo.mes.techSubcontrForDeliveries.aop;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
-import static com.qcadoo.mes.techSubcontrForDeliveries.constants.OrderedProductFieldsTSFD.OPERATION;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.techSubcontrForDeliveries.constants.TechSubcontrForDeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginStateResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.ADDITIONAL_CODE;
+import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
+import static com.qcadoo.mes.techSubcontrForDeliveries.constants.OrderedProductFieldsTSFD.OPERATION;
 
 @Service
 public class OrderedProductHooksTSFDOverrideUtil {
@@ -51,6 +51,7 @@ public class OrderedProductHooksTSFDOverrideUtil {
         SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD.find()
                 .add(SearchRestrictions.belongsTo(DELIVERY, orderedProduct.getBelongsToField(DELIVERY)))
                 .add(SearchRestrictions.belongsTo(PRODUCT, orderedProduct.getBelongsToField(PRODUCT)))
+                .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, orderedProduct.getBelongsToField(ADDITIONAL_CODE)))
                 .add(SearchRestrictions.belongsTo(OPERATION, orderedProduct.getBelongsToField(OPERATION)));
 
         if (orderedProduct.getId() != null) {

@@ -23,31 +23,17 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
+import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
+import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -58,6 +44,15 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @Component
 public class DeliveredProductAddMultiListeners {
@@ -73,6 +68,9 @@ public class DeliveredProductAddMultiListeners {
 
     @Autowired
     private DeliveredProductAddMultiHooks deliveredProductAddMultiHooks;
+
+    @Autowired
+    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
 
     public void createDeliveriedProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -121,6 +119,7 @@ public class DeliveredProductAddMultiListeners {
         EntityList deliveredProductMultiPositions = deliveredProductMulti
                 .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
         Multimap<Long, Date> positionsMap = ArrayListMultimap.create();
+        DeliveredMultiProductContainer multiProductContainer = new DeliveredMultiProductContainer();
         for (Entity position : deliveredProductMultiPositions) {
             checkMissing(position, DeliveredProductMultiPositionFields.PRODUCT, positionDataDefinition);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, positionDataDefinition);
@@ -128,17 +127,29 @@ public class DeliveredProductAddMultiListeners {
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.CONVERSION, positionDataDefinition);
             if (position.isValid()) {
                 Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+                Entity additionalCode = position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
-                if (positionsMap.containsEntry(product.getId(), expirationDate)) {
+                if (multiProductContainer.checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode),
+                        expirationDate))) {
                     position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.PRODUCT),
                             "deliveries.deliveredProductMulti.error.productExists");
                 } else {
-                    positionsMap.put(product.getId(), expirationDate);
+                    DeliveredMultiProduct deliveredMultiProduct = new DeliveredMultiProduct(mapToId(product),
+                            mapToId(additionalCode), expirationDate);
+                    multiProductContainer.addProduct(deliveredMultiProduct);
                 }
             }
             isValid = isValid && position.isValid();
         }
+        //TODO POBRAĆ ODEBRANE PRODUKTY DODAĆ TO KONTENERA, ROZSZEŻYĆ O PALETĘ SPRAWDZIĆ UNIKALNOŚĆ
         return isValid;
+    }
+
+    private Long mapToId(Entity entity) {
+        if (entity == null) {
+            return null;
+        }
+        return entity.getId();
     }
 
     private void checkMissing(Entity position, String fieldname, DataDefinition positionDataDefinition) {
@@ -183,7 +194,26 @@ public class DeliveredProductAddMultiListeners {
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.STORAGE_LOCATION));
     }
 
+    public void additionalCodeChanged(final ViewDefinitionState view, final ComponentState state, final String[] args){
+        Entity delivery = extractDeliveryEntityFromView(view);
+        AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
+                .getComponentByReference("deliveredProductMultiPositions");
+        List<FormComponent> formComponents = deliveredProductMultiPositions.getFormComponents();
+        for (FormComponent formComponent : formComponents) {
+            Entity formEntity = formComponent.getEntity();
+            LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
+            if (additionalCodeComponent.getUuid().equals(state.getUuid())) {
+                recalculateQuantities(delivery, formEntity);
+                formComponent.setEntity(formEntity);
+            }
+
+        }
+
+    }
+
+
     public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Entity delivery = extractDeliveryEntityFromView(view);
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");
         List<FormComponent> formComponenets = deliveredProductMultiPositions.getFormComponents();
@@ -191,6 +221,13 @@ public class DeliveredProductAddMultiListeners {
             Entity formEntity = formComponent.getEntity();
             Entity product = formEntity.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
             LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
+            LookupComponent productComponent = (LookupComponent) formComponent.findFieldComponentByName("product");
+
+            if (productComponent.getUuid().equals(state.getUuid())) {
+                formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE, null);
+                recalculateQuantities(delivery, formEntity);
+            }
+
             deliveredProductAddMultiHooks.boldRequired(formComponent);
             deliveredProductAddMultiHooks.filterAdditionalCode(product, additionalCodeComponent);
             if (product != null) {
@@ -213,6 +250,40 @@ public class DeliveredProductAddMultiListeners {
         }
     }
 
+    private Entity extractDeliveryEntityFromView(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity deliveredProductMulti = form.getPersistedEntityWithIncludedFormValues();
+        return deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
+    }
+
+    private void recalculateQuantities(Entity delivery, Entity formEntity) {
+        Entity product = formEntity.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+        Entity additionalCode = formEntity.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
+        BigDecimal conversion = BigDecimal.ONE;
+        if (product != null) {
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            String unit = product.getStringField(ProductFields.UNIT);
+            if (StringUtils.isNotEmpty(additionalUnit)) {
+                conversion = getConversion(product, unit, additionalUnit);
+            }
+
+            BigDecimal orderedQuantity = deliveredProductMultiPositionService.findOrderedQuantity(delivery, product,
+                    additionalCode);
+            BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService
+                    .countAlreadyAssignedQuantityForProduct(product, additionalCode, delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
+
+            BigDecimal quantity = orderedQuantity.subtract(alreadyAssignedQuantity, numberService.getMathContext());
+            if (BigDecimal.ZERO.compareTo(quantity) == 1) {
+                quantity = BigDecimal.ZERO;
+            }
+            BigDecimal newAdditionalQuantity = quantity.multiply(conversion, numberService.getMathContext());
+            newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
+                    RoundingMode.HALF_UP);
+            formEntity.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
+            formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, newAdditionalQuantity);
+        }
+    }
+
     private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                 searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
@@ -223,7 +294,7 @@ public class DeliveredProductAddMultiListeners {
             return BigDecimal.ZERO;
         }
     }
-    
+
     public void quantityChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");

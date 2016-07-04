@@ -23,26 +23,14 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
@@ -60,6 +48,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -104,6 +100,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private ReservationService reservationService;
+
+    @Autowired
+    private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -206,7 +205,7 @@ public class DeliveryDetailsListeners {
             additionalUnit = unit;
         }
         Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
-        BigDecimal alreadyAssignedQuantity = countAlreadyAssignedQuantity(orderedProduct, additionalCode, deliveredProducts);
+        BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantity(orderedProduct, additionalCode, deliveredProducts);
         BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY).subtract(
                 alreadyAssignedQuantity);
         if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
@@ -226,22 +225,7 @@ public class DeliveryDetailsListeners {
         return deliveredProductMuliPosition;
     }
 
-    public BigDecimal countAlreadyAssignedQuantity(final Entity orderedProduct, final Entity additionalCode,
-            List<Entity> deliveredProducts) {
-        Entity product = orderedProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        BigDecimal alreadyAssignedQuantity = deliveredProducts
-                .stream()
-                .filter(p -> product.getId().equals(p.getBelongsToField(DeliveredProductFields.PRODUCT).getId())
-                        && additionalCodesTheSame(additionalCode, p))
-                .map(p -> p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        return alreadyAssignedQuantity;
-    }
 
-    private boolean additionalCodesTheSame(Entity additionalCode, Entity deliveredProduct) {
-        Entity deliveredProductAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-        return (additionalCode == null && deliveredProductAdditionalCode == null)
-                || (additionalCode != null && additionalCode.getId().equals(deliveredProductAdditionalCode.getId()));
-    }
 
     private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
