@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -40,10 +41,14 @@ public class DocumentModelHooks {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private DocumentValidators documentValidators;
+
     public void onCreate(final DataDefinition documentDD, final Entity document) {
         String translatedType = getTranslatedType(document);
 
         document.setField(DocumentFields.NUMBER, translatedType);
+        documentValidators.validateAvailableQuantities(document);
     }
 
     public void onCopy(final DataDefinition documentDD, final Entity document) {
@@ -51,6 +56,11 @@ public class DocumentModelHooks {
 
         document.setField(DocumentFields.NUMBER, translatedType);
         document.setField(DocumentFields.NAME, null);
+        // documentValidators.validateAvailableQuantities(document);
+    }
+
+    public void onSave(final DataDefinition documentDD, final Entity document) {
+        documentValidators.validateAvailableQuantities(document);
     }
 
     private String getTranslatedType(Entity document) {

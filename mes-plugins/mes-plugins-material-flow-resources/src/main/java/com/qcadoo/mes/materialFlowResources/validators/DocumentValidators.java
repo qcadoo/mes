@@ -51,7 +51,7 @@ public class DocumentValidators {
     public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
         validateDocumentName(dataDefinition, entity);
         hasWarehouses(dataDefinition, entity);
-        validateAvailableQuantities(entity);
+        // validateAvailableQuantities(entity);
 
         return entity.isValid();
     }
@@ -97,11 +97,12 @@ public class DocumentValidators {
         }
     }
 
-    private boolean validateAvailableQuantities(final Entity document) {
+    public boolean validateAvailableQuantities(final Entity document) {
+
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
-        List<Entity> posistions = document.getHasManyField(DocumentFields.POSITIONS);
-        for (Entity position : posistions) {
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
             if (!positionValidators.validateAvailableQuantity(positionDD, position, document)) {
                 document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
                 return false;

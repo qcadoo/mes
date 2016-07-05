@@ -126,18 +126,7 @@ public class ReservationsServiceImpl implements ReservationsService {
         if (!reservationsEnabled(params)) {
             return;
         }
-        String queryForOldQuantity = "SELECT reservedQuantity FROM materialflowresources_resourcestock WHERE product_id = :product_id AND "
-                + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id)";
-        BigDecimal oldQuantity = jdbcTemplate.queryForObject(queryForOldQuantity, params, BigDecimal.class);
-        BigDecimal newQuantity = BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY));
-        BigDecimal quantityToAdd = newQuantity.subtract(oldQuantity);
-        String query = "UPDATE materialflowresources_reservation SET "
-                + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), "
-                + "product_id = :product_id, quantity = :quantity WHERE position_id = :id";
 
-        jdbcTemplate.update(query, params);
-
-        resourceStockService.updateResourceStock(params, quantityToAdd);
         if (params.get("id") != null) {
             String queryForOld = "SELECT product_id, quantity FROM materialflowresources_position WHERE id = :id";
             Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
@@ -155,10 +144,22 @@ public class ReservationsServiceImpl implements ReservationsService {
                     });
             Long oldProductId = (Long) oldPosition.get("product_id");
             BigDecimal oldPositionQuantity = (BigDecimal) oldPosition.get("quantity");
+
+            BigDecimal newQuantity = BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY));
+            BigDecimal quantityToAdd = newQuantity.subtract(oldPositionQuantity);
+            String query = "UPDATE materialflowresources_reservation SET "
+                    + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), "
+                    + "product_id = :product_id, quantity = :quantity WHERE position_id = :id";
+
+            jdbcTemplate.update(query, params);
+
             if (oldProductId.compareTo((Long) params.get("product_id")) != 0) {
+                resourceStockService.updateResourceStock(params, newQuantity);
                 Map<String, Object> paramsForOld = Maps.newHashMap(params);
                 paramsForOld.put("product_id", oldProductId);
                 resourceStockService.updateResourceStock(paramsForOld, oldPositionQuantity.negate());
+            } else {
+                resourceStockService.updateResourceStock(params, quantityToAdd);
             }
         }
 
