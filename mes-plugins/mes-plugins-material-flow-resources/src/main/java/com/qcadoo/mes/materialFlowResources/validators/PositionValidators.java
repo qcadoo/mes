@@ -37,7 +37,7 @@ import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -46,7 +46,7 @@ import com.qcadoo.model.api.Entity;
 public class PositionValidators {
 
     @Autowired
-    private ReservationsServiceImpl reservationsService;
+    private ReservationsService reservationsService;
 
     @Autowired
     private ResourceStockService resourceStockService;

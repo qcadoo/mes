@@ -78,7 +78,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private ResourceStockService resourceStockService;
 
     @Autowired
-    private ReservationsServiceImpl reservationsService;
+    private ReservationsService reservationsService;
 
     public ResourceManagementServiceImpl() {
 
@@ -424,7 +424,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
         for (Entity position : positions) {
 
-            reservationsService.deleteReservation(position);
+            reservationsService.deleteReservationFromDocumentPosition(position);
         }
     }
 
@@ -593,7 +593,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
         for (Entity position : positions) {
-            reservationsService.updateReservation(position);
+            reservationsService.updateReservationFromDocumentPosition(position);
         }
     }
 

@@ -32,7 +32,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -44,7 +44,7 @@ public class PositionModelHooks {
     private MaterialFlowResourcesService materialFlowResourceService;
 
     @Autowired
-    private ReservationsServiceImpl reservationsService;
+    private ReservationsService reservationsService;
 
     @Autowired
     private PositionValidators positionValidators;
@@ -67,7 +67,7 @@ public class PositionModelHooks {
         }
 
         // if (positionValidators.validateAvailableQuantity(positionDD, position)) {
-        reservationsService.updateReservation(position);
+        reservationsService.updateReservationFromDocumentPosition(position);
         // }
 
     }
@@ -80,7 +80,7 @@ public class PositionModelHooks {
                     materialFlowResourceService.getAttributesForPosition(position, warehouse));
         }
         if (positionValidators.validateAvailableQuantity(positionDD, position)) {
-            reservationsService.createReservation(position);
+            reservationsService.createReservationFromDocumentPosition(position);
         }
     }
 

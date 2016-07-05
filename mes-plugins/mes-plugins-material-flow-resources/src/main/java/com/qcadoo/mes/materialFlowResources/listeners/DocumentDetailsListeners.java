@@ -42,7 +42,6 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsServiceImpl;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -51,6 +50,7 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -90,7 +90,7 @@ public class DocumentDetailsListeners {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ReservationsServiceImpl reservationsService;
+    private ReservationsService reservationsService;
 
     private static final String L_RESOURCE = "resource";
 
