@@ -26,15 +26,20 @@ package com.qcadoo.mes.materialFlowResources.validators;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
+import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -102,7 +107,8 @@ public class DocumentValidators {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-        for (Entity position : positions) {
+        Collection<Entity> groupedPositions = groupProductsInPositions(positions);
+        for (Entity position : groupedPositions) {
             if (!positionValidators.validateAvailableQuantity(positionDD, position, document)) {
                 document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
                 return false;
@@ -110,5 +116,33 @@ public class DocumentValidators {
         }
         return true;
 
+    }
+
+    private Collection<Entity> groupProductsInPositions(final List<Entity> positions) {
+        Map<Long, Entity> groupedPositions = Maps.newHashMap();
+        for (Entity position : positions) {
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            if (groupedPositions.containsKey(product.getId())) {
+                Entity existingPosition = groupedPositions.get(product.getId());
+                BigDecimal oldQuantity = existingPosition.getDecimalField(PositionFields.QUANTITY);
+                BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
+                if (oldQuantity == null) {
+                    existingPosition.setField(PositionFields.QUANTITY, newQuantity);
+                } else {
+                    if (newQuantity != null) {
+                        existingPosition.setField(PositionFields.QUANTITY, newQuantity.add(oldQuantity));
+                    }
+                }
+            } else {
+                Entity newPosition = dataDefinitionService
+                        .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
+                        .create();
+                newPosition.setField(PositionFields.PRODUCT, product);
+                newPosition.setField("id", position.getId());
+                newPosition.setField(PositionFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
+                groupedPositions.put(product.getId(), newPosition);
+            }
+        }
+        return groupedPositions.values();
     }
 }
