@@ -10,6 +10,8 @@ public final class ReservationFields {
 
     public static final String POSITION = "position";
 
+    public static final String PRODUCTS_TO_ISSUE = "productsToIssue";
+    
     private ReservationFields() {
     }
 

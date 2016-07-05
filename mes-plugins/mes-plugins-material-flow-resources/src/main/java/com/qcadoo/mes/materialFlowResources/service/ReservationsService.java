@@ -21,6 +21,8 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -191,7 +193,6 @@ public class ReservationsService {
             existingReservation.setField(ReservationFields.LOCATION, location);
             existingReservation.getDataDefinition().save(existingReservation);
         }
-
     }
 
     /**
@@ -254,21 +255,34 @@ public class ReservationsService {
                 .add(SearchRestrictions.belongsTo(ReservationFields.POSITION, position)).setMaxResults(1).uniqueResult();
     }
 
+    public Entity getReservationForProductToIssue(final Entity productToIssue) {
+        if (productToIssue.getId() == null) {
+            return null;
+        }
+        return dataDefinitionService
+                .get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).find()
+                .add(SearchRestrictions.belongsTo(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue)).setMaxResults(1).uniqueResult();
+    }
+
     public void updateReservationFromProductToIssue(Entity productToIssue) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        Entity existingReservation = getReservationForProductToIssue(productToIssue);
+        if (existingReservation != null) {
+            existingReservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
+            existingReservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
+            existingReservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+            existingReservation.getDataDefinition().save(existingReservation);
+        }
     }
 
     public void createReservationFromProductToIssue(Entity productToIssue) {
-//        Entity reservation = getReservationDD().create();
-//
-//        reservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION_FROM));
-//        reservation.setField(ReservationFields.POSITION, position);
-//        reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-//        reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
-//
-//        reservation = reservation.getDataDefinition().save(reservation);
-//        // updateResourceStock(position, position.getDecimalField(PositionFields.QUANTITY));
-//        position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
+        Entity reservation = getReservationDD().create();
+
+        reservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+        reservation.setField(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue);
+        reservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
+        reservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
+
+        reservation = reservation.getDataDefinition().save(reservation);
     }
 
     private DataDefinition getReservationDD() {

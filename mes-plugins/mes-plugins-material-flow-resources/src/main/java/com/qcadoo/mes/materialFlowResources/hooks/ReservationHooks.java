@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -16,9 +15,6 @@ public class ReservationHooks {
 
     @Autowired
     private ResourceStockService resourceStockService;
-
-    @Autowired
-    private ReservationsService reservationsService;
 
     public boolean onDelete(DataDefinition reservationDD, Entity reservation) {
         resourceStockService.updateResourceStock(reservation.getBelongsToField(ReservationFields.PRODUCT),
