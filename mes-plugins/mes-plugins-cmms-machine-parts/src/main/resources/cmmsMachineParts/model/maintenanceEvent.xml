@@ -72,6 +72,8 @@
 
         <boolean name="acceptanceEvents" default="false" persistent="false"/>
 
+        <boolean name="soundNotifications" default="false"/>
+
         <hasMany name="plannedEvents" plugin="cmmsMachineParts" model="plannedEvent" joinField="maintenanceEvent"
                  cascade="nullify"/>
     </fields>

@@ -1,8 +1,11 @@
-﻿﻿-- rename fields in settings
+﻿-- rename fields in settings
 -- last touched 2.06.2016 by pako
 
 UPDATE materialflowresources_documentpositionparametersitem SET name = 'productionDate' WHERE name = 'productiondate';
 UPDATE materialflowresources_documentpositionparametersitem SET name = 'expirationDate' WHERE name = 'expirationdate';
+
+-- end
+
 -- resource stock view
 -- last touched 30.05.2016 by kama
 
@@ -20,6 +23,8 @@ CREATE TABLE materialflowresources_resourcestock
   CONSTRAINT resourcestock_location_fkey FOREIGN KEY (location_id)
       REFERENCES materialflow_location (id) DEFERRABLE
 );
+
+CREATE SEQUENCE materialFlowResources_resourcestockdto_id_seq;
 
 CREATE OR REPLACE VIEW materialflowresources_orderedquantitystock AS
     SELECT COALESCE(SUM(orderedproduct.orderedquantity), 0::numeric) AS orderedquantity,
@@ -52,74 +57,34 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS
 
 -- end
 
--- new delivered product fields
-ď»ż-- last touched 9.06.2016 by pako
+-- TABLE cmmsmachineparts_maintenanceevent
+-- last touched 23.06.2016 by kasi
 
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN palletnumber_id bigint;
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN pallettype character varying(255);
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN storagelocation_id bigint;
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN additionalcode_id bigint;
-
-ALTER TABLE deliveries_deliveredproduct
-  ADD CONSTRAINT deliveredproduct_additionalcode_fkey FOREIGN KEY (additionalcode_id)
-      REFERENCES basic_additionalcode (id) DEFERRABLE;
-ALTER TABLE deliveries_deliveredproduct
-  ADD CONSTRAINT deliveredproduct_palletnumber_fkey FOREIGN KEY (palletnumber_id)
-      REFERENCES basic_palletnumber (id) DEFERRABLE;
-ALTER TABLE deliveries_deliveredproduct
-  ADD CONSTRAINT deliveredproduct_storagelocation_fkey FOREIGN KEY (storagelocation_id)
-      REFERENCES materialflowresources_storagelocation (id) DEFERRABLE;
+ALTER TABLE cmmsmachineparts_maintenanceevent ADD COLUMN soundnotifications boolean;
+ALTER TABLE cmmsmachineparts_maintenanceevent ALTER COLUMN soundnotifications SET DEFAULT false;
 
 -- end
 
--- deliveries changes
--- last touched 20.06.2016 by pako
+SELECT add_role('ROLE_EVENTS_NOTIFICATION','Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe');
 
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN additionalquantity numeric(12,5);
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN conversion numeric(12,5);
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN iswaste boolean;
-ALTER TABLE deliveries_deliveredproduct ADD COLUMN additionalunit character varying(255);
-
-CREATE TABLE deliveries_deliveredproductmulti
+-- NBLS-250
+CREATE TABLE repairs_repairorderstatechange
 (
   id bigint NOT NULL,
-  delivery_id bigint,
-  palletnumber_id bigint,
-  pallettype character varying(255),
-  storagelocation_id bigint,
-  createdate timestamp without time zone,
-  updatedate timestamp without time zone,
-  createuser character varying(255),
-  updateuser character varying(255),
-  CONSTRAINT deliveries_deliveredproductmulti_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveredproductmulti_delivery_fkey FOREIGN KEY (delivery_id)
-      REFERENCES deliveries_delivery (id) DEFERRABLE,
-  CONSTRAINT deliveredproductmulti_palletnumber_fkey FOREIGN KEY (palletnumber_id)
-      REFERENCES basic_palletnumber (id) DEFERRABLE,
-  CONSTRAINT deliveredproductmulti_storagelocation_fkey FOREIGN KEY (storagelocation_id)
-      REFERENCES materialflowresources_storagelocation (id) DEFERRABLE
-);
+  dateandtime timestamp without time zone,
+  sourcestate character varying(255),
+  targetstate character varying(255),
+  phase integer,
+  worker character varying(255),
+  repairorder_id bigint,
+  shift_id bigint,
+  CONSTRAINT repairs_repairorderstatechange_pkey PRIMARY KEY (id),
 
-CREATE TABLE deliveries_deliveredproductmultiposition
-(
-  id bigint NOT NULL,
-  deliveredproductmulti_id bigint,
-  product_id bigint,
-  quantity numeric(12,5),
-  additionalquantity numeric(12,5),
-  conversion numeric(12,5),
-  iswaste boolean,
-  expirationdate date,
-  unit character varying(255),
-  additionalunit character varying(255),
-  additionalcode_id bigint,
-  CONSTRAINT deliveries_deliveredproductmultiposition_pkey PRIMARY KEY (id),
-  CONSTRAINT deliveredproductmp_deliveredproductmulti_fkey FOREIGN KEY (deliveredproductmulti_id)
-      REFERENCES deliveries_deliveredproductmulti (id) DEFERRABLE,
-  CONSTRAINT deliveredproductmp_product_fkey FOREIGN KEY (product_id)
-      REFERENCES basic_product (id) DEFERRABLE,
-  CONSTRAINT deliveredproductmp_additionalcode_fkey FOREIGN KEY (additionalcode_id)
-      REFERENCES basic_additionalcode (id) DEFERRABLE
+  CONSTRAINT repairorderstatechange_repairorder FOREIGN KEY (repairorder_id)
+      REFERENCES repairs_repairorder (id) DEFERRABLE,
+
+  CONSTRAINT repairorderstatechange_shift FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
 );
 
 -- end

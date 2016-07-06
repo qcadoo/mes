@@ -132,7 +132,7 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-    private boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
+    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
         final SearchCriteriaBuilder searchBuilder = productionTracking.getHasManyField(modelName).find()
                 .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
 

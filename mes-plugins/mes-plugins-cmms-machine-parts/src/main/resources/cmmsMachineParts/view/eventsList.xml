@@ -64,7 +64,11 @@
                 <smallButton name="closeEvent" icon="acceptIcon16.png"
                              state="disabled" action="#{grid}.changeState(closeEvent);"/>
             </group>
-
+            <group name="notifications">
+                <bigButton name="turnOffSoundNotifications" icon="cancelIcon24.png"
+                           action="#{grid}.fireEvent(turnOffSoundNotifications);"
+                           state="disabled"/>
+            </group>
             <group name="plannedEvents">
                 <bigButton name="showPlannedEvent" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(showPlannedEvent);" state="disabled">
@@ -201,6 +205,7 @@
 						getRibbonItem("status.planEvent").disable();
 						getRibbonItem("status.closeEvent").disable();
 						getRibbonItem("plannedEvents.showPlannedEvent").disable();
+						getRibbonItem("notifications.turnOffSoundNotifications").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -209,6 +214,8 @@
 						var differentStatesMessage = "#{translate(cmmsMachineParts.eventsList.window.ribbon.status.differentStates)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
                         var showPlannedEvent = #{window}.getRibbonItem("plannedEvents.showPlannedEvent");
+                        var turnOffSoundNotifications = #{window}.getRibbonItem("notifications.turnOffSoundNotifications");
+                        var enableNotification = canEnableNotification(selectedEntitiesArray);
 
                         var acceptanceEvents = #{acceptanceEvents}.getValue().content.value;
 
@@ -226,6 +233,12 @@
 								ribbonItem.enable();
 							}
 						}
+
+                        if(enableNotification){
+                            turnOffSoundNotifications.enable();
+                        } else {
+                            turnOffSoundNotifications.disable();
+                        }
 
 						if (!differentStates) {
 							var state = selectedEntitiesArray[0].fields.state;
@@ -377,6 +390,26 @@
 						return false;
 					}
 
+					function canEnableNotification(selectedEntitiesArray) {
+											console.log(selectedEntitiesArray.length);
+
+						if (selectedEntitiesArray.length == 0) {
+							return false;
+						}
+						var canEnable = true;
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+						console.log(selectedEntitiesArray[i].fields.state);
+							console.log(selectedEntitiesArray[i].fields.type);
+							if (selectedEntitiesArray[i].fields.state !=  "01new" || selectedEntitiesArray[i].fields.type == "03proposal" ) {
+
+
+								canEnable = false;
+							}
+						}
+						return canEnable;
+					}
+
+
 				]]>
                 </script>
                 <option type="column" name="number" fields="number" link="true"/>
@@ -441,9 +474,14 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
                           method="onSelectedEventChange"/>
 
+                <listener event="turnOffSoundNotifications"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
+                          method="turnOffSoundNotifications"/>
+
                 <listener event="showPlannedEvent"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"
                           method="showPlannedEvent"/>
+
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
                                   method="showEventsFromContext"/>

@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
                     + "LEFT JOIN basic_workstation workstation ON maintenanceevent.workstation_id = workstation.id\n"
                     + "LEFT JOIN basic_subassembly subassembly ON maintenanceevent.subassembly_id = subassembly.id\n"
                     + "LEFT JOIN basic_staff personreceiving ON maintenanceevent.personreceiving_id = personreceiving.id\n"
-                    + "LEFT JOIN cmmsmachineparts_faulttype faulttype ON maintenanceevent.faulttype_id = faulttype.id\n"
+                    + "LEFT JOIN basic_faulttype faulttype ON maintenanceevent.faulttype_id = faulttype.id\n"
                     + "LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON maintenanceevent.sourcecost_id = sourcecost.id\n";
 
     private final static String ORDER_BY = " ORDER BY maintenanceevent.number";

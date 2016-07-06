@@ -23,21 +23,24 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventRealizationFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PlannedEventRealizationCriteriaModifiers {
 
-    public static final String L_EVENT = "plannedEvent";
+    public static final String L_PLANNED_EVENT = "plannedEvent";
 
-    public void showActionsForEvent(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
-        if (filterValueHolder.has(L_EVENT)) {
-            Long eventId = filterValueHolder.getLong(L_EVENT);
-            scb.add(SearchRestrictions.eq(PlannedEventRealizationFields.PLANNED_EVENT + ".id", eventId));
+    public void showActionsForEvent(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_PLANNED_EVENT)) {
+            Long eventId = filterValueHolder.getLong(L_PLANNED_EVENT);
+
+            searchCriteriaBuilder.add(SearchRestrictions.eq(PlannedEventRealizationFields.PLANNED_EVENT + ".id", eventId));
         }
     }
+
 }

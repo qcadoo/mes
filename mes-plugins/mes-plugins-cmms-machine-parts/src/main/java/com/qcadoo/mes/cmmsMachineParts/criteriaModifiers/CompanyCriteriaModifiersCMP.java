@@ -38,10 +38,12 @@ public class CompanyCriteriaModifiersCMP {
     @Autowired
     private ParameterService parameterService;
 
-    public void hideOwnerCompany(SearchCriteriaBuilder scb) {
+    public void hideOwnerCompany(final SearchCriteriaBuilder searchCriteriaBuilder) {
         Entity owner = parameterService.getParameter().getBelongsToField(ParameterFields.COMPANY);
+
         if (owner != null) {
-            scb.add(SearchRestrictions.idNe(owner.getId()));
+            searchCriteriaBuilder.add(SearchRestrictions.idNe(owner.getId()));
         }
     }
+
 }
