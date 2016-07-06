@@ -37,6 +37,7 @@ import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,12 +48,15 @@ import com.qcadoo.view.api.components.LookupComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DeliveredProductAddMultiListeners {
@@ -74,33 +78,61 @@ public class DeliveredProductAddMultiListeners {
 
     public void createDeliveriedProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
-        state.performEvent(view, "save");
         Entity deliveredProductMulti = form.getPersistedEntityWithIncludedFormValues();
-        if (!validate(deliveredProductMulti)) {
+        try {
+
+            if (!validate(deliveredProductMulti)) {
+                form.setEntity(deliveredProductMulti);
+                view.addMessage("deliveries.deliveredProductMulti.error.invalid", MessageType.FAILURE);
+                return;
+            }
+
+            Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
+            EntityList deliveredProductMultiPositions = deliveredProductMulti
+                    .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
+            if (deliveredProductMultiPositions.isEmpty()) {
+                view.addMessage("deliveries.deliveredProductMulti.error.emptyPositions", MessageType.FAILURE);
+                return;
+            }
+
+            trySaveDeliveredProducts(view, deliveredProductMulti, delivery, deliveredProductMultiPositions);
             form.setEntity(deliveredProductMulti);
-            view.addMessage("deliveries.deliveredProductMulti.error.invalid", MessageType.FAILURE);
-            return;
+
+            if (deliveredProductMulti.isValid()) {
+                state.performEvent(view, "save");
+                view.addMessage("deliveries.deliveredProductMulti.success", MessageType.SUCCESS);
+
+            }
+        } catch (Exception ex) {
+            form.setEntity(deliveredProductMulti);
         }
-        Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
-        EntityList deliveredProductMultiPositions = deliveredProductMulti
-                .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
-        if (deliveredProductMultiPositions.isEmpty()) {
-            view.addMessage("deliveries.deliveredProductMulti.error.emptyPositions", MessageType.FAILURE);
-            return;
-        }
+
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void trySaveDeliveredProducts(final ViewDefinitionState view, final Entity deliveredProductMulti,
+            final Entity delivery, final EntityList deliveredProductMultiPositions) {
+
         DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
         List<Entity> deliveredProducts = Lists.newArrayList(delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
+
         for (Entity position : deliveredProductMultiPositions) {
             Entity deliveredProduct = createDeliveredProduct(position, deliveredProductDD);
             setStorageLocationFields(deliveredProduct, deliveredProductMulti);
             deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
             deliveredProduct = deliveredProductDD.save(deliveredProduct);
+            if (!deliveredProduct.isValid()) {
+                for (Map.Entry<String, ErrorMessage> entry : deliveredProduct.getErrors().entrySet())
+                    position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage());
+                deliveredProductMulti.addGlobalError("deliveries.deliveredProductMulti.error.invalid");
+                throw new IllegalStateException("Undone saved delivered product");
+            }
             deliveredProducts.add(deliveredProduct);
         }
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, deliveredProducts);
         delivery.getDataDefinition().save(delivery);
-        view.addMessage("deliveries.deliveredProductMulti.success", MessageType.SUCCESS);
+
     }
 
     private boolean validate(Entity deliveredProductMulti) {
@@ -141,7 +173,6 @@ public class DeliveredProductAddMultiListeners {
             }
             isValid = isValid && position.isValid();
         }
-        //TODO POBRAĆ ODEBRANE PRODUKTY DODAĆ TO KONTENERA, ROZSZEŻYĆ O PALETĘ SPRAWDZIĆ UNIKALNOŚĆ
         return isValid;
     }
 
@@ -194,7 +225,7 @@ public class DeliveredProductAddMultiListeners {
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.STORAGE_LOCATION));
     }
 
-    public void additionalCodeChanged(final ViewDefinitionState view, final ComponentState state, final String[] args){
+    public void additionalCodeChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity delivery = extractDeliveryEntityFromView(view);
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");
@@ -210,7 +241,6 @@ public class DeliveredProductAddMultiListeners {
         }
 
     }
-
 
     public void productChanged(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity delivery = extractDeliveryEntityFromView(view);
@@ -269,8 +299,8 @@ public class DeliveredProductAddMultiListeners {
 
             BigDecimal orderedQuantity = deliveredProductMultiPositionService.findOrderedQuantity(delivery, product,
                     additionalCode);
-            BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService
-                    .countAlreadyAssignedQuantityForProduct(product, additionalCode, delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
+            BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantityForProduct(
+                    product, additionalCode, delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
 
             BigDecimal quantity = orderedQuantity.subtract(alreadyAssignedQuantity, numberService.getMathContext());
             if (BigDecimal.ZERO.compareTo(quantity) == 1) {

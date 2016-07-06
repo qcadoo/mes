@@ -23,17 +23,14 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.aop.helper;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF.EXPIRATION_DATE;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.*;
+import static com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF.EXPIRATION_DATE;
 
 @Service
 public class DeliveredProductValidationHelper {
@@ -43,6 +40,7 @@ public class DeliveredProductValidationHelper {
                 .add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY)))
                 .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)))
                 .add(SearchRestrictions.belongsTo(PALLET_NUMBER, deliveredProduct.getBelongsToField(PALLET_NUMBER)))
+                .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, deliveredProduct.getBelongsToField(ADDITIONAL_CODE)))
                 .add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
         Long deliveredProductId = deliveredProduct.getId();
         if (deliveredProductId != null) {
