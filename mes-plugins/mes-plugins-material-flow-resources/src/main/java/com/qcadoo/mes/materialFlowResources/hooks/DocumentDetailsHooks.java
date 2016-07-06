@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import com.google.common.base.Strings;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -33,6 +32,7 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -90,6 +90,8 @@ public class DocumentDetailsHooks {
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
         String documentType = document.getStringField(DocumentFields.TYPE);
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+
         if (DocumentType.RECEIPT.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             showWarehouse(view, false, true);
@@ -104,6 +106,9 @@ public class DocumentDetailsHooks {
         } else {
             showWarehouse(view, false, false);
             showCompany(view, false);
+        }
+        if (!positions.isEmpty()) {
+            showWarehouse(view, false, false);
         }
     }
 
@@ -149,7 +154,6 @@ public class DocumentDetailsHooks {
 
     }
 
-        
     private void disableRibbon(final WindowComponent window) {
         for (String actionItem : RIBBON_ACTION_ITEM) {
             window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(false);
@@ -215,6 +219,7 @@ public class DocumentDetailsHooks {
     }
 
     private DataDefinition getDocumentDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
     }
 }

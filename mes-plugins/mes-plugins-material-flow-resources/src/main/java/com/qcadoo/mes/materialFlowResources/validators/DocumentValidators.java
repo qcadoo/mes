@@ -27,7 +27,6 @@ import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -107,9 +106,11 @@ public class DocumentValidators {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-        Collection<Entity> groupedPositions = groupProductsInPositions(positions);
-        for (Entity position : groupedPositions) {
-            if (!positionValidators.validateAvailableQuantity(positionDD, position, document)) {
+        Map<Long, Entity> groupedPositions = groupProductsInPositions(positions);
+        for (Entity position : positions) {
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            BigDecimal availableQuantity = positionValidators.getAvailableQuantity(positionDD, position, document);
+            if (groupedPositions.get(product.getId()).getDecimalField(PositionFields.QUANTITY).compareTo(availableQuantity) > 0) {
                 document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
                 return false;
             }
@@ -118,7 +119,7 @@ public class DocumentValidators {
 
     }
 
-    private Collection<Entity> groupProductsInPositions(final List<Entity> positions) {
+    private Map<Long, Entity> groupProductsInPositions(final List<Entity> positions) {
         Map<Long, Entity> groupedPositions = Maps.newHashMap();
         for (Entity position : positions) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -143,6 +144,6 @@ public class DocumentValidators {
                 groupedPositions.put(product.getId(), newPosition);
             }
         }
-        return groupedPositions.values();
+        return groupedPositions;
     }
 }

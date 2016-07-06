@@ -137,7 +137,7 @@ public class PositionValidators {
         return true;
     }
 
-    private BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
+    public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
         BigDecimal oldQuantity = BigDecimal.ZERO;
         if (position.getId() != null) {
             Entity positionFromDB = positionDD.get(position.getId());
