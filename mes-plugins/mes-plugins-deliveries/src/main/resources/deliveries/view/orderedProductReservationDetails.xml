@@ -56,6 +56,7 @@
                         <component type="gridLayout" name="gridLayoutOrderedQuantity" columns="3" rows="1" hasBorders="false">
                             <layoutElement column="1" row="1" width="2">
                                 <component type="input" name="orderedQuantity" reference="orderedQuantity" field="orderedQuantity">
+                                    <option type="alignment" value="right"/>
                                     <listener event="onInputChange" method="quantityChange"
                                               class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
                                 </component>
@@ -72,6 +73,7 @@
                         <component type="gridLayout" name="gridLayoutAdditionalQuantity" columns="3" rows="1" hasBorders="false">                                         
                             <layoutElement column="1" row="1" width="2">
                                 <component type="input" name="additionalQuantity" reference="additionalQuantity" field="additionalQuantity">
+                                    <option type="alignment" value="right"/>
                                     <listener event="onInputChange" method="additionalQuantityChange"
                                               class="com.qcadoo.mes.deliveries.listeners.OrderedProductReservationDetailsListeners" />
                                 </component>
