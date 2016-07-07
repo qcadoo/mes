@@ -124,7 +124,7 @@ public class PositionValidators {
     }
 
     public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {
-        if (reservationsService.reservationsEnabled(document)) {
+        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
 
             BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
             BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);

@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -21,12 +21,13 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import java.util.Map;
 
@@ -42,9 +43,12 @@ public class ReservationsService {
     @Autowired
     private ResourceStockService resourceStockService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     private final static String L_QUANTITY = "quantity";
 
-    public boolean reservationsEnabled() {
+    public boolean reservationsEnabledForDocumentPositions() {
         Entity documentPositionParameters = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult();
         if (documentPositionParameters != null) {
@@ -53,12 +57,17 @@ public class ReservationsService {
         return false;
     }
 
-    public boolean reservationsEnabled(final Entity document) {
+    public boolean reservationsEnabledForDocumentPositions(final Entity document) {
         if (document == null) {
-            return reservationsEnabled();
+            return ReservationsService.this.reservationsEnabledForDocumentPositions();
         }
         String type = document.getStringField(DocumentFields.TYPE);
-        return reservationsEnabled() && DocumentType.isOutbound(type);
+        return ReservationsService.this.reservationsEnabledForDocumentPositions() && DocumentType.isOutbound(type);
+    }
+
+    public boolean reservationsEnabledForProductsToIssue() {
+        Entity parameter = parameterService.getParameter();
+        return parameter.getBooleanField(ParameterFieldsPFTD.WAREHOUSE_ISSUES_RESERVE_STATES);
     }
 
     /**
@@ -73,7 +82,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#createReservation(Entity)
      */
     public void createReservationFromDocumentPosition(Map<String, Object> params) {
-        if (!reservationsEnabled(params)) {
+        if (!ReservationsService.this.reservationsEnabledForDocumentPositions(params)) {
             return;
         }
         String query = "INSERT INTO materialflowresources_reservation (location_id, product_id, quantity, position_id) "
@@ -94,7 +103,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#createReservation(Map)
      */
     public void createReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabled(position.getBelongsToField(PositionFields.DOCUMENT))) {
+        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
             return;
         }
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
@@ -126,7 +135,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#updateReservation(Entity)
      */
     public void updateReservationFromDocumentPosition(Map<String, Object> params) {
-        if (!reservationsEnabled(params)) {
+        if (!ReservationsService.this.reservationsEnabledForDocumentPositions(params)) {
             return;
         }
 
@@ -179,7 +188,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#updateReservation(Map)
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabled(position.getBelongsToField(PositionFields.DOCUMENT))) {
+        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
             return;
         }
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -207,7 +216,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#deleteReservation(Entity)
      */
     public void deleteReservationFromDocumentPosition(Map<String, Object> params) {
-        if (!reservationsEnabled(params)) {
+        if (!reservationsEnabledForDocumentPositions(params)) {
             return;
         }
         String query = "DELETE FROM materialflowresources_reservation WHERE position_id = :id";
@@ -226,7 +235,7 @@ public class ReservationsService {
      * @see ReservationsServiceImpl#deleteReservation(Map)
      */
     public void deleteReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabled(position.getBelongsToField(PositionFields.DOCUMENT))) {
+        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
             return;
         }
 
@@ -234,10 +243,9 @@ public class ReservationsService {
         if (reservation != null) {
             reservation.getDataDefinition().delete(reservation.getId());
         }
-
     }
 
-    public Boolean reservationsEnabled(Map<String, Object> params) {
+    public Boolean reservationsEnabledForDocumentPositions(Map<String, Object> params) {
         String query = "SELECT draftmakesreservation FROM materialflowresources_documentpositionparameters LIMIT 1";
         Boolean enabled = jdbcTemplate.queryForObject(query, new HashMap<String, Object>() {
         }, Boolean.class);
@@ -255,13 +263,13 @@ public class ReservationsService {
                 .add(SearchRestrictions.belongsTo(ReservationFields.POSITION, position)).setMaxResults(1).uniqueResult();
     }
 
-    public Entity getReservationForProductToIssue(final Entity productToIssue) {
+    private Entity getReservationForProductToIssue(final Entity productToIssue) {
         if (productToIssue.getId() == null) {
             return null;
         }
-        return dataDefinitionService
-                .get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).find()
-                .add(SearchRestrictions.belongsTo(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue)).setMaxResults(1).uniqueResult();
+        SearchCriteriaBuilder find = getReservationDD().find();
+        find.add(SearchRestrictions.belongsTo(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue)).setMaxResults(1);
+        return find.uniqueResult();
     }
 
     public void updateReservationFromProductToIssue(Entity productToIssue) {
@@ -282,10 +290,22 @@ public class ReservationsService {
         reservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
         reservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
 
-        reservation = reservation.getDataDefinition().save(reservation);
+        //reservation = reservation.getDataDefinition().save(reservation);
+        productToIssue.setField(ProductsToIssueFields.RESERVATIONS, Lists.newArrayList(reservation));
     }
 
     private DataDefinition getReservationDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION);
+    }
+
+    public void deleteReservationFromProductToIssue(Entity productToIssue) {
+        if (!reservationsEnabledForProductsToIssue()) {
+            return;
+        }
+
+        Entity reservation = getReservationForProductToIssue(productToIssue);
+        if (reservation != null) {
+            reservation.getDataDefinition().delete(reservation.getId());
+        }
     }
 }

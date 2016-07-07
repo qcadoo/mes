@@ -24,7 +24,6 @@ public class ReservationHooks {
     }
 
     public void onSave(DataDefinition reservationDD, Entity reservation) {
-
         Entity product = reservation.getBelongsToField(ReservationFields.PRODUCT);
         Entity location = reservation.getBelongsToField(ReservationFields.LOCATION);
         BigDecimal newQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
