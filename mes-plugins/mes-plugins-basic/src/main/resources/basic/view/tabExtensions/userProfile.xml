@@ -27,27 +27,13 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="qcadooUsers" view="userDetails">
+                    plugin="qcadooUsers" view="profile">
 
-    <windowTab name="staffTab" reference="staffTab">
+    <windowTab name="permissionsTab" reference="permissionsTab">
         <component type="gridLayout" name="staffGridLayout"
-                   columns="3" rows="2" hasBorders="false">
+                   columns="3" rows="1" hasBorders="false">
 
             <layoutElement column="1" row="1">
-                <component type="lookup" name="staff" reference="staff"
-                           field="#{form}.staff">
-
-                    <option type="searchable" value="name"/>
-                    <option type="orderable" value="name"/>
-
-                    <option type="expression"
-                            value="#name + ' ' + #surname"/>
-                    <option type="fieldCode" value="surname"/>
-
-                </component>
-            </layoutElement>
-
-            <layoutElement column="1" row="2">
                 <component type="lookup" name="factory" field="#{form}.factory"
                            reference="factory">
                     <option type="column" name="name" fields="name"/>
