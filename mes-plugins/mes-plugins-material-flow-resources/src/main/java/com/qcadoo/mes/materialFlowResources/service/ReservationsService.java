@@ -21,8 +21,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -67,7 +65,7 @@ public class ReservationsService {
 
     public boolean reservationsEnabledForProductsToIssue() {
         Entity parameter = parameterService.getParameter();
-        return parameter.getBooleanField(ParameterFieldsPFTD.WAREHOUSE_ISSUES_RESERVE_STATES);
+        return parameter.getBooleanField("warehouseIssuesReserveStates");
     }
 
     /**
@@ -275,9 +273,9 @@ public class ReservationsService {
     public void updateReservationFromProductToIssue(Entity productToIssue) {
         Entity existingReservation = getReservationForProductToIssue(productToIssue);
         if (existingReservation != null) {
-            existingReservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
-            existingReservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
-            existingReservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+            existingReservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField("demandQuantity"));
+            existingReservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField("product"));
+            existingReservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField("location"));
             existingReservation.getDataDefinition().save(existingReservation);
         }
     }
@@ -285,13 +283,13 @@ public class ReservationsService {
     public void createReservationFromProductToIssue(Entity productToIssue) {
         Entity reservation = getReservationDD().create();
 
-        reservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+        reservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField("location"));
         reservation.setField(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue);
-        reservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
-        reservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
+        reservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField("product"));
+        reservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField("demandQuantity"));
 
         //reservation = reservation.getDataDefinition().save(reservation);
-        productToIssue.setField(ProductsToIssueFields.RESERVATIONS, Lists.newArrayList(reservation));
+        productToIssue.setField("reservations", Lists.newArrayList(reservation));
     }
 
     private DataDefinition getReservationDD() {
