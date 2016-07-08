@@ -129,6 +129,11 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
+    public Entity getStaffWorkTime(final Long staffWorkTimeId) {
+        return getStaffWorkTimeDD().get(staffWorkTimeId);
+    }
+
+    @Override
     public DataDefinition getProductionTrackingReportDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_TRACKING_REPORT);
@@ -156,6 +161,12 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     public DataDefinition getTrackingOperationProductOutComponentDD() {
         return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT);
+    }
+
+    @Override
+    public DataDefinition getStaffWorkTimeDD() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_STAFF_WORK_TIME);
     }
 
     @Override
