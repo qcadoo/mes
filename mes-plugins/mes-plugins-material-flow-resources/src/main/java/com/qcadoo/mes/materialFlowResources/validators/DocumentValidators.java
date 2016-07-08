@@ -39,6 +39,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -123,15 +124,25 @@ public class DocumentValidators {
         Map<Long, Entity> groupedPositions = Maps.newHashMap();
         for (Entity position : positions) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            List<Entity> reservations = position.getHasManyField(PositionFields.RESERVATIONS);
+            BigDecimal reservedQuantity = BigDecimal.ZERO;
+            if (reservations != null && !reservations.isEmpty()) {
+                Entity reservation = reservations.get(0);
+                if (reservation.getId() != null) {
+                    reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
+                }
+            }
             if (groupedPositions.containsKey(product.getId())) {
+
                 Entity existingPosition = groupedPositions.get(product.getId());
                 BigDecimal oldQuantity = existingPosition.getDecimalField(PositionFields.QUANTITY);
                 BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
                 if (oldQuantity == null) {
-                    existingPosition.setField(PositionFields.QUANTITY, newQuantity);
+                    existingPosition.setField(PositionFields.QUANTITY, newQuantity.subtract(reservedQuantity));
                 } else {
                     if (newQuantity != null) {
-                        existingPosition.setField(PositionFields.QUANTITY, newQuantity.add(oldQuantity));
+                        existingPosition.setField(PositionFields.QUANTITY,
+                                newQuantity.add(oldQuantity).subtract(reservedQuantity));
                     }
                 }
             } else {
@@ -140,7 +151,8 @@ public class DocumentValidators {
                         .create();
                 newPosition.setField(PositionFields.PRODUCT, product);
                 newPosition.setField("id", position.getId());
-                newPosition.setField(PositionFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
+                newPosition.setField(PositionFields.QUANTITY,
+                        position.getDecimalField(PositionFields.QUANTITY).subtract(reservedQuantity));
                 groupedPositions.put(product.getId(), newPosition);
             }
         }
