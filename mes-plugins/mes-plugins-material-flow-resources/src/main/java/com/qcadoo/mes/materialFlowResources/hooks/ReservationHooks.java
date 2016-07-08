@@ -37,9 +37,6 @@ public class ReservationHooks {
     }
 
     public void onCreate(DataDefinition reservationDD, Entity reservation) {
-        resourceStockService.updateResourceStock(reservation.getBelongsToField(ReservationFields.PRODUCT),
-                reservation.getBelongsToField(ReservationFields.LOCATION),
-                reservation.getDecimalField(ReservationFields.QUANTITY));
     }
 
     public void onCopy(DataDefinition reservationDD, Entity reservation) {

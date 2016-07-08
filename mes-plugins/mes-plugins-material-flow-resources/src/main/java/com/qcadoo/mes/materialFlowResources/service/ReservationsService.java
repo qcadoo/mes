@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -22,10 +21,8 @@ import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import java.util.Map;
 
@@ -40,9 +37,6 @@ public class ReservationsService {
 
     @Autowired
     private ResourceStockService resourceStockService;
-
-    @Autowired
-    private ParameterService parameterService;
 
     private final static String L_QUANTITY = "quantity";
 
@@ -61,11 +55,6 @@ public class ReservationsService {
         }
         String type = document.getStringField(DocumentFields.TYPE);
         return ReservationsService.this.reservationsEnabledForDocumentPositions() && DocumentType.isOutbound(type);
-    }
-
-    public boolean reservationsEnabledForProductsToIssue() {
-        Entity parameter = parameterService.getParameter();
-        return parameter.getBooleanField("warehouseIssuesReserveStates");
     }
 
     /**
@@ -142,16 +131,16 @@ public class ReservationsService {
             Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
                     new ResultSetExtractor<Map<String, Object>>() {
 
-                @Override
-                public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                    Map<String, Object> result = Maps.newHashMap();
-                    if (rs.next()) {
-                        result.put("product_id", rs.getLong("product_id"));
-                        result.put("quantity", rs.getBigDecimal("quantity"));
-                    }
-                    return result;
-                }
-            });
+                        @Override
+                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                            Map<String, Object> result = Maps.newHashMap();
+                            if (rs.next()) {
+                                result.put("product_id", rs.getLong("product_id"));
+                                result.put("quantity", rs.getBigDecimal("quantity"));
+                            }
+                            return result;
+                        }
+                    });
             Long oldProductId = (Long) oldPosition.get("product_id");
             BigDecimal oldPositionQuantity = (BigDecimal) oldPosition.get("quantity");
 
@@ -259,51 +248,5 @@ public class ReservationsService {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).find()
                 .add(SearchRestrictions.belongsTo(ReservationFields.POSITION, position)).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getReservationForProductToIssue(final Entity productToIssue) {
-        if (productToIssue.getId() == null) {
-            return null;
-        }
-        SearchCriteriaBuilder find = getReservationDD().find();
-        find.add(SearchRestrictions.belongsTo(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue)).setMaxResults(1);
-        return find.uniqueResult();
-    }
-
-    public void updateReservationFromProductToIssue(Entity productToIssue) {
-        Entity existingReservation = getReservationForProductToIssue(productToIssue);
-        if (existingReservation != null) {
-            existingReservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField("demandQuantity"));
-            existingReservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField("product"));
-            existingReservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField("location"));
-            existingReservation.getDataDefinition().save(existingReservation);
-        }
-    }
-
-    public void createReservationFromProductToIssue(Entity productToIssue) {
-        Entity reservation = getReservationDD().create();
-
-        reservation.setField(ReservationFields.LOCATION, productToIssue.getBelongsToField("location"));
-        reservation.setField(ReservationFields.PRODUCTS_TO_ISSUE, productToIssue);
-        reservation.setField(ReservationFields.PRODUCT, productToIssue.getBelongsToField("product"));
-        reservation.setField(ReservationFields.QUANTITY, productToIssue.getDecimalField("demandQuantity"));
-
-        //reservation = reservation.getDataDefinition().save(reservation);
-        productToIssue.setField("reservations", Lists.newArrayList(reservation));
-    }
-
-    private DataDefinition getReservationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION);
-    }
-
-    public void deleteReservationFromProductToIssue(Entity productToIssue) {
-        if (!reservationsEnabledForProductsToIssue()) {
-            return;
-        }
-
-        Entity reservation = getReservationForProductToIssue(productToIssue);
-        if (reservation != null) {
-            reservation.getDataDefinition().delete(reservation.getId());
-        }
     }
 }

@@ -109,14 +109,12 @@ public class ResourceStockServiceImpl implements ResourceStockService {
                 + "availablequantity = availablequantity - :quantity_to_add WHERE product_id = :product_id AND "
                 + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id)";
         jdbcTemplate.update(query, params);
-
     }
 
     public void updateResourceStock(Entity position, BigDecimal quantityToAdd) {
         updateResourceStock(position.getBelongsToField(PositionFields.PRODUCT),
                 position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM),
                 quantityToAdd);
-
     }
 
     public void updateResourceStock(Entity product, Entity location, BigDecimal quantityToAdd) {
