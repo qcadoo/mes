@@ -37,4 +37,7 @@ public interface ProductionTrackingService {
 
     void fillProductionLineLookup(final ViewDefinitionState view);
 
+    void changeState(Entity productionTracking, ProductionTrackingState state);
+
+    void correct(Entity productionTracking);
 }

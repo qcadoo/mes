@@ -48,6 +48,10 @@
                 <bigButton name="calcTotalLaborTime" icon="calculateTimeIcon24.png"
                            state="disabled" action="#{form}.fireEvent(calcTotalLaborTime);"/>
             </group>
+            <group name="correction">
+                <bigButton name="correct" icon="copyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(correct));"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -416,6 +420,10 @@
                 <listener event="calcTotalLaborTime"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="calcTotalLaborTime"/>
+
+                <listener event="correct"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="correct"/>
 
             </component>
         </windowTab>

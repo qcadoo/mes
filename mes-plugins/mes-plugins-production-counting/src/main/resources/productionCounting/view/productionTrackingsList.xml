@@ -64,6 +64,10 @@
 					</script>
 				</smallButton>
 			</group>
+            <group name="correction">
+                <bigButton name="correct" icon="copyIcon24.png"
+                	state="disabled" action="#{window}.fireEvent(correct));"/>
+            </group>
 		</ribbon>
 
 		<component type="grid" name="productionTrackingsList"
@@ -199,6 +203,8 @@
 					width="100"/>
 			<option type="column" name="timeRangeTo" fields="timeRangeTo"
 					width="100"/>
+			<option type="column" name="correctionNumber" fields="correctionNumber"
+					width="120"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 
 			<option type="order" column="number" direction="desc"/>
@@ -219,8 +225,16 @@
 					  method="changeState"/>
 		</component>
 
+		<listener event="correct"
+				  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingsListListeners"
+				  method="correct"/>
 		<option type="fixedHeight" value="true"/>
 		<option type="header" value="false"/>
 	</component>
 
+	<hooks>
+	    <beforeRender
+	        class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingsListHooks"
+	        method="onBeforeRender"/>
+	</hooks>
 </view>

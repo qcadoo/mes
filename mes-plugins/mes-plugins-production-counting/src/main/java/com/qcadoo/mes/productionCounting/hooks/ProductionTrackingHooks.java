@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -49,9 +50,11 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -78,6 +81,9 @@ public class ProductionTrackingHooks {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
     }
@@ -92,6 +98,15 @@ public class ProductionTrackingHooks {
         copyProducts(productionTracking);
         generateSetTrackingOperationProductsComponents(productionTracking);
         generateSetTechnologyInComponents(productionTracking);
+    }
+
+    public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        Entity correctedProductionTracking = productionTrackingDD.find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, productionTracking)).uniqueResult();
+        if (correctedProductionTracking != null) {
+            correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
+            productionTrackingService.changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
+        }
     }
 
     private void copyProducts(final Entity productionTracking) {

@@ -33,7 +33,11 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -65,6 +69,12 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
+
+    @Autowired
+    private StateChangeContextBuilder stateChangeContextBuilder;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -146,4 +156,19 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         productionLineLookup.setFieldValue(productionLineId);
     }
 
+    @Override
+    public void changeState(Entity productionTracking, ProductionTrackingState state) {
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                productionTrackingStateChangeAspect.getChangeEntityDescriber(), productionTracking, state.getStringValue());
+        productionTrackingStateChangeAspect.changeState(orderStateChangeContext);
+    }
+
+    @Override
+    public void correct(Entity productionTracking) {
+        DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
+        Entity correctingProductionTracking = productionTrackingDD.copy(productionTracking.getId()).get(0);
+        productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
+
+        changeState(productionTracking, ProductionTrackingState.CORRECTED);
+    }
 }

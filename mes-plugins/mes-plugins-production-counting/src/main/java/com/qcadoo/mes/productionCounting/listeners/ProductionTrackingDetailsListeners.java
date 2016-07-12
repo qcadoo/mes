@@ -283,4 +283,13 @@ public class ProductionTrackingDetailsListeners {
         }
 
     }
+
+    public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity productionRecord = productionRecordForm.getPersistedEntityWithIncludedFormValues();
+        if (productionRecord != null) {
+            productionTrackingService.correct(productionRecord);
+            productionRecordForm.setEntity(productionRecord.getDataDefinition().get(productionRecord.getId()));
+        }
+    }
 }

@@ -71,6 +71,10 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY = "copyPlannedQuantityToUsedQuantity";
 
+    private static final String L_CORRECT = "correct";
+
+    private static final String L_CORRECTION = "correction";
+
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(
             ProductionTrackingFields.LAST_TRACKING, ProductionTrackingFields.NUMBER, ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
@@ -105,6 +109,17 @@ public class ProductionTrackingDetailsHooks {
             showLastStateChangeFailNotification(productionTrackingForm, productionTracking);
             changeFieldComponentsEnabledAndGridsEditable(view);
             updateRibbonState(view);
+        }
+        toggleCorrectButton(view, productionTrackingForm.getEntity());
+    }
+
+    private void toggleCorrectButton(ViewDefinitionState view, Entity entity) {
+        String state = entity.getStringField(ProductionTrackingFields.STATE);
+        if (ProductionTrackingStateStringValues.ACCEPTED.equals(state)) {
+            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
+            correctButton.setEnabled(true);
+            correctButton.requestUpdate(true);
         }
     }
 

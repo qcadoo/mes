@@ -38,7 +38,7 @@
 				 copyable="false"/>
 		<boolean name="lastTracking"/>
 
-		<enum name="state" values="01draft,02accepted,03declined"
+		<enum name="state" values="01draft,02accepted,03declined,04corrected"
 			  default="01draft" required="true"/>
 
 		<integer name="machineTime" copyable="false"/>
@@ -58,6 +58,8 @@
 		<belongsTo name="workstationType" model="workstationType"
 				   plugin="basic"/>
 		<belongsTo name="division" model="division" plugin="basic"/>
+
+		<belongsTo name="correction" model="productionTracking"/>
 
 		<date name="shiftStartDay"/>
 
@@ -90,6 +92,9 @@
 		<onCopy
 				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks"
 				method="onCopy"/>
+		<onDelete
+				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingHooks"
+				method="onDelete"/>
 	</hooks>
 
 	<identifier expression="#number"/>
