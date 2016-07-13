@@ -50,11 +50,9 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -101,12 +99,7 @@ public class ProductionTrackingHooks {
     }
 
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        Entity correctedProductionTracking = productionTrackingDD.find()
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, productionTracking)).uniqueResult();
-        if (correctedProductionTracking != null) {
-            correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
-            productionTrackingService.changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
-        }
+        productionTrackingService.unCorrect(productionTracking);
     }
 
     private void copyProducts(final Entity productionTracking) {

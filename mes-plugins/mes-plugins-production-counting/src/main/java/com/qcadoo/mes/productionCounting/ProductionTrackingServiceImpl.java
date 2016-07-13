@@ -40,6 +40,7 @@ import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -170,5 +171,16 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
 
         changeState(productionTracking, ProductionTrackingState.CORRECTED);
+    }
+
+    @Override
+    public void unCorrect(Entity correctingProductionTracking) {
+        Entity correctedProductionTracking = correctingProductionTracking.getDataDefinition().find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, correctingProductionTracking))
+                .uniqueResult();
+        if (correctedProductionTracking != null) {
+            correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
+            changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
+        }
     }
 }

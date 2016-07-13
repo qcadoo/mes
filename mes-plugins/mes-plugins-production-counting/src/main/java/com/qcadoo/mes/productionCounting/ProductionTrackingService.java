@@ -40,4 +40,6 @@ public interface ProductionTrackingService {
     void changeState(Entity productionTracking, ProductionTrackingState state);
 
     void correct(Entity productionTracking);
+
+    void unCorrect(Entity productionTracking);
 }

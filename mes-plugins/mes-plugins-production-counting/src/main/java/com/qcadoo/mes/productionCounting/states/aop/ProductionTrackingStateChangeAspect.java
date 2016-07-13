@@ -27,11 +27,15 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangePhase;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.aop.AbstractStateChangeAspect;
+import com.qcadoo.model.api.Entity;
 
 @Aspect
 @Service
@@ -39,6 +43,9 @@ public class ProductionTrackingStateChangeAspect extends AbstractStateChangeAspe
 
     @Autowired
     private ProductionTrackingStateChangeDescriber productionTrackingStateChangeDescriber;
+
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
     public static final String SELECTOR_POINTCUT = "this(com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect)";
 
@@ -57,4 +64,14 @@ public class ProductionTrackingStateChangeAspect extends AbstractStateChangeAspe
 
     }
 
+    @Override
+    public void changeState(final StateChangeContext stateChangeContext) {
+        super.changeState(stateChangeContext);
+        Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
+        String targetState = stateChangeEntity.getStringField(ProductionTrackingStateChangeFields.TARGET_STATE);
+        if (ProductionTrackingState.DECLINED.getStringValue().equals(targetState)) {
+            Entity productionTracking = stateChangeContext.getOwner();
+            productionTrackingService.unCorrect(productionTracking);
+        }
+    }
 }
