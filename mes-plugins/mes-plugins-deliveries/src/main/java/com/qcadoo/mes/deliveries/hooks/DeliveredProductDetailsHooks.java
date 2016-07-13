@@ -63,9 +63,6 @@ public class DeliveredProductDetailsHooks {
     @Autowired
     private UnitConversionService unitConversionService;
 
-    @Autowired
-    private DeliveredProductDetailsListeners deliveredProductDetailsListeners;
-
     public void beforeRender(final ViewDefinitionState view) {
         fillOrderedQuantities(view);
         fillUnitFields(view);

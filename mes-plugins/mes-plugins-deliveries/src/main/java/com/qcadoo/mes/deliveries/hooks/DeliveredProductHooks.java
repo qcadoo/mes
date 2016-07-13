@@ -53,6 +53,10 @@ public class DeliveredProductHooks {
     public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.createDefaultReservationsForDeliveredProduct(deliveredProduct);
     }
+    
+    public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
+    }
 
     public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);

@@ -15,6 +15,7 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -110,12 +111,17 @@ public class ReservationService {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_RESERVATION);
     }
 
-    private void deletePreviousReservations(List<Entity> deliveredProducts) {
+    private boolean deletePreviousReservations(List<Entity> deliveredProducts) {
+        int countReservations = 0;
         for (Entity deliveredProduct : deliveredProducts) {
-            deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS).stream().forEach(reservation -> {
+            EntityList reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
+            countReservations += reservations.size();
+            reservations.stream().forEach(reservation -> {
                 reservation.getDataDefinition().delete(reservation.getId());
             });
         }
+
+        return countReservations > 0;
     }
 
     private Entity findOrderedProductForProduct(Entity deliveredProduct) {
@@ -162,5 +168,33 @@ public class ReservationService {
         }).reduce(BigDecimal.ZERO, (r1, r2) -> r1.add(r2));
 
         return quantity;
+    }
+
+    public void deleteReservationsForDeliveredProductIfChanged(Entity deliveredProduct) {
+        if (deliveredProduct.getId() != null) {
+            Entity deliveredProductFromDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
+            List<String> fields = Arrays.asList(DeliveredProductFields.DELIVERED_QUANTITY, DeliveredProductFields.DAMAGED_QUANTITY,
+                    DeliveredProductFields.PRODUCT, DeliveredProductFields.ADDITIONAL_CODE);
+
+            for (String field : fields) {
+                if (notEquals(deliveredProduct.getField(field), deliveredProductFromDB.getField(field))) {
+                    if (deletePreviousReservations(Arrays.asList(deliveredProductFromDB))) {
+                        deliveredProduct.addGlobalMessage("deliveries.delivery.message.reservationsDeleted");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    private boolean notEquals(Object a, Object b) {
+        if (a != null && b != null) {
+            if (a instanceof BigDecimal && b instanceof BigDecimal) {
+                return ((BigDecimal) a).compareTo((BigDecimal) b) != 0;
+            }
+            return !a.equals(b);
+        } else {
+            return a != b;
+        }
     }
 }

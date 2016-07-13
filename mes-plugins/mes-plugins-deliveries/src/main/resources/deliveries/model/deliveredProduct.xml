@@ -57,7 +57,7 @@
         </decimal>
         <boolean name="isWaste"/>
 		
-		<dictionary name="additionalUnit" dictionary="units"/>
+        <dictionary name="additionalUnit" dictionary="units"/>
 
         <priority name="succession" scope="delivery" />
         <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
@@ -66,6 +66,7 @@
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="calculateDeliveredProductPricePerUnit"/>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="onCreate"/>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="onSave"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredProductAlreadyExists" />
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
     </hooks>
