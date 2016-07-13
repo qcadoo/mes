@@ -31,10 +31,10 @@
         <belongsTo name="deliveredProduct" model="deliveredProduct" plugin="deliveries" required="true" />
         <belongsTo name="location" model="location" plugin="materialFlow" required="true" />
         <decimal name="deliveredQuantity" required="true" >
-            <validatesRange from="0" exclusively="false" />
+            <validatesRange from="0" exclusively="true" />
         </decimal>
         <decimal name="additionalQuantity" required="true" >
-            <validatesRange from="0" exclusively="false" />
+            <validatesRange from="0" exclusively="true" />
         </decimal>  
         <string name="deliveredQuantityUnit" persistent="false" />      
         <string name="additionalQuantityUnit" persistent="false" />      
