@@ -41,8 +41,13 @@ public class ReservationService {
             if (orderedProductForProduct != null) {
                 EntityList reservationsFromOrderedProduct = orderedProductForProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
 
+                BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
+                damagedQuantity = damagedQuantity == null ? BigDecimal.ZERO : damagedQuantity;
+                
                 BigDecimal availableQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
                 availableQuantity = availableQuantity == null ? BigDecimal.ZERO : availableQuantity;
+                availableQuantity = availableQuantity.subtract(damagedQuantity);
+                
                 for (Entity reservationFromOrderedProduct : reservationsFromOrderedProduct) {
                     Optional<Entity> maybeDeliveredProductReservation = createDeliveredProductReservation(availableQuantity, deliveredProduct, reservationFromOrderedProduct, presentDeliveredProductForProductReservations);
                     if (maybeDeliveredProductReservation.isPresent()) {

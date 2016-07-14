@@ -144,6 +144,10 @@ public class DeliveredProductReservationHooks {
         BigDecimal sumOfQuantity = resList.getTotalNumberOfEntities() == 0 ? BigDecimal.ZERO : resList.getEntities().get(0).getDecimalField("sumOfQuantity");
         sumOfQuantity = sumOfQuantity == null ? BigDecimal.ZERO : sumOfQuantity;
 
+        BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
+        damagedQuantity = damagedQuantity == null ? BigDecimal.ZERO : damagedQuantity;
+        productDeliveredQuantity = productDeliveredQuantity.subtract(damagedQuantity);
+                
         boolean sumIsNotExceeded = productDeliveredQuantity.compareTo(reservationDeliveredQuantity.add(sumOfQuantity)) >= 0;
 
         if (!sumIsNotExceeded) {
