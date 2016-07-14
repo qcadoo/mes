@@ -6,10 +6,12 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -196,5 +198,53 @@ public class ReservationService {
         } else {
             return a != b;
         }
+    }
+
+    public boolean validateDeliveryAgainstReservations(Entity delivery) {
+        return validateDeliveryOrderedProductsAgainstReservations(delivery) && validateDeliveryDeliveredProductsAgainstReservations(delivery);
+    }
+
+    private boolean validateDeliveryOrderedProductsAgainstReservations(Entity delivery) {
+        Entity deliveryLocation = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        EntityList orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
+        if (orderedProducts != null && deliveryLocation != null) {
+            for (Entity orderedProduct : orderedProducts) {
+                EntityList reservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+                if (reservations != null) {
+                    for (Entity reservation : reservations) {
+                        Entity reservationLocation = reservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
+                        if (deliveryLocation.getId().equals(reservationLocation.getId())) {
+                            FieldDefinition locationField = delivery.getDataDefinition().getField(DeliveryFields.LOCATION);
+                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery", deliveryLocation.getStringField(LocationFields.NUMBER));
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean validateDeliveryDeliveredProductsAgainstReservations(Entity delivery) {
+        Entity deliveryLocation = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        EntityList deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        if (deliveredProducts != null && deliveryLocation != null) {
+            for (Entity deliveredProduct : deliveredProducts) {
+                EntityList reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
+                if (reservations != null) {
+                    for (Entity reservation : reservations) {
+                        Entity reservationLocation = reservation.getBelongsToField(DeliveredProductReservationFields.LOCATION);
+                        if (deliveryLocation.getId().equals(reservationLocation.getId())) {
+                            FieldDefinition locationField = delivery.getDataDefinition().getField(DeliveryFields.LOCATION);
+                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery", deliveryLocation.getStringField(LocationFields.NUMBER));
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+        
+        return true;
     }
 }

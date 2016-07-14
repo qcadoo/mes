@@ -38,18 +38,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.NumberService;
 
 @Service
@@ -69,6 +65,9 @@ public class DeliveryHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
@@ -142,29 +141,7 @@ public class DeliveryHooks {
     }
 
     public boolean validate(final DataDefinition deliveryDD, final Entity delivery) {
-        return validateLocationAgainstReservations(delivery);
-    }
-
-    private boolean validateLocationAgainstReservations(Entity delivery) {
-        Entity deliveryLocation = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        EntityList orderedProducts = delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS);
-        if (orderedProducts != null && deliveryLocation != null) {
-            for (Entity orderedProduct : orderedProducts) {
-                EntityList reservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
-                if (reservations != null) {
-                    for (Entity reservation : reservations) {
-                        Entity reservationLocation = reservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
-                        if (deliveryLocation.getId().equals(reservationLocation.getId())) {
-                            FieldDefinition locationField = delivery.getDataDefinition().getField(DeliveryFields.LOCATION);
-                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery", deliveryLocation.getStringField(LocationFields.NUMBER));
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        return true;
+        return reservationService.validateDeliveryAgainstReservations(delivery);
     }
 
 }
