@@ -75,15 +75,6 @@ CREATE OR REPLACE VIEW orders_orderPlanningListDto AS SELECT o.id, o.active, o.n
 -- end
 
 
--- QCADOOCLS-4341
-
-DROP TABLE IF EXISTS orders_orderlistdto;
-
-CREATE OR REPLACE VIEW orders_orderlistdto AS SELECT o.id, o.active, o.number, o.name,  o.datefrom,  o.dateto, o.startdate,  o.finishdate, o.state, o.externalnumber, o.externalsynchronized, o.issubcontracted,  o.plannedquantity, o.workplandelivered,  o.deadline,  product.number AS productnumber,  tech.number AS technologynumber,  product.unit,  master.number AS masterordernumber, division.name AS divisionname,  company.name AS companyname, masterdefinition.number AS masterorderdefinitionnumber FROM orders_order o JOIN basic_product product ON o.product_id = product.id LEFT JOIN technologies_technology tech ON o.technology_id = tech.id LEFT JOIN basic_company company ON o.company_id = company.id LEFT JOIN masterorders_masterorder master ON o.masterorder_id = master.id LEFT JOIN masterorders_masterorderdefinition masterdefinition ON master.masterorderdefinition_id = masterdefinition.id LEFT JOIN basic_division division ON tech.division_id = division.id;
-
--- end
-
-
 -- subassemblies view
 
 DROP TABLE IF EXISTS basic_subassemblylistdto;
@@ -121,6 +112,9 @@ CREATE OR replace VIEW cmmsmachineparts_maintenanceeventlistdto AS SELECT mainte
 -- end
 
 
+ALTER TABLE repairs_repairorder DROP COLUMN productiontracking_id;
+
+
 -- production tracking
 
 DROP TABLE IF EXISTS productioncounting_productiontrackingdto;
@@ -130,7 +124,7 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS SELECT produc
 
 DROP TABLE IF EXISTS productioncounting_trackingoperationproductincomponentdto;
 
-CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS SELECT trackingoperationproductincomponent.id AS id, productiontracking.id::integer AS productiontracking_id, product.id::integer AS product_id, product.number AS productnumber, product.unit AS productunit, CASE WHEN productiontracking.technologyoperationcomponent_id IS NULL THEN (SELECT SUM(productioncountingquantity_1.plannedquantity) AS sum) ELSE (SELECT SUM(productioncountingquantity_2.plannedquantity) AS sum) END AS plannedquantity, trackingoperationproductincomponent.usedquantity AS usedquantity, batch.number AS batchnumber FROM productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent LEFT JOIN productioncounting_productiontracking productiontracking ON productiontracking.id = trackingoperationproductincomponent.productiontracking_id LEFT JOIN basic_product product ON product.id = trackingoperationproductincomponent.product_id LEFT JOIN advancedgenealogy_batch batch ON batch.id = trackingoperationproductincomponent.batch_id LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON ( productioncountingquantity_1.order_id = productiontracking.order_id AND productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id AND productioncountingquantity_1.role::text = '01used'::text ) LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON ( productioncountingquantity_2.order_id = productiontracking.order_id AND productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id AND productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id AND productioncountingquantity_2.role::text = '01used'::text ) GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.name, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS SELECT trackingoperationproductincomponent.id AS id, productiontracking.id::integer AS productiontracking_id, product.id::integer AS product_id, product.number AS productnumber, product.unit AS productunit, CASE WHEN productiontracking.technologyoperationcomponent_id IS NULL THEN (SELECT SUM(productioncountingquantity_1.plannedquantity) AS sum) ELSE (SELECT SUM(productioncountingquantity_2.plannedquantity) AS sum) END AS plannedquantity, trackingoperationproductincomponent.usedquantity AS usedquantity, batch.number AS batchnumber FROM productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent LEFT JOIN productioncounting_productiontracking productiontracking ON productiontracking.id = trackingoperationproductincomponent.productiontracking_id LEFT JOIN basic_product product ON product.id = trackingoperationproductincomponent.product_id LEFT JOIN advancedgenealogy_batch batch ON batch.id = trackingoperationproductincomponent.batch_id LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON ( productioncountingquantity_1.order_id = productiontracking.order_id AND productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id AND productioncountingquantity_1.role::text = '01used'::text ) LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON ( productioncountingquantity_2.order_id = productiontracking.order_id AND productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id AND productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id AND productioncountingquantity_2.role::text = '01used'::text ) GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
 
 
 DROP TABLE IF EXISTS productioncounting_trackingoperationproductoutcomponentdto;
@@ -141,16 +135,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdt
 DROP TABLE IF EXISTS productioncounting_trackingoperationproductcomponentdto;
 
 CREATE OR REPLACE VIEW productioncounting_trackingoperationproductcomponentdto AS SELECT row_number() OVER () AS id, trackingoperationproductcomponentdto.productiontracking_id::integer AS productiontracking_id, trackingoperationproductcomponentdto.product_id::integer AS product_id, trackingoperationproductcomponentdto.productnumber AS productnumber, trackingoperationproductcomponentdto.productunit AS productunit, trackingoperationproductcomponentdto.plannedquantity AS plannedquantity, trackingoperationproductcomponentdto.usedquantity AS usedquantity, trackingoperationproductcomponentdto.batchnumber FROM (SELECT trackingoperationproductincomponentdto.productiontracking_id, trackingoperationproductincomponentdto.product_id, trackingoperationproductincomponentdto.productnumber, trackingoperationproductincomponentdto.productunit, trackingoperationproductincomponentdto.plannedquantity, trackingoperationproductincomponentdto.usedquantity, trackingoperationproductincomponentdto.batchnumber FROM productioncounting_trackingoperationproductincomponentdto trackingoperationproductincomponentdto UNION SELECT trackingoperationproductoutcomponentdto.productiontracking_id, trackingoperationproductoutcomponentdto.product_id, trackingoperationproductoutcomponentdto.productnumber, trackingoperationproductoutcomponentdto.productunit, trackingoperationproductoutcomponentdto.plannedquantity, trackingoperationproductoutcomponentdto.usedquantity, trackingoperationproductoutcomponentdto.batchnumber FROM productioncounting_trackingoperationproductoutcomponentdto trackingoperationproductoutcomponentdto) trackingoperationproductcomponentdto;
-
-
-DROP TABLE IF EXISTS productioncounting_productiontrackingforproductdto;
-
-CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS SELECT trackingoperationproductcomponentdto.id AS id, productiontrackingdto.number AS number, productiontrackingdto.state AS state, productiontrackingdto.createdate AS createdate, productiontrackingdto.lasttracking AS lasttracking, productiontrackingdto.timerangefrom AS timerangefrom, productiontrackingdto.timerangeto AS timerangeto, productiontrackingdto.active AS active, productiontrackingdto.order_id::integer AS order_id, productiontrackingdto.ordernumber AS ordernumber, productiontrackingdto.orderstate AS orderstate, productiontrackingdto.technologyoperationcomponent_id::integer AS technologyoperationcomponent_id, productiontrackingdto.technologyoperationcomponentnumber AS technologyoperationcomponentnumber, productiontrackingdto.operation_id::integer AS operation_id, productiontrackingdto.shift_id::integer AS shift_id, productiontrackingdto.shiftname AS shiftname, productiontrackingdto.staff_id::integer AS staff_id, productiontrackingdto.staffname AS staffname, productiontrackingdto.division_id::integer AS division_id, productiontrackingdto.divisionnumber AS divisionnumber, productiontrackingdto.subcontractor_id::integer AS subcontractor_id, productiontrackingdto.subcontractorname AS subcontractorname, trackingoperationproductcomponentdto.product_id::integer AS product_id, trackingoperationproductcomponentdto.productnumber AS productnumber, trackingoperationproductcomponentdto.productunit AS productunit, trackingoperationproductcomponentdto.plannedquantity AS plannedquantity, trackingoperationproductcomponentdto.usedquantity AS usedquantity, productiontrackingdto.id AS productiontracking_id, trackingoperationproductcomponentdto.batchnumber FROM productioncounting_trackingoperationproductcomponentdto trackingoperationproductcomponentdto LEFT JOIN productioncounting_productiontrackingdto productiontrackingdto ON productiontrackingdto.id = trackingoperationproductcomponentdto.productiontracking_id;
-
-
-DROP TABLE IF EXISTS productioncounting_productiontrackingforproductgroupeddto;
-
-CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto AS SELECT row_number() OVER () AS id, productiontrackingforproductdto.active AS active, productiontrackingforproductdto.order_id::integer AS order_id, productiontrackingforproductdto.ordernumber AS ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id::integer AS technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber AS technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id AS operation_id, productiontrackingforproductdto.product_id::integer AS product_id, productiontrackingforproductdto.productnumber AS productnumber, productiontrackingforproductdto.productunit AS productunit, productiontrackingforproductdto.plannedquantity AS plannedquantity, SUM(productiontrackingforproductdto.usedquantity) AS usedquantity FROM productioncounting_productiontrackingforproductdto productiontrackingforproductdto GROUP BY productiontrackingforproductdto.active, productiontrackingforproductdto.order_id, productiontrackingforproductdto.ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id, productiontrackingforproductdto.product_id, productiontrackingforproductdto.productnumber, productiontrackingforproductdto.productunit, productiontrackingforproductdto.plannedquantity;
 
 -- end
 
@@ -165,25 +149,35 @@ CREATE TRIGGER materialflowresources_resource_trigger_number BEFORE INSERT ON ma
 
 --end #QCADOO-432
 
+
 --end #QCADOO-433
+
 CREATE OR REPLACE FUNCTION generate_document_number(_translated_type text) RETURNS text AS $$ DECLARE _pattern text;_sequence_name text;_sequence_value numeric;_tmp text;_seq text; _number text; BEGIN _pattern := '#translated_type/#seq'; _sequence_name := 'materialflowresources_document_number_' || lower(_translated_type); SELECT sequence_name into _tmp FROM information_schema.sequences where sequence_schema = 'public' and sequence_name = _sequence_name; if _tmp is null then execute 'CREATE SEQUENCE ' || _sequence_name || ';'; end if; select nextval(_sequence_name) into _sequence_value; _seq := to_char(_sequence_value, 'fm00000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#translated_type', _translated_type); _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
 CREATE OR REPLACE FUNCTION generate_and_set_document_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_document_number(NEW.number); IF NEW.name is null THEN NEW.name := NEW.number; END IF; return NEW; END; $$ LANGUAGE 'plpgsql';
 CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
+
 --end #QCADOO-433
 
+
 -- #GOODFOOD-1196
+
 CREATE SEQUENCE cmmsmachineparts_maintenanceevent_number_seq;
+
 CREATE OR REPLACE FUNCTION generate_maintenanceevent_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('cmmsmachineparts_maintenanceevent_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if;	 _number := _pattern; _number := replace(_number, '#seq', _seq);	 RETURN _number; END; $$ LANGUAGE 'plpgsql';
 CREATE OR REPLACE FUNCTION generate_and_set_maintenanceevent_number_trigger() RETURNS trigger AS $$ BEGIN NEW.number := generate_maintenanceevent_number(); return NEW; END; $$ LANGUAGE 'plpgsql';
 CREATE TRIGGER cmmsmachineparts_maintenanceevent_trigger_number BEFORE INSERT ON cmmsmachineparts_maintenanceevent FOR EACH ROW EXECUTE PROCEDURE generate_and_set_maintenanceevent_number_trigger();
+
 -- end #GOODFOOD-1196
 
+
 -- VIEW: technologies_technologydto
+
 DROP TABLE IF EXISTS technologies_technologydto;
 
 CREATE OR REPLACE VIEW technologies_technologydto AS SELECT technology.id, technology.name, technology.number, technology.externalsynchronized, technology.master, technology.state, product.number AS productnumber, product.globaltypeofmaterial AS productglobaltypeofmaterial, tg.number AS technologygroupnumber, division.name AS divisionname, product.name AS productname, technology.technologytype, technology.active FROM technologies_technology technology LEFT JOIN basic_product product ON technology.product_id = product.id LEFT JOIN basic_division division ON technology.division_id = division.id LEFT JOIN technologies_technologygroup tg ON technology.technologygroup_id = tg.id;
 
 -- end
+
 
 CREATE OR REPLACE FUNCTION prepare_documentpositionparameters() RETURNS VOID AS $$ BEGIN insert into materialflowresources_documentpositionparameters (id) values (1); insert into materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) values         (1,1,'act', 1, false),(2,2,'number', 1, false),(3,3,'product', 1, false),(4,4,'additionalCode', 1, true),(5,5,'quantity', 1, false),(6,6,'unit', 1, false),(7,7,'givenquantity', 1, false),(8,8,'givenunit', 1, false),(9,9,'conversion', 1, false),(10,10,'resource', 1, true),(11,11,'price', 1, true),(12,12,'batch', 1, true),(13,13,'productionDate', 1, true),(14,14,'expirationDate', 1, true),(15,15,'storageLocation', 1, true),(16,16,'palletNumber', 1, true),(17,17,'typeOfPallet', 1, true); END; $$ LANGUAGE 'plpgsql';
 
@@ -191,9 +185,11 @@ SELECT * FROM prepare_documentpositionparameters();
 
 DROP FUNCTION prepare_documentpositionparameters();
 
+
 -- VIEW: orders_orderdto
 
 ALTER TABLE productflowthrudivision_warehouseissue DROP COLUMN order_id;
+
 ALTER TABLE repairs_repairorder DROP COLUMN order_id;
 
 DROP TABLE IF EXISTS orders_orderdto;
@@ -201,6 +197,10 @@ DROP TABLE IF EXISTS orders_orderdto;
 CREATE OR REPLACE VIEW orders_orderdto AS SELECT id, active, number, name, state, typeofproductionrecording FROM orders_order;
 
 ALTER TABLE productflowthrudivision_warehouseissue ADD COLUMN order_id bigint;
+ALTER TABLE productflowthrudivision_warehouseissue ADD CONSTRAINT warehouseissue_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order (id) DEFERRABLE;
+
+ALTER TABLE repairs_repairorder ADD COLUMN order_id bigint;
+ALTER TABLE repairs_repairorder ADD CONSTRAINT repairdorder_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order (id) DEFERRABLE;
 
 -- end
 
@@ -233,15 +233,19 @@ CREATE OR REPLACE VIEW materialflowresources_resourcestockdto_internal AS SELECT
 
 CREATE OR REPLACE VIEW materialflowresources_resourcestockdto AS SELECT internal.*, location.number AS locationNumber, location.name AS locationName, product.number AS productNumber, product.name AS productName, product.unit AS productUnit FROM materialflowresources_resourcestockdto_internal internal JOIN materialflow_location location ON (location.id = internal.location_id) JOIN basic_product product ON (product.id = internal.product_id);
 
---end
+-- end
+
 
 -- VIEW: repairs_repairorderdto
 
-ALTER TABLE repairs_repairorder ADD COLUMN order_id bigint;
+ALTER TABLE productioncounting_productiontracking DROP COLUMN repairorder_id;
+
+ALTER TABLE repairs_repairorder ADD COLUMN productiontracking_id bigint;
+ALTER TABLE repairs_repairorder ADD CONSTRAINT repairorder_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES productioncounting_productiontracking (id) DEFERRABLE;
 
 DROP TABLE IF EXISTS repairs_repairorderdto;
 
-CREATE OR REPLACE VIEW repairs_repairorderdto AS SELECT repairorder.id AS id, repairorder.number AS number, repairorder.state AS state, repairorder.createdate AS createdate, repairorder.startdate AS startdate, repairorder.enddate AS enddate, repairorder.quantitytorepair AS quantitytorepair, repairorder.quantityrepaired AS quantityrepaired, repairorder.lack AS lack, repairorder.active AS active, orderdto.id::integer AS order_id, orderdto.number AS ordernumber, division.id::integer AS division_id, division.number AS divisionnumber, shift.id::integer AS shift_id, shift.name AS shiftname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname FROM repairs_repairorder repairorder LEFT JOIN orders_orderdto orderdto ON orderdto.id = repairorder.order_id LEFT JOIN basic_division division ON division.id = repairorder.division_id LEFT JOIN basic_shift shift ON shift.id = repairorder.shift_id LEFT JOIN basic_product product ON product.id = repairorder.product_id;
+CREATE OR REPLACE VIEW repairs_repairorderdto AS SELECT repairorder.id AS id, repairorder.number AS number, repairorder.state AS state, repairorder.createdate AS createdate, repairorder.startdate AS startdate, repairorder.enddate AS enddate, repairorder.quantitytorepair AS quantitytorepair, repairorder.quantityrepaired AS quantityrepaired, repairorder.lack AS lack, repairorder.active AS active, orderdto.id::integer AS order_id, orderdto.number AS ordernumber, division.id::integer AS division_id, division.number AS divisionnumber, shift.id::integer AS shift_id, shift.name AS shiftname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, productiontrackingdto.id::integer AS productiontracking_id, productiontrackingdto.number AS productiontrackingnumber FROM repairs_repairorder repairorder LEFT JOIN orders_orderdto orderdto ON orderdto.id = repairorder.order_id LEFT JOIN basic_division division ON division.id = repairorder.division_id LEFT JOIN basic_shift shift ON shift.id = repairorder.shift_id LEFT JOIN basic_product product ON product.id = repairorder.product_id LEFT JOIN productioncounting_productiontracking productiontrackingdto ON productiontrackingdto.id = repairorder.productiontracking_id;
 
 CREATE SEQUENCE repairs_repairorder_number_seq;
 
@@ -252,3 +256,27 @@ CREATE OR REPLACE FUNCTION generate_and_set_repairorder_number_trigger() RETURNS
 CREATE TRIGGER repairs_repairorder_trigger_number BEFORE INSERT ON repairs_repairorder FOR EACH ROW EXECUTE PROCEDURE generate_and_set_repairorder_number_trigger();
 
 -- end
+
+
+ALTER TABLE productioncounting_productiontracking ADD COLUMN repairorder_id bigint;
+ALTER TABLE productioncounting_productiontracking ADD CONSTRAINT productiontracking_repairorder_fkey FOREIGN KEY (repairorder_id) REFERENCES repairs_repairorder (id) DEFERRABLE;
+
+
+DROP TABLE IF EXISTS orders_orderlistdto;
+
+CREATE OR REPLACE VIEW orders_orderlistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.deadline, product.number AS productnumber, technology.number AS technologynumber, product.unit, masterorder.number AS masterordernumber, division.name AS divisionname, company.name AS companyname, masterorderdefinition.number AS masterorderdefinitionnumber, (CASE WHEN (EXISTS (SELECT repairoder.id FROM repairs_repairorder repairoder WHERE repairoder.order_id = ordersorder.id)) THEN TRUE ELSE FALSE END) AS existsrepairorders FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN basic_company company ON company.id = ordersorder.company_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON masterorderdefinition.id = masterorder.masterorderdefinition_id LEFT JOIN basic_division division ON division.id = technology.division_id;
+
+
+DROP VIEW productioncounting_productiontrackingdto;
+
+CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS SELECT productiontracking.id AS id, productiontracking.number AS number, productiontracking.state AS state, productiontracking.createdate AS createdate, productiontracking.lasttracking AS lasttracking, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, productiontracking.active AS active, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, ordersorder.state AS orderstate, technologyoperationcomponent.id::integer AS technologyoperationcomponent_id, (CASE WHEN technologyoperationcomponent IS NULL THEN '' ELSE (technologyoperationcomponent.nodenumber::text || ' '::text) || operation.name::text END) AS technologyoperationcomponentnumber, operation.id::integer AS operation_id, shift.id::integer AS shift_id, shift.name AS shiftname, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, division.id::integer AS division_id, division.number AS divisionnumber, subcontractor.id::integer AS subcontractor_id, subcontractor.name AS subcontractorname, repairorderdto.id::integer AS repairorder_id, repairorderdto.number AS repairordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id LEFT JOIN technologies_operation operation ON operation.id = technologyoperationcomponent.operation_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN basic_division division ON division.id = productiontracking.division_id LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id LEFT JOIN repairs_repairorderdto repairorderdto ON repairorderdto.id = productiontracking.repairorder_id;
+
+
+DROP TABLE IF EXISTS productioncounting_productiontrackingforproductdto;
+
+CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductdto AS SELECT trackingoperationproductcomponentdto.id AS id, productiontrackingdto.number AS number, productiontrackingdto.state AS state, productiontrackingdto.createdate AS createdate, productiontrackingdto.lasttracking AS lasttracking, productiontrackingdto.timerangefrom AS timerangefrom, productiontrackingdto.timerangeto AS timerangeto, productiontrackingdto.active AS active, productiontrackingdto.order_id::integer AS order_id, productiontrackingdto.ordernumber AS ordernumber, productiontrackingdto.orderstate AS orderstate, productiontrackingdto.technologyoperationcomponent_id::integer AS technologyoperationcomponent_id, productiontrackingdto.technologyoperationcomponentnumber AS technologyoperationcomponentnumber, productiontrackingdto.operation_id::integer AS operation_id, productiontrackingdto.shift_id::integer AS shift_id, productiontrackingdto.shiftname AS shiftname, productiontrackingdto.staff_id::integer AS staff_id, productiontrackingdto.staffname AS staffname, productiontrackingdto.division_id::integer AS division_id, productiontrackingdto.divisionnumber AS divisionnumber, productiontrackingdto.subcontractor_id::integer AS subcontractor_id, productiontrackingdto.subcontractorname AS subcontractorname, trackingoperationproductcomponentdto.product_id::integer AS product_id, trackingoperationproductcomponentdto.productnumber AS productnumber, trackingoperationproductcomponentdto.productunit AS productunit, trackingoperationproductcomponentdto.plannedquantity AS plannedquantity, trackingoperationproductcomponentdto.usedquantity AS usedquantity, productiontrackingdto.id AS productiontracking_id, trackingoperationproductcomponentdto.batchnumber FROM productioncounting_trackingoperationproductcomponentdto trackingoperationproductcomponentdto LEFT JOIN productioncounting_productiontrackingdto productiontrackingdto ON productiontrackingdto.id = trackingoperationproductcomponentdto.productiontracking_id;
+
+
+DROP TABLE IF EXISTS productioncounting_productiontrackingforproductgroupeddto;
+
+CREATE OR REPLACE VIEW productioncounting_productiontrackingforproductgroupeddto AS SELECT row_number() OVER () AS id, productiontrackingforproductdto.active AS active, productiontrackingforproductdto.order_id::integer AS order_id, productiontrackingforproductdto.ordernumber AS ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id::integer AS technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber AS technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id AS operation_id, productiontrackingforproductdto.product_id::integer AS product_id, productiontrackingforproductdto.productnumber AS productnumber, productiontrackingforproductdto.productunit AS productunit, productiontrackingforproductdto.plannedquantity AS plannedquantity, SUM(productiontrackingforproductdto.usedquantity) AS usedquantity FROM productioncounting_productiontrackingforproductdto productiontrackingforproductdto GROUP BY productiontrackingforproductdto.active, productiontrackingforproductdto.order_id, productiontrackingforproductdto.ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id, productiontrackingforproductdto.product_id, productiontrackingforproductdto.productnumber, productiontrackingforproductdto.productunit, productiontrackingforproductdto.plannedquantity;

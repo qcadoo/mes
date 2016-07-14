@@ -51,7 +51,7 @@ public interface ProductionCountingService {
     /**
      * Gets production balance
      *
-     * @param productionBalanaceId
+     * @param productionBalanceId
      * @return production balance
      */
     Entity getProductionBalance(final Long productionBalanceId);
@@ -71,6 +71,14 @@ public interface ProductionCountingService {
      * @return tracking operation product out component
      */
     Entity getTrackingOperationProductOutComponent(final Long trackingOperationProductOutComponentId);
+
+    /**
+     * Gets staff work time
+     *
+     * @param staffWorkTimeId
+     * @return staff work time
+     */
+    Entity getStaffWorkTime(final Long staffWorkTimeId);
 
     /**
      * Gets production tracking report data definition
@@ -106,6 +114,13 @@ public interface ProductionCountingService {
      * @return tracking operation product out component data definition
      */
     DataDefinition getTrackingOperationProductOutComponentDD();
+
+    /**
+     * Gets staff work time data definition
+     *
+     * @return staff work time data definition
+     */
+    DataDefinition getStaffWorkTimeDD();
 
     /**
      * Gets production trackings for order
