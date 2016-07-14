@@ -15,6 +15,7 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -142,7 +143,6 @@ public class ReservationService {
             findOrderedProduct.add(SearchRestrictions.isNull(OrderedProductFields.ADDITIONAL_CODE));
         } else {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
-
         }
         Entity orderedProductForProduct = findOrderedProduct.uniqueResult();
 
@@ -150,9 +150,18 @@ public class ReservationService {
     }
 
     private List<Entity> findPresentDeliveredProductForProductReservations(Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        EntityList deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
-
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);        
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+        
+        SearchCriteriaBuilder findDeliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).find();
+        findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)));
+        if (additionalCode == null) {
+            findDeliveredProducts.add(SearchRestrictions.isNull(DeliveredProductFields.ADDITIONAL_CODE));
+        } else {
+            findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
+        }        
+        List<Entity> deliveredProducts = findDeliveredProducts.list().getEntities();
+        
         List<Entity> allReservationsFromDeliveredProducts = deliveredProducts.stream().flatMap(p -> {
             return p.getHasManyField(DeliveredProductFields.RESERVATIONS).stream();
         }).collect(Collectors.toList());
