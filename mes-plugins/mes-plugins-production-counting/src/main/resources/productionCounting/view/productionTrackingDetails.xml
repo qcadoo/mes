@@ -151,6 +151,12 @@
                                    reference="number" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="checkbox" name="isCorrection" field="isCorrection"
+                                   reference="isCorrection" defaultEnabled="false"/>
+                        <component type="input" name="corrects" field="corrects"
+                                   reference="corrects" defaultEnabled="false" defaultVisible="false">
+                            <option type="alignment" value="right"/>
+                        </component>
                         <component type="lookup" name="order" field="order"
                                    reference="order">
                             <option type="column" name="name" fields="name" link="true"/>
