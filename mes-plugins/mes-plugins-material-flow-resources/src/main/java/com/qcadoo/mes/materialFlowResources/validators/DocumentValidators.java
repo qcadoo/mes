@@ -58,6 +58,7 @@ public class DocumentValidators {
         hasWarehouses(dataDefinition, entity);
         // validateAvailableQuantities(entity);
 
+        validateWarehouseChanged(dataDefinition, entity);
         return entity.isValid();
     }
 
@@ -88,6 +89,32 @@ public class DocumentValidators {
             return false;
         }
         return true;
+    }
+
+    private boolean validateWarehouseChanged(final DataDefinition documentDD, final Entity document) {
+        if (document.getId() == null || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            return true;
+        }
+        Entity documentFromDB = documentDD.get(document.getId());
+
+        if (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
+                || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO)) {
+            document.addGlobalError("materialFlow.document.validate.global.error.warehouseChanged");
+            return false;
+        }
+        return true;
+    }
+
+    private boolean checkIfWarehouseHasChanged(final Entity oldDocument, final Entity newDocument, final String warehouseField) {
+        Entity oldWarehouse = oldDocument.getBelongsToField(warehouseField);
+        Entity newWarehouse = newDocument.getBelongsToField(warehouseField);
+        if (oldWarehouse == null && newWarehouse == null) {
+            return false;
+        } else if (oldWarehouse != null && newWarehouse != null) {
+            return oldWarehouse.getId().compareTo(newWarehouse.getId()) != 0;
+        }
+        return true;
+
     }
 
     private void validateDocumentName(final DataDefinition documentDD, final Entity document) {
