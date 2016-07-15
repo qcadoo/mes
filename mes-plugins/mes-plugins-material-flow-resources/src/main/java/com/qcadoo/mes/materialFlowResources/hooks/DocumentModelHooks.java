@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -62,6 +64,7 @@ public class DocumentModelHooks {
 
         document.setField(DocumentFields.NUMBER, translatedType);
         document.setField(DocumentFields.NAME, null);
+        document.setField(DocumentFields.TIME, new Date());
         // documentValidators.validateAvailableQuantities(document);
     }
 
