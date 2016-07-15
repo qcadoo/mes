@@ -54,6 +54,8 @@
             <option type="column" name="unit" fields="product" width="30"
                     expression="#product['unit']"/>
 
+            <option type="column" name="price" fields="price" width="50"/>
+
             <option type="column" name="documentDate" fields="document"
                     expression="#document['time']"/>
 
@@ -82,9 +84,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate,price"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate,price"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

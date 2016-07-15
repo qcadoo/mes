@@ -54,6 +54,7 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
+
     }
 
     @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)

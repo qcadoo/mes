@@ -179,7 +179,7 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto
 		trackingoperationproductincomponent.id,
 		productiontracking.id,
 		product.id,
-		product.name,
+		product.number,
 		product.unit,
 		trackingoperationproductincomponent.usedquantity,
 		productiontracking.technologyoperationcomponent_id;

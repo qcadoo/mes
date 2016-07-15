@@ -72,8 +72,8 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
 
     @Pointcut(ProductionTrackingStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
-    }
 
+    }
 
     @RunInPhase(ProductionTrackingStateChangePhase.PRE_VALIDATION)
     @RunForStateTransition(targetState = ProductionTrackingStateStringValues.ACCEPTED)
@@ -102,4 +102,5 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext, final int phase) {
         productionTrackingListenerService.onLeavingDraft(stateChangeContext);
     }
+
 }
