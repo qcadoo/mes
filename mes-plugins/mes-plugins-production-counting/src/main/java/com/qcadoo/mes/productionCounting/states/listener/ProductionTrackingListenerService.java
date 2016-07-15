@@ -126,9 +126,10 @@ public final class ProductionTrackingListenerService {
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
 
-        if (!checkIfUsedQuantitiesWereFilled(productionTracking) && !checkIfUsedQuantitiesWereFilled(productionTracking)) {
-            stateChangeContext
-                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking)
+                && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
+            stateChangeContext.addValidationError(
+                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -142,10 +143,8 @@ public final class ProductionTrackingListenerService {
 
     public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
         final SearchCriteriaBuilder searchBuilder = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)
-                .find()
-                .add(SearchRestrictions.or(
-                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
@@ -182,8 +181,8 @@ public final class ProductionTrackingListenerService {
             stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
+                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
@@ -326,7 +325,8 @@ public final class ProductionTrackingListenerService {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId()
+                    .equals(product.getId())) {
                 return basicProductionCounting;
             }
         }
