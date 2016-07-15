@@ -119,10 +119,10 @@ public class ReservationService {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_RESERVATION);
     }
 
-    private boolean deletePreviousReservations(List<Entity> deliveredProducts) {
+    private boolean deletePreviousReservations(List<Entity> orderedOrDeliveredProducts) {
         int countReservations = 0;
-        for (Entity deliveredProduct : deliveredProducts) {
-            EntityList reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
+        for (Entity p : orderedOrDeliveredProducts) {
+            EntityList reservations = p.getHasManyField(DeliveredProductFields.RESERVATIONS);
             countReservations += reservations.size();
             reservations.stream().forEach(reservation -> {
                 reservation.getDataDefinition().delete(reservation.getId());
@@ -186,6 +186,22 @@ public class ReservationService {
         return quantity;
     }
 
+    public void deleteReservationsForOrderedProductIfChanged(Entity orderedProduct) {
+        if (orderedProduct.getId() != null) {
+            Entity orderedProductFromDB = orderedProduct.getDataDefinition().get(orderedProduct.getId());
+            List<String> fields = Arrays.asList(OrderedProductFields.ORDERED_QUANTITY, OrderedProductFields.PRODUCT, OrderedProductFields.ADDITIONAL_CODE);
+
+            for (String field : fields) {
+                if (notEquals(orderedProduct.getField(field), orderedProductFromDB.getField(field))) {
+                    if (deletePreviousReservations(Arrays.asList(orderedProductFromDB))) {
+                        orderedProduct.addGlobalMessage("deliveries.delivery.message.reservationsDeletedFromOrderedProduct");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     public void deleteReservationsForDeliveredProductIfChanged(Entity deliveredProduct) {
         if (deliveredProduct.getId() != null) {
             Entity deliveredProductFromDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
@@ -195,7 +211,7 @@ public class ReservationService {
             for (String field : fields) {
                 if (notEquals(deliveredProduct.getField(field), deliveredProductFromDB.getField(field))) {
                     if (deletePreviousReservations(Arrays.asList(deliveredProductFromDB))) {
-                        deliveredProduct.addGlobalMessage("deliveries.delivery.message.reservationsDeleted");
+                        deliveredProduct.addGlobalMessage("deliveries.delivery.message.reservationsDeletedFromDeliveredProduct");
                     }
                     break;
                 }

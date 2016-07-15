@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -50,9 +51,13 @@ public class OrderedProductHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private ReservationService reservationService;
+
     public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         calculateOrderedProductPricePerUnit(orderedProductDD, orderedProduct);
         calculateReservationQuantities(orderedProductDD, orderedProduct);
+        reservationService.deleteReservationsForOrderedProductIfChanged(orderedProduct);
     }
 
     public void calculateOrderedProductPricePerUnit(final DataDefinition orderedProductDD, final Entity orderedProduct) {
