@@ -24,16 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="documentPositionParameters"
+<model name="reservation"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <hasMany name="items" model="documentPositionParametersItem" joinField="parameters"/>
-        <boolean name="suggestResource" default="false"/>
-        <boolean name="draftMakesReservation" default="true"/>
+        <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <decimal name="quantity" required="true"/>
+        <belongsTo name="position" model="position"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersValidators"
-                       method="validatesWith"/>
+        <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onDelete"/>
+        <onSave class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onSave"/>
+        <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCreate"/>
+        <!--<onCopy class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCopy"/>-->
     </hooks>
 </model>

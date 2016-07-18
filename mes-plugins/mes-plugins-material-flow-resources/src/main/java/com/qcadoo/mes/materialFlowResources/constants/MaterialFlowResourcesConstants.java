@@ -57,4 +57,6 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM = "documentPositionParametersItem";
 
+    public static final String MODEL_RESERVATION = "reservation";
+
 }

@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
@@ -26,6 +27,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 
 @Repository
 public class DocumentPositionService {
@@ -44,6 +46,9 @@ public class DocumentPositionService {
 
     @Autowired
     private DocumentPositionResourcesHelper positionResourcesHelper;
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, DocumentPositionDTO position) {
@@ -64,10 +69,16 @@ public class DocumentPositionService {
 
     public void delete(Long id) {
         validator.validateBeforeDelete(id);
-
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("DELETE FROM materialflowresources_position WHERE id = :id ");
-        jdbcTemplate.update(queryBuilder.toString(), Collections.singletonMap("id", id));
+
+        String queryForDocumentId = "SELECT document_id, product_id, quantity FROM materialflowresources_position WHERE id = :id";
+        Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocumentId, params);
+        params.putAll(result);
+        reservationsService.deleteReservationFromDocumentPosition(params);
+        jdbcTemplate.update(queryBuilder.toString(), params);
     }
 
     public void create(DocumentPositionDTO documentPositionVO) {
@@ -82,12 +93,16 @@ public class DocumentPositionService {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String.format(
-                "INSERT INTO materialflowresources_position (%s, type, state) "
-                        + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id))",
-                keys, values);
+        String query = String.format("INSERT INTO materialflowresources_position (%s, type, state) "
 
-        jdbcTemplate.update(query, params);
+                + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
+                keys, values);
+        Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        if (positionId != null) {
+            params.put("id", positionId);
+            reservationsService.createReservationFromDocumentPosition(params);
+        }
     }
 
     public void update(Long id, DocumentPositionDTO documentPositionVO) {
@@ -100,6 +115,7 @@ public class DocumentPositionService {
                 + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
                 + "WHERE id = :id ", set);
 
+        reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);
     }
 
@@ -423,4 +439,5 @@ public class DocumentPositionService {
         // return addMethodOfDisposalCondition;
         return true;
     }
+
 }
