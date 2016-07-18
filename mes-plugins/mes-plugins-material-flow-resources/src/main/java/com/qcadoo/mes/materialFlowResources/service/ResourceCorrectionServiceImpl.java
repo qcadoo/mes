@@ -74,6 +74,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             correction.getDataDefinition().save(correction);
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
+            resource.setField(ResourceFields.IS_CORRECTED, true);
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource));
             Entity savedResource = resource.getDataDefinition().save(resource);
             if (savedResource.isValid()) {
