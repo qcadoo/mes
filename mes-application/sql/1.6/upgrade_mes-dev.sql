@@ -73,3 +73,11 @@ CREATE TABLE deliveries_deliveredproductmultiposition
 );
 
 -- end
+
+-- last touched 18.07.2016 by kasi
+
+ALTER TABLE qcadoosecurity_user ADD COLUMN factory_id bigint;
+ALTER TABLE qcadoosecurity_user
+  ADD CONSTRAINT user_factory_fkey FOREIGN KEY (factory_id)
+      REFERENCES basic_factory (id) DEFERRABLE;
+-- end
