@@ -275,6 +275,29 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+            final List<String> additionalUnitNames) {
+        fillUnitFields(view, productName, referenceNames);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
+        Entity product = productLookup.getEntity();
+
+        String additionalUnit = "";
+
+        if (product != null) {
+            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (additionalUnit == null) {
+                additionalUnit = product.getStringField(ProductFields.UNIT);
+            }
+        }
+
+        for (String additionalUnitName : additionalUnitNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(additionalUnitName);
+            field.setFieldValue(additionalUnit);
+            field.requestComponentUpdateState();
+        }
+    }
+
+    @Override
     public void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames) {
         String currency = currencyService.getCurrencyAlphabeticCode();
 
@@ -545,5 +568,4 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         showProduct.requestUpdate(true);
         window.requestRibbonRender();
     }
-
 }

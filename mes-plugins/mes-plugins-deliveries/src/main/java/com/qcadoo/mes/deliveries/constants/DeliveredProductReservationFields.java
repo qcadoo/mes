@@ -23,32 +23,15 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class OrderedProductFields {
+public final class DeliveredProductReservationFields {
 
-    private OrderedProductFields() {
-
+    private DeliveredProductReservationFields() {
     }
 
-    public static final String PRODUCT = "product";
-
-    public static final String DELIVERY = "delivery";
-
-    public static final String ORDERED_QUANTITY = "orderedQuantity";
-
+    public static final String DELIVERED_PRODUCT = "deliveredProduct";
+    public static final String LOCATION = "location";
+    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
     public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
-
-    public static final String CONVERSION = "conversion";
-
-    public static final String SUCCESSION = "succession";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String PRICE_PER_UNIT = "pricePerUnit";
-
-    public static final String TOTAL_PRICE = "totalPrice";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
-    public static final String RESERVATIONS = "reservations";
-
+    public static final String DELIVERED_QUANTITY_UNIT = "deliveredQuantityUnit";
+    public static final String ADDITIONAL_QUANTITY_UNIT = "additionalQuantityUnit";
 }

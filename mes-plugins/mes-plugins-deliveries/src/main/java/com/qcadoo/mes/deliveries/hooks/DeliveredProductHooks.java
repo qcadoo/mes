@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +46,17 @@ public class DeliveredProductHooks {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private ReservationService reservationService;
+
+    public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        reservationService.createDefaultReservationsForDeliveredProduct(deliveredProduct);
+    }
+    
+    public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
+    }
 
     public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         deliveriesService.calculatePricePerUnit(deliveredProduct, DeliveredProductFields.DELIVERED_QUANTITY);
