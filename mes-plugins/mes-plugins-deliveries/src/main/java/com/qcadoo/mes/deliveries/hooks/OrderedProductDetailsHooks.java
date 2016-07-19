@@ -51,9 +51,6 @@ public class OrderedProductDetailsHooks {
     @Autowired
     private DeliveriesService deliveriesService;
 
-    @Autowired
-    private NumberService numberService;
-
     public void fillUnitFields(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
         List<String> additionalUnitNames = Lists.newArrayList("additionalQuantityUnit");

@@ -36,7 +36,7 @@
 
         <windowTab name="mainTab">
             <component type="form" name="orderedProductReservationDetails" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3" rows="3" hasBorders="false">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="4" hasBorders="false">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="location" reference="location" field="location">
                             <option type="column" name="name" fields="name" link="true" />
@@ -49,7 +49,7 @@
                             <criteriaModifier
                                 class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                 method="showWarehousesOnly"/>
-                        </component>
+                        </component>                    
                     </layoutElement>   
                     
                     <layoutElement column="1" row="2" width="3">                        
@@ -85,8 +85,7 @@
                                 </component>                        
                             </layoutElement> 
                         </component>
-                    </layoutElement>             
-                    
+                    </layoutElement>     
                     
                 </component>
 				
@@ -97,5 +96,7 @@
     </component>
 
     <hooks>
+        <beforeRender
+            class="com.qcadoo.mes.deliveries.hooks.OrderedProductReservationDetailsHooks" method="onBeforeRender" />
     </hooks>
 </view>

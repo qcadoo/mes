@@ -37,7 +37,7 @@
 
         <windowTab name="mainTab">
             <component type="form" name="deliveredProductReservationDetails" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3" rows="3" hasBorders="false">
+                <component type="gridLayout" name="gridLayout" columns="3" rows="4" hasBorders="false">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="location" reference="location" field="location">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -48,8 +48,8 @@
                             <option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>
 
@@ -92,7 +92,7 @@
                                 </component>
                             </layoutElement>
                         </component>
-                    </layoutElement>
+                    </layoutElement>    
 
 
                 </component>
@@ -103,6 +103,9 @@
         </windowTab>
     </component>
 
+
     <hooks>
+        <beforeRender
+            class="com.qcadoo.mes.deliveries.hooks.DeliveredProductReservationDetailsHooks" method="onBeforeRender" />
     </hooks>
 </view>
