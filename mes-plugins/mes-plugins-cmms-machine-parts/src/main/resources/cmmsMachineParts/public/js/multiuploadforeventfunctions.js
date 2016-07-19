@@ -43,7 +43,7 @@ $(function() {
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
-											"Część niezapisana",
+											"Zdarzenie niezapisane",
 											"Pominięto wgranie pliku: "
 													+ file.name);
 									} else {
