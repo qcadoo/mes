@@ -126,18 +126,17 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void toggleCorrectionFields(ViewDefinitionState view, Entity entity) {
-        Entity correctedProductionTracking = getCorrentedPtoductionTracking(entity);
+        Entity correctedProductionTracking = getCorrectedProductionTracking(entity);
         if (correctedProductionTracking != null) {
             view.getComponentByReference("order").setEnabled(false);
             view.getComponentByReference("productionLine").setEnabled(false);
             view.getComponentByReference("technologyOperationComponent").setEnabled(false);
-            view.getComponentByReference("isCorrection").setFieldValue(true);
             view.getComponentByReference("corrects").setVisible(true);
             view.getComponentByReference("corrects").setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
         }
     }
 
-    private Entity getCorrentedPtoductionTracking(Entity entity) {
+    private Entity getCorrectedProductionTracking(Entity entity) {
         return entity.getDataDefinition().find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, entity))
                 .uniqueResult();
     }

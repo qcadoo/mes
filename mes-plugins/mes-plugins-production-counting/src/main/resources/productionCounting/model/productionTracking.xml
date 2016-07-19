@@ -60,7 +60,7 @@
 		<belongsTo name="division" model="division" plugin="basic"/>
 
 		<belongsTo name="correction" model="productionTracking"/>
-		<boolean name="isCorrection" default="false" persistent="false"/>
+		<boolean name="isCorrection" default="false"/>
 		<string name="corrects" persistent="false"/>
 
 		<date name="shiftStartDay"/>

@@ -73,6 +73,8 @@ public final class ProductionTrackingFields {
 
     public static final String CORRECTION = "correction";
 
+    public static final String IS_CORRECTION = "isCorrection";
+
     public static final String STATE_CHANGES = "stateChanges";
 
 }

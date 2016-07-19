@@ -46,4 +46,7 @@ ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigin
 ALTER TABLE productioncounting_productiontracking
   ADD CONSTRAINT productiontracking_productiontracking_c FOREIGN KEY (correction_id)
       REFERENCES productioncounting_productiontracking (id) DEFERRABLE;
+
+ALTER TABLE productioncounting_productiontracking ADD COLUMN iscorrection boolean;
+ALTER TABLE productioncounting_productiontracking ALTER COLUMN iscorrection SET DEFAULT false;
 -- end

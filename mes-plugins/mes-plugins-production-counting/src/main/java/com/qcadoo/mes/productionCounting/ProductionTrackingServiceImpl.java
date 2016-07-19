@@ -169,6 +169,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
         Entity correctingProductionTracking = productionTrackingDD.copy(productionTracking.getId()).get(0);
         productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
+        correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, true);
+        productionTrackingDD.save(correctingProductionTracking);
 
         changeState(productionTracking, ProductionTrackingState.CORRECTED);
     }
@@ -181,6 +183,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         if (correctedProductionTracking != null) {
             correctedProductionTracking.setField(ProductionTrackingFields.CORRECTION, null);
             changeState(correctedProductionTracking, ProductionTrackingState.ACCEPTED);
+            correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
+            correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
         }
     }
 }
