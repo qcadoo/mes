@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -129,8 +130,13 @@ public class DocumentValidators {
         }
     }
 
-    public boolean validateAvailableQuantities(final Entity document) {
-
+    public boolean validateAvailableQuantities(final Entity document) {     
+        String state = document.getStringField(DocumentFields.STATE);
+        
+        if(DocumentState.ACCEPTED.getStringValue().equals(state)){
+            return true;
+        }  
+        
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
@@ -144,7 +150,6 @@ public class DocumentValidators {
             }
         }
         return true;
-
     }
 
     private Map<Long, Entity> groupProductsInPositions(final List<Entity> positions) {
