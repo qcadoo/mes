@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.OrderedProductFields.PRODUCT;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +63,9 @@ public class OrderedProductHooks {
 
     public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD.find()
-                .add(SearchRestrictions.belongsTo(DELIVERY, orderedProduct.getBelongsToField(DELIVERY)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, orderedProduct.getBelongsToField(PRODUCT)));
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE)));
 
         if (orderedProduct.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProduct.getId()));
@@ -78,7 +76,7 @@ public class OrderedProductHooks {
         if (orderedProductFromDB == null) {
             return true;
         } else {
-            orderedProduct.addError(orderedProductDD.getField(PRODUCT), "deliveries.orderedProduct.error.productAlreadyExists");
+            orderedProduct.addError(orderedProductDD.getField(OrderedProductFields.PRODUCT), "deliveries.orderedProduct.error.productAlreadyExists");
 
             return false;
         }
