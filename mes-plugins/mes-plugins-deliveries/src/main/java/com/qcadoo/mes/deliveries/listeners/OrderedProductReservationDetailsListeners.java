@@ -55,7 +55,7 @@ public class OrderedProductReservationDetailsListeners {
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
         Object orderedQuantityRawValue = orderedProductReservation.getField(OrderedProductReservationFields.ORDERED_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(orderedQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Either<Exception, Optional<BigDecimal>> tryParseOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(orderedQuantityRawValue == null ? "" : orderedQuantityRawValue.toString(), LocaleContextHolder.getLocale());
 
         if (conversion != null && tryParseOrderedQuantity.isRight() && tryParseOrderedQuantity.getRight().isPresent()) {
             BigDecimal orderedQuantity = tryParseOrderedQuantity.getRight().get();
@@ -74,7 +74,7 @@ public class OrderedProductReservationDetailsListeners {
 
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         Object additionalQuantityRawValue = orderedProductReservation.getField(OrderedProductReservationFields.ADDITIONAL_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(additionalQuantityRawValue == null ? "" : additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
 
         if (conversion != null && tryParseAdditionalQuantity.isRight() && tryParseAdditionalQuantity.getRight().isPresent()) {
             BigDecimal additionalQuantity = tryParseAdditionalQuantity.getRight().get();

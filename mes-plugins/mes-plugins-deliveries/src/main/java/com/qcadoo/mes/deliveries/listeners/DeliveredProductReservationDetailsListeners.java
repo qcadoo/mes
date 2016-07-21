@@ -53,7 +53,7 @@ public class DeliveredProductReservationDetailsListeners {
         Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         Object deliveredQuantityRawValue = deliveredProductReservation.getField(DeliveredProductFields.DELIVERED_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseDeliveredQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(deliveredQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Either<Exception, Optional<BigDecimal>> tryParseDeliveredQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(deliveredQuantityRawValue == null ? "" : deliveredQuantityRawValue.toString(), LocaleContextHolder.getLocale());
         if (conversion != null && tryParseDeliveredQuantity.isRight() && tryParseDeliveredQuantity.getRight().isPresent()) {
             BigDecimal deliveredQuantity = tryParseDeliveredQuantity.getRight().get();
             FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference(DeliveredProductReservationFields.ADDITIONAL_QUANTITY);
@@ -71,7 +71,7 @@ public class DeliveredProductReservationDetailsListeners {
 
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         Object additionalQuantityRawValue = deliveredProductReservation.getField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(additionalQuantityRawValue == null ? "" : additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
         if (conversion != null && tryParseAdditionalQuantity.isRight() && tryParseAdditionalQuantity.getRight().isPresent()) {
             BigDecimal additionalQuantity = tryParseAdditionalQuantity.getRight().get();
             FieldComponent deliveredQuantity = (FieldComponent) view.getComponentByReference(DeliveredProductReservationFields.DELIVERED_QUANTITY);
