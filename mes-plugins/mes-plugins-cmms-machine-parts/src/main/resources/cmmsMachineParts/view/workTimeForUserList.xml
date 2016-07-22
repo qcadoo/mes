@@ -36,13 +36,13 @@
         <component type="grid" name="grid" reference="grid">
 
             <option type="column" name="username" fields="username"/>
-            <option type="column" name="startDate" fields="startDate" width="120"/>
-            <option type="column" name="finishDate" fields="finishDate" width="120"/>
+            <option type="column" name="startDate" fields="startDate" width="130"/>
+            <option type="column" name="finishDate" fields="finishDate" width="130"/>
             <option type="column" name="duration" fields="duration" width="70"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
             <option type="column" name="eventNumber" fields="eventNumber" width="50"/>
             <option type="column" name="objectNumber" fields="objectNumber"/>
-            <option type="column" name="eventType" fields="eventType"/>
+            <option type="column" name="eventType" fields="eventType" width="70"/>
             <option type="column" name="actionName" fields="actionName"/>
 
             <option type="searchable"
