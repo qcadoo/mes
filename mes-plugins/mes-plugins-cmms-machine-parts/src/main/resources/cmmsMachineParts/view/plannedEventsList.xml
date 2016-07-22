@@ -75,6 +75,12 @@
                            action="#{window}.fireEvent(printXlsReport);"
                            state="disabled"/>
             </group>
+
+            <group name="workTime">
+                <bigButton name="showWorkTime" icon="genealogyIcon24.png"
+                           action="#{window}.fireEvent(showWorkTime);"
+                           state="enabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="contextTab" reference="contextTab">
@@ -553,6 +559,8 @@
         <listener event="printXlsReport" method="printXlsReport"
                   class="com.qcadoo.mes.cmmsMachineParts.listeners.EventsListListeners"/>
 
+        <listener event="showWorkTime" method="showWorkTime"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.WorkTimeForUserListeners"/>
 
     </component>
 
