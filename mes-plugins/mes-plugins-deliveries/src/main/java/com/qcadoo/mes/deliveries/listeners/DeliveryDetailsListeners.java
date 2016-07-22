@@ -345,6 +345,7 @@ public class DeliveryDetailsListeners {
             relatedDelivery.setField(DeliveryFields.RELATED_DELIVERY, delivery);
             relatedDelivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             relatedDelivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+            relatedDelivery.setField(DeliveryFields.LOCATION, delivery.getBelongsToField(DeliveryFields.LOCATION));
 
             relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
         }
@@ -433,6 +434,10 @@ public class DeliveryDetailsListeners {
                     .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY))
                     .subtract(deliveredReservedQuantity);
             if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal orderedQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+                if (orderedQuantity.compareTo(quantity) < 0) {
+                    quantity = orderedQuantity;
+                }
                 Entity newReservation = dataDefinitionService
                         .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION)
                         .create();
