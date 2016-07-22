@@ -40,13 +40,23 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -175,8 +185,8 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity createDeliveredProductMultiEntity(Entity delivery, ViewDefinitionState view) {
-        Entity deliveredProductMulti = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
+        Entity deliveredProductMulti = dataDefinitionService
+                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
         deliveredProductMulti.setField("delivery", delivery);
         List<Entity> orderedProducts = getSelectedProducts(view);
         List<Entity> deliveredProducts = ((GridComponent) view.getComponentByReference("deliveredProducts")).getEntities();
@@ -211,8 +221,8 @@ public class DeliveryDetailsListeners {
         Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
         BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantity(orderedProduct,
                 additionalCode, deliveredProducts);
-        BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY).subtract(
-                alreadyAssignedQuantity);
+        BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY)
+                .subtract(alreadyAssignedQuantity);
         if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
             quantity = BigDecimal.ZERO;
         }
@@ -328,8 +338,8 @@ public class DeliveryDetailsListeners {
         if (!orderedProducts.isEmpty()) {
             relatedDelivery = deliveriesService.getDeliveryDD().create();
 
-            relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(
-                    DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
+            relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService
+                    .generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
             relatedDelivery.setField(DeliveryFields.SUPPLIER, delivery.getBelongsToField(DeliveryFields.SUPPLIER));
             relatedDelivery.setField(DeliveryFields.DELIVERY_DATE, new Date());
             relatedDelivery.setField(DeliveryFields.RELATED_DELIVERY, delivery);
@@ -354,12 +364,12 @@ public class DeliveryDetailsListeners {
             if (deliveredProduct == null) {
                 BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
 
-                newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity));
+                newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity, null));
             } else {
                 BigDecimal orderedQuantity = getLackQuantity(orderedProduct, deliveredProduct);
 
                 if (BigDecimal.ZERO.compareTo(orderedQuantity) < 0) {
-                    newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity));
+                    newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity, deliveredProduct));
                 }
             }
         }
@@ -378,27 +388,84 @@ public class DeliveryDetailsListeners {
     }
 
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
-        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(deliveredProduct.getBelongsToField(
-                DeliveredProductFields.PRODUCT).getId()));
+        Entity orderedAdditionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
+        Entity deliveredAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+        boolean additionalCodesMatching = orderedAdditionalCode == null && deliveredAdditionalCode == null;
+        if (orderedAdditionalCode != null && deliveredAdditionalCode != null) {
+            additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
+        }
+        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId()
+                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId())) && additionalCodesMatching;
     }
 
-    private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity) {
+    private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity,
+            final Entity deliveredProduct) {
         Entity newOrderedProduct = deliveriesService.getOrderedProductDD().create();
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-        BigDecimal conversion = getConversion(product);
+        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
         newOrderedProduct.setField(OrderedProductFields.PRODUCT, product);
+        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_CODE,
+                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
         newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
                 orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
         newOrderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, BigDecimalUtils.convertNullToZero(orderedQuantity)
-                .multiply(conversion, numberService.getMathContext()));
+        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
+                BigDecimalUtils.convertNullToZero(orderedQuantity).multiply(conversion, numberService.getMathContext()));
 
+        newOrderedProduct.setField(OrderedProductFields.RESERVATIONS,
+                copyReservations(orderedProduct, newOrderedProduct, deliveredProduct));
         return newOrderedProduct;
+    }
+
+    private List<Entity> copyReservations(final Entity orderedProduct, final Entity newOrderedProduct,
+            final Entity deliveredProduct) {
+        List<Entity> newReservations = Lists.newArrayList();
+        List<Entity> oldReservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+        for (Entity oldReservation : oldReservations) {
+            Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
+            BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
+            BigDecimal quantity = BigDecimalUtils
+                    .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY))
+                    .subtract(deliveredReservedQuantity);
+            if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+                Entity newReservation = dataDefinitionService
+                        .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION)
+                        .create();
+                BigDecimal conversion = getConversion(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+                newReservation.setField(OrderedProductReservationFields.LOCATION,
+                        oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION));
+                newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT,
+                        oldReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT));
+                newReservation.setField(OrderedProductReservationFields.ORDERED_QUANTITY, quantity);
+                newReservation.setField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT,
+                        oldReservation.getStringField(OrderedProductReservationFields.ORDERED_QUANTITY_UNIT));
+                newReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY,
+                        BigDecimalUtils.convertNullToZero(quantity).multiply(conversion, numberService.getMathContext()));
+                newReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT,
+                        oldReservation.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
+                newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT, newOrderedProduct);
+                newReservations.add(newReservation);
+            }
+        }
+        return newReservations;
+    }
+
+    private BigDecimal getDeliveredReservedQuantity(final Entity deliveredProduct, final Entity location) {
+        BigDecimal quantity = BigDecimal.ZERO;
+        if (deliveredProduct != null) {
+            List<Entity> reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
+            quantity = reservations.stream()
+                    .filter(reservation -> reservation.getBelongsToField(DeliveredProductReservationFields.LOCATION).getId()
+                            .equals(location.getId()))
+                    .map(reservation -> reservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+        }
+        return quantity;
     }
 
     public BigDecimal getConversion(Entity product) {
@@ -408,8 +475,8 @@ public class DeliveryDetailsListeners {
             return BigDecimal.ONE;
         }
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
