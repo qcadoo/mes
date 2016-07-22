@@ -118,6 +118,7 @@ CREATE OR REPLACE VIEW cmmsmachineparts_worktimeforuserdto_internal AS
 CREATE OR REPLACE VIEW cmmsmachineparts_worktimeforuserdto AS
     select row_number() OVER () as id, internal.*
     from cmmsmachineparts_worktimeforuserdto_internal internal;
+    
 -- end
 -- last touched 26.07.2016 by kasi
 INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (18, 'productName', false, true, 18, 1);
