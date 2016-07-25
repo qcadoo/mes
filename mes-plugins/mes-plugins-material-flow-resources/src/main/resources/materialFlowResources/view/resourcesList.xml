@@ -44,7 +44,7 @@
                     expression="#product['number']" link="true" width="100"/>
             <option type="column" name="productName" fields="product"
                     expression="#product['name']" link="true" width="110"/>
-            <option type="column" name="quantity" fields="quantity" width="30"/>
+            <option type="column" name="quantity" fields="quantity" width="100"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product['unit']" width="50"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
@@ -76,6 +76,8 @@
             <option type="correspondingViewInModal" value="true"/>
             <option type="correspondingComponent" value="form"/>
 
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="quantity,quantityInAdditionalUnit,price"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
         </component>

@@ -765,6 +765,9 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
+                <option type="footerRow" value="true"/>
+                <option type="columnsToSummaryTime" value="duration"/>
+
                 <option type="fixedHeight" value="true"/>
 
             </component>
