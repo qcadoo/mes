@@ -77,7 +77,7 @@
             <option type="correspondingComponent" value="form"/>
 
             <option type="footerRow" value="true"/>
-            <option type="columnsToSummary" value="quantity,quantityInAdditionalUnit,price"/>
+            <option type="columnsToSummary" value="quantity,quantityInAdditionalUnit,value"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
         </component>
