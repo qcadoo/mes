@@ -320,6 +320,10 @@ public class DeliveryDetailsListeners {
 
             Long relatedDeliveryId = relatedDelivery.getId();
 
+            if (relatedDeliveryId == null) {
+                deliveryForm.addMessage("deliveries.delivery.relatedDelivery.invalidDelivery", MessageType.FAILURE);
+                return;
+            }
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", relatedDeliveryId);
 
@@ -427,17 +431,20 @@ public class DeliveryDetailsListeners {
             final Entity deliveredProduct) {
         List<Entity> newReservations = Lists.newArrayList();
         List<Entity> oldReservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+        BigDecimal availableQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
         for (Entity oldReservation : oldReservations) {
             Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
             BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
+
             BigDecimal quantity = BigDecimalUtils
-                    .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY))
-                    .subtract(deliveredReservedQuantity);
+                    .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
+
+            if (availableQuantity.compareTo(quantity) < 0) {
+                quantity = availableQuantity;
+            }
+            quantity = quantity.subtract(deliveredReservedQuantity);
             if (quantity.compareTo(BigDecimal.ZERO) > 0) {
-                BigDecimal orderedQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-                if (orderedQuantity.compareTo(quantity) < 0) {
-                    quantity = orderedQuantity;
-                }
+
                 Entity newReservation = dataDefinitionService
                         .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION)
                         .create();
@@ -455,6 +462,7 @@ public class DeliveryDetailsListeners {
                         oldReservation.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
                 newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT, newOrderedProduct);
                 newReservations.add(newReservation);
+                availableQuantity = availableQuantity.subtract(quantity);
             }
         }
         return newReservations;
