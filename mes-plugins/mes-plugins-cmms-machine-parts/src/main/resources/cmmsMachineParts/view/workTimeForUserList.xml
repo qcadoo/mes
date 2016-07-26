@@ -46,14 +46,14 @@
             <option type="column" name="actionName" fields="actionName"/>
 
             <option type="searchable"
-                    value="username,startDate,finishDate,duration,eventNumber,objectNumber,eventType,actionName"/>
+                    value="username,startDate,finishDate,eventNumber,objectNumber,eventType,actionName"/>
             <option type="orderable"
-                    value="username,startDate,finishDate,duration,eventNumber,objectNumber,eventType,actionName"/>
+                    value="username,startDate,finishDate,eventNumber,objectNumber,eventType,actionName"/>
 
-            <option type="multiselect" value="true"/>
+            <option type="multiselect" value="false"/>
             <option type="footerRow" value="true"/>
             <option type="columnsToSummaryTime" value="duration"/>
-            <option type="order" column="username" direction="asc"/>
+            <option type="order" column="startDate" direction="asc"/>
             <option type="fullscreen" value="true"/>
         </component>
         <component type="checkbox" name="initialized" reference="initialized" defaultVisible="false"/>
