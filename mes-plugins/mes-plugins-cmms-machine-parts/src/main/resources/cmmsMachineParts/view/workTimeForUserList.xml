@@ -51,7 +51,8 @@
                     value="username,startDate,finishDate,duration,eventNumber,objectNumber,eventType,actionName"/>
 
             <option type="multiselect" value="true"/>
-
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummaryTime" value="duration"/>
             <option type="order" column="username" direction="asc"/>
             <option type="fullscreen" value="true"/>
         </component>
