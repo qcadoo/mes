@@ -82,6 +82,44 @@ ALTER TABLE qcadoosecurity_user
       REFERENCES basic_factory (id) DEFERRABLE;
 -- end
 
+-- work time for users view
+-- last touched 20.07.2016 by kama
+
+CREATE SEQUENCE cmmsMachineParts_workTimeForUserDto_id_seq;
+
+
+CREATE OR REPLACE VIEW cmmsmachineparts_worktimeforuserdto_internal AS
+    select u.username as username, swt.effectiveexecutiontimestart as startdate, swt.effectiveexecutiontimeend as finishdate,
+        swt.labortime as duration, me.number as eventNumber, me.type as eventtype,
+        coalesce(s.number, w.number, p.number, d.number, f.number) as objectnumber, null as actionname
+    from cmmsmachineparts_staffworktime swt
+        join qcadoosecurity_user u on swt.worker_id = u.staff_id
+        join cmmsmachineparts_maintenanceevent me on me.id = swt.maintenanceevent_id
+        join basic_factory f on me.factory_id = f.id
+        join basic_division d on me.division_id = d.id
+        left join productionlines_productionline p on me.productionline_id = p.id
+        left join basic_workstation w on me.workstation_id = w.id
+        left join basic_subassembly s on me.subassembly_id = s.id
+    union all
+    select u.username as username, per.startdate as startdate, per.finishdate as finishdate,
+        per.duration as duration, pe.number as eventnumber, pe.type as eventtype,
+        coalesce(s.number, w.number, p.number, d.number, f.number) as objectnumber, a.name as actionname
+    from cmmsmachineparts_plannedeventrealization per
+        join qcadoosecurity_user u on per.worker_id = u.staff_id
+        join cmmsmachineparts_plannedevent pe on pe.id = per.plannedevent_id
+        join basic_factory f on pe.factory_id = f.id
+        join basic_division d on pe.division_id = d.id
+        left join productionlines_productionline p on pe.productionline_id = p.id
+        left join basic_workstation w on pe.workstation_id = w.id
+        left join basic_subassembly s on pe.subassembly_id = s.id
+        left join cmmsmachineparts_actionforplannedevent afpe on per.action_id = afpe.id
+        left join cmmsmachineparts_action a on afpe.action_id = a.id;
+
+CREATE OR REPLACE VIEW cmmsmachineparts_worktimeforuserdto AS
+    select row_number() OVER () as id, internal.*
+    from cmmsmachineparts_worktimeforuserdto_internal internal;
+
+-- end
 -- last touched 26.07.2016 by kasi
 INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (18, 'productName', false, true, 18, 1);
 -- end
