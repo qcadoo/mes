@@ -81,3 +81,7 @@ ALTER TABLE qcadoosecurity_user
   ADD CONSTRAINT user_factory_fkey FOREIGN KEY (factory_id)
       REFERENCES basic_factory (id) DEFERRABLE;
 -- end
+
+-- last touched 26.07.2016 by kasi
+INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (18, 'productName', false, true, 18, 1);
+-- end
