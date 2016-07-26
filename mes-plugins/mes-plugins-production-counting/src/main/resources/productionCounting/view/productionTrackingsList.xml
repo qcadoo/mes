@@ -210,9 +210,9 @@
 			<option type="order" column="number" direction="desc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
 			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
 
 			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
 			<option type="correspondingComponent" value="form"/>
