@@ -31,8 +31,8 @@ public class WorkTimeForUserListHooks {
 
         Map<String, String> filters = Maps.newHashMap();
         DateTime currentDate = getCurrentDate();
-        filters.put("startDate", ">" + currentDate.toString("yyyy-MM-dd hh:mm:ss"));
-        filters.put("finishDate", "<" + currentDate.plusDays(1).toString("yyyy-MM-dd hh:mm:ss"));
+        filters.put("startDate", ">=" + currentDate.toString("yyyy-MM-dd hh:mm:ss"));
+        filters.put("finishDate", "=<" + currentDate.plusDays(1).toString("yyyy-MM-dd hh:mm:ss"));
         filters.put("username", currentUser.getStringField("userName"));
         grid.setFilters(filters);
     }
