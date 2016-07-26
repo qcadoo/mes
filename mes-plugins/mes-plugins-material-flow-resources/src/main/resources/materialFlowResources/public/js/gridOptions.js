@@ -370,6 +370,24 @@ function updateFieldValue(field, value, rowId) {
     return element.val(value);
 }
 
+function clearSelect(field,rowId)
+{
+        var productInput = $('#product');
+        var selector = null;
+
+        if (productInput.length) {
+            // edit form
+            selector = $('#' + field);
+
+        } else {
+            // edit inline
+            selector = $('#' + rowId + '_' + field);
+        }
+    selector = $('#' + rowId + '_' + field);
+    $(selector).empty();
+   $(selector).val([]);
+}
+
 function onSelectLookupRow(row, recordName) {
     if (row) {
         var code = row.code || row.number;
@@ -789,6 +807,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
                         updateFieldValue('resource', '', getRowIdFromElement(t));
                         updateFieldValue('batch', '', getRowIdFromElement(t));
+                        updateFieldValue('productName', '', getRowIdFromElement(t));
+                        updateFieldValue('unit', '', getRowIdFromElement(t));
+                        updateFieldValue('givenunit', '', getRowIdFromElement(t));
+                        updateFieldValue('givenquantity', '', getRowIdFromElement(t));
+                        updateFieldValue('conversion', '', getRowIdFromElement(t));
+
+                        clearSelect('givenunit', getRowIdFromElement(t));
                     }
                     clearAdditionalCode(t.val(), getRowIdFromElement(t));
                 }, 500));
