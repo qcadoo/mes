@@ -3,25 +3,36 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p/>
  * This file is part of Qcadoo.
- *
+ * <p/>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.productionCounting.states.listener;
+
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
@@ -33,7 +44,11 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -45,16 +60,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
 
 @Service
 public final class ProductionTrackingListenerService {
@@ -127,8 +132,8 @@ public final class ProductionTrackingListenerService {
                 ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
                 && !checkIfUsedQuantitiesWereFilled(productionTracking,
                         ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
-            stateChangeContext
-                    .addValidationError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            stateChangeContext.addValidationError(
+                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -170,8 +175,8 @@ public final class ProductionTrackingListenerService {
             stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
+                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
@@ -314,12 +319,18 @@ public final class ProductionTrackingListenerService {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId()
+                    .equals(product.getId())) {
                 return basicProductionCounting;
             }
         }
 
         throw new IllegalStateException("No basic production counting found for product");
+    }
+
+    public void onCorrected(StateChangeContext stateChangeContext) {
+        Entity productionTracking = stateChangeContext.getOwner();
+        updateBasicProductionCounting(productionTracking, new Substraction());
     }
 
     private interface Operation {
