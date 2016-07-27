@@ -165,7 +165,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public void correct(Entity productionTracking) {
+    public Entity correct(Entity productionTracking) {
         DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
         Entity correctingProductionTracking = productionTrackingDD.copy(productionTracking.getId()).get(0);
         productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
@@ -173,6 +173,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         productionTrackingDD.save(correctingProductionTracking);
 
         changeState(productionTracking, ProductionTrackingState.CORRECTED);
+        return correctingProductionTracking;
     }
 
     @Override

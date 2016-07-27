@@ -288,8 +288,9 @@ public class ProductionTrackingDetailsListeners {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity productionRecord = productionRecordForm.getPersistedEntityWithIncludedFormValues();
         if (productionRecord != null) {
-            productionTrackingService.correct(productionRecord);
-            productionRecordForm.setEntity(productionRecord.getDataDefinition().get(productionRecord.getId()));
+            Long id = productionTrackingService.correct(productionRecord).getId();
+            String url = "../page/productionCounting/productionTrackingDetails.html";
+            view.redirectTo(url, false, true, ImmutableMap.of("form.id", id));
         }
     }
 }
