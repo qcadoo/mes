@@ -363,6 +363,10 @@
 										} else if (state == "03declined") {
 											toggleEditable(false);
 											enableDeleteButton();
+										} else if (state == "04corrected") {
+											toggleEditable(false);
+											acceptState.disable();
+											cancelState.disable();
 										} else{
 											QCD.error("Unknown state - '" + state + "'");
 											toggleEditable(true);
