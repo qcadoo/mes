@@ -117,7 +117,12 @@ public class ProductionTrackingDetailsHooks {
 
     private void toggleCorrectButton(ViewDefinitionState view, Entity entity) {
         String state = entity.getStringField(ProductionTrackingFields.STATE);
-        if (ProductionTrackingStateStringValues.ACCEPTED.equals(state)) {
+        Entity order = entity.getBelongsToField(ProductionTrackingFields.ORDER);
+        String orderState = order.getStringField(OrderFields.STATE);
+        boolean productionTrackingIsAccepted = ProductionTrackingStateStringValues.ACCEPTED.equals(state);
+        boolean orderIsNotFinished = !OrderStateStringValues.COMPLETED.equals(orderState)
+                && !OrderStateStringValues.ABANDONED.equals(orderState);
+        if (productionTrackingIsAccepted && orderIsNotFinished) {
             WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
             RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
             correctButton.setEnabled(true);
