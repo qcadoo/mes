@@ -1,4 +1,4 @@
--- reservations
+﻿-- reservations
 -- last touched 28.06.2016 by kama
 
 CREATE TABLE materialflowresources_reservation
@@ -120,6 +120,38 @@ CREATE OR REPLACE VIEW cmmsmachineparts_worktimeforuserdto AS
     from cmmsmachineparts_worktimeforuserdto_internal internal;
 
 -- end
+
 -- last touched 26.07.2016 by kasi
 INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (18, 'productName', false, true, 18, 1);
+-- end
+
+-- delivery reservation tables
+-- last touched 27.07.2016 by kama
+CREATE TABLE deliveries_deliveredproductreservation
+(
+  id bigint NOT NULL,
+  deliveredproduct_id bigint,
+  location_id bigint,
+  deliveredquantity numeric(12,5),
+  additionalquantity numeric(12,5),
+  CONSTRAINT deliveries_deliveredproductreservation_pkey PRIMARY KEY (id),
+  CONSTRAINT deliveredproductreservation_deliveredproduct_fkey FOREIGN KEY (deliveredproduct_id)
+      REFERENCES deliveries_deliveredproduct (id) DEFERRABLE,
+  CONSTRAINT deliveredproductreservation_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
+);
+
+CREATE TABLE deliveries_orderedproductreservation
+(
+  id bigint NOT NULL,
+  orderedproduct_id bigint,
+  location_id bigint,
+  orderedquantity numeric(12,5),
+  additionalquantity numeric(12,5),
+  CONSTRAINT deliveries_orderedproductreservation_pkey PRIMARY KEY (id),
+  CONSTRAINT orderedproductreservation_orderedproduct_fkey FOREIGN KEY (orderedproduct_id)
+      REFERENCES deliveries_orderedproduct (id) DEFERRABLE,
+  CONSTRAINT orderedproductreservation_location_fkey FOREIGN KEY (location_id)
+      REFERENCES materialflow_location (id) DEFERRABLE
+);
 -- end
