@@ -23,15 +23,19 @@
  */
 package com.qcadoo.mes.productionCounting;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
@@ -40,6 +44,7 @@ import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -168,12 +173,60 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     public Entity correct(Entity productionTracking) {
         DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
         Entity correctingProductionTracking = productionTrackingDD.copy(productionTracking.getId()).get(0);
+        copyOtherFields(productionTracking, correctingProductionTracking);
         productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
         correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, true);
         productionTrackingDD.save(correctingProductionTracking);
 
         changeState(productionTracking, ProductionTrackingState.CORRECTED);
         return correctingProductionTracking;
+    }
+
+    private void copyOtherFields(Entity productionTracking, Entity correctingProductionTracking) {
+        correctingProductionTracking.setField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES,
+                productionTracking.getDecimalField(ProductionTrackingFields.EXECUTED_OPERATION_CYCLES));
+
+        copyStaffWorkTimes(productionTracking, correctingProductionTracking);
+        copyTrackingOperationProductInComponents(productionTracking, correctingProductionTracking);
+        copyTrackingOperationProductOutComponents(productionTracking, correctingProductionTracking);
+    }
+
+    private void copyStaffWorkTimes(Entity productionTracking, Entity correctingProductionTracking) {
+        EntityList staffWorkTimes = productionTracking.getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES);
+        List<Entity> copiedStaffWorkTimes = Lists.newArrayList();
+        for (Entity staffWorkTime : staffWorkTimes) {
+            Entity newStaffWorkTime = staffWorkTime.getDataDefinition().copy(staffWorkTime.getId()).get(0);
+            newStaffWorkTime.setField(StaffWorkTimeFields.LABOR_TIME,
+                    staffWorkTime.getIntegerField(StaffWorkTimeFields.LABOR_TIME));
+            newStaffWorkTime.setField(StaffWorkTimeFields.PRODUCTION_RECORD, correctingProductionTracking);
+            copiedStaffWorkTimes.add(newStaffWorkTime);
+        }
+        correctingProductionTracking.setField(ProductionTrackingFields.STAFF_WORK_TIMES, copiedStaffWorkTimes);
+
+        correctingProductionTracking.setField(ProductionTrackingFields.MACHINE_TIME,
+                productionTracking.getField(ProductionTrackingFields.MACHINE_TIME));
+        correctingProductionTracking.setField(ProductionTrackingFields.LABOR_TIME,
+                productionTracking.getField(ProductionTrackingFields.LABOR_TIME));
+    }
+
+    private void copyTrackingOperationProductInComponents(Entity productionTracking, Entity correctingProductionTracking) {
+        EntityList trackingOperationProductInComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+        List<Entity> copiedTrackingOperationProductInComponents = Lists.newArrayList();
+        trackingOperationProductInComponents.forEach(t -> copiedTrackingOperationProductInComponents.add(t.getDataDefinition()
+                .copy(t.getId()).get(0)));
+        correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
+                copiedTrackingOperationProductInComponents);
+    }
+
+    private void copyTrackingOperationProductOutComponents(Entity productionTracking, Entity correctingProductionTracking) {
+        EntityList trackingOperationProductOutComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+        List<Entity> copiedTrackingOperationProductOutComponents = Lists.newArrayList();
+        trackingOperationProductOutComponents.forEach(t -> copiedTrackingOperationProductOutComponents.add(t.getDataDefinition()
+                .copy(t.getId()).get(0)));
+        correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
+                copiedTrackingOperationProductOutComponents);
     }
 
     @Override
