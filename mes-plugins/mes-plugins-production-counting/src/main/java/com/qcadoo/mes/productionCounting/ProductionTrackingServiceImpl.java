@@ -195,10 +195,15 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         EntityList staffWorkTimes = productionTracking.getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES);
         List<Entity> copiedStaffWorkTimes = Lists.newArrayList();
         for (Entity staffWorkTime : staffWorkTimes) {
-            Entity newStaffWorkTime = staffWorkTime.getDataDefinition().copy(staffWorkTime.getId()).get(0);
+            Entity newStaffWorkTime = staffWorkTime.getDataDefinition().create();
+            newStaffWorkTime.setField(StaffWorkTimeFields.PRODUCTION_RECORD, correctingProductionTracking);
+            newStaffWorkTime.setField(StaffWorkTimeFields.WORKER, staffWorkTime.getField(StaffWorkTimeFields.WORKER));
+            newStaffWorkTime.setField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END,
+                    staffWorkTime.getField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END));
+            newStaffWorkTime.setField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START,
+                    staffWorkTime.getField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START));
             newStaffWorkTime.setField(StaffWorkTimeFields.LABOR_TIME,
                     staffWorkTime.getIntegerField(StaffWorkTimeFields.LABOR_TIME));
-            newStaffWorkTime.setField(StaffWorkTimeFields.PRODUCTION_RECORD, correctingProductionTracking);
             copiedStaffWorkTimes.add(newStaffWorkTime);
         }
         correctingProductionTracking.setField(ProductionTrackingFields.STAFF_WORK_TIMES, copiedStaffWorkTimes);
