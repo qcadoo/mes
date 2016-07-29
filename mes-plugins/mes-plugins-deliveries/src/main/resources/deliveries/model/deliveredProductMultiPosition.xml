@@ -29,6 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="deliveredProductMulti" model="deliveredProductMulti"/>
+		<decimal name="ordinal" persistent="false"/>
 
 		<belongsTo name="product" model="product" plugin="basic"/>
 		<decimal name="quantity" />

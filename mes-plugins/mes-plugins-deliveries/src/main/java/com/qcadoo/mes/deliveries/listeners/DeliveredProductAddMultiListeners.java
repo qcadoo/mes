@@ -235,7 +235,15 @@ public class DeliveredProductAddMultiListeners {
             LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
             if (additionalCodeComponent.getUuid().equals(state.getUuid())) {
                 recalculateQuantities(delivery, formEntity);
-                formComponent.setEntity(formEntity);
+
+                FieldComponent quantityComponent = formComponent.findFieldComponentByName("quantity");
+                quantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                        formEntity.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
+                quantityComponent.requestComponentUpdateState();
+                FieldComponent additionalQuantityComponent = formComponent.findFieldComponentByName("additionalQuantity");
+                additionalQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                        formEntity.getField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY), 0));
+                additionalQuantityComponent.requestComponentUpdateState();
             }
 
         }
@@ -256,26 +264,26 @@ public class DeliveredProductAddMultiListeners {
             if (productComponent.getUuid().equals(state.getUuid())) {
                 formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE, null);
                 recalculateQuantities(delivery, formEntity);
-            }
 
-            deliveredProductAddMultiHooks.boldRequired(formComponent);
-            deliveredProductAddMultiHooks.filterAdditionalCode(product, additionalCodeComponent);
-            if (product != null) {
-                String unit = product.getStringField(ProductFields.UNIT);
-                formEntity.setField(DeliveredProductMultiPositionFields.UNIT, unit);
-                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-                FieldComponent conversionComponent = formComponent.findFieldComponentByName("conversion");
-                if (additionalUnit != null) {
-                    conversionComponent.setEnabled(true);
-                    formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
-                    BigDecimal conversion = getConversion(product, unit, additionalUnit);
-                    formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
-                } else {
-                    conversionComponent.setEnabled(false);
-                    formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, BigDecimal.ONE);
-                    formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
+                deliveredProductAddMultiHooks.boldRequired(formComponent);
+                deliveredProductAddMultiHooks.filterAdditionalCode(product, additionalCodeComponent);
+                if (product != null) {
+                    String unit = product.getStringField(ProductFields.UNIT);
+                    formEntity.setField(DeliveredProductMultiPositionFields.UNIT, unit);
+                    String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+                    FieldComponent conversionComponent = formComponent.findFieldComponentByName("conversion");
+                    if (additionalUnit != null) {
+                        conversionComponent.setEnabled(true);
+                        formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
+                        BigDecimal conversion = getConversion(product, unit, additionalUnit);
+                        formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+                    } else {
+                        conversionComponent.setEnabled(false);
+                        formEntity.setField(DeliveredProductMultiPositionFields.CONVERSION, BigDecimal.ONE);
+                        formEntity.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
+                    }
+                    formComponent.setEntity(formEntity);
                 }
-                formComponent.setEntity(formEntity);
             }
         }
     }
@@ -292,9 +300,12 @@ public class DeliveredProductAddMultiListeners {
         BigDecimal conversion = BigDecimal.ONE;
         if (product != null) {
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-            String unit = product.getStringField(ProductFields.UNIT);
             if (StringUtils.isNotEmpty(additionalUnit)) {
-                conversion = getConversion(product, unit, additionalUnit);
+                conversion = formEntity.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
+                if (conversion == null) {
+                    String unit = product.getStringField(ProductFields.UNIT);
+                    conversion = getConversion(product, unit, additionalUnit);
+                }
             }
 
             BigDecimal orderedQuantity = deliveredProductMultiPositionService.findOrderedQuantity(delivery, product,

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -51,12 +52,17 @@ public class DeliveredProductAddMultiHooks {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
                 .getComponentByReference("deliveredProductMultiPositions");
         List<FormComponent> formComponents = deliveredProductMultiPositions.getFormComponents();
+        BigInteger ordinal = BigInteger.ONE;
         for (FormComponent formComponent : formComponents) {
             FieldComponent conversion = formComponent.findFieldComponentByName("conversion");
             LookupComponent productComponent = (LookupComponent) formComponent.findFieldComponentByName("product");
             FieldComponent unitComponent = formComponent.findFieldComponentByName("unit");
             FieldComponent additionalUnitComponent = formComponent.findFieldComponentByName("additionalUnit");
             LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
+            FieldComponent ordinalComponent = formComponent.findFieldComponentByName("ordinal");
+            ordinalComponent.setFieldValue(ordinal);
+            ordinalComponent.requestComponentUpdateState();
+            ordinal = ordinal.add(BigInteger.ONE);
             filterAdditionalCode(productComponent.getEntity(), additionalCodeComponent);
             String unit = (String) unitComponent.getFieldValue();
             String additionalUnit = (String) additionalUnitComponent.getFieldValue();
