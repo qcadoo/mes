@@ -281,7 +281,7 @@ public class DeliveryDetailsListeners {
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
-        BigDecimal conversion = deliveredProductDetailsHooks.getDefaultConversion(product);
+        BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
 
         if (copyQuantityAndPrice) {

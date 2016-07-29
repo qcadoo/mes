@@ -41,8 +41,10 @@ public class DeliveredProductMultiPositionService {
         BigDecimal alreadyAssignedQuantity = deliveredProducts
                 .stream()
                 .filter(p -> product.getId().equals(p.getBelongsToField(DeliveredProductFields.PRODUCT).getId())
-                        && additionalCodesTheSame(additionalCode, p))
-                .map(p -> p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                        && additionalCodesTheSame(additionalCode, p)).map(p -> {
+                    BigDecimal deliveredQuantity = p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
+                    return deliveredQuantity == null ? BigDecimal.ZERO : deliveredQuantity;
+                }).reduce(BigDecimal.ZERO, BigDecimal::add);
         return alreadyAssignedQuantity;
     }
 

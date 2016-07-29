@@ -96,7 +96,13 @@
                 		<components>
 	                		<component type="gridLayout" name="positions"
 	                			columns="11" rows="2">
-	                			<layoutElement column="1" row="1" width="4">
+	                			<layoutElement column="1" row="1">
+	                                <component type="input" name="ordinal" field="ordinal"
+	                                           defaultEnabled="never" hasLabel="true" reference="ordinal">
+	                                    <option type="textRepresentationOnDisabled" value="true" />
+	                                </component>
+	                            </layoutElement>
+	                			<layoutElement column="2" row="1" width="4">
 	                                <component type="lookup" name="product" field="product"
 	                                           reference="product">
 										<option type="column" name="name" fields="name" link="true"/>
@@ -110,16 +116,7 @@
  											class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners" />
                                     </component>
 	                            </layoutElement>
-	                			<layoutElement column="5" row="1" width="4">
-	                                <component type="calendar" name="expirationDate" field="expirationDate"
-	                                           reference="expirationDate"/>
-	                            </layoutElement>
-	                			<layoutElement column="9" row="1" width="3">
-	                                <component type="checkbox" name="isWaste" field="isWaste"
-	                                           reference="isWaste"/>
-	                            </layoutElement>
-	                            
-	                            <layoutElement column="1" row="2" width="3">
+	                            <layoutElement column="6" row="1" width="3">
 	                            	<component type="lookup" name="additionalCode" reference="additionalCode"
                                                            field="additionalCode">
 			        
@@ -136,23 +133,28 @@
 			                                method="restrictAdditionalCodesForProduct" />
 			                        </component>
 	                            </layoutElement>
-	                            <layoutElement column="4" row="2"  width="2">
-                                <component type="input" name="quantity"
-                                           reference="quantity" field="quantity">
-                                    <option type="alignment" value="right" />
-                                    <option type="labelWidth" value="45" />
-                                    <listener event="onInputChange"
-                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
-                                           method="quantityChanged"/>
-                                </component>
+	                			<layoutElement column="9" row="1" width="3">
+	                                <component type="calendar" name="expirationDate" field="expirationDate"
+	                                           reference="expirationDate"/>
 	                            </layoutElement>
-	                            <layoutElement column="6" row="2">
+	                            
+	                            <layoutElement column="2" row="2"  width="2">
+	                                <component type="input" name="quantity"
+	                                           reference="quantity" field="quantity">
+	                                    <option type="alignment" value="right" />
+	                                    <option type="labelWidth" value="45" />
+	                                    <listener event="onInputChange"
+	                                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
+	                                           method="quantityChanged"/>
+	                                </component>
+	                            </layoutElement>
+	                            <layoutElement column="4" row="2">
 	                                <component type="input" name="unit" field="unit"
 	                                           defaultEnabled="never" hasLabel="false" reference="unit">
 	                                    <option type="textRepresentationOnDisabled" value="true" />
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="7" row="2"  width="2">
+	                            <layoutElement column="5" row="2"  width="2">
 	                                <component type="input" name="additionalQuantity"
 	                                           reference="additionalQuantity" field="additionalQuantity">
 	                                    <option type="alignment" value="right" />
@@ -162,13 +164,13 @@
                                            method="additionalQuantityChanged"/>
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="9" row="2">
+	                            <layoutElement column="7" row="2">
 	                                <component type="input" name="additionalUnit" field="additionalUnit"
 	                                           defaultEnabled="never" hasLabel="false" reference="additionalUnit">
 	                                    <option type="textRepresentationOnDisabled" value="true" />
 	                                </component>
 	                            </layoutElement>
-	                            <layoutElement column="10" row="2"  width="2">
+	                            <layoutElement column="8" row="2"  width="2">
 	                                <component type="input" name="conversion"
 	                                           reference="conversion" field="conversion">
 	                                    <option type="alignment" value="right" />
@@ -178,7 +180,10 @@
                                            method="quantityChanged"/>
 	                                </component>
 	                            </layoutElement>
-                            
+	                			<layoutElement column="10" row="2" width="2">
+	                                <component type="checkbox" name="isWaste" field="isWaste"
+	                                           reference="isWaste"/>
+	                            </layoutElement>
 	                		</component>
                 		</components>
 						<listener event="onAddRow" method="onAddRow"
