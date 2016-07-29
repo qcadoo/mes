@@ -56,11 +56,30 @@ public class DocumentValidators {
 
     public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
         validateDocumentName(dataDefinition, entity);
-        hasWarehouses(dataDefinition, entity);
+        boolean hasWarehouses = hasWarehouses(dataDefinition, entity);
         // validateAvailableQuantities(entity);
 
+        if (hasWarehouses) {
+            hasDifferentWarehouses(dataDefinition, entity);
+        }
         validateWarehouseChanged(dataDefinition, entity);
         return entity.isValid();
+    }
+
+    public boolean hasDifferentWarehouses(final DataDefinition dataDefinition, final Entity entity) {
+        DocumentType documentType = DocumentType.of(entity);
+        if (DocumentType.TRANSFER.equals(documentType)) {
+            Entity locationFrom = entity.getBelongsToField(DocumentFields.LOCATION_FROM);
+            Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
+            if (locationFrom == null || locationTo == null) {
+                return true;
+            }
+            if (locationFrom.getId().equals(locationTo.getId())) {
+                entity.addGlobalError("materialFlow.error.document.warehouse.sameForTransfer");
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean hasWarehouses(final DataDefinition dataDefinition, final Entity entity) {
@@ -130,13 +149,13 @@ public class DocumentValidators {
         }
     }
 
-    public boolean validateAvailableQuantities(final Entity document) {     
+    public boolean validateAvailableQuantities(final Entity document) {
         String state = document.getStringField(DocumentFields.STATE);
-        
-        if(DocumentState.ACCEPTED.getStringValue().equals(state)){
+
+        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
             return true;
-        }  
-        
+        }
+
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
