@@ -38,32 +38,35 @@
 
         <windowTab name="mainTab">
             <component type="form" name="documentPositionParameters" reference="form">
-                       
-                <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource" />
+
+                <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource"/>
+                <component type="checkbox" name="draftMakesReservation" field="draftMakesReservation"
+                           reference="draftMakesReservation"/>
                 <component type="grid" name="grid" reference="grid" source="#{form}.items">
-                    <option type="column" name="name" fields="name" link="true" />
-                    <option type="column" name="checked" fields="checked" width="50" />
-                    <option type="column" name="editable" fields="editable" width="50" />
+                    <option type="column" name="name" fields="name" link="true"/>
+                    <option type="column" name="checked" fields="checked" width="50"/>
+                    <option type="column" name="editable" fields="editable" width="50"/>
 
-                    <option type="searchable" value="" />
-                    <option type="orderable" value="" />
+                    <option type="searchable" value=""/>
+                    <option type="orderable" value=""/>
 
-                    <option type="order" column="name" direction="asc" />                    
+                    <option type="order" column="name" direction="asc"/>
 
-                    <option type="correspondingView" value="materialFlowResources/documentPositionParametersItemDetails"/>
+                    <option type="correspondingView"
+                            value="materialFlowResources/documentPositionParametersItemDetails"/>
                     <option type="correspondingComponent" value="form"/>
                     <option type="correspondingViewInModal" value="true"/>
                     <option type="order" column="ordering" direction="desc"/>
 
                     <option type="creatable" value="false"/>
                     <option type="deletable" value="false"/>
-                    <option type="multiselect" value="false"/>  
-                    <option type="fullscreen" value="true" />
+                    <option type="multiselect" value="false"/>
+                    <option type="fullscreen" value="true"/>
                     <option type="fixedHeight" value="true"/>
                 </component>
-                
-                <option type="header" value="true" />
-                <option type="expression" value="" />
+
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
             </component>
         </windowTab>
 
@@ -71,7 +74,7 @@
 
     <hooks>
         <beforeRender
-            class="com.qcadoo.mes.materialFlowResources.hooks.ParametersMFRHooks"
-            method="onBeforeRender"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParametersMFRHooks"
+                method="onBeforeRender"/>
     </hooks>
 </view>

@@ -1,12 +1,12 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.qcadoo.mes.basic.SearchAttribute;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
 
 public class DocumentPositionDTO {
 
@@ -17,6 +17,8 @@ public class DocumentPositionDTO {
     private Integer number;
 
     private String product;
+
+    private String productName;
 
     private String additionalCode;
 
@@ -87,6 +89,14 @@ public class DocumentPositionDTO {
 
     public void setProduct(String product) {
         this.product = product;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public String getAdditionalCode() {

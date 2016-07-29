@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
@@ -64,6 +65,9 @@ public class DeliveryHooks {
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private ReservationService reservationService;
 
     public void onCreate(final DataDefinition deliveryDD, final Entity delivery) {
         setInitialState(delivery);
@@ -134,6 +138,10 @@ public class DeliveryHooks {
 
     private boolean isLocationIsWarehouse(final Entity location) {
         return ((location != null) && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
+    }
+
+    public boolean validate(final DataDefinition deliveryDD, final Entity delivery) {
+        return reservationService.validateDeliveryAgainstReservations(delivery);
     }
 
 }

@@ -72,6 +72,12 @@
                 </bigButton>
             </group>
 
+            <group name="workTime">
+                <bigButton name="showWorkTime" icon="genealogyIcon24.png"
+                           action="#{window}.fireEvent(showWorkTime);"
+                           state="enabled"/>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -613,7 +619,8 @@
             </component>
         </windowTab>
 
-
+        <listener event="showWorkTime" method="showWorkTime"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.WorkTimeForUserListeners"/>
     </component>
     <hooks>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"

@@ -47,6 +47,12 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "product/{number}")
+    public ProductDTO getProductForProductNumber(@PathVariable String number) {
+        return documentPositionRepository.getProductForProductNumber(number);
+    }
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.PUT)
     public void create(@RequestBody DocumentPositionDTO documentPositionVO) {
         documentPositionRepository.create(documentPositionVO);

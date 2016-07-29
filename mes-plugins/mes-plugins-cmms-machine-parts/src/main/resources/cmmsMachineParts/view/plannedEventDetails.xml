@@ -70,6 +70,12 @@
                 </bigButton>
             </group>
 
+            <group name="workTime">
+                <bigButton name="showWorkTime" icon="genealogyIcon24.png"
+                           action="#{window}.fireEvent(showWorkTime);"
+                           state="enabled"/>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -765,6 +771,9 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
+                <option type="footerRow" value="true"/>
+                <option type="columnsToSummaryTime" value="duration"/>
+
                 <option type="fixedHeight" value="true"/>
 
             </component>
@@ -886,6 +895,9 @@
                 </layoutElement>
             </component>
         </windowTab>
+
+        <listener event="showWorkTime" method="showWorkTime"
+                  class="com.qcadoo.mes.cmmsMachineParts.listeners.WorkTimeForUserListeners"/>
     </component>
     <hooks>
 

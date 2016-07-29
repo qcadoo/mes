@@ -225,7 +225,6 @@ input[type="number"] {
     background-color: #f5f5f5 !important; 
     border: solid #cccccc 1px;
     border-bottom: solid #e8e8e8 1px;
-    border-right: 0;
 }
 
 .error-grid {

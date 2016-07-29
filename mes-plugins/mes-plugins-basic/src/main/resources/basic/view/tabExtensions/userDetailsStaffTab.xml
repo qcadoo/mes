@@ -29,23 +29,40 @@
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
                     plugin="qcadooUsers" view="userDetails">
 
-	<windowTab name="staffTab" reference="staffTab">
-		<component type="gridLayout" name="staffGridLayout"
-		           columns="3" rows="1" hasBorders="false">
-			<layoutElement column="1" row="1">
-				<component type="lookup" name="staff" reference="staff"
-				           field="#{form}.staff">
+    <windowTab name="staffTab" reference="staffTab">
+        <component type="gridLayout" name="staffGridLayout"
+                   columns="3" rows="2" hasBorders="false">
 
-					<option type="searchable" value="name" />
-					<option type="orderable" value="name" />
+            <layoutElement column="1" row="1">
+                <component type="lookup" name="staff" reference="staff"
+                           field="#{form}.staff">
 
-					<option type="expression"
-					        value="#name + ' ' + #surname" />
-					<option type="fieldCode" value="surname" />
+                    <option type="searchable" value="name"/>
+                    <option type="orderable" value="name"/>
 
-				</component>
-			</layoutElement>
-		</component>
-	</windowTab>
+                    <option type="expression"
+                            value="#name + ' ' + #surname"/>
+                    <option type="fieldCode" value="surname"/>
+
+                </component>
+            </layoutElement>
+
+            <layoutElement column="1" row="2">
+                <component type="lookup" name="factory" field="#{form}.factory"
+                           reference="factory">
+                    <option type="column" name="name" fields="name"/>
+                    <option type="column" name="city" fields="city"/>
+
+                    <option type="searchable" value="name,city,number"/>
+                    <option type="orderable" value="name,city,number"/>
+
+                    <option type="expression" value="#number + ' - ' + #name"/>
+                    <option type="fieldCode" value="number"/>
+
+                </component>
+            </layoutElement>
+
+        </component>
+    </windowTab>
 
 </windowTabExtension>

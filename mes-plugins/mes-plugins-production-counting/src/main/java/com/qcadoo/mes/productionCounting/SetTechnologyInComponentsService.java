@@ -2,7 +2,6 @@ package com.qcadoo.mes.productionCounting;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,13 +112,16 @@ public class SetTechnologyInComponentsService {
 
         if (masterTechnology != null) {
             EntityTree operationComponents = masterTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
             boolean isSet = operationComponents.getRoot()
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0)
                     .getBooleanField(OperationProductOutComponentFields.SET);
+
             if (isSet) {
                 return Optional.of(masterTechnology);
             }
         }
+
         return Optional.empty();
     }
 

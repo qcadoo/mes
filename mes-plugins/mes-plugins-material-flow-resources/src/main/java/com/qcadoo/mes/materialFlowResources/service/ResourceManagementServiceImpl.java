@@ -77,6 +77,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Autowired
     private ResourceStockService resourceStockService;
 
+    @Autowired
+    private ReservationsService reservationsService;
+
     public ResourceManagementServiceImpl() {
 
     }
@@ -411,7 +414,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!enoughResources) {
             addDocumentError(document, warehouse, errorMessage);
         } else {
+            deleteReservations(document);
             document.setField(DocumentFields.POSITIONS, generatedPositions);
+        }
+    }
+
+    private void deleteReservations(Entity document) {
+
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
+
+            reservationsService.deleteReservationFromDocumentPosition(position);
         }
     }
 
@@ -570,8 +583,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
+        } else {
+            deleteReservations(document);
         }
 
+    }
+
+    private void updateReservations(Entity document) {
+
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        for (Entity position : positions) {
+            reservationsService.updateReservationFromDocumentPosition(position);
+        }
     }
 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
