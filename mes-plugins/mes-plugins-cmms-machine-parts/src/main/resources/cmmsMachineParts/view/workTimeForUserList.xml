@@ -1,0 +1,71 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="workTimeForUserList" modelName="workTimeForUserDto" defaultAuthorizationRole="ROLE_MAINTENANCE">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group template="navigation" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+        </ribbon>
+
+        <component type="grid" name="grid" reference="grid">
+
+            <option type="column" name="username" fields="username"/>
+            <option type="column" name="startDate" fields="startDate" width="130"/>
+            <option type="column" name="finishDate" fields="finishDate" width="130"/>
+            <option type="column" name="duration" fields="duration" width="70"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+            <option type="column" name="eventNumber" fields="eventNumber" width="50"/>
+            <option type="column" name="objectNumber" fields="objectNumber"/>
+            <option type="column" name="eventType" fields="eventType" width="70"/>
+            <option type="column" name="actionName" fields="actionName"/>
+
+            <option type="searchable"
+                    value="username,startDate,finishDate,eventNumber,objectNumber,eventType,actionName"/>
+            <option type="orderable"
+                    value="username,startDate,finishDate,eventNumber,objectNumber,eventType,actionName"/>
+
+            <option type="multiselect" value="false"/>
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummaryTime" value="duration"/>
+            <option type="order" column="startDate" direction="asc"/>
+            <option type="fullscreen" value="true"/>
+        </component>
+        <component type="checkbox" name="initialized" reference="initialized" defaultVisible="false"/>
+
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.WorkTimeForUserListHooks"
+                      method="fillDefaultFilters"/>
+    </hooks>
+
+</view>

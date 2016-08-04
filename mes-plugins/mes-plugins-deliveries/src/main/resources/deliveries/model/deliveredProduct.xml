@@ -25,37 +25,49 @@
 
 -->
 <model name="deliveredProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="delivery" model="delivery" required="true" />
-		<belongsTo name="product" model="product" plugin="basic"
-			required="true" />
-		<decimal name="deliveredQuantity">
-			<validatesRange from="0" />
-		</decimal>
-		<decimal name="damagedQuantity">
-			<validatesRange from="0" />
-		</decimal>
-		<decimal name="pricePerUnit">
-			<validatesRange from="0" />
-		</decimal>
-		<decimal name="totalPrice" >
-			<validatesRange from="0" />
-		</decimal>
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="delivery" model="delivery" required="true" />
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true" />
+        <decimal name="deliveredQuantity">
+            <validatesRange from="0" />
+        </decimal>
+        <decimal name="damagedQuantity">
+            <validatesRange from="0" />
+        </decimal>
+        <decimal name="pricePerUnit">
+            <validatesRange from="0" />
+        </decimal>
+        <decimal name="totalPrice" >
+            <validatesRange from="0" />
+        </decimal>
 
-		<belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
-		<dictionary name="palletType" dictionary="typeOfPallet" />
-		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"  />
-		<belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-		<priority name="succession" scope="delivery" />
-	</fields>
-	<hooks>
-		<onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" 
-			method="calculateDeliveredProductPricePerUnit"/>
-		<validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-			method="checkIfDeliveredProductAlreadyExists" />
-		<validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-			method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
-	</hooks>
+        <belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
+        <dictionary name="palletType" dictionary="typeOfPallet" />
+        <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"  />
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
+		
+        <decimal name="additionalQuantity">
+            <validatesRange from="0" />
+        </decimal>
+        <decimal name="conversion" required="true">
+            <validatesRange from="0" />
+        </decimal>
+        <boolean name="isWaste"/>
+		
+        <dictionary name="additionalUnit" dictionary="units"/>
+
+        <priority name="succession" scope="delivery" />
+        <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
+                 model="deliveredProductReservation" plugin="deliveries" copyable="true" />
+    </fields>
+    <hooks>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="calculateDeliveredProductPricePerUnit"/>
+        <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="onCreate"/>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"  method="onSave"/>
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredProductAlreadyExists" />
+        <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="checkIfDeliveredQuantityIsLessThanDamagedQuantity" />
+    </hooks>
 </model>

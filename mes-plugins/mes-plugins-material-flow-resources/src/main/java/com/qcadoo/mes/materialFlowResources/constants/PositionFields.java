@@ -29,6 +29,8 @@ public final class PositionFields {
 
     }
 
+    public static final String RESERVATIONS = "reservations";
+
     public static final String DOCUMENT = "document";
 
     public static final String PRODUCT = "product";

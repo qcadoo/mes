@@ -27,7 +27,7 @@ public class MaintenanceEnentsNotification implements NotificationDataComponent 
     @Override
     public Optional<Notification> registerNotification() {
         if (securityService.hasCurrentUserRole("ROLE_EVENTS_NOTIFICATION")
-                && maintenanceEventService.existsNewEventsToNotification()) {
+                && maintenanceEventService.existsNewEventsToNotification(securityService.getCurrentUserId())) {
             Notification notification = new Notification(NotificationType.information, translationService.translate(
                     "cmmsMachineParts.maintenanceEvent.notification.newEventNotification", LocaleContextHolder.getLocale()),
                     true, true);

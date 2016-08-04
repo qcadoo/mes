@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -32,12 +35,21 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceStockFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class PositionValidators {
+
+    @Autowired
+    private ReservationsService reservationsService;
+
+    @Autowired
+    private ResourceStockService resourceStockService;
 
     public boolean checkAttributesRequirement(final DataDefinition dataDefinition, final Entity position) {
 
@@ -104,6 +116,48 @@ public class PositionValidators {
             }
         }
         return true;
+    }
+
+    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        return validateAvailableQuantity(dataDefinition, position, document);
+    }
+
+    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {        
+        String state = document.getStringField(DocumentFields.STATE);
+        
+        if(DocumentState.ACCEPTED.getStringValue().equals(state)){
+            return true;
+        }  
+        
+        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
+
+            BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
+            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+            if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
+                position.addError(dataDefinition.getField(PositionFields.QUANTITY),
+                        "documentGrid.error.position.quantity.notEnoughResources");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
+        BigDecimal oldQuantity = BigDecimal.ZERO;
+        if (position.getId() != null) {
+            Entity positionFromDB = positionDD.get(position.getId());
+            oldQuantity = positionFromDB.getDecimalField(PositionFields.QUANTITY);
+        }
+        BigDecimal availableQuantity = BigDecimal.ZERO;
+        Optional<Entity> resourceStock = resourceStockService.getResourceStockForProductAndLocation(
+                position.getBelongsToField(PositionFields.PRODUCT), document.getBelongsToField(DocumentFields.LOCATION_FROM));
+
+        if (resourceStock.isPresent()) {
+            availableQuantity = resourceStock.get().getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
+        }
+
+        return availableQuantity.add(oldQuantity);
     }
 
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {

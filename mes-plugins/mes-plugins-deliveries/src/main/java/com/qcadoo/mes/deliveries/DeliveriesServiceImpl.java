@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -58,6 +59,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -160,6 +162,10 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
     }
 
+    public DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+    }
+
     @Override
     public DataDefinition getOrderedProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT);
@@ -258,9 +264,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(productName);
-        Entity product = productLookup.getEntity();
+        Entity product = getProductEntityByComponentName(view, productName);
+        fillUnitFields(view, product, referenceNames);
+    }
 
+    public void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames) {
         String unit = "";
 
         if (product != null) {
@@ -272,6 +280,34 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+    }
+
+    @Override
+    public void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames,
+            final List<String> additionalUnitNames) {
+        fillUnitFields(view, product, referenceNames);
+        String additionalUnit = "";
+
+        if (product != null) {
+            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (additionalUnit == null) {
+                additionalUnit = product.getStringField(ProductFields.UNIT);
+            }
+        }
+
+        for (String additionalUnitName : additionalUnitNames) {
+            FieldComponent field = (FieldComponent) view.getComponentByReference(additionalUnitName);
+            field.setFieldValue(additionalUnit);
+            field.requestComponentUpdateState();
+        }
+    }
+
+    @Override
+    public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+            final List<String> additionalUnitNames) {
+        Entity product = getProductEntityByComponentName(view, productName);
+
+        fillUnitFields(view, product, referenceNames, additionalUnitNames);
     }
 
     @Override
@@ -546,4 +582,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         window.requestRibbonRender();
     }
 
+    private Entity getProductEntityByComponentName(final ViewDefinitionState view, final String productName) {
+        ComponentState productComponentState = view.getComponentByReference(productName);
+        Entity product = null;
+        if (productComponentState instanceof LookupComponent) {
+            product = ((LookupComponent) productComponentState).getEntity();
+        }
+
+        return product;
+    }
 }

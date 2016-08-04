@@ -37,252 +37,253 @@ public interface DeliveriesService {
 
     /**
      * Gets delivery
-     * 
+     *
      * @param deliveryId
-     * 
+     *
      * @return delivery
      */
     Entity getDelivery(final Long deliveryId);
 
     /**
      * Gets ordered product
-     * 
+     *
      * @param deliveredProductId
-     * 
+     *
      * @return ordered product
      */
     Entity getOrderedProduct(final Long deliveredProductId);
 
     /**
      * Gets delivered product
-     * 
+     *
      * @param deliveredProductId
-     * 
+     *
      * @return delivered product
      */
     Entity getDeliveredProduct(final Long deliveredProductId);
 
     /**
      * Gets company product
-     * 
+     *
      * @param companyProductId
-     * 
+     *
      * @return company product
      */
     Entity getCompanyProduct(final Long companyProductId);
 
     /**
      * Gets company products family
-     * 
+     *
      * @param companyProductsFamilyId
-     * 
+     *
      * @return company products family
      */
     Entity getCompanyProductsFamily(final Long companyProductsFamilyId);
 
     /**
      * Gets list of columns for deliveries
-     * 
+     *
      * @return list of columns for deliveries
      */
     List<Entity> getColumnsForDeliveries();
 
     /**
      * Gets list of columns for orders
-     * 
+     *
      * @return list of columns for orders
      */
     List<Entity> getColumnsForOrders();
 
     /**
      * Gets delivery data definition
-     * 
+     *
      * @return delivery data definition
      */
     DataDefinition getDeliveryDD();
 
     /**
      * Gets ordered product data definition
-     * 
+     *
      * @return ordered product data definition
      */
     DataDefinition getOrderedProductDD();
 
     /**
      * Gets delivered product data definition
-     * 
+     *
      * @return delivered product data definition
      */
     DataDefinition getDeliveredProductDD();
 
     /**
      * Gets company product data definition
-     * 
+     *
      * @return company product data definition
      */
     DataDefinition getCompanyProductDD();
 
     /**
      * Gets company products family data definition
-     * 
+     *
      * @return company products family data definition
      */
     DataDefinition getCompanyProductsFamilyDD();
 
     /**
      * Gets column for deliveries data definition
-     * 
+     *
      * @return column for deliveries data definition
      */
     DataDefinition getColumnForDeliveriesDD();
 
     /**
      * Gets columns for orders data definition
-     * 
+     *
      * @return column for orders data definition
      */
     DataDefinition getColumnForOrdersDD();
 
     /**
      * Gets product for given delivery product
-     * 
+     *
      * @return deliveryProduct
      */
     Entity getProduct(final DeliveryProduct deliveryProduct);
 
     /**
      * Gets description default value
-     * 
+     *
      * @return description
      */
     String getDescriptionDefaultValue();
 
     /**
      * Gets delivery address default value
-     * 
+     *
      * @return delivery adresss
      */
     String getDeliveryAddressDefaultValue();
 
     /**
      * Gets address from company
-     * 
-     * @param company
-     *            company
-     * 
+     *
+     * @param company company
+     *
      * @return adresss
      */
     String generateAddressFromCompany(final Entity company);
 
     /**
      * Fills unit fields
-     * 
-     * @param view
-     *            view
-     * @param productName
-     *            product lookup reference name
-     * @param referenceNames
-     *            reference names to unit fields
+     *
+     * @param view view
+     * @param productName product lookup reference name
+     * @param referenceNames reference names to unit fields
      */
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
     /**
+     * Fills unit fields
+     *
+     * @param view view
+     * @param product product entity
+     * @param referenceNames reference names to unit fields
+     * @param additionalUnitNames
+     */
+    void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames,
+            final List<String> additionalUnitNames);
+
+    /**
+     * Fills unit fields
+     *
+     * @param view view
+     * @param productName product lookup reference name
+     * @param referenceNames reference names to unit fields
+     * @param additionalUnitNames reference names to additional unit fields
+     */
+    void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
+            final List<String> additionalUnitNames);
+
+    /**
      * Fills currency fields
-     * 
-     * @param view
-     *            view
-     * @param referenceNames
-     *            reference names to unit fields
-     * @param delivery
-     *            entity need to get currency
+     *
+     * @param view view
+     * @param referenceNames reference names to unit fields
+     * @param delivery entity need to get currency
      */
     void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames);
 
     /**
      * Fills currency fields
-     * 
-     * @param view
-     *            view
-     * @param referenceNames
-     *            reference names to unit fields
+     *
+     * @param view view
+     * @param referenceNames reference names to unit fields
      */
     void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
     /**
      * Gets currency for delivery
-     * 
-     * @param delivery
-     *            delivery entity
-     * 
+     *
+     * @param delivery delivery entity
+     *
      * @return selected or default currency
      */
     String getCurrency(final Entity delivery);
 
     /**
      * Recalculate price form total price
-     * 
-     * @param view
-     *            view
-     * @param quantityFieldReference
-     *            quantity field reference
+     *
+     * @param view view
+     * @param quantityFieldReference quantity field reference
      */
     void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Recalculate price from price per unit
-     * 
-     * @param view
-     *            view
-     * @param quantityFieldReference
-     *            quantity field reference
+     *
+     * @param view view
+     * @param quantityFieldReference quantity field reference
      */
     void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Recalculate price
-     * 
-     * @param view
-     *            view
-     * @param quantityFieldReference
-     *            quantity field reference
+     *
+     * @param view view
+     * @param quantityFieldReference quantity field reference
      */
     void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Gets big decimal from field
-     * 
-     * @param fieldComponent
-     *            field component
-     * @param locale
-     *            locale
-     * 
+     *
+     * @param fieldComponent field component
+     * @param locale locale
+     *
      * @return BigDecimal
      */
     BigDecimal getBigDecimalFromField(final FieldComponent fieldComponent, final Locale locale);
 
     /**
      * Calculate price per unit
-     * 
-     * @param entity
-     *            entity
-     * @param quantityFieldName
-     *            quantity field name
+     *
+     * @param entity entity
+     * @param quantityFieldName quantity field name
      */
     void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
 
     /**
      * Filters currency column
-     * 
-     * @param columns
-     *            columnsForOrders, columnsForDeliveries
-     * 
+     *
+     * @param columns columnsForOrders, columnsForDeliveries
+     *
      * @return list of filtered columns
      */
     List<Entity> getColumnsWithFilteredCurrencies(final List<Entity> columns);
 
     /**
      * Disables show product button
-     * 
+     *
      * @param view
      */
     void disableShowProductButton(final ViewDefinitionState view);

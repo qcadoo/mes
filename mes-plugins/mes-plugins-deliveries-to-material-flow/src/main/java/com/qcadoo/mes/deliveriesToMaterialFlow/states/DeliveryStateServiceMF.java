@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -39,7 +38,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
@@ -53,8 +51,6 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
@@ -106,29 +102,14 @@ public class DeliveryStateServiceMF {
             BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 Entity product = product(deliveredProduct);
-                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-                if (StringUtils.isEmpty(additionalUnit)) {
-                    documentBuilder.addPosition(product, positionQuantity, positionQuantity,
-                            product.getStringField(ProductFields.UNIT), BigDecimal.ONE, price(deliveredProduct, currency),
-                            batch(deliveredProduct), productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
-                } else {
+                String additionalUnit = deliveredProduct.getStringField(DeliveredProductFields.ADDITIONAL_UNIT);
+                BigDecimal givenQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
+                BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
 
-                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
-                            product.getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
-                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-                    BigDecimal givenQuantity;
-                    BigDecimal conversion;
-                    if (unitConversions.isDefinedFor(additionalUnit)) {
-                        givenQuantity = unitConversions.convertTo(positionQuantity, additionalUnit);
-                        conversion = givenQuantity.divide(positionQuantity, numberService.getMathContext());
-                    } else {
-                        conversion = BigDecimal.ONE;
-                        givenQuantity = positionQuantity;
-                    }
-                    documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
-                            conversion, price(deliveredProduct, currency), batch(deliveredProduct),
-                            productionDate(deliveredProduct), expirationDate(deliveredProduct), null);
-                }
+                documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
+                        conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
+                        expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),
+                        palletNumber(deliveredProduct), typeOfPallet(deliveredProduct), additionalCode(deliveredProduct));
             }
         }
         Entity createdDocument = documentBuilder.setAccepted().build();
@@ -179,6 +160,22 @@ public class DeliveryStateServiceMF {
 
     private Date expirationDate(Entity deliveredProduct) {
         return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
+    }
+
+    private String typeOfPallet(Entity deliveredProduct) {
+        return deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
+    }
+
+    private Entity additionalCode(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+    }
+
+    private Entity palletNumber(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+    }
+
+    private Entity storageLocation(Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
     }
 
     private Date productionDate(Entity deliveredProduct) {

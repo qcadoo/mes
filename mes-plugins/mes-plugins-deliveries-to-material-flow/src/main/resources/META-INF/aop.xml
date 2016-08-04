@@ -32,4 +32,7 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.deliveriesToMaterialFlow.aop.DeliveredProductValidationAspect" />
 	</aspects>
+	<aspects>
+		<aspect name="com.qcadoo.mes.deliveriesToMaterialFlow.aop.DeliveredProductAddMultiListenersAspect" />
+	</aspects>
 </aspectj>

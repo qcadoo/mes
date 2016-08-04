@@ -400,6 +400,7 @@
         <view:view resource="view/faultTypeDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
+        <view:view-tab resource="view/tabExtensions/userProfile.xml"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>
@@ -409,6 +410,16 @@
             <model:hasMany plugin="qcadooSecurity" model="user"
                            joinField="staff" name="users" cascade="nullify"/>
         </model:model-field>
+
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:belongsTo model="factory" plugin="basic" name="factory"/>
+        </model:model-field>
+        <!-- For constraints sake -->
+        <model:model-field plugin="basic" model="factory">
+            <model:hasMany plugin="qcadooSecurity" model="user"
+                           joinField="factory" name="users" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-hook plugin="qcadooSecurity" model="user">
             <model:validatesWith
                     class="com.qcadoo.mes.basic.validators.UserValidators" method="onValidate"/>

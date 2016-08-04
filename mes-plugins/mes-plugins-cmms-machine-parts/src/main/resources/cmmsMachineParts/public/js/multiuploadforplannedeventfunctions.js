@@ -43,12 +43,12 @@ $(function() {
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
-											"Część niezapisana",
+											"Zdarzenie planowane niezapisane",
 											"Pominięto wgranie pliku: "
 													+ file.name);
 									} else {
 								    	showMessage("failure",
-												"Event is not saved",
+												"Planned event is not saved",
 												"Omitted file upload: "
 														+ file.name);
 									}

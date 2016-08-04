@@ -1,4 +1,4 @@
-﻿-- added corrections to production tracking
+-- added corrections to production tracking
 -- last touched 12.07 by pako
 ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
 ALTER TABLE productioncounting_productiontracking
@@ -29,6 +29,8 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 		division.number AS divisionnumber,
 		subcontractor.id::integer AS subcontractor_id,
 		subcontractor.name AS subcontractorname,
+        repairorderdto.id::integer AS repairorder_id,
+        repairorderdto.number AS repairordernumber,
 		productiontrackingcorrection.number AS correctionNumber
 	FROM productioncounting_productiontracking productiontracking
 	LEFT JOIN orders_order ordersorder
@@ -45,6 +47,8 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 		ON division.id = productiontracking.division_id
 	LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id
 	LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id; 
+	LEFT JOIN repairs_repairorderdto repairorderdto
+        ON repairorderdto.id = productiontracking.repairorder_id;
 
 ALTER TABLE productioncounting_productiontracking ADD COLUMN iscorrection boolean DEFAULT false;
 

@@ -28,9 +28,12 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -39,6 +42,12 @@ public class PositionModelHooks {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourceService;
+
+    @Autowired
+    private ReservationsService reservationsService;
+
+    @Autowired
+    private PositionValidators positionValidators;
 
     public void onSave(final DataDefinition positionDD, final Entity position) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
@@ -50,9 +59,16 @@ public class PositionModelHooks {
 
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         if (document != null) {
-            position.setField(PositionFields.TYPE, document.getField(DocumentFields.TYPE));
-            position.setField(PositionFields.STATE, document.getField(DocumentFields.STATE));
+            DocumentType type = DocumentType.of(document);
+            DocumentState state = DocumentState.of(document);
+
+            position.setField(PositionFields.TYPE, type.getStringValue());
+            position.setField(PositionFields.STATE, state.getStringValue());
         }
+
+        // if (positionValidators.validateAvailableQuantity(positionDD, position)) {
+        reservationsService.updateReservationFromDocumentPosition(position);
+        // }
 
     }
 
@@ -62,6 +78,9 @@ public class PositionModelHooks {
             Entity warehouse = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_TO);
             position.setField(PositionFields.ATRRIBUTE_VALUES,
                     materialFlowResourceService.getAttributesForPosition(position, warehouse));
+        }
+        if (positionValidators.validateAvailableQuantity(positionDD, position)) {
+            reservationsService.createReservationFromDocumentPosition(position);
         }
     }
 

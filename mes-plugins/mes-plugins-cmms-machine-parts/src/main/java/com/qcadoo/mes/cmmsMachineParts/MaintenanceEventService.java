@@ -34,6 +34,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -111,11 +112,23 @@ public class MaintenanceEventService {
         return Optional.of(plannedEvents.get(0));
     }
 
-    public boolean existsNewEventsToNotification() {
-        Entity entity = getMaintenanceEventDD().find()
+    public boolean existsNewEventsToNotification(Long currentUserId) {
+        Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
+                .get(currentUserId);
+        Entity factory = user.getBelongsToField("factory");
+
+       SearchCriteriaBuilder scb = getMaintenanceEventDD()
+                .find()
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), "countrows"))
-                .add(SearchRestrictions.eq(MaintenanceEventFields.SOUND_NOTIFICATIONS, true))
-                .addOrder(SearchOrders.asc("countrows")).setFirstResult(0).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(MaintenanceEventFields.SOUND_NOTIFICATIONS, true));
+
+        if (factory != null) {
+            scb = scb.add(SearchRestrictions.belongsTo("factory", factory));
+        }
+
+        scb = scb.addOrder(SearchOrders.asc("countrows"));
+
+        Entity entity = scb.setFirstResult(0).setMaxResults(1).uniqueResult();
         if (entity.getLongField("countrows") > 0) {
             return true;
         }

@@ -83,7 +83,6 @@
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
 
 
-
         <view:view resource="view/actionsList.xml"/>
         <view:view resource="view/actionDetails.xml"/>
 
@@ -136,6 +135,8 @@
 
         <view:view resource="view/sourceCostReports.xml"/>
 
+        <view:view resource="view/workTimeForUserList.xml"/>
+
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 
         <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
@@ -170,6 +171,8 @@
         <model:model model="maintenanceEventXLSHelper" resource="model/maintenanceEventXLSHelper.xml"/>
         <model:model model="timeUsageReportFilter" resource="model/timeUsageReportFilter.xml"/>
         <model:model model="sourceCostReportFilter" resource="model/sourceCostReportFilter.xml"/>
+
+        <model:model model="workTimeForUserDto" resource="model/workTimeForUserDto.xml"/>
 
         <!-- model extensions -->
 
@@ -249,8 +252,9 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="faultType">
-            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts" joinField="faultType" cascade="nullify"
-                     copyable="false"/>
+            <model:hasMany name="maintenanceEvents" model="maintenanceEvent" plugin="cmmsMachineParts"
+                           joinField="faultType" cascade="nullify"
+                           copyable="false"/>
         </model:model-field>
 
         <model:model-field plugin="states" model="message">

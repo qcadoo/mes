@@ -450,7 +450,7 @@
             </component>
         </windowTab>
 
-        <windowTab name="productsTab">
+        <windowTab name="productsTab" reference="productsTab">
             <component type="gridLayout" name="productsGridLayout"
                        columns="1" rows="2">
                 <layoutElement column="1" row="1">
@@ -536,7 +536,6 @@
                 </layoutElement>
             </component>
         </windowTab>
-
 
         <windowTab name="timeTab" reference="timeTab">
             <component type="gridLayout" name="timeGridLayout" columns="2"

@@ -370,6 +370,24 @@ function updateFieldValue(field, value, rowId) {
     return element.val(value);
 }
 
+function clearSelect(field,rowId)
+{
+        var productInput = $('#product');
+        var selector = null;
+
+        if (productInput.length) {
+            // edit form
+            selector = $('#' + field);
+
+        } else {
+            // edit inline
+            selector = $('#' + rowId + '_' + field);
+        }
+    selector = $('#' + rowId + '_' + field);
+    $(selector).empty();
+   $(selector).val([]);
+}
+
 function onSelectLookupRow(row, recordName) {
     if (row) {
         var code = row.code || row.number;
@@ -593,7 +611,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return element;
         }
 
+        function updateNameInGridByProduct(productNumber, _rowID) {
+            if (!productNumber) {
+                return;
+            }
+            $.get('/integration/rest/documentPositions/product/' + productNumber + ".html", function (product) {
+                updateFieldValue('productName', product.name, _rowID);
+            });
+        }
+
         var available_additionalunits = null;
+
         function updateUnitsInGridByProduct(productNumber, additionalUnitValue) {
             if (!productNumber) {
                 return;
@@ -766,6 +794,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $(this).data("timeout", setTimeout(function () {
                     conversionModified = false;
                     updateUnitsInGridByProduct(t.val());
+                    updateNameInGridByProduct(t.val(), getRowIdFromElement(t));
                     if (t.val()) {
                         if (!$scope.config.outDocument) {
                             updateStorageLocations(t.val(), getDocumentId());
@@ -778,6 +807,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
                         updateFieldValue('resource', '', getRowIdFromElement(t));
                         updateFieldValue('batch', '', getRowIdFromElement(t));
+                        updateFieldValue('productName', '', getRowIdFromElement(t));
+                        updateFieldValue('unit', '', getRowIdFromElement(t));
+                        updateFieldValue('givenunit', '', getRowIdFromElement(t));
+                        updateFieldValue('givenquantity', '', getRowIdFromElement(t));
+                        updateFieldValue('conversion', '', getRowIdFromElement(t));
+
+                        clearSelect('givenunit', getRowIdFromElement(t));
                     }
                     clearAdditionalCode(t.val(), getRowIdFromElement(t));
                 }, 500));
@@ -1306,6 +1342,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                 },
                 {
+                    name: 'productName',
+                    index: 'productName',
+                    editable: true,
+                    editoptions: {readonly: 'readonly'},
+                    searchoptions: {},
+                    formoptions: {
+                        rowpos: 3,
+                        colpos: 1
+                    }
+                },
+                {
                     name: 'additionalCode',
                     index: 'additionalCode',
                     editable: true,
@@ -1316,7 +1363,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: lookup_value
                     },
                     formoptions: {
-                        rowpos: 3,
+                        rowpos: 4,
                         colpos: 1
                     },
                 },
@@ -1333,7 +1380,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: input_value,
                     },
                     formoptions: {
-                        rowpos: 4,
+                        rowpos: 5,
                         colpos: 1
                     },
                 },
@@ -1345,7 +1392,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editoptions: {readonly: 'readonly'},
                     searchoptions: {},
                     formoptions: {
-                        rowpos: 5,
+                        rowpos: 6,
                         colpos: 1
                     },
                 },
@@ -1362,7 +1409,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: input_value
                     },
                     formoptions: {
-                        rowpos: 6,
+                        rowpos: 7,
                         colpos: 1
                     },
                 },
@@ -1379,7 +1426,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                     searchoptions: {},
                     formoptions: {
-                        rowpos: 7,
+                        rowpos: 8,
                         colpos: 1
                     },
                 },
@@ -1396,7 +1443,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         custom_value: input_value
                     },
                     formoptions: {
-                        rowpos: 8,
+                        rowpos: 9,
                         colpos: 1
                     },
                 },

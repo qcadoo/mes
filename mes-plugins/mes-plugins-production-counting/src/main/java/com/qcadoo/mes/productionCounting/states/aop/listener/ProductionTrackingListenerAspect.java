@@ -72,6 +72,7 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
 
     @Pointcut(ProductionTrackingStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
+
     }
 
     @RunInPhase(ProductionTrackingStateChangePhase.PRE_VALIDATION)

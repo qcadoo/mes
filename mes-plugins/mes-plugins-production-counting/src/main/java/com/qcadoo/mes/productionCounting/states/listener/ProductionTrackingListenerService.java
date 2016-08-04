@@ -64,8 +64,6 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 @Service
 public final class ProductionTrackingListenerService {
 
-    private static final String L_USED_QUANTITY = "usedQuantity";
-
     private static final String L_PRODUCT = "product";
 
     @Autowired
@@ -127,19 +125,26 @@ public final class ProductionTrackingListenerService {
 
     private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
         final Entity productionTracking = stateChangeContext.getOwner();
-
-        if (!checkIfUsedQuantitiesWereFilled(productionTracking,
-                ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS)
-                && !checkIfUsedQuantitiesWereFilled(productionTracking,
-                        ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)) {
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking)
+                && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
             stateChangeContext.addValidationError(
                     "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
-    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking, final String modelName) {
-        final SearchCriteriaBuilder searchBuilder = productionTracking.getHasManyField(modelName).find()
-                .add(SearchRestrictions.isNotNull(L_USED_QUANTITY));
+    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
+                .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY));
+
+        return (searchBuilder.list().getTotalNumberOfEntities() != 0);
+    }
+
+    public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
+        final SearchCriteriaBuilder searchBuilder = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
