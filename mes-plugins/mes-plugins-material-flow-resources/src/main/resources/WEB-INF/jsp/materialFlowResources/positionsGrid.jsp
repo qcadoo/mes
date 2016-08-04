@@ -52,11 +52,11 @@ String ctx = request.getContextPath();
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
     <script src="/qcadooView/public/js/crud/qcd/components/jqGrid/jquery.blockUI.js?ver=${buildNumber}"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/ui.jqgrid.css?ver=${buildNumber}" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/_jquery-ui-1.8.5.custom.css?ver=${buildNumber}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css?ver=${buildNumber}" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css?ver=${buildNumber}" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/custom.css?ver=${buildNumber}">
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/custom.css?ver=${buildNumber}">
 
         <script type="text/javascript">
             var QCD = QCD || {};

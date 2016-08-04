@@ -23,12 +23,12 @@ String ctx = request.getContextPath();
         </c:otherwise>
     </c:choose>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/ui.jqgrid.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/_jquery-ui-1.8.5.custom.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
     
-    <link rel="stylesheet" type="text/css" media="screen" href="/qcadooView/public/css/crud/components/jqGrid/custom.css">
+    <link rel="stylesheet" type="text/css" media="screen" href="/w">
 
     <script type="text/javascript">
         var QCD = QCD || {};
