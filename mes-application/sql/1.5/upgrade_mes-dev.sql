@@ -1,5 +1,9 @@
--- added corrections to production tracking
+﻿-- added corrections to production tracking
 -- last touched 12.07 by pako
+ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
+ALTER TABLE productioncounting_productiontracking
+  ADD CONSTRAINT productiontracking_productiontracking_c FOREIGN KEY (correction_id)
+      REFERENCES productioncounting_productiontracking (id) DEFERRABLE;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	SELECT
@@ -42,13 +46,8 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id
 	LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id; 
 
-ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
-ALTER TABLE productioncounting_productiontracking
-  ADD CONSTRAINT productiontracking_productiontracking_c FOREIGN KEY (correction_id)
-      REFERENCES productioncounting_productiontracking (id) DEFERRABLE;
+ALTER TABLE productioncounting_productiontracking ADD COLUMN iscorrection boolean DEFAULT false;
 
-ALTER TABLE productioncounting_productiontracking ADD COLUMN iscorrection boolean;
-ALTER TABLE productioncounting_productiontracking ALTER COLUMN iscorrection SET DEFAULT false;
 -- end
 
 -- removed corrected entries from production tracking grouped by product
