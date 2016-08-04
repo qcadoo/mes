@@ -142,3 +142,10 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdt
 		productiontracking.technologyoperationcomponent_id,
 		batch.number;
 -- end
+		
+-- new parameter
+-- last touched 4.08 by pako
+
+ALTER TABLE basic_parameter ADD COLUMN trackingcorrectionrecalculatepps boolean;
+
+-- end
