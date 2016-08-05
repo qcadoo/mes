@@ -1,4 +1,4 @@
--- added corrections to production tracking
+﻿-- added corrections to production tracking
 -- last touched 12.07 by pako
 ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
 ALTER TABLE productioncounting_productiontracking
@@ -46,7 +46,7 @@ CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	LEFT JOIN basic_division division
 		ON division.id = productiontracking.division_id
 	LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id
-	LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id; 
+	LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id
 	LEFT JOIN repairs_repairorderdto repairorderdto
         ON repairorderdto.id = productiontracking.repairorder_id;
 
@@ -149,6 +149,6 @@ CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdt
 -- new parameter
 -- last touched 4.08 by pako
 
-ALTER TABLE basic_parameter ADD COLUMN trackingcorrectionrecalculatepps boolean;
+ALTER TABLE basic_parameter ADD COLUMN trackingcorrectionrecalculatepps boolean DEFAULT false;
 
 -- end
