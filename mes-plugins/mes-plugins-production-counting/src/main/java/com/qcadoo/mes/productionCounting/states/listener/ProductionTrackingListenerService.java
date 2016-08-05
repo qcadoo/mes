@@ -217,6 +217,7 @@ public final class ProductionTrackingListenerService {
 
     private void setOrderDoneAndWastesQuantity(final Entity productionTracking, final Operation operation) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        order = order.getDataDefinition().get(order.getId());
         Entity mainProduct = order.getBelongsToField(OrderFields.PRODUCT);
         Entity mainTrackingOperationProductOutComponent = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
