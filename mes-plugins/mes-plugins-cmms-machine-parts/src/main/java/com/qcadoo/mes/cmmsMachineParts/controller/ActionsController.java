@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlannedEventService;
@@ -40,14 +39,7 @@ public class ActionsController {
             @RequestParam String sord, @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
             @RequestParam(value = "rows") int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
 
-        ActionForPlannedEventDTO action = new ActionForPlannedEventDTO(1L, "czynność", 1L, 1L, "Jan Kowalski", "jakiś opis",
-                "correct", "bo tak");
-        GridResponse<ActionForPlannedEventDTO> response = new GridResponse<>();
-        response.setRows(Lists.newArrayList(action));
-        response.setPage(1);
-        response.setRecords(1);
-        response.setTotal(1);
-        return response;
+        return dataProvider.findAll(id, sidx, sord, page, perPage, actionForPlannedEventDto);
     }
 
     @ResponseBody

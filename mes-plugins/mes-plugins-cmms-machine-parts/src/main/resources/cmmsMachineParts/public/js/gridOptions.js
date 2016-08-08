@@ -474,10 +474,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function state_createElement(value, options) {
             var $select = $('<select id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '">');
-
-            $select.append('<option value="correct">correct</option>');
-            $select.append('<option value="incorrect">incorrect</option>');
-
             return $select;
         }
 

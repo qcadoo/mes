@@ -13,11 +13,13 @@ import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionDTO;
+import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.dto.WorkerDTO;
 
 @Repository
@@ -35,11 +37,26 @@ public class ActionsForPlannedEventService {
     @Autowired
     private DataProvider dataProvider;
 
+    public GridResponse<ActionForPlannedEventDTO> findAll(final Long plannedEventId, final String _sidx, final String _sord,
+            int page, int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
+        String query = "SELECT %s FROM ( SELECT afpe.id AS id, a.name AS action, a.id AS actionId, "
+                + "s.name || ' ' || s.surname AS responsibleWorker, s.id AS responsibleWorkerId, "
+                + "afpe.description AS description, afpe.state AS state, afpe.reason AS reason "
+                + "FROM cmmsmachineparts_actionforplannedevent afpe JOIN cmmsmachineparts_action a ON a.id = afpe.action_id "
+                + "JOIN basic_staff s ON s.id = afpe.responsibleworker_id "
+                + "WHERE afpe.plannedevent_id = :plannedEventId %s) q ";
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("plannedEventId", plannedEventId);
+
+        return lookupUtils.getGridResponse(query, _sidx, _sord, page, perPage, actionForPlannedEventDto, parameters);
+    }
+
     public List<Map<String, String>> getActionStates() {
         return Lists.newArrayList("01correct", "02incorrect").stream().map(state -> {
             Map<String, String> states = new HashMap<>();
-            states.put("value", state);
-            states.put("key", translationService.translate("cmmsMachineParts.actionForPlannedEvent.state.value." + state,
+            states.put("key", state);
+            states.put("value", translationService.translate("cmmsMachineParts.actionForPlannedEvent.state.value." + state,
                     LocaleContextHolder.getLocale()));
 
             return states;
@@ -77,7 +94,8 @@ public class ActionsForPlannedEventService {
     public DataResponse getAllWorkers(String query) {
         List<AbstractDTO> entities = getWorkers(query);
         Map<String, Object> paramMap = new HashMap<>();
-        return dataProvider.getDataResponse(query, "SELECT id, name  || ' ' || surname AS code FROM basic_staff WHERE name  || ' ' || surname ilike :query;",
+        return dataProvider.getDataResponse(query,
+                "SELECT id, name  || ' ' || surname AS code FROM basic_staff WHERE name  || ' ' || surname ilike :query;",
                 entities, paramMap);
     }
 }
