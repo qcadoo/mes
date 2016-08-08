@@ -15,15 +15,16 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlannedEventDataProvider;
-import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlannedEventService;
+import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
 
 @Controller
 @RequestMapping("/integration/rest/actions")
 public class ActionsController {
 
     @Autowired
-    private ActionsForPlannedEventDataProvider dataProvider;
+    private ActionsForPlannedEventService dataProvider;
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig/{id}")
@@ -35,13 +36,13 @@ public class ActionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
-    public GridResponse<ActionForPlannedEventDto> findAll(@PathVariable Long id, @RequestParam String sidx,
+    public GridResponse<ActionForPlannedEventDTO> findAll(@PathVariable Long id, @RequestParam String sidx,
             @RequestParam String sord, @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
-            @RequestParam(value = "rows") int perPage, ActionForPlannedEventDto actionForPlannedEventDto) {
+            @RequestParam(value = "rows") int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
 
-        ActionForPlannedEventDto action = new ActionForPlannedEventDto("czynność", "Jan Kowalski", "jakiś opis", "correct",
-                "bo tak");
-        GridResponse<ActionForPlannedEventDto> response = new GridResponse<>();
+        ActionForPlannedEventDTO action = new ActionForPlannedEventDTO(1L, "czynność", 1L, "Jan Kowalski", "jakiś opis",
+                "correct", "bo tak");
+        GridResponse<ActionForPlannedEventDTO> response = new GridResponse<>();
         response.setRows(Lists.newArrayList(action));
         response.setPage(1);
         response.setRecords(1);
@@ -51,7 +52,14 @@ public class ActionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "states")
-    public List<Map<String, String>> getTypeOfPallets() {
+    public List<Map<String, String>> getStates() {
         return dataProvider.getActionStates();
     }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "actions")
+    public DataResponse getActionsForObject(@RequestParam("query") String query, @RequestParam("context") Long plannedEventId) {
+        return dataProvider.getActionsForObject(query, plannedEventId);
+    }
+
 }

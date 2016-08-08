@@ -405,8 +405,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function actionLookup_createElement(value, options) {
-            var lookup = createLookupElement('action', value, '/rest/palletnumbers', options);
-
+            var lookup = createLookupElement('action', value, '../../integration/rest/actions/actions.html', options, function () {
+                return  {
+                    context: getPlannedEventId()
+                };
+            });
             return lookup;
         }
 
