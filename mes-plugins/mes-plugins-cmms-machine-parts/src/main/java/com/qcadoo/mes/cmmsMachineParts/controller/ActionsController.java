@@ -40,7 +40,7 @@ public class ActionsController {
             @RequestParam String sord, @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
             @RequestParam(value = "rows") int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
 
-        ActionForPlannedEventDTO action = new ActionForPlannedEventDTO(1L, "czynność", 1L, "Jan Kowalski", "jakiś opis",
+        ActionForPlannedEventDTO action = new ActionForPlannedEventDTO(1L, "czynność", 1L, 1L, "Jan Kowalski", "jakiś opis",
                 "correct", "bo tak");
         GridResponse<ActionForPlannedEventDTO> response = new GridResponse<>();
         response.setRows(Lists.newArrayList(action));
@@ -60,6 +60,12 @@ public class ActionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "actions")
     public DataResponse getActionsForObject(@RequestParam("query") String query, @RequestParam("context") Long plannedEventId) {
         return dataProvider.getActionsForObject(query, plannedEventId);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "workers")
+    public DataResponse getWorkers(@RequestParam("query") String query) {
+        return dataProvider.getAllWorkers(query);
     }
 
 }

@@ -8,6 +8,8 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
 
     private String action;
 
+    private Long actionId;
+
     private Long responsibleWorkerId;
 
     private String responsibleWorker;
@@ -21,10 +23,11 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
     public ActionForPlannedEventDTO() {
     }
 
-    public ActionForPlannedEventDTO(Long id, String action, Long responsibleWorkerId, String responsibleWorker,
+    public ActionForPlannedEventDTO(Long id, String action, Long actionId, Long responsibleWorkerId, String responsibleWorker,
             String description, String state, String reason) {
         this.id = id;
         this.action = action;
+        this.actionId = actionId;
         this.responsibleWorkerId = responsibleWorkerId;
         this.responsibleWorker = responsibleWorker;
         this.description = description;
@@ -124,5 +127,13 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         return result;
+    }
+
+    public Long getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(Long actionId) {
+        this.actionId = actionId;
     }
 }

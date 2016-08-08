@@ -414,7 +414,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function responsibleWorkerLookup_createElement(value, options) {
-            var lookup = createLookupElement('responsibleWorker', value, '/rest/palletnumbers', options);
+            var lookup = createLookupElement('responsibleWorker', value, '../../integration/rest/actions/workers.html', options);
 
             return lookup;
         }

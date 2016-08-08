@@ -2,21 +2,18 @@ package com.qcadoo.mes.cmmsMachineParts.dto;
 
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 
-public class ActionDTO implements AbstractDTO {
+public class WorkerDTO implements AbstractDTO {
 
     private Long id;
 
     private String code;
 
-    private Long plannedEventId;
-
-    public ActionDTO() {
+    public WorkerDTO() {
     }
 
-    public ActionDTO(Long id, String code, Long plannedEventId) {
+    public WorkerDTO(Long id, String code) {
         this.id = id;
         this.code = code;
-        this.plannedEventId = plannedEventId;
     }
 
     public String getCode() {
@@ -34,7 +31,7 @@ public class ActionDTO implements AbstractDTO {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        ActionDTO actionDTO = (ActionDTO) o;
+        WorkerDTO actionDTO = (WorkerDTO) o;
 
         return code != null ? code.equals(actionDTO.code) : actionDTO.code == null;
 
@@ -53,11 +50,4 @@ public class ActionDTO implements AbstractDTO {
         this.id = id;
     }
 
-    public Long getPlannedEventId() {
-        return plannedEventId;
-    }
-
-    public void setPlannedEventId(Long plannedEventId) {
-        this.plannedEventId = plannedEventId;
-    }
 }

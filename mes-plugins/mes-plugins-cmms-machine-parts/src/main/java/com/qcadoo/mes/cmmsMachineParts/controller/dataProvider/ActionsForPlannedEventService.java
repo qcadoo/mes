@@ -18,6 +18,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionDTO;
+import com.qcadoo.mes.cmmsMachineParts.dto.WorkerDTO;
 
 @Repository
 public class ActionsForPlannedEventService {
@@ -64,5 +65,19 @@ public class ActionsForPlannedEventService {
         return dataProvider.getDataResponse(q, "SELECT id, name AS code FROM cmmsmachineparts_action WHERE name ilike :query;",
                 entities, paramMap);
 
+    }
+
+    public List<AbstractDTO> getWorkers(String q) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("q", '%' + q + '%');
+        String query = "SELECT id, name  || ' ' || surname AS code FROM basic_staff WHERE name  || ' ' || surname ilike :q LIMIT 20;";
+        return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(WorkerDTO.class));
+    }
+
+    public DataResponse getAllWorkers(String query) {
+        List<AbstractDTO> entities = getWorkers(query);
+        Map<String, Object> paramMap = new HashMap<>();
+        return dataProvider.getDataResponse(query, "SELECT id, name  || ' ' || surname AS code FROM basic_staff WHERE name  || ' ' || surname ilike :query;",
+                entities, paramMap);
     }
 }

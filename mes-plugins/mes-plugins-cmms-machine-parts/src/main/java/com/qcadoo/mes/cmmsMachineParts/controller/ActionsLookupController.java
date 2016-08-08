@@ -17,7 +17,7 @@ public class ActionsLookupController extends BasicLookupController<ActionDTO> {
 
     @Override
     protected String getQueryForRecords(final Long context) {
-        String query = "SELECT %s FROM ( SELECT id, name FROM cmmsmachineparts_action ) %s) q";
+        String query = "SELECT %s FROM ( SELECT id, name AS code FROM cmmsmachineparts_action %s) q";
 
         return query;
     }
@@ -25,12 +25,13 @@ public class ActionsLookupController extends BasicLookupController<ActionDTO> {
     @Override
     protected Map<String, Object> getQueryParameters(Long context, ActionDTO actionDTO) {
         Map<String, Object> params = new HashMap<>();
+        params.put("plannedEventId", actionDTO.getPlannedEventId());
         return params;
     }
 
     @Override
     protected List<String> getGridFields() {
-        return Arrays.asList("name");
+        return Arrays.asList("code");
     }
 
     @Override
