@@ -221,7 +221,7 @@ public class ActionsForPlannedEventService {
                 errors.append("\n");
             }
             errors.append(actionForPlannedEvent.getErrors().entrySet().stream().map(entry ->
-                    translationService.translate(entry.getKey(), LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
+                    translationService.translate("cmmsMachineParts.actionForPlannedEvent." + entry.getKey() + ".label", LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
             throw new RuntimeException(errors.toString());
         }
