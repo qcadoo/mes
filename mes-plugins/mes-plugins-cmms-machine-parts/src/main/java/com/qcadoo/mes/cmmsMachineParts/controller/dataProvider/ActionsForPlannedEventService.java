@@ -1,5 +1,7 @@
 package com.qcadoo.mes.cmmsMachineParts.controller.dataProvider;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +9,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -52,7 +56,7 @@ public class ActionsForPlannedEventService {
                 + "s.name  || ' ' || s.surname || ' - ' || s.number AS responsibleWorker, "
                 + "afpe.description AS description, afpe.state AS state, afpe.reason AS reason "
                 + "FROM cmmsmachineparts_actionforplannedevent afpe JOIN cmmsmachineparts_action a ON a.id = afpe.action_id "
-                + "JOIN basic_staff s ON s.id = afpe.responsibleworker_id "
+                + "LEFT JOIN basic_staff s ON s.id = afpe.responsibleworker_id "
                 + "WHERE afpe.plannedevent_id = :plannedEventId %s) q ";
 
         Map<String, Object> parameters = new HashMap<>();
@@ -159,14 +163,24 @@ public class ActionsForPlannedEventService {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("q", q);
         String query = "SELECT id FROM basic_staff WHERE name  || ' ' || surname || ' - ' || number = :q LIMIT 1;";
-        return jdbcTemplate.queryForObject(query, paramMap, Long.class);
+        return jdbcTemplate.query(query, paramMap, new ResultSetExtractor<Long>() {
+            @Override
+            public Long extractData(ResultSet rs) throws SQLException, DataAccessException {
+                return rs.next() ? rs.getLong("id") : null;
+            }
+        });
     }
 
     private Long getActionId(String q) {
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("q", q);
         String query = "SELECT id FROM cmmsmachineparts_action WHERE name = :q LIMIT 1;";
-        return jdbcTemplate.queryForObject(query, paramMap, Long.class);
+        return jdbcTemplate.query(query, paramMap, new ResultSetExtractor<Long>() {
+            @Override
+            public Long extractData(ResultSet rs) throws SQLException, DataAccessException {
+                return rs.next() ? rs.getLong("id") : null;
+            }
+        });
     }
 
     private DataDefinition getActionForPlannedEventDD() {
@@ -206,7 +220,8 @@ public class ActionsForPlannedEventService {
             if (errors.length() > 0) {
                 errors.append("\n");
             }
-            errors.append(actionForPlannedEvent.getErrors().entrySet().stream().map(entry -> translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
+            errors.append(actionForPlannedEvent.getErrors().entrySet().stream().map(entry ->
+                    translationService.translate(entry.getKey(), LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
             throw new RuntimeException(errors.toString());
         }
