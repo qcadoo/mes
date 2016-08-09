@@ -125,9 +125,8 @@
 										cancelTracking.enable();
 									} else if (state == "02accepted") {
 										acceptTracking.disable();
-										cancelTracking.enable();
-
 										deleteButton.disable();
+										cancelTracking.disable();
 									} else if (state == "03declined") {
 										acceptTracking.disable();
 										cancelTracking.disable();

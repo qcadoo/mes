@@ -39,7 +39,7 @@ public enum ProductionTrackingState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return DECLINED.equals(targetState) || CORRECTED.equals(targetState);
+            return CORRECTED.equals(targetState);
         }
     },
     DECLINED(ProductionTrackingStateStringValues.DECLINED) {

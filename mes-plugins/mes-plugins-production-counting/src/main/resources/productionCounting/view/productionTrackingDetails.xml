@@ -359,7 +359,7 @@
 											toggleEditable(true);
 										} else if (state == "02accepted") {
 											toggleEditable(false);
-											cancelState.enable();
+											cancelState.disable();
 										} else if (state == "03declined") {
 											toggleEditable(false);
 											enableDeleteButton();
