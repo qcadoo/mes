@@ -18,9 +18,13 @@ import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionDTO;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.dto.WorkerDTO;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Repository
 public class ActionsForPlannedEventService {
@@ -36,6 +40,9 @@ public class ActionsForPlannedEventService {
 
     @Autowired
     private DataProvider dataProvider;
+
+    @Autowired
+    DataDefinitionService dataDefinitionService;
 
     public GridResponse<ActionForPlannedEventDTO> findAll(final Long plannedEventId, final String _sidx, final String _sord,
             int page, int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
@@ -70,16 +77,48 @@ public class ActionsForPlannedEventService {
         } else {
             Map<String, Object> paramMap = new HashMap<>();
             paramMap.put("id", plannedEventId);
-            paramMap.put("q", '%' + q + '%');
-            String query = "SELECT id, name AS code FROM cmmsmachineparts_action WHERE name ilike :q LIMIT 20;";
+            paramMap.put("query", '%' + q + '%');
+            String query = generateQuery(plannedEventId) + " LIMIT 20";
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ActionDTO.class));
         }
+    }
+
+    private String generateQuery(Long plannedEventId) {
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(plannedEventId);
+
+        String query = "SELECT id, name AS code FROM cmmsmachineparts_action WHERE name ilike :query";
+
+        Entity subassembly = plannedEvent.getBelongsToField(PlannedEventFields.SUBASSEMBLY);
+        if (subassembly != null) {
+            query = "SELECT * FROM ( SELECT id, name AS code FROM cmmsmachineparts_action "
+                    + "WHERE id IN (SELECT action_id FROM jointable_action_subassembly WHERE subassembly_id = "
+                    + "(SELECT subassembly_id FROM cmmsmachineparts_plannedevent WHERE id = :id)) "
+                    + "OR id IN (SELECT action_id FROM jointable_action_workstationtype WHERE workstationtype_id = "
+                    + "(SELECT workstationtype_id FROM basic_subassembly WHERE id IN("
+                    + "SELECT subassembly_id FROM cmmsmachineparts_plannedevent WHERE id = :id)))"
+                    + "OR appliesto IS NULL) q WHERE code ilike :query";
+        } else {
+            Entity workstation = plannedEvent.getBelongsToField(PlannedEventFields.WORKSTATION);
+            if (workstation != null) {
+                query = "SELECT * FROM ( SELECT id, name AS code FROM cmmsmachineparts_action "
+                        + "WHERE id IN (SELECT action_id FROM jointable_action_workstation WHERE workstation_id = "
+                        + "(SELECT workstation_id FROM cmmsmachineparts_plannedevent WHERE id = :id)) "
+                        + "OR id IN (SELECT action_id FROM jointable_action_workstationtype WHERE workstationtype_id = "
+                        + "(SELECT workstationtype_id FROM basic_workstation WHERE id IN("
+                        + "SELECT workstation_id FROM cmmsmachineparts_plannedevent WHERE id = :id)))"
+                        + "OR appliesto IS NULL) q WHERE code ilike :query";
+            }
+        }
+
+        return query;
     }
 
     public DataResponse getActionsForObject(String q, Long plannedEventId) {
         List<AbstractDTO> entities = getActions(q, plannedEventId);
         Map<String, Object> paramMap = new HashMap<>();
-        return dataProvider.getDataResponse(q, "SELECT id, name AS code FROM cmmsmachineparts_action WHERE name ilike :query;",
+        paramMap.put("id", plannedEventId);
+        return dataProvider.getDataResponse(q, generateQuery(plannedEventId),
                 entities, paramMap);
 
     }
