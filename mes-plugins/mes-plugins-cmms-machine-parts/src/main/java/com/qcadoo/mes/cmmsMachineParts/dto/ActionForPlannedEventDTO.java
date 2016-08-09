@@ -6,11 +6,9 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
 
     private Long id;
 
+    private Long plannedEvent;
+
     private String action;
-
-    private Long actionId;
-
-    private Long responsibleWorkerId;
 
     private String responsibleWorker;
 
@@ -23,12 +21,11 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
     public ActionForPlannedEventDTO() {
     }
 
-    public ActionForPlannedEventDTO(Long id, String action, Long actionId, Long responsibleWorkerId, String responsibleWorker,
-            String description, String state, String reason) {
+    public ActionForPlannedEventDTO(Long id, Long plannedEvent, String action, String responsibleWorker, String description,
+            String state, String reason) {
         this.id = id;
+        this.plannedEvent = plannedEvent;
         this.action = action;
-        this.actionId = actionId;
-        this.responsibleWorkerId = responsibleWorkerId;
         this.responsibleWorker = responsibleWorker;
         this.description = description;
         this.state = state;
@@ -83,36 +80,28 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
         this.reason = reason;
     }
 
-    public Long getResponsibleWorkerId() {
-        return responsibleWorkerId;
+    public Long getPlannedEvent() {
+        return plannedEvent;
     }
 
-    public void setResponsibleWorkerId(Long responsibleWorkerId) {
-        this.responsibleWorkerId = responsibleWorkerId;
+    public void setPlannedEvent(Long plannedEvent) {
+        this.plannedEvent = plannedEvent;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ActionForPlannedEventDTO that = (ActionForPlannedEventDTO) o;
 
-        if (id != null ? !id.equals(that.id) : that.id != null)
-            return false;
-        if (action != null ? !action.equals(that.action) : that.action != null)
-            return false;
-        if (responsibleWorkerId != null ? !responsibleWorkerId.equals(that.responsibleWorkerId)
-                : that.responsibleWorkerId != null)
-            return false;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (plannedEvent != null ? !plannedEvent.equals(that.plannedEvent) : that.plannedEvent != null) return false;
+        if (action != null ? !action.equals(that.action) : that.action != null) return false;
         if (responsibleWorker != null ? !responsibleWorker.equals(that.responsibleWorker) : that.responsibleWorker != null)
             return false;
-        if (description != null ? !description.equals(that.description) : that.description != null)
-            return false;
-        if (state != null ? !state.equals(that.state) : that.state != null)
-            return false;
+        if (description != null ? !description.equals(that.description) : that.description != null) return false;
+        if (state != null ? !state.equals(that.state) : that.state != null) return false;
         return reason != null ? reason.equals(that.reason) : that.reason == null;
 
     }
@@ -120,20 +109,12 @@ public class ActionForPlannedEventDTO implements AbstractDTO {
     @Override
     public int hashCode() {
         int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (plannedEvent != null ? plannedEvent.hashCode() : 0);
         result = 31 * result + (action != null ? action.hashCode() : 0);
-        result = 31 * result + (responsibleWorkerId != null ? responsibleWorkerId.hashCode() : 0);
         result = 31 * result + (responsibleWorker != null ? responsibleWorker.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
         result = 31 * result + (state != null ? state.hashCode() : 0);
         result = 31 * result + (reason != null ? reason.hashCode() : 0);
         return result;
-    }
-
-    public Long getActionId() {
-        return actionId;
-    }
-
-    public void setActionId(Long actionId) {
-        this.actionId = actionId;
     }
 }

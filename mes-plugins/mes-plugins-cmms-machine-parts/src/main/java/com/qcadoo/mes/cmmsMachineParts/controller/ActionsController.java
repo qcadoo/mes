@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,7 @@ import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlannedEventService;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 
 @Controller
 @RequestMapping("/integration/rest/actions")
@@ -40,6 +42,24 @@ public class ActionsController {
             @RequestParam(value = "rows") int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
 
         return dataProvider.findAll(id, sidx, sord, page, perPage, actionForPlannedEventDto);
+    }
+
+    @ResponseBody
+    @RequestMapping(method = RequestMethod.PUT)
+    public void create(@RequestBody ActionForPlannedEventDTO actionForPlannedEventDTO) {
+        dataProvider.create(actionForPlannedEventDTO);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable Long id) {
+        dataProvider.delete(id);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "{id}", method = RequestMethod.PUT)
+    public void update(@PathVariable Long id, @RequestBody ActionForPlannedEventDTO actionForPlannedEventDTO) {
+        dataProvider.update(id, actionForPlannedEventDTO);
     }
 
     @ResponseBody

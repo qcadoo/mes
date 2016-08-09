@@ -120,7 +120,68 @@ myApp.directive('ngJqGrid', function ($window) {
                         $(table).navGrid('#jqGridPager',
                                 // the buttons to appear on the toolbar of the grid
                                         {edit: false, add: false, del: true, search: false, refresh: false, view: false, position: "left", cloneToTop: false},
+                                // options for the Edit Dialog
+                                        {
+                                            ajaxEditOptions: {contentType: "application/json"},
+                                            mtype: 'PUT',
+                                            closeAfterEdit: true,
+                                            resize: false,
+                                            viewPagerButtons: false,
+                                            serializeEditData: function (data) {
+                                                delete data.oper;
 
+                                                return validateSerializeData(data);
+                                            },
+                                            onclickSubmit: function (params, postdata) {
+                                                params.url = '../../integration/rest/actions/' + postdata.grid_id + ".html";
+                                            },
+                                            errorTextFormat: function (response) {
+                                                return translateAndShowMessages(response);
+                                            },
+                                            beforeShowForm: function (form) {
+                                                var dlgDiv = $("#editmodgrid");
+                                                var dlgWidth = 800;
+                                                var dlgHeight = dlgDiv.height();
+                                                var parentWidth = $(window).width();
+                                                var parentHeight = $(window).height();
+                                                dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                dlgDiv[0].style.width = dlgWidth + "px";
+                                            },
+                                        },
+                                        // options for the Add Dialog
+                                                {
+                                                    ajaxEditOptions: {
+                                                        contentType: "application/json"
+                                                    },
+                                                    mtype: "PUT",
+                                                    closeAfterEdit: true,
+                                                    resize: false,
+                                                    reloadAfterSubmit: true,
+                                                    viewPagerButtons: false,
+                                                    serializeEditData: function (data) {
+                                                        delete data.oper;
+                                                        delete data.id;
+
+                                                        return validateSerializeData(data);
+                                                    },
+                                                    onclickSubmit: function (params, postdata) {
+                                                        params.url = '../../integration/rest/actions.html';
+                                                    },
+                                                    errorTextFormat: function (response) {
+                                                        return translateAndShowMessages(response);
+                                                    },
+                                                    beforeShowForm: function (form) {
+                                                        var dlgDiv = $("#editmodgrid");
+                                                        var dlgWidth = 800;
+                                                        var dlgHeight = dlgDiv.height();
+                                                        var parentWidth = $(window).width();
+                                                        var parentHeight = $(window).height();
+                                                        dlgDiv[0].style.left = Math.round((parentWidth - dlgWidth) / 2) + "px";
+                                                        dlgDiv[0].style.top = Math.round((parentHeight - dlgHeight) / 2) + "px";
+                                                        dlgDiv[0].style.width = dlgWidth + "px";
+                                                    },
+                                                },
                                                 // options for the Delete Dailog
                                                         {
                                                             mtype: "DELETE",

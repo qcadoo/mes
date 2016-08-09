@@ -17,7 +17,7 @@ public class WorkersLookupController extends BasicLookupController<WorkerDTO> {
 
     @Override
     protected String getQueryForRecords(final Long context) {
-        String query = "SELECT %s FROM ( SELECT id, name  || ' ' || surname AS code FROM basic_staff %s) q";
+        String query = "SELECT %s FROM ( SELECT id, name  || ' ' || surname || ' - ' || number AS code FROM basic_staff %s) q";
 
         return query;
     }
