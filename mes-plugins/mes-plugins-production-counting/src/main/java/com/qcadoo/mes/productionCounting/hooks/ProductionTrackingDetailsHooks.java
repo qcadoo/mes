@@ -116,6 +116,9 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void toggleCorrectButton(ViewDefinitionState view, Entity entity) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
+
         String state = entity.getStringField(ProductionTrackingFields.STATE);
         Entity order = entity.getBelongsToField(ProductionTrackingFields.ORDER);
         String orderState = order.getStringField(OrderFields.STATE);
@@ -123,11 +126,11 @@ public class ProductionTrackingDetailsHooks {
         boolean orderIsNotFinished = !OrderStateStringValues.COMPLETED.equals(orderState)
                 && !OrderStateStringValues.ABANDONED.equals(orderState);
         if (productionTrackingIsAccepted && orderIsNotFinished) {
-            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-            RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
             correctButton.setEnabled(true);
-            correctButton.requestUpdate(true);
+        } else {
+            correctButton.setEnabled(false);
         }
+        correctButton.requestUpdate(true);
     }
 
     private void toggleCorrectionFields(ViewDefinitionState view, Entity entity) {
