@@ -196,7 +196,11 @@ public class ActionsForPlannedEventService {
 
     public void delete(Long id) {
         DataDefinition dataDefinition = getActionForPlannedEventDD();
-        dataDefinition.delete(id);
+        try {
+            dataDefinition.delete(id);
+        } catch (IllegalStateException exc) {
+            throw new RuntimeException(translationService.translate("actionsGrid.notification.entityInUse", LocaleContextHolder.getLocale()));
+        }
     }
 
     public void update(Long id, ActionForPlannedEventDTO actionForPlannedEventDTO) {

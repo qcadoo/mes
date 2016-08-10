@@ -267,12 +267,14 @@ function translateMessages(messages) {
 }
 
 function saveAllRows() {
+    QCD.components.elements.utils.LoadingIndicator.blockElement(parent.$('body'));
     var grid = $("#grid");
     var ids = grid.jqGrid('getDataIDs');
 
     for (var i = 0; i < ids.length; i++) {
         grid.saveRow(ids[i]);
     }
+    QCD.components.elements.utils.LoadingIndicator.unblockElement(parent.$('body'));
 }
 
 function viewRefresh() {
@@ -736,6 +738,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     index: 'state',
                     editable: true,
                     edittype: 'select',
+                    width: 55,
                     stype: 'select',
                     editoptions: {},
                     searchoptions: {},
@@ -750,6 +753,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: true,
                     required: false,
                     edittype: 'custom',
+                    width: 220,
                     editoptions: {
                         custom_element: reason_createElement,
                         custom_value: input_value,
