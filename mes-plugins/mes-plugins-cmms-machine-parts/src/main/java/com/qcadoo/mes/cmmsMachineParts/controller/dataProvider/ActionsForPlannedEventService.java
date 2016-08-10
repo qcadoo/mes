@@ -28,9 +28,12 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionDTO;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.dto.WorkerDTO;
+import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
 
 @Repository
 public class ActionsForPlannedEventService {
@@ -46,6 +49,12 @@ public class ActionsForPlannedEventService {
 
     @Autowired
     private DataProvider dataProvider;
+
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     DataDefinitionService dataDefinitionService;
@@ -228,6 +237,20 @@ public class ActionsForPlannedEventService {
                     translationService.translate("cmmsMachineParts.actionForPlannedEvent." + entry.getKey() + ".label", LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
             throw new RuntimeException(errors.toString());
+
         }
+    }
+
+    public boolean canEditActions(Long id) {
+        Entity user = userService.getCurrentUserEntity();
+        boolean hasProperRole = securityService.hasRole(user, "ROLE_PLANNED_EVENTS_BASIC_EDIT");
+
+        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(id);
+        String state = plannedEvent.getStringField(PlannedEventFields.STATE);
+        boolean eventIsInProperState = !(PlannedEventStateStringValues.REALIZED.equals(state) || PlannedEventStateStringValues.CANCELED
+                .equals(state));
+
+        return hasProperRole && eventIsInProperState;
     }
 }

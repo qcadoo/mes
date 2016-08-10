@@ -18,7 +18,6 @@ import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlannedEventService;
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 
 @Controller
 @RequestMapping("/integration/rest/actions")
@@ -31,7 +30,8 @@ public class ActionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "gridConfig/{id}")
     public Map<String, Object> gridConfig(@PathVariable Long id) {
         Map<String, Object> config = new HashMap<>();
-        config.put("readOnly", false);
+        boolean editable = dataProvider.canEditActions(id);
+        config.put("readOnly", !editable);
         return config;
     }
 

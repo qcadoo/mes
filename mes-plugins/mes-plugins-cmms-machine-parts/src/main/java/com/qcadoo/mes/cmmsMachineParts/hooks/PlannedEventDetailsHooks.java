@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
@@ -46,13 +53,6 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.select.SelectComponentState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -220,7 +220,7 @@ public class PlannedEventDetailsHooks {
         PlannedEventState state = PlannedEventState.of(event);
         if (state.compareTo(PlannedEventState.CANCELED) == 0 || state.compareTo(PlannedEventState.REALIZED) == 0) {
             form.setFormEnabled(false);
-            lockGrids(view, Lists.newArrayList(PlannedEventFields.RESPONSIBLE_WORKERS, PlannedEventFields.ACTIONS,
+            lockGrids(view, Lists.newArrayList(PlannedEventFields.RESPONSIBLE_WORKERS,
                     PlannedEventFields.RELATED_EVENTS, PlannedEventFields.REALIZATIONS,
                     PlannedEventFields.MACHINE_PARTS_FOR_EVENT));
         }
