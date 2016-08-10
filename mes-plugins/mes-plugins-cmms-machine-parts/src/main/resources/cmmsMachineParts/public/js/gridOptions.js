@@ -192,7 +192,8 @@ myApp.directive('ngJqGrid', function ($window) {
                                                                 params.url = '../../integration/rest/actions/' + encodeURIComponent(postdata) + ".html";
                                                             },
                                                             errorTextFormat: function (response) {
-                                                                return translateMessages(JSON.parse(response.responseText).message);
+                                                                translateAndShowMessages(response)
+                                                                return null;
                                                             }
                                                         });
                                             }
