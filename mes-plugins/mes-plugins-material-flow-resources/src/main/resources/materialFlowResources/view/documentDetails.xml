@@ -33,8 +33,8 @@
         <ribbon>
             <template name="standardFormTemplate"/>
             <group name="print">
-                <bigButton name="printPdf" icon="pdfIcon24.png"
-                           action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
+                <bigButton name="printPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
+                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDispositionOrder,pdf);" state="enabled"/>
             </group>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
@@ -186,6 +186,10 @@
                 <listener event="printDocument"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDocument"/>
+                
+                <listener event="printDispositionOrder"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="printDispositionOrder"/>
 
                 <listener event="save"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
@@ -241,12 +245,5 @@
         <beforeRender
             class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
             method="onBeforeRender"/>
-        <!--         <beforeRender -->
-        <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
-        <!--                 method="initializeDocument"/> -->
-        <!--         <beforeRender -->
-        <!--                 class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks" -->
-        <!--                 method="setCriteriaModifiersParameters"/> -->
-
     </hooks>
 </view>

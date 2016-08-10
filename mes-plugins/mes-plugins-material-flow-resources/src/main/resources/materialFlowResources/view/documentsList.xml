@@ -34,6 +34,9 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete"/>
+            <group name="print">
+                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" action="#{grid}.fireEvent(printDispositionOrder,pdf);" state="enabled"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -62,10 +65,19 @@
 
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentsCriteriaModifier"
                               method="hideDraftDocumentsWithOrder"/>
+                
+            <listener event="printDispositionOrder"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
+                          method="printDispositionOrder"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
 
+    <hooks>
+        <beforeRender
+            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"
+            method="onBeforeRender"/>
+    </hooks>
 </view>

@@ -31,6 +31,7 @@
         <hasMany name="items" model="documentPositionParametersItem" joinField="parameters"/>
         <boolean name="suggestResource" default="false"/>
         <boolean name="draftMakesReservation" default="false"/>
+        <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersValidators"

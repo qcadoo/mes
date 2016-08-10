@@ -38,7 +38,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -65,8 +64,6 @@ public class DocumentDetailsHooks {
 
     private static final String PRINT_PDF_ITEM = "printPdf";
 
-    private static final List<String> INBOUND_FIELDS = Arrays.asList("price", "batch", "productionDate", "expirationDate");
-
     public static final String FORM = "form";
 
     @Autowired
@@ -75,13 +72,11 @@ public class DocumentDetailsHooks {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private DocumentDetailsListeners documentDetailsListeners;
-
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
         lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
+        lockDispositionOrder(view);
     }
 
     // fixme: refactor
@@ -221,5 +216,24 @@ public class DocumentDetailsHooks {
     private DataDefinition getDocumentDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+    }
+
+    private void lockDispositionOrder(ViewDefinitionState view) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem dispositionOrderPdfItem = (RibbonActionItem) window.getRibbon().getGroupByName(PRINT_GROUP).getItemByName("printDispositionOrderPdf");
+        String errorMessage = null;
+
+        if (formComponent.getEntityId() != null) {
+            String documentType = formComponent.getEntity().getStringField(DocumentFields.TYPE);
+
+            List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(), DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
+            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {                
+                errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
+            }
+        }
+        dispositionOrderPdfItem.setEnabled(errorMessage==null && formComponent.getEntityId() != null);
+        dispositionOrderPdfItem.setMessage(errorMessage);
+        dispositionOrderPdfItem.requestUpdate(true);
     }
 }
