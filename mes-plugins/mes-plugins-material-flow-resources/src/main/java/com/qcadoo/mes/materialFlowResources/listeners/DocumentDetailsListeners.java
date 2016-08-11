@@ -137,14 +137,16 @@ public class DocumentDetailsListeners {
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        String documentState = document.getStringField(DocumentFields.STATE);
+        if (!DocumentState.DRAFT.getStringValue().equals(documentState)) {
+            return;
+        }
+
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         Entity documentToCreateResourcesFor = documentDD.save(document);
 

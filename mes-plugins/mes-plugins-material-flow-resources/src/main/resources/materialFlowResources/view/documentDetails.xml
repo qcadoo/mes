@@ -34,7 +34,24 @@
             <template name="standardFormTemplate"/>
             <group name="print">
                 <bigButton name="printPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
-                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDispositionOrder,pdf);" state="enabled"/>
+                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name    : 'printDispositionOrder',
+                                        args    : ['pdf'],
+                                        type    : undefined,
+                                        callback : function(){
+                                            #{form}.performRefresh();
+                                        }
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
