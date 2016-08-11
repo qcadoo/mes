@@ -174,14 +174,7 @@ public class DispositionOrderPdf extends ReportPdfView {
                 positionsTable.addCell(createCell(getDataForTargetPallet(position), Element.ALIGN_LEFT));
             }
         }
-
-        PdfPCell totalLabel = createCell(documentPdfHelper.getTotaLabel(locale), Element.ALIGN_LEFT);
-        totalLabel.setColspan(7);
-        totalLabel.setBorderWidth(0.7f);
-        positionsTable.addCell(totalLabel);
-        PdfPCell totalValue = createCell(PositionDataProvider.totalValue(documentEntity), Element.ALIGN_RIGHT);
-        totalValue.setBorderWidth(0.7f);
-        positionsTable.addCell(totalValue);
+        
         positionsTable.setSpacingAfter(20);
 
         document.add(positionsTable);
