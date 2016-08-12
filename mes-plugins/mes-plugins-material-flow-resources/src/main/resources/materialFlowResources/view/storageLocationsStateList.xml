@@ -38,15 +38,15 @@
 
         <component type="grid" name="grid" reference="grid">
 
-            <option type="column" name="locationNumber" fields="locationNumber"/>
-            <option type="column" name="storageLocationNumber" fields="storageLocationNumber"/>
-            <option type="column" name="productNumber" fields="productNumber"/>
-            <option type="column" name="productName" fields="productName"/>
-            <option type="column" name="additionalCode" fields="additionalCode"/>
-            <option type="column" name="resourceQuantity" fields="resourceQuantity"/>
-            <option type="column" name="productUnit" fields="productUnit"/>
-            <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
-            <option type="column" name="productAdditionalUnit" fields="productAdditionalUnit"/>
+            <option type="column" name="locationNumber" fields="locationNumber" width="70"/>
+            <option type="column" name="storageLocationNumber" fields="storageLocationNumber" width="100"/>
+            <option type="column" name="productNumber" fields="productNumber" width="100"/>
+            <option type="column" name="productName" fields="productName" width="100"/>
+            <option type="column" name="additionalCode" fields="additionalCode" width="100"/>
+            <option type="column" name="resourceQuantity" fields="resourceQuantity" width="100"/>
+            <option type="column" name="productUnit" fields="productUnit" width="70"/>
+            <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="100"/>
+            <option type="column" name="productAdditionalUnit" fields="productAdditionalUnit" width="70"/>
 
             <option type="order" column="number" direction="desc"/>
             <option type="footerRow" value="true"/>
