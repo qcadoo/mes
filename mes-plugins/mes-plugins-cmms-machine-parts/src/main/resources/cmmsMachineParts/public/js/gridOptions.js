@@ -133,7 +133,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                 return validateSerializeData(data);
                                             },
                                             onclickSubmit: function (params, postdata) {
-                                                params.url = '../../integration/rest/actions/' + postdata.grid_id + ".html";
+                                                params.url = '../../rest/rest/actions/' + postdata.grid_id + ".html";
                                             },
                                             errorTextFormat: function (response) {
                                                 return translateAndShowMessages(response);
@@ -166,7 +166,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                         return validateSerializeData(data);
                                                     },
                                                     onclickSubmit: function (params, postdata) {
-                                                        params.url = '../../integration/rest/actions.html';
+                                                        params.url = '../../rest/rest/actions.html';
                                                     },
                                                     errorTextFormat: function (response) {
                                                         return translateAndShowMessages(response);
@@ -189,7 +189,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                                 return ""; // don't send and body for the HTTP DELETE
                                                             },
                                                             onclickSubmit: function (params, postdata) {
-                                                                params.url = '../../integration/rest/actions/' + encodeURIComponent(postdata) + ".html";
+                                                                params.url = '../../rest/rest/actions/' + encodeURIComponent(postdata) + ".html";
                                                             },
                                                             errorTextFormat: function (response) {
                                                                 translateAndShowMessages(response)
@@ -469,7 +469,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function actionLookup_createElement(value, options) {
-            var lookup = createLookupElement('action', value, '../../integration/rest/actions/actions.html', options, function () {
+            var lookup = createLookupElement('action', value, '../../rest/rest/actions/actions.html', options, function () {
                 return  {
                     context: getPlannedEventId()
                 };
@@ -478,7 +478,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function responsibleWorkerLookup_createElement(value, options) {
-            var lookup = createLookupElement('responsibleWorker', value, '../../integration/rest/actions/workers.html', options);
+            var lookup = createLookupElement('responsibleWorker', value, '../../rest/rest/actions/workers.html', options);
 
             return lookup;
         }
@@ -611,7 +611,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var gridEditOptions = {
             keys: true,
-            url: '../../integration/rest/actions.html',
+            url: '../../rest/rest/actions.html',
             mtype: 'PUT',
             errorfunc: errorfunc,
             successfunc: successfunc,
@@ -620,7 +620,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var gridAddOptions = {
             rowID: "0",
-            url: '../../integration/rest/actions.html',
+            url: '../../rest/rest/actions.html',
             initdata: {
             },
             position: "first",
@@ -632,7 +632,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         var config = {
-            url: '../../integration/rest/actions/' + getPlannedEventId() + '.html',
+            url: '../../rest/rest/actions/' + getPlannedEventId() + '.html',
             datatype: "json",
             height: '100%',
             autowidth: true,
@@ -674,14 +674,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     formatoptions: {
                         keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
                         editOptions: gridEditOptions,
-                        url: '../../integration/rest/actions/' + 1 + '.html',
+                        url: '../../rest/rest/actions/' + 1 + '.html',
                         delbutton: false,
                         onEdit: function (id) {
                             if (typeof (lastSel) !== "undefined" && id !== lastSel) {
                                 cancelEditing(id);
                             }
                             prepareViewOnStartEdit();
-                            gridEditOptions.url = '../../integration/rest/actions/' + id + '.html';
+                            gridEditOptions.url = '../../rest/rest/actions/' + id + '.html';
                             lastSel = id;
                         },
                         afterRestore: function () {
@@ -797,14 +797,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $http({
                 method: 'GET',
-                url: '../../integration/rest/actions/gridConfig/' + config.plannedevent_id + '.html'
+                url: '../../rest/rest/actions/gridConfig/' + config.plannedevent_id + '.html'
 
             }).then(function successCallback(response) {
                 config.readOnly = response.data.readOnly;
 
                 $http({
                     method: 'GET',
-                    url: '../../integration/rest/actions/states.html'
+                    url: '../../rest/rest/actions/states.html'
 
                 }).then(function successCallback(response) {
                     var selectOptionsStates = [':' + translateMessages('actionsGrid.allItem')];
@@ -838,7 +838,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         $scope.plannedEventIdChanged = function (id) {
-            config.url = '../../integration/rest/actions/' + id + '.html';
+            config.url = '../../rest/rest/actions/' + id + '.html';
             config.plannedevent_id = id;
 
             config.colModel.filter(function (element, index) {
@@ -867,12 +867,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {
                 if (rowId === '0') {
-                    option.url = '../../integration/rest/actions.html';
+                    option.url = '../../rest/rest/actions.html';
                     option.errorfunc = errorfunc;
                     option.successfunc = successfunc;
                     option.aftersavefunc = aftersavefunc;
                 } else {
-                    option.url = '../../integration/rest/actions/' + rowId + '.html';
+                    option.url = '../../rest/rest/actions/' + rowId + '.html';
                     option.errorfunc = errorfunc;
                     option.successfunc = successfunc;
                     option.aftersavefunc = aftersavefunc;

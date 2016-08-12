@@ -20,7 +20,7 @@ import com.qcadoo.mes.cmmsMachineParts.controller.dataProvider.ActionsForPlanned
 import com.qcadoo.mes.cmmsMachineParts.dto.ActionForPlannedEventDTO;
 
 @Controller
-@RequestMapping("/integration/rest/actions")
+@RequestMapping("/rest/actions")
 public class ActionsController {
 
     @Autowired

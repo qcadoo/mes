@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicException;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
@@ -236,7 +237,7 @@ public class ActionsForPlannedEventService {
             errors.append(actionForPlannedEvent.getErrors().entrySet().stream().map(entry ->
                     translationService.translate("cmmsMachineParts.actionForPlannedEvent." + entry.getKey() + ".label", LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
-            throw new RuntimeException(errors.toString());
+            throw new BasicException(errors.toString());
 
         }
     }
