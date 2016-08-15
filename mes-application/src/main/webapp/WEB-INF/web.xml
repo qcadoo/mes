@@ -119,22 +119,22 @@
     	<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-	<!--<filter>-->
-		<!--<filter-name>filesystemResourcesFilter</filter-name>-->
-		<!--<filter-class>com.qcadoo.view.FilesystemResourcesFilter</filter-class>-->
-		<!--<init-param>-->
-		   <!--<param-name>sourceBasePath</param-name>-->
-		   <!--<param-value></param-value>-->
-		<!--</init-param>-->
-	<!--</filter>-->
+	<filter>
+		<filter-name>filesystemResourcesFilter</filter-name>
+		<filter-class>com.qcadoo.view.FilesystemResourcesFilter</filter-class>
+		<init-param>
+		   <param-name>sourceBasePath</param-name>
+		   <param-value></param-value>
+		</init-param>
+	</filter>
 
-	<!--<filter-mapping>-->
-		<!--<filter-name>filesystemResourcesFilter</filter-name>-->
-		<!--<url-pattern>/*</url-pattern>-->
-		<!--<dispatcher>REQUEST</dispatcher>-->
-		<!--<dispatcher>INCLUDE</dispatcher>-->
-		<!--<dispatcher>FORWARD</dispatcher>-->
-	<!--</filter-mapping>-->
+	<filter-mapping>
+		<filter-name>filesystemResourcesFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+	</filter-mapping>
 
 	<filter>
 		<filter-name>staticResourcesFilter</filter-name>

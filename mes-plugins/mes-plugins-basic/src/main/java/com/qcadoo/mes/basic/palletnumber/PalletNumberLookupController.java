@@ -16,7 +16,7 @@ public class PalletNumberLookupController extends BasicLookupController<PalletNu
     @Override
     protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM (SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
-                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true ) q";
+                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true %s) q";
 
         return query;
     }

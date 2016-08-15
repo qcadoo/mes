@@ -5,13 +5,13 @@ import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.model.api.DictionaryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 @RequestMapping(value = "product")
@@ -52,7 +52,7 @@ public class ProductLookupController extends BasicLookupController<ProductDTO> {
     @Override
     protected String getQueryForRecords(final Long context) {
         String query = "SELECT %s FROM (SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
-                + "FROM basic_product product WHERE product.active = true ) q ";
+                + "FROM basic_product product WHERE product.active = true %s) q ";
 
         return query;
     }

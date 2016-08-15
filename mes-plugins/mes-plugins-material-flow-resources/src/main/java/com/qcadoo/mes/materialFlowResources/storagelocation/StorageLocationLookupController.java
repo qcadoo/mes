@@ -1,15 +1,14 @@
 package com.qcadoo.mes.materialFlowResources.storagelocation;
 
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping(value = "storageLocation")
@@ -22,7 +21,7 @@ public class StorageLocationLookupController extends BasicLookupController<Stora
                 +
                 "JOIN materialflow_location loc on loc.id = sl.location_id " +
                 "WHERE loc.id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document)"+ 
- "AND (CASE WHEN :product != '' THEN p.number = :product OR sl.product_id IS NULL ELSE true END)) q";
+ "AND (CASE WHEN :product != '' THEN p.number = :product OR sl.product_id IS NULL ELSE true END) %s) q";
 
         return query;
     }
