@@ -65,7 +65,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class DocumentDetailsListeners {
@@ -103,7 +102,8 @@ public class DocumentDetailsListeners {
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
-        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
+        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
+                .getBooleanField("acceptanceOfDocumentBeforePrinting");
         if (acceptanceOfDocumentBeforePrinting) {
             createResourcesForDocuments(view, componentState, args);
         }
@@ -178,6 +178,7 @@ public class DocumentDetailsListeners {
         } else {
             formComponent.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
+        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         updatePositions(documentToCreateResourcesFor);
         formComponent.setEntity(documentToCreateResourcesFor);
     }
@@ -347,7 +348,7 @@ public class DocumentDetailsListeners {
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
                                 searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                             position.setField(PositionFields.QUANTITY, convertedQuantity);
