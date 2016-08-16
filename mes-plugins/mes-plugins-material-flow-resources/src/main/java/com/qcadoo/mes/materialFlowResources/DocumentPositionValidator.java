@@ -27,6 +27,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicException;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
@@ -90,7 +91,7 @@ public class DocumentPositionValidator {
         }
 
         if (!errors.isEmpty()) {
-            throw new RuntimeException(errors.stream().collect(Collectors.joining("\n")));
+            throw new BasicException(errors.stream().collect(Collectors.joining("\n")));
         }
 
         return params;
