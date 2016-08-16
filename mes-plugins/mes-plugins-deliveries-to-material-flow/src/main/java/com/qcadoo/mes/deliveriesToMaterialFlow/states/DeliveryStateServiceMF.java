@@ -102,14 +102,14 @@ public class DeliveryStateServiceMF {
             BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 Entity product = product(deliveredProduct);
-                String additionalUnit = deliveredProduct.getStringField(DeliveredProductFields.ADDITIONAL_UNIT);
+                String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 BigDecimal givenQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
                 BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
 
                 documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
                         conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
-                        expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),
-                        palletNumber(deliveredProduct), typeOfPallet(deliveredProduct), additionalCode(deliveredProduct));
+                        expirationDate(deliveredProduct), null, storageLocation(deliveredProduct), palletNumber(deliveredProduct),
+                        typeOfPallet(deliveredProduct), additionalCode(deliveredProduct));
             }
         }
         Entity createdDocument = documentBuilder.setAccepted().build();
