@@ -570,6 +570,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('additionalCode', resource['additionalCode'], rowId);
                 updateFieldValue('price', resource['price'], rowId);
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
+                updateFieldValue('waste', resource['waste'], rowId);
             });
         }
 
@@ -1583,6 +1584,20 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         rowpos: 9,
                         colpos: 2
                     },
+                },
+                {
+                	name: 'waste',
+                	index: 'waste',
+                	editable: true,
+                	edittype: 'checkbox',
+                	formatter: 'checkbox',
+                	editoptions: {
+                		value: '1:0'
+                	},
+                	formoptions: {
+                		rowpos: 10,
+                		colpos: 1
+                	},
                 }
             ],
             pager: "#jqGridPager",
