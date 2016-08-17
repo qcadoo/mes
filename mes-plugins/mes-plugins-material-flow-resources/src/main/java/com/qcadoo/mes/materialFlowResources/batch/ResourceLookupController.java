@@ -118,7 +118,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode" });
+                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "isWaste" });
     }
 
     @Override

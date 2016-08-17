@@ -44,6 +44,9 @@ public class ResourceDTO {
 
     private String typeOfPallet;
 
+    @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
+    private boolean isWaste;
+
     public Long getId() {
         return id;
     }
@@ -178,5 +181,13 @@ public class ResourceDTO {
 
     public void setAc(String ac) {
         this.ac = ac;
+    }
+
+    public boolean isWaste() {
+        return isWaste;
+    }
+
+    public void setWaste(boolean isWaste) {
+        this.isWaste = isWaste;
     }
 }

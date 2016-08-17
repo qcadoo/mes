@@ -55,7 +55,7 @@
         <decimal name="conversion" required="true">
             <validatesRange from="0" />
         </decimal>
-        <boolean name="isWaste"/>
+        <boolean name="isWaste" default="false"/>
 		
         <dictionary name="additionalUnit" dictionary="units"/>
 

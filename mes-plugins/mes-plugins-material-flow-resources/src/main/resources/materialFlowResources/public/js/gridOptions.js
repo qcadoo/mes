@@ -575,7 +575,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet'];
+            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
@@ -813,6 +813,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('givenunit', '', getRowIdFromElement(t));
                         updateFieldValue('givenquantity', '', getRowIdFromElement(t));
                         updateFieldValue('conversion', '', getRowIdFromElement(t));
+                        updateFieldValue('waste', '0', getRowIdFromElement(t));
 
                         clearSelect('givenunit', getRowIdFromElement(t));
                     }
@@ -1635,7 +1636,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
-                if (!outDocument && columnIndex === 'resource') {
+                if (!outDocument && (columnIndex === 'resource' || columnIndex === 'waste')) {
                     return true;
                 }
                 return false;
