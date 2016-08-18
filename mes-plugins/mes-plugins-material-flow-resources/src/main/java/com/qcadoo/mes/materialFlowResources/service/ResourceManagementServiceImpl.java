@@ -222,10 +222,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
-        String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
-
-        BigDecimal quantityInAdditionalUnit = convertToGivenUnit(quantity, resource.getBelongsToField(ResourceFields.PRODUCT),
-                givenUnit);
+        BigDecimal quantityInAdditionalUnit = numberService
+                .setScale(quantity.multiply(resource.getDecimalField(ResourceFields.CONVERSION)));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
