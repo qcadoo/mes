@@ -172,7 +172,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ADDITIONAL_CODE, position.getField(PositionFields.ADDITIONAL_CODE));
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
-        resource.setField(ResourceFields.IS_WASTE, position.getField(PositionFields.WASTE));
+        resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
 
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));

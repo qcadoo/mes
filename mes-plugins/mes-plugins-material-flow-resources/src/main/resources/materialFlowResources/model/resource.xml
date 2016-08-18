@@ -65,7 +65,7 @@
         <dictionary name="typeOfPallet" dictionary="typeOfPallet"/>
         <dictionary name="givenUnit" dictionary="units"/>
         <string name="userName"/>
-        <boolean name="isWaste" default="false"/>
+        <boolean name="waste" default="false"/>
 
     </fields>
     <hooks>

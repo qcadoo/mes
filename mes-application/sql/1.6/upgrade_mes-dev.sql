@@ -205,3 +205,12 @@ ALTER TABLE materialflowresources_document
 ALTER TABLE materialflowresources_storagelocation ADD COLUMN active boolean DEFAULT true;
 
 -- end
+
+-- incomplete resource fields
+-- last touched 18.08.2016 by pako
+
+ALTER TABLE materialflowresources_position ADD COLUMN waste boolean DEFAULT false;
+ALTER TABLE materialflowresources_resource ADD COLUMN waste boolean DEFAULT false;
+INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (19, 'waste', true, true, 19, 1);
+
+--

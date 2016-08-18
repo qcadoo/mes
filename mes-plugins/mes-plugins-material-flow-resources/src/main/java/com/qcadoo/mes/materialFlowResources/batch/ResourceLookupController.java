@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
@@ -32,6 +34,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
 
     @Autowired
     private LookupUtils lookupUtils;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Override
     @ResponseBody
@@ -61,6 +66,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
                     documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false));
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
+        setTranslatedWasteFlag(response);
         return response;
     }
 
@@ -118,7 +124,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "isWaste" });
+                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "wasteString" });
     }
 
     @Override
@@ -129,6 +135,13 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected String getQueryForRecords(Long context) {
         return null;
+    }
+
+    private void setTranslatedWasteFlag(GridResponse<ResourceDTO> responce) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale());
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale());
+        responce.getRows().forEach(resDTO -> resDTO.setWasteString(resDTO.isWaste() ? yes : no));
     }
 
 }

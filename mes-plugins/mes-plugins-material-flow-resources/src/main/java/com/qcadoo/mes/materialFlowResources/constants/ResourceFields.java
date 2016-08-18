@@ -71,6 +71,6 @@ public final class ResourceFields {
 
     public static final String NUMBER = "number";
 
-    public static final String IS_WASTE = "isWaste";
+    public static final String WASTE = "waste";
 
 }
