@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlowResources.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -45,8 +46,12 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     public DocumentBuilder getDocumentBuilder() {
-        return new DocumentBuilder(dataDefinitionService, resourceManagementService, userService, numberGeneratorService);
+        return new DocumentBuilder(dataDefinitionService, resourceManagementService, userService, numberGeneratorService,
+                translationService);
     }
 }
