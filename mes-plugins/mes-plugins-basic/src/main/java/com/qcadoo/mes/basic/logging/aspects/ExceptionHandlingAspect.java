@@ -69,7 +69,7 @@ public class ExceptionHandlingAspect {
     public ModelAndView handleException(final ProceedingJoinPoint pjp, final HttpServletRequest request,
             final HttpServletResponse response, final Object handler, final Exception exception) throws Throwable {
         ErrorResponse errorResponse = null;
-        if (exception instanceof BasicException) {
+        if (exception instanceof BasicException || exception.getCause() instanceof BasicException) {
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
             errorResponse = new ErrorResponse(exception);
             writeResponse(response, errorResponse);
