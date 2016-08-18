@@ -42,6 +42,8 @@
                 <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource"/>
                 <component type="checkbox" name="draftMakesReservation" field="draftMakesReservation"
                            reference="draftMakesReservation"/>
+                <component type="checkbox" name="acceptanceOfDocumentBeforePrinting" field="acceptanceOfDocumentBeforePrinting" 
+                           reference="acceptanceOfDocumentBeforePrinting" hasDescription="true"/>
                 <component type="grid" name="grid" reference="grid" source="#{form}.items">
                     <option type="column" name="name" fields="name" link="true"/>
                     <option type="column" name="checked" fields="checked" width="50"/>

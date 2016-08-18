@@ -39,6 +39,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
@@ -49,7 +50,6 @@ import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
-import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -65,16 +65,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class DocumentDetailsListeners {
 
     @Autowired
     private ResourceManagementService resourceManagementService;
-
-    @Autowired
-    private DocumentDetailsHooks documentDetailsHooks;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -94,12 +90,29 @@ public class DocumentDetailsListeners {
 
     private static final String L_FORM = "form";
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getEntity();
 
         view.redirectTo("/materialFlowResources/document." + args[0] + "?id=" + document.getId(), true, false);
+    }
 
+    public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
+        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
+                .getBooleanField("acceptanceOfDocumentBeforePrinting");
+        if (acceptanceOfDocumentBeforePrinting) {
+            createResourcesForDocuments(view, componentState, args);
+        }
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = form.getEntity();
+        if (form.isValid()) {
+            view.redirectTo("/materialFlowResources/dispositionOrder." + args[0] + "?id=" + document.getId(), true, false);
+        }
     }
 
     public void onSave(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -124,14 +137,16 @@ public class DocumentDetailsListeners {
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        String documentState = document.getStringField(DocumentFields.STATE);
+        if (!DocumentState.DRAFT.getStringValue().equals(documentState)) {
+            return;
+        }
+
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         Entity documentToCreateResourcesFor = documentDD.save(document);
 
@@ -163,6 +178,7 @@ public class DocumentDetailsListeners {
         } else {
             formComponent.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
+        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         updatePositions(documentToCreateResourcesFor);
         formComponent.setEntity(documentToCreateResourcesFor);
     }
@@ -204,7 +220,6 @@ public class DocumentDetailsListeners {
         locationFrom.requestComponentUpdateState();
 
         // showResourceLookupOrBatchInput(view, false, true);
-
         // clearAttributes(view);
     }
 
