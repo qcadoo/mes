@@ -22,3 +22,15 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
 	select row_number() OVER () AS id, internal.*
 	from materialflowresources_storagelocationdto_internal internal;
 -- end
+
+-- masterOrder
+-- last touched 19.08.2016 by kasi
+ALTER TABLE masterorders_masterorder ADD COLUMN lefttorelease numeric(14,5);
+ALTER TABLE masterorders_masterorder ADD COLUMN comments text;
+ALTER TABLE masterorders_masterorder ADD COLUMN masterorderpositionstatus character varying(255);
+
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN lefttorelease numeric(14,5);
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN comments text;
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN masterorderpositionstatus character varying(255);
+
+-- end
