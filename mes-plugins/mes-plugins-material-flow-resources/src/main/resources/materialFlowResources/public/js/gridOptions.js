@@ -182,7 +182,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                 return validateSerializeData(data);
                                             },
                                             onclickSubmit: function (params, postdata) {
-                                                params.url = '../../integration/rest/documentPositions/' + postdata.grid_id + ".html";
+                                                params.url = '../../rest/rest/documentPositions/' + postdata.grid_id + ".html";
                                             },
                                             errorTextFormat: function (response) {
                                                 return translateAndShowMessages(response);
@@ -215,7 +215,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                         return validateSerializeData(data);
                                                     },
                                                     onclickSubmit: function (params, postdata) {
-                                                        params.url = '../../integration/rest/documentPositions.html';
+                                                        params.url = '../../rest/rest/documentPositions.html';
                                                     },
                                                     errorTextFormat: function (response) {
                                                         return translateAndShowMessages(response);
@@ -238,7 +238,7 @@ myApp.directive('ngJqGrid', function ($window) {
                                                                 return ""; // don't send and body for the HTTP DELETE
                                                             },
                                                             onclickSubmit: function (params, postdata) {
-                                                                params.url = '../../integration/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
+                                                                params.url = '../../rest/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
                                                             },
                                                             errorTextFormat: function (response) {
                                                                 return translateMessages(JSON.parse(response.responseText).message);
@@ -525,7 +525,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function resourceLookup_createElement(value, options) {
-            var lookup = createLookupElement('resource', value, '/integration/rest/documentPositions/resources.html', options, function () {
+            var lookup = createLookupElement('resource', value, '/rest/rest/documentPositions/resources.html', options, function () {
                 var rowId = getRowIdFromElement($('input', lookup));
                 var params;
                 if (hasAdditionalUnit) {
@@ -561,7 +561,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function fillWithAttributesFromResource(resource, rowId) {
-            $.get('/integration/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
+            $.get('/rest/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
                 updateFieldValue('batch', resource['batch'], rowId);
                 updateFieldValue('productionDate', resource['productionDate'], rowId);
                 updateFieldValue('expirationDate', resource['expirationDate'], rowId);
@@ -615,7 +615,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/integration/rest/documentPositions/product/' + productNumber + ".html", function (product) {
+            $.get('/rest/rest/documentPositions/product/' + productNumber + ".html", function (product) {
                 updateFieldValue('productName', product.name, _rowID);
             });
         }
@@ -626,7 +626,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/integration/rest/documentPositions/units/' + productNumber + ".html", function (units) {
+            $.get('/rest/rest/documentPositions/units/' + productNumber + ".html", function (units) {
                 available_additionalunits = units['available_additionalunits'];
                 var gridData = $('#grid').jqGrid('getRowData');
 
@@ -698,7 +698,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var storageLocations = null;
         function updateStorageLocations(productNumber, document) {
-            $.get('/integration/rest/documentPositions/storageLocation/' + productNumber + "/" + document + ".html", function (location) {
+            $.get('/rest/rest/documentPositions/storageLocation/' + productNumber + "/" + document + ".html", function (location) {
                 if (location) {
                     var gridData = $('#grid').jqGrid('getRowData');
 
@@ -746,7 +746,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     conversion: 1
                 }
             }
-            $.get('/integration/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
+            $.get('/rest/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
                 var gridData = $('#grid').jqGrid('getRowData');
 
                 var productInput = $('#product');
@@ -884,7 +884,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function storageLocationLookup_createElement(value, options) {
-            var lookup = createLookupElement('storageLocation', value, '/integration/rest/documentPositions/storagelocations.html', options, function () {
+            var lookup = createLookupElement('storageLocation', value, '/rest/rest/documentPositions/storagelocations.html', options, function () {
                 return  {
                     product: getFieldValue('product', getRowIdFromElement($('input', lookup))),
                     location: getDocumentId()
@@ -904,7 +904,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function updateProductFromLocation(location, rowNumber) {
-            $.get('/integration/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
+            $.get('/rest/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
                 if (newProduct) {
                     var productField = updateFieldValue('product', newProduct['name'], rowNumber);
                     productField.trigger('change');
@@ -1239,7 +1239,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var gridEditOptions = {
             keys: true,
-            url: '../../integration/rest/documentPositions.html',
+            url: '../../rest/rest/documentPositions.html',
             mtype: 'PUT',
             errorfunc: errorfunc,
             successfunc: successfunc,
@@ -1248,7 +1248,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var gridAddOptions = {
             rowID: "0",
-            url: '../../integration/rest/documentPositions.html',
+            url: '../../rest/rest/documentPositions.html',
             initdata: {
             },
             position: "first",
@@ -1260,7 +1260,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         };
 
         var config = {
-            url: '../../integration/rest/documentPositions/' + getDocumentId() + '.html',
+            url: '../../rest/rest/documentPositions/' + getDocumentId() + '.html',
             datatype: "json",
             height: '100%',
             autowidth: true,
@@ -1311,14 +1311,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     formatoptions: {
                         keys: true, // we want use [Enter] key to save the row and [Esc] to cancel editing.
                         editOptions: gridEditOptions,
-                        url: '../../integration/rest/documentPositions/' + 1 + '.html',
+                        url: '../../rest/rest/documentPositions/' + 1 + '.html',
                         delbutton: false,
                         onEdit: function (id) {
                             if (typeof (lastSel) !== "undefined" && id !== lastSel) {
                                 cancelEditing(id);
                             }
                             prepareViewOnStartEdit();
-                            gridEditOptions.url = '../../integration/rest/documentPositions/' + id + '.html';
+                            gridEditOptions.url = '../../rest/rest/documentPositions/' + id + '.html';
                             lastSel = id;
                         },
                         afterRestore: function () {
@@ -1628,7 +1628,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             $http({
                 method: 'GET',
-                url: '../../integration/rest/documentPositions/gridConfig/' + config.document_id + '.html'
+                url: '../../rest/rest/documentPositions/gridConfig/' + config.document_id + '.html'
 
             }).then(function successCallback(response) {
                 config.readOnly = response.data.readOnly;
@@ -1704,7 +1704,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         $scope.documentIdChanged = function (id) {
-            config.url = '../../integration/rest/documentPositions/' + id + '.html';
+            config.url = '../../rest/rest/documentPositions/' + id + '.html';
             config.document_id = id;
 
             config.colModel.filter(function (element, index) {
@@ -1733,12 +1733,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {
                 if (rowId === '0') {
-                    option.url = '../../integration/rest/documentPositions.html';
+                    option.url = '../../rest/rest/documentPositions.html';
                     option.errorfunc = errorfunc;
                     option.successfunc = successfunc;
                     option.aftersavefunc = aftersavefunc;
                 } else {
-                    option.url = '../../integration/rest/documentPositions/' + rowId + '.html';
+                    option.url = '../../rest/rest/documentPositions/' + rowId + '.html';
                     option.errorfunc = errorfunc;
                     option.successfunc = successfunc;
                     option.aftersavefunc = aftersavefunc;

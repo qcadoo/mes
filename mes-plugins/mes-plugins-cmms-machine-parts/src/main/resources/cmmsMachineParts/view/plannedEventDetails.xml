@@ -84,6 +84,16 @@
                        defaultAuthorizationRole="ROLE_PLANNED_EVENTS_BASIC_EDIT">
                 <script>
                     <![CDATA[
+                        this.addOnChangeListener({
+                            onSetValue: function(value) {
+                                if (!value || !value.content)
+                                    return;
+
+                                if (value.content.entityId) {
+                                    plannedEventIdChanged(value.content.entityId);
+                                }
+                            }
+                        });
                            this.changeState = function(eventPerformer, ribbonItemName) {
                                 var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
                                 var newState = ribbonItem.forState;
@@ -640,30 +650,13 @@
             </component>
         </windowTab>
         <windowTab name="actionsTab" reference="actionsTab">
-            <component type="grid" name="actions" reference="actions"
-                       source="#{form}.actions" field="#{form}.actions">
-                <option type="column" name="name" fields="action" link="true" expression="#action['name']"/>
-                <option type="column" name="responsibleWorkerName" fields="responsibleWorkerName" link="true"/>
-                <option type="column" name="description" fields="description"/>
-                <option type="column" name="state" fields="state"/>
-                <option type="column" name="reason" fields="reason"/>
-
-                <option type="order" column="name" direction="asc"/>
-
-                <option type="searchable" value="name,responsibleWorkerName,description,state,reason"/>
-                <option type="orderable" value="name,responsibleWorkerName,description,state,reason"/>
-
-                <option type="correspondingView" value="cmmsMachineParts/actionForPlannedEventDetails"/>
-                <option type="correspondingComponent" value="form"/>
-                <option type="correspondingViewInModal" value="true"/>
-
-                <option type="fullscreen" value="true"/>
-                <option type="multiselect" value="true"/>
-                <option type="deletable" value="true"/>
-                <option type="creatable" value="true"/>
-
-                <option type="fixedHeight" value="true"/>
-
+            <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
+                <layoutElement column="1" row="1" minHeight="6">
+                    <component type="staticPage" name="actionsGrid" reference="actionsGrid">
+                        <option type="page" value="cmmsMachineParts/actionsGrid.jsp"/>
+                        <option type="messagesGroup" value="actionsGrid"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
         <windowTab name="solutionDescriptionTab" reference="solutionDescriptionTab">
