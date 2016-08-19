@@ -139,8 +139,8 @@
 
         <windowTab name="productsTab">
             <component type="gridLayout" name="gridLayout" reference="productsTabGridLayout"
-                       columns="3" rows="9">
-                <layoutElement column="1" row="1">
+                       columns="10" rows="9">
+                <layoutElement column="1" width="3" row="1">
                     <component type="select" name="masterOrderType"
                                reference="masterOrderType" field="#{form}.masterOrderType">
 
@@ -150,7 +150,7 @@
                                   class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2">
+                <layoutElement column="1" width="3" row="2">
                     <component type="lookup" name="product" reference="product"
                                field="#{form}.product" hasDescription="true" defaultVisible="false">
                         <option type="column" name="name" fields="name" link="true"
@@ -170,12 +170,12 @@
                                   class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="3">
+                <layoutElement column="1" width="3" row="3">
                     <component type="input" name="defaultTechnology"
                                reference="defaultTechnology" field="#{form}.defaultTechnology"
                                defaultEnabled="never" defaultVisible="false"/>
                 </layoutElement>
-                <layoutElement column="1" row="4">
+                <layoutElement column="1" width="3" row="4">
                     <component type="lookup" name="technology" reference="technology"
                                field="#{form}.technology" source="#{product}.technologies"
                                hasDescription="true" defaultVisible="false">
@@ -193,15 +193,15 @@
                                 method="showPatternTechnology"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="5" height="2">
+                <layoutElement column="1" width="3" row="5" height="2">
                     <component type="textarea" name="comments" field="#{form}.comments"
                                reference="comments"/>
                 </layoutElement>
-                <layoutElement column="1" row="7">
+                <layoutElement column="1" width="3" row="7">
                     <component type="select" name="masterOrderPositionStatus"
                                 reference="masterOrderPositionStatus" field="#{form}.masterOrderPositionStatus"/>
                 </layoutElement>
-                <layoutElement column="1" row="8">
+                <layoutElement column="1" width="3" row="8">
                     <component type="borderLayout" name="productQuantity"
                                reference="borderLayoutProductQuantity">
                         <component type="gridLayout" name="productQuantityGridLayout"
@@ -268,7 +268,7 @@
                     </component>
                 </layoutElement>
 
-                <layoutElement column="2" row="1" width="2" height="9">
+                <layoutElement column="4" row="1" width="7" height="9">
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts">
                         <option type="column" name="productNumber" fields="product"
@@ -277,6 +277,8 @@
                                 expression="#product['name']"/>
                         <option type="column" name="technologyNumber" fields="technology"
                                 expression="#technology['number']"/>
+                        <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus"/>
+                        <option type="column" name="comments" fields="comments"/>
                         <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
                         <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
                         <option type="column" name="leftToRelease" fields="leftToRelease"/>
@@ -287,9 +289,9 @@
                         <option type="order" column="number" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit"/>
+                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments"/>
                         <option type="orderable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit"/>
+                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments"/>
 
                         <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
