@@ -52,7 +52,7 @@
         <windowTab name="mainTab">
             <component type="form" name="masterOrderDetails" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="8">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="masterOrderDefinition" reference="masterOrderDefinition"
                                    field="#{form}.masterOrderDefinition">
@@ -194,10 +194,18 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="5" height="2">
+                    <component type="textarea" name="comments" field="#{form}.comments"
+                               reference="comments"/>
+                </layoutElement>
+                <layoutElement column="1" row="7">
+                    <component type="select" name="masterOrderPositionStatus"
+                                reference="masterOrderPositionStatus" field="#{form}.masterOrderPositionStatus"/>
+                </layoutElement>
+                <layoutElement column="1" row="8">
                     <component type="borderLayout" name="productQuantity"
                                reference="borderLayoutProductQuantity">
                         <component type="gridLayout" name="productQuantityGridLayout"
-                                   columns="4" rows="3" reference="productQuantityGridLayout"
+                                   columns="4" rows="4" reference="productQuantityGridLayout"
                                    hasBorders="false">
                             <layoutElement column="1" row="1" width="3">
                                 <component type="input" name="masterOrderQuantity"
@@ -228,13 +236,26 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="3" width="3">
+                                <component type="input" name="leftToRelease"
+                                           field="leftToRelease" reference="leftToRelease"
+                                           defaultEnabled="never">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="3">
+                                <component type="input" name="leftToReleaseUnit"
+                                           reference="leftToReleaseUnit" hasLabel="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4" width="3">
                                 <component type="input" name="producedOrderQuantity"
                                            field="#{form}.producedOrderQuantity" reference="producedOrderQuantity"
                                            defaultVisible="false" defaultEnabled="never">
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="4" row="3">
+                            <layoutElement column="4" row="4">
                                 <component type="input" name="producedOrderQuantityUnit"
                                            reference="producedOrderQuantityUnit" hasLabel="false"
                                            defaultVisible="false">
@@ -246,6 +267,7 @@
                         <option type="label" value="productQuantityLabel"/>
                     </component>
                 </layoutElement>
+
                 <layoutElement column="2" row="1" width="2" height="9">
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts">
@@ -257,6 +279,7 @@
                                 expression="#technology['number']"/>
                         <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
                         <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
+                        <option type="column" name="leftToRelease" fields="leftToRelease"/>
                         <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity"/>
                         <option type="column" name="productUnit" fields="product"
                                 expression="#product['unit']"/>
@@ -316,13 +339,14 @@
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="startDate" fields="startDate"/>
                 <option type="column" name="finishDate" fields="finishDate"/>
+                <option type="column" name="deadline" fields="deadline"/>
 
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate"/>
+                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate,deadline"/>
                 <option type="orderable"
-                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate"/>
+                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate,deadline"/>
 
                 <option type="weakRelation" value="true"/>
                 <option type="correspondingLookup" value="ordersLookup"/>

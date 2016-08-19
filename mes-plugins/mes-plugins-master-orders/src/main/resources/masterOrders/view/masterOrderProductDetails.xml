@@ -37,7 +37,7 @@
             <component type="form" name="masterOrderProductDetails"
                        reference="form">
                 <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="4">
+                           rows="7">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="product" reference="product"
                                    field="product" hasDescription="true">
@@ -81,10 +81,18 @@
                                     method="showPatternTechnology"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="1" row="4" height="2">
+                        <component type="textarea" name="comments" field="comments"
+                                   reference="comments"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="select" name="masterOrderPositionStatus"
+                                   reference="masterOrderPositionStatus" field="masterOrderPositionStatus"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
                         <component type="borderLayout" name="productQuantity">
                             <component type="gridLayout" name="productQuantityGridLayout"
-                                       columns="4" rows="3" reference="productQuantityGridLayout"
+                                       columns="4" rows="4" reference="productQuantityGridLayout"
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="3">
                                     <component type="input" name="masterOrderQuantity"
@@ -112,18 +120,32 @@
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3" width="3">
+                                    <component type="input" name="leftToRelease"
+                                               field="leftToRelease" reference="leftToRelease"
+                                               defaultEnabled="never">
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="3">
+                                    <component type="input" name="leftToReleaseUnit"
+                                               reference="leftToReleaseUnit" hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="4" width="3">
                                     <component type="input" name="producedOrderQuantity"
                                                field="producedOrderQuantity" reference="producedOrderQuantity"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="3">
+                                <layoutElement column="4" row="4">
                                     <component type="input" name="producedOrderQuantityUnit"
                                                reference="producedOrderQuantityUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
+
                             </component>
                             <option type="label" value="productQuantityLabel"/>
                         </component>

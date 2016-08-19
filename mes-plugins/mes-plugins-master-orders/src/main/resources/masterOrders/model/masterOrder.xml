@@ -50,6 +50,7 @@
         </datetime>
         <datetime name="startDate"/>
         <datetime name="finishDate"/>
+        <datetime name="dateOfReceipt"/>
 
         <boolean name="addMasterPrefixToNumber"/>
 
@@ -68,6 +69,12 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="leftToRelease">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
         <enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
               default="01undefined" required="true">
             <validatesWith
@@ -100,6 +107,9 @@
         <hasMany name="masterOrderProducts" joinField="masterOrder"
                  model="masterOrderProduct" cascade="delete"/>
 
+        <text name="comments" />
+
+        <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
     </fields>
 
     <hooks>
