@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlowResources.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,18 +52,21 @@ public class DocumentBuilder {
 
     private final TranslationService translationService;
 
+    private final ParameterService parameterService;
+
     private final Entity document;
 
     private final List<Entity> positions = Lists.newArrayList();
 
     DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
             final UserService userService, NumberGeneratorService numberGeneratorService,
-            final TranslationService translationService) {
+            final TranslationService translationService, final ParameterService parameterService) {
         this.dataDefinitionService = dataDefinitionService;
         this.resourceManagementService = resourceManagementService;
         this.userService = userService;
         this.numberGeneratorService = numberGeneratorService;
         this.translationService = translationService;
+        this.parameterService = parameterService;
         this.document = createDocument(userService, numberGeneratorService);
     }
 
@@ -298,7 +302,7 @@ public class DocumentBuilder {
         if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue()
                 .equals(savedDocument.getStringField(DocumentFields.STATE)) && buildConnectedPZDocument(savedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService);
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService, parameterService);
             receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
         }
 

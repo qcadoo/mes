@@ -188,10 +188,14 @@ public class DocumentDetailsListeners {
         documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         updatePositions(documentToCreateResourcesFor);
         Entity recentlySavedDocument = documentDD.get(document.getId());
-        if (recentlySavedDocument.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
+        if (documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService);
-            receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(recentlySavedDocument, true);
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                    parameterService);
+            boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+            if (created) {
+                view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
+            }
         }
         formComponent.setEntity(documentToCreateResourcesFor);
     }

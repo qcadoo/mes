@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,9 +50,12 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @Override
     public DocumentBuilder getDocumentBuilder() {
         return new DocumentBuilder(dataDefinitionService, resourceManagementService, userService, numberGeneratorService,
-                translationService);
+                translationService, parameterService);
     }
 }
