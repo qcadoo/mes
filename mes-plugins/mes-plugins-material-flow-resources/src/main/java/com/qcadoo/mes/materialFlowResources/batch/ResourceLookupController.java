@@ -56,6 +56,10 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
         Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode);
 
+        prepareWasteFilter(record);
+        if ("wasteString".equals(sidx)) {
+            sidx = "waste";
+        }
         String query = getQuery(context, useAdditionalCode,
                 documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode));
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
@@ -144,4 +148,22 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         responce.getRows().forEach(resDTO -> resDTO.setWasteString(resDTO.isWaste() ? yes : no));
     }
 
+    private void prepareWasteFilter(ResourceDTO record) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale()).toLowerCase();
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
+                .toLowerCase();
+        String filter = record.getWasteString();
+        if (filter != null) {
+            filter = filter.toLowerCase();
+        }
+        if (yes.equals(filter)) {
+            record.setWaste(true);
+        } else if (no.equals(filter)) {
+            record.setWaste(false);
+        } else {
+            record.setWaste(null);
+        }
+        record.setWasteString(null);
+    }
 }

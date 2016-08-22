@@ -86,9 +86,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate,price"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,documentDate,price"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

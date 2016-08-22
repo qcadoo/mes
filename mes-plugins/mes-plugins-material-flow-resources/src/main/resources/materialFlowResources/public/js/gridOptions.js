@@ -1599,6 +1599,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 		rowpos: 10,
                 		colpos: 1
                 	},
+                	searchoptions: {
+                		sopt: ['eq', 'ne'],
+                		value:': ;1:'+translateMessages('documentGrid.yes')+';0:'+translateMessages('documentGrid.no')
+        			},
+        			stype: 'select'
                 }
             ],
             pager: "#jqGridPager",

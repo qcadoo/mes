@@ -60,7 +60,7 @@ public class DocumentPositionDTO {
     private String resource;
 
     @JsonDeserialize(using = BooleanDeserializer.class)
-    private boolean waste;
+    private Boolean waste;
 
     public Long getId() {
         return id;
@@ -214,11 +214,11 @@ public class DocumentPositionDTO {
         this.resource = resource;
     }
 
-    public boolean isWaste() {
+    public Boolean isWaste() {
         return waste;
     }
 
-    public void setWaste(boolean waste) {
+    public void setWaste(Boolean waste) {
         this.waste = waste;
     }
 
