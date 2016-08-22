@@ -28,6 +28,7 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
 ALTER TABLE masterorders_masterorder ADD COLUMN lefttorelease numeric(14,5);
 ALTER TABLE masterorders_masterorder ADD COLUMN comments text;
 ALTER TABLE masterorders_masterorder ADD COLUMN masterorderpositionstatus character varying(255);
+ALTER TABLE masterorders_masterorder ADD COLUMN dateofreceipt timestamp without time zone;
 
 ALTER TABLE masterorders_masterorderproduct ADD COLUMN lefttorelease numeric(14,5);
 ALTER TABLE masterorders_masterorderproduct ADD COLUMN comments text;
