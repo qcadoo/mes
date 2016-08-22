@@ -22,3 +22,13 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
 	select row_number() OVER () AS id, internal.*
 	from materialflowresources_storagelocationdto_internal internal;
 -- end
+
+-- materialflowresources_document
+-- last touched 18.08.2016 by kasi
+ALTER TABLE materialflowresources_document ADD COLUMN createlinkedpzdocument boolean;
+ALTER TABLE materialflowresources_document ADD COLUMN linkedpzdocumentlocation_id bigint;
+ALTER TABLE materialflowresources_document
+  ADD CONSTRAINT document_linkedpzdocumentlocation_fkey FOREIGN KEY (linkedpzdocumentlocation_id)
+      REFERENCES materialflow_location (id) DEFERRABLE;
+-- end
+
