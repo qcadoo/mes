@@ -1637,11 +1637,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'batch' || columnIndex === 'price' ||
+                        columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
-                if (!outDocument && (columnIndex === 'resource' || columnIndex === 'waste')) {
+                if (!outDocument && (columnIndex === 'resource')) {
                     return true;
                 }
                 return false;
@@ -1669,7 +1669,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                     if (readOnlyInType(config.outDocument, key, response.data)) {
                         gridColModel.editoptions = gridColModel.editoptions || {};
-                        if (gridColModel.edittype === 'select') {
+                        if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
                             gridColModel.editoptions.disabled = 'disabled';
 
                         } else {
