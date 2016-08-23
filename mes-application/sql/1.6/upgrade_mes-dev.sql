@@ -32,3 +32,9 @@ ALTER TABLE materialflowresources_document
       REFERENCES materialflow_location (id) DEFERRABLE;
 -- end
 
+-- made storage locations activable
+-- last touched 23.08.2016 by pako
+
+ALTER TABLE materialflowresources_storagelocation ADD COLUMN active boolean DEFAULT true;
+
+-- end
