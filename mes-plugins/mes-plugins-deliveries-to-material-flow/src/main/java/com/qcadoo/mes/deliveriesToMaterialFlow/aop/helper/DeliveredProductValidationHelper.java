@@ -40,8 +40,12 @@ public class DeliveredProductValidationHelper {
                 .add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY)))
                 .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)))
                 .add(SearchRestrictions.belongsTo(PALLET_NUMBER, deliveredProduct.getBelongsToField(PALLET_NUMBER)))
-                .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, deliveredProduct.getBelongsToField(ADDITIONAL_CODE)))
-                .add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
+                .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, deliveredProduct.getBelongsToField(ADDITIONAL_CODE)));
+        if (deliveredProduct.getField(EXPIRATION_DATE) != null) {
+            scb.add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
+        } else {
+            scb.add(SearchRestrictions.isNull(EXPIRATION_DATE));
+        }
         Long deliveredProductId = deliveredProduct.getId();
         if (deliveredProductId != null) {
             scb.add(SearchRestrictions.idNe(deliveredProductId));
