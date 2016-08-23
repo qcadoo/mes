@@ -45,6 +45,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantitySet
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -171,7 +172,8 @@ public class ProductionCountingQuantityHooksPC {
     }
 
     private List<Entity> getProductionTrackings(final Entity order, final Entity technologyOperationComponent) {
-        SearchCriteriaBuilder searchCriteriaBuilder = order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find();
+        SearchCriteriaBuilder searchCriteriaBuilder = order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find()
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingState.ACCEPTED.getStringValue()));
 
         if (technologyOperationComponent != null) {
             searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,

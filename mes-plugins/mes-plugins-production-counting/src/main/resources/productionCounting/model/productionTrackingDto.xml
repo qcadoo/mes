@@ -30,7 +30,7 @@
 
 	<fields>
 		<string name="number"/>
-		<enum name="state" values="01draft,02accepted,03declined"/>
+		<enum name="state" values="01draft,02accepted,03declined,04corrected"/>
 		<datetime name="createDate"/>
 		<boolean name="lastTracking"/>
 		<datetime name="timeRangeFrom"/>
@@ -54,6 +54,8 @@
 
 		<integer name="division_id"/>
 		<string name="divisionNumber"/>
+
+		<string name="correctionNumber"/>
 	</fields>
 
 	<masterModel plugin="productionCounting" model="productionTracking" />

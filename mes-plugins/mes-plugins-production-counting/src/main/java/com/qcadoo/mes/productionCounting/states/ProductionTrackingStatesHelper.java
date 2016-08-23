@@ -115,6 +115,16 @@ public class ProductionTrackingStatesHelper {
         return context.getStatus();
     }
 
+    public StateChangeStatus tryCorrect(final Entity productionRecord, final boolean logMessages) {
+        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
+                ProductionTrackingStateStringValues.CORRECTED);
+        productionTrackingStateChangeAspect.changeState(context);
+        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
+            logMessages(context);
+        }
+        return context.getStatus();
+    }
+
     private void logMessages(final StateChangeContext context) {
         if (!LOGGER.isWarnEnabled()) {
             return;

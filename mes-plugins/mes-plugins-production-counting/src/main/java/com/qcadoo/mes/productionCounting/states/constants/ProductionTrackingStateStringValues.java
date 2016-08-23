@@ -39,4 +39,6 @@ public final class ProductionTrackingStateStringValues {
 
     public static final String DECLINED = "03declined";
 
+    public static final String CORRECTED = "04corrected";
+
 }
