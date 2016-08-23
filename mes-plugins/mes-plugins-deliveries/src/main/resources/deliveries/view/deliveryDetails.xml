@@ -577,45 +577,59 @@
                         <option type="boldTextRepresentationOnDisabled" value="true"/>
                     </component>
                 </layoutElement>
+
                 <layoutElement column="1" row="2" width="4">
-                    <component type="grid" name="orderedProducts" reference="orderedProducts"
-                               source="#{form}.orderedProducts" defaultEnabled="false">
-                        <option type="column" name="succession" fields="succession"
-                                width="30"/>
-                        <option type="column" name="number" fields="product"
-                                expression="#product['number']" link="true" width="80"/>
-                        <option type="column" name="name" fields="product"
-                                expression="#product['name']" link="true"/>
-                        <option type="column" name="orderedQuantity" fields="orderedQuantity"
-                                width="80"/>
-                        <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" width="30"/>
-                        <option type="column" name="pricePerUnit" fields="pricePerUnit"
-                                width="80"/>
-                        <option type="column" name="totalPrice" fields="totalPrice"
-                                width="80"/>
-                        <option type="column" name="description" fields="description"
-                                width="140"/>
-                        <option type="column" name="additionalCode" fields="additionalCode"
-                        		expression="#additionalCode['code']" width="80"/>
-                        <option type="order" column="succession" direction="asc"/>
+					<component type="grid" name="orderedProducts"
+							   model="orderedProductDto" reference="orderedProducts"
+							   defaultEnabled="false">
 
-                        <option type="searchable" value="number,name,orderedQuantity,unit,additionalCode"/>
-                        <option type="orderable" value="succession,number,name,orderedQuantity,unit,additionalCode"/>
+						<option type="column" name="succession" fields="succession"
+								width="30"/>
 
-                        <option type="correspondingView" value="deliveries/orderedProductDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
+						<option type="column" name="productNumber" fields="productNumber" link="true" width="80"/>
 
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-                        <option type="fixedHeight" value="true"/>
+						<option type="column" name="productName" fields="productName" link="true" width="80"/>
 
-                        <listener event="select" method="disableShowProductButton"
-                                  class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
-                    </component>
+						<option type="column" name="orderedQuantity" fields="orderedQuantity"
+								width="80"/>
+
+						<option type="column" name="productUnit" fields="productUnit"
+								width="30"/>
+
+						<option type="column" name="pricePerUnit" fields="pricePerUnit"
+								width="80"/>
+
+						<option type="column" name="totalPrice" fields="totalPrice"
+								width="80"/>
+
+						<option type="column" name="description" fields="description"
+								width="140"/>
+
+						<option type="column" name="additionalCode" fields="additionalCode"
+								 width="80"/>
+
+						<option type="order" column="succession" direction="asc"/>
+
+						<option type="searchable" value="productNumber,productName,orderedQuantity,productUnit,additionalCode"/>
+						<option type="orderable" value="succession,productNumber,productName,orderedQuantity,productUnit,additionalCode"/>
+
+						<option type="correspondingView" value="deliveries/orderedProductDetails"/>
+						<option type="correspondingComponent" value="form"/>
+						<option type="correspondingViewInModal" value="true"/>
+
+						<option type="creatable" value="true"/>
+						<option type="deletable" value="true"/>
+						<option type="fullscreen" value="true"/>
+						<option type="multiselect" value="true"/>
+						<option type="fixedHeight" value="true"/>
+
+						<listener event="select" method="disableShowProductButton"
+								  class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
+						<criteriaModifier
+								class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
+								method="mainRestriction"/>
+
+					</component>
                 </layoutElement>
                 <layoutElement column="2" row="1">
                     <component type="gridLayout"
@@ -753,6 +767,8 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="generateDeliveryNumber"/>
+		<beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+					  method="setFilterValue"/>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="fillCompanyFieldsForSupplier"/>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
