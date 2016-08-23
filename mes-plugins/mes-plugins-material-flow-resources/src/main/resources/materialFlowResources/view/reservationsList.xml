@@ -59,15 +59,12 @@
             <option type="column" name="documentName" fields="position"
                     width="50" expression="#position?.get('document')?.get('name')"/>
 
-            <option type="column" name="warehouseIssueNumber" fields="productsToIssue"
-                    width="50" expression="#productsToIssue?.get('warehouseIssue')?.get('number')"/>
-
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,warehouseIssueNumber"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
             <option type="orderable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,warehouseIssueNumber"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

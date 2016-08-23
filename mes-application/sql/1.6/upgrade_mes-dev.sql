@@ -34,4 +34,19 @@ ALTER TABLE masterorders_masterorderproduct ADD COLUMN lefttorelease numeric(14,
 ALTER TABLE masterorders_masterorderproduct ADD COLUMN comments text;
 ALTER TABLE masterorders_masterorderproduct ADD COLUMN masterorderpositionstatus character varying(255);
 
+
+-- materialflowresources_document
+-- last touched 18.08.2016 by kasi
+ALTER TABLE materialflowresources_document ADD COLUMN createlinkedpzdocument boolean;
+ALTER TABLE materialflowresources_document ADD COLUMN linkedpzdocumentlocation_id bigint;
+ALTER TABLE materialflowresources_document
+  ADD CONSTRAINT document_linkedpzdocumentlocation_fkey FOREIGN KEY (linkedpzdocumentlocation_id)
+      REFERENCES materialflow_location (id) DEFERRABLE;
+-- end
+
+-- made storage locations activable
+-- last touched 23.08.2016 by pako
+
+ALTER TABLE materialflowresources_storagelocation ADD COLUMN active boolean DEFAULT true;
+
 -- end
