@@ -60,7 +60,18 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <decimal name="leftToRelease">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+
         <string name="defaultTechnology" persistent="false"/>
+
+        <text name="comments" />
+
+        <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
     </fields>
 
     <hooks>

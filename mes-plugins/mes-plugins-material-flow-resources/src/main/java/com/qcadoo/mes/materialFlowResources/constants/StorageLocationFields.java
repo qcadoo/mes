@@ -6,6 +6,8 @@ public final class StorageLocationFields {
 
     }
 
+    public static final String ACTIVE = "active";
+
     public static final String NUMBER = "number";
 
     public static final String LOCATION = "location";

@@ -136,13 +136,13 @@ import java.util.stream.Collectors;
         if (Strings.isNullOrEmpty(product)) {
             preparedQuery = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :query "
                     + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = "
-                    + Integer.parseInt(document) + "); ";
+                    + Integer.parseInt(document) + ") AND active = true; ";
         } else {
 
             preparedQuery = "SELECT id, number from materialflowresources_storagelocation WHERE number ilike :query "
                     + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = "
                     + Integer.parseInt(document) + ") " + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE '"
-                    + product + "') OR product_id IS NULL);";
+                    + product + "') OR product_id IS NULL) AND active = true;";
         }
         List<AbstractDTO> entities = getStorageLocations(q, product, document);
         Map<String, Object> paramMap = new HashMap<>();
@@ -312,7 +312,7 @@ import java.util.stream.Collectors;
         String query =
                 "select sl.id, sl.number as number, p.name as product, loc.name as location from materialflowresources_storagelocation sl join basic_product p on p.id = sl.product_id join materialflow_location loc on loc.id = sl.location_id\n"
                         + "where location_id in\n"
-                        + "(SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :document) AND p.number = :product LIMIT 1;";
+                + "(SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :document) AND sl.active = true AND p.number = :product LIMIT 1;";
         Map<String, Object> filter = new HashMap<>();
         filter.put("product", product);
         filter.put("document", Integer.parseInt(document));
