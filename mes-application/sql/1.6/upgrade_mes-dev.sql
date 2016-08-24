@@ -178,6 +178,18 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
 	from materialflowresources_storagelocationdto_internal internal;
 -- end
 
+-- masterOrder
+-- last touched 19.08.2016 by kasi
+ALTER TABLE masterorders_masterorder ADD COLUMN lefttorelease numeric(14,5);
+ALTER TABLE masterorders_masterorder ADD COLUMN comments text;
+ALTER TABLE masterorders_masterorder ADD COLUMN masterorderpositionstatus character varying(255);
+ALTER TABLE masterorders_masterorder ADD COLUMN dateofreceipt timestamp without time zone;
+
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN lefttorelease numeric(14,5);
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN comments text;
+ALTER TABLE masterorders_masterorderproduct ADD COLUMN masterorderpositionstatus character varying(255);
+
+
 -- materialflowresources_document
 -- last touched 18.08.2016 by kasi
 ALTER TABLE materialflowresources_document ADD COLUMN createlinkedpzdocument boolean;

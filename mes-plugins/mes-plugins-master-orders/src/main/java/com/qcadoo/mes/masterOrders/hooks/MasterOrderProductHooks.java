@@ -23,20 +23,17 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class MasterOrderProductHooks {
@@ -47,6 +44,11 @@ public class MasterOrderProductHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private NumberService numberService;
+
+    private Entity masterOrderProduct;
+
     public boolean onDelete(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         return checkAssignedOrder(masterOrderProduct);
     }
@@ -54,7 +56,18 @@ public class MasterOrderProductHooks {
     public void onView(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         countCumulativeOrderQuantity(masterOrderProduct);
         fillRegisteredQuantity(masterOrderProduct);
+        calculateLeftToRelease(masterOrderProduct);
 
+    }
+
+    private void calculateLeftToRelease(Entity masterOrderProduct) {
+        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrderProduct.getDecimalField("masterOrderQuantity")).subtract(
+                BigDecimalUtils.convertNullToZero(masterOrderProduct.getDecimalField("producedOrderQuantity")),
+                numberService.getMathContext());
+        if (BigDecimal.ZERO.compareTo(value) == 1) {
+            value = BigDecimal.ZERO;
+        }
+        masterOrderProduct.setField(MasterOrderProductFields.LEFT_TO_RELASE, value);
     }
 
     private void fillRegisteredQuantity(Entity masterOrderProduct) {

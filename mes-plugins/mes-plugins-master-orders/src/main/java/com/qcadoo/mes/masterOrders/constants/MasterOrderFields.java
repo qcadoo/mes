@@ -47,6 +47,8 @@ public final class MasterOrderFields {
 
     public static final String FINISH_DATE = "finishDate";
 
+    public static final String DATE_OF_RECIPT = "dateOfReceipt";
+
     public static final String ADD_MASTER_PREFIX_TO_NUMBER = "addMasterPrefixToNumber";
 
     public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
@@ -70,5 +72,11 @@ public final class MasterOrderFields {
     public static final String MASTER_ORDER_PRODUCTS = "masterOrderProducts";
 
     public static final String PRODUCED_ORDER_QUQNTITY = "producedOrderQuantity";
+
+    public static final String LEFT_TO_RELASE = "leftToRelease";
+
+    public static final String COOMENTS = "comments";
+
+    public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
 }
