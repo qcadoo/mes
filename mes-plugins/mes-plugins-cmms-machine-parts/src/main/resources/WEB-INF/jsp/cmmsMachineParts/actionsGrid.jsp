@@ -48,31 +48,27 @@ String ctx = request.getContextPath();
     </c:choose>
 
     <script src="/cmmsMachineParts/public/js/gridOptions.js?ver=${buildNumber}"></script>
-
-    <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
     <script src="/qcadooView/public/js/crud/qcd/components/jqGrid/jquery.blockUI.js?ver=${buildNumber}"></script>
 
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/ui.jqgrid.css?ver=${buildNumber}" />
-    <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/_jquery-ui-1.8.5.custom.css?ver=${buildNumber}" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/window.css?ver=${buildNumber}" type="text/css" />
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/crud/components/grid.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" type="text/css" media="screen" href="/basic/public/css/custom.css?ver=${buildNumber}">
-    <link rel="stylesheet" type="text/css" media="screen" href="/cmmsMachineParts/public/css/customActionsGrid.css?ver=${buildNumber}">
-        <script type="text/javascript">
-            var QCD = QCD || {};
+    <link rel="stylesheet" type="text/css" media="screen" href="/cmmsMachineParts/public/css/customActionsGrid.css?ver=${buildNumber}" />
+    
+    <script type="text/javascript">
+        var QCD = QCD || {};
 
-            QCD.currentLang = '<c:out value="${locale}" />';
+        QCD.currentLang = '<c:out value="${locale}" />';
 
-            QCD.translate = function (key) {
-                var msg = QCD.translations[key];
-                return msg === undefined ? '[' + key + ']' : msg;
-            };
+        QCD.translate = function (key) {
+            var msg = QCD.translations[key];
+            return msg === undefined ? '[' + key + ']' : msg;
+        };
 
-            QCD.translations = {};
-            <c:forEach items="${translationsMap}" var="translation">
-                QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
-            </c:forEach>
-        </script>
+        QCD.translations = {};
+        <c:forEach items="${translationsMap}" var="translation">
+            QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
+        </c:forEach>
+    </script>
 
     <div class="windowContainer" style="background:#9b9b9b;" ng-app="gridApp" ng-controller="GridController" id="GridController">
 
