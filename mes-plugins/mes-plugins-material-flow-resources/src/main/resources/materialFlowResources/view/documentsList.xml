@@ -45,7 +45,7 @@
                                         args    : ['pdf'],
                                         type    : undefined,
                                         callback : function(){
-                                            #{grid}.performRefresh();
+                                            setTimeout(function(){#{grid}.performRefresh();}, 2000);
                                         }
                                     });
                                 }
