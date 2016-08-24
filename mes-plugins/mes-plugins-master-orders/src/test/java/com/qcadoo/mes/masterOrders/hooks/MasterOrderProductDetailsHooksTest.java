@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -43,6 +32,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class MasterOrderProductDetailsHooksTest {
 
@@ -57,7 +56,8 @@ public class MasterOrderProductDetailsHooksTest {
     private FormComponent masterOrderProductForm;
 
     @Mock
-    private FieldComponent cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField, producedOrderQuantityUnitField;
+    private FieldComponent cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField, producedOrderQuantityUnitField,
+            leftToRelease, leftToReleaseUnit, comments, masterOrderPositionStatus;
 
     @Mock
     private LookupComponent productField;
@@ -78,11 +78,13 @@ public class MasterOrderProductDetailsHooksTest {
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
         given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
-
+        given(view.getComponentByReference("leftToReleaseUnit")).willReturn(leftToReleaseUnit);
+        given(view.getComponentByReference("leftToRelease")).willReturn(leftToRelease);
+        given(view.getComponentByReference("comments")).willReturn(comments);
+        given(view.getComponentByReference("masterOrderPositionStatus")).willReturn(masterOrderPositionStatus);
         given(masterOrderProductForm.getEntity()).willReturn(masterOrderProduct);
         given(masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)).willReturn(masterOrder);
     }
-
 
     @Test
     public final void shouldSetNullWhenProductDoesnotExists() {
@@ -128,15 +130,14 @@ public class MasterOrderProductDetailsHooksTest {
 
         given(masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY)).willReturn(
                 cumulatedOrderQuantity);
-        given(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY))
-                .willReturn(masterOrderQuantity);
+        given(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantity);
 
         // when
         masterOrderProductDetailsHooks.showErrorWhenCumulatedQuantity(view);
 
         // then
-        verify(masterOrderProductForm).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO,
-                false);
+        verify(masterOrderProductForm).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
+                MessageType.INFO, false);
     }
 
     @Test
@@ -152,14 +153,13 @@ public class MasterOrderProductDetailsHooksTest {
 
         given(masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY)).willReturn(
                 cumulatedOrderQuantity);
-        given(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY))
-                .willReturn(masterOrderQuantity);
+        given(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantity);
 
         // when
         masterOrderProductDetailsHooks.showErrorWhenCumulatedQuantity(view);
         // then
-        verify(masterOrderProductForm, Mockito.never()).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
-                MessageType.INFO, false);
+        verify(masterOrderProductForm, Mockito.never()).addMessage(
+                "masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO, false);
     }
 
 }

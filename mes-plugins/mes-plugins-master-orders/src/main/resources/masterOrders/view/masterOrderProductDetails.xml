@@ -92,7 +92,7 @@
                     <layoutElement column="1" row="7">
                         <component type="borderLayout" name="productQuantity">
                             <component type="gridLayout" name="productQuantityGridLayout"
-                                       columns="4" rows="4" reference="productQuantityGridLayout"
+                                       columns="8" rows="2" reference="productQuantityGridLayout"
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="3">
                                     <component type="input" name="masterOrderQuantity"
@@ -119,27 +119,28 @@
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="3" width="3">
+
+                                <layoutElement column="5" row="1" width="3">
                                     <component type="input" name="leftToRelease"
                                                field="leftToRelease" reference="leftToRelease"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="3">
+                                <layoutElement column="8" row="1">
                                     <component type="input" name="leftToReleaseUnit"
                                                reference="leftToReleaseUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="4" width="3">
+                                <layoutElement column="5" row="2" width="3">
                                     <component type="input" name="producedOrderQuantity"
                                                field="producedOrderQuantity" reference="producedOrderQuantity"
                                                defaultEnabled="never">
                                         <option type="alignment" value="right"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="4" row="4">
+                                <layoutElement column="8" row="2">
                                     <component type="input" name="producedOrderQuantityUnit"
                                                reference="producedOrderQuantityUnit" hasLabel="false">
                                         <option type="textRepresentationOnDisabled" value="true"/>
@@ -151,6 +152,8 @@
                         </component>
                     </layoutElement>
                 </component>
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
             </component>
         </windowTab>
 
