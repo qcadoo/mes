@@ -125,14 +125,17 @@
 										cancelTracking.enable();
 									} else if (state == "02accepted") {
 										acceptTracking.disable();
-										cancelTracking.enable();
-
 										deleteButton.disable();
+										cancelTracking.disable();
 									} else if (state == "03declined") {
 										acceptTracking.disable();
 										cancelTracking.disable();
 
 										deleteButton.enable();
+									} else if (state == "04corrected") {
+										acceptTracking.disable();
+										cancelTracking.disable();
+										deleteButton.disable();
 									} else{
 										acceptTracking.disable();
 										cancelTracking.disable();
@@ -143,7 +146,7 @@
 								}
 
 								for (var i in selectedEntitiesArray) {
-									if (selectedEntitiesArray[i].fields.state == "02accepted") {
+									if (selectedEntitiesArray[i].fields.state == "02accepted" || selectedEntitiesArray[i].fields.state == "04corrected") {
 										deleteable = false;
 
 										break;
@@ -199,14 +202,16 @@
 					width="100"/>
 			<option type="column" name="timeRangeTo" fields="timeRangeTo"
 					width="100"/>
+			<option type="column" name="correctionNumber" fields="correctionNumber"
+					width="120"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 
 			<option type="order" column="number" direction="desc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
 			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
 
 			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
 			<option type="correspondingComponent" value="form"/>
@@ -223,4 +228,6 @@
 		<option type="header" value="false"/>
 	</component>
 
+	<hooks>
+	</hooks>
 </view>

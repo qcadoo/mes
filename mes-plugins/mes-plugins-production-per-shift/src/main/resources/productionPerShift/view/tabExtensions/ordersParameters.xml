@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -24,30 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="productionTrackingStateChange" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+					xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+					plugin="orders" view="ordersParameters">
 
-	<fields>
-		<!-- generic state change fields -->
-		<datetime name="dateAndTime"/>
-		<enum name="sourceState" values="01draft,02accepted,03declined,04corrected"/>
-		<enum name="targetState" values="01draft,02accepted,03declined,04corrected"
-			  required="true"/>
-		<enum name="status"
-			  values="01inProgress,02paused,03successful,04failure,05canceled"
-			  required="true"/>
-		<integer name="phase"/>
-		<string name="worker"/>
-		<belongsTo name="shift" model="shift" plugin="basic"/>
-		<belongsTo name="productionTracking" model="productionTracking"/>
-		<!-- owner -->
+	<windowTab name="planPerShiftTab" reference="planPerShiftTab">
+		<component type="checkbox" name="trackingCorrectionRecalculatePps"
+				   field="#{form}.trackingCorrectionRecalculatePps" reference="trackingCorrectionRecalculatePps"/>
+	</windowTab>
 
-		<hasMany name="messages" joinField="productionTrackingStateChange"
-				 model="message" plugin="states" cascade="delete"/>
-		<!-- messages -->
-	</fields>
-
-	<hooks/>
-
-</model>
+</windowTabExtension>

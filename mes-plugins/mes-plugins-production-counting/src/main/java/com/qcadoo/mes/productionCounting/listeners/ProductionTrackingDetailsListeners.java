@@ -283,4 +283,14 @@ public class ProductionTrackingDetailsListeners {
         }
 
     }
+
+    public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity productionRecord = productionRecordForm.getPersistedEntityWithIncludedFormValues();
+        if (productionRecord != null) {
+            Long id = productionTrackingService.correct(productionRecord).getId();
+            String url = "../page/productionCounting/productionTrackingDetails.html";
+            view.redirectTo(url, false, true, ImmutableMap.of("form.id", id));
+        }
+    }
 }

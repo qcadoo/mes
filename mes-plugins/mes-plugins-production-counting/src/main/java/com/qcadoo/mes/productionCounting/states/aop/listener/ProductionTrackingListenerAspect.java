@@ -95,7 +95,7 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
     public void onChangeFromAcceptedToDecline(final StateChangeContext stateChangeContext, final int phase) {
         productionTrackingListenerService.onChangeFromAcceptedToDeclined(stateChangeContext);
     }
-    
+
     @RunInPhase(ProductionTrackingStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = ProductionTrackingStateStringValues.DRAFT)
     @Before(PHASE_EXECUTION_POINTCUT)
@@ -103,4 +103,10 @@ public class ProductionTrackingListenerAspect extends AbstractStateListenerAspec
         productionTrackingListenerService.onLeavingDraft(stateChangeContext);
     }
 
+    @RunInPhase(ProductionTrackingStateChangePhase.LAST)
+    @RunForStateTransition(targetState = ProductionTrackingStateStringValues.CORRECTED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onCorrected(final StateChangeContext stateChangeContext, final int phase) {
+        productionTrackingListenerService.onCorrected(stateChangeContext);
+    }
 }
