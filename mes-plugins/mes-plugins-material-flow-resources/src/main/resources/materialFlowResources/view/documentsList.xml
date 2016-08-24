@@ -35,7 +35,24 @@
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete"/>
             <group name="print">
-                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" action="#{grid}.fireEvent(printDispositionOrder,pdf);" state="enabled"/>
+                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent({
+                                        name    : 'printDispositionOrder',
+                                        args    : ['pdf'],
+                                        type    : undefined,
+                                        callback : function(){
+                                            #{grid}.performRefresh();
+                                        }
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
