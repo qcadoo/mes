@@ -25,6 +25,8 @@ package com.qcadoo.mes.technologies.tree.builder;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalOperationProductComponent;
@@ -67,6 +69,13 @@ public class OperationProductComponentImpl implements InternalOperationProductCo
     @Override
     public void setQuantity(final BigDecimal quantity) {
         entity.setField(operationType.getQuantityFieldName(), quantity);
+    }
+
+    @Override
+    public void setPriority(final int priority) {
+        if (!StringUtils.isEmpty(operationType.getPriorityFieldName())) {
+            entity.setField(operationType.getPriorityFieldName(), priority);
+        }
     }
 
 }

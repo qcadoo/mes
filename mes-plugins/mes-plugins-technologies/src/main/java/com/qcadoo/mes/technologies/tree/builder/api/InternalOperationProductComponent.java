@@ -36,14 +36,7 @@ import com.qcadoo.model.api.Entity;
 public interface InternalOperationProductComponent extends OperationProductComponent {
 
     /**
-     * Sets a quantity of product
-     * 
-     * @param quantity
-     */
-    void setQuantity(final BigDecimal quantity);
-
-    /**
-     * Sets an product entity
+     * Sets a product entity
      * 
      * @param product
      *            product entity
@@ -51,5 +44,21 @@ public interface InternalOperationProductComponent extends OperationProductCompo
      *             when given entity has type other than #basic_product.
      */
     void setProduct(final Entity product);
+
+    /**
+     * Sets a quantity of product
+     *
+     * @param quantity
+     */
+    void setQuantity(final BigDecimal quantity);
+
+
+    /**
+     * Sets a priority
+     *
+     * @param priority
+     *
+     */
+    void setPriority(final int priority);
 
 }

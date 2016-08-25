@@ -45,16 +45,12 @@ public class ItemWithQuantity<T> {
 
     public final T item;
 
-    public ItemWithQuantity(final T item, final BigDecimal quantity) {
+    public final int priority;
+
+    public ItemWithQuantity(final T item, final BigDecimal quantity, final int priority) {
         this.item = item;
         this.quantity = quantity;
-    }
-
-    /**
-     * @return quantity
-     */
-    public BigDecimal getQuantity() {
-        return quantity;
+        this.priority = priority;
     }
 
     /**
@@ -64,9 +60,24 @@ public class ItemWithQuantity<T> {
         return item;
     }
 
+
+    /**
+     * @return quantity
+     */
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    /**
+     * @return priority
+     */
+    public int getPriority() {
+        return priority;
+    }
+
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(item).append(quantity).toHashCode();
+        return new HashCodeBuilder().append(item).append(quantity).append(priority).toHashCode();
     }
 
     @Override
@@ -74,11 +85,14 @@ public class ItemWithQuantity<T> {
         if (this == obj) {
             return true;
         }
+
         if (!(obj instanceof ItemWithQuantity)) {
             return false;
         }
+
         ItemWithQuantity<?> other = (ItemWithQuantity<?>) obj;
-        return new EqualsBuilder().append(item, other.item).append(quantity, other.quantity).isEquals();
+
+        return new EqualsBuilder().append(item, other.item).append(quantity, other.quantity).append(priority, other.priority).isEquals();
     }
 
 }
