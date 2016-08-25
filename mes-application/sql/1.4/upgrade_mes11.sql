@@ -1,6 +1,6 @@
 -- table: qcadooview_item
--- last touched 03.02.2015 by lupo
+-- last touched 24.08.2016 by lupo
 
-UPDATE qcadooview_item SET category_id = 3 WHERE pluginidentifier = 'productionLines';
+UPDATE qcadooview_item SET category_id = (SELECT id FROM qcadooview_category WHERE name = 'basic' LIMIT 1) WHERE pluginidentifier = 'productionLines';
 
 -- end
