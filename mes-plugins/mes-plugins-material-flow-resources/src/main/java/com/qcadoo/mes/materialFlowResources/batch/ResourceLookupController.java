@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
@@ -56,25 +57,28 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
         Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode);
 
-        prepareWasteFilter(record);
+        boolean properFilter = prepareWasteFilter(record);
         if ("wasteString".equals(sidx)) {
             sidx = "waste";
         }
         String query = getQuery(context, useAdditionalCode,
-                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode));
+                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode),
+                !properFilter);
+
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
             parameters = geParameters(context, record, false, additionalCode);
             query = getQuery(context, false,
-                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false));
+                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false), !properFilter);
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
         setTranslatedWasteFlag(response);
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal) {
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal,
+            boolean wasteFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(
                 "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
@@ -86,6 +90,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append(
                 " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion ");
+        if (wasteFilterIsWrong) {
+            queryBuilder.append(" AND waste IS NULL ");
+        }
         if (useAdditionalCode) {
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
@@ -148,12 +155,13 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         responce.getRows().forEach(resDTO -> resDTO.setWasteString(resDTO.isWaste() ? yes : no));
     }
 
-    private void prepareWasteFilter(ResourceDTO record) {
+    private boolean prepareWasteFilter(ResourceDTO record) {
         String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
                 LocaleContextHolder.getLocale()).toLowerCase();
         String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
                 .toLowerCase();
         String filter = record.getWasteString();
+        record.setWasteString(null);
         if (filter != null) {
             filter = filter.toLowerCase();
         }
@@ -161,9 +169,11 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             record.setWaste(true);
         } else if (no.equals(filter)) {
             record.setWaste(false);
+        } else if (!StringUtils.isEmpty(filter)) {
+            return false;
         } else {
             record.setWaste(null);
         }
-        record.setWasteString(null);
+        return true;
     }
 }
