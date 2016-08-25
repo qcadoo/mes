@@ -1,4 +1,3 @@
-
 package com.qcadoo.mes.newstates;
 
 import com.google.common.base.Optional;
@@ -9,12 +8,16 @@ import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentMessagesHolder;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -107,7 +110,7 @@ public class StateExecutorService {
 
         entity = hookOnValidate(entity, services, sourceState, targetState);
         if (!entity.isValid()) {
-            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
+            copyErrorMessages(entity);
             return entity;
         }
         entity = changeState(entity, targetState);
@@ -196,7 +199,14 @@ public class StateExecutorService {
     private <M extends StateService> List<M> lookupChangeStateServices(Class<M> serviceMarker) {
         Map<String, M> stateServices = applicationContext.getBeansOfType(serviceMarker);
 
-        List<M> services = Lists.newArrayList(stateServices.values());
+        List<M> services = new ArrayList<>();
+
+        for (M service : stateServices.values()) {
+            if (serviceEnabled(service)) {
+                services.add(service);
+            }
+        }
+
         AnnotationAwareOrderComparator.sort(services);
 
         return services;
@@ -205,12 +215,35 @@ public class StateExecutorService {
     public <M extends StateService> void buildInitial(Class<M> serviceMarker, Entity entity, String initialState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
 
-        StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
+        StateChangeEntityDescriber describer = services.get(0).getChangeEntityDescriber();
 
         Entity stateChangeEntity = saveStateChangeEntity(describer, null, initialState, entity);
 
         entity.setField(describer.getOwnerStateFieldName(), initialState);
         entity.setField(describer.getOwnerStateChangesFieldName(), Lists.newArrayList(stateChangeEntity));
 
+    }
+
+    private <M extends Object & StateService> boolean serviceEnabled(M service) {
+        RunIfEnabled runIfEnabled = service.getClass().getAnnotation(RunIfEnabled.class);
+        if (runIfEnabled == null) {
+            return true;
+        }
+        for (String pluginIdentifier : runIfEnabled.value()) {
+            if (!PluginUtils.isEnabled(pluginIdentifier)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void copyErrorMessages(Entity entity) {
+        for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
+            componentMessagesHolder.addMessage(errorMessage);
+        }
+        for (ErrorMessage errorMessage : entity.getErrors().values()) {
+            componentMessagesHolder.addMessage(errorMessage);
+        }
     }
 }
