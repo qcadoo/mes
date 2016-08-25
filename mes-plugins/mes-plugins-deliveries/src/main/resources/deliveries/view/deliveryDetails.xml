@@ -601,13 +601,13 @@
                                 width="30"/>
 
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
-                                width="80"/>
+                                width="60"/>
 
                         <option type="column" name="totalPrice" fields="totalPrice"
                                 width="80"/>
 
                         <option type="column" name="description" fields="description"
-                                width="140"/>
+                                width="120"/>
 
                         <option type="column" name="additionalCode" fields="additionalCode"
                                 width="80"/>
