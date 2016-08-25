@@ -1,4 +1,4 @@
--- added corrections to production tracking
+﻿-- added corrections to production tracking
 -- last touched 12.07 by pako
 ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
 ALTER TABLE productioncounting_productiontracking
@@ -153,7 +153,7 @@ ALTER TABLE basic_parameter ADD COLUMN trackingcorrectionrecalculatepps boolean 
 
 -- end
 
-﻿-- storageLocationDto
+-- storageLocationDto
 -- last touched 12.08.2016 by kama
 
 CREATE SEQUENCE materialFlowResources_storagelocationdto_id_seq;
