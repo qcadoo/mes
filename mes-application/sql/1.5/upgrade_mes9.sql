@@ -39,7 +39,7 @@ ALTER TABLE assignmenttoshift_staffassignmenttoshift ADD COLUMN description char
 -- end
 
 -- cmmsmachineparts_plannedevent
--- last touched 19.02.2016 by wesi
+-- last touched 24.08.2016 by lupo
 
 DROP VIEW cmmsmachineparts_plannedeventlistdto;
 
@@ -123,7 +123,7 @@ CREATE OR REPLACE VIEW cmmsmachineparts_plannedeventlistdto AS
           ON maintenanceevent.workstation_id = workstation.id
       LEFT JOIN basic_subassembly subassembly
           ON maintenanceevent.subassembly_id = subassembly.id
-      LEFT JOIN basic_faulttype faultType
+      LEFT JOIN cmmsmachineparts_faulttype faultType
           ON maintenanceevent.faulttype_id = faultType.id
       LEFT JOIN productionLines_productionLine productionLine
           ON maintenanceevent.productionline_id = productionLine.id;
