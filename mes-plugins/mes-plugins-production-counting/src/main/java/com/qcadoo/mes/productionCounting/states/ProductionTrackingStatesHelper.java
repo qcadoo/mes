@@ -23,12 +23,14 @@
  */
 package com.qcadoo.mes.productionCounting.states;
 
+import com.qcadoo.mes.newstates.StateExecutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 //import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
@@ -65,6 +67,9 @@ public class ProductionTrackingStatesHelper {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+    
     public void setInitialState(final Entity productionTracking) {
         stateChangeEntityBuilder.buildInitial(stateChangeDescriber, productionTracking, ProductionTrackingState.DRAFT);
     }
@@ -105,20 +110,24 @@ public class ProductionTrackingStatesHelper {
 //        return tryAccept(productionRecord, false);
 //    }
 
-//    public StateChangeStatus tryAccept(final Entity productionRecord, final boolean logMessages) {
-//        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
-//                ProductionTrackingStateStringValues.ACCEPTED);
+    public StateChangeStatus tryAccept(final Entity productionRecord, final boolean logMessages) {
+        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
+                ProductionTrackingStateStringValues.ACCEPTED);
+        
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.ACCEPTED);
+        
 //        productionTrackingStateChangeAspect.changeState(context);
-//        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
-//            logMessages(context);
-//        }
-//        return context.getStatus();
-//    }
+        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
+            logMessages(context);
+        }
+        return context.getStatus();
+    }
 
     public StateChangeStatus tryCorrect(final Entity productionRecord, final boolean logMessages) {
         StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
                 ProductionTrackingStateStringValues.CORRECTED);
-        productionTrackingStateChangeAspect.changeState(context);
+//        productionTrackingStateChangeAspect.changeState(context);
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.CORRECTED);
         if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
             logMessages(context);
         }

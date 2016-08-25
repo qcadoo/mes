@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productionCounting.newstates;
 
 import com.qcadoo.mes.newstates.BasicStateService;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListenerService;
@@ -17,6 +18,9 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Autowired
     private ProductionTrackingListenerService productionTrackingListenerService;
+
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -40,7 +44,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
         if (ProductionTrackingStateStringValues.DRAFT.equals(sourceState)) {
             productionTrackingListenerService.onLeavingDraft(entity);
         }
-        
+
         return entity;
     }
 
@@ -53,9 +57,15 @@ public class ProductionTrackingStateService extends BasicStateService implements
                 break;
 
             case ProductionTrackingStateStringValues.DECLINED:
+                productionTrackingService.unCorrect(entity);
+
                 if (ProductionTrackingStateStringValues.ACCEPTED.equals(sourceState)) {
                     productionTrackingListenerService.onChangeFromAcceptedToDeclined(entity);
                 }
+                break;
+
+            case ProductionTrackingStateStringValues.CORRECTED:
+                productionTrackingListenerService.onCorrected(entity);
                 break;
         }
 

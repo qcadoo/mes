@@ -109,7 +109,7 @@ public final class ProductionTrackingListenerService {
     public void onAccept(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Addition());
         setOrderDoneAndWastesQuantity(productionTracking, new Addition());
-        closeOrder(stateChangeContext);
+        closeOrder(productionTracking);
     }
 
     public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {
@@ -117,12 +117,10 @@ public final class ProductionTrackingListenerService {
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
 
-    private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
         if (!checkIfUsedQuantitiesWereFilled(productionTracking)
                 && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
-            stateChangeContext.addValidationError(
-                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -143,8 +141,7 @@ public final class ProductionTrackingListenerService {
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
 
-    public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void checkIfExistsFinalRecord(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -329,8 +326,7 @@ public final class ProductionTrackingListenerService {
         throw new IllegalStateException("No basic production counting found for product");
     }
 
-    public void onCorrected(StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onCorrected(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
     }
 
