@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.technologies.tree.builder.api;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -37,8 +39,8 @@ public interface OperationProductComponent extends EntityWrapper {
 
     enum OperationCompType {
         INPUT(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT, OperationProductInComponentFields.PRODUCT,
-                OperationProductInComponentFields.QUANTITY), OUTPUT(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
-                OperationProductOutComponentFields.PRODUCT, OperationProductOutComponentFields.QUANTITY);
+                OperationProductInComponentFields.QUANTITY, OperationProductInComponentFields.PRIORITY), OUTPUT(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
+                OperationProductOutComponentFields.PRODUCT, OperationProductOutComponentFields.QUANTITY, StringUtils.EMPTY);
 
         private final String modelName;
 
@@ -46,10 +48,13 @@ public interface OperationProductComponent extends EntityWrapper {
 
         private final String quantityFieldName;
 
-        private OperationCompType(final String modelName, final String productFieldName, final String quantityFieldName) {
+        private final String priorityFieldName;
+
+        private OperationCompType(final String modelName, final String productFieldName, final String quantityFieldName, String priorityFieldName) {
             this.modelName = modelName;
             this.productFieldName = productFieldName;
             this.quantityFieldName = quantityFieldName;
+            this.priorityFieldName = priorityFieldName;
         }
 
         public String getModelName() {
@@ -62,6 +67,10 @@ public interface OperationProductComponent extends EntityWrapper {
 
         public String getQuantityFieldName() {
             return quantityFieldName;
+        }
+
+        public String getPriorityFieldName() {
+            return priorityFieldName;
         }
     }
 

@@ -31,6 +31,8 @@ public final class OperationProductInComponentFields {
 
     public static final String OPERATION_COMPONENT = "operationComponent";
 
+    public static final String PRIORITY = "priority";
+
     public static final String PRODUCT = "product";
 
     public static final String QUANTITY = "quantity";

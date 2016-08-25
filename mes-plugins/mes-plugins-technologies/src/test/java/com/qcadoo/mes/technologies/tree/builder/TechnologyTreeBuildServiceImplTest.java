@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -215,7 +216,7 @@ public class TechnologyTreeBuildServiceImplTest {
         given(numberService.setScale(quantity)).willReturn(quantity);
         DataDefinition dataDef = mockProductDataDef();
         given(productEntity.getDataDefinition()).willReturn(dataDef);
-        return new ItemWithQuantity<ProductHolder>(product, quantity);
+        return new ItemWithQuantity<ProductHolder>(product, quantity, 0);
     }
 
     private DataDefinition mockOperationDataDef() {
