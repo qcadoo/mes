@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="orderedProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="deliveredProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
@@ -41,7 +41,7 @@
 
         <string name="productUnit"/>
 
-        <decimal name="orderedQuantity"/>
+        <decimal name="damagedQuantity"/>
 
         <decimal name="deliveredQuantity"/>
 
@@ -57,17 +57,16 @@
 
         <string name="additionalCode"/>
 
+        <string name="storageLocationNumber"/>
+
+        <string name="palletNumber"/>
+
         <string name="offerNumber"/>
-
-        <string name="productNorm"/>
-
-        <string name="operationNumber"/>
 
         <string name="productCatalogNumber"/>
 
-        <string name="actualVersion"/>
-
+        <string name="operationNumber"/>
 
     </fields>
-    <masterModel plugin="deliveries" model="orderedProduct"/>
+    <masterModel plugin="deliveries" model="deliveredProduct"/>
 </model>

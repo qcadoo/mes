@@ -86,8 +86,8 @@
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="deliveredProducts">
 			<view:column name="productCatalogNumber" fields="productCatalogNumber"
-				expression="#productCatalogNumber['catalogNumber']" orderable="true"
-				searchable="true" width="80" />
+						 orderable="true"
+						 searchable="true" width="80"/>
 		</view:view-grid-column>
 
 		<model:model-hook plugin="deliveries" model="orderedProduct">

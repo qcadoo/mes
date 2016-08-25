@@ -41,7 +41,6 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -94,16 +93,6 @@ public class DeliveryDetailsHooks {
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERY, L_FORM, DeliveryFields.NUMBER);
-    }
-
-    public void setFilterValue(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        GridComponent grid = (GridComponent) view.getComponentByReference("orderedProducts");
-        FilterValueHolder filter = grid.getFilterValue();
-        filter.put("deliveryId", deliveryForm.getEntityId());
-        grid.setFilterValue(filter);
-
     }
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view) {

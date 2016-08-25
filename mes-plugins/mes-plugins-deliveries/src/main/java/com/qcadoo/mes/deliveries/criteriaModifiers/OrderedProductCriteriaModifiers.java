@@ -23,14 +23,12 @@
  */
 package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderedProductCriteriaModifiers {
@@ -43,23 +41,6 @@ public class OrderedProductCriteriaModifiers {
             searchCriteriaBuilder.createCriteria(AdditionalCodeFields.PRODUCT, AdditionalCodeFields.PRODUCT, JoinType.INNER).add(
                     SearchRestrictions.idEq(productId));
         }
-    }
-
-    public void mainRestriction(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
-
-        Long deliveryId = null;
-        if (filterValueHolder.has("deliveryId")) {
-            deliveryId = filterValueHolder.getLong("deliveryId");
-
-            searchCriteriaBuilder.add(SearchRestrictions.eq("delivery", deliveryId.intValue()));
-            return;
-        }
-
-        deliveryId = 0L;
-
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo("delivery", DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERY, deliveryId.intValue()));
-
     }
 
 }
