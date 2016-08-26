@@ -23,17 +23,38 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
-import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -45,18 +66,6 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class DeliveredProductAddMultiListeners {
@@ -123,8 +132,13 @@ public class DeliveredProductAddMultiListeners {
             deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
             deliveredProduct = deliveredProductDD.save(deliveredProduct);
             if (!deliveredProduct.isValid()) {
-                for (Map.Entry<String, ErrorMessage> entry : deliveredProduct.getErrors().entrySet())
-                    position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage());
+                for (Map.Entry<String, ErrorMessage> entry : deliveredProduct.getErrors().entrySet()) {
+                    if (position.getDataDefinition().getField(entry.getKey()) != null) {
+                        position.addError(position.getDataDefinition().getField(entry.getKey()), entry.getValue().getMessage());
+                    } else {
+                        position.addGlobalError(entry.getValue().getMessage(), false);
+                    }
+                }
                 deliveredProductMulti.addGlobalError("deliveries.deliveredProductMulti.error.invalid");
                 throw new IllegalStateException("Undone saved delivered product");
             }
@@ -140,10 +154,10 @@ public class DeliveredProductAddMultiListeners {
         boolean isValid = true;
         Arrays.asList(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.PALLET_TYPE,
                 DeliveredProductMultiFields.STORAGE_LOCATION).stream().forEach(f -> {
-            if (deliveredProductMulti.getField(f) == null) {
-                deliveredProductMulti.addError(dataDefinition.getField(f), "qcadooView.validate.field.error.missing");
-            }
-        });
+                    if (deliveredProductMulti.getField(f) == null) {
+                        deliveredProductMulti.addError(dataDefinition.getField(f), "qcadooView.validate.field.error.missing");
+                    }
+                });
         isValid = deliveredProductMulti.isValid();
 
         DataDefinition positionDataDefinition = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -161,8 +175,8 @@ public class DeliveredProductAddMultiListeners {
                 Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
                 Entity additionalCode = position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
-                if (multiProductContainer.checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode),
-                        expirationDate))) {
+                if (multiProductContainer
+                        .checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode), expirationDate))) {
                     position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.PRODUCT),
                             "deliveries.deliveredProductMulti.error.productExists");
                 } else {
@@ -237,8 +251,8 @@ public class DeliveredProductAddMultiListeners {
                 recalculateQuantities(delivery, formEntity);
 
                 FieldComponent quantityComponent = formComponent.findFieldComponentByName("quantity");
-                quantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
-                        formEntity.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
+                quantityComponent.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(formEntity.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
                 quantityComponent.requestComponentUpdateState();
                 FieldComponent additionalQuantityComponent = formComponent.findFieldComponentByName("additionalQuantity");
                 additionalQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
@@ -327,8 +341,8 @@ public class DeliveredProductAddMultiListeners {
 
     private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {

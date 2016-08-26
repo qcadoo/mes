@@ -28,14 +28,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
-        xmlns:security="http://schema.qcadoo.org/modules/security"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
         xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-       http://schema.qcadoo.org/plugin
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
        http://schema.qcadoo.org/plugin.xsd
-       http://schema.qcadoo.org/modules/security
-	   http://schema.qcadoo.org/modules/security.xsd
+
+
        http://schema.qcadoo.org/modules/model
        http://schema.qcadoo.org/modules/model.xsd
        http://schema.qcadoo.org/modules/view
@@ -120,6 +118,9 @@
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="positivePurchasePrice" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="deliveredBiggerThanOrdered" default="true"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:hasMany name="columnsForOrders" plugin="deliveries"
