@@ -29,7 +29,6 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Override
     public Entity onValidate(Entity entity, String sourceState, String targetState) {
-
         switch (targetState) {
             case ProductionTrackingStateStringValues.ACCEPTED:
                 productionTrackingListenerService.validationOnAccept(entity);
@@ -50,7 +49,6 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
     @Override
     public Entity onAfterSave(Entity entity, String sourceState, String targetState) {
-
         switch (targetState) {
             case ProductionTrackingStateStringValues.ACCEPTED:
                 productionTrackingListenerService.onAccept(entity);
