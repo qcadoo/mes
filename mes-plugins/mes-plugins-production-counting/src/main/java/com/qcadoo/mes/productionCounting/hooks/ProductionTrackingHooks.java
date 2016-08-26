@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -78,12 +79,16 @@ public class ProductionTrackingHooks {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
     }
 
     public void onCopy(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
+        productionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
     }
 
     public void onSave(final DataDefinition productionTrackingDD, final Entity productionTracking) {
@@ -92,6 +97,10 @@ public class ProductionTrackingHooks {
         copyProducts(productionTracking);
         generateSetTrackingOperationProductsComponents(productionTracking);
         generateSetTechnologyInComponents(productionTracking);
+    }
+
+    public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        productionTrackingService.unCorrect(productionTracking);
     }
 
     private void copyProducts(final Entity productionTracking) {
@@ -159,6 +168,7 @@ public class ProductionTrackingHooks {
 
     private void setInitialState(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.IS_EXTERNAL_SYNCHRONIZED, true);
+        productionTracking.setField(ProductionTrackingFields.CORRECTION, null);
 
         if (productionTracking.getField(ProductionTrackingFields.LAST_TRACKING) == null) {
             productionTracking.setField(ProductionTrackingFields.LAST_TRACKING, false);

@@ -79,7 +79,7 @@ public class DispositionOrderPdf extends ReportPdfView {
     private static final String L_STATE_VALUE = "materialFlowResources.document.state.value.";
     private static final String L_TIME = "materialFlowResources.document.time.label";
     private static final String L_DESCRIPTION = "materialFlowResources.document.description.label";
-    private static final String L_HEADER = "materialFlowResources.report.header";
+    private static final String L_HEADER = "materialFlowResources.dispositionOrder.header";
     
     @Autowired
     private TranslationService translationService;

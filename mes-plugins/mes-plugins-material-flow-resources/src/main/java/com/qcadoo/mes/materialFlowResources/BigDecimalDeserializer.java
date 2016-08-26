@@ -1,11 +1,13 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import java.io.IOException;
+import java.math.BigDecimal;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.deser.std.NumberDeserializers;
-import java.io.IOException;
-import java.math.BigDecimal;
+import com.qcadoo.mes.basic.BasicException;
 
 public class BigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
 
@@ -16,7 +18,7 @@ public class BigDecimalDeserializer extends JsonDeserializer<BigDecimal> {
         try {
             return delegate.deserialize(jsonParser, deserializationContext);
         } catch (Exception e) {
-            throw new RuntimeException("documentGrid.validate.field.error.invalidNumericFormat");
+            throw new BasicException("documentGrid.validate.field.error.invalidNumericFormat");
         }
     }
 

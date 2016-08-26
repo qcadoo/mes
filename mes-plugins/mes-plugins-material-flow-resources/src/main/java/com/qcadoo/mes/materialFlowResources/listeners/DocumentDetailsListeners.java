@@ -23,33 +23,16 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -59,13 +42,26 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class DocumentDetailsListeners {
@@ -81,6 +77,15 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -103,7 +108,8 @@ public class DocumentDetailsListeners {
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
-        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
+        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
+                .getBooleanField("acceptanceOfDocumentBeforePrinting");
         if (acceptanceOfDocumentBeforePrinting) {
             createResourcesForDocuments(view, componentState, args);
         }
@@ -178,8 +184,28 @@ public class DocumentDetailsListeners {
         } else {
             formComponent.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
+
+        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         updatePositions(documentToCreateResourcesFor);
+        Entity recentlySavedDocument = documentDD.get(document.getId());
+        if (documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                    parameterService);
+            boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+            if (created) {
+                view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
+            }
+        }
         formComponent.setEntity(documentToCreateResourcesFor);
+    }
+
+    private boolean buildConnectedPZDocument(final Entity document) {
+        if (document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
+                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null) {
+            return true;
+        }
+        return false;
     }
 
     private void updatePositions(Entity document) {
@@ -239,8 +265,8 @@ public class DocumentDetailsListeners {
 
     private void createNewAttributes(final ViewDefinitionState view) {
         AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference("positions");
-        Entity warehouse = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity()
-                .getBelongsToField(DocumentFields.LOCATION_TO);
+        Entity warehouse = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getBelongsToField(
+                DocumentFields.LOCATION_TO);
         for (FormComponent positionForm : positionsADL.getFormComponents()) {
             Entity position = positionForm.getEntity();
             if (position.getId() != null) {
@@ -308,8 +334,8 @@ public class DocumentDetailsListeners {
             String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
             boolean result = true;
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
-                        && position.getField(PositionFields.RESOURCE) != null)
+                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
+                        .getField(PositionFields.RESOURCE) != null)
                         || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
                 if (!resultForPosition) {
                     result = false;
@@ -336,8 +362,8 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
-                    .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
+            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
+                    (String) givenQuantityField.getFieldValue(), view.getLocale());
             if (maybeQuantity.isRight()) {
                 if (maybeQuantity.getRight().isPresent()) {
                     BigDecimal givenQuantity = maybeQuantity.getRight().get();
@@ -346,8 +372,8 @@ public class DocumentDetailsListeners {
                         position.setField(PositionFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                        UnitConversionItemFieldsB.PRODUCT, product)));
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
                             position.setField(PositionFields.QUANTITY, convertedQuantity);

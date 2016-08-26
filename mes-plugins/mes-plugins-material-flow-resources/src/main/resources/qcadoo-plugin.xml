@@ -83,6 +83,7 @@
         <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
 
         <model:model model="storageLocation" resource="model/storageLocation.xml"/>
+        <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
 
         <model:model model="resourceStock" resource="model/resourceStock.xml"/>
@@ -97,6 +98,12 @@
 
         <model:model-field plugin="materialFlow" model="transfer">
             <model:decimal name="price" default="0"/>
+        </model:model-field>
+
+        <model:model-field model="location" plugin="materialFlow">
+            <model:hasMany name="linkedPZDocuments" plugin="materialFlowResources" model="document"
+                           joinField="linkedPZDocumentLocation"
+                           cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -237,6 +244,9 @@
         <menu:menu-item name="reservations" category="materialFlow"
                         view="reservationsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="storageLocationsState" category="materialFlow"
+                        view="storageLocationsStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
@@ -276,6 +286,7 @@
         <view:view resource="view/storageLocationsDetails.xml"/>
         <view:view resource="view/storageLocationList.xml"/>
         <view:view resource="view/reservationsList.xml"/>
+        <view:view resource="view/storageLocationsStateList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>

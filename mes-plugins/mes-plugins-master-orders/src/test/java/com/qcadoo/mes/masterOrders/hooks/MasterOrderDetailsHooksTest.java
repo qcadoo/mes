@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -56,6 +39,21 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
+import java.util.Locale;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class MasterOrderDetailsHooksTest {
 
@@ -67,7 +65,7 @@ public class MasterOrderDetailsHooksTest {
     @Mock
     private FieldComponent masterOrderTypeField, technologyField, defaultTechnologyField, cumulatedQuantityField,
             masterOrderQuantityField, producedOrderQuantityField, cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField,
-            producedOrderQuantityUnitField;
+            producedOrderQuantityUnitField, leftToRelease, leftToReleaseUnit, comments, masterOrderPositionStatus;
 
     @Mock
     private FormComponent form;
@@ -111,6 +109,10 @@ public class MasterOrderDetailsHooksTest {
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
         given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
+        given(view.getComponentByReference("leftToReleaseUnit")).willReturn(leftToReleaseUnit);
+        given(view.getComponentByReference("leftToRelease")).willReturn(leftToRelease);
+        given(view.getComponentByReference("comments")).willReturn(comments);
+        given(view.getComponentByReference("masterOrderPositionStatus")).willReturn(masterOrderPositionStatus);
 
         WindowComponentState windowComponent = mock(WindowComponentState.class);
         mockRibbon(windowComponent);

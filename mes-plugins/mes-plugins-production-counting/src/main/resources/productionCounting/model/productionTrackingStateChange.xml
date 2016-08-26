@@ -31,8 +31,8 @@
 	<fields>
 		<!-- generic state change fields -->
 		<datetime name="dateAndTime"/>
-		<enum name="sourceState" values="01draft,02accepted,03declined"/>
-		<enum name="targetState" values="01draft,02accepted,03declined"
+		<enum name="sourceState" values="01draft,02accepted,03declined,04corrected"/>
+		<enum name="targetState" values="01draft,02accepted,03declined,04corrected"
 			  required="true"/>
 		<enum name="status"
 			  values="01inProgress,02paused,03successful,04failure,05canceled"

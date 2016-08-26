@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -39,6 +33,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
 
 @Service
 public class MasterOrderProductDetailsHooks {
@@ -57,9 +56,8 @@ public class MasterOrderProductDetailsHooks {
             unit = product.getStringField(ProductFields.UNIT);
         }
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
-                "producedOrderQuantityUnit")) {
+                "producedOrderQuantityUnit", "leftToReleaseUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
@@ -87,7 +85,8 @@ public class MasterOrderProductDetailsHooks {
         BigDecimal cumulatedQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
         BigDecimal masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
 
-        if ((cumulatedQuantity != null) && (masterOrderQuantity != null) && (cumulatedQuantity.compareTo(masterOrderQuantity) == -1)) {
+        if ((cumulatedQuantity != null) && (masterOrderQuantity != null)
+                && (cumulatedQuantity.compareTo(masterOrderQuantity) == -1)) {
             masterOrderProductForm.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
                     MessageType.INFO, false);
         }

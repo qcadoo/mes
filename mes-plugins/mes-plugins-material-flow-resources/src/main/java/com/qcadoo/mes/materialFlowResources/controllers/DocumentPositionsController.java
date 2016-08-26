@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 @Controller
-@RequestMapping("/integration/rest/documentPositions")
+@RequestMapping("/rest/documentPositions")
 public class DocumentPositionsController {
 
     @Autowired

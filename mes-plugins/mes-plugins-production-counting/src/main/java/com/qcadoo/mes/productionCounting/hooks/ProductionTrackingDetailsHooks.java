@@ -41,6 +41,7 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -70,6 +71,10 @@ public class ProductionTrackingDetailsHooks {
     private static final String L_COPY = "copy";
 
     private static final String L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY = "copyPlannedQuantityToUsedQuantity";
+
+    private static final String L_CORRECT = "correct";
+
+    private static final String L_CORRECTION = "correction";
 
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(
             ProductionTrackingFields.LAST_TRACKING, ProductionTrackingFields.NUMBER, ProductionTrackingFields.ORDER,
@@ -105,7 +110,43 @@ public class ProductionTrackingDetailsHooks {
             showLastStateChangeFailNotification(productionTrackingForm, productionTracking);
             changeFieldComponentsEnabledAndGridsEditable(view);
             updateRibbonState(view);
+            toggleCorrectButton(view, productionTracking);
+            toggleCorrectionFields(view, productionTracking);
         }
+    }
+
+    private void toggleCorrectButton(ViewDefinitionState view, Entity entity) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
+
+        String state = entity.getStringField(ProductionTrackingFields.STATE);
+        Entity order = entity.getBelongsToField(ProductionTrackingFields.ORDER);
+        String orderState = order.getStringField(OrderFields.STATE);
+        boolean productionTrackingIsAccepted = ProductionTrackingStateStringValues.ACCEPTED.equals(state);
+        boolean orderIsNotFinished = !OrderStateStringValues.COMPLETED.equals(orderState)
+                && !OrderStateStringValues.ABANDONED.equals(orderState);
+        if (productionTrackingIsAccepted && orderIsNotFinished) {
+            correctButton.setEnabled(true);
+        } else {
+            correctButton.setEnabled(false);
+        }
+        correctButton.requestUpdate(true);
+    }
+
+    private void toggleCorrectionFields(ViewDefinitionState view, Entity entity) {
+        Entity correctedProductionTracking = getCorrectedProductionTracking(entity);
+        if (correctedProductionTracking != null) {
+            view.getComponentByReference("order").setEnabled(false);
+            view.getComponentByReference("productionLine").setEnabled(false);
+            view.getComponentByReference("technologyOperationComponent").setEnabled(false);
+            view.getComponentByReference("corrects").setVisible(true);
+            view.getComponentByReference("corrects").setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
+        }
+    }
+
+    private Entity getCorrectedProductionTracking(Entity entity) {
+        return entity.getDataDefinition().find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.CORRECTION, entity))
+                .uniqueResult();
     }
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {

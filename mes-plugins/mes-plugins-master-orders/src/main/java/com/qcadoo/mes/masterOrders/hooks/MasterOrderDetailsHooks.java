@@ -29,6 +29,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.NumberService;
@@ -96,12 +97,13 @@ public class MasterOrderDetailsHooks {
 
     public void setFieldsVisibility(final ViewDefinitionState view, final boolean visibleFields, final boolean visibleGrid) {
         for (String reference : Arrays.asList(TECHNOLOGY, PRODUCT, DEFAULT_TECHNOLOGY, MASTER_ORDER_QUANTITY,
-                CUMULATED_ORDER_QUANTITY, "producedOrderQuantity")) {
+                CUMULATED_ORDER_QUANTITY, "producedOrderQuantity", COOMENTS, MASTER_ORDER_POSITION_STATUS)) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setVisible(visibleFields);
         }
 
-        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         masterOrderProductsGrid.setVisible(visibleGrid);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
@@ -139,7 +141,7 @@ public class MasterOrderDetailsHooks {
         }
 
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
-                "producedOrderQuantityUnit")) {
+                "producedOrderQuantityUnit", "leftToReleaseUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
 
@@ -200,7 +202,8 @@ public class MasterOrderDetailsHooks {
         }
 
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.ORDERS);
-        GridComponent masterOrderProductsGrid = (GridComponent) view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
                 .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && masterOrderProductsGrid.getEntities().isEmpty()) {
@@ -247,10 +250,11 @@ public class MasterOrderDetailsHooks {
         productField.setRequired(true);
     }
 
-    public void setDefaultMasterOrderNumber(final ViewDefinitionState view){
-        if(checkIfShouldInsertNumber(view)) {
+    public void setDefaultMasterOrderNumber(final ViewDefinitionState view) {
+        if (checkIfShouldInsertNumber(view)) {
             FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
-            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER));
+            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                    MasterOrdersConstants.MODEL_MASTER_ORDER));
             numberField.requestComponentUpdateState();
         }
     }
@@ -284,6 +288,7 @@ public class MasterOrderDetailsHooks {
 
         calculateCumulativeQuantityFromOrders(view, masterOrder);
         fillRegisteredQuantity(view, masterOrder);
+
     }
 
     private void fillRegisteredQuantity(final ViewDefinitionState view, final Entity masterOrder) {
@@ -292,13 +297,24 @@ public class MasterOrderDetailsHooks {
         }
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
 
-        FieldComponent producedOrderQuantityField = (FieldComponent) view.getComponentByReference(MasterOrderFields.PRODUCED_ORDER_QUQNTITY);
+        FieldComponent producedOrderQuantityField = (FieldComponent) view
+                .getComponentByReference(MasterOrderFields.PRODUCED_ORDER_QUQNTITY);
+        FieldComponent leftToReleaseField = (FieldComponent) view.getComponentByReference(MasterOrderFields.LEFT_TO_RELASE);
 
         BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(masterOrder, product);
 
-        producedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(doneQuantity,0));
+        producedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(doneQuantity, 0));
 
         producedOrderQuantityField.requestComponentUpdateState();
+
+        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrder.getDecimalField("masterOrderQuantity")).subtract(
+                BigDecimalUtils.convertNullToZero(doneQuantity), numberService.getMathContext());
+        if (BigDecimal.ZERO.compareTo(value) == 1) {
+            value = BigDecimal.ZERO;
+        }
+        leftToReleaseField.setFieldValue(numberService.formatWithMinimumFractionDigits(value, 0));
+
+        leftToReleaseField.requestComponentUpdateState();
     }
 
     private void calculateCumulativeQuantityFromOrders(final ViewDefinitionState view, final Entity masterOrder) {
@@ -307,11 +323,12 @@ public class MasterOrderDetailsHooks {
         }
         Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
 
-        FieldComponent cumulatedOrderQuantityField = (FieldComponent) view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY);
+        FieldComponent cumulatedOrderQuantityField = (FieldComponent) view
+                .getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY);
 
         BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
 
-        cumulatedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantitiesSum,0));
+        cumulatedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantitiesSum, 0));
 
         cumulatedOrderQuantityField.requestComponentUpdateState();
     }

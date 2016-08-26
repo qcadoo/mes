@@ -48,6 +48,22 @@
                 <bigButton name="calcTotalLaborTime" icon="calculateTimeIcon24.png"
                            state="disabled" action="#{form}.fireEvent(calcTotalLaborTime);"/>
             </group>
+            <group name="correction">
+                <bigButton name="correct" icon="copyIcon24.png"
+                           state="disabled">
+                     <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.correction.confirm)}")) {
+										#{form}.performEvent('correct', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+            	</bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -145,6 +161,12 @@
                                    reference="lastTracking"/>
                         <component type="input" name="number" field="number"
                                    reference="number" defaultEnabled="false">
+                            <option type="alignment" value="right"/>
+                        </component>
+                        <component type="checkbox" name="isCorrection" field="isCorrection"
+                                   reference="isCorrection" defaultEnabled="false"/>
+                        <component type="input" name="corrects" field="corrects"
+                                   reference="corrects" defaultEnabled="false" defaultVisible="false">
                             <option type="alignment" value="right"/>
                         </component>
                         <component type="lookup" name="order" field="order"
@@ -337,10 +359,14 @@
 											toggleEditable(true);
 										} else if (state == "02accepted") {
 											toggleEditable(false);
-											cancelState.enable();
+											cancelState.disable();
 										} else if (state == "03declined") {
 											toggleEditable(false);
 											enableDeleteButton();
+										} else if (state == "04corrected") {
+											toggleEditable(false);
+											acceptState.disable();
+											cancelState.disable();
 										} else{
 											QCD.error("Unknown state - '" + state + "'");
 											toggleEditable(true);
@@ -416,6 +442,10 @@
                 <listener event="calcTotalLaborTime"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="calcTotalLaborTime"/>
+
+                <listener event="correct"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="correct"/>
 
             </component>
         </windowTab>

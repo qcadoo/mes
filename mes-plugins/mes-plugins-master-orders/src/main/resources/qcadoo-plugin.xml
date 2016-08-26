@@ -68,6 +68,7 @@
         <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
 
         <model:dictionary name="masterOrderState"/>
+        <model:dictionary name="masterOrderPositionStatus"/>
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="sameOrderNumber" default="false"/>
