@@ -417,7 +417,7 @@
                         <option type="column" name="unit" fields="product"
                                 expression="#product['unit']" link="false" width="70"/>
 
-                        <option type="order" column="priority" direction="desc"/>
+                        <option type="order" column="priority" direction="asc"/>
 
                         <option type="searchable" value="number,name,quantity,unit"/>
                         <option type="orderable" value="number,name,quantity,unit"/>
