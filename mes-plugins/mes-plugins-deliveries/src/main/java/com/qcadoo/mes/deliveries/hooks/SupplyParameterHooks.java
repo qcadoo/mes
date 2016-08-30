@@ -29,11 +29,12 @@ import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.LOCATION;
 import static com.qcadoo.mes.deliveries.constants.ParameterFieldsD.OTHER_ADDRESS;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -78,6 +79,11 @@ public class SupplyParameterHooks {
 
     private boolean isLocationIsWarehouse(final Entity location) {
         return ((location != null) && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
+    }
+
+    public void onCreate(final DataDefinition dataDefinition, final Entity parameter) {
+
+        parameter.setField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED, true);
     }
 
 }

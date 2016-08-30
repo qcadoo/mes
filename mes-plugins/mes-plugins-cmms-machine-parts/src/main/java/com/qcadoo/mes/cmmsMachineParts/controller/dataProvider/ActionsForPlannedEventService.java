@@ -61,7 +61,7 @@ public class ActionsForPlannedEventService {
     DataDefinitionService dataDefinitionService;
 
     public GridResponse<ActionForPlannedEventDTO> findAll(final Long plannedEventId, final String _sidx, final String _sord,
-                                                          int page, int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
+            int page, int perPage, ActionForPlannedEventDTO actionForPlannedEventDto) {
         String query = "SELECT %s FROM ( SELECT afpe.id AS id, a.name AS action, afpe.plannedevent_id AS plannedEvent, "
                 + "s.name  || ' ' || s.surname || ' - ' || s.number AS responsibleWorker, "
                 + "afpe.description AS description, afpe.state AS state, afpe.reason AS reason "
@@ -115,8 +115,9 @@ public class ActionsForPlannedEventService {
     }
 
     private String generateQuery(Long plannedEventId) {
-        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(plannedEventId);
+        Entity plannedEvent = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
+                .get(plannedEventId);
 
         String query = "SELECT id, name AS code FROM cmmsmachineparts_action WHERE name ilike :query";
 
@@ -149,8 +150,7 @@ public class ActionsForPlannedEventService {
         List<AbstractDTO> entities = getActions(q, plannedEventId);
         Map<String, Object> paramMap = new HashMap<>();
         paramMap.put("id", plannedEventId);
-        return dataProvider.getDataResponse(q, generateQuery(plannedEventId),
-                entities, paramMap);
+        return dataProvider.getDataResponse(q, generateQuery(plannedEventId), entities, paramMap);
 
     }
 
@@ -174,6 +174,7 @@ public class ActionsForPlannedEventService {
         paramMap.put("q", q);
         String query = "SELECT id FROM basic_staff WHERE name  || ' ' || surname || ' - ' || number = :q LIMIT 1;";
         return jdbcTemplate.query(query, paramMap, new ResultSetExtractor<Long>() {
+
             @Override
             public Long extractData(ResultSet rs) throws SQLException, DataAccessException {
                 return rs.next() ? rs.getLong("id") : null;
@@ -186,6 +187,7 @@ public class ActionsForPlannedEventService {
         paramMap.put("q", q);
         String query = "SELECT id FROM cmmsmachineparts_action WHERE name = :q LIMIT 1;";
         return jdbcTemplate.query(query, paramMap, new ResultSetExtractor<Long>() {
+
             @Override
             public Long extractData(ResultSet rs) throws SQLException, DataAccessException {
                 return rs.next() ? rs.getLong("id") : null;
@@ -194,7 +196,8 @@ public class ActionsForPlannedEventService {
     }
 
     private DataDefinition getActionForPlannedEventDD() {
-        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_ACTION_PLANNED_EVENT);
+        return dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
+                CmmsMachinePartsConstants.MODEL_ACTION_PLANNED_EVENT);
 
     }
 
@@ -209,7 +212,8 @@ public class ActionsForPlannedEventService {
         try {
             dataDefinition.delete(id);
         } catch (IllegalStateException exc) {
-            throw new RuntimeException(translationService.translate("actionsGrid.notification.entityInUse", LocaleContextHolder.getLocale()));
+            throw new BasicException(
+                    translationService.translate("actionsGrid.notification.entityInUse", LocaleContextHolder.getLocale()));
         }
     }
 
@@ -219,8 +223,10 @@ public class ActionsForPlannedEventService {
         updateActionForPlannedEvent(dataDefinition, actionForPlannedEvent, actionForPlannedEventDTO);
     }
 
-    private void updateActionForPlannedEvent(DataDefinition dataDefinition, Entity actionForPlannedEvent, ActionForPlannedEventDTO actionForPlannedEventDTO) {
-        actionForPlannedEvent.setField(ActionForPlannedEventFields.RESPONSIBLE_WORKER, getWorkerId(actionForPlannedEventDTO.getResponsibleWorker()));
+    private void updateActionForPlannedEvent(DataDefinition dataDefinition, Entity actionForPlannedEvent,
+            ActionForPlannedEventDTO actionForPlannedEventDTO) {
+        actionForPlannedEvent.setField(ActionForPlannedEventFields.RESPONSIBLE_WORKER,
+                getWorkerId(actionForPlannedEventDTO.getResponsibleWorker()));
         actionForPlannedEvent.setField(ActionForPlannedEventFields.ACTION, getActionId(actionForPlannedEventDTO.getAction()));
         actionForPlannedEvent.setField(ActionForPlannedEventFields.DESCRIPTION, actionForPlannedEventDTO.getDescription());
         actionForPlannedEvent.setField(ActionForPlannedEventFields.PLANNED_EVENT, actionForPlannedEventDTO.getPlannedEvent());
@@ -229,13 +235,17 @@ public class ActionsForPlannedEventService {
         actionForPlannedEvent = dataDefinition.save(actionForPlannedEvent);
         if (!actionForPlannedEvent.isValid()) {
             StringBuilder errors = new StringBuilder();
-            errors.append(actionForPlannedEvent.getGlobalErrors().stream().map(error -> translationService.translate(error.getMessage(), LocaleContextHolder.getLocale()))
+            errors.append(actionForPlannedEvent.getGlobalErrors().stream()
+                    .map(error -> translationService.translate(error.getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
             if (errors.length() > 0) {
                 errors.append("\n");
             }
-            errors.append(actionForPlannedEvent.getErrors().entrySet().stream().map(entry ->
-                    translationService.translate("cmmsMachineParts.actionForPlannedEvent." + entry.getKey() + ".label", LocaleContextHolder.getLocale()) + " - " + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
+            errors.append(actionForPlannedEvent.getErrors().entrySet().stream()
+                    .map(entry -> translationService.translate(
+                            "cmmsMachineParts.actionForPlannedEvent." + entry.getKey() + ".label",
+                            LocaleContextHolder.getLocale()) + " - "
+                    + translationService.translate(entry.getValue().getMessage(), LocaleContextHolder.getLocale()))
                     .collect(Collectors.joining("\n")));
             throw new BasicException(errors.toString());
 
@@ -246,11 +256,11 @@ public class ActionsForPlannedEventService {
         Entity user = userService.getCurrentUserEntity();
         boolean hasProperRole = securityService.hasRole(user, "ROLE_PLANNED_EVENTS_BASIC_EDIT");
 
-        Entity plannedEvent = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(id);
+        Entity plannedEvent = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT).get(id);
         String state = plannedEvent.getStringField(PlannedEventFields.STATE);
-        boolean eventIsInProperState = !(PlannedEventStateStringValues.REALIZED.equals(state) || PlannedEventStateStringValues.CANCELED
-                .equals(state));
+        boolean eventIsInProperState = !(PlannedEventStateStringValues.REALIZED.equals(state)
+                || PlannedEventStateStringValues.CANCELED.equals(state));
 
         return hasProperRole && eventIsInProperState;
     }
