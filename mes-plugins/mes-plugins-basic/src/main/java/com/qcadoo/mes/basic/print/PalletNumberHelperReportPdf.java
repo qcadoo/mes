@@ -23,21 +23,7 @@
  */
 package com.qcadoo.mes.basic.print;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
 import com.qcadoo.localization.api.TranslationService;
@@ -49,6 +35,15 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.Footer;
 import com.qcadoo.report.api.pdf.PdfPageNumbering;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkState;
 
 @Component(value = "palletNumberHelperReportPdf")
 public class PalletNumberHelperReportPdf extends ReportPdfView {
@@ -82,43 +77,67 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
 
         for (String number : numbers) {
             if (i % 2 == 0) {
-                Paragraph firstNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
+                Paragraph firstNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
+                firstNumberParagraph.setLeading(0, 0);
+                Paragraph numberSmallParagraph = new Paragraph(new Phrase(buildSmallNumber(number),
+                        FontUtils.getDejavuBold10Dark()));
+                numberSmallParagraph.setLeading(0, 0);
 
                 firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-                firstNumberParagraph.setSpacingAfter(180F);
+                firstNumberParagraph.setSpacingAfter(20F);
+                numberSmallParagraph.setAlignment(Element.ALIGN_CENTER);
+                numberSmallParagraph.setSpacingAfter(100F);
 
                 if (i == 0) {
                     Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
 
-                    newLineParagraph.setSpacingAfter(80f);
+                    newLineParagraph.setSpacingAfter(220f);
 
                     document.add(newLineParagraph);
+
                 }
 
                 document.add(firstNumberParagraph);
+                document.add(numberSmallParagraph);
 
                 LineSeparator lineSeparator = new LineSeparator(1, 100f, ColorUtils.getLineDarkColor(), Element.ALIGN_LEFT, 0);
-
                 document.add(lineSeparator);
             }
 
             if (i % 2 != 0) {
-                Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold70Dark()));
-
+                Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
+                Paragraph numSmallParagraph = new Paragraph(new Phrase(buildSmallNumber(number), FontUtils.getDejavuBold10Dark()));
+                secondNumberParagraph.setSpacingBefore(180F);
                 secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
-                secondNumberParagraph.setSpacingBefore(100f);
+                secondNumberParagraph.setSpacingAfter(20F);
+                numSmallParagraph.setAlignment(Element.ALIGN_CENTER);
+                numSmallParagraph.setSpacingAfter(0F);
 
+                secondNumberParagraph.setLeading(0, 0);
+                numSmallParagraph.setLeading(0, 0);
                 document.add(secondNumberParagraph);
+
+                document.add(numSmallParagraph);
 
                 if (i < numbers.size() - 1) {
                     document.newPage();
+                    Paragraph newp = new Paragraph(new Phrase("\n", FontUtils.getDejavuBold10Dark()));
+                    newp.setSpacingAfter(220F);
+                    document.add(newp);
 
-                    document.add(new Phrase("\n"));
                 }
             }
 
             i++;
         }
+    }
+
+    private String buildSmallNumber(String number) {
+        StringBuffer small = new StringBuffer();
+        small.append("*");
+        small.append(number);
+        small.append("*");
+        return small.toString();
     }
 
     @Override

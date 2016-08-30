@@ -176,7 +176,7 @@ public class DeliveryDetailsListeners {
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
         deliveredProductMulti.setField("delivery", delivery);
         List<Entity> orderedProducts = getSelectedProducts(view);
-        List<Entity> deliveredProducts = ((GridComponent) view.getComponentByReference("deliveredProducts")).getEntities();
+        List<Entity> deliveredProducts = getSelectedDeliveredProducts(view);
         List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
         DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 "deliveredProductMultiPosition");
@@ -197,6 +197,18 @@ public class DeliveryDetailsListeners {
         Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
         if (ids != null && !ids.isEmpty()) {
             final SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find();
+            searchCriteria.add(SearchRestrictions.in("id", ids));
+            result = searchCriteria.list().getEntities();
+        }
+        return result;
+    }
+
+    private List<Entity> getSelectedDeliveredProducts(ViewDefinitionState view) {
+        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
+        List<Entity> result = Lists.newArrayList();
+        Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
+        if (ids != null && !ids.isEmpty()) {
+            final SearchCriteriaBuilder searchCriteria = deliveriesService.getDeliveredProductDD().find();
             searchCriteria.add(SearchRestrictions.in("id", ids));
             result = searchCriteria.list().getEntities();
         }
