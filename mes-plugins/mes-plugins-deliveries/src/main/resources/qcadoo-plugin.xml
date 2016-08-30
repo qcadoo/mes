@@ -148,6 +148,12 @@
                     method="checkIfLocationIsWarehouse"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onCreate
+                    class="com.qcadoo.mes.deliveries.hooks.SupplyParameterHooks"
+                    method="onCreate"/>
+        </model:model-hook>
+
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="products" joinField="company"
                            plugin="deliveries" model="companyProduct" cascade="delete" copyable="false"/>
