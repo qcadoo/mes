@@ -45,6 +45,8 @@
 
         <decimal name="deliveredQuantity"/>
 
+        <decimal name="leftToReceiveQuantity"/>
+
         <decimal name="additionalQuantity"/>
 
         <decimal name="conversion"/>
