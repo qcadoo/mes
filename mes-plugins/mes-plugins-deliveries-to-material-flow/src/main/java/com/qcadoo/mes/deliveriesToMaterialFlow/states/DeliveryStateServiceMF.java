@@ -108,8 +108,9 @@ public class DeliveryStateServiceMF {
 
                 documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
                         conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
-                        expirationDate(deliveredProduct), null, storageLocation(deliveredProduct), palletNumber(deliveredProduct),
-                        typeOfPallet(deliveredProduct), additionalCode(deliveredProduct));
+                        expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),
+                        palletNumber(deliveredProduct), typeOfPallet(deliveredProduct), additionalCode(deliveredProduct),
+                        isWaste(deliveredProduct));
             }
         }
         Entity createdDocument = documentBuilder.setAccepted().build();
@@ -176,6 +177,10 @@ public class DeliveryStateServiceMF {
 
     private Entity storageLocation(Entity deliveredProduct) {
         return deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+    }
+
+    private boolean isWaste(Entity deliveredProduct) {
+        return deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE);
     }
 
     private Date productionDate(Entity deliveredProduct) {

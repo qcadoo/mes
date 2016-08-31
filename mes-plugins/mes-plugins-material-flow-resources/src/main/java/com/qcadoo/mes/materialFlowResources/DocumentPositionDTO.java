@@ -1,12 +1,12 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.qcadoo.mes.basic.SearchAttribute;
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.qcadoo.mes.basic.SearchAttribute;
 
 public class DocumentPositionDTO {
 
@@ -58,6 +58,9 @@ public class DocumentPositionDTO {
     private String batch;
 
     private String resource;
+
+    @JsonDeserialize(using = BooleanDeserializer.class)
+    private Boolean waste;
 
     public Long getId() {
         return id;
@@ -211,6 +214,14 @@ public class DocumentPositionDTO {
         this.resource = resource;
     }
 
+    public Boolean isWaste() {
+        return waste;
+    }
+
+    public void setWaste(Boolean waste) {
+        this.waste = waste;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -231,6 +242,7 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.price);
         hash = 67 * hash + Objects.hashCode(this.batch);
         hash = 67 * hash + Objects.hashCode(this.resource);
+        hash = 67 * hash + Objects.hashCode(this.waste);
         return hash;
     }
 

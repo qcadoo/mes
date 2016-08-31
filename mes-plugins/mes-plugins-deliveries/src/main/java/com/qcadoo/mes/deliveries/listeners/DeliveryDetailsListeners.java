@@ -283,6 +283,7 @@ public class DeliveryDetailsListeners {
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
+        deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);
 
         if (copyQuantityAndPrice) {
             BigDecimal deliverdQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
