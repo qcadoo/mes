@@ -176,7 +176,7 @@ public class DeliveryDetailsListeners {
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
         deliveredProductMulti.setField("delivery", delivery);
         List<Entity> orderedProducts = getSelectedProducts(view);
-        List<Entity> deliveredProducts = getSelectedDeliveredProducts(view);
+        List<Entity> deliveredProducts =delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
         List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
         DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 "deliveredProductMultiPosition");
@@ -405,8 +405,8 @@ public class DeliveryDetailsListeners {
         if (orderedAdditionalCode != null && deliveredAdditionalCode != null) {
             additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
         }
-        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(deliveredProduct.getBelongsToField(
-                DeliveredProductFields.PRODUCT).getId()))
+        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(
+                deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId()))
                 && additionalCodesMatching;
     }
 
@@ -443,8 +443,8 @@ public class DeliveryDetailsListeners {
             Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
             BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
 
-            BigDecimal quantity = BigDecimalUtils.convertNullToZero(oldReservation
-                    .getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
+            BigDecimal quantity = BigDecimalUtils.convertNullToZero(
+                    oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
 
             if (availableQuantity.compareTo(quantity) < 0) {
                 quantity = availableQuantity;
@@ -495,8 +495,8 @@ public class DeliveryDetailsListeners {
             return BigDecimal.ONE;
         }
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(
+                        SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
