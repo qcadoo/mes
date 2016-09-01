@@ -137,6 +137,7 @@
         <view:view resource="view/sourceCostReports.xml"/>
 
         <view:view resource="view/workTimeForUserList.xml"/>
+        <view:view resource="view/addActionsForPlannedEvent.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
 

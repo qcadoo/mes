@@ -25,6 +25,7 @@ package com.qcadoo.mes.cmmsMachineParts.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventAttachmentFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
@@ -45,9 +46,11 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.json.JSONObject;
 
 @Service
 public class PlannedEventDetailsListeners {
@@ -55,6 +58,8 @@ public class PlannedEventDetailsListeners {
     private static final Logger LOG = LoggerFactory.getLogger(PlannedEventDetailsListeners.class);
 
     public static final String L_FORM = "form";
+
+    public static final String L_GRID = "grid";
 
     @Autowired
     private PlannedEventDetailsHooks plannedEventDetailsHooks;
@@ -101,6 +106,38 @@ public class PlannedEventDetailsListeners {
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void addActionsForm(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        final Map<String, Object> parameters = new HashMap<String, Object>() {
+            {
+                put("plannedEvent", args[0]);
+            }
+        };
+        JSONObject context = new JSONObject(parameters);
+        StringBuilder url = new StringBuilder(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/addActionsForPlannedEvent.html");
+        url.append("?context=");
+        url.append(context.toString());
+
+        view.openModal(url.toString());
+    }
+
+    public void addActions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        List<Entity> selectedEntities = grid.getSelectedEntities();
+
+        DataDefinition actionForPlannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_ACTION_PLANNED_EVENT);
+        DataDefinition plannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT);
+        
+        Entity plannedEvent = plannedEventDD.get(Long.valueOf(args[0]));
+
+        for (Entity selectedAction : selectedEntities) {
+            Entity actionForPlannedEvent = actionForPlannedEventDD.create();
+            actionForPlannedEvent.setField(ActionForPlannedEventFields.ACTION, selectedAction);
+            actionForPlannedEvent.setField(ActionForPlannedEventFields.PLANNED_EVENT, plannedEvent);
+
+            actionForPlannedEventDD.save(actionForPlannedEvent);
+        }
     }
 
     public void onAddExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {

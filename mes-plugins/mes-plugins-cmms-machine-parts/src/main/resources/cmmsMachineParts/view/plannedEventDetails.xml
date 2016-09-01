@@ -49,6 +49,20 @@
                 <smallButton name="cancelEvent" icon="deleteIcon16.png"
                              state="disabled" action="#{form}.changeState(cancelEvent);"/>
             </group>
+            <group name="actionsGroup">
+                <bigButton name="addActions" icon="genealogyIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    var eventId = #{form}.getValue().content ? #{form}.getValue().content.entityId : 0;
+                                    #{form}.performEvent('addActionsForm', [eventId]);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="attachments" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ATTACHMENTS">
                 <bigButton name="downloadAttachment" icon="generateIcon24.png"
                            state="enabled">
@@ -562,6 +576,9 @@
                           method="fillFieldValues"/>
 
                 <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+
+                <listener event="addActionsForm" method="addActionsForm"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
                 <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
