@@ -23,18 +23,16 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 
 @Service
 public class ProductDetailsListenersT {
@@ -105,14 +103,14 @@ public class ProductDetailsListenersT {
             return;
         }
 
-        String productName = product.getStringField(NAME);
+        String productNumber = product.getStringField(NUMBER);
 
-        if (productName == null) {
+        if (productNumber == null) {
             return;
         }
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("productName", applyInOperator(productName));
+        filters.put("productNumber", applyInOperator(productNumber));
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);

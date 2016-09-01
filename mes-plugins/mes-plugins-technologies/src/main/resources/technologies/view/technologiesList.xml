@@ -230,7 +230,7 @@
             <option type="column" name="number" fields="number" link="true"
                     width="100"/>
             <option type="column" name="name" fields="name" link="true" width="150"/>
-            <option type="column" name="productName" fields="productName"
+            <option type="column" name="productNumber" fields="productNumber"
                     width="150"/>
 			<option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial"
 					width="80"/>
@@ -242,8 +242,8 @@
 			<option type="column" name="divisionName" fields="divisionName"
 					width="55"/>
             <option type="order" column="number" direction="desc"/>
-            <option type="searchable" value="name,number,productName,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master"/>
-            <option type="orderable" value="name,number,productName,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master"/>
+            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master"/>
+            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master"/>
             <option type="correspondingView" value="technologies/technologyDetails"/>
             <option type="correspondingComponent" value="form"/>
             <option type="fullscreen" value="true"/>
