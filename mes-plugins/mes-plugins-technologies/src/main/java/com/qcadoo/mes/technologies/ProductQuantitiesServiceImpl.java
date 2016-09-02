@@ -23,37 +23,25 @@
  */
 package com.qcadoo.mes.technologies;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -351,8 +339,11 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 for (Entity operationProductOutComponent : operationComponent
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
-                    if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(
-                            operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
+                    if (operationProductOutComponent
+                            .getBelongsToField(OperationProductOutComponentFields.PRODUCT)
+                            .getId()
+                            .equals(operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT)
+                                    .getId())) {
                         isntComponent = true;
 
                         BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
@@ -417,8 +408,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     private boolean isTechnologyOperationComponentEntityTypeReferenceTechnology(final Entity operationComponent) {
-        return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue()
-                .equals(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
+        return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
     }
 
     @Override
@@ -456,6 +447,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false);
         } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true);
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS)) {
+            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false);
         } else {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true, true);
         }
@@ -495,7 +488,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private boolean hasAcceptedMasterTechnology(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity masterTechnology = technologyDD.find()
+        Entity masterTechnology = technologyDD
+                .find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product),
                         (SearchRestrictions.eq("state", "02accepted"))))
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
@@ -570,9 +564,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public Entity getTechnologyOperationComponent(final Long technologyOperationComponentId) {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .get(technologyOperationComponentId);
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationComponentId);
     }
 
     @Override
