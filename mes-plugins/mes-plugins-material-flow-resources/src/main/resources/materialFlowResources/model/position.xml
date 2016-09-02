@@ -68,6 +68,7 @@
 
         <hasMany name="reservations" model="reservation" joinField="position" copyable="true" cascade="delete"/>
 
+		<boolean name="waste" default="false"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

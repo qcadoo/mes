@@ -65,6 +65,8 @@
 
         <string name="operationNumber"/>
 
+        <boolean name="isWaste"/>
+
     </fields>
     <masterModel plugin="deliveries" model="deliveredProduct"/>
 </model>

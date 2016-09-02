@@ -1,207 +1,88 @@
-﻿-- added corrections to production tracking
--- last touched 12.07 by pako
-ALTER TABLE productioncounting_productiontracking ADD COLUMN correction_id bigint;
-ALTER TABLE productioncounting_productiontracking
-  ADD CONSTRAINT productiontracking_productiontracking_c FOREIGN KEY (correction_id)
-      REFERENCES productioncounting_productiontracking (id) DEFERRABLE;
+-- views
+-- by kasi 01.09.2016
+CREATE SEQUENCE deliveries_orderedproductdto_id_seq;
 
-CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
+DROP VIEW IF EXISTS deliveries_orderedproductdto;
+CREATE OR REPLACE VIEW deliveries_orderedproductdto AS
 	SELECT
-		productiontracking.id AS id,
-		productiontracking.number AS number,
-		productiontracking.state AS state,
-		productiontracking.createdate AS createdate,
-		productiontracking.lasttracking AS lasttracking,
-		productiontracking.timerangefrom AS timerangefrom,
-		productiontracking.timerangeto AS timerangeto,
-		productiontracking.active AS active,
-		ordersorder.id::integer AS order_id,
-		ordersorder.number AS ordernumber,
-		ordersorder.state AS orderstate,
-		technologyoperationcomponent.id::integer AS technologyoperationcomponent_id,
-		(CASE WHEN technologyoperationcomponent IS NULL THEN '' ELSE (technologyoperationcomponent.nodenumber::text || ' '::text) || operation.name::text END) AS technologyoperationcomponentnumber,
-		operation.id::integer AS operation_id,
-		shift.id::integer AS shift_id,
-		shift.name AS shiftname,
-		staff.id::integer AS staff_id,
-		staff.name || ' ' || staff.surname AS staffname,
-		division.id::integer AS division_id,
-		division.number AS divisionnumber,
-		subcontractor.id::integer AS subcontractor_id,
-		subcontractor.name AS subcontractorname,
-        repairorderdto.id::integer AS repairorder_id,
-        repairorderdto.number AS repairordernumber,
-		productiontrackingcorrection.number AS correctionNumber
-	FROM productioncounting_productiontracking productiontracking
-	LEFT JOIN orders_order ordersorder
-		ON ordersorder.id = productiontracking.order_id
-	LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent
-		ON technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id
-	LEFT JOIN technologies_operation operation
-		ON operation.id = technologyoperationcomponent.operation_id
-	LEFT JOIN basic_shift shift
-		ON shift.id = productiontracking.shift_id
-	LEFT JOIN basic_staff staff
-		ON staff.id = productiontracking.staff_id
-	LEFT JOIN basic_division division
-		ON division.id = productiontracking.division_id
-	LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id
-	LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id
-	LEFT JOIN repairs_repairorderdto repairorderdto
-        ON repairorderdto.id = productiontracking.repairorder_id;
+		orderedproduct.id as id,
+		orderedproduct.succession as succession,
+		orderedproduct.orderedquantity as orderedquantity,
+		orderedproduct.priceperunit as priceperunit,
+		orderedproduct.totalprice as totalprice,
+		orderedproduct.conversion as conversion,
+		orderedproduct.additionalquantity as additionalquantity,
+		orderedproduct.description as description,
+		orderedproduct.actualversion as actualVersion,
+		del.id as delivery,
+		del.id as deliveryId,
+		del.supplier_id as supplier,
+		product.number as productNumber,
+		product.name as productName,
+		product.norm as productNorm,
+		product.unit as productUnit,
+		addcode.code as additionalCode,
+		offer.number as offerNumber,
+		operation.number as operationNumber,
+		(SELECT catalognumber FROM productcatalognumbers_productcatalognumbers WHERE product_id = product.id and company_id=del.supplier_id) as productCatalogNumber,
+		CASE
+			WHEN addcode.id IS NULL THEN (SELECT SUM (deliveredquantity) FROM deliveries_deliveredproduct WHERE delivery_id = del.id and product_id = product.id and additionalcode_id IS NULL GROUP BY product_id, additionalcode_id)
+			ELSE (SELECT SUM (deliveredquantity) FROM deliveries_deliveredproduct WHERE delivery_id = del.id and product_id = product.id and additionalcode_id = addcode.id GROUP BY product_id, additionalcode_id)
+		END AS deliveredQuantity,
+		CASE
+			WHEN addcode.id IS NULL THEN orderedproduct.orderedquantity - (SELECT SUM (deliveredquantity) FROM deliveries_deliveredproduct WHERE delivery_id = del.id and product_id = product.id and additionalcode_id IS NULL GROUP BY product_id, additionalcode_id)
+			ELSE orderedproduct.orderedquantity - (SELECT SUM (deliveredquantity) FROM deliveries_deliveredproduct WHERE delivery_id = del.id and product_id = product.id and additionalcode_id = addcode.id GROUP BY product_id, additionalcode_id)
+		END AS leftToReceiveQuantity
 
-ALTER TABLE productioncounting_productiontracking ADD COLUMN iscorrection boolean DEFAULT false;
+	FROM deliveries_orderedproduct orderedproduct
+		LEFT JOIN deliveries_delivery del ON orderedproduct.delivery_id = del.id
+		LEFT JOIN basic_product product ON orderedproduct.product_id = product.id
+		LEFT JOIN supplynegotiations_offer offer ON orderedproduct.offer_id = offer.id
+		LEFT JOIN technologies_operation operation ON orderedproduct.operation_id = operation.id
+		LEFT JOIN basic_additionalcode addcode ON orderedproduct.additionalcode_id = addcode.id;
 
--- end
+CREATE SEQUENCE deliveries_deliveredproductdto_id_seq;
 
--- removed corrected entries from production tracking grouped by product
--- last touched 27.07 by pako
-
-CREATE OR REPLACE VIEW productioncounting_trackingoperationproductincomponentdto AS
-SELECT
-		trackingoperationproductincomponent.id AS id,
-		productiontracking.id::integer AS productiontracking_id,
-		product.id::integer AS product_id,
-		product.number AS productnumber,
-		product.unit AS productunit,
-		CASE WHEN productiontracking.technologyoperationcomponent_id IS NULL THEN (
-			SELECT SUM(productioncountingquantity_1.plannedquantity) AS sum
-		) ELSE (
-			SELECT SUM(productioncountingquantity_2.plannedquantity) AS sum
-		) END AS plannedquantity,
-		trackingoperationproductincomponent.usedquantity AS usedquantity,
-        batch.number AS batchnumber
-	FROM productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
-	LEFT JOIN productioncounting_productiontracking productiontracking
-		ON productiontracking.id = trackingoperationproductincomponent.productiontracking_id
-	LEFT JOIN basic_product product
-		ON product.id = trackingoperationproductincomponent.product_id
-	LEFT JOIN advancedgenealogy_batch batch ON batch.id = trackingoperationproductincomponent.batch_id
-	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1
-		ON (
-			productioncountingquantity_1.order_id = productiontracking.order_id
-			AND productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id
-   			AND productioncountingquantity_1.role::text = '01used'::text
-   		)
-   	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2
-   		ON (
-   			productioncountingquantity_2.order_id = productiontracking.order_id
-   			AND productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id
-			AND productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id
-			AND productioncountingquantity_2.role::text = '01used'::text
-		)
-	WHERE productiontracking.state NOT IN ('03declined'::text,'04corrected'::text)
-	GROUP BY
-		trackingoperationproductincomponent.id,
-		productiontracking.id,
-		product.id,
-		product.number,
-		product.unit,
-		trackingoperationproductincomponent.usedquantity,
-		productiontracking.technologyoperationcomponent_id,
-		batch.number;
-
-CREATE OR REPLACE VIEW productioncounting_trackingoperationproductoutcomponentdto AS
+DROP VIEW IF EXISTS deliveries_deliveredproductdto;
+CREATE OR REPLACE VIEW deliveries_deliveredproductdto AS
 	SELECT
-		trackingoperationproductoutcomponent.id AS id,
-		productiontracking.id::integer AS productiontracking_id,
-		product.id::integer AS product_id,
-		product.number AS productnumber,
-		product.unit AS productunit,
-		CASE WHEN productiontracking.technologyoperationcomponent_id IS NULL THEN (
-			SELECT SUM(productioncountingquantity_1.plannedquantity) AS sum
-		) ELSE (
-			SELECT SUM(productioncountingquantity_2.plannedquantity) AS sum
-		) END AS plannedquantity,
-		trackingoperationproductoutcomponent.usedquantity AS usedquantity,
-        batch.number AS batchnumber
-	FROM productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
-	LEFT JOIN productioncounting_productiontracking productiontracking
-		ON productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id
-	LEFT JOIN basic_product product
-		ON product.id = trackingoperationproductoutcomponent.product_id
-	LEFT JOIN advancedgenealogy_batch batch ON batch.id = trackingoperationproductoutcomponent.batch_id
-	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1
-		ON (
-			productioncountingquantity_1.order_id = productiontracking.order_id
-			AND productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id
-   			AND productioncountingquantity_1.role::text = '02produced'::text
-   		)
-   	LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2
-   		ON (
-   			productioncountingquantity_2.order_id = productiontracking.order_id
-   			AND productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id
-			AND productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id
-			AND productioncountingquantity_2.role::text = '02produced'::text
-		)
-	WHERE productiontracking.state NOT IN ('03declined'::text,'04corrected'::text)
-	GROUP BY
-		trackingoperationproductoutcomponent.id,
-		productiontracking.id,
-		product.id,
-		product.number,
-		product.unit,
-		trackingoperationproductoutcomponent.usedquantity,
-		productiontracking.technologyoperationcomponent_id,
-		batch.number;
--- end
-		
--- new parameter
--- last touched 4.08 by pako
-
-ALTER TABLE basic_parameter ADD COLUMN trackingcorrectionrecalculatepps boolean DEFAULT false;
+		deliveredproduct.id as id,
+		deliveredproduct.succession as succession,
+		deliveredproduct.damagedquantity as damagedquantity,
+		deliveredproduct.deliveredquantity as deliveredquantity,
+		deliveredproduct.priceperunit as priceperunit,
+		deliveredproduct.totalprice as totalprice,
+		deliveredproduct.conversion as conversion,
+		deliveredproduct.additionalquantity as additionalquantity,
+		deliveredproduct.iswaste as iswaste,
+		del.id as delivery,
+		del.id as deliveryId,
+		del.supplier_id as supplier,
+		product.number as productNumber,
+		product.name as productName,
+		product.unit as productUnit,
+		addcode.code as additionalCode,
+		offer.number as offerNumber,
+		operation.number as operationNumber,
+		slocation.number as storageLocationNumber,
+		pnumber.number as palletNumber,
+		(SELECT catalognumber FROM productcatalognumbers_productcatalognumbers WHERE product_id = product.id and company_id=del.supplier_id) as productCatalogNumber
+	FROM deliveries_deliveredproduct deliveredproduct
+		LEFT JOIN deliveries_delivery del ON deliveredproduct.delivery_id = del.id
+		LEFT JOIN basic_product product ON deliveredproduct.product_id = product.id
+		LEFT JOIN supplynegotiations_offer offer ON deliveredproduct.offer_id = offer.id
+		LEFT JOIN technologies_operation operation ON deliveredproduct.operation_id = operation.id
+		LEFT JOIN basic_additionalcode addcode ON deliveredproduct.additionalcode_id = addcode.id
+		LEFT JOIN materialflowresources_storagelocation slocation ON deliveredproduct.storagelocation_id = slocation.id
+		LEFT JOIN basic_palletnumber pnumber ON deliveredproduct.palletnumber_id = pnumber.id;
 
 -- end
 
--- storageLocationDto
--- last touched 12.08.2016 by kama
+-- incomplete resource fields
+-- last touched 18.08.2016 by pako
 
-CREATE SEQUENCE materialFlowResources_storagelocationdto_id_seq;
+ALTER TABLE materialflowresources_position ADD COLUMN waste boolean DEFAULT false;
+ALTER TABLE materialflowresources_resource ADD COLUMN waste boolean DEFAULT false;
+INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (19, 'waste', true, true, 19, 1);
 
-CREATE OR REPLACE VIEW materialflowresources_storagelocationdto_internal AS
-    select location.number as locationNumber, storageLocation.number as storageLocationNumber,
-    	COALESCE(product.number, storageProduct.number) as productNumber, COALESCE(product.name, storageProduct.name) as productName, resourceCode.code as additionalCode,
-    	COALESCE(SUM(resource.quantity), 0::numeric) as resourceQuantity, COALESCE(product.unit, storageProduct.unit) as productUnit,
-    	COALESCE(SUM(resource.quantityinadditionalunit), 0::numeric) as quantityInAdditionalUnit,
-    	COALESCE(product.additionalunit, product.unit, storageProduct.additionalunit, storageProduct.unit) as productAdditionalUnit
-    from materialflowresources_storagelocation storageLocation
-   	join materialflow_location location on storageLocation.location_id = location.id
-   	left join materialflowresources_resource resource on resource.storagelocation_id = storageLocation.id
-   	left join basic_product product on product.id = resource.product_id
-   	left join basic_product storageProduct on storageProduct.id = storageLocation.product_id
-   	left join basic_additionalcode resourceCode on resourceCode.id = resource.additionalcode_id
-   	group by locationNumber, storageLocationNumber, productNumber, productName, additionalCode, productUnit, productAdditionalUnit;
-
-
-CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
-	select row_number() OVER () AS id, internal.*
-	from materialflowresources_storagelocationdto_internal internal;
--- end
-
--- masterOrder
--- last touched 19.08.2016 by kasi
-ALTER TABLE masterorders_masterorder ADD COLUMN lefttorelease numeric(14,5);
-ALTER TABLE masterorders_masterorder ADD COLUMN comments text;
-ALTER TABLE masterorders_masterorder ADD COLUMN masterorderpositionstatus character varying(255);
-ALTER TABLE masterorders_masterorder ADD COLUMN dateofreceipt timestamp without time zone;
-
-ALTER TABLE masterorders_masterorderproduct ADD COLUMN lefttorelease numeric(14,5);
-ALTER TABLE masterorders_masterorderproduct ADD COLUMN comments text;
-ALTER TABLE masterorders_masterorderproduct ADD COLUMN masterorderpositionstatus character varying(255);
-
-
--- materialflowresources_document
--- last touched 18.08.2016 by kasi
-ALTER TABLE materialflowresources_document ADD COLUMN createlinkedpzdocument boolean;
-ALTER TABLE materialflowresources_document ADD COLUMN linkedpzdocumentlocation_id bigint;
-ALTER TABLE materialflowresources_document
-  ADD CONSTRAINT document_linkedpzdocumentlocation_fkey FOREIGN KEY (linkedpzdocumentlocation_id)
-      REFERENCES materialflow_location (id) DEFERRABLE;
--- end
-
--- made storage locations activable
--- last touched 23.08.2016 by pako
-
-ALTER TABLE materialflowresources_storagelocation ADD COLUMN active boolean DEFAULT true;
-
--- end
+--

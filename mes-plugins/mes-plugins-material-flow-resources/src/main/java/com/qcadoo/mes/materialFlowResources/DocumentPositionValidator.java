@@ -321,6 +321,7 @@ public class DocumentPositionValidator {
         params.put("price", vo.getPrice());
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
         params.put("batch", vo.getBatch().trim());
+        params.put("waste", vo.isWaste());
 
         return params;
     }
