@@ -86,3 +86,10 @@ ALTER TABLE materialflowresources_resource ADD COLUMN waste boolean DEFAULT fals
 INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (19, 'waste', true, true, 19, 1);
 
 --
+
+-- technologies_technology
+-- by kasi 05.09.2016
+ALTER TABLE technologies_technology ADD COLUMN standardperformancetechnology numeric(12,5);
+ALTER TABLE technologies_technology ADD COLUMN template boolean;
+ALTER TABLE technologies_technology ALTER COLUMN template SET DEFAULT false;
+-- end
