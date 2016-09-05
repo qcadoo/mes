@@ -55,7 +55,7 @@
             <validatesRange from="0" exclusively="true"/>
         </integer>
 
-        <boolean name="production" default="false"/>
+        <boolean name="production" default="true"/>
 
     </fields>
     <hooks>
