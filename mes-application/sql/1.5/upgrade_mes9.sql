@@ -46,98 +46,98 @@ DROP VIEW cmmsmachineparts_plannedeventlistdto;
 ALTER TABLE cmmsmachineparts_plannedevent ALTER COLUMN description TYPE character varying(600);
 
 CREATE OR REPLACE VIEW cmmsmachineparts_plannedeventlistdto AS
-	SELECT
-		plannedevent.id AS id,
-		plannedevent.number AS number,
-		plannedevent.type AS type,
-		plannedevent.description AS description,
-		plannedevent.date::TIMESTAMP WITHOUT time ZONE AS date,
-		plannedevent.counter AS counter,
-		plannedevent.createUser AS createuser,
-		plannedevent.createDate AS createdate,
-		plannedevent.state AS state,
-		context.id AS plannedeventcontext_id,
-		sourcecost.id AS sourcecost_id,
-		staff.name || ' ' || staff.surname AS ownername,
-		factory.id ::integer AS factory_id,
-		factory.number AS factorynumber,
-		division.id::integer AS division_id,
-		division.number AS divisionnumber,
-		workstation.id AS workstation_id,
-		workstation.number AS workstationnumber,
-		subassembly.id AS subassembly_id,
-		subassembly.number AS subassemblynumber,
-		company.id AS company_id,
-		productionLine.number AS productionlinenumber
-	FROM cmmsmachineparts_plannedevent plannedevent
-	LEFT JOIN cmmsmachineparts_plannedeventcontext context
-		ON plannedevent.plannedeventcontext_id = context.id
+    SELECT
+        plannedevent.id AS id,
+        plannedevent.number AS number,
+        plannedevent.type AS type,
+        plannedevent.description AS description,
+        plannedevent.date::TIMESTAMP WITHOUT time ZONE AS date,
+        plannedevent.counter AS counter,
+        plannedevent.createUser AS createuser,
+        plannedevent.createDate AS createdate,
+        plannedevent.state AS state,
+        context.id AS plannedeventcontext_id,
+        sourcecost.id AS sourcecost_id,
+        staff.name || ' ' || staff.surname AS ownername,
+        factory.id::integer AS factory_id,
+        factory.number AS factorynumber,
+        division.id::integer AS division_id,
+        division.number AS divisionnumber,
+        workstation.id::integer AS workstation_id,
+        workstation.number AS workstationnumber,
+        subassembly.id::integer AS subassembly_id,
+        subassembly.number AS subassemblynumber,
+        company.id::integer AS company_id,
+        productionline.number AS productionlinenumber
+    FROM cmmsmachineparts_plannedevent plannedevent
+    LEFT JOIN cmmsmachineparts_plannedeventcontext context
+        ON plannedevent.plannedeventcontext_id = context.id
     LEFT JOIN cmmsmachineparts_sourcecost sourcecost
-    	ON plannedevent.sourcecost_id = sourcecost.id
-	LEFT JOIN basic_staff staff
-		ON plannedevent.owner_id = staff.id
-	LEFT JOIN basic_factory factory
-		ON plannedevent.factory_id = factory.id
-	LEFT JOIN basic_division division
-		ON plannedevent.division_id = division.id
-	LEFT JOIN basic_workstation workstation
-		ON plannedevent.workstation_id = workstation.id
-	LEFT JOIN basic_subassembly subassembly
-		ON plannedevent.subassembly_id = subassembly.id
-	LEFT JOIN basic_company company
-		ON plannedevent.company_id = company.id
-	LEFT JOIN productionLines_productionLine productionLine
-		ON plannedevent.productionline_id = productionline.id;
+        ON plannedevent.sourcecost_id = sourcecost.id
+    LEFT JOIN basic_staff staff
+        ON plannedevent.owner_id = staff.id
+    LEFT JOIN basic_factory factory
+        ON plannedevent.factory_id = factory.id
+    LEFT JOIN basic_division division
+        ON plannedevent.division_id = division.id
+    LEFT JOIN basic_workstation workstation
+        ON plannedevent.workstation_id = workstation.id
+    LEFT JOIN basic_subassembly subassembly
+        ON plannedevent.subassembly_id = subassembly.id
+    LEFT JOIN basic_company company
+        ON plannedevent.company_id = company.id
+    LEFT JOIN productionlines_productionline productionline
+        ON plannedevent.productionline_id = productionline.id;
 
   DROP VIEW cmmsmachineparts_maintenanceeventlistdto;
 
-  CREATE OR replace VIEW cmmsmachineparts_maintenanceeventlistdto AS
+  CREATE OR REPLACE VIEW cmmsmachineparts_maintenanceeventlistdto AS
       SELECT
           maintenanceevent.id AS id,
           maintenanceevent.number AS number,
           maintenanceevent.type AS type,
           maintenanceevent.createuser AS createuser,
-          maintenanceevent.createdate As createdate,
+          maintenanceevent.createdate AS createdate,
           maintenanceevent.state AS state,
           maintenanceevent.description AS description,
           context.id AS maintenanceeventcontext_id,
-          staff.name || ' ' || staff.surname  as personreceivingname,
-          factory.id::integer as factory_id,
-          factory.number as factorynumber,
-          division.id::integer as division_id,
-          division.number as divisionnumber,
-          workstation.number as workstationnumber,
-          subassembly.number as subassemblynumber,
-          faultType.name AS faulttypename,
-          productionLine.number as productionlinenumber
-      FROM cmmsmachineparts_maintenanceevent maintenanceevent
-      LEFT JOIN cmmsmachineparts_maintenanceeventcontext context
-          ON maintenanceevent.maintenanceeventcontext_id = context.id
-      LEFT JOIN basic_staff staff
-          ON maintenanceevent.personreceiving_id = staff.id
-      LEFT JOIN basic_factory factory
-          ON maintenanceevent.factory_id = factory.id
-      LEFT JOIN basic_division division
-          ON maintenanceevent.division_id = division.id
-      LEFT JOIN basic_workstation workstation
-          ON maintenanceevent.workstation_id = workstation.id
-      LEFT JOIN basic_subassembly subassembly
-          ON maintenanceevent.subassembly_id = subassembly.id
-      LEFT JOIN cmmsmachineparts_faulttype faultType
-          ON maintenanceevent.faulttype_id = faultType.id
-      LEFT JOIN productionLines_productionLine productionLine
-          ON maintenanceevent.productionline_id = productionLine.id;
+          staff.name || ' ' || staff.surname AS personreceivingname,
+          factory.id::integer AS factory_id,
+          factory.number AS factorynumber,
+          division.id::integer AS division_id,
+          division.number AS divisionnumber, 
+          workstation.number AS workstationnumber, 
+          subassembly.number AS subassemblynumber, 
+          faulttype.name AS faulttypename, 
+          productionline.number AS productionlinenumber 
+      FROM cmmsmachineparts_maintenanceevent maintenanceevent 
+      LEFT JOIN cmmsmachineparts_maintenanceeventcontext context 
+          ON maintenanceevent.maintenanceeventcontext_id = context.id 
+      LEFT JOIN basic_staff staff 
+          ON maintenanceevent.personreceiving_id = staff.id 
+      LEFT JOIN basic_factory factory 
+          ON maintenanceevent.factory_id = factory.id 
+      LEFT JOIN basic_division division 
+          ON maintenanceevent.division_id = division.id 
+      LEFT JOIN basic_workstation workstation 
+          ON maintenanceevent.workstation_id = workstation.id 
+      LEFT JOIN basic_subassembly subassembly 
+          ON maintenanceevent.subassembly_id = subassembly.id 
+      LEFT JOIN cmmsmachineparts_faulttype faulttype 
+          ON maintenanceevent.faulttype_id = faulttype.id 
+      LEFT JOIN productionlines_productionline productionline 
+          ON maintenanceevent.productionline_id = productionline.id;
 
 -- end
 
 -- start
 
-drop view productioncounting_productiontrackingforproductgroupeddto;
-drop view productioncounting_productiontrackingforproductdto;
-drop view productioncounting_trackingoperationproductcomponentdto;
-drop view productioncounting_trackingoperationproductoutcomponentdto;
-drop view productioncounting_trackingoperationproductincomponentdto;
-drop view productioncounting_productiontrackingdto;
+DROP VIEW productioncounting_productiontrackingforproductgroupeddto;
+DROP VIEW productioncounting_productiontrackingforproductdto;
+DROP VIEW productioncounting_trackingoperationproductcomponentdto;
+DROP VIEW productioncounting_trackingoperationproductoutcomponentdto;
+DROP VIEW productioncounting_trackingoperationproductincomponentdto;
+DROP VIEW productioncounting_productiontrackingdto;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS
 	SELECT
