@@ -37,11 +37,11 @@ public class AddressCriteriaModifiers {
     public static final String L_COMPANY_ID = "companyId";
 
     public void showOnlyCompanyAddresses(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final FilterValueHolder filterValue) {
+            final FilterValueHolder filterValueHolder) {
         Long companyId = null;
 
-        if (filterValue.has(L_COMPANY_ID)) {
-            companyId = filterValue.getLong(L_COMPANY_ID);
+        if (filterValueHolder.has(L_COMPANY_ID)) {
+            companyId = filterValueHolder.getLong(L_COMPANY_ID);
         } else {
             companyId = 0L;
         }

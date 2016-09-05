@@ -279,6 +279,14 @@ public class DocumentDetailsHooks {
         } else {
             Long companyId = company.getId();
 
+            if (filterValueHolder.has(AddressCriteriaModifiers.L_COMPANY_ID)) {
+                Long oldCompanyId = filterValueHolder.getLong(AddressCriteriaModifiers.L_COMPANY_ID);
+
+                if (!companyId.equals(oldCompanyId)) {
+                    addressLookup.setFieldValue(null);
+                }
+            }
+
             filterValueHolder.put(AddressCriteriaModifiers.L_COMPANY_ID, companyId);
         }
 

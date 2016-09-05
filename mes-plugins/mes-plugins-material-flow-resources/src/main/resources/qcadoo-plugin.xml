@@ -97,13 +97,13 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="company">
-            <model:hasMany name="documents" model="company"
-                           plugin="basic" joinField="company" cascade="nullify"/>
+            <model:hasMany name="documents" model="document"
+                           plugin="materialFlowResources" joinField="company" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="address">
-            <model:hasMany name="documents" model="address"
-                           plugin="basic" joinField="address" cascade="nullify"/>
+            <model:hasMany name="documents" model="document"
+                           plugin="materialFlowResources" joinField="address" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="transfer">
