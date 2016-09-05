@@ -96,6 +96,16 @@
                         values="01never,02validateWithResources" default="01never"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="documents" model="company"
+                           plugin="basic" joinField="company" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="documents" model="address"
+                           plugin="basic" joinField="address" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlow" model="transfer">
             <model:decimal name="price" default="0"/>
         </model:model-field>

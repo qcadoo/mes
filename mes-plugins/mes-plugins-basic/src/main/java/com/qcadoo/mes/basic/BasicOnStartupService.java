@@ -45,7 +45,7 @@ public class BasicOnStartupService extends Module {
     private TypeOfPalletLoader typeOfPalletLoader;
 
     @Autowired
-    private DefaultFaultTypesLoaderModule defaultFaultTypesLoaderModule;
+    private DefaultFaultTypesLoader defaultFaultTypesLoader;
 
     @Autowired
     private ExchangeRatesUpdateService exchangeRatesUpdateService;
@@ -57,7 +57,7 @@ public class BasicOnStartupService extends Module {
         currencyLoader.loadCurrencies();
         reportColumnWidthLoader.loadReportColumnWidths();
         typeOfPalletLoader.loadTypeOfPallets();
-        defaultFaultTypesLoaderModule.loadFaultTypes();
+        defaultFaultTypesLoader.loadFaultTypes();
         exchangeRatesUpdateService.update();
     }
 

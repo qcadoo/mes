@@ -132,6 +132,7 @@ public class CompanyService {
     private void disableGridComponents(final ViewDefinitionState view, final Boolean isEditable, final String... references) {
         for (String reference : references) {
             ComponentState componentState = view.getComponentByReference(reference);
+
             if (componentState instanceof GridComponent) {
                 ((GridComponent) componentState).setEditable(isEditable);
             }

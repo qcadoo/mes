@@ -24,23 +24,6 @@
     ***************************************************************************
 
 -->
-<model name="country" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="country" required="true" />
-		<string name="code" required="true" unique="true">
-			<validatesLength is="2" />
-		</string>
-
-        <hasMany name="companies" model="company" plugin="basic" joinField="country"
-                 cascade="nullify"/>
-        <hasMany name="addresses" model="address" plugin="basic" joinField="country"
-                 cascade="nullify"/>
-	</fields>
-
-	<hooks />
-
-	<identifier expression="#code + ' - ' + #country" />
-
-</model>
+<addressType>
+    <row NAME="main" TECHNICALCODE="01main"/>
+</addressType>

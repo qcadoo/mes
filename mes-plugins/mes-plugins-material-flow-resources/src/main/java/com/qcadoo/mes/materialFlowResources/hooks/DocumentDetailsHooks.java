@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -46,25 +47,31 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 @Service
 public class DocumentDetailsHooks {
 
-    private static final String RIBBON_GROUP = "actions";
+    private static final String L_FORM = "form";
 
-    private static final List<String> RIBBON_ACTION_ITEM = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
+    private static final String L_WINDOW = "window";
 
-    private static final String STATE_GROUP = "state";
+    private static final String L_ACTIONS = "actions";
 
-    private static final String ACCEPT_ITEM = "accept";
+    private static final String L_STATE = "state";
 
-    private static final String PRINT_GROUP = "print";
+    private static final String L_PRINT = "print";
 
-    private static final String PRINT_PDF_ITEM = "printPdf";
+    private static final String L_ACCEPT = "accept";
 
-    public static final String FORM = "form";
+    private static final String L_PRINT_PDF = "printPdf";
+
+    private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
+
+    public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -77,12 +84,14 @@ public class DocumentDetailsHooks {
         lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
         lockDispositionOrder(view);
+        fillAddressLookupCriteriaModifier(view);
     }
 
     // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
-        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
 
         String documentType = document.getStringField(DocumentFields.TYPE);
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
@@ -90,85 +99,96 @@ public class DocumentDetailsHooks {
         if (DocumentType.RECEIPT.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
             showWarehouse(view, false, true);
-            showCompany(view, true);
+            showCompanyAndAddress(view, true);
         } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
             showWarehouse(view, true, true);
-            showCompany(view, false);
+            showCompanyAndAddress(view, false);
         } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             showWarehouse(view, true, false);
-            showCompany(view, true);
+            showCompanyAndAddress(view, true);
         } else {
             showWarehouse(view, false, false);
-            showCompany(view, false);
+            showCompanyAndAddress(view, false);
         }
+
         if (!positions.isEmpty()) {
             showWarehouse(view, false, false);
         }
     }
 
     private void showWarehouse(final ViewDefinitionState view, boolean from, boolean to) {
-        FieldComponent locationFrom = (FieldComponent) view.getComponentByReference("locationFrom");
-        locationFrom.setEnabled(from);
+        LookupComponent locationFromLookup = (LookupComponent) view.getComponentByReference(DocumentFields.LOCATION_FROM);
+        locationFromLookup.setEnabled(from);
 
-        FieldComponent locationTo = (FieldComponent) view.getComponentByReference("locationTo");
-        locationTo.setEnabled(to);
+        LookupComponent locationToLookup = (LookupComponent) view.getComponentByReference(DocumentFields.LOCATION_TO);
+        locationToLookup.setEnabled(to);
     }
 
-    private void showCompany(final ViewDefinitionState view, boolean visible) {
-        FieldComponent company = (FieldComponent) view.getComponentByReference("company");
-        company.setEnabled(visible);
+    private void showCompanyAndAddress(final ViewDefinitionState view, boolean visible) {
+        LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(DocumentFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(DocumentFields.ADDRESS);
+
+        companyLookup.setEnabled(visible);
+        addressLookup.setEnabled(visible);
     }
 
     public void initializeDocument(final ViewDefinitionState view) {
         showFieldsByDocumentType(view);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
-        Long documentId = formComponent.getEntityId();
 
-        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long documentId = documentForm.getEntityId();
+
+        Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
 
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
-            FieldComponent date = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
-            FieldComponent user = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
-            if (date.getFieldValue() == null) {
-                date.setFieldValue(setDateToField(new Date()));
+
+            FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
+            FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
+
+            if (dateField.getFieldValue() == null) {
+                dateField.setFieldValue(setDateToField(new Date()));
             }
-            user.setFieldValue(userService.getCurrentUserEntity().getId());
+
+            userField.setFieldValue(userService.getCurrentUserEntity().getId());
         } else if (DocumentState.DRAFT.equals(state)) {
             changeAcceptButtonState(window, true);
             changePrintButtonState(window, true);
         } else if (DocumentState.ACCEPTED.equals(state)) {
-            formComponent.setFormEnabled(false);
+            documentForm.setFormEnabled(false);
             disableRibbon(window);
             changePrintButtonState(window, true);
         }
-
     }
 
     private void disableRibbon(final WindowComponent window) {
-        for (String actionItem : RIBBON_ACTION_ITEM) {
-            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).setEnabled(false);
-            window.getRibbon().getGroupByName(RIBBON_GROUP).getItemByName(actionItem).requestUpdate(true);
+        for (String actionItem : L_ACTIONS_ITEMS) {
+            window.getRibbon().getGroupByName(L_ACTIONS).getItemByName(actionItem).setEnabled(false);
+            window.getRibbon().getGroupByName(L_ACTIONS).getItemByName(actionItem).requestUpdate(true);
         }
+
         changeAcceptButtonState(window, false);
     }
 
     private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem actionItem = (RibbonActionItem) window.getRibbon().getGroupByName(STATE_GROUP)
-                .getItemByName(ACCEPT_ITEM);
-        actionItem.setEnabled(enable);
-        actionItem.requestUpdate(true);
+        RibbonActionItem acceptRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_STATE)
+                .getItemByName(L_ACCEPT);
+
+        acceptRibbonActionItem.setEnabled(enable);
+        acceptRibbonActionItem.requestUpdate(true);
     }
 
     private void changePrintButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem actionItem = (RibbonActionItem) window.getRibbon().getGroupByName(PRINT_GROUP)
-                .getItemByName(PRINT_PDF_ITEM);
-        actionItem.setEnabled(enable);
-        actionItem.requestUpdate(true);
+        RibbonActionItem printRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
+                .getItemByName(L_PRINT_PDF);
+
+        printRibbonActionItem.setEnabled(enable);
+        printRibbonActionItem.requestUpdate(true);
     }
 
     private Object setDateToField(final Date date) {
@@ -176,23 +196,24 @@ public class DocumentDetailsHooks {
     }
 
     private void lockNumberAndTypeChange(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
-        if (formComponent.getEntityId() != null) {
-            typeComponent.setEnabled(false);
 
+        if (documentForm.getEntityId() != null) {
+            typeComponent.setEnabled(false);
         } else {
             typeComponent.setEnabled(true);
         }
 
-        FieldComponent numberFieldComponent = (FieldComponent) view.getComponentByReference(DocumentFields.NUMBER);
-        numberFieldComponent.setEnabled(false);
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(DocumentFields.NUMBER);
+        numberField.setEnabled(false);
     }
 
     private void fetchNameAndNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
-        if (formComponent.getEntityId() != null) {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (documentForm.getEntityId() != null) {
             ComponentState numberField = view.getComponentByReference(DocumentFields.NUMBER);
             ComponentState nameField = view.getComponentByReference(DocumentFields.NAME);
 
@@ -200,7 +221,7 @@ public class DocumentDetailsHooks {
             String numberFieldValue = (String) numberField.getFieldValue();
 
             if (!numberFieldValue.contains("/")) {
-                Entity document = getDocumentDD().get(formComponent.getEntityId());
+                Entity document = getDocumentDD().get(documentForm.getEntityId());
 
                 if (!numberFieldValue.contains("/")) {
                     numberField.setFieldValue(document.getField(DocumentFields.NUMBER));
@@ -219,21 +240,50 @@ public class DocumentDetailsHooks {
     }
 
     private void lockDispositionOrder(ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonActionItem dispositionOrderPdfItem = (RibbonActionItem) window.getRibbon().getGroupByName(PRINT_GROUP).getItemByName("printDispositionOrderPdf");
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonActionItem printDispositionOrderPdfRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
+                .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);
+
         String errorMessage = null;
 
-        if (formComponent.getEntityId() != null) {
-            String documentType = formComponent.getEntity().getStringField(DocumentFields.TYPE);
+        if (documentForm.getEntityId() != null) {
+            String documentType = documentForm.getEntity().getStringField(DocumentFields.TYPE);
 
-            List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(), DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
-            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {                
+            List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
+                    DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
+
+            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
             }
         }
-        dispositionOrderPdfItem.setEnabled(errorMessage==null && formComponent.getEntityId() != null);
-        dispositionOrderPdfItem.setMessage(errorMessage);
-        dispositionOrderPdfItem.requestUpdate(true);
+
+        printDispositionOrderPdfRibbonActionItem.setEnabled(errorMessage == null && documentForm.getEntityId() != null);
+        printDispositionOrderPdfRibbonActionItem.setMessage(errorMessage);
+        printDispositionOrderPdfRibbonActionItem.requestUpdate(true);
     }
+
+    public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view) {
+        LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(DocumentFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(DocumentFields.ADDRESS);
+
+        Entity company = companyLookup.getEntity();
+
+        FilterValueHolder filterValueHolder = addressLookup.getFilterValue();
+
+        if (company == null) {
+            filterValueHolder.remove(AddressCriteriaModifiers.L_COMPANY_ID);
+
+            addressLookup.setFieldValue(null);
+        } else {
+            Long companyId = company.getId();
+
+            filterValueHolder.put(AddressCriteriaModifiers.L_COMPANY_ID, companyId);
+        }
+
+        addressLookup.setFilterValue(filterValueHolder);
+        addressLookup.requestComponentUpdateState();
+    }
+
 }

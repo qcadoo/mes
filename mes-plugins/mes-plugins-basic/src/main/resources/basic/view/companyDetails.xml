@@ -24,17 +24,18 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_COMPANY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="companyDetails" modelName="company">
+<view defaultAuthorizationRole="ROLE_COMPANY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	  name="companyDetails" modelName="company">
 
 	<component type="window" name="window" reference="window">
-	
+
 		<ribbon>
-			<template name="standardFormTemplate" />
+			<template name="standardFormTemplate"/>
 			<group name="orderProduction" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY">
 				<bigButton name="redirectToFilteredOrderProductionList"
-					icon="genealogyIcon24.png">
+						   icon="genealogyIcon24.png">
 					<script>
 						<![CDATA[
 							this.addOnChangeListener({
@@ -49,7 +50,7 @@
 				</bigButton>
 			</group>
 		</ribbon>
-		
+
 		<windowTab name="mainTab">
 			<component type="form" name="company" reference="form">
 				<script>
@@ -75,135 +76,191 @@
 								"onClick",
 								 QCDTrack.eventResolver.formStateDependent( "addCompany" , "modifyCompany") 
 						);
-						
-						
 					]]>
 				</script>
 				<component type="gridLayout" name="mainTabGridLayout"
-					columns="3" rows="7">
+						   columns="3" rows="8">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
-							reference="number">
-							<option type="alignment" value="right" />
+								   reference="number">
+							<option type="alignment" value="right"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="name" field="name"
-							reference="name" />
+								   reference="name"/>
 					</layoutElement>
 					<layoutElement column="1" row="3">
 						<component type="gridLayout" name="taxGridLayout"
-							columns="2" rows="1" hasBorders="false">
+								   columns="2" rows="1" hasBorders="false">
 							<layoutElement column="1" row="1">
 								<component type="lookup" name="taxCountryCode" field="taxCountryCode"
-									reference="taxCountryCode">
+										   reference="taxCountryCode">
 									<option type="column" name="country" fields="country"
-										link="true" />
-									
-									<option type="order" column="code" direction="asc" />
-									
-									<option type="searchable" value="code,country" />
-									<option type="orderable" value="code,country" />
-		
-									<option type="expression" value="#code" />
-									<option type="fieldCode" value="code" />
-									
-									<option type="labelWidth" value="60" />
+											link="true"/>
+
+									<option type="order" column="code" direction="asc"/>
+
+									<option type="searchable" value="code,country"/>
+									<option type="orderable" value="code,country"/>
+
+									<option type="expression" value="#code"/>
+									<option type="fieldCode" value="code"/>
+
+									<option type="labelWidth" value="60"/>
 								</component>
-							</layoutElement>	
+							</layoutElement>
 							<layoutElement column="2" row="1">
 								<component type="input" name="tax" field="tax"
-									reference="tax" hasLabel="false" />
+										   reference="tax" hasLabel="false"/>
 							</layoutElement>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="4">
 						<component type="input" name="phone" field="phone"
-							reference="phone" />
+								   reference="phone"/>
 					</layoutElement>
 					<layoutElement column="1" row="5">
 						<component type="input" name="email" field="email"
-							reference="email" />
+								   reference="email"/>
 					</layoutElement>
 					<layoutElement column="1" row="6">
 						<component type="input" name="website" field="website"
-							reference="website" />
+								   reference="website"/>
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="checkbox" name="isSupplier" field="isSupplier"
+								   reference="isSupplier"/>
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="checkbox" name="isReceiver" field="isReceiver"
+								   reference="isReceiver"/>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="input" name="street" field="street"
-							reference="street" />
+								   reference="street"/>
 					</layoutElement>
 					<layoutElement column="2" row="2">
 						<component type="input" name="house" field="house"
-							reference="house" />
+								   reference="house"/>
 					</layoutElement>
 					<layoutElement column="2" row="3">
 						<component type="input" name="flat" field="flat"
-							reference="flat" />
+								   reference="flat"/>
 					</layoutElement>
 					<layoutElement column="2" row="4">
 						<component type="input" name="zipCode" field="zipCode"
-							reference="zipCode" />
+								   reference="zipCode"/>
 					</layoutElement>
 					<layoutElement column="2" row="5">
 						<component type="input" name="city" field="city"
-							reference="city" />
+								   reference="city"/>
 					</layoutElement>
 					<layoutElement column="2" row="6">
 						<component type="input" name="state" field="state"
-							reference="state" />
+								   reference="state"/>
 					</layoutElement>
 					<layoutElement column="2" row="7">
 						<component type="lookup" name="country" field="country"
-							reference="country">
+								   reference="country">
 							<option type="column" name="country" fields="country"
-								link="true" />
-							
-							<option type="order" column="code" direction="asc" />
-							
-							<option type="searchable" value="code,country" />
-							<option type="orderable" value="code,country" />
+									link="true"/>
 
-							<option type="expression" value="#code + ' - ' + #country" />
-							<option type="fieldCode" value="code" />
-										
+							<option type="order" column="code" direction="asc"/>
+
+							<option type="searchable" value="code,country"/>
+							<option type="orderable" value="code,country"/>
+
+							<option type="expression" value="#code + ' - ' + #country"/>
+							<option type="fieldCode" value="code"/>
+
 							<listener event="onSelectedEntityChange"
-								class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
-								method="setTaxCountryCode" />
+									  class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
+									  method="setTaxCountryCode"/>
 						</component>
 					</layoutElement>
 
 				</component>
-				
-				<option type="header" value="true" />
-				<option type="expression" value="#name" />
-				
+
+				<option type="header" value="true"/>
+				<option type="expression" value="#name"/>
+
 				<listener event="redirectToFilteredOrderProductionList"
-					class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
-					method="redirectToFilteredOrderProductionList" />
+						  class="com.qcadoo.mes.basic.listeners.CompanyDetailsListeners"
+						  method="redirectToFilteredOrderProductionList"/>
 			</component>
 		</windowTab>
-		
-		<windowTab name="integrationTab">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="1">
+
+		<windowTab name="addressesTab" reference="addressesTab">
+			<component type="gridLayout" name="addressesGridLayout" columns="1"
+					   rows="1">
 				<layoutElement column="1" row="1">
-					<component type="input" name="externalNumber" field="#{form}.externalNumber"
-						reference="externalNumber" defaultEnabled="never" />
+					<component type="grid" name="addresses" reference="addresses"
+							   source="#{form}.addresses">
+						<option type="column" name="addressType" fields="addressType"
+								width="50" link="true"/>
+						<option type="column" name="number" fields="number"
+								width="50" link="true"/>
+						<option type="column" name="name" fields="name"
+								width="70" link="true"/>
+						<option type="column" name="street" fields="street"
+								width="70" link="true"/>
+						<option type="column" name="house" fields="house"
+								width="30" link="true"/>
+						<option type="column" name="flat" fields="flat"
+								width="40" link="true"/>
+						<option type="column" name="zipCode" fields="zipCode"
+								width="40" link="true"/>
+						<option type="column" name="city" fields="city"
+								width="50" link="true"/>
+						<option type="column" name="phone" fields="phone"
+								width="50" link="true"/>
+						<option type="column" name="email" fields="email"
+								width="70" link="true"/>
+						<option type="column" name="contactPerson" fields="contactPerson"
+								width="70" link="true"/>
+
+						<option type="order" column="number" direction="desc"/>
+
+						<option type="searchable"
+								value="addressType,number,name,street,house,flat,zipCode,city,phone,email,contactPerson"/>
+						<option type="orderable"
+								value="addressType,number,name,street,house,flat,zipCode,city,phone,email,contactPerson"/>
+
+						<option type="correspondingView" value="basic/addressDetails"/>
+						<option type="correspondingComponent" value="form"/>
+						<option type="correspondingViewInModal" value="false"/>
+
+						<option type="creatable" value="true"/>
+						<option type="deletable" value="true"/>
+						<option type="fullscreen" value="true"/>
+						<option type="multiselect" value="true"/>
+					</component>
 				</layoutElement>
 			</component>
 		</windowTab>
-		
+
+		<windowTab name="integrationTab">
+			<component type="gridLayout" name="integrationGridLayout" columns="3"
+					   rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+							   reference="externalNumber" defaultEnabled="never"/>
+				</layoutElement>
+			</component>
+		</windowTab>
+
 	</component>
 
 	<hooks>
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-			method="updateRibbonState" />
+					  method="updateRibbonState"/>
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-			method="generateCompanyNumber" />
+					  method="generateCompanyNumber"/>
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-			method="fillDefaultCountry" />
+					  method="fillDefaultCountry"/>
 		<beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDetailsHooks"
-			method="disabledFieldsForExternalCompany" />
+					  method="disabledFieldsForExternalCompany"/>
 	</hooks>
+
 </view>

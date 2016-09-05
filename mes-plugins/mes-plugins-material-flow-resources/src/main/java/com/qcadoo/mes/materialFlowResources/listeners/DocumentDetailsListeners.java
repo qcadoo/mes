@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
@@ -31,7 +44,14 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -50,30 +70,18 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class DocumentDetailsListeners {
 
-    @Autowired
-    private ResourceManagementService resourceManagementService;
+    private static final String L_FORM = "form";
+
+    private static final String L_RESOURCE = "resource";
+
+    private static final String L_BATCH = "batch";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private UnitConversionService unitConversionService;
@@ -90,14 +98,17 @@ public class DocumentDetailsListeners {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String L_RESOURCE = "resource";
-
-    private static final String L_BATCH = "batch";
-
-    private static final String L_FORM = "form";
-
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private ResourceManagementService resourceManagementService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private DocumentDetailsHooks documentDetailsHooks;
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
@@ -396,7 +407,10 @@ public class DocumentDetailsListeners {
             position.setField(PositionFields.UNIT, unit);
             positionForm.setEntity(position);
         }
+    }
 
+    public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        documentDetailsHooks.fillAddressLookupCriteriaModifier(view);
     }
 
 }
