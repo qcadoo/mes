@@ -136,7 +136,7 @@ public class EventHooks {
     }
 
     private void fetchNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(DocumentDetailsHooks.L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (formComponent.getEntityId() != null) {
             ComponentState numberField = view.getComponentByReference(MaintenanceEventFields.NUMBER);
