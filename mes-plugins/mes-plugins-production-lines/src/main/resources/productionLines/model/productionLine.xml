@@ -54,6 +54,9 @@
                  required="true">
             <validatesRange from="0" exclusively="true"/>
         </integer>
+
+        <boolean name="production" default="false"/>
+
     </fields>
     <hooks>
         <onDelete class="com.qcadoo.mes.productionLines.hooks.ProductionLineHooks" method="onDelete"/>
