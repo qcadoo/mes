@@ -1,4 +1,4 @@
--- views
+﻿-- views
 -- by kasi 01.09.2016
 CREATE SEQUENCE deliveries_orderedproductdto_id_seq;
 
@@ -200,5 +200,14 @@ CREATE TABLE basic_address
 -- last touched 02.09.2016 by lupo
 
 ALTER TABLE materialflowresources_document ADD COLUMN address_id bigint;
+
+-- end
+
+--
+
+-- master order labels
+-- last touched 06.09.2016 by kama
+
+ALTER TABLE basic_parameter ADD COLUMN additionalimage character varying(255);
 
 -- end
