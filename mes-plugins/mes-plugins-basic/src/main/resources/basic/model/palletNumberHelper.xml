@@ -30,7 +30,7 @@
 
     <fields>
         <integer name="quantity" required="true">
-            <validatesRange from="0"/>
+            <validatesRange from="0" to="100"/>
         </integer>
         <string name="numbers" persistent="false">
             <validatesLength max="2048"/>
