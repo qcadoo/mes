@@ -189,6 +189,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                    class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                                    method="setCriteriaModifiersParameters"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="4">
