@@ -5,7 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.BasicLookupController;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
@@ -33,6 +36,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Autowired
     private LookupUtils lookupUtils;
 
+    @Autowired
+    private TranslationService translationService;
+
     @Override
     @ResponseBody
     @RequestMapping(value = "records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,20 +57,28 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
         Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode);
 
+        boolean properFilter = prepareWasteFilter(record);
+        if ("wasteString".equals(sidx)) {
+            sidx = "waste";
+        }
         String query = getQuery(context, useAdditionalCode,
-                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode));
+                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode),
+                !properFilter);
+
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
             parameters = geParameters(context, record, false, additionalCode);
             query = getQuery(context, false,
-                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false));
+                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false), !properFilter);
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
+        setTranslatedWasteFlag(response);
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal) {
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal,
+            boolean wasteFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(
                 "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
@@ -76,6 +90,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append(
                 " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion ");
+        if (wasteFilterIsWrong) {
+            queryBuilder.append(" AND waste IS NULL ");
+        }
         if (useAdditionalCode) {
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
@@ -118,7 +135,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode" });
+                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "wasteString" });
     }
 
     @Override
@@ -131,4 +148,32 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         return null;
     }
 
+    private void setTranslatedWasteFlag(GridResponse<ResourceDTO> responce) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale());
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale());
+        responce.getRows().forEach(resDTO -> resDTO.setWasteString(resDTO.isWaste() ? yes : no));
+    }
+
+    private boolean prepareWasteFilter(ResourceDTO record) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale()).toLowerCase();
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
+                .toLowerCase();
+        String filter = record.getWasteString();
+        record.setWasteString(null);
+        if (filter != null) {
+            filter = filter.toLowerCase();
+        }
+        if (yes.equals(filter)) {
+            record.setWaste(true);
+        } else if (no.equals(filter)) {
+            record.setWaste(false);
+        } else if (!StringUtils.isEmpty(filter)) {
+            return false;
+        } else {
+            record.setWaste(null);
+        }
+        return true;
+    }
 }

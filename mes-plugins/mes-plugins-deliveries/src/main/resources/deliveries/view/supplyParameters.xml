@@ -77,11 +77,15 @@
                     </layoutElement>
                     <layoutElement column="1" row="7">
                         <component type="checkbox" name="positivePurchasePrice" hasDescription="true"
-                                   field="#{form}.positivePurchasePrice" reference="positivePurchasePrice"/>
+                                   field="#{form}.positivePurchasePrice" reference="positivePurchasePrice">
+                        <option type="labelWidth" value="50" />
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="8">
                         <component type="checkbox" name="deliveredBiggerThanOrdered" hasDescription="true"
-                                   field="#{form}.deliveredBiggerThanOrdered" reference="deliveredBiggerThanOrdered"/>
+                                   field="#{form}.deliveredBiggerThanOrdered" reference="deliveredBiggerThanOrdered">
+                            <option type="labelWidth" value="50" />
+                        </component>
                     </layoutElement>
 
                     <layoutElement column="2" row="1" width="2" height="9">

@@ -460,6 +460,7 @@
 								name="registeredTotalTechnicalProductionCosts" field="#{form}.registeredTotalTechnicalProductionCosts"
 								reference="registeredTotalTechnicalProductionCosts"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -479,6 +480,7 @@
 								defaultEnabled="false">
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
+								<option type="labelWidth" value="50" />
 							</component>
 						</layoutElement>
 						<layoutElement column="3" row="2">
@@ -503,6 +505,7 @@
 						<layoutElement column="1" row="1" width="2">
 							<component type="input" name="totalTechnicalProductionCosts"
 								field="#{form}.totalTechnicalProductionCosts" reference="totalTechnicalProductionCosts">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -518,6 +521,7 @@
 							<component type="input" name="totalTechnicalProductionCostPerUnit"
 								field="#{form}.totalTechnicalProductionCostPerUnit" reference="plannedTotalCostPerUnit"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -544,6 +548,7 @@
 							<component type="input" name="balanceTechnicalProductionCosts"
 								field="#{form}.balanceTechnicalProductionCosts" reference="balanceTechnicalProductionCosts"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -560,6 +565,7 @@
 							<component type="input" name="balanceTechnicalProductionCostPerUnit"
 								field="#{form}.balanceTechnicalProductionCostPerUnit" reference="balanceTechnicalProductionCostPerUnit"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -585,7 +591,7 @@
 							<component type="input" name="productionCostMarginValue"
 								field="#{form}.productionCostMarginValue" reference="productionCostMarginValue"
 								defaultEnabled="false">
-								<!-- <option type="labelWidth" value="60" /> -->
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -601,6 +607,7 @@
 							<component type="input" name="materialCostMarginValue"
 								field="#{form}.materialCostMarginValue" reference="materialCostMarginValue"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>
@@ -616,6 +623,7 @@
 							<component type="input" name="additionalOverheadValue"
 								field="#{form}.additionalOverheadValue" reference="additionalOverheadValue"
 								defaultEnabled="false">
+								<option type="labelWidth" value="50" />
 								<option type="alignment" value="right" />
 								<option type="boldTextRepresentationOnDisabled" value="true" />
 							</component>

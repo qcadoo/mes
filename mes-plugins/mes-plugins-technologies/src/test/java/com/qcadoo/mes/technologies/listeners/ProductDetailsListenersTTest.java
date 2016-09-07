@@ -23,23 +23,22 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ProductDetailsListenersTTest {
 
@@ -51,7 +50,7 @@ public class ProductDetailsListenersTTest {
 
     private static final String L_TECHNOLOGY_GROUP_NUMBER = "000001";
 
-    private static final String L_PRODUCT_NAME = "ProductName";
+    private static final String L_PRODUCT_NUMBER = "ProductNumber";
 
     private static final long L_ID = 1L;
 
@@ -203,9 +202,9 @@ public class ProductDetailsListenersTTest {
         // given
         given(product.getId()).willReturn(L_ID);
 
-        given(product.getStringField(NAME)).willReturn(L_PRODUCT_NAME);
+        given(product.getStringField(NUMBER)).willReturn(L_PRODUCT_NUMBER);
 
-        filters.put("productName", "["+ L_PRODUCT_NAME + "]");
+        filters.put("productNumber", "["+ L_PRODUCT_NUMBER + "]");
 
         gridOptions.put(L_FILTERS, filters);
 

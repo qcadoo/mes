@@ -34,6 +34,7 @@ import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
 import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
+import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,8 +54,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks.FORM;
 
 @Service
 public class EventHooks {
@@ -137,7 +136,7 @@ public class EventHooks {
     }
 
     private void fetchNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
 
         if (formComponent.getEntityId() != null) {
             ComponentState numberField = view.getComponentByReference(MaintenanceEventFields.NUMBER);

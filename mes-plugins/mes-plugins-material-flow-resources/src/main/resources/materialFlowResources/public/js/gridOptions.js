@@ -570,11 +570,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('additionalCode', resource['additionalCode'], rowId);
                 updateFieldValue('price', resource['price'], rowId);
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
+                updateFieldValue('waste', resource['waste'], rowId);
             });
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet'];
+            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
@@ -812,6 +813,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('givenunit', '', getRowIdFromElement(t));
                         updateFieldValue('givenquantity', '', getRowIdFromElement(t));
                         updateFieldValue('conversion', '', getRowIdFromElement(t));
+                        updateFieldValue('waste', '0', getRowIdFromElement(t));
 
                         clearSelect('givenunit', getRowIdFromElement(t));
                     }
@@ -1583,6 +1585,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         rowpos: 9,
                         colpos: 2
                     },
+                },
+                {
+                	name: 'waste',
+                	index: 'waste',
+                	editable: true,
+                	edittype: 'checkbox',
+                	formatter: 'checkbox',
+                	editoptions: {
+                		value: '1:0'
+                	},
+                	formoptions: {
+                		rowpos: 10,
+                		colpos: 1
+                	},
+                	searchoptions: {
+                		sopt: ['eq', 'ne'],
+                		value:': ;1:'+translateMessages('documentGrid.yes')+';0:'+translateMessages('documentGrid.no')
+        			},
+        			stype: 'select'
                 }
             ],
             pager: "#jqGridPager",
@@ -1616,11 +1637,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function prepareGridConfig(config) {
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'batch' || columnIndex === 'price' ||
+                        columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
-                if (!outDocument && columnIndex === 'resource') {
+                if (!outDocument && (columnIndex === 'resource')) {
                     return true;
                 }
                 return false;
@@ -1648,7 +1669,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                     if (readOnlyInType(config.outDocument, key, response.data)) {
                         gridColModel.editoptions = gridColModel.editoptions || {};
-                        if (gridColModel.edittype === 'select') {
+                        if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
                             gridColModel.editoptions.disabled = 'disabled';
 
                         } else {

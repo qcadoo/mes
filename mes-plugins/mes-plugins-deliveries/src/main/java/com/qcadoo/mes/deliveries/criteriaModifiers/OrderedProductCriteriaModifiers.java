@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.deliveries.criteriaModifiers;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderedProductCriteriaModifiers {
@@ -43,4 +42,5 @@ public class OrderedProductCriteriaModifiers {
                     SearchRestrictions.idEq(productId));
         }
     }
+
 }

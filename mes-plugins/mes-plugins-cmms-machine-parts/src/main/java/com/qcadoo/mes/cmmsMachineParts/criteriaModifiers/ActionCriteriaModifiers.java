@@ -43,6 +43,14 @@ public class ActionCriteriaModifiers {
     @Autowired
     private TranslationService translationService;
 
+    public void filterAllWithoutOtherAction(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+        filterActionsForObejct(searchCriteriaBuilder, filterValueHolder);
+        
+        String other = translationService.translate("cmmsMachineParts.action.name.other", LocaleContextHolder.getLocale());
+        searchCriteriaBuilder.add(SearchRestrictions.not(SearchRestrictions.eq(ActionFields.NAME, other)));
+    }
+
     public void filterActionsForObejct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
         if (filterValueHolder.has(PlannedEventFields.SUBASSEMBLY)) {

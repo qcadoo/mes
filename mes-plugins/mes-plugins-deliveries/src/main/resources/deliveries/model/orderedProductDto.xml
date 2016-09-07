@@ -24,21 +24,52 @@
     ***************************************************************************
 
 -->
-<model name="technologyDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderedProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" />
-        <string name="name" />
-        <string name="technologyType" />
-        <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked" />
-        <boolean name="externalSynchronized" default="true" copyable="false"/>
-        <boolean name="master" default="false" copyable="false"/>
-        <string name="productNumber" />
-        <string name="technologyGroupNumber" />
-        <string name="divisionName" />
-        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
+
+        <integer name="succession"/>
+
+        <belongsTo name="delivery" model="delivery" persistent="false" />
+
+        <integer name="deliveryId"/>
+
+        <string name="productName"/>
+
+        <string name="productNumber"/>
+
+        <string name="productUnit"/>
+
+        <decimal name="orderedQuantity"/>
+
+        <decimal name="deliveredQuantity"/>
+
+        <decimal name="leftToReceiveQuantity"/>
+
+        <decimal name="additionalQuantity"/>
+
+        <decimal name="conversion"/>
+
+        <decimal name="pricePerUnit"/>
+
+        <decimal name="totalPrice"/>
+
+        <string name="description"/>
+
+        <string name="additionalCode"/>
+
+        <string name="offerNumber"/>
+
+        <string name="productNorm"/>
+
+        <string name="operationNumber"/>
+
+        <string name="productCatalogNumber"/>
+
+        <string name="actualVersion"/>
+
+
     </fields>
-    <identifier expression="#number + ' - ' + #name"/>
-    <masterModel plugin="technologies" model="technology" />
+    <masterModel plugin="deliveries" model="orderedProduct"/>
 </model>

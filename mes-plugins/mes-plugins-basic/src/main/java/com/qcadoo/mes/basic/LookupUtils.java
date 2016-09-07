@@ -1,6 +1,5 @@
 package com.qcadoo.mes.basic;
 
-import com.google.common.base.Preconditions;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,10 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Preconditions;
 
 @Service
 public class LookupUtils {
@@ -57,6 +59,9 @@ public class LookupUtils {
                             items.add(String.format("%s = :%s", field.getName(), field.getName()));
 
                         } else if (value instanceof Date) {
+                            items.add(String.format("%s = :%s", field.getName(), field.getName()));
+
+                        } else if (value instanceof Boolean) {
                             items.add(String.format("%s = :%s", field.getName(), field.getName()));
 
                         } else if (value instanceof String) {
