@@ -86,3 +86,38 @@ ALTER TABLE materialflowresources_resource ADD COLUMN waste boolean DEFAULT fals
 INSERT INTO materialflowresources_documentpositionparametersitem(id, name, checked, editable, ordering, parameters_id) VALUES (19, 'waste', true, true, 19, 1);
 
 --
+
+-- assortments
+-- last touched 07.09.2016 by kama
+
+CREATE TABLE basic_assortment
+(
+  id bigint NOT NULL,
+  name character varying(255),
+  active boolean DEFAULT true,
+  CONSTRAINT basic_assortment_pkey PRIMARY KEY (id)
+);
+
+CREATE TABLE basic_assortmentelement
+(
+  id bigint NOT NULL,
+  descriptiontype character varying(255),
+  description character varying(255),
+  assortment_id bigint,
+  CONSTRAINT basic_assortmentelement_pkey PRIMARY KEY (id),
+  CONSTRAINT assortmentelement_assortment_fkey FOREIGN KEY (assortment_id)
+      REFERENCES basic_assortment (id) DEFERRABLE
+);
+
+ALTER TABLE basic_product ADD COLUMN assortment_id bigint;
+ALTER TABLE basic_product
+  ADD CONSTRAINT product_assortment_fkey FOREIGN KEY (assortment_id)
+      REFERENCES basic_assortment (id) DEFERRABLE;
+
+INSERT INTO qcadoomodel_dictionary(
+            name, pluginidentifier, active)
+    SELECT 'descriptionTypes', 'basic', TRUE
+    WHERE NOT EXISTS (
+        SELECT id FROM qcadoomodel_dictionary WHERE name = 'descriptionTypes');
+
+-- end
