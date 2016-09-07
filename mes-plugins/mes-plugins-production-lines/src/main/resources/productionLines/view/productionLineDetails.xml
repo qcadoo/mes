@@ -135,6 +135,11 @@
                         <component type="select" name="place" field="place"
                                    reference="productionLinePlaces" hasDescription="true"/>
                     </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="production"
+                                   field="#{form}.production" reference="production">
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1" height="2">
                         <component type="textarea" name="description" field="description"/>
                     </layoutElement>
