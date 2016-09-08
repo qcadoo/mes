@@ -48,6 +48,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -79,6 +80,9 @@ public class ProductDetailsHooksTest {
     private FieldComponent parentField, entityTypeField, unitField;
 
     @Mock
+    private LookupComponent assortmentLookup;
+
+    @Mock
     private DataDefinition productDD;
 
     @Mock
@@ -102,6 +106,7 @@ public class ProductDetailsHooksTest {
         given(view.getComponentByReference(L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
+        given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
 
         given(productForm.getEntityId()).willReturn(L_ID);
 
