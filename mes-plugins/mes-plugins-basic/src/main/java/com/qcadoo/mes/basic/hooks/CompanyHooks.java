@@ -28,6 +28,7 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.TAX;
 import static com.qcadoo.mes.basic.constants.CompanyFields.TAX_COUNTRY_CODE;
 import static com.qcadoo.mes.basic.constants.CountryFields.CODE;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -152,11 +153,9 @@ public class CompanyHooks {
         address.setField(AddressFields.ADDRESS_TYPE, basicService.getMainAddressType());
 
         if (address.getId() == null) {
-            address.setField(AddressFields.NUMBER,
-                    company.getStringField(CompanyFields.NUMBER) + "-" + basicService.getAddressesNumber(company));
+            address.setField(AddressFields.NUMBER, basicService.generateAddressNumber(company));
         }
 
-        address.setField(AddressFields.NAME, company.getStringField(CompanyFields.NAME));
         address.setField(AddressFields.PHONE, company.getStringField(CompanyFields.PHONE));
         address.setField(AddressFields.EMAIL, company.getStringField(CompanyFields.EMAIL));
         address.setField(AddressFields.WEBSITE, company.getStringField(CompanyFields.WEBSITE));
@@ -196,6 +195,16 @@ public class CompanyHooks {
 
     private void clearSpecyfiedFields(final Entity company) {
         company.setField(CompanyFields.EXTERNAL_NUMBER, null);
+    }
+
+    public void onDelete(final DataDefinition companyDD, final Entity company) {
+        List<Entity> addresses = company.getHasManyField(CompanyFields.ADDRESSES);
+
+        addresses.forEach(address -> {
+            address.setField(AddressFields.CAN_BE_DELETED, true);
+
+            address = address.getDataDefinition().save(address);
+        });
     }
 
 }

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.BasicService;
 import com.qcadoo.mes.basic.constants.AddressFields;
-import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -52,7 +51,7 @@ public class AddressDetailsHooks {
     public void beforeRender(final ViewDefinitionState view) {
         updateRibbonState(view);
         updateFormState(view);
-        fillNumber(view);
+        generateNumber(view);
     }
 
     private void updateRibbonState(final ViewDefinitionState view) {
@@ -62,11 +61,7 @@ public class AddressDetailsHooks {
 
         RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_ACTIONS);
 
-        Entity address = addressForm.getPersistedEntityWithIncludedFormValues();
-
-        String addressType = address.getStringField(AddressFields.ADDRESS_TYPE);
-
-        boolean isEnabled = ((address.getId() == null) || !basicService.checkIfIsMainAddressType(addressType));
+        boolean isEnabled = shouldBeEnabled(addressForm);
 
         ribbonGroup.getItems().stream().forEach(ribbonActionItem -> {
             ribbonActionItem.setEnabled(isEnabled);
@@ -77,17 +72,33 @@ public class AddressDetailsHooks {
     private void updateFormState(final ViewDefinitionState view) {
         FormComponent addressForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Entity address = addressForm.getPersistedEntityWithIncludedFormValues();
-
-        String addressType = address.getStringField(AddressFields.ADDRESS_TYPE);
-
-        boolean isEnabled = ((address.getId() == null) || !basicService.checkIfIsMainAddressType(addressType));
+        boolean isEnabled = shouldBeEnabled(addressForm);
 
         addressForm.setEnabled(isEnabled);
         addressForm.setFormEnabled(isEnabled);
     }
 
-    private void fillNumber(final ViewDefinitionState view) {
+    private boolean shouldBeEnabled(final FormComponent addressForm) {
+        Entity address = addressForm.getPersistedEntityWithIncludedFormValues();
+
+        Long addressId = address.getId();
+
+        String addressType = getAddressType(address);
+
+        return ((addressId == null) || !basicService.checkIfIsMainAddressType(addressType));
+    }
+
+    private String getAddressType(final Entity address) {
+        Long addressId = address.getId();
+        
+        if (addressId == null) {
+            return address.getStringField(AddressFields.ADDRESS_TYPE);
+        } else {
+            return address.getDataDefinition().get(addressId).getStringField(AddressFields.ADDRESS_TYPE);
+        }
+    }
+
+    private void generateNumber(final ViewDefinitionState view) {
         FormComponent addressForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(AddressFields.NUMBER);
 
@@ -98,8 +109,7 @@ public class AddressDetailsHooks {
         if ((address.getId() == null) && StringUtils.isEmpty(number)) {
             Entity company = address.getBelongsToField(AddressFields.COMPANY);
 
-            numberField.setFieldValue(company.getStringField(CompanyFields.NUMBER) + "-"
-                    + basicService.getAddressesNumber(company));
+            numberField.setFieldValue(basicService.generateAddressNumber(company));
             numberField.requestComponentUpdateState();
         }
     }

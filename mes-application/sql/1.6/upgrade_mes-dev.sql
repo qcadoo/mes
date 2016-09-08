@@ -123,6 +123,7 @@ CREATE TABLE basic_address
   state character varying(255),
   country_id bigint,
   contactperson character varying(255),
+  canbedeleted boolean DEFAULT false,
   active boolean DEFAULT true,
   CONSTRAINT basic_address_pkey PRIMARY KEY (id),
   CONSTRAINT address_company_fkey FOREIGN KEY (company_id)

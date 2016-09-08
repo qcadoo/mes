@@ -59,4 +59,6 @@ public final class AddressFields {
 
     public static final String CONTACT_PERSON = "conctactPerson";
 
+    public static final String CAN_BE_DELETED = "canBeDeleted";
+
 }

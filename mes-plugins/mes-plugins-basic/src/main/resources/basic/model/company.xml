@@ -57,10 +57,10 @@
 
         <string name="externalNumber" unique="true"/>
 
-        <manyToMany name="workstations" model="workstation" joinField="companies" cascade="nullify"/>
-        <manyToMany name="subassemblies" model="subassembly" joinField="companies" cascade="nullify"/>
+        <manyToMany name="workstations" plugin="basic" model="workstation" joinField="companies" cascade="nullify"/>
+        <manyToMany name="subassemblies" plugin="basic" model="subassembly" joinField="companies" cascade="nullify"/>
 
-        <hasMany name="producedProducts" model="product" plugin="basic" joinField="producer"
+        <hasMany name="producedProducts" plugin="basic" model="product" joinField="producer"
                  cascade="nullify"/>
 
         <boolean name="isSupplier" default="false" required="true"/>
@@ -78,6 +78,7 @@
         <onSave class="com.qcadoo.mes.basic.hooks.CompanyHooks"
                   method="onSave"/>
         <onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
+        <onDelete method="onDelete" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

@@ -58,11 +58,15 @@
         <belongsTo name="country" plugin="basic" model="country"/>
 
         <string name="contactPerson"/>
+
+        <boolean name="canBeDeleted" default="false" required="true"/>
     </fields>
 
     <hooks>
         <validatesWith class="com.qcadoo.mes.basic.hooks.AddressHooks"
                        method="validatesWith"/>
+        <onCreate class="com.qcadoo.mes.basic.hooks.AddressHooks"
+                  method="onCreate"/>
         <onDelete class="com.qcadoo.mes.basic.hooks.AddressHooks"
                        method="onDelete"/>
     </hooks>

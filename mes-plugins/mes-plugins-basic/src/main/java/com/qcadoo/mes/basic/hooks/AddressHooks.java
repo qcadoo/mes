@@ -51,7 +51,7 @@ public class AddressHooks {
 
         if (basicService.checkIfIsMainAddressType(addressType)) {
             if (!checkIfOnlyOneMainAddressExists(addressDD, address, addressType)) {
-                address.addGlobalError("basic.address.error.mainCompanyAlreadyExists");
+                address.addGlobalError("basic.address.error.mainAddressAlreadyExists");
 
                 return false;
             }
@@ -78,11 +78,23 @@ public class AddressHooks {
         return searchResult.getEntities().isEmpty();
     }
 
+    public void onCreate(final DataDefinition addressDD, final Entity address) {
+        if (address.getField(AddressFields.CAN_BE_DELETED) == null) {
+            address.setField(AddressFields.CAN_BE_DELETED, false);
+        }
+    }
+
     public boolean onDelete(final DataDefinition addressDD, final Entity address) {
         String addressType = address.getStringField(AddressFields.ADDRESS_TYPE);
 
+        boolean canBeDeleted = address.getBooleanField(AddressFields.CAN_BE_DELETED);
+
         if (basicService.checkIfIsMainAddressType(addressType)) {
-            address.addGlobalError("basic.address.error.mainCompanyAlreadyCannotBeDeleted");
+            if (canBeDeleted) {
+                return true;
+            }
+
+            address.addGlobalError("basic.address.error.mainAddressCannotBeDeleted");
 
             return false;
         }
