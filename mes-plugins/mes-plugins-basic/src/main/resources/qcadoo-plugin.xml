@@ -159,7 +159,8 @@
         <security:role identifier="ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION"
                        description="Dostęp do zakładek części, czas pracy, opis rozwiązania"/>
         <security:role identifier="ROLE_EVENTS_LIST_EXPORT" description="Dostęp do eksportu"/>
-        <security:role identifier="ROLE_EVENTS_NOTIFICATION" description="Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
+        <security:role identifier="ROLE_EVENTS_NOTIFICATION"
+                       description="Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
 
         <!-- end -->
 
@@ -254,7 +255,8 @@
 
         <security:role identifier="ROLE_ACTIONS" description="Dostęp do czynności"/>
 
-        <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL" description="Dostęp do terminalu rejestracji produkcji"/>
+        <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL"
+                       description="Dostęp do terminalu rejestracji produkcji"/>
 
         <security:role identifier="ROLE_REPAIR_ORDERS" description="Dostęp do zleceń naprawy"/>
 
@@ -292,6 +294,9 @@
 
         <model:model model="faultType" resource="model/faultType.xml"/>
 
+        <model:model model="assortment" resource="model/assortment.xml"/>
+        <model:model model="assortmentElement" resource="model/assortmentElement.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -299,6 +304,8 @@
         <model:dictionary name="typeOfSubassembly"/>
 
         <model:dictionary name="typeOfPallet"/>
+
+        <model:dictionary name="descriptionTypes"/>
 
         <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
@@ -318,6 +325,9 @@
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
+
+        <menu:menu-item name="assortments" category="basic" view="assortmentsList"
+                        defaultAuthorizationRole="ROLE_PRODUCTS"/>
 
         <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
@@ -398,6 +408,9 @@
 
         <view:view resource="view/faultTypesList.xml"/>
         <view:view resource="view/faultTypeDetails.xml"/>
+
+        <view:view resource="view/assortmentsList.xml"/>
+        <view:view resource="view/assortmentDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>
