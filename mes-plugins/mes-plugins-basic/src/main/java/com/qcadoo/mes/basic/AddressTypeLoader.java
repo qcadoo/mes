@@ -50,6 +50,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugins.dictionaries.DictionariesService;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
@@ -145,7 +146,7 @@ public class AddressTypeLoader {
 
         if (dictionaryItem.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Address type saved {adressType : " + dictionaryItem.toString() + "}");
+                LOG.debug("Address type saved {addressType : " + dictionaryItem.toString() + "}");
             }
         } else {
             throw new IllegalStateException("Saved dictionaryItem entity have validation errors - "
@@ -170,12 +171,12 @@ public class AddressTypeLoader {
     }
 
     private InputStream getAddressTypeXmlFile() throws IOException {
-        return AddressTypeLoader.class.getResourceAsStream("/basic/model/data/adressType" + "_"
+        return AddressTypeLoader.class.getResourceAsStream("/basic/model/data/addressType" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
     public Entity getAddressTypeDictionary() {
-        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryItemFields.NAME, L_ADDRESS_TYPE))
+        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_ADDRESS_TYPE))
                 .setMaxResults(1).uniqueResult();
     }
 

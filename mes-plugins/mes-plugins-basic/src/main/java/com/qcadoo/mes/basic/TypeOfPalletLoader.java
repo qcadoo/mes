@@ -50,6 +50,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugins.dictionaries.DictionariesService;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
@@ -179,7 +180,7 @@ public class TypeOfPalletLoader {
 
     public Entity getTypeOfPalletDictionary() {
         return dictionariesService.getDictionaryDD().find()
-                .add(SearchRestrictions.eq(DictionaryItemFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
     }
 
 }

@@ -48,6 +48,9 @@ public class BasicOnStartupService extends Module {
     private DefaultFaultTypesLoader defaultFaultTypesLoader;
 
     @Autowired
+    private AddressTypeLoader addressTypeLoader;
+
+    @Autowired
     private ExchangeRatesUpdateService exchangeRatesUpdateService;
 
     @Override
@@ -58,6 +61,7 @@ public class BasicOnStartupService extends Module {
         reportColumnWidthLoader.loadReportColumnWidths();
         typeOfPalletLoader.loadTypeOfPallets();
         defaultFaultTypesLoader.loadFaultTypes();
+        addressTypeLoader.loadAddressTypes();
         exchangeRatesUpdateService.update();
     }
 

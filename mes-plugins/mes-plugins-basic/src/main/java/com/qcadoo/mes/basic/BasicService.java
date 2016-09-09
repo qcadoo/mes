@@ -106,10 +106,12 @@ public class BasicService {
     }
 
     public Optional<Entity> getMainAddress(final Entity company) {
-        String addressType = getMainAddressType();
+        if (company.getId() != null) {
+            String addressType = getMainAddressType();
 
-        if (StringUtils.isNotEmpty(addressType)) {
-            return Optional.ofNullable(findMainAddress(company, addressType));
+            if (StringUtils.isNotEmpty(addressType)) {
+                return Optional.ofNullable(findMainAddress(company, addressType));
+            }
         }
 
         return Optional.empty();
@@ -159,7 +161,7 @@ public class BasicService {
             Map<String, String> placeholderValues = Maps.newHashMap();
 
             placeholderValues.put("NUMBER_FIELD", AddressFields.NUMBER);
-            placeholderValues.put("PREFIX", company.getStringField(CompanyFields.NUMBER) + L_DASH);
+            placeholderValues.put("PREFIX", createPrefix(company));
             placeholderValues.put("NUM_PROJECTION_ALIAS", L_NUM_PROJECTION_ALIAS);
             placeholderValues.put("COMPANY_FIELD", AddressFields.COMPANY);
             placeholderValues.put("COMPANY_VALUE", company.getId().toString());
@@ -170,6 +172,16 @@ public class BasicService {
         }
 
         return query;
+    }
+
+    private String createPrefix(final Entity company) {
+        String number = company.getStringField(CompanyFields.NUMBER);
+
+        return replaceBrackets(number) + L_DASH;
+    }
+
+    private String replaceBrackets(final String number) {
+        return number.replace("(", "\\(").replace(")", "\\)");
     }
 
     private Collection<Long> extractNumericValues(final Iterable<Entity> numberProjections) {
@@ -196,7 +208,7 @@ public class BasicService {
         return numberBuilder.toString();
     }
 
-    public boolean  checkIfIsMainAddressType(final String addressType) {
+    public boolean checkIfIsMainAddressType(final String addressType) {
         if (StringUtils.isNotEmpty(addressType)) {
             String mainAddressType = getMainAddressType();
 
