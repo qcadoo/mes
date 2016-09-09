@@ -62,7 +62,7 @@
                 <option type="column" name="appliesTo" fields="appliesTo" link="true"/>
 
                 <option type="searchable" value="name,appliesTo"/>
-                <option type="orderable" value="name,appliesT"/>
+                <option type="orderable" value="name,appliesTo"/>
 
                 <option type="multiselect" value="true"/>
 
@@ -87,4 +87,10 @@
         <option type="header" value="false"/>
         
     </component>
+    
+    <hooks>
+
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.AddActionsForPlannedEventHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

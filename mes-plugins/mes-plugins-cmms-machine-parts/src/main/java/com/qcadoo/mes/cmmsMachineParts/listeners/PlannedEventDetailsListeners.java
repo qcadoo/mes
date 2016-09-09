@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 @Service
@@ -122,14 +123,15 @@ public class PlannedEventDetailsListeners {
         view.openModal(url.toString());
     }
 
-    public void addActions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void addActions(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
 
         DataDefinition actionForPlannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_ACTION_PLANNED_EVENT);
         DataDefinition plannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT);
         
-        Entity plannedEvent = plannedEventDD.get(Long.valueOf(args[0]));
+        Long plannedEventId = Long.valueOf(view.getJsonContext().get("window.mainTab.plannedEvent").toString());
+        Entity plannedEvent = plannedEventDD.get(plannedEventId);
 
         for (Entity selectedAction : selectedEntities) {
             Entity actionForPlannedEvent = actionForPlannedEventDD.create();
