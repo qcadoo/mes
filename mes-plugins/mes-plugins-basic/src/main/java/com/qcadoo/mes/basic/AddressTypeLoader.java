@@ -56,15 +56,15 @@ import com.qcadoo.plugins.dictionaries.DictionariesService;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class TypeOfPalletLoader {
+public class AddressTypeLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TypeOfPalletLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AddressTypeLoader.class);
 
     private static final String L_NAME = "name";
 
     private static final String L_TECHNICAL_CODE = "technicalCode";
 
-    private static final String L_TYPE_OF_PALLET = "typeOfPallet";
+    private static final String L_ADDRESS_TYPE = "addressType";
 
     @Autowired
     private DefaultLocaleResolver defaultLocaleResolver;
@@ -72,42 +72,42 @@ public class TypeOfPalletLoader {
     @Autowired
     private DictionariesService dictionariesService;
 
-    public final void loadTypeOfPallets() {
+    public final void loadAddressTypes() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Type of pallet table will be populated...");
+                LOG.debug("Address types table will be populated...");
             }
 
-            Map<Integer, Map<String, String>> typeOfPalletsAttributes = getTypeOfPalletsAttributesFromXML();
+            Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
 
-            for (Map<String, String> typeOfPalletAttributes : typeOfPalletsAttributes.values()) {
-                addDictionaryItem(typeOfPalletAttributes);
+            for (Map<String, String> addressTypeAttributes : addressTypesAttributes.values()) {
+                addDictionaryItem(addressTypeAttributes);
             }
         }
     }
 
-    public void unloadTypeOfPallets() {
+    public void unloadAddressTypes() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Type of pallet table will be unpopulated...");
+            LOG.debug("Address types table will be unpopulated...");
         }
 
-        Map<Integer, Map<String, String>> typeOfPalletsAttributes = getTypeOfPalletsAttributesFromXML();
+        Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
 
-        List<String> technicalCodes = typeOfPalletsAttributes.values().stream()
-                .map(typeOfPalletAttribute -> typeOfPalletAttribute.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
+        List<String> technicalCodes = addressTypesAttributes.values().stream()
+                .map(addressTypesAttribute -> addressTypesAttribute.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         deactivateDictionaryItems(technicalCodes);
     }
 
-    private Map<Integer, Map<String, String>> getTypeOfPalletsAttributesFromXML() {
-        LOG.info("Loading test data from typeOfPallet.xml ...");
+    private Map<Integer, Map<String, String>> getAddressTypesAttributesFromXML() {
+        LOG.info("Loading test data from addressType.xml ...");
 
-        Map<Integer, Map<String, String>> typeOfPalletsAttributes = Maps.newHashMap();
+        Map<Integer, Map<String, String>> addressTypesAttributes = Maps.newHashMap();
 
         try {
             SAXBuilder builder = new SAXBuilder();
-            Document document = builder.build(getTypeOfPalletXmlFile());
+            Document document = builder.build(getAddressTypeXmlFile());
             Element rootNode = document.getRootElement();
             @SuppressWarnings("unchecked")
             List<Element> listOfRows = rootNode.getChildren("row");
@@ -118,39 +118,39 @@ public class TypeOfPalletLoader {
                 @SuppressWarnings("unchecked")
                 List<Attribute> listOfAtributes = node.getAttributes();
 
-                Map<String, String> typeOfPalletAttribute = Maps.newHashMap();
+                Map<String, String> addressTypesAttribute = Maps.newHashMap();
 
                 for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
-                    typeOfPalletAttribute.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
+                    addressTypesAttribute.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
                             listOfAtributes.get(attributeNum).getValue());
                 }
 
-                typeOfPalletsAttributes.put(rowNum, typeOfPalletAttribute);
+                addressTypesAttributes.put(rowNum, addressTypesAttribute);
             }
         } catch (IOException | JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
 
-        return typeOfPalletsAttributes;
+        return addressTypesAttributes;
     }
 
-    private void addDictionaryItem(final Map<String, String> typeOfPalletAttributes) {
+    private void addDictionaryItem(final Map<String, String> addressTypesAttribute) {
         Entity dictionaryItem = dictionariesService.getDictionaryItemDD().create();
 
-        dictionaryItem.setField(DictionaryItemFields.NAME, typeOfPalletAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.NAME, addressTypesAttribute.get(L_NAME.toLowerCase(Locale.ENGLISH)));
         dictionaryItem.setField(DictionaryItemFields.TECHNICAL_CODE,
-                typeOfPalletAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
-        dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary());
+                addressTypesAttribute.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary());
 
         dictionaryItem = dictionaryItem.getDataDefinition().save(dictionaryItem);
 
         if (dictionaryItem.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Type of pallet saved {typeOfPallet : " + dictionaryItem.toString() + "}");
+                LOG.debug("Address type saved {addressType : " + dictionaryItem.toString() + "}");
             }
         } else {
             throw new IllegalStateException("Saved dictionaryItem entity have validation errors - "
-                    + typeOfPalletAttributes.get(L_NAME));
+                    + addressTypesAttribute.get(L_NAME));
         }
     }
 
@@ -158,29 +158,26 @@ public class TypeOfPalletLoader {
         DataDefinition dictionaryItemDD = dictionariesService.getDictionaryItemDD();
 
         List<Entity> dictionaryItems = dictionaryItemDD.find()
-                .add(belongsTo(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary()))
+                .add(belongsTo(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary()))
                 .add(in(DictionaryItemFields.TECHNICAL_CODE, technicalCodes)).list().getEntities();
 
         dictionaryItemDD.deactivate(dictionaryItems.stream().map(Entity::getId).toArray(Long[]::new));
     }
 
     private boolean databaseHasToBePrepared() {
-        return dictionariesService
-                .getDictionaryItemDD()
-                .find()
-                .add(belongsTo(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary()))
-                .add(SearchRestrictions.or(eq(DictionaryItemFields.TECHNICAL_CODE, "01epal"),
-                        eq(DictionaryItemFields.TECHNICAL_CODE, "02cheapEur"))).list().getTotalNumberOfEntities() == 0;
+        return dictionariesService.getDictionaryItemDD().find()
+                .add(belongsTo(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary()))
+                .add(eq(DictionaryItemFields.TECHNICAL_CODE, "01main")).list().getTotalNumberOfEntities() == 0;
     }
 
-    private InputStream getTypeOfPalletXmlFile() throws IOException {
-        return TypeOfPalletLoader.class.getResourceAsStream("/basic/model/data/typeOfPallet" + "_"
+    private InputStream getAddressTypeXmlFile() throws IOException {
+        return AddressTypeLoader.class.getResourceAsStream("/basic/model/data/addressType" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
-    public Entity getTypeOfPalletDictionary() {
-        return dictionariesService.getDictionaryDD().find()
-                .add(SearchRestrictions.eq(DictionaryFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
+    public Entity getAddressTypeDictionary() {
+        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_ADDRESS_TYPE))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

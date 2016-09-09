@@ -21,20 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class CountryFields {
+public final class AddressFieldsMFR {
 
-    private CountryFields() {
+    private AddressFieldsMFR() {
 
     }
 
-    public static final String CODE = "code";
-
-    public static final String COUNTRY = "country";
-
-    public static final String COMPANIES = "companies";
-
-    public static final String ADDRESSES = "addresses";
+    public static final String DOCUMENTS = "documents";
 
 }

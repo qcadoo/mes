@@ -24,19 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="company" activable="true"
+<model name="address" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
+        <belongsTo name="company" plugin="basic" model="company" required="true"/>
+
+        <dictionary name="addressType" dictionary="addressType" required="true"/>
+
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
         </string>
-        <string name="name" required="true">
+        <string name="name">
             <validatesLength max="255"/>
         </string>
-        <belongsTo name="taxCountryCode" plugin="basic" model="country"/>
-        <string name="tax"/>
 
         <string name="phone"/>
         <string name="email"/>
@@ -55,32 +57,20 @@
 
         <belongsTo name="country" plugin="basic" model="country"/>
 
-        <string name="externalNumber" unique="true"/>
+        <string name="contactPerson"/>
 
-        <manyToMany name="workstations" plugin="basic" model="workstation" joinField="companies" cascade="nullify"/>
-        <manyToMany name="subassemblies" plugin="basic" model="subassembly" joinField="companies" cascade="nullify"/>
-
-        <hasMany name="producedProducts" plugin="basic" model="product" joinField="producer"
-                 cascade="nullify"/>
-
-        <boolean name="isSupplier" default="false" required="true"/>
-        <boolean name="isReceiver" default="false" required="true"/>
-
-        <hasMany name="addresses" model="address" plugin="basic" joinField="company"
-                 cascade="delete"/>
+        <boolean name="canBeDeleted" default="false" required="true"/>
     </fields>
 
     <hooks>
-        <validatesWith class="com.qcadoo.mes.basic.hooks.CompanyHooks"
+        <validatesWith class="com.qcadoo.mes.basic.hooks.AddressHooks"
                        method="validatesWith"/>
-        <onCreate class="com.qcadoo.mes.basic.hooks.CompanyHooks"
+        <onCreate class="com.qcadoo.mes.basic.hooks.AddressHooks"
                   method="onCreate"/>
-        <onSave class="com.qcadoo.mes.basic.hooks.CompanyHooks"
-                  method="onSave"/>
-        <onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
-        <onDelete method="onDelete" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
+        <onDelete class="com.qcadoo.mes.basic.hooks.AddressHooks"
+                       method="onDelete"/>
     </hooks>
 
-    <identifier expression="#number + ' - ' + #name"/>
+    <identifier expression="#number"/>
 
 </model>

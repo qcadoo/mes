@@ -23,18 +23,42 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class CountryFields {
+public final class AddressFields {
 
-    private CountryFields() {
+    private AddressFields() {
 
     }
 
-    public static final String CODE = "code";
+    public static final String COMPANY = "company";
+
+    public static final String ADDRESS_TYPE = "addressType";
+
+    public static final String NUMBER = "number";
+
+    public static final String NAME = "name";
+
+    public static final String PHONE = "phone";
+
+    public static final String EMAIL = "email";
+
+    public static final String WEBSITE = "website";
+
+    public static final String STREET = "street";
+
+    public static final String HOUSE = "house";
+
+    public static final String FLAT = "flat";
+
+    public static final String ZIP_CODE = "zipCode";
+
+    public static final String CITY = "city";
+
+    public static final String STATE = "state";
 
     public static final String COUNTRY = "country";
 
-    public static final String COMPANIES = "companies";
+    public static final String CONTACT_PERSON = "conctactPerson";
 
-    public static final String ADDRESSES = "addresses";
+    public static final String CAN_BE_DELETED = "canBeDeleted";
 
 }

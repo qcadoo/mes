@@ -28,10 +28,16 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.TAX;
 import static com.qcadoo.mes.basic.constants.CompanyFields.TAX_COUNTRY_CODE;
 import static com.qcadoo.mes.basic.constants.CountryFields.CODE;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.BasicService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.AddressFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CountryFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -45,13 +51,16 @@ public class CompanyHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private BasicService basicService;
+
     public boolean validatesWith(final DataDefinition companyDD, final Entity company) {
         boolean isValid = checkIfTaxIsValid(companyDD, company);
 
         return isValid;
     }
 
-    public boolean checkIfTaxIsValid(final DataDefinition companyDD, final Entity company) {
+    private boolean checkIfTaxIsValid(final DataDefinition companyDD, final Entity company) {
         Entity taxCountryCode = company.getBelongsToField(TAX_COUNTRY_CODE);
         if (taxCountryCode != null && taxCountryCode.getStringField(CountryFields.CODE).equals(L_PL)) {
             String tax = company.getStringField(TAX);
@@ -119,9 +128,11 @@ public class CompanyHooks {
 
     public void onCreate(final DataDefinition companyDD, final Entity company) {
         setDefaultCountry(companyDD, company);
+        setDefaultParameters(companyDD, company);
+        setMainAddress(company);
     }
 
-    public void setDefaultCountry(final DataDefinition companyDD, final Entity company) {
+    private void setDefaultCountry(final DataDefinition companyDD, final Entity company) {
         Entity country = company.getBelongsToField(COUNTRY);
 
         if (country == null) {
@@ -129,16 +140,90 @@ public class CompanyHooks {
         }
     }
 
+    private void setDefaultParameters(final DataDefinition companyDD, final Entity company) {
+        if (company.getField(CompanyFields.IS_SUPPLIER) == null) {
+            company.setField(CompanyFields.IS_SUPPLIER, false);
+        }
+        if (company.getField(CompanyFields.IS_RECEIVER) == null) {
+            company.setField(CompanyFields.IS_RECEIVER, false);
+        }
+    }
+
+    private void setMainAddress(final Entity company) {
+        company.setField(CompanyFields.ADDRESSES, Lists.newArrayList(createMainAddress(company)));
+    }
+
+    private Entity createMainAddress(final Entity company) {
+        Entity address = basicService.getAddressDD().create();
+
+        updateMainAddress(address, company);
+
+        return address;
+    }
+
+    private void updateMainAddress(final Entity address, final Entity company) {
+        address.setField(AddressFields.ADDRESS_TYPE, basicService.getMainAddressType());
+
+        if (address.getId() == null) {
+            address.setField(AddressFields.NUMBER, basicService.generateAddressNumber(company));
+        }
+
+        address.setField(AddressFields.PHONE, company.getStringField(CompanyFields.PHONE));
+        address.setField(AddressFields.EMAIL, company.getStringField(CompanyFields.EMAIL));
+        address.setField(AddressFields.WEBSITE, company.getStringField(CompanyFields.WEBSITE));
+        address.setField(AddressFields.STREET, company.getStringField(CompanyFields.STREET));
+        address.setField(AddressFields.HOUSE, company.getStringField(CompanyFields.HOUSE));
+        address.setField(AddressFields.FLAT, company.getStringField(CompanyFields.FLAT));
+        address.setField(AddressFields.ZIP_CODE, company.getStringField(CompanyFields.ZIP_CODE));
+        address.setField(AddressFields.CITY, company.getStringField(CompanyFields.CITY));
+        address.setField(AddressFields.STATE, company.getStringField(CompanyFields.STATE));
+        address.setField(AddressFields.COUNTRY, company.getBelongsToField(CompanyFields.COUNTRY));
+        address.setField(AddressFields.CAN_BE_DELETED, false);
+    }
+
     private Entity getDefaultCountry() {
         return parameterService.getParameter().getBelongsToField(COUNTRY);
     }
 
+    public void onSave(final DataDefinition companyDD, final Entity company) {
+        updateMainAddress(company);
+    }
+
+    private void updateMainAddress(final Entity company) {
+        Optional<Entity> mayBeAddress = basicService.getMainAddress(company);
+
+        if (mayBeAddress.isPresent()) {
+            Entity address = mayBeAddress.get();
+
+            updateMainAddress(address, company);
+
+            address = address.getDataDefinition().save(address);
+        } else {
+            setMainAddress(company);
+        }
+    }
+
     public void onCopy(final DataDefinition companyDD, final Entity company) {
+        setMainAddress(company);
         clearSpecyfiedFields(company);
     }
 
     private void clearSpecyfiedFields(final Entity company) {
         company.setField(CompanyFields.EXTERNAL_NUMBER, null);
+    }
+
+    public void onDelete(final DataDefinition companyDD, final Entity company) {
+        setAddressesCanBeDeleted(company);
+    }
+
+    private void setAddressesCanBeDeleted(final Entity company) {
+        List<Entity> addresses = company.getHasManyField(CompanyFields.ADDRESSES);
+
+        addresses.forEach(address -> {
+            address.setField(AddressFields.CAN_BE_DELETED, true);
+
+            address = address.getDataDefinition().save(address);
+        });
     }
 
 }
