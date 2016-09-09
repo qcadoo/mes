@@ -177,11 +177,11 @@ public class BasicService {
     private String createPrefix(final Entity company) {
         String number = company.getStringField(CompanyFields.NUMBER);
 
-        return replaceBrackets(number) + L_DASH;
+        return escapeSql(number) + L_DASH;
     }
 
-    private String replaceBrackets(final String number) {
-        return number.replace("(", "\\(").replace(")", "\\)");
+    private String escapeSql(final String number) {
+        return number.replace("'", "''").replace("(", "\\(").replace(")", "\\)");
     }
 
     private Collection<Long> extractNumericValues(final Iterable<Entity> numberProjections) {
