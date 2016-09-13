@@ -71,8 +71,12 @@
 
                 <listener event="addActions"
                           method="addActions"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
-                
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>                
+
+<!--                <listener event="select"
+                        class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"
+                        method="addActions" />                -->
+
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ActionCriteriaModifiers"
                                   method="filterAllWithoutOtherAction"/>
             </component>
