@@ -55,9 +55,10 @@ public class CompanyDetailsHooks {
     private static final String L_ACTIONS = "actions";
 
     private static final List<String> L_COMPANY_FIELDS = Arrays.asList(CompanyFields.NUMBER, CompanyFields.NAME,
-            CompanyFields.CITY, CompanyFields.COUNTRY, CompanyFields.EMAIL, CompanyFields.HOUSE, CompanyFields.FLAT,
-            CompanyFields.PHONE, CompanyFields.ZIP_CODE, CompanyFields.WEBSITE, CompanyFields.TAX_COUNTRY_CODE,
-            CompanyFields.TAX, CompanyFields.STREET, CompanyFields.STATE);
+            CompanyFields.TAX_COUNTRY_CODE, CompanyFields.TAX, CompanyFields.PHONE, CompanyFields.EMAIL, CompanyFields.WEBSITE,
+            CompanyFields.STREET, CompanyFields.HOUSE, CompanyFields.FLAT, CompanyFields.ZIP_CODE, CompanyFields.CITY,
+            CompanyFields.STATE, CompanyFields.COUNTRY, CompanyFields.CONTACT_PERSON, CompanyFields.IS_SUPPLIER,
+            CompanyFields.IS_RECEIVER);
 
     @Autowired
     private ParameterService parameterService;

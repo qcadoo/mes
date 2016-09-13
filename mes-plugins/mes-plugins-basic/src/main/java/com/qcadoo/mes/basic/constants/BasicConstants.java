@@ -49,6 +49,8 @@ public final class BasicConstants {
 
     public static final String MODEL_COMPANY = "company";
 
+    public static final String MODEL_ADDRESS = "address";
+
     public static final String MODEL_CURRENCY = "currency";
 
     public static final String MODEL_COUNTRY = "country";

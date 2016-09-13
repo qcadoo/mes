@@ -85,10 +85,13 @@
         <model:model model="columnForOrders" resource="model/columnForOrders.xml"/>
         <model:model model="delivery" resource="model/delivery.xml"/>
         <model:model model="deliveredProduct" resource="model/deliveredProduct.xml"/>
+        <model:model model="deliveredProductDto" resource="model/deliveredProductDto.xml"/>
         <model:model model="deliveredProductReservation" resource="model/deliveredProductReservation.xml"/>
         <model:model model="deliveredProductMulti" resource="model/deliveredProductMulti.xml"/>
         <model:model model="deliveredProductMultiPosition" resource="model/deliveredProductMultiPosition.xml"/>
         <model:model model="orderedProduct" resource="model/orderedProduct.xml"/>
+        <model:model model="orderedProductDto" resource="model/orderedProductDto.xml"/>
+
         <model:model model="orderedProductReservation" resource="model/orderedProductReservation.xml"/>
         <model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml"/>
         <model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml"/>

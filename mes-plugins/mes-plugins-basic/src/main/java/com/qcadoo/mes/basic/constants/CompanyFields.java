@@ -29,8 +29,6 @@ public final class CompanyFields {
 
     }
 
-    public static final String EXTERNAL_NUMBER = "externalNumber";
-
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
@@ -38,6 +36,12 @@ public final class CompanyFields {
     public static final String TAX_COUNTRY_CODE = "taxCountryCode";
 
     public static final String TAX = "tax";
+
+    public static final String PHONE = "phone";
+
+    public static final String EMAIL = "email";
+
+    public static final String WEBSITE = "website";
 
     public static final String STREET = "street";
 
@@ -53,10 +57,14 @@ public final class CompanyFields {
 
     public static final String COUNTRY = "country";
 
-    public static final String EMAIL = "email";
+    public static final String CONTACT_PERSON = "contactPerson";
 
-    public static final String WEBSITE = "website";
+    public static final String EXTERNAL_NUMBER = "externalNumber";
 
-    public static final String PHONE = "phone";
+    public static final String IS_SUPPLIER = "isSupplier";
+
+    public static final String IS_RECEIVER = "isReceiver";
+
+    public static final String ADDRESSES = "addresses";
 
 }

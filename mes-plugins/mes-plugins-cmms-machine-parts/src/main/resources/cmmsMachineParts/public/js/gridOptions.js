@@ -554,6 +554,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             var message = JSON.parse(response.responseText).message;
             message = translateMessages(message);
             showMessage('failure', QCD.translate('actionsGrid.notification.failure'), message);
+            QCD.components.elements.utils.LoadingIndicator.unblockElement(parent.$('body'));
+            
             return true;
         }
 
@@ -569,6 +571,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function aftersavefunc() {
             $("#grid").trigger("reloadGrid");
+            QCD.components.elements.utils.LoadingIndicator.unblockElement(parent.$('body'));
         }
 
         function prepareViewOnStartEdit() {
@@ -866,6 +869,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         $.extend(true, $.jgrid.inlineEdit, {
             beforeSaveRow: function (option, rowId) {
+                QCD.components.elements.utils.LoadingIndicator.blockElement(parent.$('body'));
+                
                 if (rowId === '0') {
                     option.url = '../../rest/rest/actions.html';
                     option.errorfunc = errorfunc;

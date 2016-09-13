@@ -23,13 +23,19 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.constants.DictionaryItemFields;
-import com.qcadoo.plugins.dictionaries.DictionariesService;
-import com.qcadoo.tenant.api.DefaultLocaleResolver;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.in;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -40,17 +46,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import com.google.common.collect.Maps;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.DictionaryFields;
+import com.qcadoo.model.constants.DictionaryItemFields;
+import com.qcadoo.plugins.dictionaries.DictionariesService;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
 public class TypeOfPalletLoader {
 
-    protected static final Logger LOG = LoggerFactory.getLogger(TypeOfPalletLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TypeOfPalletLoader.class);
 
     private static final String L_NAME = "name";
 
@@ -84,8 +92,11 @@ public class TypeOfPalletLoader {
         }
 
         Map<Integer, Map<String, String>> typeOfPalletsAttributes = getTypeOfPalletsAttributesFromXML();
-        List<String> technicalCodes = typeOfPalletsAttributes.values().stream().map(m -> m.get(L_TECHNICAL_CODE))
-                .filter(Objects::nonNull).collect(Collectors.toList());
+
+        List<String> technicalCodes = typeOfPalletsAttributes.values().stream()
+                .map(typeOfPalletAttribute -> typeOfPalletAttribute.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
         deactivateDictionaryItems(technicalCodes);
     }
 
@@ -145,9 +156,11 @@ public class TypeOfPalletLoader {
 
     public void deactivateDictionaryItems(final Collection<String> technicalCodes) {
         DataDefinition dictionaryItemDD = dictionariesService.getDictionaryItemDD();
+
         List<Entity> dictionaryItems = dictionaryItemDD.find()
                 .add(belongsTo(DictionaryItemFields.DICTIONARY, getTypeOfPalletDictionary()))
                 .add(in(DictionaryItemFields.TECHNICAL_CODE, technicalCodes)).list().getEntities();
+
         dictionaryItemDD.deactivate(dictionaryItems.stream().map(Entity::getId).toArray(Long[]::new));
     }
 
@@ -167,7 +180,7 @@ public class TypeOfPalletLoader {
 
     public Entity getTypeOfPalletDictionary() {
         return dictionariesService.getDictionaryDD().find()
-                .add(SearchRestrictions.eq(DictionaryItemFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
     }
 
 }

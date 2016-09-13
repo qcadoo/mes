@@ -39,10 +39,17 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class ActionCriteriaModifiers {
-
+    
     @Autowired
     private TranslationService translationService;
-
+    
+    public void filterAllWithoutOtherAction(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final FilterValueHolder filterValueHolder) {
+        filterActionsForObejct(searchCriteriaBuilder, filterValueHolder);
+        
+        searchCriteriaBuilder.add(SearchRestrictions.or(SearchRestrictions.eq(ActionFields.IS_DEFAULT, false), SearchRestrictions.isNull(ActionFields.IS_DEFAULT)));
+    }
+    
     public void filterActionsForObejct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
         if (filterValueHolder.has(PlannedEventFields.SUBASSEMBLY)) {
@@ -51,42 +58,42 @@ public class ActionCriteriaModifiers {
             addWorkstationCriteria(searchCriteriaBuilder, filterValueHolder);
         }
     }
-
+    
     private void addSubassemblyCriteria(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
         Long subassemblyId = filterValueHolder.getLong(PlannedEventFields.SUBASSEMBLY);
-
+        
         addCriteriaForElementAndWorkstationType(searchCriteriaBuilder, filterValueHolder, subassemblyId,
                 ActionFields.SUBASSEMBLIES);
     }
-
+    
     private void addWorkstationCriteria(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
         Long workstationId = filterValueHolder.getLong(PlannedEventFields.WORKSTATION);
-
+        
         addCriteriaForElementAndWorkstationType(searchCriteriaBuilder, filterValueHolder, workstationId,
                 ActionFields.WORKSTATIONS);
     }
-
+    
     private void addCriteriaForElementAndWorkstationType(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder, Long elementId, String alias) {
         SearchCriterion searchCriterion;
-
+        
         String other = translationService.translate("cmmsMachineParts.action.name.other", LocaleContextHolder.getLocale());
-
+        
         if (filterValueHolder.has(WorkstationFields.WORKSTATION_TYPE)) {
             Long workstationTypeId = filterValueHolder.getLong(WorkstationFields.WORKSTATION_TYPE);
-
+            
             searchCriterion = SearchRestrictions.or(
                     SearchRestrictions.eq(ActionFields.WORKSTATION_TYPES + ".id", workstationTypeId),
                     SearchRestrictions.eq(alias + ".id", elementId));
         } else {
             searchCriterion = SearchRestrictions.eq(alias + ".id", elementId);
         }
-
+        
         searchCriteriaBuilder.createAlias(ActionFields.WORKSTATION_TYPES, ActionFields.WORKSTATION_TYPES, JoinType.LEFT)
                 .createAlias(alias, alias, JoinType.LEFT)
                 .add(SearchRestrictions.or(searchCriterion, SearchRestrictions.eq(ActionFields.NAME, other)));
     }
-
+    
 }

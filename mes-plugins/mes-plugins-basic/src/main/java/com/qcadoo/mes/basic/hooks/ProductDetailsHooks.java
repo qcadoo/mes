@@ -39,6 +39,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -94,6 +95,7 @@ public class ProductDetailsHooks {
         FieldComponent entityTypeField = (FieldComponent) state.getComponentByReference(ProductFields.ENTITY_TYPE);
         FieldComponent parentField = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
 
+        LookupComponent assortmentLookup = (LookupComponent) state.getComponentByReference(ProductFields.ASSORTMENT);
         Long productId = productForm.getEntityId();
 
         if (productId == null) {
@@ -116,6 +118,7 @@ public class ProductDetailsHooks {
             productForm.setFormEnabled(false);
             entityTypeField.setEnabled(true);
             parentField.setEnabled(true);
+            assortmentLookup.setEnabled(true);
         }
     }
 

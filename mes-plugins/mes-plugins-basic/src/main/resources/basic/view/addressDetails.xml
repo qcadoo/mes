@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_COMPANY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	  name="addressDetails" modelName="address">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate"/>
+		</ribbon>
+
+		<windowTab name="mainTab">
+			<component type="form" name="company" reference="form">
+				<component type="gridLayout" name="mainTabGridLayout"
+						   columns="3" rows="7">
+					<layoutElement column="1" row="1">
+						<component type="select" name="addressType"
+								   field="addressType"/>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="input" name="number" field="number"
+								   reference="number">
+							<option type="alignment" value="right"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3">
+						<component type="input" name="name" field="name"
+								   reference="name"/>
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="input" name="phone" field="phone"
+								   reference="phone"/>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="input" name="email" field="email"
+								   reference="email"/>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="input" name="website" field="website"
+								   reference="website"/>
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="input" name="contactPerson" field="contactPerson"
+								   reference="contactPerson"/>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="input" name="street" field="street"
+								   reference="street"/>
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="input" name="house" field="house"
+								   reference="house"/>
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="input" name="flat" field="flat"
+								   reference="flat"/>
+					</layoutElement>
+					<layoutElement column="2" row="4">
+						<component type="input" name="zipCode" field="zipCode"
+								   reference="zipCode"/>
+					</layoutElement>
+					<layoutElement column="2" row="5">
+						<component type="input" name="city" field="city"
+								   reference="city"/>
+					</layoutElement>
+					<layoutElement column="2" row="6">
+						<component type="input" name="state" field="state"
+								   reference="state"/>
+					</layoutElement>
+					<layoutElement column="2" row="7">
+						<component type="lookup" name="country" field="country"
+								   reference="country">
+							<option type="column" name="country" fields="country"
+									link="true"/>
+
+							<option type="order" column="code" direction="asc"/>
+
+							<option type="searchable" value="code,country"/>
+							<option type="orderable" value="code,country"/>
+
+							<option type="expression" value="#code + ' - ' + #country"/>
+							<option type="fieldCode" value="code"/>
+						</component>
+					</layoutElement>
+
+				</component>
+
+				<option type="header" value="true"/>
+				<option type="expression" value="#number"/>
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.AddressDetailsHooks"
+					  method="beforeRender"/>
+	</hooks>
+
+</view>

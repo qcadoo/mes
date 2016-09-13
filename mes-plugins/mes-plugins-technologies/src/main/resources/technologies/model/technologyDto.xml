@@ -34,7 +34,7 @@
         <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked" />
         <boolean name="externalSynchronized" default="true" copyable="false"/>
         <boolean name="master" default="false" copyable="false"/>
-        <string name="productName" />
+        <string name="productNumber" />
         <string name="technologyGroupNumber" />
         <string name="divisionName" />
         <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>

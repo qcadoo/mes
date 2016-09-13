@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="deliveredProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+
+        <integer name="succession"/>
+
+        <belongsTo name="delivery" model="delivery" persistent="false" />
+
+        <integer name="deliveryId"/>
+
+        <string name="productName"/>
+
+        <string name="productNumber"/>
+
+        <string name="productUnit"/>
+
+        <decimal name="damagedQuantity"/>
+
+        <decimal name="deliveredQuantity"/>
+
+        <decimal name="additionalQuantity"/>
+
+        <decimal name="conversion"/>
+
+        <decimal name="pricePerUnit"/>
+
+        <decimal name="totalPrice"/>
+        
+        <string name="additionalCode"/>
+
+        <string name="storageLocationNumber"/>
+
+        <string name="palletNumber"/>
+
+        <string name="offerNumber"/>
+
+        <string name="productCatalogNumber"/>
+
+        <string name="operationNumber"/>
+
+        <boolean name="isWaste"/>
+
+    </fields>
+    <masterModel plugin="deliveries" model="deliveredProduct"/>
+</model>

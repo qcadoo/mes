@@ -27,6 +27,7 @@
 <model name="company" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -36,6 +37,11 @@
         </string>
         <belongsTo name="taxCountryCode" plugin="basic" model="country"/>
         <string name="tax"/>
+
+        <string name="phone"/>
+        <string name="email"/>
+        <string name="website"/>
+
         <string name="street"/>
         <string name="house">
             <validatesLength max="30"/>
@@ -46,17 +52,24 @@
         <string name="zipCode"/>
         <string name="city"/>
         <string name="state"/>
+
         <belongsTo name="country" plugin="basic" model="country"/>
-        <string name="email"/>
-        <string name="website"/>
-        <string name="phone"/>
+
+        <string name="contactPerson"/>
+
         <string name="externalNumber" unique="true"/>
 
-        <manyToMany name="workstations" model="workstation" joinField="companies" cascade="nullify"/>
-        <manyToMany name="subassemblies" model="subassembly" joinField="companies" cascade="nullify"/>
+        <manyToMany name="workstations" plugin="basic" model="workstation" joinField="companies" cascade="nullify"/>
+        <manyToMany name="subassemblies" plugin="basic" model="subassembly" joinField="companies" cascade="nullify"/>
 
-        <hasMany name="producedProducts" model="product" plugin="basic" joinField="producer"
+        <hasMany name="producedProducts" plugin="basic" model="product" joinField="producer"
                  cascade="nullify"/>
+
+        <boolean name="isSupplier" default="false" required="true"/>
+        <boolean name="isReceiver" default="false" required="true"/>
+
+        <hasMany name="addresses" model="address" plugin="basic" joinField="company"
+                 cascade="delete"/>
     </fields>
 
     <hooks>
@@ -64,7 +77,10 @@
                        method="validatesWith"/>
         <onCreate class="com.qcadoo.mes.basic.hooks.CompanyHooks"
                   method="onCreate"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.CompanyHooks"
+                  method="onSave"/>
         <onCopy method="onCopy" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
+        <onDelete method="onDelete" class="com.qcadoo.mes.basic.hooks.CompanyHooks"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>
