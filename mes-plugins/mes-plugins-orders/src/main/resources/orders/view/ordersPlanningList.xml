@@ -225,14 +225,15 @@
  			<option type="column" name="externalSynchronized" fields="externalSynchronized" expression="#externalSynchronized?'1':'0'" hidden="true" />
 
             <option type="column" name="productionLineNumber" fields="productionLineNumber" width="40" />
+			<option type="column" name="orderCategory" fields="orderCategory" width="60" />
 
 			<option type="correspondingView" value="orders/orderDetails" />
 			<option type="correspondingComponent" value="form" />
 
 			<option type="order" column="dateFrom" direction="desc" />
 
-			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine" />
-			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine" />
+			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory" />
+			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory" />
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />

@@ -75,63 +75,68 @@ public class TypeOfPalletLoader {
     public final void loadTypeOfPallets() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Type of pallet table will be populated...");
+                LOG.debug("Type of pallets will be populated ...");
             }
 
             Map<Integer, Map<String, String>> typeOfPalletsAttributes = getTypeOfPalletsAttributesFromXML();
 
-            for (Map<String, String> typeOfPalletAttributes : typeOfPalletsAttributes.values()) {
-                addDictionaryItem(typeOfPalletAttributes);
-            }
+            typeOfPalletsAttributes.values().stream()
+                    .forEach(typeOfPalletAttributes -> addDictionaryItem(typeOfPalletAttributes));
         }
     }
 
     public void unloadTypeOfPallets() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Type of pallet table will be unpopulated...");
+            LOG.debug("Type of pallets will be unpopulated ...");
         }
 
         Map<Integer, Map<String, String>> typeOfPalletsAttributes = getTypeOfPalletsAttributesFromXML();
 
         List<String> technicalCodes = typeOfPalletsAttributes.values().stream()
-                .map(typeOfPalletAttribute -> typeOfPalletAttribute.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
+                .map(typeOfPalletAttributes -> typeOfPalletAttributes.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         deactivateDictionaryItems(technicalCodes);
     }
 
     private Map<Integer, Map<String, String>> getTypeOfPalletsAttributesFromXML() {
-        LOG.info("Loading test data from typeOfPallet.xml ...");
+        LOG.info("Loading data from typeOfPallet" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
         Map<Integer, Map<String, String>> typeOfPalletsAttributes = Maps.newHashMap();
 
         try {
             SAXBuilder builder = new SAXBuilder();
+            
             Document document = builder.build(getTypeOfPalletXmlFile());
             Element rootNode = document.getRootElement();
+            
             @SuppressWarnings("unchecked")
             List<Element> listOfRows = rootNode.getChildren("row");
 
             for (int rowNum = 0; rowNum < listOfRows.size(); rowNum++) {
-                Element node = listOfRows.get(rowNum);
-
-                @SuppressWarnings("unchecked")
-                List<Attribute> listOfAtributes = node.getAttributes();
-
-                Map<String, String> typeOfPalletAttribute = Maps.newHashMap();
-
-                for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
-                    typeOfPalletAttribute.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
-                            listOfAtributes.get(attributeNum).getValue());
-                }
-
-                typeOfPalletsAttributes.put(rowNum, typeOfPalletAttribute);
+                parseAndAddTypeOfPallet(typeOfPalletsAttributes, listOfRows, rowNum);
             }
         } catch (IOException | JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
 
         return typeOfPalletsAttributes;
+    }
+
+    private void parseAndAddTypeOfPallet(final Map<Integer, Map<String, String>> typeOfPalletsAttributes, final List<Element> listOfRows, final int rowNum) {
+        Element node = listOfRows.get(rowNum);
+
+        @SuppressWarnings("unchecked")
+        List<Attribute> listOfAtributes = node.getAttributes();
+
+        Map<String, String> typeOfPalletAttributes = Maps.newHashMap();
+
+        for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
+            typeOfPalletAttributes.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
+                    listOfAtributes.get(attributeNum).getValue());
+        }
+
+        typeOfPalletsAttributes.put(rowNum, typeOfPalletAttributes);
     }
 
     private void addDictionaryItem(final Map<String, String> typeOfPalletAttributes) {
@@ -179,8 +184,8 @@ public class TypeOfPalletLoader {
     }
 
     public Entity getTypeOfPalletDictionary() {
-        return dictionariesService.getDictionaryDD().find()
-                .add(SearchRestrictions.eq(DictionaryFields.NAME, L_TYPE_OF_PALLET)).setMaxResults(1).uniqueResult();
+        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_TYPE_OF_PALLET))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

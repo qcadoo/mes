@@ -24,32 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="orderPlanningListDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderCategoryColor"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
-        <string name="number" />
-        <string name="name" />
-        <datetime name="dateFrom"/>
-        <datetime name="dateTo" />
-        <datetime name="startDate" />
-        <datetime name="finishDate" />
-        <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
-        <string name="technologyNumber" />
-        <string name="productNumber" />
-        <decimal name="plannedQuantity" />
-        <string name="unit" />
-        <string name="externalNumber" />
-        <boolean name="externalSynchronized" default="true" />
-        <string name="productionLineNumber" />
-        <boolean name="isSubcontracted" default="false"/>
-        <string name="masterOrderNumber" />
-        <string name="divisionName" />
-        <string name="orderCategory" />
-        <boolean name="workPlanDelivered" default="false" />
+        <belongsTo name="parameter" plugin="basic" model="parameter" required="true"/>
+        <dictionary name="orderCategory" dictionary="orderCategory" required="true"/>
+        <dictionary name="color" dictionary="color" required="true"/>
     </fields>
-    <hooks>
-    </hooks>
-    <identifier expression="#number + ' - ' + #name"/>
-    <masterModel plugin="orders" model="order" />
+
+    <hooks />
+
 </model>

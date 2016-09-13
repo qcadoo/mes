@@ -127,4 +127,6 @@ public final class OrderFields {
 
     public static final String WORKER_TO_CHANGE = "workerToChange";
 
+    public static final String ORDER_CATEGORY = "orderCategory";
+
 }

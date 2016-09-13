@@ -60,6 +60,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_FORMULA = "formula";
 
+    public static final String MODEL_ORDER_CATEGORY_COLOR = "orderCategoryColor";
+
     // VIEW
 
     public static final String VIEW_ORDER_DETAILS = "orderDetails";

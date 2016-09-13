@@ -88,7 +88,7 @@
         <security:role identifier="ROLE_COMPANY_STRUCTURE_EDIT" description="Dostęp do struktury firmy - akcje"/>
 
         <security:role identifier="ROLE_BASE_FUNCTIONALITY"
-                       description="Dostęp do funkcjonlności nie określonych innymi rolami"/>
+                       description="Dostęp do funkcjonalności nie określonych innymi rolami"/>
 
         <security:role identifier="ROLE_REQUIREMENTS" description="Dostęp do zaopatrzenia"/>
 
@@ -145,7 +145,7 @@
         <security:role identifier="ROLE_EVENTS_PLAN" description="Dostęp do planowania zdarzeń"/>
         <security:role identifier="ROLE_EVENTS_ACCEPT" description="Dostęp do akceptowania zdarzeń"/>
 
-        <security:role identifier="ROLE_EVENTS_ADD_FAILURE" description="Dostęp do dodawnia awarii"/>
+        <security:role identifier="ROLE_EVENTS_ADD_FAILURE" description="Dostęp do dodawania awarii"/>
         <security:role identifier="ROLE_EVENTS_ADD_ISSUE" description="Dostęp do dodawania problemu"/>
         <security:role identifier="ROLE_EVENTS_ADD_PROPOSAL" description="Dostęp do dodawania wniosku"/>
 
@@ -160,7 +160,7 @@
                        description="Dostęp do zakładek części, czas pracy, opis rozwiązania"/>
         <security:role identifier="ROLE_EVENTS_LIST_EXPORT" description="Dostęp do eksportu"/>
         <security:role identifier="ROLE_EVENTS_NOTIFICATION"
-                       description="Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
+                       description="Powiadomienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
 
         <!-- end -->
 
@@ -308,6 +308,8 @@
         <model:dictionary name="addressType"/>
 
         <model:dictionary name="descriptionTypes"/>
+
+        <model:dictionary name="color"/>
 
         <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>

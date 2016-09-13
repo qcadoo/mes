@@ -56,15 +56,17 @@ import com.qcadoo.plugins.dictionaries.DictionariesService;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class AddressTypeLoader {
+public class ColorLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AddressTypeLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ColorLoader.class);
 
     private static final String L_NAME = "name";
 
+    private static final String L_DESCRIPTION = "description";
+
     private static final String L_TECHNICAL_CODE = "technicalCode";
 
-    private static final String L_ADDRESS_TYPE = "addressType";
+    private static final String L_COLOR = "color";
 
     @Autowired
     private DefaultLocaleResolver defaultLocaleResolver;
@@ -72,90 +74,90 @@ public class AddressTypeLoader {
     @Autowired
     private DictionariesService dictionariesService;
 
-    public final void loadAddressTypes() {
+    public final void loadColors() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Address types will be populated ...");
+                LOG.debug("Colors will be populated ...");
             }
 
-            Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
+            Map<Integer, Map<String, String>> colorsAttributes = getColorsAttributesFromXML();
 
-            addressTypesAttributes.values().forEach(addressTypeAttributes -> addDictionaryItem(addressTypeAttributes));
+            colorsAttributes.values().stream().forEach(colorAttributes -> addDictionaryItem(colorAttributes));
         }
     }
 
-    public void unloadAddressTypes() {
+    public void unloadColors() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Address types will be unpopulated ...");
+            LOG.debug("Colors will be unpopulated ...");
         }
 
-        Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
+        Map<Integer, Map<String, String>> colorsAttributes = getColorsAttributesFromXML();
 
-        List<String> technicalCodes = addressTypesAttributes.values().stream()
-                .map(addressTypeAttributes -> addressTypeAttributes.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
+        List<String> technicalCodes = colorsAttributes.values().stream()
+                .map(colorAttributes -> colorAttributes.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         deactivateDictionaryItems(technicalCodes);
     }
 
-    private Map<Integer, Map<String, String>> getAddressTypesAttributesFromXML() {
-        LOG.info("Loading data from addressType" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
+    private Map<Integer, Map<String, String>> getColorsAttributesFromXML() {
+        LOG.info("Loading data from color" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
-        Map<Integer, Map<String, String>> addressTypesAttributes = Maps.newHashMap();
+        Map<Integer, Map<String, String>> colorsAttributes = Maps.newHashMap();
 
         try {
             SAXBuilder builder = new SAXBuilder();
 
-            Document document = builder.build(getAddressTypeXmlFile());
+            Document document = builder.build(getColorXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
             List<Element> listOfRows = rootNode.getChildren("row");
 
             for (int rowNum = 0; rowNum < listOfRows.size(); rowNum++) {
-                parseAndAddAddressType(addressTypesAttributes, listOfRows, rowNum);
+                parseAndAddColor(colorsAttributes, listOfRows, rowNum);
             }
         } catch (IOException | JDOMException e) {
             LOG.error(e.getMessage(), e);
         }
 
-        return addressTypesAttributes;
+        return colorsAttributes;
     }
 
-    private void parseAndAddAddressType(final Map<Integer, Map<String, String>> addressTypesAttributes,
-            final List<Element> listOfRows, final int rowNum) {
+    private void parseAndAddColor(final Map<Integer, Map<String, String>> colorsAttributes, final List<Element> listOfRows,
+            final int rowNum) {
         Element node = listOfRows.get(rowNum);
 
         @SuppressWarnings("unchecked")
         List<Attribute> listOfAtributes = node.getAttributes();
 
-        Map<String, String> addressTypeAttributes = Maps.newHashMap();
+        Map<String, String> colorAttributes = Maps.newHashMap();
 
         for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
-            addressTypeAttributes.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH), listOfAtributes
-                    .get(attributeNum).getValue());
+            colorAttributes.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
+                    listOfAtributes.get(attributeNum).getValue());
         }
 
-        addressTypesAttributes.put(rowNum, addressTypeAttributes);
+        colorsAttributes.put(rowNum, colorAttributes);
     }
 
-    private void addDictionaryItem(final Map<String, String> addressTypeAttributes) {
+    private void addDictionaryItem(final Map<String, String> colorAttributes) {
         Entity dictionaryItem = dictionariesService.getDictionaryItemDD().create();
 
-        dictionaryItem.setField(DictionaryItemFields.NAME, addressTypeAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.NAME, colorAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.DESCRIPTION, colorAttributes.get(L_DESCRIPTION.toLowerCase(Locale.ENGLISH)));
         dictionaryItem.setField(DictionaryItemFields.TECHNICAL_CODE,
-                addressTypeAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
-        dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary());
+                colorAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getColorDictionary());
 
         dictionaryItem = dictionaryItem.getDataDefinition().save(dictionaryItem);
 
         if (dictionaryItem.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Address type saved {addressType : " + dictionaryItem.toString() + "}");
+                LOG.debug("Color saved {color : " + dictionaryItem.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved dictionaryItem entity have validation errors - "
-                    + addressTypeAttributes.get(L_NAME));
+            throw new IllegalStateException("Saved dictionaryItem entity have validation errors - " + colorAttributes.get(L_NAME));
         }
     }
 
@@ -163,25 +165,31 @@ public class AddressTypeLoader {
         DataDefinition dictionaryItemDD = dictionariesService.getDictionaryItemDD();
 
         List<Entity> dictionaryItems = dictionaryItemDD.find()
-                .add(belongsTo(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary()))
+                .add(belongsTo(DictionaryItemFields.DICTIONARY, getColorDictionary()))
                 .add(in(DictionaryItemFields.TECHNICAL_CODE, technicalCodes)).list().getEntities();
 
         dictionaryItemDD.deactivate(dictionaryItems.stream().map(Entity::getId).toArray(Long[]::new));
     }
 
     private boolean databaseHasToBePrepared() {
-        return dictionariesService.getDictionaryItemDD().find()
-                .add(belongsTo(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary()))
-                .add(eq(DictionaryItemFields.TECHNICAL_CODE, "01main")).list().getTotalNumberOfEntities() == 0;
+        return dictionariesService
+                .getDictionaryItemDD()
+                .find()
+                .add(belongsTo(DictionaryItemFields.DICTIONARY, getColorDictionary()))
+                .add(SearchRestrictions.or(eq(DictionaryItemFields.TECHNICAL_CODE, "01white"),
+                        eq(DictionaryItemFields.TECHNICAL_CODE, "02grey"), eq(DictionaryItemFields.TECHNICAL_CODE, "03yellow"),
+                        eq(DictionaryItemFields.TECHNICAL_CODE, "04orange"), eq(DictionaryItemFields.TECHNICAL_CODE, "05red"),
+                        eq(DictionaryItemFields.TECHNICAL_CODE, "06green"), eq(DictionaryItemFields.TECHNICAL_CODE, "07blue")))
+                .list().getTotalNumberOfEntities() == 0;
     }
 
-    private InputStream getAddressTypeXmlFile() throws IOException {
-        return AddressTypeLoader.class.getResourceAsStream("/basic/model/data/addressType" + "_"
+    private InputStream getColorXmlFile() throws IOException {
+        return ColorLoader.class.getResourceAsStream("/basic/model/data/color" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
-    public Entity getAddressTypeDictionary() {
-        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_ADDRESS_TYPE))
+    public Entity getColorDictionary() {
+        return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_COLOR))
                 .setMaxResults(1).uniqueResult();
     }
 
