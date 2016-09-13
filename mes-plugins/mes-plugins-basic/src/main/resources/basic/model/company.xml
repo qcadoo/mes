@@ -55,6 +55,8 @@
 
         <belongsTo name="country" plugin="basic" model="country"/>
 
+        <string name="contactPerson"/>
+
         <string name="externalNumber" unique="true"/>
 
         <manyToMany name="workstations" plugin="basic" model="workstation" joinField="companies" cascade="nullify"/>

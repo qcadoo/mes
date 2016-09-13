@@ -150,7 +150,9 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS
 
 
 -- table: basic_company
--- last touched 02.09.2016 by lupo
+-- last touched 12.09.2016 by lupo
+
+ALTER TABLE basic_company ADD COLUMN contactperson character varying(255);
 
 ALTER TABLE basic_company ADD COLUMN issupplier boolean;
 ALTER TABLE basic_company ALTER COLUMN issupplier SET DEFAULT false;

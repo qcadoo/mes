@@ -79,7 +79,7 @@
 					]]>
 				</script>
 				<component type="gridLayout" name="mainTabGridLayout"
-						   columns="3" rows="8">
+						   columns="3" rows="9">
 					<layoutElement column="1" row="1">
 						<component type="input" name="number" field="number"
 								   reference="number">
@@ -129,10 +129,14 @@
 								   reference="website"/>
 					</layoutElement>
 					<layoutElement column="1" row="7">
+						<component type="input" name="contactPerson" field="contactPerson"
+								   reference="contactPerson"/>
+					</layoutElement>
+					<layoutElement column="1" row="8">
 						<component type="checkbox" name="isSupplier" field="isSupplier"
 								   reference="isSupplier"/>
 					</layoutElement>
-					<layoutElement column="1" row="8">
+					<layoutElement column="1" row="9">
 						<component type="checkbox" name="isReceiver" field="isReceiver"
 								   reference="isReceiver"/>
 					</layoutElement>

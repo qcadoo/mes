@@ -57,6 +57,8 @@ public final class CompanyFields {
 
     public static final String COUNTRY = "country";
 
+    public static final String CONTACT_PERSON = "contactPerson";
+
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
     public static final String IS_SUPPLIER = "isSupplier";

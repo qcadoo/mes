@@ -178,6 +178,7 @@ public class CompanyHooks {
         address.setField(AddressFields.CITY, company.getStringField(CompanyFields.CITY));
         address.setField(AddressFields.STATE, company.getStringField(CompanyFields.STATE));
         address.setField(AddressFields.COUNTRY, company.getBelongsToField(CompanyFields.COUNTRY));
+        address.setField(AddressFields.CONTACT_PERSON, company.getStringField(CompanyFields.CONTACT_PERSON));
         address.setField(AddressFields.CAN_BE_DELETED, false);
     }
 
