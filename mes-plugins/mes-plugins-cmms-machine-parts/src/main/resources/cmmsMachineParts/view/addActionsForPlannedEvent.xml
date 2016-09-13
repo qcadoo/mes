@@ -58,8 +58,8 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="grid" name="grid" reference="grid">
 
-                <option type="column" name="name" fields="name" link="true"/>
-                <option type="column" name="appliesTo" fields="appliesTo" link="true"/>
+                <option type="column" name="name" fields="name" link="false"/>
+                <option type="column" name="appliesTo" fields="appliesTo" link="false"/>
 
                 <option type="searchable" value="name,appliesTo"/>
                 <option type="orderable" value="name,appliesTo"/>
@@ -71,11 +71,7 @@
 
                 <listener event="addActions"
                           method="addActions"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>                
-
-<!--                <listener event="select"
-                        class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"
-                        method="addActions" />                -->
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>              
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ActionCriteriaModifiers"
                                   method="filterAllWithoutOtherAction"/>
