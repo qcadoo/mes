@@ -33,4 +33,6 @@ public final class ParameterFieldsMO {
 
     public static final String MASTER_ORDER_DEFINITIONS = "masterOrderDefinitions";
 
+    public static final String ADDITIONAL_IMAGE = "additionalImage";
+
 }

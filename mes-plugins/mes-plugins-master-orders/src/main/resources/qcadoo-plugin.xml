@@ -78,6 +78,14 @@
                            joinField="parameter" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:file name="additionalImage">
+                <model:validatesWith
+                        class="com.qcadoo.mes.masterOrders.validators.ParameterValidatorsMO"
+                        method="validatesWith"/>
+            </model:file>
+        </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrder" model="masterOrder"
                              plugin="masterOrders" lazy="true"/>
