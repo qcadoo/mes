@@ -211,3 +211,35 @@ ALTER TABLE materialflowresources_document ADD COLUMN address_id bigint;
 ALTER TABLE basic_parameter ADD COLUMN additionalimage character varying(255);
 
 -- end
+
+-- 14.09.2016 by kasi
+
+CREATE OR REPLACE VIEW orders_orderplanninglistdto AS
+ SELECT o.id,
+    o.active,
+    o.number,
+    o.name,
+    o.datefrom,
+    o.dateto,
+    o.startdate,
+    o.finishdate,
+    o.state,
+    o.externalnumber,
+    o.externalsynchronized,
+    o.issubcontracted,
+    o.plannedquantity,
+    o.workplandelivered,
+    product.number AS productnumber,
+    tech.number AS technologynumber,
+    product.unit,
+    line.number AS productionlinenumber,
+    master.number AS masterordernumber,
+    division.name AS divisionname
+   FROM orders_order o
+     JOIN basic_product product ON o.product_id = product.id
+     LEFT JOIN technologies_technology tech ON o.technology_id = tech.id
+     LEFT JOIN productionlines_productionline line ON o.productionline_id = line.id
+     LEFT JOIN masterorders_masterorder master ON o.masterorder_id = master.id
+     LEFT JOIN basic_division division ON tech.division_id = division.id;
+
+-- end
