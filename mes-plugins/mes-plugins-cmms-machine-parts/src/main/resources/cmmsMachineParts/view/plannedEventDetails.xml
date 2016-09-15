@@ -50,17 +50,8 @@
                              state="disabled" action="#{form}.changeState(cancelEvent);"/>
             </group>
             <group name="actionsGroup">
-                <bigButton name="addActions" icon="genealogyIcon24.png" state="enabled">
-                    <script>
-                        <![CDATA[
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    var eventId = #{form}.getValue().content ? #{form}.getValue().content.entityId : 0;
-                                    #{form}.performEvent('addActionsForm', [eventId]);
-                                }
-                            });
-                        ]]>
-                    </script>
+                <bigButton name="actions" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(gotToActions);" state="disabled">
                 </bigButton>
             </group>
             <group name="attachments" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ATTACHMENTS">
@@ -102,10 +93,6 @@
                             onSetValue: function(value) {
                                 if (!value || !value.content)
                                     return;
-
-                                if (value.content.entityId) {
-                                    plannedEventIdChanged(value.content.entityId);
-                                }
                             }
                         });
                            this.changeState = function(eventPerformer, ribbonItemName) {
@@ -578,10 +565,10 @@
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
-                <listener event="addActionsForm" method="addActionsForm"
+                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
-                <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
+                <listener event="gotToActions" method="gotToActions"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
 
                 <listener event="showSolutions" method="showSolutions"
@@ -666,16 +653,7 @@
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
             </component>
         </windowTab>
-        <windowTab name="actionsTab" reference="actionsTab">
-            <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
-                <layoutElement column="1" row="1" minHeight="6">
-                    <component type="staticPage" name="actionsGrid" reference="actionsGrid">
-                        <option type="page" value="cmmsMachineParts/actionsGrid.jsp"/>
-                        <option type="messagesGroup" value="actionsGrid"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
+
         <windowTab name="solutionDescriptionTab" reference="solutionDescriptionTab">
             <component type="gridLayout" name="solutionDescriptionGrid" columns="3"
                        rows="6" hasBorders="false">

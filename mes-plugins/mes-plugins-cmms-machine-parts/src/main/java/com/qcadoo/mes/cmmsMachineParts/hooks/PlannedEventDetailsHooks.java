@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
@@ -39,7 +32,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
-import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.PlannedEventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
@@ -48,17 +41,19 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.internal.components.select.SelectComponentState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PlannedEventDetailsHooks {
@@ -187,9 +182,61 @@ public class PlannedEventDetailsHooks {
         hideTabs(view, fieldsForType);
         clearGrids(view, fieldsForType);
         setAndLockBasedOn(view, fieldsForType);
-        toggleAddMultipleActions(view, fieldsForType, plannedEvent);
+        actionsButtonProcess(plannedEvent, view, fieldsForType);
     }
 
+    private void actionsButtonProcess(Entity plannedEvent, ViewDefinitionState view, FieldsForType ftype) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        PlannedEventType type = PlannedEventType.from(plannedEvent);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup actionsGroup = ribbon.getGroupByName("actionsGroup");
+        RibbonActionItem addActionsItem = actionsGroup.getItemByName("actions");
+        if(plannedEvent.getId() == null){
+            addActionsItem.setEnabled(false);
+            addActionsItem.requestUpdate(true);
+            window.requestRibbonRender();
+            return;
+        }
+
+        boolean enable = false;
+
+        if (type.compareTo(PlannedEventType.REVIEW) == 0) {
+            enable = true;
+        } else if (type.compareTo(PlannedEventType.REPAIRS) == 0) {
+            enable = true;
+        } else if (type.compareTo(PlannedEventType.EXTERNAL_SERVICE) == 0) {
+            enable = false;
+        } else if (type.compareTo(PlannedEventType.ADDITIONAL_WORK) == 0) {
+            enable = true;
+        } else if (type.compareTo(PlannedEventType.MANUAL) == 0) {
+            enable = true;
+        } else if (type.compareTo(PlannedEventType.METER_READING) == 0) {
+            enable = false;
+        } else if (type.compareTo(PlannedEventType.UDT_REVIEW) == 0) {
+            enable = false;
+        } else if (type.compareTo(PlannedEventType.AFTER_REVIEW) == 0) {
+            enable = false;
+        }
+
+        addActionsItem.setEnabled(enable);
+        addActionsItem.requestUpdate(true);
+        window.requestRibbonRender();
+    }
+
+    public void toggleActionsFieldsVisible(final ViewDefinitionState view) {
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity plannedEvent = plannedEventForm.getPersistedEntityWithIncludedFormValues();
+
+        PlannedEventType type = PlannedEventType.from(plannedEvent);
+
+        FieldsForType fieldsForType = eventFieldsForTypeFactory.createFieldsForType(type);
+
+        if (fieldsForType == null) {
+            return;
+        }
+        toggleAddMultipleActions(view, fieldsForType, plannedEvent);
+    }
     public void hideFields(final ViewDefinitionState view, final Entity plannedEvent, final FieldsForType fieldsForType) {
         Set<String> allFields = plannedEvent.getDataDefinition().getFields().keySet();
 

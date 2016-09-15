@@ -127,6 +127,7 @@
 
         <view:view resource="view/plannedEventsList.xml"/>
         <view:view resource="view/plannedEventDetails.xml"/>
+        <view:view resource="view/plannedEventActions.xml"/>
         <view:view resource="view/actionForPlannedEventDetails.xml"/>
         <view:view resource="view/plannedEventRealizationDetails.xml"/>
 
