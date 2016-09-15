@@ -31,7 +31,7 @@ public class FieldsForAfterReview extends AbstractFieldsForType {
     public FieldsForAfterReview() {
         super(Lists.newArrayList(PlannedEventFields.EFFECTIVE_DURATION, PlannedEventFields.PLANNED_SEPARATELY,
                 PlannedEventFields.COUNTER, PlannedEventFields.DURATION, PlannedEventFields.COMPANY), Lists
-                .newArrayList(PlannedEventFields.ACTIONS_TAB), Lists.newArrayList());
+                .newArrayList(), Lists.newArrayList());
     }
 
     @Override

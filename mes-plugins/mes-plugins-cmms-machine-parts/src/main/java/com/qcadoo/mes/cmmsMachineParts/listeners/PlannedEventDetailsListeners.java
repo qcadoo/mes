@@ -39,6 +39,8 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 @Service
 public class PlannedEventDetailsListeners {
@@ -240,6 +240,17 @@ public class PlannedEventDetailsListeners {
                     true, parameters);
         }
     }
+
+    public void gotToActions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", form.getEntityId());
+            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventActions.html", false,
+                    true, parameters);
+
+    }
+
+
 
     public void showRecurringEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
