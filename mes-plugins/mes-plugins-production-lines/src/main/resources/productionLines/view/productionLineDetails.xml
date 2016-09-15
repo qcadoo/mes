@@ -265,8 +265,8 @@
 
                         <option type="multiselect" value="true"/>
                         <criteriaModifier
-                                class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-                                method="showWorkstationsWithoutProductionLineOnly"/>
+                            class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+                            method="showWorkstationsWithoutProductionLineOnly"/>
 
                     </component>
                     <component type="grid" name="workstations" reference="workstations"
@@ -301,8 +301,8 @@
                         <option type="correspondingLookup" value="workstationsLookup"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-                                method="showWorkstationsForCurrentProductionLine"/>
+                            class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
+                            method="showWorkstationsForCurrentProductionLine"/>
                         <listener event="addExistingEntity"
                                   method="onAddExistingEntity"
                                   class="com.qcadoo.mes.productionLines.listeners.ProductionLineDetailsListeners"/>
@@ -313,15 +313,47 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="calendarTab">
+            <component type="flowGridLayout" name="workstationsGridLayout" columns="1" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="lookup" name="shiftLookup" reference="shiftLookup" field="#{form}.shifts" defaultVisible="false" persistent="false" hasLabel="false">
+                        <option type="expression" value="#name" />
+                        <option type="fieldCode" value="name" />
+                        <option type="multiselect" value="true" />
+						
+                        <option type="searchable" value="name" />
+                        <option type="orderable" value="name" />
+                    </component>          
+              
+                    <component type="grid" name="shiftsComponent" reference="shiftsComponent" source="#{form}.shifts"> 
+                        <option type="column" name="name" fields="name" />
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+
+                        <option type="order" column="name" direction="desc"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="shiftLookup"/>
+
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
     </component>
     <hooks>
         <beforeRender
-                class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
-                method="generateProductionLineNumber"/>
+            class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
+            method="generateProductionLineNumber"/>
 
         <beforeRender
-                class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
-                method="fillCriteriaModifiers"/>
+            class="com.qcadoo.mes.productionLines.hooks.ProductionLineDetailsViewHooks"
+            method="fillCriteriaModifiers"/>
     </hooks>
 </view>

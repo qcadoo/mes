@@ -63,6 +63,8 @@
 		</string>
 		<hasMany name="timetableExceptions" model="shiftTimetableException"
 			joinField="shift" cascade="delete" copyable="true" />
+                
+                <manyToMany name="productionLines" joinField="shifts" model="productionLine" cascade="nullify" plugin="productionLines" />
 	</fields>
 
 	<hooks>
