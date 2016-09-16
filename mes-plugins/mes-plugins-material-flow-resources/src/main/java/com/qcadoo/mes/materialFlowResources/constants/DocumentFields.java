@@ -45,6 +45,8 @@ public final class DocumentFields {
 
     public static final String COMPANY = "company";
 
+    public static final String ADDRESS = "address";
+
     public static final String USER = "user";
 
     public static final String DESCRIPTION = "description";

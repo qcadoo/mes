@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -47,11 +39,7 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -60,6 +48,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -226,8 +221,10 @@ public class CostCalculationDetailsListeners {
         if (cameFromOrder) {
             componentsMap.get(CostCalculationFields.ORDER).setFieldValue(order.getId());
             componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
-            componentsMap.get(CostCalculationFields.PRODUCTION_LINE).setFieldValue(
-                    order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE).getId());
+            if(order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE) != null){
+                componentsMap.get(CostCalculationFields.PRODUCTION_LINE).setFieldValue(
+                        order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE).getId());
+            }
             componentsMap.get(CostCalculationFields.QUANTITY).setFieldValue(
                     numberService.format(order.getField(OrderFields.PLANNED_QUANTITY)));
         } else {

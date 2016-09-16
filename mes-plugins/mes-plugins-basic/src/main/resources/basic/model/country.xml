@@ -32,9 +32,15 @@
 		<string name="code" required="true" unique="true">
 			<validatesLength is="2" />
 		</string>
+
+        <hasMany name="companies" model="company" plugin="basic" joinField="country"
+                 cascade="nullify"/>
+        <hasMany name="addresses" model="address" plugin="basic" joinField="country"
+                 cascade="nullify"/>
 	</fields>
 
 	<hooks />
 
 	<identifier expression="#code + ' - ' + #country" />
+
 </model>

@@ -28,6 +28,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SubstituteFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -49,6 +50,10 @@ public class ProductCriteriaModifiers {
             Long productId = filter.getLong(SubstituteFields.PRODUCT);
             scb.add(SearchRestrictions.idNe(productId));
         }
+    }
+
+    public void showProductsWithoutAssortment(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNull(ProductFields.ASSORTMENT));
     }
 
 }

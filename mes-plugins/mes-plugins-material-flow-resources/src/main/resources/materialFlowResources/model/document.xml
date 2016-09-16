@@ -39,6 +39,7 @@
         <belongsTo name="locationFrom" model="location" plugin="materialFlow"/>
         <belongsTo name="locationTo" model="location" plugin="materialFlow"/>
         <belongsTo name="company" model="company" plugin="basic"/>
+        <belongsTo name="address" model="address" plugin="basic"/>
         <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true"/>
         <string name="description">
             <validatesLength max="2048"/>

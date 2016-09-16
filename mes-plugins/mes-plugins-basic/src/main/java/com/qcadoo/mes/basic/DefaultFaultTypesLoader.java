@@ -48,9 +48,9 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class DefaultFaultTypesLoaderModule {
+public class DefaultFaultTypesLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultFaultTypesLoaderModule.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultFaultTypesLoader.class);
 
     @Autowired
     private DefaultLocaleResolver defaultLocaleResolver;
@@ -63,6 +63,7 @@ public class DefaultFaultTypesLoaderModule {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Fault types table will be populated ...");
             }
+
             readDataFromXML();
         }
     }
@@ -130,7 +131,7 @@ public class DefaultFaultTypesLoaderModule {
     }
 
     private InputStream getFaultTypesXmlFile() throws IOException {
-        return DefaultFaultTypesLoaderModule.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
+        return DefaultFaultTypesLoader.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 

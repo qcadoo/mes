@@ -25,6 +25,7 @@ package com.qcadoo.mes.cmmsMachineParts.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventAttachmentFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
@@ -38,6 +39,8 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +48,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -55,6 +59,8 @@ public class PlannedEventDetailsListeners {
     private static final Logger LOG = LoggerFactory.getLogger(PlannedEventDetailsListeners.class);
 
     public static final String L_FORM = "form";
+
+    public static final String L_GRID = "grid";
 
     @Autowired
     private PlannedEventDetailsHooks plannedEventDetailsHooks;
@@ -101,6 +107,39 @@ public class PlannedEventDetailsListeners {
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void addActionsForm(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        final Map<String, Object> parameters = new HashMap<String, Object>() {
+            {
+                put("plannedEvent", args[0]);
+            }
+        };
+        JSONObject context = new JSONObject(parameters);
+        StringBuilder url = new StringBuilder(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/addActionsForPlannedEvent.html");
+        url.append("?context=");
+        url.append(context.toString());
+
+        view.openModal(url.toString());
+    }
+
+    public void addActions(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        List<Entity> selectedEntities = grid.getSelectedEntities();
+
+        DataDefinition actionForPlannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_ACTION_PLANNED_EVENT);
+        DataDefinition plannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT);
+        
+        Long plannedEventId = Long.valueOf(view.getJsonContext().get("window.mainTab.plannedEvent").toString());
+        Entity plannedEvent = plannedEventDD.get(plannedEventId);
+
+        for (Entity selectedAction : selectedEntities) {
+            Entity actionForPlannedEvent = actionForPlannedEventDD.create();
+            actionForPlannedEvent.setField(ActionForPlannedEventFields.ACTION, selectedAction);
+            actionForPlannedEvent.setField(ActionForPlannedEventFields.PLANNED_EVENT, plannedEvent);
+
+            actionForPlannedEventDD.save(actionForPlannedEvent);
+        }
     }
 
     public void onAddExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -201,6 +240,17 @@ public class PlannedEventDetailsListeners {
                     true, parameters);
         }
     }
+
+    public void gotToActions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", form.getEntityId());
+            view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventActions.html", false,
+                    true, parameters);
+
+    }
+
+
 
     public void showRecurringEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);

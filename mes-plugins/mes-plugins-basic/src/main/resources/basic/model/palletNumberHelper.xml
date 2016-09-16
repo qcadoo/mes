@@ -30,9 +30,11 @@
 
     <fields>
         <integer name="quantity" required="true">
-            <validatesRange from="0"/>
+            <validatesRange from="0" to="100"/>
         </integer>
-        <string name="numbers" persistent="false"/>
+        <string name="numbers" persistent="false">
+            <validatesLength max="2048"/>
+        </string>
         <boolean name="temporary" required="true" default="false"/>
 
         <manyToMany name="palletNumbers" model="palletNumber" joinField="palletNumberHelpers"

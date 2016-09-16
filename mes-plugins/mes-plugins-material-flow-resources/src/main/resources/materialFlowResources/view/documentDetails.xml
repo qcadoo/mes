@@ -33,7 +33,8 @@
         <ribbon>
             <template name="standardFormTemplate"/>
             <group name="print">
-                <bigButton name="printPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDocument,pdf);" state="enabled"/>
+                <bigButton name="printPdf" icon="pdfIcon24.png" action="#{form}.fireEvent(printDocument,pdf);"
+                           state="enabled"/>
                 <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
@@ -68,44 +69,42 @@
                                 }
                             });
                         ]]>
-                    </script>                    
+                    </script>
                 </smallButton>
             </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
                 <script>
-<![CDATA[
-                this.addOnChangeListener({
-                    onSetValue: function(value) {
-                        if (!value || !value.content)
-                            return;
-                            
-                        if (value.content.entityId) {
-                            documentIdChanged(value.content.entityId);                            
-                        } 
-                    }
-                });             
-                
-                var isCanClose;
-                var controllerCanClose = controller.canClose;
-                controller.canClose = function(){
-                    isCanClose = controllerCanClose();
-                    return isCanClose;
-                }
-                
-                var formComponent = window.mainController.getComponentByReferenceName("form");
-                var formPerformRefresh = formComponent.performRefresh;
-                formComponent.performRefresh = function(){
-                    formPerformRefresh();
-                    if(isCanClose){
-                        viewRefresh();
-                    }
-                }   
-                
-            ]]></script>                
-                
-                
+                    <![CDATA[
+                        this.addOnChangeListener({
+                            onSetValue: function(value) {
+                                if (!value || !value.content)
+                                    return;
+
+                                if (value.content.entityId) {
+                                    documentIdChanged(value.content.entityId);
+                                }
+                            }
+                        });
+
+                        var isCanClose;
+                        var controllerCanClose = controller.canClose;
+                        controller.canClose = function(){
+                            isCanClose = controllerCanClose();
+                            return isCanClose;
+                        }
+
+                        var formComponent = window.mainController.getComponentByReferenceName("form");
+                        var formPerformRefresh = formComponent.performRefresh;
+                        formComponent.performRefresh = function(){
+                            formPerformRefresh();
+                            if(isCanClose){
+                                viewRefresh();
+                            }
+                        }
+                    ]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
@@ -124,6 +123,7 @@
                     <layoutElement column="1" row="4">
                         <component type="select" name="type" field="type"
                                    reference="type">
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                       method="clearWarehouseFields"/>
@@ -153,9 +153,10 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
-                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                method="showWarehousesOnly"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                    method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
@@ -168,9 +169,11 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
-                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                method="showWarehousesOnly"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                    method="showWarehousesOnly"/>
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                                       method="setCriteriaModifiersParameters"/>
@@ -186,16 +189,39 @@
 
                             <option type="expression" value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                    class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                                    method="setCriteriaModifiersParameters"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="4">
+                        <component type="lookup" name="address" field="address"
+                                   reference="address">
+                            <option type="column" fields="name" name="name" link="true"/>
+                            <option type="column" fields="addressType" name="addressType" link="true"/>
+
+                            <option type="searchable" value="number,name,addressType"/>
+                            <option type="orderable" value="number,name,addressType"/>
+
+                            <option type="expression" value="(#name == null) ? #number : #number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers"
+                                    method="showOnlyCompanyAddresses"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>
                     </layoutElement>
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
+
                 <listener event="createResourcesForDocuments"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="createResourcesForDocuments"/>
@@ -203,7 +229,7 @@
                 <listener event="printDocument"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDocument"/>
-                
+
                 <listener event="printDispositionOrder"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDispositionOrder"/>
@@ -215,17 +241,15 @@
         </windowTab>
 
         <windowTab name="positionsGridTab" reference="positionsGridTab">
-
             <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="6">
                 <layoutElement column="1" row="1" minHeight="6">
                     <component type="staticPage" name="positionsGrid" reference="positionsGrid">
                         <option type="page" value="materialFlowResources/positionsGrid.jsp"/>
-                        <option type="messagesGroup" value="documentGrid" />
-                    </component>                  
+                        <option type="messagesGroup" value="documentGrid"/>
+                    </component>
                 </layoutElement>
             </component>
         </windowTab>
-
 
         <windowTab name="auditTab">
             <component type="gridLayout" name="gridLayout" columns="3"
@@ -257,10 +281,13 @@
                 </layoutElement>
             </component>
         </windowTab>
+
     </component>
+
     <hooks>
         <beforeRender
-            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
-            method="onBeforeRender"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
+                method="onBeforeRender"/>
     </hooks>
+
 </view>

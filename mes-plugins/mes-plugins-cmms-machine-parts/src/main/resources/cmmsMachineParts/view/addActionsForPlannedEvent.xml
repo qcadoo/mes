@@ -1,0 +1,96 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="addActionsForPlannedEvent" modelName="action" defaultAuthorizationRole="ROLE_MAINTENANCE">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group template="navigation" defaultAuthorizationRole="ROLE_MAINTENANCE"/>
+            <group name="actions">
+                <bigButton name="addActions" icon="genealogyIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    var json = JSON.parse(context);
+                                    
+                                    #{grid}.performEvent({
+                                        name    : 'addActions',
+                                        args    : [json['window.mainTab.plannedEvent']],
+                                        type    : undefined,
+                                        callback : function(){                                        
+                                            mainController.goBack();
+                                        }
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="grid" name="grid" reference="grid">
+
+                <option type="column" name="name" fields="name" link="false"/>
+                <option type="column" name="appliesTo" fields="appliesTo" link="false"/>
+
+                <option type="searchable" value="name,appliesTo"/>
+                <option type="orderable" value="name,appliesTo"/>
+
+                <option type="multiselect" value="true"/>
+
+                <option type="order" column="name" direction="asc"/>
+                <option type="fullscreen" value="true"/>
+
+                <listener event="addActions"
+                          method="addActions"
+                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>              
+
+                <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ActionCriteriaModifiers"
+                                  method="filterAllWithoutOtherAction"/>
+            </component>
+            <component type="hidden" name="plannedEvent" reference="plannedEvent" persistent="false"/>
+            
+            <option type="fixedHeight" value="true"/>
+            <option type="header" value="false"/>
+        
+        </windowTab>
+        
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+        
+    </component>
+    
+    <hooks>
+
+        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.AddActionsForPlannedEventHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>
