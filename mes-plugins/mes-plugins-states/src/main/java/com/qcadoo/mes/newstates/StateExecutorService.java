@@ -27,13 +27,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-@Service public class StateExecutorService {
+@Service
+public class StateExecutorService {
 
-    @Autowired private ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Autowired private ShiftsService shiftsService;
+    @Autowired
+    private ShiftsService shiftsService;
 
-    @Autowired private SecurityService securityService;
+    @Autowired
+    private SecurityService securityService;
 
     private ComponentMessagesHolder componentMessagesHolder;
 
@@ -73,19 +77,18 @@ import java.util.*;
 
         try {
             entity = performChangeState(services, entity, stateChangeEntity, describer);
-            if (componentMessagesHolder != null) {
-                if (entity.isValid()) {
-                    saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
-                    componentMessagesHolder.addMessage("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
-                } else {
-                    saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
-                    componentMessagesHolder.addMessage("states.messages.change.failure", ComponentState.MessageType.FAILURE);
-                }
+
+            if (entity.isValid()) {
+                saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
+                message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
+            } else {
+                saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+                message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             }
         } catch (EntityRuntimeException entityException) {
             copyErrorMessages(entityException.getEntity());
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
-            componentMessagesHolder.addMessage("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             return entity;
         } catch (Exception exception) {
             LOGGER.warn("Can't perform state change", exception);
@@ -105,11 +108,12 @@ import java.util.*;
             List<M> services, Entity entity, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
 
         if (!canChangeState(describer, entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()))) {
+            entity.setNotValid();
             return entity;
         }
 
         entity = hookOnValidate(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
-                stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
             copyErrorMessages(entity);
             return entity;
@@ -117,7 +121,7 @@ import java.util.*;
         entity = changeState(entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
 
         entity = hookOnBeforeSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
-                stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
             // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
             return entity;
@@ -125,7 +129,7 @@ import java.util.*;
         entity = entity.getDataDefinition().save(entity);
 
         if (!hookOnAfterSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
-                stateChangeEntity.getStringField(describer.getTargetStateFieldName()))) {
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer)) {
             // TODO tu trzeba wycofać transakcję i cofnąć zmiany na bazie
             // wyjątek? ręcznie?
         }
@@ -135,8 +139,8 @@ import java.util.*;
 
     private Entity saveStateChangeEntity(final Entity stateChangeEntity, StateChangeStatus stateChangeStatus) {
         stateChangeEntity.setField("status", stateChangeStatus.getStringValue());
-        // TODO isValid
-        Entity savedStateChangeEntity = stateChangeEntity.getDataDefinition().save(stateChangeEntity);
+
+        Entity savedStateChangeEntity = saveAndValidate(stateChangeEntity);
         return savedStateChangeEntity;
     }
 
@@ -168,9 +172,9 @@ import java.util.*;
     }
 
     private <M extends StateService> Entity hookOnValidate(Entity entity, Collection<M> services, String sourceState,
-            String targetState) {
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onValidate(entity, sourceState, targetState);
+            entity = service.onValidate(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity;
@@ -184,18 +188,18 @@ import java.util.*;
     }
 
     private <M extends StateService> Entity hookOnBeforeSave(Entity entity, Collection<M> services, String sourceState,
-            String targetState) {
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onBeforeSave(entity, sourceState, targetState);
+            entity = service.onBeforeSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity;
     }
 
     private <M extends StateService> boolean hookOnAfterSave(Entity entity, Collection<M> services, String sourceState,
-            String targetState) {
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onAfterSave(entity, sourceState, targetState);
+            entity = service.onAfterSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity.isValid();
@@ -249,6 +253,24 @@ import java.util.*;
         }
         for (ErrorMessage errorMessage : entity.getErrors().values()) {
             componentMessagesHolder.addMessage(errorMessage);
+        }
+    }
+
+    private Entity saveAndValidate(final Entity entity) {
+        if (entity == null) {
+            return null;
+        }
+        Entity saved = entity.getDataDefinition().save(entity);
+        if (!saved.isValid()) {
+            throw new RuntimeException(String.format("Error on save state entity: %s", saved.getErrors()));
+        }
+
+        return saved;
+    }
+
+    private void message(String msg, ComponentState.MessageType messageType) {
+        if (componentMessagesHolder != null) {
+            componentMessagesHolder.addMessage(msg, messageType);
         }
     }
 }

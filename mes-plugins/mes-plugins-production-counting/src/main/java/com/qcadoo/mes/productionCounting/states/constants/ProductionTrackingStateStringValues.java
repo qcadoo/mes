@@ -28,7 +28,6 @@ import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
 public final class ProductionTrackingStateStringValues {
 
     private ProductionTrackingStateStringValues() {
-
     }
 
     public static final String WILDCARD_STATE = RunForStateTransitionAspect.WILDCARD_STATE;
@@ -36,9 +35,11 @@ public final class ProductionTrackingStateStringValues {
     public static final String DRAFT = "01draft";
 
     public static final String ACCEPTED = "02accepted";
-
+    
     public static final String DECLINED = "03declined";
 
     public static final String CORRECTED = "04corrected";
+    
+    public static final String PENDING = "05pending";
 
 }
