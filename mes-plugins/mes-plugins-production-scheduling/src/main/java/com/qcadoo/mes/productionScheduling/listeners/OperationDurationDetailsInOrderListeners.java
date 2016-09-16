@@ -48,6 +48,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -112,10 +113,14 @@ public class OperationDurationDetailsInOrderListeners {
             final String[] args) {
         FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         FieldComponent startTimeField = (FieldComponent) viewDefinitionState.getComponentByReference(L_START_TIME);
-
+        LookupComponent prodLine = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCTION_LINE);
         if (!StringUtils.hasText((String) startTimeField.getFieldValue())) {
             startTimeField.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
 
+            return;
+        }
+        if(prodLine.isEmpty()){
+            prodLine.addMessage(L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED, MessageType.FAILURE);
             return;
         }
 
