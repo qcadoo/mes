@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
+import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class OrderDetailsHooksLCNFO {
 
     private void enableOrDisableChangeoverButton(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "changeover", "showChangeover",
-                HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE);
+                HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE, Optional.of("orders.orderDetails.window.ribbon.changeover.disabledMessage"));
     }
 
 }
