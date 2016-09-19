@@ -243,3 +243,12 @@ CREATE OR REPLACE VIEW orders_orderplanninglistdto AS
      LEFT JOIN basic_division division ON tech.division_id = division.id;
 
 -- end
+
+
+-- table: qcadoosecurity_role, qcadoosecurity_group
+-- last touched 16.09.2016 by lupo
+
+UPDATE qcadoosecurity_role SET description = null;
+UPDATE qcadoosecurity_group SET description = null;
+
+-- end
