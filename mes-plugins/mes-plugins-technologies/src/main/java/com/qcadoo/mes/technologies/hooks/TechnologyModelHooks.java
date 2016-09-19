@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -42,6 +35,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 
 @Service
 public class TechnologyModelHooks {
@@ -72,6 +71,9 @@ public class TechnologyModelHooks {
     }
 
     public void onSave(final DataDefinition technologyDD, final Entity technology) {
+        if (!technology.getBooleanField(TechnologyFields.TEMPLATE)) {
+            technology.setField(TechnologyFields.TEMPLATE, false);
+        }
         setNewMasterTechnology(technologyDD, technology);
     }
 
@@ -84,13 +86,12 @@ public class TechnologyModelHooks {
     }
 
     private void setNewMasterTechnology(final DataDefinition technologyDD, final Entity technology) {
-        if (technology.getStringField(TechnologyFields.STATE)
-                .equals(TechnologyState.OUTDATED.getStringValue()) && technology.getBooleanField(MASTER)) {
+        if (technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.OUTDATED.getStringValue())
+                && technology.getBooleanField(MASTER)) {
             technology.setField(MASTER, false);
             return;
         }
-        if (!technology.getStringField(TechnologyFields.STATE)
-                .equals(TechnologyState.ACCEPTED.getStringValue())
+        if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())
                 || technology.getStringField(TechnologyFields.TECHNOLOGY_TYPE) != null) {
             return;
         }
@@ -103,8 +104,8 @@ public class TechnologyModelHooks {
             return;
         }
 
-        if (defaultTechnology == null && technology.getStringField(TechnologyFields.STATE)
-                .equals(TechnologyState.ACCEPTED.getStringValue())) {
+        if (defaultTechnology == null
+                && technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.ACCEPTED.getStringValue())) {
             technology.setField(MASTER, true);
             return;
         }
