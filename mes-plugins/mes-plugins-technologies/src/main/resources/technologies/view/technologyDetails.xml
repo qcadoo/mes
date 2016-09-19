@@ -308,6 +308,7 @@
                     <layoutElement column="3" row="1">
                         <component type="input" name="standardPerformanceTechnology"
                                    field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
+                            <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
                 </component>
