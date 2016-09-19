@@ -6,19 +6,19 @@
  * <p/>
  * This file is part of Qcadoo.
  * <p/>
- * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License,
- * or (at your option) any later version.
+ * Qcadoo is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
  * <p/>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
  * <p/>
  * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.productionCounting.states.listener;
@@ -53,7 +53,6 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -167,8 +166,7 @@ public final class ProductionTrackingListenerService {
             return;
         }
         if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            //FIXME to raczej info powinno być
-            productionTracking.addGlobalError("productionCounting.order.orderIsAlreadyClosed"/*, StateMessageType.INFO*/, false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderIsAlreadyClosed", false, false);
             return;
         }
         final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
@@ -176,14 +174,13 @@ public final class ProductionTrackingListenerService {
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            //FIXME
-            productionTracking.addGlobalError("productionCounting.order.orderClosed", /*StateMessageType.INFO,*/ false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderClosed", false, false);
+
         } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
-            //FIXME
-            productionTracking.addGlobalError("productionCounting.order.orderWillBeClosedAfterExtSync", /*StateMessageType.INFO,*/ false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderWillBeClosedAfterExtSync", false, false);
+
         } else {
-            //FIXME
-            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", /*StateMessageType.FAILURE,*/ false);
+            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", false);
 
             List<ErrorMessage> errors = Lists.newArrayList();
 

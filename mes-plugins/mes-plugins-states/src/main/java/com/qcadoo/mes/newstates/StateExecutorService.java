@@ -10,6 +10,7 @@ import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.security.api.SecurityService;
@@ -77,16 +78,20 @@ public class StateExecutorService {
 
         try {
             entity = performChangeState(services, entity, stateChangeEntity, describer);
-
+            copyMessages(entity);
+            
             if (entity.isValid()) {
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
                 message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
             } else {
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+                entity = rollbackStateChange(entity, sourceState);
                 message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             }
+            
         } catch (EntityRuntimeException entityException) {
-            copyErrorMessages(entityException.getEntity());
+            copyMessages(entityException.getEntity());
+            entity = rollbackStateChange(entity, sourceState);
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             return entity;
@@ -115,7 +120,7 @@ public class StateExecutorService {
         entity = hookOnValidate(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
-            copyErrorMessages(entity);
+//            copyErrorMessages(entity);
             return entity;
         }
         entity = changeState(entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
@@ -123,15 +128,16 @@ public class StateExecutorService {
         entity = hookOnBeforeSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
-            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
-            return entity;
+//            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
+//            return entity;
+            throw new EntityRuntimeException(entity);
         }
         entity = entity.getDataDefinition().save(entity);
 
         if (!hookOnAfterSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer)) {
-            // TODO tu trzeba wycofać transakcję i cofnąć zmiany na bazie
-            // wyjątek? ręcznie?
+            throw new EntityRuntimeException(entity);
+//            return entity;
         }
 
         return entity;
@@ -183,6 +189,12 @@ public class StateExecutorService {
     private Entity changeState(Entity entity, String targetState) {
         // TODO zawsze stan będzie w tym polu?
         entity.setField("state", targetState);
+
+        return entity;
+    }
+
+    private Entity rollbackStateChange(Entity entity, String sourceState) {
+        entity.setField("state", sourceState);
 
         return entity;
     }
@@ -247,12 +259,16 @@ public class StateExecutorService {
         return true;
     }
 
-    private void copyErrorMessages(Entity entity) {
+    private void copyMessages(Entity entity) {
         for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
             componentMessagesHolder.addMessage(errorMessage);
         }
         for (ErrorMessage errorMessage : entity.getErrors().values()) {
             componentMessagesHolder.addMessage(errorMessage);
+        }
+        
+        for(GlobalMessage globalMessage :  entity.getGlobalMessages()){
+            componentMessagesHolder.addMessage(globalMessage);
         }
     }
 
