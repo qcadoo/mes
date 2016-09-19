@@ -88,6 +88,9 @@
                     class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
                     method="checkIfCanChangeCompany"/>
         </belongsTo>
+
+        <belongsTo name="address" plugin="basic" model="address"/>
+        
         <belongsTo name="product" plugin="basic" model="product">
             <validatesWith
                     class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
@@ -107,7 +110,7 @@
         <hasMany name="masterOrderProducts" joinField="masterOrder"
                  model="masterOrderProduct" cascade="delete"/>
 
-        <text name="comments" />
+        <text name="comments"/>
 
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
     </fields>

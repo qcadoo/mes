@@ -29,6 +29,8 @@ public final class OrderFields {
 
     }
 
+    public static final String ADDRESS = "address";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";

@@ -243,3 +243,18 @@ CREATE OR REPLACE VIEW orders_orderplanninglistdto AS
      LEFT JOIN basic_division division ON tech.division_id = division.id;
 
 -- end
+
+-- address in orders
+-- last touched 19.09.2016 by kama
+
+ALTER TABLE orders_order ADD COLUMN address_id bigint;
+ALTER TABLE orders_order
+  ADD CONSTRAINT order_address_fkey FOREIGN KEY (address_id)
+      REFERENCES basic_address (id) DEFERRABLE;
+
+ALTER TABLE masterorders_masterorder ADD COLUMN address_id bigint;
+ALTER TABLE masterorders_masterorder
+  ADD CONSTRAINT masterorder_address_fkey FOREIGN KEY (address_id)
+      REFERENCES basic_address (id) DEFERRABLE;
+
+-- end

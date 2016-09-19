@@ -114,6 +114,8 @@ public class OrderDetailsHooksMO {
                 .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
+
         if (masterOrder != null) {
             Entity parameter = parameterService.getParameter();
 
@@ -123,6 +125,7 @@ public class OrderDetailsHooksMO {
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
+            Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
             BigDecimal masterOrderQuantity;
             BigDecimal cumulatedOrderQuantity;
             if (productComponent == null) {
@@ -161,6 +164,9 @@ public class OrderDetailsHooksMO {
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
+            }
+            if ((addressLookup.getEntity() == null) && (masterOrderAddress != null)) {
+                addressLookup.setFieldValue(masterOrderAddress.getId());
             }
 
             if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && (masterOrderDeadline != null)) {

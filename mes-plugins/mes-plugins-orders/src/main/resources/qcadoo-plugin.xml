@@ -205,6 +205,12 @@
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
         </model:model-field>
 
+
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="orders" model="order" plugin="orders" joinField="address"
+                           cascade="nullify"/>
+        </model:model-field>
+
         <model:model-hook plugin="technologies" model="technology">
             <model:validatesWith
                     class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"

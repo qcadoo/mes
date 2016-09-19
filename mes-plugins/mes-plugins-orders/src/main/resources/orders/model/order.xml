@@ -150,6 +150,9 @@
         <belongsTo name="recipe" plugin="orders" model="recipe"/>
 
         <string name="workerToChange"/>
+
+        <belongsTo name="address" plugin="basic" model="address"/>
+
     </fields>
 
     <hooks>
