@@ -78,11 +78,13 @@
 									<component type="checkbox" name="blockAbilityToChangeApprovalOrder"
 											   field="#{form}.blockAbilityToChangeApprovalOrder"
 											   reference="blockAbilityToChangeApprovalOrder">
+										<option type="labelWidth" value="40"/>
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="checkbox" name="lockTechnologyTree"
 											   field="#{form}.lockTechnologyTree" reference="lockTechnologyTree">
+										<option type="labelWidth" value="40"/>
 									</component>
 								</layoutElement>
 							</component>
