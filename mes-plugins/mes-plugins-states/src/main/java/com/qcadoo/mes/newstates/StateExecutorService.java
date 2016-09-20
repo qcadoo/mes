@@ -78,9 +78,9 @@ public class StateExecutorService {
 
         try {
             entity = performChangeState(services, entity, stateChangeEntity, describer);
-            copyMessages(entity);
-            
+
             if (entity.isValid()) {
+                copyMessages(entity);
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
                 message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
             } else {
@@ -88,24 +88,21 @@ public class StateExecutorService {
                 entity = rollbackStateChange(entity, sourceState);
                 message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             }
-            
+
         } catch (EntityRuntimeException entityException) {
-            copyMessages(entityException.getEntity());
+            copyMessages(entityException.getEntity(), entity);
             entity = rollbackStateChange(entity, sourceState);
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             return entity;
+
         } catch (Exception exception) {
             LOGGER.warn("Can't perform state change", exception);
-            // stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-            // stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
-            // stateChangeContext.save();
 
-            // saveStateChangeEntity(describer, sourceState, targetState, entity);
             throw new StateChangeException(exception);
         }
-        return entity;
 
+        return entity;
     }
 
     @Transactional
@@ -128,8 +125,6 @@ public class StateExecutorService {
         entity = hookOnBeforeSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
-//            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
-//            return entity;
             throw new EntityRuntimeException(entity);
         }
         entity = entity.getDataDefinition().save(entity);
@@ -137,7 +132,6 @@ public class StateExecutorService {
         if (!hookOnAfterSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer)) {
             throw new EntityRuntimeException(entity);
-//            return entity;
         }
 
         return entity;
@@ -259,17 +253,25 @@ public class StateExecutorService {
         return true;
     }
 
-    private void copyMessages(Entity entity) {
+    private void copyMessages(Entity entity, Entity mainEntity) {
+        if (mainEntity != null && mainEntity.equals(entity)) {
+            return;
+        }
+
         for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
             componentMessagesHolder.addMessage(errorMessage);
         }
         for (ErrorMessage errorMessage : entity.getErrors().values()) {
             componentMessagesHolder.addMessage(errorMessage);
         }
-        
-        for(GlobalMessage globalMessage :  entity.getGlobalMessages()){
+
+        for (GlobalMessage globalMessage : entity.getGlobalMessages()) {
             componentMessagesHolder.addMessage(globalMessage);
         }
+    }
+
+    private void copyMessages(Entity entity) {
+        copyMessages(entity, null);
     }
 
     private Entity saveAndValidate(final Entity entity) {
