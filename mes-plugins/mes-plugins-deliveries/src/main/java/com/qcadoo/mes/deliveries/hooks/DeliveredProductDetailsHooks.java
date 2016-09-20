@@ -37,7 +37,6 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -46,6 +45,7 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
@@ -71,6 +71,16 @@ public class DeliveredProductDetailsHooks {
         setAdditionalQuantityFieldRequired(view);
         lockConversion(view);
         setFilters(view);
+        disableReservationsForWaste((view));
+    }
+
+    private void disableReservationsForWaste(final ViewDefinitionState view) {
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity deliveredProduct = form.getEntity();
+        GridComponent reservations = (GridComponent) view.getComponentByReference("deliveredProductReservations");
+        boolean enabled = !deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE);
+        reservations.setEnabled(enabled);
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
@@ -121,8 +131,8 @@ public class DeliveredProductDetailsHooks {
                 conversionField.setEnabled(false);
                 conversionField.requestComponentUpdateState();
             } else {
-                String conversion = numberService
-                        .formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit), 0);
+                String conversion = numberService.formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit),
+                        0);
                 conversionField.setFieldValue(conversion);
                 conversionField.setEnabled(true);
                 conversionField.requestComponentUpdateState();
@@ -143,8 +153,8 @@ public class DeliveredProductDetailsHooks {
 
     private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {

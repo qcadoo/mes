@@ -1,5 +1,15 @@
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -15,15 +25,6 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ReservationService {
@@ -37,25 +38,29 @@ public class ReservationService {
             List<Entity> deliveredProductReservations = new ArrayList<>();
 
             Entity orderedProductForProduct = findOrderedProductForProduct(deliveredProduct);
-            List<Entity> presentDeliveredProductForProductReservations = findPresentDeliveredProductForProductReservations(deliveredProduct);
+            List<Entity> presentDeliveredProductForProductReservations = findPresentDeliveredProductForProductReservations(
+                    deliveredProduct);
 
             if (orderedProductForProduct != null) {
-                EntityList reservationsFromOrderedProduct = orderedProductForProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
+                EntityList reservationsFromOrderedProduct = orderedProductForProduct
+                        .getHasManyField(OrderedProductFields.RESERVATIONS);
 
                 BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
                 damagedQuantity = damagedQuantity == null ? BigDecimal.ZERO : damagedQuantity;
-                
+
                 BigDecimal availableQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
                 availableQuantity = availableQuantity == null ? BigDecimal.ZERO : availableQuantity;
                 availableQuantity = availableQuantity.subtract(damagedQuantity);
-                
+
                 for (Entity reservationFromOrderedProduct : reservationsFromOrderedProduct) {
-                    Optional<Entity> maybeDeliveredProductReservation = createDeliveredProductReservation(availableQuantity, deliveredProduct, reservationFromOrderedProduct, presentDeliveredProductForProductReservations);
+                    Optional<Entity> maybeDeliveredProductReservation = createDeliveredProductReservation(availableQuantity,
+                            deliveredProduct, reservationFromOrderedProduct, presentDeliveredProductForProductReservations);
                     if (maybeDeliveredProductReservation.isPresent()) {
                         Entity deliveredProductReservation = maybeDeliveredProductReservation.get();
                         deliveredProductReservations.add(deliveredProductReservation);
                         presentDeliveredProductForProductReservations.add(deliveredProductReservation);
-                        availableQuantity = availableQuantity.subtract(deliveredProductReservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY));
+                        availableQuantity = availableQuantity.subtract(deliveredProductReservation
+                                .getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY));
                     }
                 }
             }
@@ -65,14 +70,18 @@ public class ReservationService {
         return deliveredProduct;
     }
 
-    private Optional<Entity> createDeliveredProductReservation(BigDecimal availableQuantity, final Entity deliveredProduct, final Entity reservationFromOrderedProduct, List<Entity> presentDeliveredProductForProductReservations) {
+    private Optional<Entity> createDeliveredProductReservation(BigDecimal availableQuantity, final Entity deliveredProduct,
+            final Entity reservationFromOrderedProduct, List<Entity> presentDeliveredProductForProductReservations) {
         Entity location = reservationFromOrderedProduct.getBelongsToField(OrderedProductReservationFields.LOCATION);
-        List<Entity> reservationsFromLocation = filterReservationsByLocation(presentDeliveredProductForProductReservations, location);
+        List<Entity> reservationsFromLocation = filterReservationsByLocation(presentDeliveredProductForProductReservations,
+                location);
 
         BigDecimal orderedQuantity = reservationFromOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-        BigDecimal deliveredQuantity = sumQuantityFromReservations(reservationsFromLocation, DeliveredProductReservationFields.DELIVERED_QUANTITY);
+        BigDecimal deliveredQuantity = sumQuantityFromReservations(reservationsFromLocation,
+                DeliveredProductReservationFields.DELIVERED_QUANTITY);
         BigDecimal requestQuantity = orderedQuantity.subtract(deliveredQuantity);
-        BigDecimal currentDeliveredQuantity = requestQuantity.compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO : requestQuantity.min(availableQuantity);
+        BigDecimal currentDeliveredQuantity = requestQuantity.compareTo(BigDecimal.ZERO) <= 0 ? BigDecimal.ZERO
+                : requestQuantity.min(availableQuantity);
 
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         if (conversion == null) {
@@ -80,13 +89,15 @@ public class ReservationService {
         }
         BigDecimal currentDeliveredAdditionalQuantity = currentDeliveredQuantity.multiply(conversion);
 
-        if (currentDeliveredQuantity.compareTo(BigDecimal.ZERO) <= 0 || currentDeliveredAdditionalQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+        if (currentDeliveredQuantity.compareTo(BigDecimal.ZERO) <= 0
+                || currentDeliveredAdditionalQuantity.compareTo(BigDecimal.ZERO) <= 0) {
             return Optional.empty();
         }
 
         DataDefinition deliveredProductReservationDD = getDeliveredProductReservationDD();
         Entity deliveredProductReservation = deliveredProductReservationDD.create();
-        deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY, currentDeliveredAdditionalQuantity);
+        deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY,
+                currentDeliveredAdditionalQuantity);
         deliveredProductReservation.setField(DeliveredProductReservationFields.ADDITIONAL_QUANTITY_UNIT,
                 reservationFromOrderedProduct.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
         deliveredProductReservation.setField(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
@@ -106,8 +117,10 @@ public class ReservationService {
 
         deletePreviousReservations(deliveredProducts);
         for (Entity deliveredProduct : deliveredProducts) {
-            deliveredProduct = createDefaultReservationsForDeliveredProduct(deliveredProduct);
-            deliveredProductDD.save(deliveredProduct);
+            if (!deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE)) {
+                deliveredProduct = createDefaultReservationsForDeliveredProduct(deliveredProduct);
+                deliveredProductDD.save(deliveredProduct);
+            }
         }
     }
 
@@ -116,7 +129,8 @@ public class ReservationService {
     }
 
     private DataDefinition getDeliveredProductReservationDD() {
-        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERED_PRODUCT_RESERVATION);
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_RESERVATION);
     }
 
     private boolean deletePreviousReservations(List<Entity> orderedOrDeliveredProducts) {
@@ -150,18 +164,19 @@ public class ReservationService {
     }
 
     private List<Entity> findPresentDeliveredProductForProductReservations(Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);        
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-        
+
         SearchCriteriaBuilder findDeliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).find();
-        findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)));
+        findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT,
+                deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)));
         if (additionalCode == null) {
             findDeliveredProducts.add(SearchRestrictions.isNull(DeliveredProductFields.ADDITIONAL_CODE));
         } else {
             findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
-        }        
+        }
         List<Entity> deliveredProducts = findDeliveredProducts.list().getEntities();
-        
+
         List<Entity> allReservationsFromDeliveredProducts = deliveredProducts.stream().flatMap(p -> {
             return p.getHasManyField(DeliveredProductFields.RESERVATIONS).stream();
         }).collect(Collectors.toList());
@@ -169,7 +184,8 @@ public class ReservationService {
         return allReservationsFromDeliveredProducts;
     }
 
-    private List<Entity> filterReservationsByLocation(List<Entity> presentDeliveredProductForProductReservations, Entity location) {
+    private List<Entity> filterReservationsByLocation(List<Entity> presentDeliveredProductForProductReservations,
+            Entity location) {
         List<Entity> reservationsFromLocation = presentDeliveredProductForProductReservations.stream().filter(reservation -> {
             Entity reservationLocation = reservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
             return location.getId().equals(reservationLocation.getId());
@@ -189,7 +205,8 @@ public class ReservationService {
     public void deleteReservationsForOrderedProductIfChanged(Entity orderedProduct) {
         if (orderedProduct.getId() != null) {
             Entity orderedProductFromDB = orderedProduct.getDataDefinition().get(orderedProduct.getId());
-            List<String> fields = Arrays.asList(OrderedProductFields.ORDERED_QUANTITY, OrderedProductFields.PRODUCT, OrderedProductFields.ADDITIONAL_CODE);
+            List<String> fields = Arrays.asList(OrderedProductFields.ORDERED_QUANTITY, OrderedProductFields.PRODUCT,
+                    OrderedProductFields.ADDITIONAL_CODE);
 
             for (String field : fields) {
                 if (notEquals(orderedProduct.getField(field), orderedProductFromDB.getField(field))) {
@@ -205,8 +222,9 @@ public class ReservationService {
     public void deleteReservationsForDeliveredProductIfChanged(Entity deliveredProduct) {
         if (deliveredProduct.getId() != null) {
             Entity deliveredProductFromDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
-            List<String> fields = Arrays.asList(DeliveredProductFields.DELIVERED_QUANTITY, DeliveredProductFields.DAMAGED_QUANTITY,
-                    DeliveredProductFields.PRODUCT, DeliveredProductFields.ADDITIONAL_CODE);
+            List<String> fields = Arrays.asList(DeliveredProductFields.DELIVERED_QUANTITY,
+                    DeliveredProductFields.DAMAGED_QUANTITY, DeliveredProductFields.PRODUCT,
+                    DeliveredProductFields.ADDITIONAL_CODE, DeliveredProductFields.IS_WASTE);
 
             for (String field : fields) {
                 if (notEquals(deliveredProduct.getField(field), deliveredProductFromDB.getField(field))) {
@@ -231,7 +249,8 @@ public class ReservationService {
     }
 
     public boolean validateDeliveryAgainstReservations(Entity delivery) {
-        return validateDeliveryOrderedProductsAgainstReservations(delivery) && validateDeliveryDeliveredProductsAgainstReservations(delivery);
+        return validateDeliveryOrderedProductsAgainstReservations(delivery)
+                && validateDeliveryDeliveredProductsAgainstReservations(delivery);
     }
 
     private boolean validateDeliveryOrderedProductsAgainstReservations(Entity delivery) {
@@ -245,7 +264,8 @@ public class ReservationService {
                         Entity reservationLocation = reservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
                         if (deliveryLocation.getId().equals(reservationLocation.getId())) {
                             FieldDefinition locationField = delivery.getDataDefinition().getField(DeliveryFields.LOCATION);
-                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery", deliveryLocation.getStringField(LocationFields.NUMBER));
+                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery",
+                                    deliveryLocation.getStringField(LocationFields.NUMBER));
                             return false;
                         }
                     }
@@ -267,14 +287,15 @@ public class ReservationService {
                         Entity reservationLocation = reservation.getBelongsToField(DeliveredProductReservationFields.LOCATION);
                         if (deliveryLocation.getId().equals(reservationLocation.getId())) {
                             FieldDefinition locationField = delivery.getDataDefinition().getField(DeliveryFields.LOCATION);
-                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery", deliveryLocation.getStringField(LocationFields.NUMBER));
+                            delivery.addError(locationField, "deliveries.delivery.error.locationNotUniqueToDelivery",
+                                    deliveryLocation.getStringField(LocationFields.NUMBER));
                             return false;
                         }
                     }
                 }
             }
         }
-        
+
         return true;
     }
 }
