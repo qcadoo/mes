@@ -64,15 +64,16 @@
             <option type="column" name="state" fields="state" width="100"/>
             <option type="column" name="locationFromName" fields="locationFromName"/>
             <option type="column" name="locationToName" fields="locationToName"/>
+            <option type="column" name="description" fields="description"/>
             <option type="column" name="companyName" fields="companyName"/>
             <option type="column" name="userName" fields="userName" width="150"/>
 
             <option type="order" column="time" direction="desc" width="200"/>
 
             <option type="searchable"
-                    value="number,name,type,time,state,locationFromName,locationToName,companyName,userName"/>
+                    value="number,name,type,time,state,locationFromName,locationToName,description,companyName,userName"/>
             <option type="orderable"
-                    value="number,name,type,time,state,locationFromName,locationToName,companyName,userName"/>
+                    value="number,name,type,time,state,locationFromName,locationToName,description,companyName,userName"/>
 
             <option type="correspondingView" value="materialFlowResources/documentDetails"/>
             <option type="correspondingComponent" value="form"/>
@@ -82,10 +83,10 @@
 
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentsCriteriaModifier"
                               method="hideDraftDocumentsWithOrder"/>
-                
+
             <listener event="printDispositionOrder"
-                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
-                          method="printDispositionOrder"/>
+                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
+                      method="printDispositionOrder"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
@@ -94,7 +95,7 @@
 
     <hooks>
         <beforeRender
-            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"
-            method="onBeforeRender"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"
+                method="onBeforeRender"/>
     </hooks>
 </view>
