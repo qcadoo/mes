@@ -30,7 +30,7 @@
 
     <fields>
         <belongsTo name="parameter" plugin="basic" model="parameter" required="true"/>
-        <dictionary name="orderCategory" dictionary="orderCategory" required="true"/>
+        <dictionary name="orderCategory" dictionary="orderCategory" unique="true" required="true" copyable="false"/>
         <dictionary name="color" dictionary="color" required="true"/>
     </fields>
 
