@@ -31,9 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderCategoryColorFields;
@@ -70,39 +68,30 @@ public class ExportToPDFControllerOOverrideUtil {
                 columns.forEach(column -> {
                     String value = row.get(column);
 
-                    if (OrderPlanningListDtoFields.ORDER_CATEGORY.equals(column)) {
-                        PdfPCell cell = new PdfPCell();
-
-                        cell.setBackgroundColor(getBackgroundColor(value));
-                        cell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
-
-                        cell.setPhrase(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
-
-                        pdfTable.addCell(cell);
-
-                    } else {
-                        pdfTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
-                    }
+                    pdfTable.getDefaultCell().setBackgroundColor(getBackgroundColor(value, column));
+                    pdfTable.addCell(new Phrase(value, FontUtils.getDejavuRegular7Dark()));
                 });
             });
         }
     }
 
-    private Color getBackgroundColor(final String orderCategory) {
+    private Color getBackgroundColor(final String orderCategory, final String column) {
         Color backgroundColor = Color.WHITE;
 
-        Entity orderCategoryColor = getOrderCategoryColor(orderCategory);
+        if (OrderPlanningListDtoFields.ORDER_CATEGORY.equals(column)) {
+            Entity orderCategoryColor = getOrderCategoryColor(orderCategory);
 
-        if (orderCategoryColor != null) {
-            String color = orderCategoryColor.getStringField(OrderCategoryColorFields.COLOR);
+            if (orderCategoryColor != null) {
+                String color = orderCategoryColor.getStringField(OrderCategoryColorFields.COLOR);
 
-            Entity colorDictionaryItem = getColorDictionaryItem(color);
+                Entity colorDictionaryItem = getColorDictionaryItem(color);
 
-            if (colorDictionaryItem != null) {
-                String description = colorDictionaryItem.getStringField(DictionaryItemFields.DESCRIPTION);
+                if (colorDictionaryItem != null) {
+                    String description = colorDictionaryItem.getStringField(DictionaryItemFields.DESCRIPTION);
 
-                if (StringUtils.isNotEmpty(description)) {
-                    backgroundColor = Color.decode(description);
+                    if (StringUtils.isNotEmpty(description)) {
+                        backgroundColor = Color.decode(description);
+                    }
                 }
             }
         }
