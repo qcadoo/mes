@@ -46,7 +46,8 @@
         <hasMany name="workstationTypeComponents" model="workstationTypeComponent"
                  joinField="productionLine" cascade="delete"/>
 
-        <hasMany name="workstations" joinField="productionLine" model="workstation" cascade="nullify" plugin="basic"/>
+        <hasMany name="workstations" joinField="productionLine" model="workstation" cascade="nullify" plugin="basic" />
+        <manyToMany name="shifts" joinField="productionLines" model="shift" cascade="nullify" plugin="basic" />
 
         <boolean name="supportsOtherTechnologiesWorkstationTypes"
                  default="true"/>
