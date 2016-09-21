@@ -34,7 +34,7 @@ public class ReservationService {
 
     public Entity createDefaultReservationsForDeliveredProduct(Entity deliveredProduct) {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        if (product != null) {
+        if (product != null && !deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE)) {
             List<Entity> deliveredProductReservations = new ArrayList<>();
 
             Entity orderedProductForProduct = findOrderedProductForProduct(deliveredProduct);
