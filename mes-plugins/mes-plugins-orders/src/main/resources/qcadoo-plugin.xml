@@ -211,6 +211,12 @@
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
         </model:model-field>
 
+        <model:model-hook plugin="qcadooModel" model="dictionaryItem">
+            <model:validatesWith
+                    class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"
+                    method="validatesWith"/>
+        </model:model-hook>
+
         <model:model-hook plugin="technologies" model="technology">
             <model:validatesWith
                     class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"

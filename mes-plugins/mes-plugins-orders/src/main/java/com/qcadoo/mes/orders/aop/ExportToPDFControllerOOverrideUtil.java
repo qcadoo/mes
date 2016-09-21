@@ -24,8 +24,12 @@
 package com.qcadoo.mes.orders.aop;
 
 import java.awt.*;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +54,8 @@ public class ExportToPDFControllerOOverrideUtil {
     private static final String L_ORDERS_PLANNING_LIST = "ordersPlanningList";
 
     private static final String L_COLOR = "color";
+
+    private static final String L_HEX_COLOR_PATTERN = "^#(?:[0-9a-fA-F]{3}){1,2}$";
 
     @Autowired
     private DictionariesService dictionariesService;
@@ -79,18 +85,32 @@ public class ExportToPDFControllerOOverrideUtil {
         Color backgroundColor = Color.WHITE;
 
         if (OrderPlanningListDtoFields.ORDER_CATEGORY.equals(column)) {
-            Entity orderCategoryColor = getOrderCategoryColor(orderCategory);
+            Optional<Entity> mayBeOrderCategoryColor = getOrderCategoryColor(orderCategory);
 
-            if (orderCategoryColor != null) {
+            if (mayBeOrderCategoryColor.isPresent()) {
+                Entity orderCategoryColor = mayBeOrderCategoryColor.get();
+
                 String color = orderCategoryColor.getStringField(OrderCategoryColorFields.COLOR);
 
-                Entity colorDictionaryItem = getColorDictionaryItem(color);
+                Optional<Entity> mayBeColorDictionaryItem = getColorDictionaryItem(color);
 
-                if (colorDictionaryItem != null) {
+                if (mayBeColorDictionaryItem.isPresent()) {
+                    Entity colorDictionaryItem = mayBeColorDictionaryItem.get();
+
                     String description = colorDictionaryItem.getStringField(DictionaryItemFields.DESCRIPTION);
 
                     if (StringUtils.isNotEmpty(description)) {
-                        backgroundColor = Color.decode(description);
+                        if (description.contains("#") && checkIfIsHexColor(description)) {
+                            backgroundColor = Color.decode(description);
+                        } else {
+                            try {
+                                Field field = Color.class.getField(description);
+
+                                backgroundColor = (Color) field.get(null);
+                            } catch (Exception e) {
+                                backgroundColor = Color.WHITE;
+                            }
+                        }
                     }
                 }
             }
@@ -99,19 +119,26 @@ public class ExportToPDFControllerOOverrideUtil {
         return backgroundColor;
     }
 
-    private Entity getOrderCategoryColor(String orderCategory) {
-        return parameterService.getParameter().getHasManyField(ParameterFieldsO.ORDER_CATEGORY_COLORS).find()
+    private boolean checkIfIsHexColor(final String description) {
+        Pattern pattern = Pattern.compile(L_HEX_COLOR_PATTERN);
+        Matcher matcher = pattern.matcher(description);
+
+        return matcher.matches();
+    }
+
+    private Optional<Entity> getOrderCategoryColor(final String orderCategory) {
+        return Optional.ofNullable(parameterService.getParameter().getHasManyField(ParameterFieldsO.ORDER_CATEGORY_COLORS).find()
                 .add(SearchRestrictions.eq(OrderCategoryColorFields.ORDER_CATEGORY, orderCategory)).setMaxResults(1)
-                .uniqueResult();
+                .uniqueResult());
     }
 
-    private Entity getColorDictionaryItem(final String name) {
-        return dictionariesService.getDictionaryItemDD().find()
+    private Optional<Entity> getColorDictionaryItem(final String name) {
+        return Optional.ofNullable(dictionariesService.getDictionaryItemDD().find()
                 .add(SearchRestrictions.belongsTo(DictionaryItemFields.DICTIONARY, getColorDictionary()))
-                .add(SearchRestrictions.eq(DictionaryItemFields.NAME, name)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryItemFields.NAME, name)).setMaxResults(1).uniqueResult());
     }
 
-    public Entity getColorDictionary() {
+    private Entity getColorDictionary() {
         return dictionariesService.getDictionaryDD().find().add(SearchRestrictions.eq(DictionaryFields.NAME, L_COLOR))
                 .setMaxResults(1).uniqueResult();
     }
