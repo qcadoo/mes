@@ -225,6 +225,15 @@ public class OrderDetailsHooks {
         }
 
         orderForm.setFormEnabled(!disabled);
+        Entity order = orderForm.getEntity();
+        Entity company = order.getBelongsToField(OrderFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
+        if (company == null) {
+            addressLookup.setFieldValue(null);
+            addressLookup.setEnabled(false);
+        } else {
+            addressLookup.setEnabled(true);
+        }
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState view) {
@@ -286,8 +295,8 @@ public class OrderDetailsHooks {
             return;
         }
 
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
+        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .get(orderId);
 
         if (order == null) {
             return;
@@ -316,7 +325,8 @@ public class OrderDetailsHooks {
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START),
+                    true);
         }
 
         if (OrderState.COMPLETED.getStringValue().equals(orderState)) {
@@ -326,7 +336,8 @@ public class OrderDetailsHooks {
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START),
+                    true);
         }
 
         if (OrderState.ABANDONED.getStringValue().equals(orderState)) {
@@ -336,7 +347,8 @@ public class OrderDetailsHooks {
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START),
+                    true);
         }
     }
 
@@ -539,10 +551,10 @@ public class OrderDetailsHooks {
         amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                        numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
@@ -573,10 +585,10 @@ public class OrderDetailsHooks {
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));

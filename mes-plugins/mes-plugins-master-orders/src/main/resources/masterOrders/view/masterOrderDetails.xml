@@ -434,6 +434,10 @@
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
                 method="calculateMasterOrderFields"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
+                method="disableFields"/>
     </hooks>
 
 </view>
