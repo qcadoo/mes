@@ -252,3 +252,32 @@ CREATE OR REPLACE VIEW orders_orderplanninglistdto AS
      LEFT JOIN basic_division division ON tech.division_id = division.id;
 
 -- end
+
+
+-- table: qcadoosecurity_role, qcadoosecurity_group
+-- last touched 16.09.2016 by lupo
+
+UPDATE qcadoosecurity_role SET description = null;
+UPDATE qcadoosecurity_group SET description = null;
+
+-- end
+
+
+--begin ANEKS-4
+
+CREATE TABLE jointable_productionline_shift
+(
+  productionline_id bigint NOT NULL,
+  shift_id bigint NOT NULL,
+  CONSTRAINT jointable_productionline_shift_pkey PRIMARY KEY (productionline_id, shift_id),
+  CONSTRAINT shift_productionline_fkey FOREIGN KEY (productionline_id)
+      REFERENCES productionlines_productionline (id) DEFERRABLE,
+  CONSTRAINT productionline_shift_fkey FOREIGN KEY (shift_id)
+      REFERENCES basic_shift (id) DEFERRABLE
+);
+
+CREATE OR REPLACE FUNCTION import_productionline_shift() RETURNS VOID AS $$ DECLARE rowProductionLine record; rowShift record;  BEGIN FOR rowShift IN select * from basic_shift  LOOP FOR rowProductionLine IN select * from productionlines_productionline  LOOP EXECUTE 'INSERT INTO jointable_productionline_shift (productionline_id, shift_id) VALUES ('||rowProductionLine.id||','||rowShift.id||')'; END  LOOP; END LOOP;END;$$ LANGUAGE 'plpgsql';
+SELECT * FROM import_productionline_shift();
+DROP FUNCTION import_productionline_shift();
+
+--end

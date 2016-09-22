@@ -88,7 +88,7 @@
 				model="transformations" plugin="materialFlow" cascade="delete"/>
 		</model:model-field>
 
-		<security:role identifier="ROLE_MATERIAL_FLOW" description="Dostęp do magazynu, dokumentów itd."/>
+		<security:role identifier="ROLE_MATERIAL_FLOW"/>
 
 		<menu:menu-category name="materialFlow" />
 	

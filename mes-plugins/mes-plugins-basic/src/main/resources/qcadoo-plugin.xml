@@ -75,190 +75,120 @@
         <localization:translation path="locales"
                                   basename="basic"/>
 
-        <security:role identifier="ROLE_PRODUCTS"
-                       description="Dostęp do produktów"/>
+        <security:role identifier="ROLE_PRODUCTS"/>
+        <security:role identifier="ROLE_PRODUCT_FAMILIES"/>
 
-        <security:role identifier="ROLE_PRODUCT_FAMILIES"
-                       description="Dostęp do rodzin produktów"/>
+        <security:role identifier="ROLE_COMPANY"/>
+        <security:role identifier="ROLE_COMPANY_STRUCTURE"/>
+        <security:role identifier="ROLE_COMPANY_STRUCTURE_EDIT"/>
 
-        <security:role identifier="ROLE_COMPANY" description="Dostęp do firmy"/>
+        <security:role identifier="ROLE_BASE_FUNCTIONALITY"/>
+        <security:role identifier="ROLE_REQUIREMENTS"/>
+        <security:role identifier="ROLE_STAFF_WAGES"/>
 
-        <security:role identifier="ROLE_COMPANY_STRUCTURE" description="Dostęp do struktury firmy - podgląd"/>
+        <security:role identifier="ROLE_MAINTENANCE"/>
+        <security:role identifier="ROLE_MAINTENANCE_MENU"/>
 
-        <security:role identifier="ROLE_COMPANY_STRUCTURE_EDIT" description="Dostęp do struktury firmy - akcje"/>
+        <security:role identifier="ROLE_MACHINE_PARTS"/>
+        <security:role identifier="ROLE_COUNTRIES"/>
+        <security:role identifier="ROLE_PARAMETERS"/>
+        <security:role identifier="ROLE_BASIC"/>
 
-        <security:role identifier="ROLE_BASE_FUNCTIONALITY"
-                       description="Dostęp do funkcjonlności nie określonych innymi rolami"/>
+        <security:role identifier="ROLE_TECHNOLOGIES"/>
+        <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"/>
 
-        <security:role identifier="ROLE_REQUIREMENTS" description="Dostęp do zaopatrzenia"/>
+        <security:role identifier="ROLE_PLANNING"/>
 
-        <security:role identifier="ROLE_STAFF_WAGES" description="Dostęp pracowników, płac, grup płacowych"/>
+        <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW"/>
+        <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
 
-        <security:role identifier="ROLE_MAINTENANCE_MENU" description="Dostęp do utrzymania ruchu w menu"/>
+        <security:role identifier="ROLE_PRODUCTION_COUNTING"/>
+        <security:role identifier="ROLE_PRODUCTION_TRACKING"/>
 
-        <security:role identifier="ROLE_MAINTENANCE" description="Dostęp do utrzymania ruchu, typów usterek"/>
+        <security:role identifier="ROLE_ORDERS_TRACKING"/>
 
-        <security:role identifier="ROLE_MACHINE_PARTS" description="Dostęp do części"/>
-
-        <security:role identifier="ROLE_COUNTRIES" description="Dostęp do listy krajów"/>
-
-        <security:role identifier="ROLE_PARAMETERS" description="Dostęp parametrów systemowych"/>
-
-        <security:role identifier="ROLE_BASIC" description="Dostęp do kategorii z danymi podstawowymi"/>
-
-        <security:role identifier="ROLE_TECHNOLOGIES" description="Dostęp do technologii"/>
-
-        <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"
-                       description="Dostęp do grup technologii, operacji i grup operacji"/>
-
-        <security:role identifier="ROLE_PLANNING" description="Dostęp do planowania zleceń"/>
-
-        <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW" description="Dostęp do planowania na linie - podgląd"/>
-
-        <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS" description="Dostęp do planowania na linie - akcje"/>
-
-        <security:role identifier="ROLE_PRODUCTION_COUNTING"
-                       description="Dostęp do  rozliczenia produkcji"/>
-
-        <security:role identifier="ROLE_PRODUCTION_TRACKING"
-                       description="Dostęp do rejestracji i rozliczenia produkcji"/>
-
-        <security:role identifier="ROLE_ORDERS_TRACKING"
-                       description="Dostęp do kategorii z rejestracją i rozliczeniem produkcji"/>
-
-        <security:role identifier="ROLE_GENEALOGY" description="Dostęp do kategorii z genealogią"/>
-
-        <security:role identifier="ROLE_ADVANCED_GENEALOGY" description="Dostęp do zaawansowanej genealogii"/>
-
-        <security:role identifier="ROLE_BATCHES" description="Dostęp do partii"/>
-
-        <security:role identifier="ROLE_PALLET_NUMBERS" description="Dostęp do numerów własnych palet"/>
+        <security:role identifier="ROLE_GENEALOGY"/>
+        <security:role identifier="ROLE_ADVANCED_GENEALOGY"/>
+        <security:role identifier="ROLE_BATCHES"/>
+        <security:role identifier="ROLE_PALLET_NUMBERS"/>
 
         <!-- Event roles -->
-        <security:role identifier="ROLE_EVENTS" description="Dostęp do zdarzeń"/>
 
-        <security:role identifier="ROLE_EVENTS_DELETE" description="Dostęp do usuwania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_START" description="Dostęp do rozpoczynania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_STOP" description="Dostęp do zatrzymywania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_REVOKE" description="Dostęp do unieważniania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_CLOSE" description="Dostęp do zamykania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_PLAN" description="Dostęp do planowania zdarzeń"/>
-        <security:role identifier="ROLE_EVENTS_ACCEPT" description="Dostęp do akceptowania zdarzeń"/>
+        <security:role identifier="ROLE_EVENTS"/>
+        <security:role identifier="ROLE_EVENTS_DELETE"/>
+        <security:role identifier="ROLE_EVENTS_START"/>
+        <security:role identifier="ROLE_EVENTS_STOP"/>
+        <security:role identifier="ROLE_EVENTS_REVOKE"/>
+        <security:role identifier="ROLE_EVENTS_CLOSE"/>
+        <security:role identifier="ROLE_EVENTS_PLAN"/>
+        <security:role identifier="ROLE_EVENTS_ACCEPT"/>
 
-        <security:role identifier="ROLE_EVENTS_ADD_FAILURE" description="Dostęp do dodawnia awarii"/>
-        <security:role identifier="ROLE_EVENTS_ADD_ISSUE" description="Dostęp do dodawania problemu"/>
-        <security:role identifier="ROLE_EVENTS_ADD_PROPOSAL" description="Dostęp do dodawania wniosku"/>
+        <security:role identifier="ROLE_EVENTS_ADD_FAILURE"/>
+        <security:role identifier="ROLE_EVENTS_ADD_ISSUE"/>
+        <security:role identifier="ROLE_EVENTS_ADD_PROPOSAL"/>
 
-        <security:role identifier="ROLE_EVENTS_TAB_DOCUMENTS" description="Dostęp do dokumentów zdarzenia"/>
-        <security:role identifier="ROLE_EVENTS_TAB_HISTORY" description="Dostęp do historii zdarzenia"/>
-        <security:role identifier="ROLE_EVENTS_TAB_ATTACHMENTS" description="Dostęp do załączników zdarzenia"/>
+        <security:role identifier="ROLE_EVENTS_TAB_DOCUMENTS"/>
+        <security:role identifier="ROLE_EVENTS_TAB_HISTORY"/>
+        <security:role identifier="ROLE_EVENTS_TAB_ATTACHMENTS"/>
 
-        <security:role identifier="ROLE_EVENTS_SOURCE_COST_CHANGE" description="Dostęp do zmiany źródła kosztów"/>
-        <security:role identifier="ROLE_EVENTS_DELETE_ATTACHMENT" description="Dostęp do dodawania załączników"/>
-        <security:role identifier="ROLE_EVENTS_EDIT_AFTER_SAVE" description="Dostęp do edycji tylko przed zapisem"/>
-        <security:role identifier="ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION"
-                       description="Dostęp do zakładek części, czas pracy, opis rozwiązania"/>
-        <security:role identifier="ROLE_EVENTS_LIST_EXPORT" description="Dostęp do eksportu"/>
-        <security:role identifier="ROLE_EVENTS_NOTIFICATION"
-                       description="Powiadomnienia o zdarzeniach (awariach/problemach) o statusie nowe"/>
+        <security:role identifier="ROLE_EVENTS_SOURCE_COST_CHANGE"/>
+        <security:role identifier="ROLE_EVENTS_DELETE_ATTACHMENT"/>
+        <security:role identifier="ROLE_EVENTS_EDIT_AFTER_SAVE"/>
+        <security:role identifier="ROLE_EVENTS_VIEW_PARTS_TIME_DESCRIPTION"/>
+        <security:role identifier="ROLE_EVENTS_LIST_EXPORT"/>
+
+        <security:role identifier="ROLE_EVENTS_NOTIFICATION"/>
 
         <!-- end -->
 
         <!-- roles for planned events -->
-        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_ADD"
-                       description="Dostęp do dodawania zdarzeń planowanych"/>
 
-        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_REMOVE"
-                       description="Dostęp do usuwania zdarzeń planowanych"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_ADD"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_REMOVE"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_EDIT"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"/>
 
-        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_EDIT"
-                       description="Dostęp do akcji edycji zdarzeń planowanych"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_BASIC_EDIT"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ADVANCED_EDIT"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_DATES_EDIT"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_DOCUMENTS"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_HISTORY"/>
 
-        <security:role identifier="ROLE_PLANNED_EVENTS_ACTIONS_VIEW"
-                       description="Dostęp do wyświetlania zdarzeń planowanych"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_OTHER"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_START_STOP"/>
 
-        <security:role identifier="ROLE_PLANNED_EVENTS_BASIC_EDIT"
-                       description="Dostęp do edycji lokalizacji i rzeczywistego stanu licznika w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_ADVANCED_EDIT"
-                       description="Dostęp do edycji definicji (numer, rodzaj, planowany termin itd.) w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_DATES_EDIT"
-                       description="Dostęp do edycji dat i osób w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_DOCUMENTS"
-                       description="Dostęp do dokumentów w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_HISTORY"
-                       description="Dostęp do historii w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_OTHER"
-                       description="Dostęp do zmian statusów (bez akceptacji) w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_ACCEPT"
-                       description="Dostęp do akceptacji w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_STATES_START_STOP"
-                       description="Dostęp do przycisków START/STOP."/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"
-                       description="Dostęp do załączników w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_EDIT_RELATED"
-                       description="Dostęp modyfikacji powiązanych zdarzeń w zdarzeniach planowanych"/>
-
-        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE"
-                       description="Dostęp do usuwania załączników w zdarzeniach planowanych"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_EDIT_RELATED"/>
+        <security:role identifier="ROLE_PLANNED_EVENTS_ATTACHMENTS_REMOVE"/>
 
         <!-- end -->
 
-        <security:role identifier="ROLE_SHIFTS" description="Dostęp do zmian"/>
+        <security:role identifier="ROLE_SHIFTS"/>
+        <security:role identifier="ROLE_CREW"/>
+        <security:role identifier="ROLE_FAULT_TYPES"/>
+        <security:role identifier="ROLE_DOCUMENT_POSITIONS"/>
+        <security:role identifier="ROLE_WAREHOUSE_STATES"/>
+        <security:role identifier="ROLE_ASSIGNMENT_TO_SHIFT"/>
+        <security:role identifier="ROLE_SOURCE_COST"/>
 
-        <security:role identifier="ROLE_CREW" description="Dostęp do załóg"/>
+        <security:role identifier="ROLE_CMMS_SCHEDULER_PREVIEW"/>
+        <security:role identifier="ROLE_CMMS_SCHEDULER_PART_EDIT"/>
+        <security:role identifier="ROLE_CMMS_SCHEDULER_FULL_EDIT"/>
 
-        <security:role identifier="ROLE_FAULT_TYPES" description="Dostęp do typów usterek"/>
+        <security:role identifier="ROLE_RECURRING_EVENTS"/>
+        <security:role identifier="ROLE_CALCULATIONS"/>
 
-        <security:role identifier="ROLE_DOCUMENT_POSITIONS" description="Dostęp do pozycji dokumentów"/>
+        <security:role identifier="ROLE_DELIVERIES_EDIT"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"/>
+        <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"/>
 
-        <security:role identifier="ROLE_WAREHOUSE_STATES" description="Dostęp do stanów magazynowych"/>
-
-        <security:role identifier="ROLE_ASSIGNMENT_TO_SHIFT" description="Dostęp do przydziału do zmian"/>
-
-        <security:role identifier="ROLE_SOURCE_COST" description="Dostęp do źródeł kosztów"/>
-
-        <security:role identifier="ROLE_CMMS_SCHEDULER_PREVIEW" description="Dostęp do podglądu kalendarza zdarzeń"/>
-
-        <security:role identifier="ROLE_CMMS_SCHEDULER_PART_EDIT"
-                       description="Dostęp do edycji kalendarza zdarzeń - edycja własnego kalendarza"/>
-
-        <security:role identifier="ROLE_CMMS_SCHEDULER_FULL_EDIT"
-                       description="Dostęp do edycji kalendarza zdarzeń - pełna edycja"/>
-
-        <security:role identifier="ROLE_RECURRING_EVENTS" description="Dostęp do zdarzeń cyklicznych"/>
-
-        <security:role identifier="ROLE_CALCULATIONS" description="Dostęp do kalkulacji"/>
-
-        <security:role identifier="ROLE_DELIVERIES_EDIT"
-                       description="Dostęp do usuwania i aktywowania dostaw"/>
-
-        <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"
-                       description="Dostęp do odrzucania dostaw"/>
-
-        <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"
-                       description="Dostęp do zmian statusów dostaw"/>
-        <security:role identifier="ROLE_TIME_GAPS" description="Dostęp do przerw na liniach"/>
-
-        <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS"
-                       description="Dostęp do przezbrojeń w zleceniach"/>
-
-        <security:role identifier="ROLE_PRODUCTION_PER_SHIFT" description="Dostęp do produkcji na zmianę"/>
-
-        <security:role identifier="ROLE_ACTIONS" description="Dostęp do czynności"/>
-
-        <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL"
-                       description="Dostęp do terminalu rejestracji produkcji"/>
-
-        <security:role identifier="ROLE_REPAIR_ORDERS" description="Dostęp do zleceń naprawy"/>
+        <security:role identifier="ROLE_TIME_GAPS"/>
+        <security:role identifier="ROLE_LINE_CHANGEOVER_NORMS_IN_ORDERS"/>
+        <security:role identifier="ROLE_PRODUCTION_PER_SHIFT"/>
+        <security:role identifier="ROLE_ACTIONS"/>
+        <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL"/>
+        <security:role identifier="ROLE_REPAIR_ORDERS"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
