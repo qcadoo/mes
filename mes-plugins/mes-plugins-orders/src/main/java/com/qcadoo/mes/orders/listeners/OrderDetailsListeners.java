@@ -66,6 +66,11 @@ public class OrderDetailsListeners {
     @Autowired
     private OrderDetailsHooks orderDetailsHooks;
 
+    public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent address = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
+        address.setFieldValue(null);
+    }
+
     public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {
             return;

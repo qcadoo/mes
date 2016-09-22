@@ -91,7 +91,8 @@
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:hasMany name="orderCategoryColors" plugin="orders" model="orderCategoryColor" joinField="parameter" cascade="delete"/>
+            <model:hasMany name="orderCategoryColors" plugin="orders" model="orderCategoryColor" joinField="parameter"
+                           cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="states" model="message">
@@ -216,6 +217,11 @@
                     class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"
                     method="validatesWith"/>
         </model:model-hook>
+
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="orders" model="order" plugin="orders" joinField="address"
+                           cascade="nullify"/>
+        </model:model-field>
 
         <model:model-hook plugin="technologies" model="technology">
             <model:validatesWith

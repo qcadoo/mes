@@ -135,3 +135,18 @@ CREATE TABLE orders_ordercategorycolor
 );
 
 -- end
+
+-- address in orders
+-- last touched 19.09.2016 by kama
+
+ALTER TABLE orders_order ADD COLUMN address_id bigint;
+ALTER TABLE orders_order
+  ADD CONSTRAINT order_address_fkey FOREIGN KEY (address_id)
+      REFERENCES basic_address (id) DEFERRABLE;
+
+ALTER TABLE masterorders_masterorder ADD COLUMN address_id bigint;
+ALTER TABLE masterorders_masterorder
+  ADD CONSTRAINT masterorder_address_fkey FOREIGN KEY (address_id)
+      REFERENCES basic_address (id) DEFERRABLE;
+
+-- end

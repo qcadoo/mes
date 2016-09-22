@@ -23,6 +23,25 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COOMENTS;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEFAULT_TECHNOLOGY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_POSITION_STATUS;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_TYPE;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.TECHNOLOGY;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
@@ -36,19 +55,14 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.*;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -181,7 +195,8 @@ public class MasterOrderDetailsHooks {
             return;
         }
 
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
+        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
+                .equals(MasterOrderType.ONE_PRODUCT.getStringValue())) {
             return;
         }
 
@@ -205,8 +220,8 @@ public class MasterOrderDetailsHooks {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
-        if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)
-                .equals(MasterOrderType.MANY_PRODUCTS.getStringValue()) && masterOrderProductsGrid.getEntities().isEmpty()) {
+        if (masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(MasterOrderType.MANY_PRODUCTS.getStringValue())
+                && masterOrderProductsGrid.getEntities().isEmpty()) {
             ordersGrid.setEditable(false);
         } else {
             ordersGrid.setEditable(true);
@@ -307,8 +322,8 @@ public class MasterOrderDetailsHooks {
 
         producedOrderQuantityField.requestComponentUpdateState();
 
-        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrder.getDecimalField("masterOrderQuantity")).subtract(
-                BigDecimalUtils.convertNullToZero(doneQuantity), numberService.getMathContext());
+        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrder.getDecimalField("masterOrderQuantity"))
+                .subtract(BigDecimalUtils.convertNullToZero(doneQuantity), numberService.getMathContext());
         if (BigDecimal.ZERO.compareTo(value) == 1) {
             value = BigDecimal.ZERO;
         }
@@ -331,6 +346,19 @@ public class MasterOrderDetailsHooks {
         cumulatedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantitiesSum, 0));
 
         cumulatedOrderQuantityField.requestComponentUpdateState();
+    }
+
+    public void disableFields(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrder = form.getEntity();
+        Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+        if (company == null) {
+            addressLookup.setFieldValue(null);
+            addressLookup.setEnabled(false);
+        } else {
+            addressLookup.setEnabled(true);
+        }
     }
 
 }

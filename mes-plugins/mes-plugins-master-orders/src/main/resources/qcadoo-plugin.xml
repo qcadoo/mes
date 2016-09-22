@@ -101,6 +101,10 @@
                              plugin="basic" lazy="true"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="address"
+                           cascade="nullify"/>
+        </model:model-field>
 
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"

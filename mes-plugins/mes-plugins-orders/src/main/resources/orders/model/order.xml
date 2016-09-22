@@ -152,6 +152,8 @@
         <string name="workerToChange"/>
 
         <dictionary name="orderCategory" dictionary="orderCategory"/>
+        <belongsTo name="address" plugin="basic" model="address"/>
+
     </fields>
 
     <hooks>
