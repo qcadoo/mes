@@ -1,4 +1,13 @@
-﻿-- views
+﻿
+-- technologies_technology
+-- by kasi 05.09.2016
+ALTER TABLE technologies_technology ADD COLUMN standardperformancetechnology numeric(12,5);
+ALTER TABLE technologies_technology ADD COLUMN template boolean;
+ALTER TABLE technologies_technology ALTER COLUMN template SET DEFAULT false;
+UPDATE technologies_technology SET template=false;
+-- end
+
+-- views
 -- by kasi 01.09.2016
 CREATE SEQUENCE deliveries_orderedproductdto_id_seq;
 

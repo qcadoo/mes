@@ -260,6 +260,10 @@
                         <component type="textarea" name="name" field="name"
                                    reference="name" hasDescription="true"/>
                     </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="template" field="template"
+                                   reference="template"/>
+                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
@@ -300,6 +304,12 @@
                         </component>
                         <component type="hidden" name="externalSynchronized"
                                    field="externalSynchronized" reference="externalSynchronized"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="input" name="standardPerformanceTechnology"
+                                   field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
+                            <option type="alignment" value="right"/>
+                        </component>
                     </layoutElement>
                 </component>
 
