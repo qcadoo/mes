@@ -59,6 +59,7 @@ public final class DashboardController {
 
         mav.setViewName("basic/dashboard");
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
+
         return mav;
     }
 

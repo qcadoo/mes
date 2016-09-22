@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,16 +24,12 @@
     ***************************************************************************
 
 -->
-<!DOCTYPE aspectj PUBLIC
-        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
-<aspectj>
-	<aspects>
-		<aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
-		
-		<aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
-		<aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateChangeReasonAspect" />
-		<aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStatesAspect" />
-
-        <aspect name="com.qcadoo.mes.orders.aop.ExportToPDFControllerOOverrideAspect" />
-	</aspects>
-</aspectj>
+<color>
+    <row NAME="biały" DESCRIPTION="#ffffff" TECHNICALCODE="01white"/>
+    <row NAME="szary" DESCRIPTION="#bfbfbf" TECHNICALCODE="02grey"/>
+    <row NAME="żółty" DESCRIPTION="#ffff99" TECHNICALCODE="03yellow"/>
+    <row NAME="pomarańczowy" DESCRIPTION="#ff944d" TECHNICALCODE="04orange"/>
+    <row NAME="czerwony" DESCRIPTION="#ff6666" TECHNICALCODE="05red"/>
+    <row NAME="zielony" DESCRIPTION="#85e085" TECHNICALCODE="06green"/>
+    <row NAME="niebieski" DESCRIPTION="#66a3ff" TECHNICALCODE="07blue"/>
+</color>

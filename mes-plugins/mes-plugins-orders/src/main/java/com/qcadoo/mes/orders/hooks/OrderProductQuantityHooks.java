@@ -58,7 +58,7 @@ public class OrderProductQuantityHooks {
     @Autowired
     private ParameterService parameterService;
 
-    public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
+    public void changeFieldsEnabledForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() == null) {
             return;

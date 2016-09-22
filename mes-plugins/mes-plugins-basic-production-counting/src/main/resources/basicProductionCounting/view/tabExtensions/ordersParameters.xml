@@ -38,6 +38,7 @@
 					<listener event="onChange" 
 							class="com.qcadoo.mes.basicProductionCounting.listeners.OrderParametersListenersBPC" 
 							method="onChangeLockProductionProgress" />
+					<option type="labelWidth" value="60"/>
 				</component>
 			</layoutElement>
 		</component>

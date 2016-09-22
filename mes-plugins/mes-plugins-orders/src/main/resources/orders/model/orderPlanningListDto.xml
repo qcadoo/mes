@@ -24,31 +24,33 @@
     ***************************************************************************
 
 -->
-<model name="orderPlanningListDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderPlanningListDto" activable="true" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" />
-        <string name="name" />
+        <string name="number"/>
+        <string name="name"/>
         <datetime name="dateFrom"/>
-        <datetime name="dateTo" />
-        <datetime name="startDate" />
-        <datetime name="finishDate" />
-        <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned" />
-        <string name="technologyNumber" />
-        <string name="productNumber" />
-        <decimal name="plannedQuantity" />
-        <string name="unit" />
-        <string name="externalNumber" />
-        <boolean name="externalSynchronized" default="true" />
-        <string name="productionLineNumber" />
+        <datetime name="dateTo"/>
+        <datetime name="startDate"/>
+        <datetime name="finishDate"/>
+        <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
+        <decimal name="plannedQuantity"/>
+        <string name="externalNumber"/>
+        <boolean name="externalSynchronized" default="true"/>
         <boolean name="isSubcontracted" default="false"/>
-        <string name="masterOrderNumber" />
-        <string name="divisionName" />
-        <boolean name="workPlanDelivered" default="false" />
+        <boolean name="workPlanDelivered" default="false"/>
+        <string name="orderCategory"/>
+        <string name="productNumber"/>
+        <string name="unit"/>
+        <string name="technologyNumber"/>
+        <string name="productionLineNumber"/>
+        <string name="masterOrderNumber"/>
+        <string name="divisionName"/>
     </fields>
     <hooks>
     </hooks>
     <identifier expression="#number + ' - ' + #name"/>
-    <masterModel plugin="orders" model="order" />
+    <masterModel plugin="orders" model="order"/>
 </model>

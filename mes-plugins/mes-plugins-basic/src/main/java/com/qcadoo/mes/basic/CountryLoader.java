@@ -23,12 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.CountryFields.CODE;
-import static com.qcadoo.mes.basic.constants.CountryFields.COUNTRY;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -43,7 +39,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CountryFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -65,6 +63,7 @@ public class CountryLoader {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Country table will be populated ...");
             }
+
             readDataFromXML();
         }
     }
@@ -74,6 +73,7 @@ public class CountryLoader {
 
         try {
             SAXBuilder builder = new SAXBuilder();
+
             Document document = builder.build(getContryXmlFile());
             Element rootNode = document.getRootElement();
 
@@ -93,7 +93,8 @@ public class CountryLoader {
     private void parseAndAddCountry(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
-        Map<String, String> values = new HashMap<String, String>();
+
+        Map<String, String> values = Maps.newHashMap();
 
         for (Attribute attribute : attributes) {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
@@ -103,13 +104,14 @@ public class CountryLoader {
     }
 
     private void addCountry(final Map<String, String> values) {
-        DataDefinition conutryDataDefinition = getCountryDataDefinition();
-        Entity country = conutryDataDefinition.create();
+        DataDefinition conutryDD = getCountryDD();
 
-        country.setField(COUNTRY, values.get(COUNTRY.toLowerCase(Locale.ENGLISH)));
-        country.setField(CODE, values.get(CODE.toLowerCase(Locale.ENGLISH)));
+        Entity country = conutryDD.create();
 
-        country = conutryDataDefinition.save(country);
+        country.setField(CountryFields.COUNTRY, values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
+        country.setField(CountryFields.CODE, values.get(CountryFields.CODE.toLowerCase(Locale.ENGLISH)));
+
+        country = conutryDD.save(country);
 
         if (country.isValid()) {
             if (LOG.isDebugEnabled()) {
@@ -117,15 +119,15 @@ public class CountryLoader {
             }
         } else {
             throw new IllegalStateException("Saved country entity have validation errors - "
-                    + values.get(COUNTRY.toLowerCase(Locale.ENGLISH)));
+                    + values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getCountryDataDefinition().find().list().getTotalNumberOfEntities() == 0;
+        return getCountryDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getCountryDataDefinition() {
+    private DataDefinition getCountryDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COUNTRY);
     }
 
