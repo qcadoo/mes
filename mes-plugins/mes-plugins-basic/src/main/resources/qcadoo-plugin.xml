@@ -239,6 +239,8 @@
 
         <model:dictionary name="descriptionTypes"/>
 
+        <model:dictionary name="color"/>
+
         <menu:menu-category name="basic"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 

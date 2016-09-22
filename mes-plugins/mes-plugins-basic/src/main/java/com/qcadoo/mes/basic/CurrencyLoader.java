@@ -26,7 +26,6 @@ package com.qcadoo.mes.basic;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,17 +40,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-
-import static com.qcadoo.mes.basic.constants.CurrencyFields.*;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
 public class CurrencyLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoader.class);
+
+    @Autowired
+    private DefaultLocaleResolver defaultLocaleResolver;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -61,15 +64,17 @@ public class CurrencyLoader {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Currency table will be populated ...");
             }
+
             readDataFromXML();
         }
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading data from currency.xml ...");
+        LOG.info("Loading data from currency.xml" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
+
             Document document = builder.build(getCurrencyXmlFile());
             Element rootNode = document.getRootElement();
 
@@ -89,7 +94,8 @@ public class CurrencyLoader {
     private void parseAndAddCurrency(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
-        Map<String, String> values = new HashMap<String, String>();
+
+        Map<String, String> values = Maps.newHashMap();
 
         for (Attribute attribute : attributes) {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
@@ -99,16 +105,19 @@ public class CurrencyLoader {
     }
 
     private void addCurrency(final Map<String, String> values) {
-        DataDefinition currencyDataDefinition = getCurrencyDataDefinition();
-        Entity currency = currencyDataDefinition.create();
+        DataDefinition currencyDD = getCurrencyDD();
 
-        currency.setField(CURRENCY, values.get(CURRENCY.toLowerCase(Locale.ENGLISH)));
-        currency.setField(ALPHABETIC_CODE, values.get(ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
-        currency.setField(ISO_CODE, Integer.valueOf(values.get(ISO_CODE.toLowerCase(Locale.ENGLISH))));
-        currency.setField(MINOR_UNIT, Integer.valueOf(values.get(MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
-        currency.setField(EXCHANGE_RATE, BigDecimal.ONE);
+        Entity currency = currencyDD.create();
 
-        currency = currencyDataDefinition.save(currency);
+        currency.setField(CurrencyFields.CURRENCY, values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
+        currency.setField(CurrencyFields.ALPHABETIC_CODE, values.get(CurrencyFields.ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
+        currency.setField(CurrencyFields.ISO_CODE,
+                Integer.valueOf(values.get(CurrencyFields.ISO_CODE.toLowerCase(Locale.ENGLISH))));
+        currency.setField(CurrencyFields.MINOR_UNIT,
+                Integer.valueOf(values.get(CurrencyFields.MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
+        currency.setField(CurrencyFields.EXCHANGE_RATE, BigDecimal.ONE);
+
+        currency = currencyDD.save(currency);
 
         if (currency.isValid()) {
             if (LOG.isDebugEnabled()) {
@@ -116,15 +125,15 @@ public class CurrencyLoader {
             }
         } else {
             throw new IllegalStateException("Saved currency entity have validation errors - "
-                    + values.get(CURRENCY.toLowerCase(Locale.ENGLISH)));
+                    + values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getCurrencyDataDefinition().find().list().getTotalNumberOfEntities() == 0;
+        return getCurrencyDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getCurrencyDataDefinition() {
+    private DataDefinition getCurrencyDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
     }
 

@@ -61,4 +61,6 @@ public final class ParameterFieldsO {
 
     public static final String REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME = "reasonNeededWhenCorrectingTheRequestedVolume";
 
+    public static final String ORDER_CATEGORY_COLORS = "orderCategoryColors";
+
 }
