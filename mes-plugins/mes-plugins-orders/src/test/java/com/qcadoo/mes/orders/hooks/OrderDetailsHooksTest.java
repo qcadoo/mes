@@ -96,7 +96,7 @@ public class OrderDetailsHooksTest {
     private FormComponent orderForm;
 
     @Mock
-    private LookupComponent productLookup, technologyLookup, productionLineLookup;
+    private LookupComponent productLookup, technologyLookup, productionLineLookup, addressLookup;
 
     @Mock
     private FieldComponent defaultTechnologyField, plannedQuantityField, stateField, correctDateFromField, correctDateToField,
@@ -109,7 +109,7 @@ public class OrderDetailsHooksTest {
     private DataDefinition orderDD, technologyDD;
 
     @Mock
-    private Entity order, product, defaultTechnology, defaultProductionLine;
+    private Entity order, product, defaultTechnology, defaultProductionLine, company;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
@@ -150,6 +150,7 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.DATE_FROM)).willReturn(dateFromField);
         given(view.getComponentByReference(OrderFields.DATE_TO)).willReturn(dateToField);
         given(view.getComponentByReference(OrderFields.EFFECTIVE_DATE_FROM)).willReturn(effectiveDateFromField);
+        given(view.getComponentByReference(OrderFields.ADDRESS)).willReturn(addressLookup);
     }
 
     @Test
@@ -363,8 +364,10 @@ public class OrderDetailsHooksTest {
         given(orderForm.getEntityId()).willReturn(L_ID);
 
         given(orderService.getOrder(L_ID)).willReturn(order);
+        given(orderForm.getEntity()).willReturn(order);
 
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.PENDING.getStringValue());
+        given(order.getBelongsToField(OrderFields.COMPANY)).willReturn(company);
 
         // when
         orderDetailsHooks.disableFieldOrderForm(view);
@@ -384,6 +387,9 @@ public class OrderDetailsHooksTest {
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.COMPLETED.getStringValue());
         given(order.isValid()).willReturn(true);
 
+        given(orderForm.getEntity()).willReturn(order);
+
+        given(order.getBelongsToField(OrderFields.COMPANY)).willReturn(company);
         // when
         orderDetailsHooks.disableFieldOrderForm(view);
 
