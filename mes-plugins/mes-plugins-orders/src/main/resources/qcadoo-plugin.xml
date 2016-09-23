@@ -38,9 +38,7 @@
 		http://schema.qcadoo.org/modules/view.xsd
 		http://schema.qcadoo.org/modules/localization 
 		http://schema.qcadoo.org/modules/localization.xsd 
-
-
-		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu
 		http://schema.qcadoo.org/modules/menu.xsd
 		http://schema.qcadoo.org/modules/custom 
 		http://schema.qcadoo.org/modules/custom.xsd">
@@ -87,6 +85,15 @@
         <model:model model="formula" resource="model/formula.xml"/>
         <model:model model="mbrStateChange" resource="model/mbrStateChange.xml"/>
         <model:model model="materialForInstruction" resource="model/materialForInstruction.xml"/>
+
+        <model:model model="orderCategoryColor" resource="model/orderCategoryColor.xml"/>
+
+        <model:dictionary name="orderCategory"/>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:hasMany name="orderCategoryColors" plugin="orders" model="orderCategoryColor" joinField="parameter"
+                           cascade="delete"/>
+        </model:model-field>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="mbrStateChange" plugin="orders" model="mbrStateChange"/>
@@ -203,6 +210,17 @@
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
+        </model:model-field>
+
+        <model:model-hook plugin="qcadooModel" model="dictionaryItem">
+            <model:validatesWith
+                    class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"
+                    method="validatesWith"/>
+        </model:model-hook>
+
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="orders" model="order" plugin="orders" joinField="address"
+                           cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook plugin="technologies" model="technology">

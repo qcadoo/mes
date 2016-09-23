@@ -64,6 +64,11 @@ public class MasterOrderDetailsListeners {
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
+    public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent address = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+        address.setFieldValue(null);
+    }
+
     public void onProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);

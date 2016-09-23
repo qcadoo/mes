@@ -29,6 +29,8 @@ public final class OrderFields {
 
     }
 
+    public static final String ADDRESS = "address";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
@@ -126,5 +128,7 @@ public final class OrderFields {
     public static final String BATCH_NUMBER = "batchNumber";
 
     public static final String WORKER_TO_CHANGE = "workerToChange";
+
+    public static final String ORDER_CATEGORY = "orderCategory";
 
 }

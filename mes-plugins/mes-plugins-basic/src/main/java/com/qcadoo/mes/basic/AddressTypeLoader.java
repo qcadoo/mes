@@ -75,57 +75,45 @@ public class AddressTypeLoader {
     public final void loadAddressTypes() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Address types table will be populated...");
+                LOG.debug("Address types will be populated ...");
             }
 
             Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
 
-            for (Map<String, String> addressTypeAttributes : addressTypesAttributes.values()) {
-                addDictionaryItem(addressTypeAttributes);
-            }
+            addressTypesAttributes.values().forEach(addressTypeAttributes -> addDictionaryItem(addressTypeAttributes));
         }
     }
 
     public void unloadAddressTypes() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Address types table will be unpopulated...");
+            LOG.debug("Address types will be unpopulated ...");
         }
 
         Map<Integer, Map<String, String>> addressTypesAttributes = getAddressTypesAttributesFromXML();
 
         List<String> technicalCodes = addressTypesAttributes.values().stream()
-                .map(addressTypesAttribute -> addressTypesAttribute.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
+                .map(addressTypeAttributes -> addressTypeAttributes.get(L_TECHNICAL_CODE)).filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
         deactivateDictionaryItems(technicalCodes);
     }
 
     private Map<Integer, Map<String, String>> getAddressTypesAttributesFromXML() {
-        LOG.info("Loading test data from addressType.xml ...");
+        LOG.info("Loading data from addressType" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
         Map<Integer, Map<String, String>> addressTypesAttributes = Maps.newHashMap();
 
         try {
             SAXBuilder builder = new SAXBuilder();
+
             Document document = builder.build(getAddressTypeXmlFile());
             Element rootNode = document.getRootElement();
+
             @SuppressWarnings("unchecked")
             List<Element> listOfRows = rootNode.getChildren("row");
 
             for (int rowNum = 0; rowNum < listOfRows.size(); rowNum++) {
-                Element node = listOfRows.get(rowNum);
-
-                @SuppressWarnings("unchecked")
-                List<Attribute> listOfAtributes = node.getAttributes();
-
-                Map<String, String> addressTypesAttribute = Maps.newHashMap();
-
-                for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
-                    addressTypesAttribute.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH),
-                            listOfAtributes.get(attributeNum).getValue());
-                }
-
-                addressTypesAttributes.put(rowNum, addressTypesAttribute);
+                parseAndAddAddressType(addressTypesAttributes, listOfRows, rowNum);
             }
         } catch (IOException | JDOMException e) {
             LOG.error(e.getMessage(), e);
@@ -134,12 +122,29 @@ public class AddressTypeLoader {
         return addressTypesAttributes;
     }
 
-    private void addDictionaryItem(final Map<String, String> addressTypesAttribute) {
+    private void parseAndAddAddressType(final Map<Integer, Map<String, String>> addressTypesAttributes,
+            final List<Element> listOfRows, final int rowNum) {
+        Element node = listOfRows.get(rowNum);
+
+        @SuppressWarnings("unchecked")
+        List<Attribute> listOfAtributes = node.getAttributes();
+
+        Map<String, String> addressTypeAttributes = Maps.newHashMap();
+
+        for (int attributeNum = 0; attributeNum < listOfAtributes.size(); attributeNum++) {
+            addressTypeAttributes.put(listOfAtributes.get(attributeNum).getName().toLowerCase(Locale.ENGLISH), listOfAtributes
+                    .get(attributeNum).getValue());
+        }
+
+        addressTypesAttributes.put(rowNum, addressTypeAttributes);
+    }
+
+    private void addDictionaryItem(final Map<String, String> addressTypeAttributes) {
         Entity dictionaryItem = dictionariesService.getDictionaryItemDD().create();
 
-        dictionaryItem.setField(DictionaryItemFields.NAME, addressTypesAttribute.get(L_NAME.toLowerCase(Locale.ENGLISH)));
+        dictionaryItem.setField(DictionaryItemFields.NAME, addressTypeAttributes.get(L_NAME.toLowerCase(Locale.ENGLISH)));
         dictionaryItem.setField(DictionaryItemFields.TECHNICAL_CODE,
-                addressTypesAttribute.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
+                addressTypeAttributes.get(L_TECHNICAL_CODE.toLowerCase(Locale.ENGLISH)));
         dictionaryItem.setField(DictionaryItemFields.DICTIONARY, getAddressTypeDictionary());
 
         dictionaryItem = dictionaryItem.getDataDefinition().save(dictionaryItem);
@@ -150,7 +155,7 @@ public class AddressTypeLoader {
             }
         } else {
             throw new IllegalStateException("Saved dictionaryItem entity have validation errors - "
-                    + addressTypesAttribute.get(L_NAME));
+                    + addressTypeAttributes.get(L_NAME));
         }
     }
 

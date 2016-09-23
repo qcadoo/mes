@@ -890,7 +890,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $.jqm.params.closeoverlay = false;
 
         $('#gridWrapper').block({
-            message: '<h2>Pozycje będą dostępne po zapisie zdarzenia planowanego.</h2>',
+            message: '<h2>'+QCD.translate('actionsGrid.firstSaveDocument')+'</h2>',
             centerY: false,
             centerX: false,
             css: {

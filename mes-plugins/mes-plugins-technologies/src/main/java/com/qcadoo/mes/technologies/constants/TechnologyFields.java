@@ -53,4 +53,7 @@ public final class TechnologyFields {
 
     public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
 
+    public static final String TEMPLATE = "template";
+
+
 }

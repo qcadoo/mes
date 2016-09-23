@@ -23,31 +23,7 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMPANY;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DEADLINE;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_NUMBER;
-import static com.qcadoo.mes.orders.constants.OrderFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.orders.constants.OrderFields.NAME;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_CORRECTION_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END;
-import static com.qcadoo.mes.orders.constants.OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.FIELD_FORM;
-import static com.qcadoo.mes.orders.constants.OrdersConstants.MODEL_ORDER;
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +43,8 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -97,14 +75,18 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 @Service
 public class OrderDetailsHooks {
 
-    public static final String L_FORM = "form";
+    private static final String L_FORM = "form";
+
+    private static final String L_GRID = "grid";
+
+    private static final String L_WINDOW = "window";
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END = "commentReasonTypeDeviationsOfEffectiveEnd";
 
-    private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Arrays.asList("defaultTechnology", "technologyPrototype",
-            "predefinedTechnology");
+    private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Lists.newArrayList("defaultTechnology",
+            "technologyPrototype", "predefinedTechnology");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -153,9 +135,9 @@ public class OrderDetailsHooks {
         disabledRibbonWhenOrderIsSynchronized(view);
         compareDeadlineAndEndDate(view);
         compareDeadlineAndStartDate(view);
-        orderProductQuantityHooks.changedEnabledFieldForSpecificOrderState(view);
+        orderProductQuantityHooks.changeFieldsEnabledForSpecificOrderState(view);
         orderProductQuantityHooks.fillProductUnit(view);
-        changedEnabledDescriptionFieldForSpecificOrderState(view);
+        changeFieldsEnabledForSpecificOrderState(view);
         setFieldsVisibility(view);
         checkIfLockTechnologyTree(view);
         setQuantities(view);
@@ -225,6 +207,15 @@ public class OrderDetailsHooks {
         }
 
         orderForm.setFormEnabled(!disabled);
+        Entity order = orderForm.getEntity();
+        Entity company = order.getBelongsToField(OrderFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
+        if (company == null) {
+            addressLookup.setFieldValue(null);
+            addressLookup.setEnabled(false);
+        } else {
+            addressLookup.setEnabled(true);
+        }
     }
 
     public void disableTechnologiesIfProductDoesNotAny(final ViewDefinitionState view) {
@@ -286,100 +277,131 @@ public class OrderDetailsHooks {
             return;
         }
 
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
+        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .get(orderId);
 
         if (order == null) {
             return;
         }
 
-        String orderState = order.getStringField(STATE);
+        String orderState = order.getStringField(OrderFields.STATE);
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
-            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
-                    REASON_TYPES_CORRECTION_DATE_TO, REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
-                    REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
-                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START, COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, EFFECTIVE_DATE_FROM, EFFECTIVE_DATE_TO);
+            List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
+                    OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END, OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START,
+                    OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
+                    OrderFields.EFFECTIVE_DATE_FROM, OrderFields.EFFECTIVE_DATE_TO);
             changedEnabledFields(view, references, false);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(orderState)) {
-            List<String> references = Arrays.asList(CORRECTED_DATE_FROM, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_FROM,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, REASON_TYPES_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, DATE_FROM, DATE_TO);
+            List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
+                    OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
+                    OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
+                    OrderFields.DATE_FROM, OrderFields.DATE_TO);
             changedEnabledFields(view, references, true);
         }
         if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
                 || OrderState.INTERRUPTED.getStringValue().equals(orderState)) {
-            List<String> references = Arrays.asList(DATE_FROM, DATE_TO, CORRECTED_DATE_TO, REASON_TYPES_CORRECTION_DATE_TO,
-                    COMMENT_REASON_TYPE_CORRECTION_DATE_TO, EFFECTIVE_DATE_FROM,
+            List<String> references = Lists.newArrayList(OrderFields.DATE_FROM, OrderFields.DATE_TO,
+                    OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
+                    OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.EFFECTIVE_DATE_FROM,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
             changedEnabledFields(view, references, true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
+                    false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_TO),
+                    true);
+            changedEnabledAwesomeDynamicListComponents(view,
+                    Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+
         }
 
         if (OrderState.COMPLETED.getStringValue().equals(orderState)) {
-            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
-                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+            List<String> references = Lists.newArrayList(OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO,
+                    OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
+                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
             changedEnabledFields(view, references, true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
+                    false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_TO),
+                    false);
+            changedEnabledAwesomeDynamicListComponents(view,
+                    Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
+            changedEnabledAwesomeDynamicListComponents(view,
+                    Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+
         }
 
         if (OrderState.ABANDONED.getStringValue().equals(orderState)) {
-            List<String> references = Arrays.asList(EFFECTIVE_DATE_TO, DATE_TO, EFFECTIVE_DATE_FROM, DATE_FROM,
-                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+            List<String> references = Lists.newArrayList(OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO,
+                    OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
+                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
             changedEnabledFields(view, references, true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_FROM), false);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_CORRECTION_DATE_TO), false);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
-            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
+                    false);
+            changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_TO),
+                    false);
+            changedEnabledAwesomeDynamicListComponents(view,
+                    Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
+            changedEnabledAwesomeDynamicListComponents(view,
+                    Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
+
         }
     }
 
     private void changedEnabledFields(final ViewDefinitionState view, final List<String> references, final boolean enabled) {
         for (String reference : references) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setEnabled(enabled);
-            field.requestComponentUpdateState();
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
+            fieldComponent.setEnabled(enabled);
+            fieldComponent.requestComponentUpdateState();
         }
     }
 
     private void changedEnabledAwesomeDynamicListComponents(final ViewDefinitionState view, final List<String> references,
             final boolean enabled) {
         for (String reference : references) {
-            AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(reference);
-            adl.setEnabled(enabled);
-            adl.requestComponentUpdateState();
-            for (FormComponent form : adl.getFormComponents()) {
-                FieldComponent field = ((FieldComponent) form.findFieldComponentByName("reasonTypeOfChangingOrderState"));
-                field.setEnabled(enabled);
-                field.requestComponentUpdateState();
+            AwesomeDynamicListComponent awesomeDynamicListComponent = (AwesomeDynamicListComponent) view
+                    .getComponentByReference(reference);
+
+            awesomeDynamicListComponent.setEnabled(enabled);
+            awesomeDynamicListComponent.requestComponentUpdateState();
+
+            for (FormComponent formComponent : awesomeDynamicListComponent.getFormComponents()) {
+                FieldComponent fieldComponent = (FieldComponent) formComponent
+                        .findFieldComponentByName("reasonTypeOfChangingOrderState");
+
+                fieldComponent.setEnabled(enabled);
+                fieldComponent.requestComponentUpdateState();
             }
         }
     }
 
     public void disableOrderFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(FIELD_FORM);
+        FormComponent orderForm = (FormComponent) state.getComponentByReference(OrdersConstants.FIELD_FORM);
 
-        if (form.getEntityId() == null) {
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
             return;
         }
-        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, MODEL_ORDER).get(form.getEntityId());
-        if (entity == null) {
+
+        Entity order = orderService.getOrder(orderId);
+
+        if (order == null) {
             return;
         }
-        String externalNumber = entity.getStringField(EXTERNAL_NUMBER);
-        boolean externalSynchronized = (Boolean) entity.getField(EXTERNAL_SYNCHRONIZED);
+
+        String externalNumber = order.getStringField(OrderFields.EXTERNAL_NUMBER);
+
+        boolean externalSynchronized = order.getBooleanField(OrderFields.EXTERNAL_SYNCHRONIZED);
 
         if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
             state.getComponentByReference(OrderFields.NUMBER).setEnabled(false);
-            state.getComponentByReference(NAME).setEnabled(false);
-            state.getComponentByReference(COMPANY).setEnabled(false);
-            state.getComponentByReference(DEADLINE).setEnabled(false);
+            state.getComponentByReference(OrderFields.NAME).setEnabled(false);
+            state.getComponentByReference(OrderFields.COMPANY).setEnabled(false);
+            state.getComponentByReference(OrderFields.DEADLINE).setEnabled(false);
             state.getComponentByReference(OrderFields.PRODUCT).setEnabled(false);
             state.getComponentByReference(OrderFields.PLANNED_QUANTITY).setEnabled(false);
         }
@@ -387,70 +409,89 @@ public class OrderDetailsHooks {
 
     // FIXME replace this beforeRender hook with <criteriaModifier /> parameter in view XML.
     public void filterStateChangeHistory(final ViewDefinitionState view) {
-        final GridComponent historyGrid = (GridComponent) view.getComponentByReference("grid");
-        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
-                Lists.newArrayList(SUCCESSFUL.getStringValue()));
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
+                OrderStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
+
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
     public void disabledRibbonWhenOrderIsSynchronized(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         Ribbon ribbon = window.getRibbon();
+
         List<RibbonGroup> ribbonGroups = ribbon.getGroups();
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Long orderId = form.getEntityId();
+
+        Long orderId = orderForm.getEntityId();
+
         if (orderId == null) {
             return;
         }
-        if (orderStateService.isSynchronized(form.getEntity().getDataDefinition().get(orderId))) {
+
+        Entity order = orderService.getOrder(orderId);
+
+        if (orderStateService.isSynchronized(order)) {
             return;
         }
+
         for (RibbonGroup ribbonGroup : ribbonGroups) {
-            for (RibbonActionItem actionItem : ribbonGroup.getItems()) {
-                actionItem.setEnabled(false);
-                actionItem.requestUpdate(true);
+            for (RibbonActionItem ribbonActionItem : ribbonGroup.getItems()) {
+                ribbonActionItem.setEnabled(false);
+                ribbonActionItem.requestUpdate(true);
             }
         }
-        RibbonActionItem refresh = ribbon.getGroupByName("actions").getItemByName("refresh");
-        RibbonActionItem back = ribbon.getGroupByName("navigation").getItemByName("back");
-        refresh.setEnabled(true);
-        back.setEnabled(true);
-        refresh.requestUpdate(true);
-        back.requestUpdate(true);
-        form.setFormEnabled(false);
+
+        RibbonActionItem refreshRibbonActionItem = ribbon.getGroupByName("actions").getItemByName("refresh");
+        RibbonActionItem backRibbonActionItem = ribbon.getGroupByName("navigation").getItemByName("back");
+
+        refreshRibbonActionItem.setEnabled(true);
+        backRibbonActionItem.setEnabled(true);
+        refreshRibbonActionItem.requestUpdate(true);
+        backRibbonActionItem.requestUpdate(true);
+
+        orderForm.setFormEnabled(false);
     }
 
     public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
             return;
         }
-        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
-        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
+
         Date finishDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
         Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+
         if (finishDate != null && deadlineDate != null && deadlineDate.before(finishDate)) {
-            form.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
+            orderForm.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
         }
     }
 
     public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() == null) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null) {
             return;
         }
-        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(DATE_FROM);
-        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(DATE_TO);
-        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(DEADLINE);
+
+        FieldComponent startDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DATE_FROM);
+        FieldComponent finishDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DATE_TO);
+        FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
+
         Date startDate = DateUtils.parseDate(startDateComponent.getFieldValue());
         Date finidhDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
         Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
+
         if (startDate != null && deadlineDate != null && finidhDate == null && deadlineDate.before(startDate)) {
-            form.addMessage("orders.validate.global.error.deadlineBeforeStartDate", MessageType.INFO, false);
+            orderForm.addMessage("orders.validate.global.error.deadlineBeforeStartDate", MessageType.INFO, false);
         }
     }
 
-    public void changedEnabledDescriptionFieldForSpecificOrderState(final ViewDefinitionState view) {
+    private void changeFieldsEnabledForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long orderId = orderForm.getEntityId();
@@ -463,12 +504,21 @@ public class OrderDetailsHooks {
 
         String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
-                || OrderState.INTERRUPTED.getStringValue().equals(state) || OrderState.PENDING.getStringValue().equals(state)) {
+        if (OrderState.PENDING.getStringValue().equals(state) || OrderState.ACCEPTED.getStringValue().equals(state)
+                || OrderState.IN_PROGRESS.getStringValue().equals(state)
+                || OrderState.INTERRUPTED.getStringValue().equals(state)) {
             FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
 
             descriptionField.setEnabled(true);
             descriptionField.requestComponentUpdateState();
+        }
+
+        if (OrderState.PENDING.getStringValue().equals(state) || OrderState.ACCEPTED.getStringValue().equals(state)
+                || OrderState.IN_PROGRESS.getStringValue().equals(state)) {
+            FieldComponent orderCategoryField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_CATEGORY);
+
+            orderCategoryField.setEnabled(true);
+            orderCategoryField.requestComponentUpdateState();
         }
     }
 
@@ -486,14 +536,17 @@ public class OrderDetailsHooks {
         boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
 
         changeFieldsVisibility(view, L_PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+
         if (selectForPatternTechnology) {
             LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
             FieldComponent technology = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
             FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
 
             Entity product = productLookup.getEntity();
+
             defaultTechnology.setFieldValue("");
             technology.setFieldValue(null);
+
             if (product != null) {
                 Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
                 if (defaultTechnologyEntity != null) {
@@ -504,11 +557,12 @@ public class OrderDetailsHooks {
         }
     }
 
-    private void changeFieldsVisibility(final ViewDefinitionState view, final List<String> fieldNames,
+    private void changeFieldsVisibility(final ViewDefinitionState view, final List<String> references,
             final boolean selectForPatternTechnology) {
-        for (String fieldName : fieldNames) {
-            ComponentState componnet = view.getComponentByReference(fieldName);
-            componnet.setVisible(selectForPatternTechnology);
+        for (String reference : references) {
+            ComponentState componentState = view.getComponentByReference(reference);
+
+            componentState.setVisible(selectForPatternTechnology);
         }
     }
 
@@ -518,8 +572,7 @@ public class OrderDetailsHooks {
     }
 
     private void setProductQuantities(final ViewDefinitionState view) {
-
-        if (!isValidDecimalField(view, Arrays.asList(OrderFields.DONE_QUANTITY))) {
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.DONE_QUANTITY))) {
             return;
         }
 
@@ -539,10 +592,10 @@ public class OrderDetailsHooks {
         amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                        numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
@@ -554,7 +607,7 @@ public class OrderDetailsHooks {
     }
 
     private void setDoneQuantity(final ViewDefinitionState view) {
-        if (!isValidDecimalField(view, Arrays.asList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
             return;
         }
 
@@ -573,10 +626,10 @@ public class OrderDetailsHooks {
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));

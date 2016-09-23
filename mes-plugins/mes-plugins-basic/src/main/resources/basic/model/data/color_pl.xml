@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<color>
+    <row NAME="biały" DESCRIPTION="#ffffff" TECHNICALCODE="01white"/>
+    <row NAME="szary" DESCRIPTION="#bfbfbf" TECHNICALCODE="02grey"/>
+    <row NAME="żółty" DESCRIPTION="#ffff99" TECHNICALCODE="03yellow"/>
+    <row NAME="pomarańczowy" DESCRIPTION="#ff944d" TECHNICALCODE="04orange"/>
+    <row NAME="czerwony" DESCRIPTION="#ff6666" TECHNICALCODE="05red"/>
+    <row NAME="zielony" DESCRIPTION="#85e085" TECHNICALCODE="06green"/>
+    <row NAME="niebieski" DESCRIPTION="#66a3ff" TECHNICALCODE="07blue"/>
+</color>

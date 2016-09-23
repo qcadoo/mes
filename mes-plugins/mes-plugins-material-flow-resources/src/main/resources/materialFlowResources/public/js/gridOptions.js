@@ -1772,7 +1772,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $.jqm.params.closeoverlay = false;
 
         $('#gridWrapper').block({
-            message: '<h2>Pozycje będą dostępne po zapisie dokumentu</h2>',
+            message: '<h2>'+QCD.translate('documentGrid.firstSaveDocument')+'</h2>',
             centerY: false,
             centerX: false,
             css: {

@@ -14,6 +14,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -57,6 +58,7 @@ public class DocumentPositionParametersValidators {
     public boolean noReservationExists() {
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).find();
+        scb.add(SearchRestrictions.isNotNull(ReservationFields.POSITION));
         scb.setProjection(alias(rowCount(), "cnt"));
         scb.addOrder(asc("cnt"));
 

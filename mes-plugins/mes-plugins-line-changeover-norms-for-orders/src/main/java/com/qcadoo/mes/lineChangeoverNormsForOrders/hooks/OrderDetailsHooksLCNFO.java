@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
+import com.google.common.base.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class OrderDetailsHooksLCNFO {
 
-    private static final Predicate<Entity> HAS_PATTERN_TECHNOLOGY = new Predicate<Entity>() {
+    private static final Predicate<Entity> HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE = new Predicate<Entity>() {
 
         @Override
         public boolean apply(final Entity order) {
@@ -44,7 +45,7 @@ public class OrderDetailsHooksLCNFO {
                 return false;
             }
             OrderType orderType = OrderType.of(order);
-            if (orderType != OrderType.WITH_PATTERN_TECHNOLOGY) {
+            if (orderType != OrderType.WITH_PATTERN_TECHNOLOGY || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
                 return false;
             }
             Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
@@ -60,7 +61,8 @@ public class OrderDetailsHooksLCNFO {
     }
 
     private void enableOrDisableChangeoverButton(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabled(view, "changeover", "showChangeover", HAS_PATTERN_TECHNOLOGY);
+        orderDetailsRibbonHelper.setButtonEnabled(view, "changeover", "showChangeover",
+                HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE, Optional.of("orders.orderDetails.window.ribbon.changeover.disabledMessage"));
     }
 
 }

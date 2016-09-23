@@ -25,7 +25,6 @@ package com.qcadoo.mes.basic;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -40,6 +39,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -58,7 +58,7 @@ public class DefaultFaultTypesLoader {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void loadFaultTypes() {
+    public void loadDefaultFaultTypes() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Fault types table will be populated ...");
@@ -74,7 +74,8 @@ public class DefaultFaultTypesLoader {
 
         try {
             SAXBuilder builder = new SAXBuilder();
-            Document document = builder.build(getFaultTypesXmlFile());
+
+            Document document = builder.build(getDefaultFaultTypesXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
@@ -93,7 +94,8 @@ public class DefaultFaultTypesLoader {
     private void parseAndAddFaultType(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
-        Map<String, String> values = new HashMap<String, String>();
+
+        Map<String, String> values = Maps.newHashMap();
 
         for (Attribute attribute : attributes) {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
@@ -103,14 +105,15 @@ public class DefaultFaultTypesLoader {
     }
 
     private void addFaultType(final Map<String, String> values) {
-        DataDefinition faultTypeDataDefinition = getFaultTypeDataDefinition();
-        Entity faultType = faultTypeDataDefinition.create();
+        DataDefinition faultTypeDD = getFaultTypeDD();
+
+        Entity faultType = faultTypeDD.create();
 
         faultType.setField(FaultTypeFields.NAME, values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
         faultType.setField(FaultTypeFields.APPLIES_TO, values.get(FaultTypeFields.APPLIES_TO.toLowerCase(Locale.ENGLISH)));
         faultType.setField(FaultTypeFields.IS_DEFAULT, values.get(FaultTypeFields.IS_DEFAULT.toLowerCase(Locale.ENGLISH)));
 
-        faultType = faultTypeDataDefinition.save(faultType);
+        faultType = faultTypeDD.save(faultType);
 
         if (faultType.isValid()) {
             if (LOG.isDebugEnabled()) {
@@ -123,14 +126,14 @@ public class DefaultFaultTypesLoader {
     }
 
     private boolean databaseHasToBePrepared() {
-        return getFaultTypeDataDefinition().find().list().getTotalNumberOfEntities() == 0;
+        return getFaultTypeDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getFaultTypeDataDefinition() {
+    private DataDefinition getFaultTypeDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FAULT_TYPE);
     }
 
-    private InputStream getFaultTypesXmlFile() throws IOException {
+    private InputStream getDefaultFaultTypesXmlFile() throws IOException {
         return DefaultFaultTypesLoader.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }

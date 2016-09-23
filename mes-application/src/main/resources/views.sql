@@ -73,14 +73,14 @@ DROP TABLE IF EXISTS ordersupplies_orderdto;
 
 CREATE OR REPLACE VIEW ordersupplies_orderdto AS SELECT id, number, name, state FROM orders_order;
 
-CREATE TABLE JOINtable_coverageorderhelper_orderdto (coverageorderhelper_id bigint NOT NULL, orderdto_id bigint NOT NULL, CONSTRAINT jointable_coverageorderhelper_orderdto_pkey PRIMARY KEY (coverageorderhelper_id, orderdto_id), CONSTRAINT jointable_coverageorderhelper_coverageorderhelper_fkey FOREIGN KEY (coverageorderhelper_id) REFERENCES ordersupplies_coverageorderhelper (id) DEFERRABLE);
+CREATE TABLE jointable_coverageorderhelper_orderdto (coverageorderhelper_id bigint NOT NULL, orderdto_id bigint NOT NULL, CONSTRAINT jointable_coverageorderhelper_orderdto_pkey PRIMARY KEY (coverageorderhelper_id, orderdto_id), CONSTRAINT jointable_coverageorderhelper_coverageorderhelper_fkey FOREIGN KEY (coverageorderhelper_id) REFERENCES ordersupplies_coverageorderhelper (id) DEFERRABLE);
 
 ---
 
 
-DROP TABLE IF EXISTS orders_orderPlanningListDto;
+DROP TABLE IF EXISTS orders_orderplanninglistdto;
 
-CREATE OR REPLACE VIEW orders_orderPlanningListDto AS SELECT o.id, o.active, o.number, o.name, o.dateFrom, o.dateTo, o.startDate, o.finishDate, o.state, o.externalNumber, o.externalSynchronized, o.isSubcontracted, o.plannedQuantity, o.workPlanDelivered, product.number AS productNumber, tech.number AS technologyNumber, product.unit, line.number AS productionLineNumber, master.number AS masterOrderNumber, division.name AS divisionName FROM orders_order o JOIN basic_product product ON (o.product_id = product.id) LEFT JOIN technologies_technology tech ON (o.technology_id = tech.id) JOIN productionLines_productionLine line ON (o.productionline_id = line.id) LEFT JOIN masterOrders_masterOrder  master ON (o.masterorder_id = master.id) LEFT JOIN basic_division division ON (tech.division_id = division.id);
+CREATE OR REPLACE VIEW orders_orderplanninglistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.ordercategory, product.number AS productnumber, technology.number AS technologynumber, product.unit AS unit, productionline.number AS productionlinenumber, masterorder.number AS masterordernumber, division.name AS divisionname FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN basic_division division ON division.id = technology.division_id;
 
 -- end
 

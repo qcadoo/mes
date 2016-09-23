@@ -61,6 +61,12 @@
                     <option type="multiselect" value="true"/>
                 </component>
             </layoutElement>
+            <layoutElement column="2" row="1">
+                <component type="file" name="additionalImage"
+                           field="#{form}.additionalImage" reference="additionalImage">
+                    <option type="labelWidth" value="50"/>
+                </component>
+            </layoutElement>
         </component>
     </windowTab>
 

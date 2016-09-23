@@ -81,7 +81,7 @@
         <belongsTo name="technologyPrototype" plugin="technologies" model="technology"/>
 
         <belongsTo name="productionLine" plugin="productionLines"
-                   model="productionLine" required="true"/>
+                   model="productionLine"/>
 
         <decimal name="plannedQuantity" required="true">
             <validatesRange from="0" exclusively="true"/>
@@ -150,6 +150,10 @@
         <belongsTo name="recipe" plugin="orders" model="recipe"/>
 
         <string name="workerToChange"/>
+
+        <dictionary name="orderCategory" dictionary="orderCategory"/>
+        <belongsTo name="address" plugin="basic" model="address"/>
+
     </fields>
 
     <hooks>
