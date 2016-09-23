@@ -185,7 +185,7 @@
                                 </layoutElement>
                                 <layoutElement column="5" row="3" width="3">
                                     <component type="checkbox" name="isWaste"
-                                               reference="isWaste" field="isWaste">
+                                               reference="isWaste" field="isWaste" hasDescription="true">
                                         <option type="labelWidth" value="45"/>
                                     </component>
                                 </layoutElement>
