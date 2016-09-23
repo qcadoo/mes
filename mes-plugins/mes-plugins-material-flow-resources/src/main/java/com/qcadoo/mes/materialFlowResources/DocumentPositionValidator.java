@@ -219,7 +219,8 @@ public class DocumentPositionValidator {
                 }
             }
         }
-        if (position.getResource() != null) {
+        
+        if (!Strings.isNullOrEmpty(position.getResource())) {
             boolean find = false;
             DataResponse resourcesResponse = documentPositionService.getResourcesResponse(position.getDocument(), "", position.getProduct(), position.getConversion(), position.getAdditionalCode());
             List<AbstractDTO> resources = resourcesResponse.getEntities();
