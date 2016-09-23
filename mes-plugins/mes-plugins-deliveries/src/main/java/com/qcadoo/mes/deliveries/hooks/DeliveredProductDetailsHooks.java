@@ -216,9 +216,11 @@ public class DeliveredProductDetailsHooks {
         if (product != null) {
             filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());
         }
+
         if (product != null && location != null) {
             filterBy(storageLocationsLookup, "location", location.getId());
             filterBy(storageLocationsLookup, "product", product.getId());
+
         } else {
             storageLocationsLookup.setFieldValue(null);
             storageLocationsLookup.setEnabled(false);
@@ -233,5 +235,4 @@ public class DeliveredProductDetailsHooks {
         component.setFilterValue(filterValueHolder);
         component.requestComponentUpdateState();
     }
-
 }

@@ -270,7 +270,7 @@
                 </layoutElement>
                 <layoutElement column="1" row="3">
                     <component type="lookup" name="storageLocation" reference="storageLocation"
-                               field="#{form}.storageLocation">
+                                                   field="#{form}.storageLocation" hasDescription="true">
 
                         <option type="column" name="location" fields="location"
                                 expression="#location['name']"/>
