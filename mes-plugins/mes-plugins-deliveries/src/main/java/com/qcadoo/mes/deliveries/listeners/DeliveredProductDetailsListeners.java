@@ -71,6 +71,7 @@ public class DeliveredProductDetailsListeners {
             clearAndDisable(storageLocationLookup);
         }
         fillConversion(view, state, args);
+        quantityChange(view, state, args);
     }
 
     private void filterByProduct(LookupComponent component, Long id) {

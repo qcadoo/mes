@@ -32,160 +32,161 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.refresh" />
+            <template name="standardFormTemplate" excludeItems="actions.copy, actions.delete, actions.refresh"/>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="deliveredProductDetails"
-                                   reference="form">
+                       reference="form">
                 <component type="gridLayout" name="gridLayout" columns="1"
-                                           rows="5">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="input" name="succession" reference="succession"
-                                                           field="succession" defaultEnabled="never" />
+                                   field="succession" defaultEnabled="never"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="lookup" name="product" reference="product"
-                                                           field="product">
-                            <option type="column" name="name" fields="name" link="true" />
+                                   field="product">
+                            <option type="column" name="name" fields="name" link="true"/>
 
-                            <option type="searchable" value="name,number" />
-                            <option type="orderable" value="name,number" />
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
                             <option type="expression"
-                                                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-                            <option type="fieldCode" value="number" />
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                                                  class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                                                  method="onSelectedEntityChange" />
+                                      class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                      method="onSelectedEntityChange"/>
                             <listener
-                                class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                method="fillOrderedQuantities" />
+                                    class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                    method="fillOrderedQuantities"/>
                             <listener
-                                class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                method="fillUnitFields" />
+                                    class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                    method="fillUnitFields"/>
                             <listener
-                                class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
-                                method="fillCurrencyFields" />
+                                    class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                    method="fillCurrencyFields"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="lookup" name="additionalCode" reference="additionalCode"
-                                                           field="#{form}.additionalCode">
-	        
-                            <option type="searchable" value="code" />
-                            <option type="orderable" value="code" />
-	        
+                                   field="#{form}.additionalCode">
+
+                            <option type="searchable" value="code"/>
+                            <option type="orderable" value="code"/>
+
                             <option type="expression"
-                                        value="#code" />
-                            <option type="fieldCode" value="code" />
+                                    value="#code"/>
+                            <option type="fieldCode" value="code"/>
                             <criteriaModifier
-                                class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
-                                method="restrictAdditionalCodesForProduct" />
+                                    class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
+                                    method="restrictAdditionalCodesForProduct"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="borderLayout" name="quantityBorderLayout">
-                            <option type="label" value="quantityLabel" />
+                            <option type="label" value="quantityLabel"/>
                             <component type="gridLayout" name="quantityGridLayout"
-                                                                   hasBorders="false" columns="11" rows="3">
+                                       hasBorders="false" columns="11" rows="3">
                                 <layoutElement column="1" row="1" width="4">
                                     <component type="gridLayout" name="orderedQuantityGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="orderedQuantity"
-                                                                                                   reference="orderedQuantity" defaultEnabled="never">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
+                                                       reference="orderedQuantity" defaultEnabled="never">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="orderedQuantityUnit"
-                                                                                                   reference="orderedQuantityUnit" defaultEnabled="never"
-                                                                                                   hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="orderedQuantityUnit" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="2" width="4">
                                     <component type="gridLayout" name="deliveredQuantityGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="deliveredQuantity"
-                                                                                                   field="#{form}.deliveredQuantity" reference="deliveredQuantity"
-                                                                                                   hasDescription="true">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
-												
+                                                       field="#{form}.deliveredQuantity" reference="deliveredQuantity"
+                                                       hasDescription="true">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
+
                                                 <listener event="onInputChange" method="calculatePrice"
-                                                                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                                 <listener event="onInputChange" method="quantityChange"
-                                              		class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="deliveredQuantityUnit"
-                                                                                                   reference="deliveredQuantityUnit" defaultEnabled="never"
-                                                                                                   hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="deliveredQuantityUnit" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="5" row="2" width="4">
                                     <component type="gridLayout" name="additionalQuantityGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="additionalQuantity"
-                                                field="additionalQuantity" reference="additionalQuantity">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
+                                                       field="additionalQuantity" reference="additionalQuantity">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
                                                 <listener event="onInputChange" method="additionalQuantityChange"
-                                              		class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="additionalQuantityUnit"
-                                                reference="additionalQuantityUnit" defaultEnabled="never" hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="additionalQuantityUnit" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="9" row="2" width="3">
                                     <component type="input" name="conversion" field="conversion"
-                                        reference="conversion">
-                                        <option type="alignment" value="right" />
-                                        <option type="labelWidth" value="45" />
+                                               reference="conversion">
+                                        <option type="alignment" value="right"/>
+                                        <option type="labelWidth" value="45"/>
                                         <listener event="onInputChange" method="quantityChange"
-                                        	class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                  class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3" width="4">
                                     <component type="gridLayout" name="damagedQuantityGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="damagedQuantity"
-                                                                                                   field="#{form}.damagedQuantity" reference="damagedQuantity">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
+                                                       field="#{form}.damagedQuantity" reference="damagedQuantity">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="damagedQuantityUnit"
-                                                                                                   reference="damagedQuantityUnit" defaultEnabled="never"
-                                                                                                   hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="damagedQuantityUnit" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="5" row="3" width="3">
                                     <component type="checkbox" name="isWaste"
-                                        reference="isWaste" field="isWaste">
-                                        <option type="labelWidth" value="45" />
+                                               reference="isWaste" field="isWaste">
+                                        <option type="labelWidth" value="45"/>
                                     </component>
                                 </layoutElement>
                             </component>
@@ -193,48 +194,48 @@
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="borderLayout" name="priceBorderLayout">
-                            <option type="label" value="priceLabel" />
+                            <option type="label" value="priceLabel"/>
                             <component type="gridLayout" name="priceGridLayout"
-                                                                   hasBorders="false" columns="9" rows="1">
+                                       hasBorders="false" columns="9" rows="1">
                                 <layoutElement column="1" row="1" width="4">
                                     <component type="gridLayout" name="totalPriceGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="totalPrice" field="#{form}.totalPrice"
-                                                                                                   reference="totalPrice">
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
+                                                       reference="totalPrice">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
                                                 <listener event="onInputChange" method="calculatePriceFromTotalPrice"
-                                                                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="totalPriceCurrency"
-                                                                                                   reference="totalPriceCurrency" defaultEnabled="never"
-                                                                                                   hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="totalPriceCurrency" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="5" row="1" width="4">
                                     <component type="gridLayout" name="pricePerUnitGridLayout"
-                                                                                   hasBorders="false" columns="4" rows="1">
+                                               hasBorders="false" columns="4" rows="1">
                                         <layoutElement column="1" row="1" width="3">
                                             <component type="input" name="pricePerUnit" field="#{form}.pricePerUnit"
-                                                                                                   reference="pricePerUnit" >
-                                                <option type="alignment" value="right" />
-                                                <option type="labelWidth" value="45" />
-												
+                                                       reference="pricePerUnit">
+                                                <option type="alignment" value="right"/>
+                                                <option type="labelWidth" value="45"/>
+
                                                 <listener event="onInputChange" method="calculatePriceFromPricePerUnit"
-                                                                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners" />
+                                                          class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
                                             <component type="input" name="pricePerUnitCurrency"
-                                                                                                   reference="pricePerUnitCurrency" defaultEnabled="never"
-                                                                                                   hasLabel="false">
-                                                <option type="textRepresentationOnDisabled" value="true" />
+                                                       reference="pricePerUnitCurrency" defaultEnabled="never"
+                                                       hasLabel="false">
+                                                <option type="textRepresentationOnDisabled" value="true"/>
                                             </component>
                                         </layoutElement>
                                     </component>
@@ -243,69 +244,73 @@
                         </component>
                     </layoutElement>
                 </component>
-				
-                <option type="header" value="true" />
-                <option type="expression" value="#name" />
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
             </component>
         </windowTab>
         <windowTab name="storageLocationTab">
             <component type="gridLayout" name="storageLocationGridLayout" columns="2"
-                                   rows="3">
+                       rows="3">
                 <layoutElement column="1" row="1">
                     <component type="lookup" name="palletNumber" reference="palletNumber"
-                                                   field="#{form}.palletNumber">
+                               field="#{form}.palletNumber">
 
-                        <option type="searchable" value="number" />
-                        <option type="orderable" value="number" />
+                        <option type="searchable" value="number"/>
+                        <option type="orderable" value="number"/>
 
                         <option type="expression"
-                                                        value="#number" />
-                        <option type="fieldCode" value="number" />
+                                value="#number"/>
+                        <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
                     <component type="select" name="palletType" field="#{form}.palletType"
-                                                   reference="palletType"/>
+                               reference="palletType"/>
                 </layoutElement>
                 <layoutElement column="1" row="3">
                     <component type="lookup" name="storageLocation" reference="storageLocation"
-                                                   field="#{form}.storageLocation">
+                               field="#{form}.storageLocation">
 
                         <option type="column" name="location" fields="location"
-                                            expression="#location['name']" />
+                                expression="#location['name']"/>
 
-                        <option type="searchable" value="number,location" />
-                        <option type="orderable" value="number,location" />
+                        <option type="searchable" value="number,location"/>
+                        <option type="orderable" value="number,location"/>
 
                         <option type="expression"
-                                                        value="#number" />
-                        <option type="fieldCode" value="number" />
+                                value="#number"/>
+                        <option type="fieldCode" value="number"/>
                         <criteriaModifier
-                            class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductCriteriaModifiers"
-                            method="restrictStorageLocation" />
+                                class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductCriteriaModifiers"
+                                method="restrictStorageLocation"/>
                     </component>
                 </layoutElement>
             </component>
         </windowTab>
-		
+
         <windowTab name="reservationsTab">
             <component type="gridLayout" name="gridsLayout" columns="1" rows="5" hasBorders="false">
                 <layoutElement column="1" row="1" width="1" height="5">
                     <component type="grid" name="deliveredProductReservations" source="#{form}.reservations">
-                        <option type="column" name="number" fields="location" expression="#location['number']" link="true" width="50"/>
-                        <option type="column" name="name" fields="location" expression="#location['name']" link="true" width="100"/>                        
+                        <option type="column" name="number" fields="location" expression="#location['number']"
+                                link="true" width="50"/>
+                        <option type="column" name="name" fields="location" expression="#location['name']" link="true"
+                                width="100"/>
                         <option type="column" name="deliveredQuantity" fields="deliveredQuantity" width="40"/>
                         <option type="column" name="deliveredQuantityUnit" fields="deliveredQuantityUnit" width="20"/>
                         <option type="column" name="additionalQuantity" fields="additionalQuantity" width="40"/>
                         <option type="column" name="additionalQuantityUnit" fields="additionalQuantityUnit" width="20"/>
- 
+
                         <option type="order" column="number" direction="desc"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductReservationDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
-                        <option type="orderable" value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
-                        <option type="searchable" value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
+                        <option type="orderable"
+                                value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
+                        <option type="searchable"
+                                value="number,name,deliveredQuantity,additionalQuantityUnit,deliveredQuantityUnit,additionalQuantity"/>
 
                         <option type="paginable" value="false"/>
                         <option type="creatable" value="true"/>
@@ -317,11 +322,11 @@
             </component>
         </windowTab>
     </component>
-	
+
     <hooks>
         <beforeRender
-            class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
-            method="beforeRender" />
+                class="com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks"
+                method="beforeRender"/>
     </hooks>
-	
+
 </view>
