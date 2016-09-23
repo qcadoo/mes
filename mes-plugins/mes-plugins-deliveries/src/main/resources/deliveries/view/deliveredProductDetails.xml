@@ -185,7 +185,7 @@
                                 </layoutElement>
                                 <layoutElement column="5" row="3" width="3">
                                     <component type="checkbox" name="isWaste"
-                                               reference="isWaste" field="isWaste">
+                                               reference="isWaste" field="isWaste" hasDescription="true">
                                         <option type="labelWidth" value="45"/>
                                     </component>
                                 </layoutElement>
@@ -292,7 +292,8 @@
         <windowTab name="reservationsTab">
             <component type="gridLayout" name="gridsLayout" columns="1" rows="5" hasBorders="false">
                 <layoutElement column="1" row="1" width="1" height="5">
-                    <component type="grid" name="deliveredProductReservations" source="#{form}.reservations">
+                    <component type="grid" name="deliveredProductReservations" source="#{form}.reservations"
+                               reference="deliveredProductReservations">
                         <option type="column" name="number" fields="location" expression="#location['number']"
                                 link="true" width="50"/>
                         <option type="column" name="name" fields="location" expression="#location['name']" link="true"
