@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 
 
-public class ResourceDTO {
+public class ResourceDTO implements AbstractDTO{
 
     private Long id;
 

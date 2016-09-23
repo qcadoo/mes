@@ -384,7 +384,6 @@ import java.util.stream.Collectors;
                     .getResourceQuery(document, true, addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode),
                             useAdditionalCode);
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
-
         }
     }
 
