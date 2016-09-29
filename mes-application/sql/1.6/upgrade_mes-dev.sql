@@ -1,4 +1,4 @@
-
+﻿
 -- added description to documentDto
 -- last touched 21.09.2016 by kama
 DROP VIEW materialflowresources_documentdto;
@@ -50,5 +50,12 @@ CREATE OR REPLACE VIEW materialflowresources_documentdto AS
 		ON ordersorder.id = document.order_id
 	LEFT JOIN subcontractorportal_suborder suborder
 		ON suborder.id = document.suborder_id;
+
+-- end
+
+-- Added new parameter rr
+-- last touched 28.09.2016 by kasi
+
+ALTER TABLE basic_parameter ADD COLUMN autorecalculateorder boolean;
 
 -- end
