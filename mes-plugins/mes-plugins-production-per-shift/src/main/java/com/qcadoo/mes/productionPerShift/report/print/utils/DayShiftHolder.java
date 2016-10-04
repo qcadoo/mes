@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,24 +21,49 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.constants;
+package com.qcadoo.mes.productionPerShift.report.print.utils;
 
-public final class ProductionPerShiftConstants {
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.joda.time.DateTime;
 
-    public static final String MODEL_PPS_REPORT = "ppsReport";
+import com.qcadoo.model.api.Entity;
 
-    private ProductionPerShiftConstants() {
+public class DayShiftHolder {
 
+    private Entity shift;
+
+    private DateTime day;
+
+    private HSSFCell cell;
+
+
+    public DayShiftHolder(Entity shift, DateTime day, HSSFCell cell) {
+        this.shift = shift;
+        this.day = day;
+        this.cell = cell;
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionPerShift";
+    public Entity getShift() {
+        return shift;
+    }
 
-    public static final String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
+    public void setShift(Entity shift) {
+        this.shift = shift;
+    }
 
-    public static final String MODEL_PROGRESS_FOR_DAY = "progressForDay";
+    public DateTime getDay() {
+        return day;
+    }
 
-    public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
+    public void setDay(DateTime day) {
+        this.day = day;
+    }
 
-    public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+    public HSSFCell getCell() {
+        return cell;
+    }
 
+    public void setCell(HSSFCell cell) {
+        this.cell = cell;
+    }
 }
