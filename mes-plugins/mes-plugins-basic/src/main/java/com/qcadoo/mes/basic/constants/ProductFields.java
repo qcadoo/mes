@@ -69,4 +69,6 @@ public final class ProductFields {
 
     public static final String ASSORTMENT = "assortment";
 
+    public static final String ADDITIONAL_CODES = "additionalCodes";
+    
 }
