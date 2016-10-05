@@ -221,6 +221,7 @@ public class OrderHooks {
                     + technology.getStringField(TechnologyFields.NUMBER);
             bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
             technology.setField(TechnologyFields.NUMBER, bNumber);
+            technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, null);
             technology.getDataDefinition().save(technology);
         }
     }
