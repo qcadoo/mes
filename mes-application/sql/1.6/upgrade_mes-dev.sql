@@ -52,3 +52,11 @@ CREATE OR REPLACE VIEW materialflowresources_documentdto AS
 		ON suborder.id = document.suborder_id;
 
 -- end
+
+
+-- table: basic_address
+-- last touched 04.10.2016 by lupo
+
+ALTER TABLE basic_address ADD COLUMN externalnumber character varying(255);
+
+-- end
