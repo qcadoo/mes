@@ -34,6 +34,7 @@ public class PPSReportColumnServiceImpl implements PPSReportColumnService {
         List<String> columns = Lists.newLinkedList();
         columns.add("productionLineReportColumn");
         columns.add("productNumberReportColumn");
+        columns.add("productNameReportColumn");
         columns.add("commentReportColumn");
         columns.add("orderNumberReportColumn");
         columns.add("orderSizeReportColumn");

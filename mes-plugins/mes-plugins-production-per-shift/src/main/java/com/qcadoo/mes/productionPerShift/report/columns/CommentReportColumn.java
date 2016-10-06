@@ -39,12 +39,21 @@ public class CommentReportColumn extends AbstractReportColumn {
     }
 
     @Override
-    public String getChangeoverValue(Entity changeover) {
+    public String getChangeoverValue(Entity pps) {
+        Entity changeover = ppsReportXlsHelper.getChangeover(ppsReportXlsHelper.getOrder(pps));
+        if (changeover == null) {
+            return StringUtils.EMPTY;
+        }
         if (StringUtils.isEmpty(changeover.getStringField("name"))) {
             return changeover.getStringField("number");
         } else {
             return changeover.getStringField("name");
         }
+    }
+
+    @Override
+    public String getFirstRowChangeoverValue(Entity pps) {
+        return getChangeoverValue(pps);
     }
 
     @Override

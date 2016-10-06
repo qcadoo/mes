@@ -108,11 +108,14 @@ public class PPSReportXlsService extends XlsDocumentService {
             final PPSReportXlsStyleContainer styleContainer) {
         HSSFRow headerAuthorLine = sheet.createRow(0);
 
-        HSSFCell updateDateCell = headerAuthorLine.createCell(4);
+        HSSFCell updateDateCell = headerAuthorLine.createCell(0);
         updateDateCell.setCellValue(translationService.translate(PPSReportConstants.COLUMN_HEADER_UPDATE_DATE, locale));
 
-        HSSFCell authorCell = headerAuthorLine.createCell(5);
+        HSSFCell authorCell = headerAuthorLine.createCell(2);
         authorCell.setCellValue(translationService.translate(PPSReportConstants.COLUMN_HEADER_AUTHOR, locale));
+
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 1));
+        sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 4));
 
         ppsReportXlsStyleHelper.setGreyDataStyle(updateDateCell, styleContainer);
         ppsReportXlsStyleHelper.setGreyDataStyle(authorCell, styleContainer);
@@ -130,7 +133,7 @@ public class PPSReportXlsService extends XlsDocumentService {
 
         for (ReportColumn column : columns) {
             HSSFCell cell = headerProduction.createCell(columnNumber);
-            cell.setCellValue(column.getIdentifier());
+            cell.setCellValue(column.getHeader(locale));
             column.setHeaderStyle(cell, styleContainer);
 
             columnNumber++;
@@ -215,12 +218,14 @@ public class PPSReportXlsService extends XlsDocumentService {
             final PPSReportXlsStyleContainer styleContainer) {
         HSSFRow row = sheet.createRow(1);
 
-        HSSFCell updateDateCell = row.createCell(4);
+        HSSFCell updateDateCell = row.createCell(0);
         updateDateCell.setCellValue(updateFormat.format(report.getDateField(PPSReportFields.UPDATE_DATE)));
 
-        HSSFCell authorCell = row.createCell(5);
+        HSSFCell authorCell = row.createCell(2);
         authorCell.setCellValue(ppsReportXlsHelper.getDocumentAuthor(report.getStringField(PPSReportFields.CREATE_USER)));
 
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 0, 1));
+        sheet.addMergedRegion(new CellRangeAddress(1, 1, 2, 4));
         ppsReportXlsStyleHelper.setHeaderStyle2(updateDateCell, styleContainer);
         ppsReportXlsStyleHelper.setHeaderStyle2(authorCell, styleContainer);
     }
@@ -240,13 +245,12 @@ public class PPSReportXlsService extends XlsDocumentService {
 
         Collections.sort(productionPerShifts, new EntityProductionPerShiftsComparator());
 
-        String tmp = "";
-        String tmp2 = "";
-
-        boolean tmpBg = false;
+        String oldProductionLineNumber = "";
+        String newProductionLineNumber;
 
         int rowNum = 6;
-        int mod = 0;
+        boolean isFirstRow;
+        boolean greyBg = false;
 
         for (Entity productionPerShift : productionPerShifts) {
 
@@ -254,68 +258,57 @@ public class PPSReportXlsService extends XlsDocumentService {
             Entity changeover = ppsReportXlsHelper.getChangeover(order);
             Entity productionLine = ppsReportXlsHelper.getProductionLine(productionPerShift);
 
+            newProductionLineNumber = productionLine.getStringField(ProductionLineFields.NUMBER);
+            isFirstRow = !oldProductionLineNumber.equals(newProductionLineNumber);
+            if (isFirstRow) {
+                greyBg = !greyBg;
+            }
             if (changeover != null && isChangeOverOnThisPrint(order, report, startTime)) {
                 HSSFRow row = sheet.createRow(rowNum++);
                 int colIndex = 0;
                 for (ReportColumn column : columns) {
                     HSSFCell cell = row.createCell(colIndex);
-                    if (tmp.equals(productionLine.getStringField(ProductionLineFields.NUMBER))) {
-                        cell.setCellValue(column.getChangeoverValue(productionPerShift));
 
-                        tmpBg = false;
-                    } else {
-
+                    if (isFirstRow) {
                         cell.setCellValue(column.getFirstRowChangeoverValue(productionPerShift));
-                        tmpBg = true;
-
-                        tmp2 = productionLine.getStringField(ProductionLineFields.NUMBER);
+                    } else {
+                        cell.setCellValue(column.getChangeoverValue(productionPerShift));
                     }
-                    tmp = productionLine.getStringField(ProductionLineFields.NUMBER);
                     colIndex++;
                 }
-                if (tmpBg) {
-                    mod++;
-                }
+                isFirstRow = false;
                 addSeriesForChangeOver(sheet, report, row, changeover, order, styleContainer, columns);
             }
             HSSFRow row = sheet.createRow(rowNum++);
             int colIndex = 0;
             for (ReportColumn column : columns) {
                 HSSFCell cell = row.createCell(colIndex);
-                if (tmp.equals(productionLine.getStringField(ProductionLineFields.NUMBER))) {
-                    cell.setCellValue(column.getValue(productionPerShift));
-
-                    tmpBg = false;
-                } else {
+                if (isFirstRow) {
                     cell.setCellValue(column.getFirstRowValue(productionPerShift));
-                    tmpBg = true;
-
-                    tmp2 = productionLine.getStringField(ProductionLineFields.NUMBER);
+                } else {
+                    cell.setCellValue(column.getValue(productionPerShift));
                 }
 
-                if (tmp.equals(tmp2) || tmpBg) {
-                    if (mod % 2 == 0) {
-                        if (columns.size() == colIndex - 1) {
-                            column.setWhiteDataStyleEnd(cell, styleContainer);
-                        } else {
-                            column.setWhiteDataStyle(cell, styleContainer);
-                        }
+                if (greyBg) {
+                    if (columns.size() == colIndex - 1) {
+                        column.setGreyDataStyleEnd(cell, styleContainer);
                     } else {
-                        if (columns.size() == colIndex - 1) {
-                            column.setGreyDataStyleEnd(cell, styleContainer);
-                        } else {
-                            column.setGreyDataStyleEnd(cell, styleContainer);
-                        }
+                        column.setGreyDataStyle(cell, styleContainer);
+                    }
+                } else {
+
+                    if (columns.size() == colIndex - 1) {
+                        column.setWhiteDataStyleEnd(cell, styleContainer);
+                    } else {
+                        column.setWhiteDataStyle(cell, styleContainer);
                     }
                 }
-            }
-            if (tmpBg) {
-                mod++;
+                colIndex++;
             }
 
-            addSeriesOfDailyProgress(sheet, report, row, productionPerShift, mod % 2 != 0, styleContainer, columns);
+            addSeriesOfDailyProgress(sheet, report, row, productionPerShift, greyBg, styleContainer, columns);
 
-            tmp = productionLine.getStringField(ProductionLineFields.NUMBER);
+            oldProductionLineNumber = newProductionLineNumber;
         }
 
         setColumnWidths(sheet, columns);

@@ -47,18 +47,5 @@ public class ProductionLineReportColumn extends AbstractReportColumn {
         return 8 * 256;
     }
 
-    @Override
-    public void setWhiteDataStyle(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer) {
-        cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_WhiteDataStyleRed));
-    }
 
-    @Override
-    public void setGreyDataStyle(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer) {
-        cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_GreyDataStyleRed));
-    }
-
-    @Override
-    public void setHeaderStyle(final HSSFCell cell, final PPSReportXlsStyleContainer styleContainer) {
-        cell.setCellStyle(styleContainer.getStyles().get(PPSReportXlsStyleContainer.I_HeaderStyle2Red));
-    }
 }
