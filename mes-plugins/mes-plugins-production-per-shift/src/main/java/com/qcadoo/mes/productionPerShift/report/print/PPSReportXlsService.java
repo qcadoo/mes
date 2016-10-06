@@ -85,7 +85,7 @@ public class PPSReportXlsService extends XlsDocumentService {
     private NumberService numberService;
 
     @Autowired
-    private PPSReportColumnService ppsReportColumnService;
+    private PPSReportColumnHelper ppsReportColumnHelper;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -99,7 +99,7 @@ public class PPSReportXlsService extends XlsDocumentService {
 
         HSSFRow headerMainLine = sheet.createRow(3);
         HSSFRow headerProduction = sheet.createRow(4);
-        List<ReportColumn> columns = ppsReportColumnService.getReportColumns();
+        List<ReportColumn> columns = ppsReportColumnHelper.getReportColumns();
         createHeaderLineForProduction(sheet, locale, headerMainLine, headerProduction, styleContainer, columns);
         createHeaderLineForDaysWithShifts(sheet, locale, headerMainLine, headerProduction, report, styleContainer, columns);
     }
@@ -209,7 +209,7 @@ public class PPSReportXlsService extends XlsDocumentService {
         sheet.getPrintSetup().setHResolution((short) 1);
         PPSReportXlsStyleContainer styleContainer = new PPSReportXlsStyleContainer(sheet);
 
-        List<ReportColumn> columns = ppsReportColumnService.getReportColumns();
+        List<ReportColumn> columns = ppsReportColumnHelper.getReportColumns();
         addSeriesOfReportAuthorAndDate(sheet, report, styleContainer);
         addSeriesOfProductionLine(sheet, report, styleContainer, columns);
     }

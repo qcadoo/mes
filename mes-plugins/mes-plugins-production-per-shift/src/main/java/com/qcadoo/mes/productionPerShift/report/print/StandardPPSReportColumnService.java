@@ -5,13 +5,18 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.report.columns.ReportColumn;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Service
-public class PPSReportColumnServiceImpl implements PPSReportColumnService {
+@RunIfEnabled(ProductionPerShiftConstants.PLUGIN_IDENTIFIER)
+@Order(2)
+public class StandardPPSReportColumnService implements PPSReportColumnService {
 
     @Autowired
     private ApplicationContext applicationContext;

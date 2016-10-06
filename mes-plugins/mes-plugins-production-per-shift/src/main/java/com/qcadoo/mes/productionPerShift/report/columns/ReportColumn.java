@@ -13,13 +13,13 @@ public interface ReportColumn {
 
     String getHeader(Locale locale);
 
-    String getValue(Entity entity);
+    String getValue(Entity pps);
 
-    String getFirstRowValue(Entity entity);
+    String getFirstRowValue(Entity pps);
 
-    String getFirstRowChangeoverValue(Entity entity);
+    String getFirstRowChangeoverValue(Entity pps);
 
-    String getChangeoverValue(Entity entity);
+    String getChangeoverValue(Entity pps);
 
     int getColumnWidth();
 
