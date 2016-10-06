@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -53,6 +47,11 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
@@ -172,14 +171,29 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     @Override
     public Entity correct(Entity productionTracking) {
         DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
-        Entity correctingProductionTracking = productionTrackingDD.copy(productionTracking.getId()).get(0);
-        copyOtherFields(productionTracking, correctingProductionTracking);
-        productionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
+        boolean last = productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING);
+        Entity clearedProductionTracking = clearLastProductionTracking(productionTracking);
+        Entity correctingProductionTracking = productionTrackingDD.copy(clearedProductionTracking.getId()).get(0);
+
+        copyOtherFields(clearedProductionTracking, correctingProductionTracking);
+        clearedProductionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
         correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, true);
+        correctingProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, last);
         productionTrackingDD.save(correctingProductionTracking);
 
-        changeState(productionTracking, ProductionTrackingState.CORRECTED);
+        changeState(clearedProductionTracking, ProductionTrackingState.CORRECTED);
         return correctingProductionTracking;
+    }
+
+    private Entity clearLastProductionTracking(Entity productionTracking) {
+        if (productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
+            productionTracking.setField(ProductionTrackingFields.LAST_TRACKING, false);
+            productionTracking = productionTracking.getDataDefinition().save(productionTracking);
+            return productionTracking;
+        } else {
+            return productionTracking;
+        }
+
     }
 
     private void copyOtherFields(Entity productionTracking, Entity correctingProductionTracking) {
