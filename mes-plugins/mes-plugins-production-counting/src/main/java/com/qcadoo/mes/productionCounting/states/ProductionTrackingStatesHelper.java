@@ -65,7 +65,7 @@ public class ProductionTrackingStatesHelper {
 
     @Autowired
     private StateExecutorService stateExecutorService;
-    
+
     public void setInitialState(final Entity productionTracking) {
         stateChangeEntityBuilder.buildInitial(stateChangeDescriber, productionTracking, ProductionTrackingState.DRAFT);
     }
@@ -98,28 +98,34 @@ public class ProductionTrackingStatesHelper {
         return scb.setMaxResults(1).uniqueResult();
     }
 
-
     public StateChangeStatus tryAccept(final Entity productionRecord, final boolean logMessages) {
-        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
-                ProductionTrackingStateStringValues.ACCEPTED); 
-        
         stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.ACCEPTED);
-        
-        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
-            logMessages(context);
+
+        if (productionRecord.isValid()) {
+            return StateChangeStatus.SUCCESSFUL;
+        } else {
+            if (logMessages) {
+                LOGGER.error(productionRecord.getErrors().toString());
+                LOGGER.error(productionRecord.getGlobalErrors().toString());
+            }
+
+            return StateChangeStatus.FAILURE;
         }
-        return context.getStatus();
     }
 
     public StateChangeStatus tryCorrect(final Entity productionRecord, final boolean logMessages) {
-        StateChangeContext context = stateChangeContextBuilder.build(stateChangeDescriber, productionRecord,
-                ProductionTrackingStateStringValues.CORRECTED);
-        
         stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.CORRECTED);
-        if (logMessages && context.getStatus() == StateChangeStatus.FAILURE) {
-            logMessages(context);
+
+        if (productionRecord.isValid()) {
+            return StateChangeStatus.SUCCESSFUL;
+        } else {
+            if (logMessages) {
+                LOGGER.error(productionRecord.getErrors().toString());
+                LOGGER.error(productionRecord.getGlobalErrors().toString());
+            }
+
+            return StateChangeStatus.FAILURE;
         }
-        return context.getStatus();
     }
 
     private void logMessages(final StateChangeContext context) {
