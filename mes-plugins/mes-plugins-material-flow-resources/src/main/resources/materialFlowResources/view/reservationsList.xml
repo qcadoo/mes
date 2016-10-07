@@ -66,6 +66,9 @@
             <option type="orderable"
                     value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
 
+            <criteriaModifier
+                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ReservationCriteriaModifiers"
+                    method="showReservationsBiggerThanZero"/>
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>
             <option type="prioritizable" value="false"/>

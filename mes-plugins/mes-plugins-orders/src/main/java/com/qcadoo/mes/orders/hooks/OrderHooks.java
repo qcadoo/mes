@@ -221,6 +221,7 @@ public class OrderHooks {
                     + technology.getStringField(TechnologyFields.NUMBER);
             bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
             technology.setField(TechnologyFields.NUMBER, bNumber);
+            technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, null);
             technology.getDataDefinition().save(technology);
         }
     }
@@ -589,6 +590,7 @@ public class OrderHooks {
         order.setField(OrderFields.DATE_FROM, order.getDateField(OrderFields.START_DATE));
         order.setField(OrderFields.DATE_TO, order.getDateField(OrderFields.FINISH_DATE));
         order.setField(OrderFields.DONE_QUANTITY, null);
+        order.setField(OrderFields.WASTES_QUANTITY, null);
         order.setField(OrderFields.EXTERNAL_NUMBER, null);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, null);

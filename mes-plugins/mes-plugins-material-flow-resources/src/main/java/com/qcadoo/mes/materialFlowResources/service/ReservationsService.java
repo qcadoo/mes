@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -24,7 +25,8 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import java.util.Map;
+import com.qcadoo.tenant.api.MultiTenantCallback;
+import com.qcadoo.tenant.api.MultiTenantService;
 
 @Service
 public class ReservationsService {
@@ -38,7 +40,26 @@ public class ReservationsService {
     @Autowired
     private ResourceStockService resourceStockService;
 
+    @Autowired
+    private MultiTenantService multiTenantService;
+
     private final static String L_QUANTITY = "quantity";
+
+    public void cleanReservationsTrigger() {
+        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
+
+            @Override
+            public void invoke() {
+                cleanReservations();
+            }
+
+        });
+    }
+
+    public void cleanReservations() {
+        String sql = "DELETE FROM materialflowresources_reservation WHERE quantity = 0";
+        jdbcTemplate.update(sql, Maps.newHashMap());
+    }
 
     public boolean reservationsEnabledForDocumentPositions() {
         Entity documentPositionParameters = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -58,15 +79,14 @@ public class ReservationsService {
     }
 
     /**
-     * Creates new reservation for position with given id, using specified
-     * parameters, and updates resource stock. Uses jdbcTemplate.
+     * Creates new reservation for position with given id, using specified parameters, and updates resource stock. Uses
+     * jdbcTemplate.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding framework method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding framework method.
      *
-     * @param params map containing keys: id (position id), quantity,
-     * product_id, document_id
-     * @see ReservationsServiceImpl#createReservation(Entity)
+     * @param params
+     *            map containing keys: id (position id), quantity, product_id, document_id
+     * @see ReservationsService#createReservationFromDocumentPosition(Entity)
      */
     public void createReservationFromDocumentPosition(Map<String, Object> params) {
         if (!ReservationsService.this.reservationsEnabledForDocumentPositions(params)) {
@@ -80,14 +100,12 @@ public class ReservationsService {
     }
 
     /**
-     * Creates new reservation for position and updates resource stock. Uses
-     * framework.
+     * Creates new reservation for position and updates resource stock. Uses framework.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding jdbc method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding jdbc method.
      *
      * @param position
-     * @see ReservationsServiceImpl#createReservation(Map)
+     * @see ReservationsService#createReservationFromDocumentPosition(Map)
      */
     public void createReservationFromDocumentPosition(final Entity position) {
         if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
@@ -111,15 +129,14 @@ public class ReservationsService {
     }
 
     /**
-     * Updates existing reservation for position with given id, using specified
-     * parameters, and updates resource stock. Uses jdbcTemplate.
+     * Updates existing reservation for position with given id, using specified parameters, and updates resource stock. Uses
+     * jdbcTemplate.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding framework method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding framework method.
      *
-     * @param params map containing keys: id (position id), quantity,
-     * product_id, document_id
-     * @see ReservationsServiceImpl#updateReservation(Entity)
+     * @param params
+     *            map containing keys: id (position id), quantity, product_id, document_id
+     * @see ReservationsService#updateReservationFromDocumentPosition(Entity)
      */
     public void updateReservationFromDocumentPosition(Map<String, Object> params) {
         if (!ReservationsService.this.reservationsEnabledForDocumentPositions(params)) {
@@ -165,14 +182,12 @@ public class ReservationsService {
     }
 
     /**
-     * Updates reservation for position and updates resource stock. Uses
-     * framework.
+     * Updates reservation for position and updates resource stock. Uses framework.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding jdbc method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding jdbc method.
      *
      * @param position
-     * @see ReservationsServiceImpl#updateReservation(Map)
+     * @see ReservationsService#updateReservationFromDocumentPosition(Map)
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
         if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
@@ -192,15 +207,13 @@ public class ReservationsService {
     }
 
     /**
-     * Deletes reservation for position with given id and updates resource
-     * stock. Uses jdbcTemplate.
+     * Deletes reservation for position with given id and updates resource stock. Uses jdbcTemplate.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding framework method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding framework method.
      *
-     * @param params map containing keys: id (position id), quantity,
-     * product_id, document_id
-     * @see ReservationsServiceImpl#deleteReservation(Entity)
+     * @param params
+     *            map containing keys: id (position id), quantity, product_id, document_id
+     * @see ReservationsService#deleteReservationFromDocumentPosition(Entity)
      */
     public void deleteReservationFromDocumentPosition(Map<String, Object> params) {
         if (!reservationsEnabledForDocumentPositions(params)) {
@@ -212,14 +225,12 @@ public class ReservationsService {
     }
 
     /**
-     * Deletes reservation for position and updates resource stock. Uses
-     * framework.
+     * Deletes reservation for position and updates resource stock. Uses framework.
      *
-     * Warning! If logic in this method is changed, it should also be applied to
-     * corresponding jdbc method.
+     * Warning! If logic in this method is changed, it should also be applied to corresponding jdbc method.
      *
      * @param position
-     * @see ReservationsServiceImpl#deleteReservation(Map)
+     * @see ReservationsService#deleteReservationFromDocumentPosition(Map)
      */
     public void deleteReservationFromDocumentPosition(final Entity position) {
         if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {

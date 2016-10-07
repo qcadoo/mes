@@ -59,6 +59,8 @@
 
         <string name="contactPerson"/>
 
+        <string name="externalNumber" unique="true"/>
+
         <boolean name="canBeDeleted" default="false" required="true"/>
     </fields>
 

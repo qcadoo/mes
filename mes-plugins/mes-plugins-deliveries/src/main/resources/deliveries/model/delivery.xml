@@ -91,6 +91,8 @@
                         method="onView" />
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
                        method="validate" />
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"
+                          method="onSave" />
     </hooks>
     <identifier expression="#number + ' - ' + #name" />
 </model>

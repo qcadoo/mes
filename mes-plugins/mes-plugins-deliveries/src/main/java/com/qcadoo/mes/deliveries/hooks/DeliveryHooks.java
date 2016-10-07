@@ -39,6 +39,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
@@ -46,7 +47,9 @@ import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
+import java.util.Objects;
 
 @Service
 public class DeliveryHooks {
@@ -83,6 +86,10 @@ public class DeliveryHooks {
 
     public void onView(final DataDefinition deliveryDD, final Entity delivery) {
         fillOrderedAndDeliveredCumulatedQuantityAndCumulatedTotalPrice(delivery);
+    }
+
+    public void onSave(final DataDefinition deliveryDD, final Entity delivery) {
+        setStorageLocations(delivery);
     }
 
     private void setInitialState(final Entity delivery) {
@@ -144,4 +151,26 @@ public class DeliveryHooks {
         return reservationService.validateDeliveryAgainstReservations(delivery);
     }
 
+    private void setStorageLocations(Entity delivery) {
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        if (location == null) {
+            clearStorageLocations(delivery);
+
+        } else if (delivery.getId() != null) {
+            Entity locationFromDb = delivery.getDataDefinition().get(delivery.getId()).getBelongsToField(DeliveryFields.LOCATION);
+            if (locationFromDb == null || !Objects.equals(location.getId(), locationFromDb.getId())) {
+                clearStorageLocations(delivery);
+            }
+        }
+    }
+
+    private void clearStorageLocations(Entity delivery) {
+        EntityList deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        if (deliveredProducts != null) {
+            for (Entity deliveryProduct : deliveredProducts) {
+                deliveryProduct.setField(DeliveredProductFields.STORAGE_LOCATION, null);
+                deliveryProduct.getDataDefinition().save(deliveryProduct);
+            }
+        }
+    }
 }

@@ -44,6 +44,7 @@
         <string name="companyName"/>
         <integer name="user_id"/>
         <string name="userName"/>
+        <string name="description"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="document"/>
