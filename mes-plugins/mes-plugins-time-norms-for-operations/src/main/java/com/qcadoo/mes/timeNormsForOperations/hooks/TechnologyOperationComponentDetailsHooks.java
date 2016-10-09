@@ -74,10 +74,10 @@ public class TechnologyOperationComponentDetailsHooks {
 
         BigDecimal currentQuantity = productOutComponent.getDecimalField("quantity");
 
-        if (timeNormsQuantity.compareTo(currentQuantity) != 0) {
+        if (timeNormsQuantity != null && timeNormsQuantity.compareTo(currentQuantity) != 0) {
             form.addMessage("technologies.technologyOperationComponent.validate.error.invalidQuantity", MessageType.INFO, false,
-                    numberService.format(currentQuantity), productOutComponent.getBelongsToField("product")
-                            .getStringField("unit"));
+                    numberService.format(currentQuantity),
+                    productOutComponent.getBelongsToField("product").getStringField("unit"));
         }
     }
 

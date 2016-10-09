@@ -1,4 +1,5 @@
-﻿-- added description to documentDto
+
+-- added description to documentDto
 -- last touched 21.09.2016 by kama
 DROP VIEW materialflowresources_documentdto;
 
@@ -52,9 +53,10 @@ CREATE OR REPLACE VIEW materialflowresources_documentdto AS
 
 -- end
 
--- Added new parameter rr
--- last touched 28.09.2016 by kasi
 
-ALTER TABLE basic_parameter ADD COLUMN autorecalculateorder boolean;
+-- table: basic_address
+-- last touched 04.10.2016 by lupo
+
+ALTER TABLE basic_address ADD COLUMN externalnumber character varying(255);
 
 -- end

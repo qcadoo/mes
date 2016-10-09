@@ -196,9 +196,9 @@
 		</windowTab>
 
 		<windowTab name="addressesTab" reference="addressesTab">
-			<component type="gridLayout" name="addressesGridLayout" columns="1"
-					   rows="1">
-				<layoutElement column="1" row="1">
+			<component type="flowGridLayout" name="addressesGridLayout" columns="1"
+					   rows="3">
+				<layoutElement column="1" row="1" minHeight="3">
 					<component type="grid" name="addresses" reference="addresses"
 							   source="#{form}.addresses">
 						<option type="column" name="addressType" fields="addressType"
