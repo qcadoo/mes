@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,16 +86,23 @@ public class AddressHooks {
     }
 
     public boolean onDelete(final DataDefinition addressDD, final Entity address) {
+        String externalNumber = address.getStringField(AddressFields.EXTERNAL_NUMBER);
         String addressType = address.getStringField(AddressFields.ADDRESS_TYPE);
 
         boolean canBeDeleted = address.getBooleanField(AddressFields.CAN_BE_DELETED);
 
-        if (basicService.checkIfIsMainAddressType(addressType)) {
-            if (canBeDeleted) {
-                return true;
-            }
+        if (StringUtils.isEmpty(externalNumber)) {
+            if (basicService.checkIfIsMainAddressType(addressType)) {
+                if (canBeDeleted) {
+                    return true;
+                }
 
-            address.addGlobalError("basic.address.error.mainAddressCannotBeDeleted");
+                address.addGlobalError("basic.address.error.mainAddressCannotBeDeleted");
+
+                return false;
+            }
+        } else {
+            address.addGlobalError("basic.address.error.addressIsExternalSynchronized");
 
             return false;
         }
