@@ -64,6 +64,9 @@ public class ResourceModelHooks {
 
     public void onCreate(final DataDefinition resourceDD, final Entity resource) {
         resource.setField(ResourceFields.IS_CORRECTED, false);
+        if (resource.getField(ResourceFields.WASTE) == null) {
+            resource.setField(ResourceFields.WASTE, false);
+        }
     }
 
     public void generateBatch(final DataDefinition resourceDD, final Entity resource) {
