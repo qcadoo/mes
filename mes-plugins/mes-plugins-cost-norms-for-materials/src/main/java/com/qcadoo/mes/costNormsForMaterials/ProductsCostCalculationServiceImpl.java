@@ -24,7 +24,6 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.technologies.constants.MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -92,8 +91,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Override
     public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        BigDecimal cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.forMode(
-                calculateMaterialCostsMode).getStrValue()));
+        BigDecimal cost = BigDecimalUtils
+                .convertNullToZero(product.getField(ProductsCostFields.forMode(calculateMaterialCostsMode).getStrValue()));
         BigDecimal costForNumber = BigDecimalUtils.convertNullToOne(product.getDecimalField("costForNumber"));
         if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
             costForNumber = BigDecimal.ONE;
@@ -112,7 +111,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity entity, final Entity technology,
             final BigDecimal quantity, final String calculateMaterialCostsMode) {
         Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(entity, technology, quantity,
-                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+                MrpAlgorithm.ONLY_COMPONENTS);
         Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
@@ -132,14 +131,14 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
         Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
-                COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+                MrpAlgorithm.ONLY_COMPONENTS);
         Map<Entity, BigDecimal> results = Maps.newHashMap();
 
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
             for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
-                BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts,
-                        productQuantity.getValue(), calculateMaterialCostsMode);
+                BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts, productQuantity.getValue(),
+                        calculateMaterialCostsMode);
                 results.put(product, thisProductsCost);
             }
         }
