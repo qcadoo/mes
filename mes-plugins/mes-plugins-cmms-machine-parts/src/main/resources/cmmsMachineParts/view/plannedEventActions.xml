@@ -34,7 +34,7 @@
             <group name="navigation">
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
             </group>
-            <group name="actionsGroup" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_ACTIONS_EDIT">
+            <group name="actionsGroup" defaultAuthorizationRole="ROLE_PLANNED_EVENTS_BASIC_EDIT">
                 <bigButton name="addActions" icon="genealogyIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
