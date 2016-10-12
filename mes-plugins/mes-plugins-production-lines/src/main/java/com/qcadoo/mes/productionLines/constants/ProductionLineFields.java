@@ -49,4 +49,6 @@ public final class ProductionLineFields {
 
     public static final String WORKSTATIONS = "workstations";
 
+    public static final String SHIFTS = "shifts";
+
 }
