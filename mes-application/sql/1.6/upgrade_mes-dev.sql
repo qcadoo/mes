@@ -58,3 +58,9 @@ CREATE OR REPLACE VIEW materialflowresources_documentdto AS
 ALTER TABLE basic_parameter ADD COLUMN autorecalculateorder boolean;
 
 -- end
+
+# ANEKS-48
+alter table basic_parameter add ppsIsAutomatic boolean;
+alter table basic_parameter add ppsProducedAmountRecalculatePlan boolean;
+alter table basic_parameter add ppsAlgorithm character varying(255);
+-- end
