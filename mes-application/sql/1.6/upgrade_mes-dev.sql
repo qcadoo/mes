@@ -59,8 +59,8 @@ ALTER TABLE basic_parameter ADD COLUMN autorecalculateorder boolean;
 
 -- end
 
-# ANEKS-48
-alter table basic_parameter add ppsIsAutomatic boolean;
-alter table basic_parameter add ppsProducedAmountRecalculatePlan boolean;
-alter table basic_parameter add ppsAlgorithm character varying(255);
+-- #ANEKS-48
+ALTER TABLE basic_parameter ADD ppsIsAutomatic boolean;
+ALTER TABLE basic_parameter ADD ppsProducedAmountRecalculatePlan boolean;
+ALTER TABLE basic_parameter ADD ppsAlgorithm character varying(255);
 -- end
