@@ -29,6 +29,7 @@
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
         xsi:schemaLocation="http://schema.qcadoo.org/plugin
 		http://schema.qcadoo.org/plugin.xsd 
 		http://schema.qcadoo.org/modules/model 
@@ -180,50 +181,50 @@
 
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-                    method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
         </model:model-hook>
 
         <model:model-hook plugin="basic" model="parameter">
             <model:onCreate
-                    class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-                    method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
+                method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-                    method="validateTransferDate"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                method="validateTransferDate"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
-                    method="validateTransferResources"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelValidatorsMFR"
+                method="validateTransferResources"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:onCreate
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-                    method="updateDate"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                method="updateDate"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:onSave
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
-                    method="manageResources"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransferModelHooksMFR"
+                method="manageResources"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transformations">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-                    method="checkIfTransformationsDateIsValid"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                method="checkIfTransformationsDateIsValid"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transformations">
             <model:validatesWith
-                    class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
-                    method="checkIfTransfersResourcesAreValid"/>
+                class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsModelValidatorsMFR"
+                method="checkIfTransfersResourcesAreValid"/>
         </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="location">
@@ -323,6 +324,7 @@
                              plugin="materialFlowResources"/>
         </model:model-field>
 
+        <custom:custom class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesOnStartupService" />
     </modules>
 
     <features>

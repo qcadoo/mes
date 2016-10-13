@@ -51,6 +51,9 @@ public class DocumentPositionParametersValidators {
     }
 
     private boolean draftMakesReservationChanged(final DataDefinition dataDefinition, final Entity parameters) {
+        if (parameters.getId() == null) {
+            return false;
+        }
         Entity parametersFromDb = dataDefinition.get(parameters.getId());
         return parametersFromDb.getBooleanField(DRAFT_MAKES_RESERVATION) != parameters.getBooleanField(DRAFT_MAKES_RESERVATION);
     }

@@ -192,14 +192,6 @@ CREATE OR REPLACE VIEW technologies_technologydto AS SELECT technology.id, techn
 
 -- end
 
-
-CREATE OR REPLACE FUNCTION prepare_documentpositionparameters() RETURNS VOID AS $$ BEGIN INSERT INTO materialflowresources_documentpositionparameters (id) VALUES (1); INSERT INTO materialflowresources_documentpositionparametersitem (id,ordering,name, parameters_id, editable) VALUES (1,1,'act', 1, false),(2,2,'number', 1, false),(3,3,'product', 1, false),(4,4,'additionalCode', 1, true),(5,5,'quantity', 1, false),(6,6,'unit', 1, false),(7,7,'givenquantity', 1, false),(8,8,'givenunit', 1, false),(9,9,'conversion', 1, false),(10,10,'resource', 1, true),(11,11,'price', 1, true),(12,12,'batch', 1, true),(13,13,'productionDate', 1, true),(14,14,'expirationDate', 1, true),(15,15,'storageLocation', 1, true),(16,16,'palletNumber', 1, true),(17,17,'typeOfPallet', 1, true),(19,19,'waste', 1, true); END; $$ LANGUAGE 'plpgsql';
-
-SELECT * FROM prepare_documentpositionparameters();
-
-DROP FUNCTION prepare_documentpositionparameters();
-
-
 -- VIEW: orders_orderdto
 
 ALTER TABLE productflowthrudivision_warehouseissue DROP COLUMN order_id;
