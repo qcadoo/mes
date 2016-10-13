@@ -6,11 +6,12 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.Module;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class MaterialFlowResourcesOnStartupService extends Module {
@@ -39,21 +40,22 @@ public class MaterialFlowResourcesOnStartupService extends Module {
         items.add(new Object[]{1, "act", false});
         items.add(new Object[]{2, "number", false});
         items.add(new Object[]{3, "product", false});
-        items.add(new Object[]{4, "additionalCode", true});
-        items.add(new Object[]{5, "quantity", false});
-        items.add(new Object[]{6, "unit", false});
-        items.add(new Object[]{7, "givenquantity", false});
-        items.add(new Object[]{8, "givenunit", false});
-        items.add(new Object[]{9, "conversion", false});
-        items.add(new Object[]{10, "resource", true});
-        items.add(new Object[]{11, "price", true});
-        items.add(new Object[]{12, "batch", true});
-        items.add(new Object[]{13, "productionDate", true});
-        items.add(new Object[]{14, "expirationDate", true});
-        items.add(new Object[]{15, "storageLocation", true});
-        items.add(new Object[]{16, "palletNumber", true});
-        items.add(new Object[]{17, "typeOfPallet", true});
-        items.add(new Object[]{18, "waste", true});
+        items.add(new Object[]{4, "productName", true});
+        items.add(new Object[]{5, "additionalCode", true});
+        items.add(new Object[]{6, "quantity", false});
+        items.add(new Object[]{7, "unit", false});
+        items.add(new Object[]{8, "givenquantity", false});
+        items.add(new Object[]{9, "givenunit", false});
+        items.add(new Object[]{10, "conversion", false});
+        items.add(new Object[]{11, "resource", true});
+        items.add(new Object[]{12, "price", true});
+        items.add(new Object[]{13, "batch", true});
+        items.add(new Object[]{14, "productionDate", true});
+        items.add(new Object[]{15, "expirationDate", true});
+        items.add(new Object[]{16, "storageLocation", true});
+        items.add(new Object[]{17, "palletNumber", true});
+        items.add(new Object[]{18, "typeOfPallet", true});
+        items.add(new Object[]{19, "waste", true});
 
         for (Object[] item : items) {
             Entity itemEntity = positionParametersItemDD.find().add(SearchRestrictions.eq("name", item[1])).uniqueResult();
