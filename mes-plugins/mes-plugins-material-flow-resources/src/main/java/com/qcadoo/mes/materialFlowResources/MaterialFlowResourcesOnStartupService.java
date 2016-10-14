@@ -1,5 +1,7 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -19,6 +21,14 @@ public class MaterialFlowResourcesOnStartupService extends Module {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ParameterService parameterService;
+
+    @Override
+    public void enableOnStartup() {
+        setDocumentPositionParameters();
+    }
+
     @Override
     public void enable() {
         setDocumentPositionParameters();
@@ -33,7 +43,16 @@ public class MaterialFlowResourcesOnStartupService extends Module {
         Entity positionParameters = positionParametersDD.find().uniqueResult();
         if (positionParameters == null) {
             positionParameters = positionParametersDD.create();
+
+            positionParameters.setField("suggestResource", "true");
+            positionParameters.setField("draftMakesReservation", "true");
+            positionParameters.setField("acceptanceOfDocumentBeforePrinting", "true");
+
             positionParameters = positionParametersDD.save(positionParameters);
+
+            Entity parameter = parameterService.getParameter();
+            parameter.setField("documentPositionParameters", positionParameters);
+            parameter.getDataDefinition().save(parameter);
         }
 
         List<Object[]> items = new ArrayList<>();
@@ -61,13 +80,15 @@ public class MaterialFlowResourcesOnStartupService extends Module {
             Entity itemEntity = positionParametersItemDD.find().add(SearchRestrictions.eq("name", item[1])).uniqueResult();
             if (itemEntity == null) {
                 itemEntity = positionParametersItemDD.create();
-            }
-            itemEntity.setField("ordering", item[0]);
-            itemEntity.setField("name", item[1]);
-            itemEntity.setField("parameters", positionParameters);
-            itemEntity.setField("editable", item[2]);
 
-            itemEntity = positionParametersItemDD.save(itemEntity);
+                itemEntity.setField("ordering", item[0]);
+                itemEntity.setField("name", item[1]);
+                itemEntity.setField("parameters", positionParameters);
+                itemEntity.setField("editable", item[2]);
+                itemEntity.setField("checked", true);
+
+                positionParametersItemDD.save(itemEntity);
+            }
         }
     }
 
