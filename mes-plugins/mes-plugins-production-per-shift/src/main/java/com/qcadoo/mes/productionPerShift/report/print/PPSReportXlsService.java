@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -397,8 +398,16 @@ public class PPSReportXlsService extends XlsDocumentService {
             columnNumber = columns.size();
             for (DateTime day : days) {
                 for (Entity shift : shifts) {
-                    DateTime shiftStart = getShiftStartDate(day, shift);
-                    DateTime shiftEnd = getShiftEndDate(day, shift);
+                    Optional<DateTime> maybeShiftStart = getShiftStartDate(day, shift);
+                    Optional<DateTime> maybeShiftEnd = getShiftEndDate(day, shift);
+                    HSSFCell cell = mapCells.get(columnNumber).getCell();
+                    if (!maybeShiftStart.isPresent() || !maybeShiftEnd.isPresent()) {
+                        cell.setCellValue("");
+                        columnNumber++;
+                        continue;
+                    }
+                    DateTime shiftEnd = maybeShiftEnd.get();
+                    DateTime shiftStart = maybeShiftStart.get();
                     if (shiftStart.toDate().after(shiftEnd.toDate())) {
                         shiftEnd = shiftEnd.plusDays(1);
                     }
@@ -410,7 +419,6 @@ public class PPSReportXlsService extends XlsDocumentService {
 
                         if (duration - changeoverOnShift > 0) {
                             if (changeoverOnShift > 0) {
-                                HSSFCell cell = mapCells.get(columnNumber).getCell();
 
                                 cell.setCellValue(DurationFormatUtils.formatDuration(changeoverOnShift * 1000, "HH:mm"));
                             }
@@ -420,8 +428,14 @@ public class PPSReportXlsService extends XlsDocumentService {
 
                                 while (durationToMark > 0) {
                                     HSSFCell cellBefore = mapCells.get(currentIndex).getCell();
-                                    DateTime start = getShiftStartDate(day, shift);
-                                    DateTime end = getShiftEndDate(day, shift);
+                                    Optional<DateTime> maybeStart = getShiftStartDate(day, shift);
+                                    Optional<DateTime> maybeEnd = getShiftEndDate(day, shift);
+                                    if (!maybeStart.isPresent() || !maybeEnd.isPresent()) {
+                                        cell.setCellValue("");
+                                        continue;
+                                    }
+                                    DateTime start = maybeStart.get();
+                                    DateTime end = maybeEnd.get();
                                     if (start.toDate().after(end.toDate())) {
                                         end = end.plusDays(1);
                                     }
@@ -442,7 +456,6 @@ public class PPSReportXlsService extends XlsDocumentService {
                                 }
                             }
                         } else {
-                            HSSFCell cell = mapCells.get(columnNumber).getCell();
                             cell.setCellValue(DurationFormatUtils.formatDuration(duration * 1000, "HH:mm"));
                         }
                     }
@@ -461,24 +474,30 @@ public class PPSReportXlsService extends XlsDocumentService {
         return date.after(start) && date.before(end);
     }
 
-    private DateTime getShiftStartDate(DateTime day, Entity shift) {
+    private Optional<DateTime> getShiftStartDate(DateTime day, Entity shift) {
         Shift shiftFirst = new Shift(shift);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(day.toLocalDate());
+        if (ranges.isEmpty()) {
+            return Optional.empty();
+        }
         LocalTime startTime = ranges.get(0).getFrom();
         DateTime startShitTime = day;
         startShitTime = startShitTime.withHourOfDay(startTime.getHourOfDay());
         startShitTime = startShitTime.withMinuteOfHour(startTime.getMinuteOfHour());
-        return startShitTime;
+        return Optional.of(startShitTime);
     }
 
-    private DateTime getShiftEndDate(DateTime day, Entity shift) {
+    private Optional<DateTime> getShiftEndDate(DateTime day, Entity shift) {
         Shift shiftFirst = new Shift(shift);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(day.toLocalDate());
+        if (ranges.isEmpty()) {
+            return Optional.empty();
+        }
         LocalTime startTime = ranges.get(0).getTo();
         DateTime startShitTime = day;
         startShitTime = startShitTime.withHourOfDay(startTime.getHourOfDay());
         startShitTime = startShitTime.withMinuteOfHour(startTime.getMinuteOfHour());
-        return startShitTime;
+        return Optional.of(startShitTime);
     }
 
     private void setColumnWidths(final HSSFSheet sheet, List<ReportColumn> columns) {
@@ -489,7 +508,7 @@ public class PPSReportXlsService extends XlsDocumentService {
             index++;
         }
 
-        for (int columnNumber = columns.size(); columnNumber < columns.size() + 15; columnNumber++) {
+        for (int columnNumber = columns.size(); columnNumber < columns.size() + 21; columnNumber++) {
             sheet.setColumnWidth(columnNumber, 6 * 256);
         }
     }
