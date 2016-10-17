@@ -62,7 +62,7 @@ public class StateExecutorService {
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
                 formComponent.performEvent(view, "save", new String[0]);
-                Entity entity = formComponent.getPersistedEntityWithIncludedFormValues();
+                Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
                 if (entity.isValid()) {
                     entity = changeState(serviceMarker, entity, args[0]);
                     formComponent.setEntity(entity);
@@ -260,7 +260,10 @@ public class StateExecutorService {
         if (mainEntity != null && mainEntity.equals(entity)) {
             return;
         }
-
+        if (componentMessagesHolder == null) {
+            return;
+        }
+        
         for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
             componentMessagesHolder.addMessage(errorMessage);
         }
