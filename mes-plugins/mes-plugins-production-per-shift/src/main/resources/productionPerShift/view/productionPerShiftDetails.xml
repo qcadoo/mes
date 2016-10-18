@@ -45,6 +45,10 @@
                 <bigButton name="copyFromPlanned" icon="copyIcon24.png"
                            state="enabled" action="#{form}.fireEvent(copyFromPlanned)"/>
             </group>
+            <group name="autoFill">
+                <bigButton name="planProgressForDays" icon="generateIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(generateProgressForDays)"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="productionPerShiftTab">
@@ -58,7 +62,9 @@
                 <listener event="refreshView"
                           class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
                           method="refreshView"/>
-
+                <listener event="generateProgressForDays"
+                          class="com.qcadoo.mes.productionPerShift.listeners.ProductionPerShiftListeners"
+                          method="generateProgressForDays"/>
                 <component type="gridLayout" name="mainGridLayout"
                            columns="3" rows="1">
                     <layoutElement column="1" row="1">

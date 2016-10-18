@@ -29,24 +29,30 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.qcadoo.commons.functional.LazyStream;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.mes.productionPerShift.dates.OrderRealizationDay;
 import com.qcadoo.mes.productionPerShift.dates.OrderRealizationDaysResolver;
+import com.qcadoo.mes.productionPerShift.domain.PpsMessage;
+import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
+import com.qcadoo.mes.productionPerShift.services.AutomaticPpsExecutorService;
 import com.qcadoo.mes.productionPerShift.util.NonWorkingShiftsNotifier;
 import com.qcadoo.mes.productionPerShift.util.ProgressPerShiftViewSaver;
 import com.qcadoo.mes.productionPerShift.util.ProgressQuantitiesDeviationNotifier;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.utils.EntityUtils;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
@@ -71,11 +77,15 @@ public class ProductionPerShiftListeners {
 
     private static final String PROGRESS_ADL_REF = "progressForDays";
 
-    private static final String DAILY_PROGRESS_ADL_REF = "dailyProgress";
-
     private static final String DAY_NUMBER_INPUT_REF = "day";
 
     private static final String DATE_INPUT_REF = "date";
+
+    public static final String L_FORM = "form";
+
+    private static final String UNIT_COMPONENT_NAME = "unit";
+
+    private static final String DAILY_PROGRESS_ADL_REF = "dailyProgress";
 
     private static final Function<LookupComponent, Entity> GET_LOOKUP_ENTITY = new Function<LookupComponent, Entity>() {
 
@@ -109,6 +119,78 @@ public class ProductionPerShiftListeners {
     @Autowired
     private NonWorkingShiftsNotifier nonWorkingShiftsNotifier;
 
+    @Autowired
+    private AutomaticPpsExecutorService automaticPpsExecutorService;
+
+    public void generateProgressForDays(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        AwesomeDynamicListComponent progressForDaysComponent = (AwesomeDynamicListComponent) view
+                .getComponentByReference(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS);
+
+        Entity productionPerShift = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
+
+        ProgressForDaysContainer progressForDaysContainer = new ProgressForDaysContainer();
+        try {
+            automaticPpsExecutorService.generateProgressForDays(progressForDaysContainer, productionPerShift);
+        } catch (Exception ex) {
+            for (ErrorMessage errorMessage : progressForDaysContainer.getErrors()) {
+                view.addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE, false, errorMessage.getVars());
+            }
+            return;
+        }
+        List<Entity> progressForDays = progressForDaysContainer.getProgressForDays();
+        Entity order = productionPerShift.getBelongsToField(ProductionPerShiftFields.ORDER);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (progressForDaysContainer.isCalculationError()) {
+            productionPerShift.getGlobalErrors().forEach(
+                    error -> view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, false, error.getVars()));
+            return;
+        } else if (progressForDaysContainer.isPartCalculation()) {
+
+            productionPerShiftForm.setEntity(productionPerShift);
+            String unit = null;
+            if (product != null) {
+                unit = product.getStringField(ProductFields.UNIT);
+            }
+            progressForDaysComponent.setFieldValue(progressForDays);
+            fillUnit(progressForDaysComponent, unit);
+            for (PpsMessage message : progressForDaysContainer.getMessages()) {
+                view.addMessage(message.getMessage(),message.getType(), false, message.getVars());
+            }
+            updateProgressForDays(view, componentState, args);
+        } else {
+
+            Date orderFinishDate = automaticPpsExecutorService.calculateOrderFinishDate(order, progressForDays);
+
+            productionPerShift.setField(ProductionPerShiftFields.ORDER_FINISH_DATE, orderFinishDate);
+            productionPerShiftForm.setEntity(productionPerShift);
+            String unit = null;
+            if (product != null) {
+                unit = product.getStringField(ProductFields.UNIT);
+            }
+            progressForDaysComponent.setFieldValue(progressForDays);
+            fillUnit(progressForDaysComponent, unit);
+
+            updateProgressForDays(view, componentState, args);
+        }
+    }
+
+    private void fillUnit(AwesomeDynamicListComponent progressForDaysComponent, String unit) {
+        for (FormComponent progressForDayForm : progressForDaysComponent.getFormComponents()) {
+            AwesomeDynamicListComponent dailyProgressADL = (AwesomeDynamicListComponent) progressForDayForm
+                    .findFieldComponentByName(DAILY_PROGRESS_ADL_REF);
+            for (FormComponent dailyProgressForm : dailyProgressADL.getFormComponents()) {
+                FieldComponent unitField = dailyProgressForm.findFieldComponentByName(UNIT_COMPONENT_NAME);
+                unitField.setFieldValue(unit);
+                unitField.requestComponentUpdateState();
+            }
+            dailyProgressADL.requestComponentUpdateState();
+        }
+        progressForDaysComponent.requestComponentUpdateState();
+    }
+
     public void onTechnologyOperationChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         detailsHooks.setProductAndFillProgressForDays(view);
     }
@@ -125,7 +207,8 @@ public class ProductionPerShiftListeners {
         ProgressType progressType = detailsHooks.resolveProgressType(view);
         for (Entity technologyOperation : getEntityFromLookup(view, OPERATION_LOOKUP_REF).asSet()) {
             for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
-                progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation, detailsHooks.isCorrectedPlan(view));
+                progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation,
+                        detailsHooks.isCorrectedPlan(view));
                 for (OrderDates orderDates : OrderDates.of(order).asSet()) {
                     nonWorkingShiftsNotifier.checkAndNotify(view, orderDates.getStart().effectiveWithFallback(),
                             technologyOperation, detailsHooks.resolveProgressType(view));

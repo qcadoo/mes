@@ -154,6 +154,9 @@
         <dictionary name="orderCategory" dictionary="orderCategory"/>
         <belongsTo name="address" plugin="basic" model="address"/>
 
+        <boolean name="finalProductionTracking" copyable="false" default="false"/>
+
+
     </fields>
 
     <hooks>
