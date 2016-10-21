@@ -12,7 +12,7 @@
 
     <groupId>com.qcadoo.mes</groupId>
     <artifactId>mes</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT-DEV</version>
     <packaging>pom</packaging>
 
     <name>Qcadoo MES</name>
@@ -41,10 +41,10 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>1.6.7</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>1.6.7-DEV</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
-        <qcadoo.saas.version>1.5-SNAPSHOT</qcadoo.saas.version>
+        <qcadoo.saas.version>1.5-SNAPSHOT-DEV</qcadoo.saas.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
         <profile.name>default</profile.name>
     </properties>
