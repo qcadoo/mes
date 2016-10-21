@@ -279,6 +279,10 @@
                           method="onSave"/>
         </model:model-hook>
 
+        <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
+            <model:onDelete class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
+                            method="onDelete"/>
+        </model:model-hook>
 
         <model:model-hook model="technology" plugin="technologies">
             <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"

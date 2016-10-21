@@ -76,6 +76,28 @@ public class ProductionCountingQuantityHooksPC {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+
+        List<Entity> productionTrackings = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
+        for (Entity tracking : productionTrackings) {
+            String state = tracking.getStringField(ProductionTrackingFields.STATE);
+            if (!ProductionTrackingState.DECLINED.getStringValue().equals(state)) {
+                Entity trackingInComponent = getTrackingOperationProductInComponent(tracking, product);
+                if (trackingInComponent != null
+                        && trackingInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY) != null) {
+                    productionCountingQuantity.addGlobalError("productionCounting.productionCountingQuantity.onDelete.error");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void onView(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillUsedQuantity(productionCountingQuantity);
         fillProducedQuantity(productionCountingQuantity);
@@ -113,15 +135,19 @@ public class ProductionCountingQuantityHooksPC {
     }
 
     private BigDecimal getTrackingOperationProductInComponentQuantity(final Entity productionTracking, final Entity product) {
-        Entity result = productionTracking.getDataDefinition()
-                .find(getTrackingOperationProductInComponentQuantityQuery(productionTracking.getId(), product.getId()))
-                .setMaxResults(1).uniqueResult();
+        Entity result = getTrackingOperationProductInComponent(productionTracking, product);
 
         if (result != null) {
             return result.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
         }
 
         return null;
+    }
+
+    private Entity getTrackingOperationProductInComponent(final Entity productionTracking, final Entity product) {
+        return productionTracking.getDataDefinition()
+                .find(getTrackingOperationProductInComponentQuantityQuery(productionTracking.getId(), product.getId()))
+                .setMaxResults(1).uniqueResult();
     }
 
     private String getTrackingOperationProductInComponentQuantityQuery(final Long productionTrackingId, final Long productId) {
