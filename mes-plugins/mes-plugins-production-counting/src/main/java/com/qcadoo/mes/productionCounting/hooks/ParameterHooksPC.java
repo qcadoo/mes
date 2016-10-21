@@ -66,6 +66,9 @@ public class ParameterHooksPC {
         if (parameter.getField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS) == null) {
             parameter.setField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS, false);
         }
+        if (parameter.getField(ParameterFieldsPC.AUTO_RECALCULATE_ORDER) == null) {
+            parameter.setField(ParameterFieldsPC.AUTO_RECALCULATE_ORDER, false);
+        }
     }
 
     public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {

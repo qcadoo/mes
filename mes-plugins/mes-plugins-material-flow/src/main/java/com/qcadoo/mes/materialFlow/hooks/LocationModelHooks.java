@@ -24,7 +24,9 @@
 package com.qcadoo.mes.materialFlow.hooks;
 
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -38,6 +40,14 @@ public class LocationModelHooks {
 
         entity.setField("externalNumber", null);
 
+        return true;
+    }
+
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        if (!StringUtils.isEmpty(entity.getStringField(LocationFields.EXTERNAL_NUMBER))) {
+            entity.addGlobalError("materialFlow.location.delete.withExternalNumber");
+            return false;
+        }
         return true;
     }
 

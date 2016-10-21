@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -41,6 +34,12 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductionTrackingValidators {
@@ -138,21 +137,35 @@ public class ProductionTrackingValidators {
     private boolean willOrderAcceptOneMoreValidator(final DataDefinition productionTrackingDD, final Entity productionTracking,
             final List<Entity> productionTrackings) {
         for (Entity tracking : productionTrackings) {
-            if (tracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
-                if (productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT) == null) {
-                    productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
-                            "productionCounting.productionTracking.messages.error.final");
-                } else {
-                    productionTracking.addError(
-                            productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            "productionCounting.productionTracking.messages.error.operationFinal");
+            if (productionTracking.getId() != null && productionTracking.getId().equals(tracking.getId())) {
+                if (checkLastProductionTracking(productionTrackingDD, productionTracking)) {
+                    return false;
                 }
-
-                return false;
+            } else {
+                if (checkLastProductionTracking(productionTrackingDD, tracking)) {
+                    return false;
+                }
             }
         }
 
         return true;
+    }
+
+    private boolean checkLastProductionTracking(DataDefinition productionTrackingDD, Entity productionTracking) {
+        if (productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
+
+            if (productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT) == null) {
+                productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
+                        "productionCounting.productionTracking.messages.error.final");
+            } else {
+                productionTracking.addError(
+                        productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        "productionCounting.productionTracking.messages.error.operationFinal");
+            }
+
+            return true;
+        }
+        return false;
     }
 
     private boolean checkIfOrderIsStarted(final DataDefinition productionTrackingDD, final Entity productionTracking,

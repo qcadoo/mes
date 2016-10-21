@@ -85,6 +85,13 @@
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
+            <layoutElement column="2" row="6">
+                <component type="checkbox" name="autoRecalculateOrder"
+                           reference="autoRecalculateOrder" field="#{form}.autoRecalculateOrder"
+                           hasDescription="true">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
             <layoutElement column="3" row="1">
                 <component type="checkbox" name="generateProductionRecordNumberFromOrderNumber"
                            reference="generateProductionRecordNumberFromOrderNumber"

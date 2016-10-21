@@ -25,6 +25,8 @@ package com.qcadoo.mes.productionPerShift.constants;
 
 public final class ProductionPerShiftConstants {
 
+    public static final String MODEL_PPS_REPORT = "ppsReport";
+
     private ProductionPerShiftConstants() {
 
     }

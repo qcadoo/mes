@@ -24,21 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="location" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true" />
-		<enum name="type" values="01controlPoint,02warehouse" default="02warehouse" required="true" />
-		<hasMany name="materialsInLocations" model="materialsInLocationComponent"
-			plugin="materialFlow" joinField="location" />
-		<string name="externalNumber" unique="true"/>
-	</fields>
-	<hooks>
-		<onCopy class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="clearExternalIdOnCopy" />
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+<model name="location"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true"/>
+        <enum name="type" values="01controlPoint,02warehouse" default="02warehouse" required="true"/>
+        <hasMany name="materialsInLocations" model="materialsInLocationComponent"
+                 plugin="materialFlow" joinField="location"/>
+        <string name="externalNumber" unique="true"/>
+    </fields>
+    <hooks>
+        <onCopy class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="clearExternalIdOnCopy"/>
+        <onDelete class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="onDelete"/>
+    </hooks>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

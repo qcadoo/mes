@@ -83,14 +83,15 @@ public class AddressDetailsHooks {
 
         Long addressId = address.getId();
 
+        String externalNumber = address.getStringField(AddressFields.EXTERNAL_NUMBER);
         String addressType = getAddressType(address);
 
-        return ((addressId == null) || !basicService.checkIfIsMainAddressType(addressType));
+        return ((addressId == null) || (StringUtils.isEmpty(externalNumber) && !basicService.checkIfIsMainAddressType(addressType)));
     }
 
     private String getAddressType(final Entity address) {
         Long addressId = address.getId();
-        
+
         if (addressId == null) {
             return address.getStringField(AddressFields.ADDRESS_TYPE);
         } else {
