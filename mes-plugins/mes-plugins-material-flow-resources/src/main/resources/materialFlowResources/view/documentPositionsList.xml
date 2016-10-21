@@ -70,6 +70,9 @@
             <option type="column" name="company" fields="document"
                     expression="#document['company']?.get('name')"/>
 
+            <option type="column" name="address" fields="document"
+                    expression="#document['address']?.get('name') == null ? #document['address']?.get('number') : #document['address']?.get('number') + ' - ' + #document['address']?.get('name')"/>
+
             <option type="column" name="batch" fields="batch" width="50"/>
 
             <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
@@ -86,9 +89,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,address,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,address,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>
