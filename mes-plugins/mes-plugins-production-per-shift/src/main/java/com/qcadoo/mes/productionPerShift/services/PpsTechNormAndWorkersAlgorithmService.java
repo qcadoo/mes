@@ -62,7 +62,8 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     }
 
     protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
-        BigDecimal norm = order.getBelongsToField(OrderFields.TECHNOLOGY).getDecimalField("standardPerformanceTechnology");
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY).getDataDefinition().get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+        BigDecimal norm = technology.getDecimalField("standardPerformanceTechnology");
         if (norm == null) {
             progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
             throw new IllegalStateException("No standard performance norm in technology");
