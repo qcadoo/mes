@@ -5,6 +5,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import org.joda.time.DateTime;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class ProgressForDaysContainer {
@@ -26,6 +27,10 @@ public class ProgressForDaysContainer {
     private Entity order;
 
     private boolean shouldBeCorrected = false;
+
+    private BigDecimal plannedQuantity = BigDecimal.ZERO;
+
+    private BigDecimal alreadyRegisteredQuantity = BigDecimal.ZERO;
 
     public void addError(ErrorMessage errorMessage) {
         errors.add(errorMessage);
@@ -101,5 +106,21 @@ public class ProgressForDaysContainer {
 
     public void setOrder(Entity order) {
         this.order = order;
+    }
+
+    public BigDecimal getAlreadyRegisteredQuantity() {
+        return alreadyRegisteredQuantity;
+    }
+
+    public void setAlreadyRegisteredQuantity(BigDecimal alreadyRegisteredQuantity) {
+        this.alreadyRegisteredQuantity = alreadyRegisteredQuantity;
+    }
+
+    public BigDecimal getPlannedQuantity() {
+        return plannedQuantity;
+    }
+
+    public void setPlannedQuantity(BigDecimal plannedQuantity) {
+        this.plannedQuantity = plannedQuantity;
     }
 }

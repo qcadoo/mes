@@ -126,8 +126,7 @@ public class OrderHooksPPS {
                         automaticPpsExecutorService.generateProgressForDays(progressForDaysContainer, productionPerShift);
                     } catch (Exception ex) {
                         for (ErrorMessage errorMessage : progressForDaysContainer.getErrors()) {
-                            productionPerShift.getGlobalErrors().forEach(
-                                    error -> order.addGlobalError(error.getMessage(), false, error.getVars()));
+                            order.addGlobalError(errorMessage.getMessage(), false, errorMessage.getVars());
                         }
                         return;
                     }

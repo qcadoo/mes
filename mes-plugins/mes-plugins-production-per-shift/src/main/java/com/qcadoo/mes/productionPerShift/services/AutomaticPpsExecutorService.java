@@ -68,9 +68,9 @@ public class AutomaticPpsExecutorService {
     }
 
     private boolean isNotStandardAlgorithm(AutomaticPpsService service) {
-        if (!PpsAlgorithm.STANDARD_TECHNOLOGY.getAlgorithmClass().equals(service.getClass().toString())
+        if (!PpsAlgorithm.STANDARD_TECHNOLOGY.getAlgorithmClass().equals(service.getClass().getSimpleName())
                 && !PpsAlgorithm.STANDARD_TECHNOLOGY_AND_AMOUNT_OF_CHANGE.getAlgorithmClass().equals(
-                        service.getClass().toString())) {
+                        service.getClass().getSimpleName())) {
             return true;
         }
         return false;
