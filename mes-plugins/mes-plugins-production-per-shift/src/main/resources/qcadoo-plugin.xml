@@ -79,20 +79,20 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
         <model:model-field model="technologyOperationComponent"
-                                   plugin="technologies">
+                           plugin="technologies">
             <model:hasMany name="progressForDays" model="progressForDay"
-                                       plugin="productionPerShift" cascade="delete"
-                                       joinField="technologyOperationComponent" />
+                           plugin="productionPerShift" cascade="delete"
+                           joinField="technologyOperationComponent" />
         </model:model-field>
         <model:model-field model="technologyOperationComponent"
-                                   plugin="technologies">
+                           plugin="technologies">
             <model:boolean name="hasCorrections" />
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
             <model:hasMany name="productionPerShift" model="productionPerShift"
-                                       plugin="productionPerShift" cascade="delete"
-                                       joinField="order" />
+                           plugin="productionPerShift" cascade="delete"
+                           joinField="order" />
         </model:model-field>
         
 
@@ -109,18 +109,18 @@
             <model:boolean name="ppsProducedAmountRecalculatePlan"/>            
         </model:model-field>
         <view:view-hook plugin="orders" view="ordersParameters"
-                                type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
-                                method="onBeforeRender" />
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
+                        method="onBeforeRender" />
         
         
         <model:model-hook model="technologyOperationComponent"
-                                  plugin="technologies">
+                          plugin="technologies">
             <model:validatesWith
                 class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
                 method="checkGrowingNumberOfDays" />
         </model:model-hook>
         <model:model-hook model="technologyOperationComponent"
-                                  plugin="technologies">
+                          plugin="technologies">
             <model:onCopy
                 class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
                 method="onCopy" />
@@ -130,15 +130,20 @@
                 class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
                 method="onUpdate" />
         </model:model-hook>
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                class="com.qcadoo.mes.productionPerShift.hooks.ParameterHooksPPS"
+                method="validatesWith" />
+        </model:model-hook>
 
         <view:view-listener plugin="orders" view="orderDetails"
-                                    component="form" event="redirectToProductionPerShift"
-                                    class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
-                                    method="redirectToProductionPerShift" />
+                            component="form" event="redirectToProductionPerShift"
+                            class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
+                            method="redirectToProductionPerShift" />
 
         <view:view-hook plugin="orders" view="orderDetails"
-                                type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
-                                method="onBeforeRender" />
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
+                        method="onBeforeRender" />
     </modules>
 
     <features>
