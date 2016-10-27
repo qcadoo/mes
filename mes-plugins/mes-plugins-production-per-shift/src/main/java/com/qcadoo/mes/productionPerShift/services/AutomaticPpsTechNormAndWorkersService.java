@@ -12,7 +12,7 @@ import com.qcadoo.model.api.Entity;
 public class AutomaticPpsTechNormAndWorkersService implements AutomaticPpsService {
 
     @Autowired
-    private PpsTechNormAlgorithmService ppsTechNormAlgorithmService;
+    private PpsTechNormAndWorkersAlgorithmService ppsTechNormAlgorithmService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)

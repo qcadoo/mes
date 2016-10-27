@@ -1,14 +1,22 @@
 package com.qcadoo.mes.productionPerShift.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.model.api.Entity;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AutomaticPpsTechNormService implements AutomaticPpsService {
 
-    @Override
-    public void generateProgressForDays(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift) {
+    @Autowired
+    private PpsTechNormAlgorithmService ppsTechNormAlgorithmService;
 
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void generateProgressForDays(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift) {
+        ppsTechNormAlgorithmService.generateProgressForDays(progressForDaysContainer, productionPerShift);
     }
 }
