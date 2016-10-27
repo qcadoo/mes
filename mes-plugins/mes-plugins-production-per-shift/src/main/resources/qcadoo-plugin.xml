@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<plugin plugin="productionPerShift" group="planning" version="${qcadoo.plugin.version}"
+<plugin plugin="productionPerShift" xmlns:menu="http://schema.qcadoo.org/modules/menu" group="planning"
+        version="${qcadoo.plugin.version}"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
         xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
@@ -43,7 +44,8 @@
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com/</url>
         </vendor>
-        <description>Lets you define how many products should be outputted in a production order in the following shifts.
+        <description>Lets you define how many products should be outputted in a production order in the following
+            shifts.
         </description>
         <license>AGPL</license>
     </information>
@@ -51,7 +53,7 @@
 
     <dependencies>
         <dependency>
-            <plugin>orders</plugin>
+            <plugin>lineChangeoverNormsForOrders</plugin>
             <version>[1.3.0</version>
         </dependency>
         <dependency>
@@ -65,89 +67,78 @@
     </dependencies>
 
     <modules>
-        <localization:translation path="locales" />
+        <localization:translation path="locales"/>
 
-        <model:model model="productionPerShift" resource="model/productionPerShift.xml" />
-        <model:model model="dailyProgress" resource="model/dailyProgress.xml" />
-        <model:model model="progressForDay" resource="model/progressForDay.xml" />
-        <model:model model="reasonTypeOfCorrectionPlan" resource="model/reasonTypeOfCorrectionPlan.xml" />
+        <model:model model="productionPerShift" resource="model/productionPerShift.xml"/>
+        <model:model model="dailyProgress" resource="model/dailyProgress.xml"/>
+        <model:model model="progressForDay" resource="model/progressForDay.xml"/>
+        <model:model model="reasonTypeOfCorrectionPlan" resource="model/reasonTypeOfCorrectionPlan.xml"/>
+        <model:model model="ppsReport" resource="model/ppsReport.xml"/>
 
-        <view:view resource="view/productionPerShiftDetails.xml" />
+
+        <menu:menu-item name="ppsReports" category="orders"
+                        view="ppsReportsList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
+        <view:view resource="view/productionPerShiftDetails.xml"/>
+        <view:view resource="view/ppsReportsList.xml"/>
+        <view:view resource="view/ppsReportDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
 
-        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
+        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
 
         <model:model-field model="technologyOperationComponent"
                            plugin="technologies">
             <model:hasMany name="progressForDays" model="progressForDay"
                            plugin="productionPerShift" cascade="delete"
-                           joinField="technologyOperationComponent" />
+                           joinField="technologyOperationComponent"/>
         </model:model-field>
         <model:model-field model="technologyOperationComponent"
                            plugin="technologies">
-            <model:boolean name="hasCorrections" />
+            <model:boolean name="hasCorrections"/>
         </model:model-field>
 
-        <model:model-field model="order" plugin="orders">
+        <model:model-field model="order"
+                           plugin="orders">
             <model:hasMany name="productionPerShift" model="productionPerShift"
                            plugin="productionPerShift" cascade="delete"
-                           joinField="order" />
+                           joinField="order"/>
         </model:model-field>
-        
 
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="trackingCorrectionRecalculatePps"/>         
+            <model:boolean name="trackingCorrectionRecalculatePps"/>
         </model:model-field>
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="ppsIsAutomatic"/>          
-        </model:model-field>
-        <model:model-field model="parameter" plugin="basic">
-            <enum name="ppsAlgorithm" values="01standardTechnology,02standardTechnologyAndAmountOfChange,03user"/>         
-        </model:model-field>
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="ppsProducedAmountRecalculatePlan"/>            
-        </model:model-field>
-        <view:view-hook plugin="orders" view="ordersParameters"
-                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
-                        method="onBeforeRender" />
-        
-        
+
         <model:model-hook model="technologyOperationComponent"
                           plugin="technologies">
             <model:validatesWith
-                class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
-                method="checkGrowingNumberOfDays" />
+                    class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
+                    method="checkGrowingNumberOfDays"/>
         </model:model-hook>
         <model:model-hook model="technologyOperationComponent"
                           plugin="technologies">
             <model:onCopy
-                class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
-                method="onCopy" />
+                    class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
+                    method="onCopy"/>
         </model:model-hook>
         <model:model-hook plugin="orders" model="order">
             <model:onUpdate
-                class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
-                method="onUpdate" />
-        </model:model-hook>
-        <model:model-hook plugin="basic" model="parameter">
-            <model:validatesWith
-                class="com.qcadoo.mes.productionPerShift.hooks.ParameterHooksPPS"
-                method="validatesWith" />
+                    class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
+                    method="onUpdate"/>
         </model:model-hook>
 
         <view:view-listener plugin="orders" view="orderDetails"
                             component="form" event="redirectToProductionPerShift"
                             class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"
-                            method="redirectToProductionPerShift" />
+                            method="redirectToProductionPerShift"/>
 
         <view:view-hook plugin="orders" view="orderDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderDetailsHooksPPS"
-                        method="onBeforeRender" />
+                        method="onBeforeRender"/>
     </modules>
 
     <features>
-        <end-user />
+        <end-user/>
     </features>
 
 </plugin>
