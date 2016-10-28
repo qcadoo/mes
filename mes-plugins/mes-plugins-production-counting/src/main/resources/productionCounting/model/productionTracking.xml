@@ -38,7 +38,7 @@
 				 copyable="false"/>
 		<boolean name="lastTracking"/>
 
-		<enum name="state" values="01draft,02accepted,03declined,04corrected"
+		<enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"
 			  default="01draft" required="true"/>
 
 		<integer name="machineTime" copyable="false"/>

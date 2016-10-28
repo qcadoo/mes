@@ -172,26 +172,10 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     @Override
     public List<Entity> getProductionTrackingsForOrder(final Entity order) {
         SearchCriteriaBuilder scb = getProductionTrackingDD().find();
-        final String scAlias = "sc_alias";
-        scb.createAlias(ProductionTrackingFields.STATE_CHANGES, scAlias, JoinType.INNER);
+
         scb.createCriteria(ProductionTrackingFields.ORDER, "ord_alias", JoinType.INNER).add(idEq(order.getId()));
-
-        SearchCriterion hasStateChangeFromDraftToAccepted = and(
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.SOURCE_STATE, ProductionTrackingStateStringValues.DRAFT),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.TARGET_STATE,
-                        ProductionTrackingStateStringValues.ACCEPTED));
-
-        SearchCriterion isAlreadyAccepted = and(eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()),
-                hasStateChangeFromDraftToAccepted);
-
-        SearchCriterion isFinalRecordDuringAcceptation = and(eq(ProductionTrackingFields.LAST_TRACKING, true),
-                eq(scAlias + "." + ProductionTrackingStateChangeFields.STATUS, StateChangeStatus.IN_PROGRESS.getStringValue()),
-                hasStateChangeFromDraftToAccepted);
-
-        /* This is a workaround for missing production tracking entity during its acceptance. */
-        scb.add(or(isAlreadyAccepted, isFinalRecordDuringAcceptation));
-
+        scb.add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED));
+        
         return scb.list().getEntities();
     }
 

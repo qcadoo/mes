@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -31,7 +32,7 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
+import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
@@ -76,11 +77,11 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
-
-    @Autowired
     private StateChangeContextBuilder stateChangeContextBuilder;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+    
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
         String recordingType = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
@@ -163,9 +164,12 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public void changeState(Entity productionTracking, ProductionTrackingState state) {
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                productionTrackingStateChangeAspect.getChangeEntityDescriber(), productionTracking, state.getStringValue());
-        productionTrackingStateChangeAspect.changeState(orderStateChangeContext);
+//        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+//                productionTrackingStateChangeAspect.getChangeEntityDescriber(), productionTracking, state.getStringValue());
+//        
+//        productionTrackingStateChangeAspect.changeState(orderStateChangeContext);
+        
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, state.getStringValue());
     }
 
     @Override

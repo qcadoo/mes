@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.states.constants;
 
-public final class ProductionTrackingStateChangePhase {
+public final class ProductionTrackingStateChangePhase_ {
 
     public static final int PRE_VALIDATION = 1;
 
@@ -33,7 +33,7 @@ public final class ProductionTrackingStateChangePhase {
 
     public static final int LAST = EXT_SYNC + 1;
 
-    private ProductionTrackingStateChangePhase() {
+    private ProductionTrackingStateChangePhase_() {
     }
 
     public static int getNumOfPhases() {
