@@ -57,6 +57,8 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +68,8 @@ import java.util.List;
 
 @Service
 public class ProductionPerShiftListeners {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProductionPerShiftListeners.class);
 
     private static final String FORM_COMPONENT_REF = "form";
 
@@ -136,6 +140,10 @@ public class ProductionPerShiftListeners {
         } catch (Exception ex) {
             for (ErrorMessage errorMessage : progressForDaysContainer.getErrors()) {
                 view.addMessage(errorMessage.getMessage(), ComponentState.MessageType.FAILURE, false, errorMessage.getVars());
+            }
+            if(progressForDaysContainer.getErrors().isEmpty()){
+                LOG.error("PPS generation error ", ex);
+                throw new IllegalStateException();
             }
             return;
         }
