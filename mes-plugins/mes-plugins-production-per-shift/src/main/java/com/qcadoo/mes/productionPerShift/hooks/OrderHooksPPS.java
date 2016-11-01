@@ -35,6 +35,7 @@ import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentF
 import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsExecutorService;
+import com.qcadoo.mes.productionPerShift.services.AutomaticPpsParametersService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -72,6 +73,9 @@ public class OrderHooksPPS {
     @Autowired
     private AutomaticPpsExecutorService automaticPpsExecutorService;
 
+    @Autowired
+    private AutomaticPpsParametersService automaticPpsParametersService;
+
     public void onUpdate(final DataDefinition orderDD, final Entity order) {
         setUpPpsDaysAndDatesFor(order);
         regenerateProductionPerShift(orderDD, order);
@@ -106,7 +110,7 @@ public class OrderHooksPPS {
                     .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
                     .uniqueResult();
 
-            if (productionPerShift != null) {
+            if (productionPerShift != null && automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
                 boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
                 List<Entity> operationComponents = order.getBelongsToField(OrderFields.TECHNOLOGY)
                         .getHasManyField(TechnologyFields.OPERATION_COMPONENTS).stream()

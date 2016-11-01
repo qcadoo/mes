@@ -140,6 +140,12 @@
                     method="onUpdate"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productionPerShift.hooks.ParameterHooksPPS"
+                    method="validatesWith"/>
+        </model:model-hook>
+
         <view:view-listener plugin="orders" view="orderDetails"
                             component="form" event="redirectToProductionPerShift"
                             class="com.qcadoo.mes.productionPerShift.listeners.OrderDetailsListenersPPS"

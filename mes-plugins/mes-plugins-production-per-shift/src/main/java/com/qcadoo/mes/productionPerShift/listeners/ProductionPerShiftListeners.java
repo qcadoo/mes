@@ -46,6 +46,7 @@ import com.qcadoo.mes.productionPerShift.domain.PpsMessage;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftDetailsHooks;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsExecutorService;
+import com.qcadoo.mes.productionPerShift.services.AutomaticPpsParametersService;
 import com.qcadoo.mes.productionPerShift.util.NonWorkingShiftsNotifier;
 import com.qcadoo.mes.productionPerShift.util.ProgressPerShiftViewSaver;
 import com.qcadoo.mes.productionPerShift.util.ProgressQuantitiesDeviationNotifier;
@@ -126,7 +127,14 @@ public class ProductionPerShiftListeners {
     @Autowired
     private AutomaticPpsExecutorService automaticPpsExecutorService;
 
+    @Autowired
+    private AutomaticPpsParametersService automaticPpsParametersService;
+
     public void generateProgressForDays(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        if(!automaticPpsParametersService.isAutomaticPlanForShiftOn()){
+            view.addMessage(new ErrorMessage("productionPerShift.automaticAlgorithm.error.ppsOff",false));
+            return;
+        }
         FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         AwesomeDynamicListComponent progressForDaysComponent = (AwesomeDynamicListComponent) view
