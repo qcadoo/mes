@@ -5,7 +5,6 @@ import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftStateStringValues;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import org.joda.time.DateTime;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class WorkersOnLineService {
@@ -40,14 +37,6 @@ public class WorkersOnLineService {
         if(productionLine == null || shift == null || date == null){
             return workersOnLine;
         }
-        List<Entity> shifts = productionLine.getManyToManyField(ProductionLineFields.SHIFTS);
-        Optional<Entity> isShift = shifts.stream()
-                .filter(user -> user.getId() == 1)
-                .collect(Collectors.reducing((a, b) -> null));
-        if(!isShift.isPresent()){
-            return workersOnLine;
-        }
-
         List<Entity> factories = getFactories();
         for(Entity factory : factories){
             workersOnLine += getWorkersOnLineForFactory(factory, productionLine, shift, date);

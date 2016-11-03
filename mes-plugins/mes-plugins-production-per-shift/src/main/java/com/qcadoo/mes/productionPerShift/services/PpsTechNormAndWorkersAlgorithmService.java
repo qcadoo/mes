@@ -68,7 +68,7 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
             progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
             throw new IllegalStateException("No standard performance norm in technology");
         }
-        return norm.setScale(0, RoundingMode.HALF_UP);
+        return norm;
     }
 
 }
