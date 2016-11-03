@@ -398,8 +398,8 @@
                             class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
                             method="fillPCParameters"/>
 
-        <custom:custom
-                class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule"/>
+<!--        <custom:custom
+                class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule"/>-->
     </modules>
 
     <features>

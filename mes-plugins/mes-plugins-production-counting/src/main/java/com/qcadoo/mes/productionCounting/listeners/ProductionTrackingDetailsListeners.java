@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -56,6 +57,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -78,6 +80,9 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private UnitConversionService unitConversionService;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
     public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         if (!grid.getSelectedEntitiesIds().isEmpty()) {
@@ -86,6 +91,10 @@ public class ProductionTrackingDetailsListeners {
 
             view.redirectTo(url, false, true, ImmutableMap.of("form.id", e.getIntegerField("productiontracking_id")));
         }
+    }
+
+    public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
     }
 
     public void calcTotalLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -133,7 +142,7 @@ public class ProductionTrackingDetailsListeners {
             } else {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
                         searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                 if (unitConversions.isDefinedFor(additionalUnit)) {
                     BigDecimal convertedQuantity = unitConversions.convertTo(plannedQuantity, additionalUnit);
                     recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,

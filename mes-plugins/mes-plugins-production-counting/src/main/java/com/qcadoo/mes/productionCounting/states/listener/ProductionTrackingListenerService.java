@@ -6,19 +6,19 @@
  * <p/>
  * This file is part of Qcadoo.
  * <p/>
- * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License,
- * or (at your option) any later version.
+ * Qcadoo is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
  * <p/>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
  * <p/>
  * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.productionCounting.states.listener;
@@ -38,7 +38,6 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -85,45 +84,37 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private ParameterService parameterService;
 
-    public void onChangeFromDraftToAny(final StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onChangeFromDraftToAny(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
-        stateChangeContext.setOwner(productionTracking);
     }
 
-    public void validationOnAccept(final StateChangeContext stateChangeContext) {
-        checkIfRecordOperationProductComponentsWereFilled(stateChangeContext);
-        checkIfExistsFinalRecord(stateChangeContext);
-        checkIfTimesIsSet(stateChangeContext);
+    public void validationOnAccept(final Entity productionTracking) {
+        checkIfRecordOperationProductComponentsWereFilled(productionTracking);
+        checkIfExistsFinalRecord(productionTracking);
+        checkIfTimesIsSet(productionTracking);
     }
 
-    public void onLeavingDraft(final StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onLeavingDraft(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
-        stateChangeContext.setOwner(productionTracking);
     }
 
-    public void onAccept(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void onAccept(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Addition());
         setOrderDoneAndWastesQuantity(productionTracking, new Addition());
-        closeOrder(stateChangeContext);
+        closeOrder(productionTracking);
     }
 
-    public void onChangeFromAcceptedToDeclined(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
 
-    private void checkIfRecordOperationProductComponentsWereFilled(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
         if (!checkIfUsedQuantitiesWereFilled(productionTracking)
                 && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
-            stateChangeContext.addValidationError(
-                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -144,8 +135,7 @@ public final class ProductionTrackingListenerService {
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
 
-    public void checkIfExistsFinalRecord(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void checkIfExistsFinalRecord(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -160,19 +150,18 @@ public final class ProductionTrackingListenerService {
         }
 
         if (searchBuilder.list().getTotalNumberOfEntities() != 0) {
-            stateChangeContext.addValidationError("productionCounting.productionTracking.messages.error.finalExists");
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.finalExists");
         }
     }
 
-    public void closeOrder(final StateChangeContext stateChangeContext) {
-        final Entity productionTracking = stateChangeContext.getOwner();
+    public void closeOrder(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ORDER);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderClosingHelper.orderShouldBeClosed(productionTracking)) {
             return;
         }
         if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderIsAlreadyClosed", StateMessageType.INFO, false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderIsAlreadyClosed", false, false);
             return;
         }
         final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
@@ -180,11 +169,13 @@ public final class ProductionTrackingListenerService {
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
-            stateChangeContext.addMessage("productionCounting.order.orderClosed", StateMessageType.INFO, false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderClosed", false, false);
+
         } else if (StateChangeStatus.PAUSED.equals(orderStateChangeContext.getStatus())) {
-            stateChangeContext.addMessage("productionCounting.order.orderWillBeClosedAfterExtSync", StateMessageType.INFO, false);
+            productionTracking.addGlobalMessage("productionCounting.order.orderWillBeClosedAfterExtSync", false, false);
+
         } else {
-            stateChangeContext.addMessage("productionCounting.order.orderCannotBeClosed", StateMessageType.FAILURE, false);
+            productionTracking.addGlobalError("productionCounting.order.orderCannotBeClosed", false);
 
             List<ErrorMessage> errors = Lists.newArrayList();
 
@@ -205,7 +196,7 @@ public final class ProductionTrackingListenerService {
                     errorMessages.append(", ");
                 }
 
-                stateChangeContext.addValidationError("orders.order.orderStates.error", errorMessages.toString());
+                productionTracking.addGlobalError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
     }
@@ -295,22 +286,20 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-    public void checkIfTimesIsSet(final StateChangeContext stateChangeContext) {
-        final Entity productionRecord = stateChangeContext.getOwner();
-        Entity orderEntity = productionRecord.getBelongsToField(ProductionTrackingFields.ORDER);
+    public void checkIfTimesIsSet(final Entity productionTracking) {
+        Entity orderEntity = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity parameter = parameterService.getParameter();
         if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
                 && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
-            Integer machineTimie = productionRecord.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+            Integer machineTimie = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
             if (machineTimie == null || machineTimie == 0) {
-                stateChangeContext.addFieldValidationError(ProductionTrackingFields.MACHINE_TIME,
+                productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.MACHINE_TIME),
                         "qcadooView.validate.field.error.missing");
             }
-            Integer laborTime = productionRecord.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+            Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
             if (laborTime == null || laborTime == 0) {
-                stateChangeContext.addFieldValidationError(ProductionTrackingFields.LABOR_TIME,
+                productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.LABOR_TIME),
                         "qcadooView.validate.field.error.missing");
-
             }
         }
 
@@ -330,8 +319,7 @@ public final class ProductionTrackingListenerService {
         throw new IllegalStateException("No basic production counting found for product");
     }
 
-    public void onCorrected(StateChangeContext stateChangeContext) {
-        Entity productionTracking = stateChangeContext.getOwner();
+    public void onCorrected(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
     }
 

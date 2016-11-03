@@ -8,23 +8,25 @@ import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.model.api.validators.GlobalMessage;
+import com.qcadoo.plugin.api.PluginUtils;
+import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentMessagesHolder;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import org.apache.log4j.Logger;
+import java.util.*;
 
 @Service
 public class StateExecutorService {
@@ -42,22 +44,25 @@ public class StateExecutorService {
 
     private static final Logger LOGGER = Logger.getLogger(StateExecutorService.class);
 
-    @Transactional
-    public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view, String[] args) {
-        componentMessagesHolder = view;
+    public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view,
+            String[] args) {
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
-                changeState(serviceMarker, entity, args[0]);
+                entity = changeState(serviceMarker, entity, args[0]);
+
+                componentMessagesHolder = view;
+                copyMessages(entity);
             });
 
         } else {
+            componentMessagesHolder = view;
             Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
                 formComponent.performEvent(view, "save", new String[0]);
-                Entity entity = formComponent.getPersistedEntityWithIncludedFormValues();
+                Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
                 if (entity.isValid()) {
                     entity = changeState(serviceMarker, entity, args[0]);
                     formComponent.setEntity(entity);
@@ -66,75 +71,84 @@ public class StateExecutorService {
         }
     }
 
-    @Transactional
-    public <M extends StateService> Entity changeState(Class<M> serviceMarker, Entity entity, String targetState) {
-        try {
-            entity = performChangeState(serviceMarker, entity, targetState);
-            if (componentMessagesHolder != null) {
-                if (entity.isValid()) {
-                    componentMessagesHolder.addMessage("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
-
-                } else {
-                    componentMessagesHolder.addMessage("states.messages.change.failure", ComponentState.MessageType.FAILURE);
-                }
-            }
-
-            return entity;
-        } catch (Exception exception) {
-            LOGGER.warn("Can't perform state change", exception);
-//            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
-//            stateChangeContext.addMessage("states.messages.change.failure.internalServerError", StateMessageType.FAILURE);
-//            stateChangeContext.save();
-
-//        saveStateChangeEntity(describer, sourceState, targetState, entity);
-            throw new StateChangeException(exception);
-        }
-
-    }
-
-    @Transactional
-    private <M extends StateService> Entity performChangeState(Class<M> serviceMarker, Entity entity, String targetState) {
+    public <M extends StateService> Entity changeState(Class<M> serviceMarker,
+            Entity entity, String targetState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
-
         StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
-
         String sourceState = entity.getStringField(describer.getOwnerStateFieldName());
 
-        if (!canChangeState(describer, entity, targetState)) {
-            return entity;
-        }
+        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, sourceState, targetState);
 
-        entity = hookOnValidate(entity, services, sourceState, targetState);
-        if (!entity.isValid()) {
-            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
-            return entity;
-        }
-        entity = changeState(entity, targetState);
-        saveStateChangeEntity(describer, sourceState, targetState, entity);
+        try {
+            entity = performChangeState(services, entity, stateChangeEntity, describer);
 
-        entity = hookOnBeforeSave(entity, services, sourceState, targetState);
-        if (!entity.isValid()) {
-            // TODO tu zwracamy błądne encję, czy wyjątek o niepowodzeniu?
-            return entity;
-        }
-        entity = entity.getDataDefinition().save(entity);
+            if (entity.isValid()) {
+                copyMessages(entity);
+                saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
+                message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
+            } else {
+                saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+                entity = rollbackStateChange(entity, sourceState);
+                message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            }
 
-        if (!hookOnAfterSave(entity, services, sourceState, targetState)) {
-            // TODO tu trzeba wycofać transakcję i cofnąć zmiany na bazie
-            // wyjątek? ręcznie?            
+        } catch (EntityRuntimeException entityException) {
+            copyMessages(entityException.getEntity(), entity);
+            entity = rollbackStateChange(entity, sourceState);
+            saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+            message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            return entity;
+
+        } catch (Exception exception) {
+            LOGGER.warn("Can't perform state change", exception);
+
+            throw new StateChangeException(exception);
         }
 
         return entity;
     }
 
-    private Entity saveStateChangeEntity(final StateChangeEntityDescriber describer, final String sourceState, final String targetState, Entity owner) {
-        Entity buildStateChangeEntity = buildStateChangeEntity(describer, sourceState, targetState, owner);
+    @Transactional
+    private <M extends StateService> Entity performChangeState(
+            List<M> services, Entity entity, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
 
-        // TODO isValid
-        return buildStateChangeEntity.getDataDefinition().save(buildStateChangeEntity);
+        if (!canChangeState(describer, entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()))) {
+            entity.setNotValid();
+            return entity;
+        }
+
+        entity = hookOnValidate(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
+        if (!entity.isValid()) {
+//            copyErrorMessages(entity);
+            return entity;
+        }
+        entity = changeState(entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
+
+        entity = hookOnBeforeSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
+        if (!entity.isValid()) {
+            throw new EntityRuntimeException(entity);
+        }
+        entity = entity.getDataDefinition().save(entity);
+
+        if (!hookOnAfterSave(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
+                stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer)) {
+            throw new EntityRuntimeException(entity);
+        }
+
+        return entity;
     }
 
-    private Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final String sourceState, final String targetState, Entity owner) {
+    private Entity saveStateChangeEntity(final Entity stateChangeEntity, StateChangeStatus stateChangeStatus) {
+        stateChangeEntity.setField("status", stateChangeStatus.getStringValue());
+
+        Entity savedStateChangeEntity = saveAndValidate(stateChangeEntity);
+        return savedStateChangeEntity;
+    }
+
+    private Entity buildStateChangeEntity(StateChangeEntityDescriber describer, Entity owner, String sourceState,
+            String targetState) {
         final Entity stateChangeEntity = describer.getDataDefinition().create();
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
 
@@ -145,7 +159,6 @@ public class StateExecutorService {
         stateChangeEntity.setField(describer.getWorkerFieldName(), securityService.getCurrentUserName());
         stateChangeEntity.setField(describer.getPhaseFieldName(), 0);
         stateChangeEntity.setField(describer.getOwnerFieldName(), owner);
-        stateChangeEntity.setField(describer.getStatusFieldName(), StateChangeStatus.SUCCESSFUL.getStringValue());
 
         return stateChangeEntity;
     }
@@ -161,9 +174,10 @@ public class StateExecutorService {
         return true;
     }
 
-    private <M extends StateService> Entity hookOnValidate(Entity entity, Collection<M> services, String sourceState, String targetState) {
+    private <M extends StateService> Entity hookOnValidate(Entity entity, Collection<M> services, String sourceState,
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onValidate(entity, sourceState, targetState);
+            entity = service.onValidate(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity;
@@ -176,17 +190,25 @@ public class StateExecutorService {
         return entity;
     }
 
-    private <M extends StateService> Entity hookOnBeforeSave(Entity entity, Collection<M> services, String sourceState, String targetState) {
+    private Entity rollbackStateChange(Entity entity, String sourceState) {
+        entity.setField("state", sourceState);
+
+        return entity;
+    }
+
+    private <M extends StateService> Entity hookOnBeforeSave(Entity entity, Collection<M> services, String sourceState,
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onBeforeSave(entity, sourceState, targetState);
+            entity = service.onBeforeSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity;
     }
 
-    private <M extends StateService> boolean hookOnAfterSave(Entity entity, Collection<M> services, String sourceState, String targetState) {
+    private <M extends StateService> boolean hookOnAfterSave(Entity entity, Collection<M> services, String sourceState,
+            String targetState, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
         for (StateService service : services) {
-            entity = service.onAfterSave(entity, sourceState, targetState);
+            entity = service.onAfterSave(entity, sourceState, targetState, stateChangeEntity, describer);
         }
 
         return entity.isValid();
@@ -195,7 +217,14 @@ public class StateExecutorService {
     private <M extends StateService> List<M> lookupChangeStateServices(Class<M> serviceMarker) {
         Map<String, M> stateServices = applicationContext.getBeansOfType(serviceMarker);
 
-        List<M> services = Lists.newArrayList(stateServices.values());
+        List<M> services = new ArrayList<>();
+
+        for (M service : stateServices.values()) {
+            if (serviceEnabled(service)) {
+                services.add(service);
+            }
+        }
+
         AnnotationAwareOrderComparator.sort(services);
 
         return services;
@@ -204,12 +233,68 @@ public class StateExecutorService {
     public <M extends StateService> void buildInitial(Class<M> serviceMarker, Entity entity, String initialState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
 
-        StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
-
-        Entity stateChangeEntity = saveStateChangeEntity(describer, null, initialState, entity);
+        StateChangeEntityDescriber describer = services.get(0).getChangeEntityDescriber();
+        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, null, initialState);
+        stateChangeEntity = saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
 
         entity.setField(describer.getOwnerStateFieldName(), initialState);
         entity.setField(describer.getOwnerStateChangesFieldName(), Lists.newArrayList(stateChangeEntity));
 
+    }
+
+    private <M extends Object & StateService> boolean serviceEnabled(M service) {
+        RunIfEnabled runIfEnabled = service.getClass().getAnnotation(RunIfEnabled.class);
+        if (runIfEnabled == null) {
+            return true;
+        }
+        for (String pluginIdentifier : runIfEnabled.value()) {
+            if (!PluginUtils.isEnabled(pluginIdentifier)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private void copyMessages(Entity entity, Entity mainEntity) {
+        if (mainEntity != null && mainEntity.equals(entity)) {
+            return;
+        }
+        if (componentMessagesHolder == null) {
+            return;
+        }
+        
+        for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
+            componentMessagesHolder.addMessage(errorMessage);
+        }
+        for (ErrorMessage errorMessage : entity.getErrors().values()) {
+            componentMessagesHolder.addMessage(errorMessage);
+        }
+
+        for (GlobalMessage globalMessage : entity.getGlobalMessages()) {
+            componentMessagesHolder.addMessage(globalMessage);
+        }
+    }
+
+    private void copyMessages(Entity entity) {
+        copyMessages(entity, null);
+    }
+
+    private Entity saveAndValidate(final Entity entity) {
+        if (entity == null) {
+            return null;
+        }
+        Entity saved = entity.getDataDefinition().save(entity);
+        if (!saved.isValid()) {
+            throw new RuntimeException(String.format("Error on save state entity: %s", saved.getErrors()));
+        }
+
+        return saved;
+    }
+
+    private void message(String msg, ComponentState.MessageType messageType) {
+        if (componentMessagesHolder != null) {
+            componentMessagesHolder.addMessage(msg, messageType);
+        }
     }
 }

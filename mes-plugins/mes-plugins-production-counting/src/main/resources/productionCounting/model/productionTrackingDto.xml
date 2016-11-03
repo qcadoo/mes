@@ -30,7 +30,7 @@
 
 	<fields>
 		<string name="number"/>
-		<enum name="state" values="01draft,02accepted,03declined,04corrected"/>
+		<enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"/>
 		<datetime name="createDate"/>
 		<boolean name="lastTracking"/>
 		<datetime name="timeRangeFrom"/>

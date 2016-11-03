@@ -26,19 +26,20 @@ package com.qcadoo.mes.productionCounting.states.module;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
+//import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
 import com.qcadoo.mes.states.module.AbstractStateServiceRegisterModule;
 import com.qcadoo.mes.states.service.StateChangeService;
 
 @Service
-public final class ProductionTrackingStateServiceRegisterModule extends AbstractStateServiceRegisterModule {
+public final class ProductionTrackingStateServiceRegisterModule_ extends AbstractStateServiceRegisterModule {
 
-    @Autowired
-    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
+//    @Autowired
+//    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
 
     @Override
     protected StateChangeService getStateChangeService() {
-        return productionTrackingStateChangeAspect;
+//        return productionTrackingStateChangeAspect;
+return null;
     }
 
 }
