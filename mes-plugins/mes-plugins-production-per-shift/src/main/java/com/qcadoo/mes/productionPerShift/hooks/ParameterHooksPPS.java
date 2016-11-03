@@ -21,34 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionLines.constants;
+package com.qcadoo.mes.productionPerShift.hooks;
 
-public final class ProductionLineFields {
+import com.google.common.base.Strings;
+import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
-    private ProductionLineFields() {
 
+@Service
+public class ParameterHooksPPS {
+
+
+    public void validatesWith(final DataDefinition parameterDD, final Entity parameter) {
+        boolean ppsIsAutomatic = parameter.getBooleanField(ParameterFieldsPPS.PPS_IS_AUTOMATIC);
+        String ppsAlgorithm = parameter.getStringField(ParameterFieldsPPS.PPS_ALGORITHM);
+        if(ppsIsAutomatic && Strings.isNullOrEmpty(ppsAlgorithm)){
+            parameter.addError(parameterDD.getField(ParameterFieldsPPS.PPS_ALGORITHM), "basic.parameter.ppsAlgorithm.isRequired");
+        }
     }
-
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String DIVISIONS = "divisions";
-
-    public static final String PLACE = "place";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String DOCUMENTATION = "documentation";
-
-    public static final String WORKSTATION_TYPE_COMPONENTS = "workstationTypeComponents";
-
-    public static final String SUPPORTS_OTHER_TECHNOLOGIES_WORKSTATIONTYPES = "supportsOtherTechnologiesWorkstationTypes";
-
-    public static final String QUANTITY_FOR_OTHER_WORKSTATION_TYPES = "quantityForOtherWorkstationTypes";
-
-    public static final String WORKSTATIONS = "workstations";
-
-    public static final String SHIFTS = "shifts";
 
 }

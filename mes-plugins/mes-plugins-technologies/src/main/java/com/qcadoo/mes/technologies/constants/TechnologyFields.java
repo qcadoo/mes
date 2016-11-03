@@ -55,5 +55,6 @@ public final class TechnologyFields {
 
     public static final String TEMPLATE = "template";
 
+    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
 
 }

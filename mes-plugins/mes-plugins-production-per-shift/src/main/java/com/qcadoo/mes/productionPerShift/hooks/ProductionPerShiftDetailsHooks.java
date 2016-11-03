@@ -33,10 +33,12 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
+import com.qcadoo.mes.productionPerShift.services.AutomaticPpsParametersService;
 import com.qcadoo.mes.productionPerShift.util.ProgressQuantitiesDeviationNotifier;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
@@ -113,6 +115,9 @@ public class ProductionPerShiftDetailsHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private AutomaticPpsParametersService automaticPpsParametersService;
+
     private static final Function<LookupComponent, Optional<Entity>> GET_LOOKUP_ENTITY = new Function<LookupComponent, Optional<Entity>>() {
 
         @Override
@@ -157,10 +162,37 @@ public class ProductionPerShiftDetailsHooks {
         disableComponents(progressForDaysADL, progressType, orderState);
 
         changeButtonState(view, progressType, orderState);
+        updateAutoFillButtonState(view);
         setupHasBeenCorrectedCheckbox(view, technology);
         checkOrderDates(view, order);
         markViewAsInitialized(view);
         deviationNotify(view);
+    }
+
+    private void updateAutoFillButtonState(ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        RibbonActionItem button = window.getRibbon().getGroupByName("autoFill").getItemByName("planProgressForDays");
+
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+
+        if(!automaticPpsParametersService.isAutomaticPlanForShiftOn()){
+            button.setEnabled(false);
+            button.requestUpdate(true);
+            window.requestRibbonRender();
+            return;
+        }
+
+        Entity formEntity = form.getPersistedEntityWithIncludedFormValues();
+
+        Date orderStartDate = formEntity.getBelongsToField(ProductionPerShiftFields.ORDER).getDateField(OrderFields.START_DATE);
+        String orderState = formEntity.getBelongsToField(ProductionPerShiftFields.ORDER).getStringField(OrderFields.STATE);
+
+        if (orderStartDate != null && OrderStateStringValues.PENDING.equals(orderState)) {
+            button.setEnabled(true);
+        } else {
+            button.setEnabled(false);
+        }
+        button.requestUpdate(true);
     }
 
     private void deviationNotify(ViewDefinitionState view) {
@@ -418,7 +450,7 @@ public class ProductionPerShiftDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(WINDOW_REF);
         RibbonGroup progressRibbonGroup = window.getRibbon().getGroupByName(PROGRESS_RIBBON_GROUP_NAME);
         boolean isInCorrectionMode = progressType == ProgressType.CORRECTED && !UNSUPPORTED_ORDER_STATES.contains(orderState);
-        ;
+
         for (RibbonActionItem ribbonActionItem : progressRibbonGroup.getItems()) {
             ribbonActionItem.setEnabled(isInCorrectionMode);
             ribbonActionItem.requestUpdate(true);

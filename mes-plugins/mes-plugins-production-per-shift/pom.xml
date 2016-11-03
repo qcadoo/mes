@@ -15,13 +15,23 @@
 
     <name>Qcadoo MES :: Plugins :: Production per shift</name>
 
-    <dependencies>
+	<dependencies>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-line-changeover-norms-for-orders</artifactId>
             <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-assignment-to-shift</artifactId>
+			<version>1.5-SNAPSHOT-DEV</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-production-counting</artifactId>
+			<version>1.5-SNAPSHOT-DEV</version>
+		</dependency>
+	</dependencies>
 
     <build>
         <plugins>
