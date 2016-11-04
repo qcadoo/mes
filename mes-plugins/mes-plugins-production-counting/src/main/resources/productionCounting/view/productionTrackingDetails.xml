@@ -430,14 +430,16 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
-                <listener event="changeTrackingState"
+<!--                <listener event="changeTrackingState"
                           class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-                          method="changeState"/>
-
+                          method="changeState"/>-->
+                <listener event="changeTrackingState"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="changeTrackingState"/>
+                          
                 <listener event="copyPlannedQuantityToUsedQuantity"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="copyPlannedQuantityToUsedQuantity"/>
-
 
                 <listener event="calcTotalLaborTime"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"

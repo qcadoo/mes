@@ -25,13 +25,36 @@
 
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-					xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
-					xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-					plugin="orders" view="ordersParameters">
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="orders" view="ordersParameters">
 
-	<windowTab name="planPerShiftTab" reference="planPerShiftTab">
-		<component type="checkbox" name="trackingCorrectionRecalculatePps"
-				   field="#{form}.trackingCorrectionRecalculatePps" reference="trackingCorrectionRecalculatePps"/>
-	</windowTab>
+    <windowTab name="planPerShiftTab" reference="planPerShiftTab">
+        <component type="gridLayout" name="gridLayout" columns="3"
+                   rows="4">
+        <layoutElement column="1" row="1">
+            <component type="checkbox" name="trackingCorrectionRecalculatePps" field="#{form}.trackingCorrectionRecalculatePps" reference="trackingCorrectionRecalculatePps">
+                <option type="labelWidth" value="60" />
+            </component>
+        </layoutElement>
+        <layoutElement column="1" row="2">
+            <component type="checkbox" name="ppsIsAutomatic" field="#{form}.ppsIsAutomatic" reference="ppsIsAutomatic" hasDescription="true">
+            <listener event="onChange" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS" method="onChangePpsIsAutomatic" />
+                <option type="labelWidth" value="60" />
+            </component>
+        </layoutElement>
+        <layoutElement column="1" row="3">
+            <component type="select" name="ppsAlgorithm" field="#{form}.ppsAlgorithm" reference="ppsAlgorithm" hasDescription="true" >
+                <option type="labelWidth" value="50" />
+            </component>
+        </layoutElement>
+        <layoutElement column="1" row="4">
+            <component type="checkbox" name="ppsProducedAmountRecalculatePlan" field="#{form}.ppsProducedAmountRecalculatePlan" reference="ppsProducedAmountRecalculatePlan" hasDescription="false" >
+                <option type="labelWidth" value="60" />
+            </component>
+        </layoutElement>
+        </component>
+    </windowTab>
 
 </windowTabExtension>
+        

@@ -27,23 +27,23 @@ import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateEnum;
 
 public enum ProductionTrackingState implements StateEnum {
-
+    
     DRAFT(ProductionTrackingStateStringValues.DRAFT) {
-
+        
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState);
+            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState) || PENDING.equals(targetState);
         }
     },
     ACCEPTED(ProductionTrackingStateStringValues.ACCEPTED) {
-
+        
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return CORRECTED.equals(targetState);
         }
     },
     DECLINED(ProductionTrackingStateStringValues.DECLINED) {
-
+        
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return false;
@@ -55,17 +55,24 @@ public enum ProductionTrackingState implements StateEnum {
         public boolean canChangeTo(final StateEnum targetState) {
             return ACCEPTED.equals(targetState);
         }
+    },
+    PENDING(ProductionTrackingStateStringValues.PENDING) {
+        
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return ACCEPTED.equals(targetState) || DRAFT.equals(targetState);
+        }
     };
-
+    
     private final String stringValue;
-
+    
     private ProductionTrackingState(final String stringValue) {
         this.stringValue = stringValue;
     }
-
+    
     @Override
     public abstract boolean canChangeTo(final StateEnum targetState);
-
+    
     public static ProductionTrackingState parseString(final String string) {
         ProductionTrackingState parsedStatus = null;
         for (ProductionTrackingState status : ProductionTrackingState.values()) {
@@ -77,10 +84,10 @@ public enum ProductionTrackingState implements StateEnum {
         Preconditions.checkArgument(parsedStatus != null, "Couldn't parse '" + string + "'");
         return parsedStatus;
     }
-
+    
     @Override
     public String getStringValue() {
         return stringValue;
     }
-
+    
 }

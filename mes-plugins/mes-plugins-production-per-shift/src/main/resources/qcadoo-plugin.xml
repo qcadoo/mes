@@ -44,7 +44,7 @@
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com/</url>
         </vendor>
-        <description>Lets you define how many products should be outputted in a production order in the following
+        <description>Lets you define how many products should be outputted in a production order in the following
             shifts.
         </description>
         <license>AGPL</license>
@@ -55,6 +55,14 @@
         <dependency>
             <plugin>lineChangeoverNormsForOrders</plugin>
             <version>[1.3.0</version>
+        </dependency>
+        <dependency>
+            <plugin>assignmentToShift</plugin>
+            <version>[1.3.0</version>
+        </dependency>
+        <dependency>
+            <plugin>productionCounting</plugin>
+            <version>[1.5.0</version>
         </dependency>
     </dependencies>
 
@@ -101,6 +109,19 @@
             <model:boolean name="trackingCorrectionRecalculatePps"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="ppsIsAutomatic"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <enum name="ppsAlgorithm" values="01standardTechnology,02standardTechnologyAndAmountOfChange,03user"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="ppsProducedAmountRecalculatePlan"/>
+        </model:model-field>
+        <view:view-hook plugin="orders" view="ordersParameters"
+                        type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
+                        method="onBeforeRender"/>
+
         <model:model-hook model="technologyOperationComponent"
                           plugin="technologies">
             <model:validatesWith
@@ -117,6 +138,12 @@
             <model:onUpdate
                     class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
                     method="onUpdate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productionPerShift.hooks.ParameterHooksPPS"
+                    method="validatesWith"/>
         </model:model-hook>
 
         <view:view-listener plugin="orders" view="orderDetails"

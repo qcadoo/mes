@@ -21,24 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.states.module;
+package com.qcadoo.mes.productionPerShift.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.google.common.base.Strings;
+import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
-import com.qcadoo.mes.states.module.AbstractStateServiceRegisterModule;
-import com.qcadoo.mes.states.service.StateChangeService;
 
 @Service
-public final class ProductionTrackingStateServiceRegisterModule extends AbstractStateServiceRegisterModule {
+public class ParameterHooksPPS {
 
-    @Autowired
-    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
 
-    @Override
-    protected StateChangeService getStateChangeService() {
-        return productionTrackingStateChangeAspect;
+    public void validatesWith(final DataDefinition parameterDD, final Entity parameter) {
+        boolean ppsIsAutomatic = parameter.getBooleanField(ParameterFieldsPPS.PPS_IS_AUTOMATIC);
+        String ppsAlgorithm = parameter.getStringField(ParameterFieldsPPS.PPS_ALGORITHM);
+        if(ppsIsAutomatic && Strings.isNullOrEmpty(ppsAlgorithm)){
+            parameter.addError(parameterDD.getField(ParameterFieldsPPS.PPS_ALGORITHM), "basic.parameter.ppsAlgorithm.isRequired");
+        }
     }
 
 }

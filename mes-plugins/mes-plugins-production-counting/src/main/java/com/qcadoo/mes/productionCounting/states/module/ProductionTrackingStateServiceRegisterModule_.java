@@ -21,24 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.states.client;
+package com.qcadoo.mes.productionCounting.states.module;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
+//import com.qcadoo.mes.productionCounting.states.aop.ProductionTrackingStateChangeAspect;
+import com.qcadoo.mes.states.module.AbstractStateServiceRegisterModule;
 import com.qcadoo.mes.states.service.StateChangeService;
-import com.qcadoo.mes.states.service.client.AbstractStateChangeViewClient;
 
 @Service
-public final class ProductionTrackingStateChangeViewClient extends AbstractStateChangeViewClient {
+public final class ProductionTrackingStateServiceRegisterModule_ extends AbstractStateServiceRegisterModule {
 
-    @Autowired
-    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
+//    @Autowired
+//    private ProductionTrackingStateChangeAspect productionTrackingStateChangeAspect;
 
     @Override
     protected StateChangeService getStateChangeService() {
-        return productionTrackingStateChangeAspect;
+//        return productionTrackingStateChangeAspect;
+return null;
     }
 
 }

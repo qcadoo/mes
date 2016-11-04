@@ -37,6 +37,7 @@
                            field="#{form}.possibleWorkTimeDeviation" hasDescription="true"
                            reference="possibleWorkTimeDeviation">
                     <option type="alignment" value="right"/>
+                    <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
             <layoutElement column="6" row="1">
@@ -46,7 +47,9 @@
             </layoutElement>
             <layoutElement column="1" row="2" width="5">
                 <component type="checkbox" name="acceptanceEvents" field="#{form}.acceptanceEvents"
-                           reference="acceptanceEvents" hasDescription="true"/>
+                           reference="acceptanceEvents" hasDescription="true">
+                    <option type="labelWidth" value="60"/>
+                </component>
             </layoutElement>
         </component>
     </windowTab>
