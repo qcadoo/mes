@@ -1,5 +1,9 @@
 package com.qcadoo.mes.productionCounting.newstates;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
@@ -7,10 +11,9 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListenerService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
+@Order(1)
 public class ProductionTrackingStateService extends BasicStateService implements ProductionTrackingStateServiceMarker {
 
     @Autowired
