@@ -30,7 +30,7 @@
                     plugin="orders" view="ordersParameters">
 
     <windowTab name="masterOrderDefinitionsTab" reference="masterOrderDefinitionsTab">
-        <component type="gridLayout" name="gridLayout" columns="3"
+        <component type="gridLayout" name="gridLayout" columns="2"
                    rows="2">
             <layoutElement column="1" row="1">
                 <component type="checkbox" name="sameOrderNumber" field="#{form}.sameOrderNumber"
