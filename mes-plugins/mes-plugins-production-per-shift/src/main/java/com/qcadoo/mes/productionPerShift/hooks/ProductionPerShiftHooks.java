@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,8 @@ import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Date;
 
 @Service
 public class ProductionPerShiftHooks {
@@ -42,6 +46,23 @@ public class ProductionPerShiftHooks {
         Optional<Entity> maybeOrder = Optional.fromNullable(pps.getBelongsToField(ProductionPerShiftFields.ORDER));
         for (Entity order : maybeOrder.asSet()) {
             progressDatesService.setUpDatesFor(order);
+        }
+        fillOrderFinishDate(dataDefinition, pps);
+    }
+
+    public void fillOrderFinishDate(final DataDefinition ppsDD, final Entity pps) {
+        Entity order = pps.getBelongsToField(ProductionPerShiftFields.ORDER);
+        Date orderFinishDate = pps.getDateField(ProductionPerShiftFields.ORDER_FINISH_DATE);
+        if (orderFinishDate != null) {
+            boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
+
+            order.setField(OrderFields.FINISH_DATE, orderFinishDate);
+            if (shouldBeCorrected) {
+                order.setField(OrderFields.CORRECTED_DATE_TO, orderFinishDate);
+            }
+            pps.setField(ProductionPerShiftFields.ORDER_FINISH_DATE, null);
+
+            order.getDataDefinition().save(order);
         }
     }
 
