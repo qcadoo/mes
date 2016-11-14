@@ -122,20 +122,21 @@
                     </layoutElement>
                     <layoutElement column="1" row="6">
                         <component type="select" name="additionalUnit" field="additionalUnit"
-                                   reference="additionalUnit" defaultEnabled="false"/>
+                                   reference="additionalUnit" defaultEnabled="false" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="input" name="ean" field="ean"/>
                     </layoutElement>
                     <layoutElement column="2" row="2">
-                        <component type="select" name="category" field="category"/>
+                        <component type="select" name="category" field="category"
+                                   hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="2" row="3" height="2">
                         <component type="textarea" name="description" field="description"/>
                     </layoutElement>
                     <layoutElement column="2" row="5">
                         <component type="lookup" name="producer" field="#{form}.producer"
-                                   reference="producer">
+                                   reference="producer" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="number,name"/>
@@ -149,7 +150,7 @@
                     </layoutElement>
                     <layoutElement column="2" row="6">
                         <component type="lookup" name="assortment" field="#{form}.assortment"
-                                   reference="assortment">
+                                   reference="assortment" hasDescription="true">
 
                             <option type="searchable" value="name"/>
                             <option type="orderable" value="name"/>

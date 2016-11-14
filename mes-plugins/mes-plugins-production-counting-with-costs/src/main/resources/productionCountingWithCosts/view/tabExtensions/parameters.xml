@@ -38,6 +38,7 @@
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="printOperationNormsPB"
 							field="#{form}.printOperationNormsPB" reference="printOperationNormsPB">
+							<option type="labelWidth" value="40" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="3">
@@ -47,6 +48,7 @@
 								<layoutElement column="1" row="1">
 									<component type="select" name="calculateOperationsCostsModePB"
 										field="#{form}.calculateOperationCostsModePB" reference="calculateOperationCostsModePB">
+										<option type="labelWidth" value="40" />
 										<listener event="onSelectedEntityChange"
 											class="com.qcadoo.mes.productionCountingWithCosts.hooks.ParameterPBDetailsViewHooks"
 											method="disableCheckboxes" />
@@ -56,15 +58,20 @@
 									<component type="select" name="sourceOfOperationCostsPB"
 										reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB"
 										hasDescription="true">
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3">
 									<component type="checkbox" name="includeTPZPB"
-										field="#{form}.includeTPZPB" reference="includeTPZPB" />
+										field="#{form}.includeTPZPB" reference="includeTPZPB">
+										<option type="labelWidth" value="40" />
+									</component>
 								</layoutElement>
 								<layoutElement column="1" row="4">
 									<component type="checkbox" name="includeAdditionalTimePB"
-										field="#{form}.includeAdditionalTimePB" reference="includeAdditionalTimePB" />
+										field="#{form}.includeAdditionalTimePB" reference="includeAdditionalTimePB">
+										<option type="labelWidth" value="40" />
+									</component>
 								</layoutElement>
 							</component>
 
@@ -72,7 +79,9 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="5">
-						<component type="select" name="priceBasedOn" reference="priceBasedOn" field="#{form}.priceBasedOn" />
+						<component type="select" name="priceBasedOn" reference="priceBasedOn" field="#{form}.priceBasedOn">
+							<option type="labelWidth" value="40" />
+						</component>
 					</layoutElement>
 				</component>
 			</layoutElement>
@@ -83,6 +92,7 @@
 					<layoutElement column="1" row="1">
 						<component type="checkbox" name="printCostNormsOfMaterialsPB"
 							field="#{form}.printCostNormsOfMaterialsPB" reference="printCostNormsOfMaterialsPB">
+							<option type="labelWidth" value="40" />
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2" height="2">
@@ -93,12 +103,13 @@
 								<layoutElement column="1" row="1">
 									<component type="select" name="sourceOfMaterialCostsPB"
 										field="#{form}.sourceOfMaterialCostsPB" reference="sourceOfMaterialCostsPB">
-
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2">
 									<component type="select" name="calculateMaterialCostsModePB"
 										field="#{form}.calculateMaterialCostsModePB" reference="calculateMaterialCostsModePB">
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 							</component>
@@ -116,6 +127,7 @@
 									<component type="input" name="averageMachineHourlyCostPB"
 										field="#{form}.averageMachineHourlyCostPB" reference="averageMachineHourlyCostPB">
 										<option type="alignment" value="right" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="6" row="1">
@@ -123,12 +135,14 @@
 										reference="averageMachineHourlyCostPBCurrency" defaultEnabled="false"
 										hasLabel="false">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="5">
 									<component type="input" name="averageLaborHourlyCostPB"
 										field="#{form}.averageLaborHourlyCostPB" reference="averageLaborHourlyCostPB">
 										<option type="alignment" value="right" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="6" row="2">
@@ -136,6 +150,7 @@
 										reference="averageLaborHourlyCostPBCurrency" defaultEnabled="false"
 										hasLabel="false">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 							</component>
@@ -159,6 +174,7 @@
 									<component type="input" name="productionCostMarginPB"
 										field="#{form}.productionCostMarginPB" reference="productionCostMarginPB">
 										<option type="alignment" value="right" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="1">
@@ -166,12 +182,14 @@
 										reference="productionCostMarginPBProc" defaultEnabled="false"
 										hasLabel="false">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="materialCostMarginPB"
 										field="#{form}.materialCostMarginPB" reference="materialCostMarginPB">
 										<option type="alignment" value="right" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="2">
@@ -179,12 +197,14 @@
 										reference="materialCostMarginPBProc" defaultEnabled="false"
 										hasLabel="false">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="1" row="3" width="3">
 									<component type="input" name="additionalOverheadPB"
 										field="#{form}.additionalOverheadPB" reference="additionalOverheadPB">
 										<option type="alignment" value="right" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 								<layoutElement column="4" row="3">
@@ -192,6 +212,7 @@
 										reference="additionalOverheadPBCurrency" defaultEnabled="false"
 										hasLabel="false">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 							</component>
@@ -208,7 +229,7 @@
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="registrationPriceOverheadPB"
 										field="#{form}.registrationPriceOverheadPB" reference="registrationPriceOverheadPB">
-										<option type="labelWidth" value="60" />
+										<option type="labelWidth" value="40" />
 										<option type="alignment" value="right" />
 									</component>
 								</layoutElement>
@@ -221,7 +242,7 @@
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="profitPB"
 										field="#{form}.profitPB" reference="profitPB">
-										<option type="labelWidth" value="60" />
+										<option type="labelWidth" value="40" />
 										<option type="alignment" value="right" />
 									</component>
 								</layoutElement>
@@ -229,6 +250,7 @@
 									<component type="input" name="profitPBProc"
 										defaultEnabled="false" hasLabel="false" reference="profitPBProc">
 										<option type="textRepresentationOnDisabled" value="true" />
+										<option type="labelWidth" value="40" />
 									</component>
 								</layoutElement>
 							</component>
