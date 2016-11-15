@@ -142,17 +142,29 @@ public class ShiftsServiceImpl implements ShiftsService {
                     LocalTime timeTo = range.getTo();
                     LocalTime timeFrom = range.getFrom();
                     if (!currentDate.equals(dateFrom.minusDays(1)) || timeFrom.isAfter(timeTo)) {
-                        if (timeFrom.isAfter(timeTo)) {
+                        if (timeFrom.isAfter(timeTo) && currentDate.equals(dateFrom.minusDays(1))) {
                             if (currentTime.compareTo(LocalTime.MIDNIGHT) >= 0 && currentTime.compareTo(timeTo) <= 0) {
                                 workTimes.add(createInterval(currentDate.plusDays(1), currentTime, timeTo));
                             }
                         } else {
-                            if (timeFrom.compareTo(currentTime) <= 0 && timeTo.compareTo(currentTime) >= 0) {
-                                workTimes.add(createInterval(currentDate, currentTime, timeTo));
-                            } else {
-                                if (range.getTo().compareTo(currentTime) >= 0) {
+
+                            if (currentDate.equals(dateFrom)) {
+
+                                if (timeFrom.compareTo(currentTime) < 0 && timeTo.compareTo(currentTime) > 0) {
+                                    workTimes.add(createInterval(currentDate, currentTime, timeTo));
+                                } else if (timeFrom.isAfter(timeTo)) {
+                                    if (timeFrom.compareTo(currentTime) < 0) {
+                                        workTimes.add(createInterval(currentDate, currentTime, timeTo));
+                                    } else {
+                                        workTimes.add(createInterval(currentDate, timeFrom, timeTo));
+                                    }
+                                } else if (timeFrom.compareTo(currentTime) >= 0) {
+
                                     workTimes.add(createInterval(currentDate, timeFrom, timeTo));
                                 }
+
+                            } else {
+                                workTimes.add(createInterval(currentDate, timeFrom, timeTo));
                             }
                         }
                     }
