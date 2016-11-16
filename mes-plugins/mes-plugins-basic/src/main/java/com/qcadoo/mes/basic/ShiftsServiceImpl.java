@@ -169,7 +169,7 @@ public class ShiftsServiceImpl implements ShiftsService {
                         }
                     }
                 }
-                workTimes = manageExceptions(workTimes, shift, currentDate);
+                workTimes = manageExceptions(workTimes, shift, dateFrom);
                 finalShiftWorkTimes.addAll(workTimes);
             }
             currentDate = currentDate.plusDays(1);
@@ -185,7 +185,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, final Shift shift, final DateTime currentDate) {
         List<Entity> exceptions = shift.getEntity()
                 .getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS).stream().filter(exception -> exception
-                        .getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(currentDate.toDate()) >= 0)
+                        .getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(currentDate.toDate()) > 0)
                 .collect(Collectors.toList());
         List<Interval> updatedWorkTimes = Lists.newArrayList(shiftWorkTimes);
         for (Entity exception : exceptions) {
