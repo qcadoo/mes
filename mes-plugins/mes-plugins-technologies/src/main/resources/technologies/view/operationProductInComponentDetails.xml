@@ -63,7 +63,8 @@
                                defaultEnabled="false" hasLabel="false"/>
                 </layoutElement>
                 <layoutElement column="1" row="3" width="5">
-                    <component type="input" name="quantityFormula" field="quantityFormula" reference="quantityFormula">
+                    <component type="input" name="quantityFormula" field="quantityFormula" reference="quantityFormula"
+                               hasDescription="true">
                         <option type="alignment" value="right"/>
                         <listener event="onInputChange" method="calculateQuantityFormula"
                                   class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>

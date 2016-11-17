@@ -509,7 +509,7 @@
                     </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="select" name="orderCategory" field="orderCategory"
-                                   reference="orderCategory"/>
+                                   reference="orderCategory" hasDescription="true"/>
                     </layoutElement>
                 </component>
 

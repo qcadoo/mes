@@ -34,7 +34,7 @@
                    rows="4" hasBorders="false">
             <layoutElement column="1" row="1">
                 <component type="time" name="tpz" field="#{form}.tpz"
-                           reference="tpz"/>
+                           reference="tpz" hasDescription="true"/>
             </layoutElement>
             <layoutElement column="1" row="2" height="2">
                 <component type="borderLayout" name="borderLayoutCycleTime"
@@ -111,11 +111,11 @@
                         <layoutElement column="1" row="1">
                             <component type="input" name="machineUtilization"
                                        field="#{form}.machineUtilization" reference="machineUtilization"
-                                       defaultEnabled="true"/>
+                                       defaultEnabled="true" hasDescription="true"/>
                         </layoutElement>
                         <layoutElement column="1" row="2">
                             <component type="input" name="laborUtilization" field="#{form}.laborUtilization"
-                                       reference="laborUtilization" defaultEnabled="true"/>
+                                       reference="laborUtilization" defaultEnabled="true" hasDescription="true"/>
                         </layoutElement>
                     </component>
                 </component>
