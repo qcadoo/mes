@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="warehouseMinimumStateDetails" modelName="warehouseMinimumState" modelPlugin="warehouseMinimalState">
 
@@ -43,15 +44,15 @@
                         <component type="lookup" name="product" reference="product"
                                    field="product">
                             <option type="column" name="name" fields="name" link="true"
-                                    width="200" />
-                            <option type="column" name="ean" fields="ean" />
+                                    width="200"/>
+                            <option type="column" name="ean" fields="ean"/>
 
-                            <option type="searchable" value="name,ean" />
-                            <option type="orderable" value="name,ean" />
+                            <option type="searchable" value="name,ean"/>
+                            <option type="orderable" value="name,ean"/>
 
                             <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-                            <option type="fieldCode" value="number" />
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
 
                         </component>
                     </layoutElement>
