@@ -39,6 +39,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -144,32 +145,50 @@ public class ShiftsServiceImpl implements ShiftsService {
                     if (!currentDate.equals(dateFrom.minusDays(1)) || timeFrom.isAfter(timeTo)) {
                         if (timeFrom.isAfter(timeTo) && currentDate.equals(dateFrom.minusDays(1))) {
                             if (currentTime.compareTo(LocalTime.MIDNIGHT) >= 0 && currentTime.compareTo(timeTo) <= 0) {
-                                workTimes.add(createInterval(currentDate.plusDays(1), currentTime, timeTo));
+                                Optional<Interval> interval = createInterval(currentDate.plusDays(1), currentTime, timeTo);
+                                if (interval.isPresent()) {
+                                    workTimes.add(interval.get());
+                                }
                             }
                         } else {
 
                             if (currentDate.equals(dateFrom)) {
 
                                 if (timeFrom.compareTo(currentTime) < 0 && timeTo.compareTo(currentTime) > 0) {
-                                    workTimes.add(createInterval(currentDate, currentTime, timeTo));
+                                    Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
+                                    if (interval.isPresent()) {
+                                        workTimes.add(interval.get());
+                                    }
                                 } else if (timeFrom.isAfter(timeTo)) {
                                     if (timeFrom.compareTo(currentTime) < 0) {
-                                        workTimes.add(createInterval(currentDate, currentTime, timeTo));
+                                        Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
+                                        if (interval.isPresent()) {
+                                            workTimes.add(interval.get());
+                                        }
                                     } else {
-                                        workTimes.add(createInterval(currentDate, timeFrom, timeTo));
+                                        Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                        if (interval.isPresent()) {
+                                            workTimes.add(interval.get());
+                                        }
                                     }
                                 } else if (timeFrom.compareTo(currentTime) >= 0) {
 
-                                    workTimes.add(createInterval(currentDate, timeFrom, timeTo));
+                                    Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                    if (interval.isPresent()) {
+                                        workTimes.add(interval.get());
+                                    }
                                 }
 
                             } else {
-                                workTimes.add(createInterval(currentDate, timeFrom, timeTo));
+                                Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                if (interval.isPresent()) {
+                                    workTimes.add(interval.get());
+                                }
                             }
                         }
                     }
                 }
-                workTimes = manageExceptions(workTimes, shift, dateFrom);
+                workTimes = manageExceptions(workTimes, shift, currentDate, dateFrom);
                 finalShiftWorkTimes.addAll(workTimes);
             }
             currentDate = currentDate.plusDays(1);
@@ -182,10 +201,13 @@ public class ShiftsServiceImpl implements ShiftsService {
         return Optional.of(result);
     }
 
-    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, final Shift shift, final DateTime currentDate) {
-        List<Entity> exceptions = shift.getEntity()
-                .getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS).stream().filter(exception -> exception
-                        .getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(currentDate.toDate()) > 0)
+    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, final Shift shift, final DateTime currentDate,
+            final DateTime baseDate) {
+        List<Entity> exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS).stream()
+                .filter(exception -> new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
+                        .compareTo(currentDate.toLocalDate()) >= 0
+                        && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
+                                .compareTo(currentDate.toLocalDate()) <= 0)
                 .collect(Collectors.toList());
         List<Interval> updatedWorkTimes = Lists.newArrayList(shiftWorkTimes);
         for (Entity exception : exceptions) {
@@ -193,8 +215,16 @@ public class ShiftsServiceImpl implements ShiftsService {
             DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
             if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
                     .equals(TimetableExceptionType.WORK_TIME.getStringValue())) {
-                Interval exceptionWorkTime = createInterval(dateFrom, dateFrom.toLocalTime(), dateTo, dateTo.toLocalTime());
-                updatedWorkTimes.add(exceptionWorkTime);
+                if (dateFrom.isBefore(baseDate)) {
+                    dateFrom = baseDate;
+                }
+                if (dateFrom.isBefore(dateTo)) {
+                    Optional<Interval> exceptionWorkTime = createInterval(dateFrom, dateFrom.toLocalTime(), dateTo,
+                            dateTo.toLocalTime());
+                    if (exceptionWorkTime.isPresent()) {
+                        updatedWorkTimes.add(exceptionWorkTime.get());
+                    }
+                }
             }
         }
         List<Interval> finalWorkTimes = Lists.newArrayList(updatedWorkTimes);
@@ -215,21 +245,35 @@ public class ShiftsServiceImpl implements ShiftsService {
                     else if (dateFrom.compareTo(workTimeFrom) <= 0 && dateTo.compareTo(workTimeTo) <= 0
                             && dateTo.compareTo(workTimeFrom) >= 0) {
                         finalWorkTimes.remove(workTime);
-                        finalWorkTimes.add(createInterval(dateTo, dateTo.toLocalTime(), workTimeTo, workTimeTo.toLocalTime()));
+                        Optional<Interval> interval = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
+                                workTimeTo.toLocalTime());
+                        if (interval.isPresent()) {
+                            finalWorkTimes.add(interval.get());
+                        }
                     }
                     // exception starts in the middle of work time and ends after
                     else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateFrom.compareTo(workTimeTo) <= 0
                             && dateTo.compareTo(workTimeTo) >= 0) {
                         finalWorkTimes.remove(workTime);
-                        finalWorkTimes
-                                .add(createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom, dateFrom.toLocalTime()));
+                        Optional<Interval> interval = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
+                                dateFrom.toLocalTime());
+                        if (interval.isPresent()) {
+                            finalWorkTimes.add(interval.get());
+                        }
                     }
                     // exception is between work time's start and end
                     else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateTo.compareTo(workTimeTo) <= 0) {
                         finalWorkTimes.remove(workTime);
-                        finalWorkTimes
-                                .add(createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom, dateFrom.toLocalTime()));
-                        finalWorkTimes.add(createInterval(dateTo, dateTo.toLocalTime(), workTimeTo, workTimeTo.toLocalTime()));
+                        Optional<Interval> first = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
+                                dateFrom.toLocalTime());
+                        if (first.isPresent()) {
+                            finalWorkTimes.add(first.get());
+                        }
+                        Optional<Interval> second = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
+                                workTimeTo.toLocalTime());
+                        if (second.isPresent()) {
+                            finalWorkTimes.add(second.get());
+                        }
                     }
                 }
                 updatedWorkTimes = finalWorkTimes;
@@ -256,17 +300,21 @@ public class ShiftsServiceImpl implements ShiftsService {
                 time.getMillisOfSecond());
     }
 
-    private Interval createInterval(final DateTime dateFrom, final LocalTime timeFrom, final LocalTime timeTo) {
+    private Optional<Interval> createInterval(final DateTime dateFrom, final LocalTime timeFrom, final LocalTime timeTo) {
         if (timeFrom.isAfter(timeTo)) {
             return createInterval(dateFrom, timeFrom, dateFrom.plusDays(1), timeTo);
         }
         return createInterval(dateFrom, timeFrom, dateFrom, timeTo);
     }
 
-    private Interval createInterval(final DateTime dateFrom, final LocalTime timeFrom, final DateTime dateTo,
+    private Optional<Interval> createInterval(final DateTime dateFrom, final LocalTime timeFrom, final DateTime dateTo,
             final LocalTime timeTo) {
 
-        return new Interval(convertToDateTime(dateFrom, timeFrom), convertToDateTime(dateTo, timeTo));
+        Interval interval = new Interval(convertToDateTime(dateFrom, timeFrom), convertToDateTime(dateTo, timeTo));
+        if (interval.toDuration().isEqual(null)) {
+            return Optional.empty();
+        }
+        return Optional.of(interval);
 
     }
 
