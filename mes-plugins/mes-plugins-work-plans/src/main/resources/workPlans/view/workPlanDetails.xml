@@ -199,12 +199,13 @@
                     </layoutElement>
                     <layoutElement column="1" row="6">
                         <component type="select" name="type" reference="type"
-                                   field="type"/>
+                                   field="type" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="1" row="7">
 
                         <component type="lookup" name="inputProductColumnToSortBy"
-                                   field="inputProductColumnToSortBy" reference="inputProductColumnToSortBy">
+                                   field="inputProductColumnToSortBy" reference="inputProductColumnToSortBy"
+                                   hasDescription="true">
                             <option type="column" name="name" fields="name"
                                     expression="'@' + #name"/>
                             <option type="column" name="description" fields="description"
@@ -222,7 +223,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="8">
                         <component type="select" name="orderSorting" reference="orderSorting"
-                                   field="orderSorting"/>
+                                   field="orderSorting" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="2" row="1" height="5" width="2">
                         <component type="lookup" name="order" reference="orderLookup"

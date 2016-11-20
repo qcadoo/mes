@@ -224,7 +224,8 @@
                 </layoutElement>
                 <layoutElement column="1" width="3" row="7">
                     <component type="select" name="masterOrderPositionStatus"
-                               reference="masterOrderPositionStatus" field="#{form}.masterOrderPositionStatus"/>
+                               reference="masterOrderPositionStatus" field="#{form}.masterOrderPositionStatus"
+                               hasDescription="true"/>
                 </layoutElement>
                 <layoutElement column="1" width="3" row="8">
                     <component type="borderLayout" name="productQuantity"

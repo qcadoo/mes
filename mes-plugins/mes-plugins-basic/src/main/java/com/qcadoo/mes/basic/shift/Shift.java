@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.basic.shift;
 
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSetMultimap;
@@ -35,15 +48,6 @@ import com.qcadoo.commons.functional.BiFunction;
 import com.qcadoo.commons.functional.Fold;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-
-import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * Shift with some common methods for checking its work time.
@@ -84,7 +88,7 @@ public class Shift {
         this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
         DateTime dateTime = day.withTimeAtStartOfDay();
         Optional<TimeRange> orange = findWorkTimeAt(dateTime.getDayOfWeek());
-        if(orange.isPresent()) {
+        if (orange.isPresent()) {
             TimeRange range = orange.get();
             shiftStartDate = dateTime;
             shiftStartDate = shiftStartDate.withHourOfDay(range.getFrom().getHourOfDay());
@@ -92,7 +96,7 @@ public class Shift {
             shiftEndDate = dateTime;
             shiftEndDate = shiftEndDate.withHourOfDay(range.getTo().getHourOfDay());
             shiftEndDate = shiftEndDate.withMinuteOfHour(range.getTo().getMinuteOfHour());
-            if(shiftStartDate.isAfter(shiftEndDate)){
+            if (shiftStartDate.isAfter(shiftEndDate)) {
                 shiftEndDate = shiftEndDate.plusDays(1);
             }
         } else {
@@ -105,9 +109,11 @@ public class Shift {
     private Multimap<Integer, WorkingHours> getWorkingHoursPerDay(final Entity shiftEntity) {
         ImmutableSetMultimap.Builder<Integer, WorkingHours> builder = ImmutableSetMultimap.builder();
         for (Entry<Integer, String> dayNumToName : Constants.DAYS_OF_WEEK.entrySet()) {
-            String hoursRanges = shiftEntity.getStringField(dayNumToName.getValue() + "Hours");
-            WorkingHours workingHoursForGivenDay = new WorkingHours(hoursRanges);
-            builder.put(dayNumToName.getKey(), workingHoursForGivenDay);
+            if (shiftEntity.getBooleanField(dayNumToName.getValue() + "Working")) {
+                String hoursRanges = shiftEntity.getStringField(dayNumToName.getValue() + "Hours");
+                WorkingHours workingHoursForGivenDay = new WorkingHours(hoursRanges);
+                builder.put(dayNumToName.getKey(), workingHoursForGivenDay);
+            }
         }
         return builder.build();
     }
@@ -235,10 +241,9 @@ public class Shift {
         return Optional.absent();
     }
 
-
     public Optional<TimeRange> findWorkTimeAt(final int dayOfWeek) {
         for (WorkingHours workingHours : workingHoursPerDay.get(dayOfWeek)) {
-           return Optional.of(workingHours.getTimeRanges().iterator().next());
+            return Optional.of(workingHours.getTimeRanges().iterator().next());
         }
         return Optional.absent();
     }

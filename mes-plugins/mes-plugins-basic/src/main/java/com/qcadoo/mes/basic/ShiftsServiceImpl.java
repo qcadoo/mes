@@ -32,17 +32,29 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.IllegalFieldValueException;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import com.google.common.base.Function;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ShiftFields;
+import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
+import com.qcadoo.mes.basic.constants.TimetableExceptionType;
+import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -113,6 +125,212 @@ public class ShiftsServiceImpl implements ShiftsService {
         return DAY_OF_WEEK.get(c.get(Calendar.DAY_OF_WEEK));
     }
 
+    @Override
+    public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, List<Entity> shiftsEntities) {
+        List<Shift> shifts = transformEntitiesToShifts(shiftsEntities);
+        List<Interval> finalShiftWorkTimes = Lists.newArrayList();
+        DateTime currentDate = dateFrom.minusDays(1);
+
+        if (!shifts.stream().anyMatch(shift -> checkShiftWorkingAfterDate(dateFrom, shift))) {
+            return Optional.empty();
+        }
+        while (finalShiftWorkTimes.isEmpty()) {
+            for (Shift shift : shifts) {
+                List<Interval> workTimes = Lists.newArrayList();
+                List<TimeRange> shiftWorkTimes = shift.findWorkTimeAt(currentDate.toLocalDate());
+                for (TimeRange range : shiftWorkTimes) {
+                    LocalTime currentTime = currentDate.toLocalTime();
+                    LocalTime timeTo = range.getTo();
+                    LocalTime timeFrom = range.getFrom();
+                    if (!currentDate.equals(dateFrom.minusDays(1)) || timeFrom.isAfter(timeTo)) {
+                        if (timeFrom.isAfter(timeTo) && currentDate.equals(dateFrom.minusDays(1))) {
+                            if (currentTime.compareTo(LocalTime.MIDNIGHT) >= 0 && currentTime.compareTo(timeTo) <= 0) {
+                                Optional<Interval> interval = createInterval(currentDate.plusDays(1), currentTime, timeTo);
+                                if (interval.isPresent()) {
+                                    workTimes.add(interval.get());
+                                }
+                            }
+                        } else {
+
+                            if (currentDate.equals(dateFrom)) {
+
+                                if (timeFrom.compareTo(currentTime) < 0 && timeTo.compareTo(currentTime) > 0) {
+                                    Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
+                                    if (interval.isPresent()) {
+                                        workTimes.add(interval.get());
+                                    }
+                                } else if (timeFrom.isAfter(timeTo)) {
+                                    if (timeFrom.compareTo(currentTime) < 0) {
+                                        Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
+                                        if (interval.isPresent()) {
+                                            workTimes.add(interval.get());
+                                        }
+                                    } else {
+                                        Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                        if (interval.isPresent()) {
+                                            workTimes.add(interval.get());
+                                        }
+                                    }
+                                } else if (timeFrom.compareTo(currentTime) >= 0) {
+
+                                    Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                    if (interval.isPresent()) {
+                                        workTimes.add(interval.get());
+                                    }
+                                }
+
+                            } else {
+                                Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
+                                if (interval.isPresent()) {
+                                    workTimes.add(interval.get());
+                                }
+                            }
+                        }
+                    }
+                }
+                workTimes = manageExceptions(workTimes, shift, currentDate, dateFrom);
+                finalShiftWorkTimes.addAll(workTimes);
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+        DateTime result = finalShiftWorkTimes.stream().sorted((a, b) -> a.getStart().compareTo(b.getStart())).findFirst().get()
+                .getStart();
+        if (result.compareTo(dateFrom) <= 0) {
+            return Optional.of(dateFrom);
+        }
+        return Optional.of(result);
+    }
+
+    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, final Shift shift, final DateTime currentDate,
+            final DateTime baseDate) {
+        List<Entity> exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS).stream()
+                .filter(exception -> new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
+                        .compareTo(currentDate.toLocalDate()) >= 0
+                        && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
+                                .compareTo(currentDate.toLocalDate()) <= 0)
+                .collect(Collectors.toList());
+        List<Interval> updatedWorkTimes = Lists.newArrayList(shiftWorkTimes);
+        for (Entity exception : exceptions) {
+            DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
+            DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
+            if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
+                    .equals(TimetableExceptionType.WORK_TIME.getStringValue())) {
+                if (dateFrom.isBefore(baseDate)) {
+                    dateFrom = baseDate;
+                }
+                if (dateFrom.isBefore(dateTo)) {
+                    Optional<Interval> exceptionWorkTime = createInterval(dateFrom, dateFrom.toLocalTime(), dateTo,
+                            dateTo.toLocalTime());
+                    if (exceptionWorkTime.isPresent()) {
+                        updatedWorkTimes.add(exceptionWorkTime.get());
+                    }
+                }
+            }
+        }
+        List<Interval> finalWorkTimes = Lists.newArrayList(updatedWorkTimes);
+        for (Entity exception : exceptions) {
+            DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
+            DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
+            if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
+                    .equals(TimetableExceptionType.FREE_TIME.getStringValue())) {
+
+                for (Interval workTime : updatedWorkTimes) {
+                    DateTime workTimeFrom = workTime.getStart();
+                    DateTime workTimeTo = workTime.getEnd();
+                    // exception contains whole work time
+                    if (dateFrom.compareTo(workTimeFrom) <= 0 && dateTo.compareTo(workTimeTo) >= 0) {
+                        finalWorkTimes.remove(workTime);
+                    }
+                    // exception starts before work time and ends in the middle
+                    else if (dateFrom.compareTo(workTimeFrom) <= 0 && dateTo.compareTo(workTimeTo) <= 0
+                            && dateTo.compareTo(workTimeFrom) >= 0) {
+                        finalWorkTimes.remove(workTime);
+                        Optional<Interval> interval = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
+                                workTimeTo.toLocalTime());
+                        if (interval.isPresent()) {
+                            finalWorkTimes.add(interval.get());
+                        }
+                    }
+                    // exception starts in the middle of work time and ends after
+                    else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateFrom.compareTo(workTimeTo) <= 0
+                            && dateTo.compareTo(workTimeTo) >= 0) {
+                        finalWorkTimes.remove(workTime);
+                        Optional<Interval> interval = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
+                                dateFrom.toLocalTime());
+                        if (interval.isPresent()) {
+                            finalWorkTimes.add(interval.get());
+                        }
+                    }
+                    // exception is between work time's start and end
+                    else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateTo.compareTo(workTimeTo) <= 0) {
+                        finalWorkTimes.remove(workTime);
+                        Optional<Interval> first = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
+                                dateFrom.toLocalTime());
+                        if (first.isPresent()) {
+                            finalWorkTimes.add(first.get());
+                        }
+                        Optional<Interval> second = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
+                                workTimeTo.toLocalTime());
+                        if (second.isPresent()) {
+                            finalWorkTimes.add(second.get());
+                        }
+                    }
+                }
+                updatedWorkTimes = finalWorkTimes;
+            }
+        }
+        return finalWorkTimes;
+    }
+
+    private boolean checkShiftWorkingAfterDate(final DateTime date, final Shift shift) {
+        for (int i = 1; i <= 7; i++) {
+            if (shift.worksAt(i)) {
+                return true;
+            }
+        }
+        List<Entity> exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+        return exceptions.stream()
+                .anyMatch(exception -> exception.getStringField(ShiftTimetableExceptionFields.TYPE)
+                        .equals(TimetableExceptionType.WORK_TIME.getStringValue())
+                        && exception.getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(date.toDate()) >= 0);
+    }
+
+    private DateTime convertToDateTime(final DateTime currentDate, final LocalTime time) {
+        return new DateTime(currentDate).withTime(time.getHourOfDay(), time.getMinuteOfHour(), time.getSecondOfMinute(),
+                time.getMillisOfSecond());
+    }
+
+    private Optional<Interval> createInterval(final DateTime dateFrom, final LocalTime timeFrom, final LocalTime timeTo) {
+        if (timeFrom.isAfter(timeTo)) {
+            return createInterval(dateFrom, timeFrom, dateFrom.plusDays(1), timeTo);
+        }
+        return createInterval(dateFrom, timeFrom, dateFrom, timeTo);
+    }
+
+    private Optional<Interval> createInterval(final DateTime dateFrom, final LocalTime timeFrom, final DateTime dateTo,
+            final LocalTime timeTo) {
+
+        Interval interval = new Interval(convertToDateTime(dateFrom, timeFrom), convertToDateTime(dateTo, timeTo));
+        if (interval.toDuration().isEqual(null)) {
+            return Optional.empty();
+        }
+        return Optional.of(interval);
+
+    }
+
+    private List<Shift> transformEntitiesToShifts(List<Entity> shiftsEntities) {
+        List<Entity> shifts = Lists.newArrayList(shiftsEntities);
+        Collections.sort(shifts, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+
+        return FluentIterable.from(shifts).transform(new Function<Entity, Shift>() {
+
+            @Override
+            public Shift apply(final Entity shiftEntity) {
+                return new Shift(shiftEntity);
+            }
+        }).toList();
+    }
+
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
         Date dateFrom = (Date) entity.getField(FROM_DATE_FIELD);
         Date dateTo = (Date) entity.getField(TO_DATE_FIELD);
@@ -124,7 +342,8 @@ public class ShiftsServiceImpl implements ShiftsService {
         return true;
     }
 
-    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         updateDayFieldsState(viewDefinitionState);
     }
 
@@ -392,9 +611,11 @@ public class ShiftsServiceImpl implements ShiftsService {
 
             while (current.compareTo(to) <= 0) {
                 for (LocalTime[] dayHour : dayHours) {
-                    hours.add(new ShiftHour(current.withHourOfDay(dayHour[0].getHourOfDay())
-                            .withMinuteOfHour(dayHour[0].getMinuteOfHour()).toDate(), current
-                            .withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour()).toDate()));
+                    hours.add(new ShiftHour(
+                            current.withHourOfDay(dayHour[0].getHourOfDay()).withMinuteOfHour(dayHour[0].getMinuteOfHour())
+                                    .toDate(),
+                            current.withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour())
+                                    .toDate()));
                 }
                 current = current.plusDays(7);
             }

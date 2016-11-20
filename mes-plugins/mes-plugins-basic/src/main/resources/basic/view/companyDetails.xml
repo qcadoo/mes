@@ -134,11 +134,11 @@
 					</layoutElement>
 					<layoutElement column="1" row="8">
 						<component type="checkbox" name="isSupplier" field="isSupplier"
-								   reference="isSupplier"/>
+								   reference="isSupplier" hasDescription="true"/>
 					</layoutElement>
 					<layoutElement column="1" row="9">
 						<component type="checkbox" name="isReceiver" field="isReceiver"
-								   reference="isReceiver"/>
+								   reference="isReceiver" hasDescription="true"/>
 					</layoutElement>
 					<layoutElement column="2" row="1">
 						<component type="input" name="street" field="street"

@@ -45,8 +45,8 @@
 						reference="parametersGridLayout" columns="1" rows="2">
 						<layoutElement column="1" row="1">
 							<component type="select" name="sourceOfMaterialCosts"
-								field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts">
-
+								field="#{form}.sourceOfMaterialCosts" reference="sourceOfMaterialCosts"
+									   hasDescription="true">
 								<listener event="onSelectedEntityChange"
 									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 									method="checkIfOptionsAreAvailable" />
@@ -55,7 +55,6 @@
 						<layoutElement column="1" row="2">
 							<component type="select" name="calculateMaterialCostsMode"
 								field="#{form}.calculateMaterialCostsMode" reference="calculateMaterialCostsMode">
-
 								<listener event="onSelectedEntityChange"
 									class="com.qcadoo.mes.productionCountingWithCosts.hooks.ProductionBalanceDetailsHooksPCWC"
 									method="checkIfOptionsAreAvailable" />
@@ -141,7 +140,8 @@
 						</layoutElement>
 						<layoutElement column="1" row="3" width="3">
 							<component type="input" name="additionalOverhead"
-								field="#{form}.additionalOverhead" reference="additionalOverhead">
+								field="#{form}.additionalOverhead" reference="additionalOverhead"
+							hasDescription="true">
 								<option type="labelWidth" value="60" />
 								<option type="alignment" value="right" />
 							</component>

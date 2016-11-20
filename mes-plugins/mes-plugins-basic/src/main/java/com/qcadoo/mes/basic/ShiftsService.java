@@ -25,6 +25,7 @@ package com.qcadoo.mes.basic;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
@@ -58,5 +59,7 @@ public interface ShiftsService {
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
 
     String getWeekDayName(final DateTime dateTime);
+
+    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final List<Entity> shifts);
 
 }
