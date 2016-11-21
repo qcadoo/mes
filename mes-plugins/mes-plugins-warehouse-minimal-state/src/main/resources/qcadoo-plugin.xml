@@ -75,9 +75,10 @@
         <view:view resource="view/warehouseMinimumStateAddMulti.xml"/>
 
         <menu:menu-item name="warehouseMinimumStateList" category="materialFlow"
-                        view="warehouseMinimumStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+                        view="warehouseMinimumStateList"
+                        defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
 
-       <!-- view extensions -->
+        <!-- view extensions -->
 
 
         <!-- model -->
@@ -93,7 +94,8 @@
         </model:model-field>
 
         <model:model-field model="product" plugin="basic">
-            <model:manyToMany name="warehouseMinimumStateMulti" model="warehouseMinimumStateMulti" joinField="products" plugin="warehouseMinimalState"/>
+            <model:manyToMany name="warehouseMinimumStateMulti" model="warehouseMinimumStateMulti" joinField="products"
+                              plugin="warehouseMinimalState"/>
         </model:model-field>
 
         <view:view-grid-column plugin="materialFlowResources"
