@@ -70,14 +70,14 @@ public class OrderStateValidationService {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE);
         checkRequired(references, stateChangeContext);
 
-        validateTechnologyState(stateChangeContext);
+        //validateTechnologyState(stateChangeContext);
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM);
         checkRequired(references, stateChangeContext);
 
-        validateTechnologyState(stateChangeContext);
+        //validateTechnologyState(stateChangeContext);
     }
 
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
