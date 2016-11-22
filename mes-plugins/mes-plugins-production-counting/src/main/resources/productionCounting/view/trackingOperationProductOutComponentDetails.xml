@@ -119,7 +119,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="9" width="5">
                         <component type="input" name="wastesQuantity" field="wastesQuantity"
-                                   reference="wastesQuantity">
+                                   reference="wastesQuantity" hasDescription="true">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>

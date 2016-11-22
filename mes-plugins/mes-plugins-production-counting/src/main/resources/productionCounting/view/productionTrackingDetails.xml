@@ -158,13 +158,13 @@
                            columns="3" rows="1">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="lastTracking" field="lastTracking"
-                                   reference="lastTracking"/>
+                                   reference="lastTracking" hasDescription="true"/>
                         <component type="input" name="number" field="number"
                                    reference="number" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
                         <component type="checkbox" name="isCorrection" field="isCorrection"
-                                   reference="isCorrection" defaultEnabled="false"/>
+                                   reference="isCorrection" defaultEnabled="false" hasDescription="true"/>
                         <component type="input" name="corrects" field="corrects"
                                    reference="corrects" defaultEnabled="false" defaultVisible="false">
                             <option type="alignment" value="right"/>

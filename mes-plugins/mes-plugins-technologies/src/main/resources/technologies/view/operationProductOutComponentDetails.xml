@@ -68,7 +68,8 @@
                                defaultEnabled="false"/>
                 </layoutElement>
                 <layoutElement column="1" row="4">
-                    <component type="checkbox" name="set" field="set" reference="set"/>
+                    <component type="checkbox" name="set" field="set" reference="set"
+                               hasDescription="true"/>
                 </layoutElement>
             </component>
             <option type="header" value="true"/>

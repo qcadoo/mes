@@ -262,7 +262,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="checkbox" name="template" field="template"
-                                   reference="template"/>
+                                   reference="template" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="product" field="product"
@@ -307,7 +307,8 @@
                     </layoutElement>
                     <layoutElement column="3" row="1">
                         <component type="input" name="standardPerformanceTechnology"
-                                   field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
+                                   field="standardPerformanceTechnology" reference="standardPerformanceTechnology"
+                                   hasDescription="true">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
