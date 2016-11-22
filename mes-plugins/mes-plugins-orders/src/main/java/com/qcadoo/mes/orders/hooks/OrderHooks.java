@@ -601,7 +601,7 @@ public class OrderHooks {
     }
 
     void setCopyOfTechnology(final Entity order) {
-        order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
+        order.setField(OrderFields.TECHNOLOGY, order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
     }
 
     private Optional<Entity> copyTechnology(final Entity order) {

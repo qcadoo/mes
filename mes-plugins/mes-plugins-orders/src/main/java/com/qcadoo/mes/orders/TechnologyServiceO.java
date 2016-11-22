@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -46,15 +37,19 @@ import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TechnologyServiceO {
@@ -84,16 +79,7 @@ public class TechnologyServiceO {
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
         OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            if (technologyPrototype == null) {
-                removeTechnologyFromOrder(order);
-            } else {
-                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
-            }
-        } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
-            createOrUpdateForOwnTechnology(order, technologyPrototype);
-        }
+        order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
     }
 
     private void removeTechnologyFromOrder(final Entity order) {
