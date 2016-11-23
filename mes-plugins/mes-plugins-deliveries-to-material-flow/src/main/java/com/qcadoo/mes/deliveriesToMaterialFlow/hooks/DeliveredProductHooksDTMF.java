@@ -23,16 +23,23 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class DeliveredProductHooksDTMF {
+
+    @Autowired
+    private ParameterService parameterService;
 
     public boolean validateDates(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Date productionDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
@@ -43,6 +50,15 @@ public class DeliveredProductHooksDTMF {
                         "materialFlow.error.position.expirationDate.lessThenProductionDate");
                 return false;
             }
+        }
+
+        boolean requireExpirationDate = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)
+                .getBelongsToField(DeliveryFields.LOCATION).getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
+
+        if (requireExpirationDate && expirationDate == null) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFieldsDTMF.EXPIRATION_DATE),
+                    "qcadooView.validate.field.error.missing");
+            return false;
         }
         return true;
     }
