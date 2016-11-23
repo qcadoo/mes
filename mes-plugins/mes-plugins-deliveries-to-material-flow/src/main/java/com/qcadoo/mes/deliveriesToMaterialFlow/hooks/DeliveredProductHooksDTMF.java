@@ -35,7 +35,7 @@ import java.util.Date;
 
 @Service
 public class DeliveredProductHooksDTMF {
-    
+
     public boolean validateDates(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Date productionDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
         Date expirationDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
