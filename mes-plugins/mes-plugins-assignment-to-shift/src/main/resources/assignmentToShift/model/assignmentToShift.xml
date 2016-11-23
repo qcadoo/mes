@@ -40,7 +40,7 @@
         <boolean name="approvedAttendanceList"/>
 
         <hasMany name="staffAssignmentToShifts" joinField="assignmentToShift"
-                 model="staffAssignmentToShift"/>
+                 model="staffAssignmentToShift" copyable="false" cascade="delete"/>
         <hasMany name="plannedStaffAssignmentToShifts" joinField="assignmentToShift"
                  model="staffAssignmentToShift" persistent="false"/>
         <hasMany name="correctedStaffAssignmentToShifts" joinField="assignmentToShift"

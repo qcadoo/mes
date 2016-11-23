@@ -41,6 +41,9 @@
 
         <belongsTo name="oldStorageLocation" model="storageLocation"/>
         <belongsTo name="newStorageLocation" model="storageLocation"/>
+        
+        <decimal name="oldPrice"/>
+        <decimal name="newPrice"/>
     </fields>
     <hooks/>
 </model>

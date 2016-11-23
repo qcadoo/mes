@@ -51,27 +51,35 @@ public class ResourceDetailsListeners {
     public void createResourceCorrection(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent quantityInput = (FieldComponent) view.getComponentByReference(ResourceFields.QUANTITY);
+        FieldComponent priceInput = (FieldComponent) view.getComponentByReference(ResourceFields.PRICE);
         String newQuantity = (String) quantityInput.getFieldValue();
+        String newPrice = (String) priceInput.getFieldValue();
 
         LookupComponent storageLocation = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         Entity newStorageLocation = storageLocation.getEntity();
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity, view.getLocale());
+        Either<Exception, Optional<BigDecimal>> price = BigDecimalUtils.tryParseAndIgnoreSeparator(newPrice, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
-            Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
-            BigDecimal correctQuantity = quantity.getRight().get();
-            if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity, newStorageLocation);
-                if (!corrected) {
-                    resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
-                    
-                } else {                    
-                    resourceForm.performEvent(view, "reset");
-                    quantityInput.requestComponentUpdateState();
-                    resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+            if (price.isRight() && price.getRight().isPresent()) {
+                Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+                BigDecimal correctQuantity = quantity.getRight().get();
+                BigDecimal correctedPrice = price.getRight().get();
+                if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                    boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity, newStorageLocation, correctedPrice);
+                    if (!corrected) {
+                        resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
+
+                    } else {
+                        resourceForm.performEvent(view, "reset");
+                        quantityInput.requestComponentUpdateState();
+                        resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+                    }
+                } else {
+                    quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
                 }
             } else {
-                quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
+                priceInput.addMessage("materialFlow.error.correction.invalidPrice", MessageType.FAILURE);
             }
         } else {
             quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
