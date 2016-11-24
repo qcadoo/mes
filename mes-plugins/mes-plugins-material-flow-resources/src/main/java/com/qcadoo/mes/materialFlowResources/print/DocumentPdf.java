@@ -23,22 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.print;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -51,6 +37,15 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component(value = "documentPdf")
 public class DocumentPdf extends ReportPdfView {
@@ -143,8 +138,9 @@ public class DocumentPdf extends ReportPdfView {
         positionsTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
         positionsTable.setHeaderRows(1);
         List<Entity> positions = PositionDataProvider.getPositions(documentEntity);
+        Integer index = 1;
         for (Entity position : positions) {
-            positionsTable.addCell(createCell(PositionDataProvider.index(position), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(index.toString(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.product(position), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.quantity(position), Element.ALIGN_RIGHT));
             positionsTable.addCell(createCell(PositionDataProvider.unit(position), Element.ALIGN_LEFT));
@@ -152,7 +148,7 @@ public class DocumentPdf extends ReportPdfView {
             positionsTable.addCell(createCell(PositionDataProvider.batch(position), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.productionDate(position), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.value(position), Element.ALIGN_RIGHT));
-
+            index++;
         }
 
         PdfPCell totalLabel = createCell(documentPdfHelper.getTotaLabel(locale), Element.ALIGN_LEFT);

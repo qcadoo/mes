@@ -25,19 +25,18 @@ package com.qcadoo.mes.materialFlowResources.print.helper;
 
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class PositionDataProvider {
     
@@ -51,8 +50,7 @@ public class PositionDataProvider {
                 : StringUtils.EMPTY;
     }
     
-    public static String quantity(final Entity position) {
-        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+    public static String quantity(final BigDecimal quantity) {
         return quantity != null ? quantity.stripTrailingZeros().toPlainString() : BigDecimal.ZERO.toPlainString();
     }
     
@@ -130,5 +128,11 @@ public class PositionDataProvider {
         
         return result;
         
+    }
+
+    public static String quantity(Entity position) {
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+        return quantity != null ? quantity.stripTrailingZeros().toPlainString() : BigDecimal.ZERO.toPlainString();
+
     }
 }
