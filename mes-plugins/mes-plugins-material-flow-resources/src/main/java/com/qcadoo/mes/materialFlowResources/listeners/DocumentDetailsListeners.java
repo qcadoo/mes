@@ -56,6 +56,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -230,7 +231,7 @@ public class DocumentDetailsListeners {
                     dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
                     parameterService);
 
-            boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+            boolean created = tryBuildPz(documentToCreateResourcesFor, receiptDocumentForReleaseHelper);
 
             if (created) {
                 view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
@@ -238,6 +239,12 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(documentToCreateResourcesFor);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private boolean tryBuildPz(Entity documentToCreateResourcesFor,
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
+        return receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
     }
 
     private boolean buildConnectedPZDocument(final Entity document) {
