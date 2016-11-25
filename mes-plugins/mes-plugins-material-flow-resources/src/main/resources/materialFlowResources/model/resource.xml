@@ -67,6 +67,12 @@
         <string name="userName"/>
         <boolean name="waste" default="false"/>
 
+        <hasMany name="reservations" model="reservation" joinField="resource" cascade="delete"/>
+
+
+        <decimal name="reservedQuantity"/>
+        <decimal name="availableQuantity"/>
+
     </fields>
     <hooks>
         <validatesWith

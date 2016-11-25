@@ -41,6 +41,9 @@ public class ReservationsService {
     private ResourceStockService resourceStockService;
 
     @Autowired
+    private ResourceReservationsService resourceReservationsService;
+
+    @Autowired
     private MultiTenantService multiTenantService;
 
     private final static String L_QUANTITY = "quantity";
@@ -92,11 +95,12 @@ public class ReservationsService {
         if (!ReservationsService.this.reservationsEnabledForDocumentPositions(params)) {
             return;
         }
-        String query = "INSERT INTO materialflowresources_reservation (location_id, product_id, quantity, position_id) "
-                + "VALUES ((SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), :product_id, :quantity, :id)";
+        String query = "INSERT INTO materialflowresources_reservation (location_id, product_id, quantity, position_id, resource_id) "
+                + "VALUES ((SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), :product_id, :quantity, :id, :resource_id)";
 
         jdbcTemplate.update(query, params);
         resourceStockService.updateResourceStock(params, BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)));
+        resourceReservationsService.updateResourceQuantites(params, BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)));
     }
 
     /**
@@ -122,7 +126,7 @@ public class ReservationsService {
         reservation.setField(ReservationFields.POSITION, position);
         reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
         reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
-
+        reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
         reservation = reservation.getDataDefinition().save(reservation);
         // updateResourceStock(position, position.getDecimalField(PositionFields.QUANTITY));
         position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
@@ -144,7 +148,7 @@ public class ReservationsService {
         }
 
         if (params.get("id") != null) {
-            String queryForOld = "SELECT product_id, quantity FROM materialflowresources_position WHERE id = :id";
+            String queryForOld = "SELECT product_id, resource_id, quantity FROM materialflowresources_position WHERE id = :id";
             Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
                     new ResultSetExtractor<Map<String, Object>>() {
 
@@ -153,19 +157,22 @@ public class ReservationsService {
                             Map<String, Object> result = Maps.newHashMap();
                             if (rs.next()) {
                                 result.put("product_id", rs.getLong("product_id"));
+                                result.put("resource_id", rs.getLong("resource_id"));
                                 result.put("quantity", rs.getBigDecimal("quantity"));
                             }
                             return result;
                         }
                     });
+            Long newResourceId = (Long) params.get("resource_id");
             Long oldProductId = (Long) oldPosition.get("product_id");
+            Long oldResourceId = (Long) oldPosition.get("resource_id");
             BigDecimal oldPositionQuantity = (BigDecimal) oldPosition.get("quantity");
 
             BigDecimal newQuantity = BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY));
             BigDecimal quantityToAdd = newQuantity.subtract(oldPositionQuantity);
             String query = "UPDATE materialflowresources_reservation SET "
                     + "location_id = (SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), "
-                    + "product_id = :product_id, quantity = :quantity WHERE position_id = :id";
+                    + "product_id = :product_id, quantity = :quantity, resource_id = :resource_id WHERE position_id = :id";
 
             jdbcTemplate.update(query, params);
 
@@ -176,6 +183,22 @@ public class ReservationsService {
                 resourceStockService.updateResourceStock(paramsForOld, oldPositionQuantity.negate());
             } else {
                 resourceStockService.updateResourceStock(params, quantityToAdd);
+            }
+            if (oldResourceId != null && newResourceId != null) {
+                if (oldResourceId.compareTo(newResourceId) != 0) {
+                    resourceReservationsService.updateResourceQuantites(params, newQuantity);
+                    Map<String, Object> paramsForOld = Maps.newHashMap(params);
+                    paramsForOld.put("resource_id", oldResourceId);
+                    resourceReservationsService.updateResourceQuantites(paramsForOld, oldPositionQuantity.negate());
+                } else {
+                    resourceReservationsService.updateResourceQuantites(params, quantityToAdd);
+                }
+            } else if (oldResourceId == null && newResourceId != null) {
+                resourceReservationsService.updateResourceQuantites(params, newQuantity);
+            } else if (oldResourceId != null && newResourceId == null) {
+                Map<String, Object> paramsForOld = Maps.newHashMap(params);
+                paramsForOld.put("resource_id", oldResourceId);
+                resourceReservationsService.updateResourceQuantites(paramsForOld, oldPositionQuantity.negate());
             }
         }
 
@@ -195,6 +218,7 @@ public class ReservationsService {
         }
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
+        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
         BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
 
         Entity existingReservation = getReservationForPosition(position);
@@ -202,6 +226,7 @@ public class ReservationsService {
             existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
             existingReservation.setField(ReservationFields.PRODUCT, product);
             existingReservation.setField(ReservationFields.LOCATION, location);
+            existingReservation.setField(ReservationFields.RESOURCE, resource);
             existingReservation.getDataDefinition().save(existingReservation);
         }
     }
@@ -222,6 +247,8 @@ public class ReservationsService {
         String query = "DELETE FROM materialflowresources_reservation WHERE position_id = :id";
         jdbcTemplate.update(query, params);
         resourceStockService.updateResourceStock(params, (BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY))).negate());
+        resourceReservationsService.updateResourceQuantites(params,
+                BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)).negate());
     }
 
     /**
@@ -260,4 +287,5 @@ public class ReservationsService {
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).find()
                 .add(SearchRestrictions.belongsTo(ReservationFields.POSITION, position)).setMaxResults(1).uniqueResult();
     }
+
 }

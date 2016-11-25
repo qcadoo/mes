@@ -32,6 +32,7 @@
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantity" required="true"/>
         <belongsTo name="position" model="position"/>
+        <belongsTo name="resource" model="resource"/>
     </fields>
     <hooks>
         <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onDelete"/>
