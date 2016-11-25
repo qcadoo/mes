@@ -135,7 +135,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "wasteString" });
+                "reservedQuantity", "availableQuantity", "expirationDate", "storageLocation", "batch", "palletNumber",
+                "additionalCode", "wasteString" });
     }
 
     @Override
@@ -156,8 +157,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     }
 
     private boolean prepareWasteFilter(ResourceDTO record) {
-        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
-                LocaleContextHolder.getLocale()).toLowerCase();
+        String yes = translationService
+                .translate("documentGrid.gridColumn.wasteString.value.yes", LocaleContextHolder.getLocale()).toLowerCase();
         String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
                 .toLowerCase();
         String filter = record.getWasteString();
