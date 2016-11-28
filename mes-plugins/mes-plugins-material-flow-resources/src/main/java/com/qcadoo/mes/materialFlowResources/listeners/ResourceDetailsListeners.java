@@ -61,10 +61,10 @@ public class ResourceDetailsListeners {
         Either<Exception, Optional<BigDecimal>> price = BigDecimalUtils.tryParseAndIgnoreSeparator(newPrice, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
-            if (price.isRight() && price.getRight().isPresent()) {
+            if (price.isRight()) {
                 Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
                 BigDecimal correctQuantity = quantity.getRight().get();
-                BigDecimal correctedPrice = price.getRight().get();
+                BigDecimal correctedPrice = price.getRight().isPresent() ? price.getRight().get() : null;
                 if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
                     boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity, newStorageLocation, correctedPrice);
                     if (!corrected) {
