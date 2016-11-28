@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -57,7 +58,8 @@ public class ResourceDetailsListeners {
 
         LookupComponent storageLocation = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         Entity newStorageLocation = storageLocation.getEntity();
-        Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity, view.getLocale());
+        Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity,
+                view.getLocale());
         Either<Exception, Optional<BigDecimal>> price = BigDecimalUtils.tryParseAndIgnoreSeparator(newPrice, view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
@@ -65,15 +67,21 @@ public class ResourceDetailsListeners {
                 Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
                 BigDecimal correctQuantity = quantity.getRight().get();
                 BigDecimal correctedPrice = price.getRight().isPresent() ? price.getRight().get() : null;
+                BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
                 if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                    boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity, newStorageLocation, correctedPrice);
-                    if (!corrected) {
-                        resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
+                    if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
+                        boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity,
+                                newStorageLocation, correctedPrice);
+                        if (!corrected) {
+                            resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
 
+                        } else {
+                            resourceForm.performEvent(view, "reset");
+                            quantityInput.requestComponentUpdateState();
+                            resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+                        }
                     } else {
-                        resourceForm.performEvent(view, "reset");
-                        quantityInput.requestComponentUpdateState();
-                        resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+                        quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanReserved", MessageType.FAILURE);
                     }
                 } else {
                     quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
