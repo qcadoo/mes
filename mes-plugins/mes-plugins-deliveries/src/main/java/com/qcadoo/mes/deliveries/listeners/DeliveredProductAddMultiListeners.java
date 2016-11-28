@@ -141,6 +141,9 @@ public class DeliveredProductAddMultiListeners {
     }
 
     private boolean validate(Entity deliveredProductMulti) {
+        if(!deliveryHasLocationSet(deliveredProductMulti)){
+            return false;
+        }
         DataDefinition dataDefinition = deliveredProductMulti.getDataDefinition();
         boolean isValid = true;
         Arrays.asList(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.PALLET_TYPE,
@@ -180,6 +183,16 @@ public class DeliveredProductAddMultiListeners {
             isValid = isValid && position.isValid();
         }
         return isValid;
+    }
+
+    private boolean deliveryHasLocationSet(Entity deliveredProductMulti) {
+        Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        if(location == null){
+            deliveredProductMulti.addGlobalError("deliveries.deliveredProductMultiPosition.error.locationRequired");
+            return false;
+        }
+        return true;
     }
 
     private Long mapToId(Entity entity) {

@@ -95,11 +95,6 @@
                                  method="validateDates"/>
         </model:model-hook>
 
-        <model:model-hook model="delivery" plugin="deliveries">
-            <model:validatesWith class="com.qcadoo.mes.deliveriesToMaterialFlow.hooks.DeliveryHooksDTMF"
-                                 method="validate"/>
-        </model:model-hook>
-
         <view:view-tab resource="view/tabExtensions/deliveredProductDetails.xml"/>
 
         <view:view-grid-column plugin="materialFlowResources"
