@@ -24,8 +24,6 @@ public class ReservationHooks {
         resourceStockService.updateResourceStock(reservation.getBelongsToField(ReservationFields.PRODUCT),
                 reservation.getBelongsToField(ReservationFields.LOCATION),
                 reservation.getDecimalField(ReservationFields.QUANTITY).negate());
-        resourceReservationsService.updateResourceQuantites(reservation,
-                reservation.getDecimalField(ReservationFields.QUANTITY).negate());
         return true;
     }
 

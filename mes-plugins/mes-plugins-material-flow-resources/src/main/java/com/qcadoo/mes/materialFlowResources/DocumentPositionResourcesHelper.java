@@ -32,7 +32,7 @@ public class DocumentPositionResourcesHelper {
     }
 
     private void appendWhereClause(StringBuilder queryBuilder, boolean query, boolean useAdditionalCode) {
-        queryBuilder.append(" WHERE conversion = :conversion");
+        queryBuilder.append(" WHERE conversion = :conversion AND availablequantity > 0 ");
         queryBuilder.append(" AND product_id = (SELECT id FROM basic_product WHERE number = :product)");
         queryBuilder.append(
                 " AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");

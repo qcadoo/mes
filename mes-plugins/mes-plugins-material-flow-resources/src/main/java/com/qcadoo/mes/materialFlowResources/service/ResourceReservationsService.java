@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -31,17 +31,19 @@ public class ResourceReservationsService {
         }
     }
 
-    public void updateResourceQuantites(Entity reservation, BigDecimal quantityToAdd) {
-        Entity resource = reservation.getBelongsToField(ReservationFields.RESOURCE);
+    public void updateResourceQuantites(Entity position, BigDecimal quantityToAdd) {
+        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
         if (resource != null) {
             resource = dataDefinitionService
                     .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
                     .get(resource.getId());
-            BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
-            // BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-            // resource.setField(ResourceFields.AVAILABLE_QUANTITY, availableQuantity.subtract(quantityToAdd));
-            resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity.add(quantityToAdd));
-            resource.getDataDefinition().save(resource);
+            if (resource != null) {
+                BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
+                // BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
+                // resource.setField(ResourceFields.AVAILABLE_QUANTITY, availableQuantity.subtract(quantityToAdd));
+                resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity.add(quantityToAdd));
+                resource.getDataDefinition().save(resource);
+            }
         }
     }
 }
