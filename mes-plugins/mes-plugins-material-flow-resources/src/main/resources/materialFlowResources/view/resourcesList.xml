@@ -50,8 +50,8 @@
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
             <option type="column" name="givenUnit" fields="givenUnit" width="50"/>
             <option type="column" name="conversion" fields="conversion"/>
-            <option type="column" name="price" fields="price" width="60"/>
-            <option type="column" name="value" fields="value" width="60"/>
+            <option type="column" name="price" fields="price" width="60" authorizationRole="ROLE_RESOURCE_PRICE" />
+            <option type="column" name="value" fields="value" width="60" authorizationRole="ROLE_RESOURCE_PRICE"/>
             <option type="column" name="time" fields="time"/>
             <option type="column" name="productionDate" fields="productionDate"/>
             <option type="column" name="expirationDate" fields="expirationDate"/>
@@ -81,6 +81,7 @@
             <option type="columnsToSummary" value="quantity,quantityInAdditionalUnit,value"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+            <option type="linkAuthorizationRole" value="ROLE_RESOURCE_PRICE"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
