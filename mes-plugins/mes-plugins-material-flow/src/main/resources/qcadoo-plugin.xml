@@ -89,6 +89,8 @@
 		</model:model-field>
 
 		<security:role identifier="ROLE_MATERIAL_FLOW"/>
+		<security:role identifier="ROLE_RESOURCE_PRICE"/>
+
 
 		<menu:menu-category name="materialFlow" />
 	
