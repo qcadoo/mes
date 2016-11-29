@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -47,6 +48,12 @@ public class StaffAssignmentToShiftHooks {
         setOccupationTypeForGridValue(staffAssignmentToShiftDD, staffAssignmentToShift);
         setOccupationTypeEnum(staffAssignmentToShiftDD, staffAssignmentToShift);
         clearProductionLineForOtherTypes(staffAssignmentToShiftDD, staffAssignmentToShift);
+    }
+
+    public Boolean onCopy(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
+        String state = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.STATE);
+
+        return StaffAssignmentToShiftState.SIMPLE.getStringValue().equals(state);
     }
 
     public void setOccupationTypeForGridValue(final DataDefinition staffAssignmentToShiftDD, final Entity staffAssignmentToShift) {
@@ -66,9 +73,9 @@ public class StaffAssignmentToShiftHooks {
 
             staffAssignmentToShift.setField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_VALUE_FOR_GRID,
                     occupationType
-                            + ": "
-                            + staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE)
-                                    .getStringField(NUMBER));
+                    + ": "
+                    + staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.PRODUCTION_LINE)
+                            .getStringField(NUMBER));
         } else if (technicalCode != null && technicalCode.equals(OTHER_CASE.getStringValue())) {
             String occupationTypeName = staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME);
 

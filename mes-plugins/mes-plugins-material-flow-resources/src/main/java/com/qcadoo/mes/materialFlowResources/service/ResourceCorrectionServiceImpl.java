@@ -59,7 +59,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                     MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION).create();
             BigDecimal oldQuantity = oldQuantity(oldResource);
             BigDecimal oldPrice = oldPrice(oldResource);
-            
+
             correction.setField(ResourceCorrectionFields.BATCH, batch(oldResource));
             correction.setField(ResourceCorrectionFields.LOCATION, location(oldResource));
             correction.setField(ResourceCorrectionFields.OLD_QUANTITY, oldQuantity);
@@ -98,7 +98,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation, final BigDecimal newPrice) {
         Entity oldStorageLocation = oldStorageLocation(resource);
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
-        boolean priceChanged = newPrice.compareTo(oldPrice(resource)) != 0;
+        boolean priceChanged = isPriceChanged(oldPrice(resource), newPrice);
 
         boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null)
                 ? (newStorageLocation.getId().compareTo(oldStorageLocation.getId()) != 0)
@@ -139,5 +139,16 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
         return quantity.multiply(conversion);
+    }
+
+    private boolean isPriceChanged(BigDecimal oldPrice, BigDecimal newPrice) {
+        if (oldPrice == null && newPrice == null) {
+            return false;
+        }
+        if (oldPrice == null || newPrice == null) {
+            return true;
+        }
+
+        return newPrice.compareTo(oldPrice) != 0;
     }
 }
