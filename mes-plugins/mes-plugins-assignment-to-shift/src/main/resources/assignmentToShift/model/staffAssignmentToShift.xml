@@ -47,9 +47,8 @@
     </fields>
 
     <hooks>
-        <onSave
-                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks"
-                method="onSave"/>
+        <onSave class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="onSave"/>
+        <onCopy class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftHooks" method="onCopy"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>
