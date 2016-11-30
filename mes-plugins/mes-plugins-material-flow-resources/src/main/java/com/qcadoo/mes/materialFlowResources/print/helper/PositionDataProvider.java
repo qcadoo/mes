@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -144,8 +145,7 @@ public class PositionDataProvider {
     }
 
     public static String unitAdd(Entity position) {
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        return product != null ? product.getStringField(ProductFields.ADDITIONAL_UNIT) : StringUtils.EMPTY;
+        return Strings.nullToEmpty(position.getStringField(PositionFields.GIVEN_UNIT));
     }
 
     public static String amountAndRest(Entity position) {
