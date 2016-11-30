@@ -985,7 +985,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         if ($scope.config.outDocument && $scope.config.suggestResource) {
                             var product = getFieldValue('product', rowId)
                             var ac = getFieldValue('additionalCode', rowId)
-                            updateResource(product, conversion, ac);
+                            var resource = getFieldValue('resource', rowId)
+                            if (!resource) {
+                                updateResource(product, conversion, ac);
+                            }
                         }
                     }
                 }

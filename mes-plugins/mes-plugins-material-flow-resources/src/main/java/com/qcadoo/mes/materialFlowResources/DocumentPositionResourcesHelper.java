@@ -11,7 +11,7 @@ public class DocumentPositionResourcesHelper {
 
     public String getResourceQuery(final Long document, boolean query, boolean addMethodOfDisposal, boolean useAdditionalCode) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select number, batch from materialflowresources_resource");
+        queryBuilder.append("select number, batch, availablequantity from materialflowresources_resource");
         appendWhereClause(queryBuilder, query, useAdditionalCode);
         if (addMethodOfDisposal) {
             // queryBuilder.append(" AND ");
@@ -32,7 +32,7 @@ public class DocumentPositionResourcesHelper {
     }
 
     private void appendWhereClause(StringBuilder queryBuilder, boolean query, boolean useAdditionalCode) {
-        queryBuilder.append(" WHERE conversion = :conversion AND availablequantity > 0 ");
+        queryBuilder.append(" WHERE conversion = :conversion ");
         queryBuilder.append(" AND product_id = (SELECT id FROM basic_product WHERE number = :product)");
         queryBuilder.append(
                 " AND location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
