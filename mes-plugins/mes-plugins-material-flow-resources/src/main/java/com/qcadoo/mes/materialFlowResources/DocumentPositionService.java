@@ -367,6 +367,8 @@ public class DocumentPositionService {
                     addMethodOfDisposalCondition(document, filter, false, false), false);
             batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         }
+        batches = batches.stream().filter(resource -> resource.getAvailableQuantity().compareTo(BigDecimal.ZERO) > 0)
+                .collect(Collectors.toList());
         if (batches.isEmpty()) {
             return null;
         } else {
