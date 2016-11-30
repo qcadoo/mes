@@ -29,12 +29,14 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
+import com.qcadoo.mes.materialFlowResources.print.helper.HeaderAlignmentWithWidth;
 import com.qcadoo.mes.materialFlowResources.print.helper.PositionDataProvider;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
-import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +61,9 @@ public class DocumentPdf extends ReportPdfView {
     @Autowired
     private DocumentPdfHelper documentPdfHelper;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @Override
     protected String addContent(Document document, Map<String, Object> model, Locale locale, PdfWriter writer)
             throws DocumentException, IOException {
@@ -77,6 +82,12 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private void addHeaderTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
+
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+
+        boolean notShowPrices = documentPositionParameters.getBooleanField("notShowPrices");
+
         PdfPTable table = pdfHelper.createPanelTable(3);
 
         List<HeaderPair> headerValues = documentPdfHelper.getDocumentHeaderTableContent(documentEntity, locale);
@@ -97,13 +108,22 @@ public class DocumentPdf extends ReportPdfView {
         descriptionLabelCell.setPaddingLeft(7);
         table.addCell(descriptionLabelCell);
 
-        Phrase totalValueLabel = new Phrase(documentPdfHelper.getTotalValueLabel(locale), FontUtils.getDejavuBold8Dark());
-        PdfPCell totalValueLabelCell = new PdfPCell(totalValueLabel);
-        totalValueLabelCell.setBorder(PdfPCell.NO_BORDER);
-        totalValueLabelCell.setPaddingLeft(7);
-        table.addCell(totalValueLabelCell);
-        table.completeRow();
+        if (!notShowPrices) {
+            Phrase totalValueLabel = new Phrase(documentPdfHelper.getTotalValueLabel(locale), FontUtils.getDejavuBold8Dark());
+            PdfPCell totalValueLabelCell = new PdfPCell(totalValueLabel);
+            totalValueLabelCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueLabelCell.setPaddingLeft(7);
+            table.addCell(totalValueLabelCell);
+            table.completeRow();
 
+        } else {
+            Phrase totalValueLabel = new Phrase("", FontUtils.getDejavuBold8Dark());
+            PdfPCell totalValueLabelCell = new PdfPCell(totalValueLabel);
+            totalValueLabelCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueLabelCell.setPaddingLeft(7);
+            table.addCell(totalValueLabelCell);
+            table.completeRow();
+        }
         Phrase value = new Phrase(description.getValue(), FontUtils.getDejavuRegular9Dark());
         PdfPCell descriptionValueCell = new PdfPCell(value);
         descriptionValueCell.setColspan(2);
@@ -112,12 +132,21 @@ public class DocumentPdf extends ReportPdfView {
         descriptionValueCell.setPaddingBottom(15);
         table.addCell(descriptionValueCell);
 
-        Phrase totalValue = new Phrase(PositionDataProvider.totalValue(documentEntity), FontUtils.getDejavuRegular9Dark());
-        PdfPCell totalValueCell = new PdfPCell(totalValue);
-        totalValueCell.setBorder(PdfPCell.NO_BORDER);
-        totalValueCell.setPaddingLeft(7);
-        totalValueCell.setPaddingBottom(15);
-        table.addCell(totalValueCell);
+        if (!notShowPrices) {
+            Phrase totalValue = new Phrase(PositionDataProvider.totalValue(documentEntity), FontUtils.getDejavuRegular9Dark());
+            PdfPCell totalValueCell = new PdfPCell(totalValue);
+            totalValueCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueCell.setPaddingLeft(7);
+            totalValueCell.setPaddingBottom(15);
+            table.addCell(totalValueCell);
+        } else {
+            Phrase totalValue = new Phrase("", FontUtils.getDejavuRegular9Dark());
+            PdfPCell totalValueCell = new PdfPCell(totalValue);
+            totalValueCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueCell.setPaddingLeft(7);
+            totalValueCell.setPaddingBottom(15);
+            table.addCell(totalValueCell);
+        }
         table.completeRow();
 
         table.setSpacingAfter(20);
@@ -127,13 +156,19 @@ public class DocumentPdf extends ReportPdfView {
     }
 
     private void addPositionsTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+
+        boolean notShowPrices = documentPositionParameters.getBooleanField("notShowPrices");
+        boolean presentTotalAmountAndRest = documentPositionParameters.getBooleanField("presentTotalAmountAndRest");
 
         document.add(new Paragraph(documentPdfHelper.getTableHeader(locale), FontUtils.getDejavuBold10Dark()));
+        Map<String, HeaderAlignmentWithWidth> headerValues = documentPdfHelper.getPositionsTableHeaderLabels(locale);
 
-        int[] headerWidths = { 20, 100, 40, 30, 40, 50, 50, 50 };
-        Map<String, HeaderAlignment> headerValues = documentPdfHelper.getPositionsTableHeaderLabels(locale);
-        PdfPTable positionsTable = pdfHelper.createTableWithHeader(8, Lists.newArrayList(headerValues.keySet()), false,
-                headerWidths, headerValues);
+        int[] headerWidths = documentPdfHelper.headerWidths(headerValues);
+
+        PdfPTable positionsTable = pdfHelper.createTableWithHeader(headerWidths.length,
+                Lists.newArrayList(headerValues.keySet()), false, headerWidths, documentPdfHelper.headerValues(headerValues));
         positionsTable.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
         positionsTable.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
         positionsTable.setHeaderRows(1);
@@ -144,21 +179,32 @@ public class DocumentPdf extends ReportPdfView {
             positionsTable.addCell(createCell(PositionDataProvider.product(position), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.quantity(position), Element.ALIGN_RIGHT));
             positionsTable.addCell(createCell(PositionDataProvider.unit(position), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(PositionDataProvider.price(position), Element.ALIGN_RIGHT));
+            positionsTable.addCell(createCell(PositionDataProvider.quantityAdd(position), Element.ALIGN_RIGHT));
+            positionsTable.addCell(createCell(PositionDataProvider.unitAdd(position), Element.ALIGN_LEFT));
+            if (presentTotalAmountAndRest) {
+                positionsTable.addCell(createCell(PositionDataProvider.amountAndRest(position), Element.ALIGN_RIGHT));
+            }
+            if (!notShowPrices) {
+                positionsTable.addCell(createCell(PositionDataProvider.price(position), Element.ALIGN_RIGHT));
+            }
             positionsTable.addCell(createCell(PositionDataProvider.batch(position), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.productionDate(position), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(PositionDataProvider.value(position), Element.ALIGN_RIGHT));
+            if (!notShowPrices) {
+                positionsTable.addCell(createCell(PositionDataProvider.value(position), Element.ALIGN_RIGHT));
+            }
             index++;
         }
 
-        PdfPCell totalLabel = createCell(documentPdfHelper.getTotaLabel(locale), Element.ALIGN_LEFT);
-        totalLabel.setColspan(7);
-        totalLabel.setBorderWidth(0.7f);
-        positionsTable.addCell(totalLabel);
-        PdfPCell totalValue = createCell(PositionDataProvider.totalValue(documentEntity), Element.ALIGN_RIGHT);
-        totalValue.setBorderWidth(0.7f);
-        positionsTable.addCell(totalValue);
-        positionsTable.setSpacingAfter(20);
+        if (!notShowPrices) {
+            PdfPCell totalLabel = createCell(documentPdfHelper.getTotaLabel(locale), Element.ALIGN_LEFT);
+            totalLabel.setColspan(headerWidths.length - 1);
+            totalLabel.setBorderWidth(0.7f);
+            positionsTable.addCell(totalLabel);
+            PdfPCell totalValue = createCell(PositionDataProvider.totalValue(documentEntity), Element.ALIGN_RIGHT);
+            totalValue.setBorderWidth(0.7f);
+            positionsTable.addCell(totalValue);
+            positionsTable.setSpacingAfter(20);
+        }
 
         document.add(positionsTable);
     }
