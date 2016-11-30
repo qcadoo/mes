@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
-
-import java.util.*;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -59,6 +51,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
