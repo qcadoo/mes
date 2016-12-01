@@ -131,12 +131,21 @@ public class DocumentPositionValidator {
 
             if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
                 errors.add("documentGrid.error.position.quantity.notEnoughResources");
+            } else {
+                if (!StringUtils.isEmpty(position.getResource())) {
+                    BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(position,
+                            tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
+
+                    if (resourceAvailableQuantity == null || quantity.compareTo(resourceAvailableQuantity) > 0) {
+                        errors.add("documentGrid.error.position.quantity.notEnoughResources");
+                    }
+                }
             }
         }
         return Arrays.asList();
     }
 
-    private BigDecimal getAvailableQuantityForProductAndLocation(DocumentPositionDTO position, Long productId, Long locationId) {
+    private BigDecimal getAvailableQuantityForResource(DocumentPositionDTO position, Long productId, Long locationId) {
 
         Long positionId = 0L;
         if (position != null) {
@@ -149,13 +158,11 @@ public class DocumentPositionValidator {
                 resourceId = resource.getId();
             }
         }
-        String query;
-        if (resourceId != null) {
-            query = "SELECT availableQuantity FROM materialflowresources_resource WHERE id = :resource_id";
-        } else {
-            query = "SELECT availableQuantity FROM materialflowresources_resourcestock "
-                    + "WHERE product_id = :product_id AND location_id = :location_id";
+        if (resourceId == null) {
+            return BigDecimal.ZERO;
         }
+        String query = "SELECT availableQuantity FROM materialflowresources_resource WHERE id = :resource_id";
+
         Map<String, Object> params = Maps.newHashMap();
         params.put("product_id", productId);
         params.put("location_id", locationId);
@@ -185,19 +192,65 @@ public class DocumentPositionValidator {
                             return result;
                         }
                     });
-            if (resourceId != null) {
-                Long oldResource = (Long) oldPosition.get("resource_id");
-                if (oldResource != null) {
-                    if (oldResource.compareTo(resourceId) == 0) {
-                        availableQuantity = ((BigDecimal) oldPosition.get("quantity")).add(availableQuantity);
-                    }
-                }
-
-            } else {
-                if (productId.compareTo((Long) oldPosition.get("product_id")) == 0) {
-
+            Long oldResource = (Long) oldPosition.get("resource_id");
+            if (oldResource != null) {
+                if (oldResource.compareTo(resourceId) == 0) {
                     availableQuantity = ((BigDecimal) oldPosition.get("quantity")).add(availableQuantity);
                 }
+
+            }
+        }
+        return availableQuantity;
+    }
+
+    private BigDecimal getAvailableQuantityForProductAndLocation(DocumentPositionDTO position, Long productId, Long locationId) {
+
+        Long positionId = 0L;
+        if (position != null) {
+            positionId = position.getId();
+        }
+        Long resourceId = null;
+        if (position != null && !StringUtils.isEmpty(position.getResource())) {
+            ResourceDTO resource = documentPositionService.getResourceByNumber(position.getResource());
+            if (resource != null) {
+                resourceId = resource.getId();
+            }
+        }
+        String query = "SELECT availableQuantity FROM materialflowresources_resourcestock "
+                + "WHERE product_id = :product_id AND location_id = :location_id";
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("product_id", productId);
+        params.put("location_id", locationId);
+        params.put("position_id", positionId);
+        params.put("resource_id", resourceId);
+        BigDecimal availableQuantity = jdbcTemplate.query(query, params, new ResultSetExtractor<BigDecimal>() {
+
+            @Override
+            public BigDecimal extractData(ResultSet rs) throws SQLException, DataAccessException {
+                return rs.next() ? rs.getBigDecimal("availableQuantity") : BigDecimal.ZERO;
+            }
+        });
+
+        if (positionId != null && positionId != 0L) {
+            String queryForOld = "SELECT product_id, quantity, resource_id FROM materialflowresources_position WHERE id = :position_id";
+            Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
+                    new ResultSetExtractor<Map<String, Object>>() {
+
+                        @Override
+                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                            Map<String, Object> result = Maps.newHashMap();
+                            if (rs.next()) {
+                                result.put("product_id", rs.getLong("product_id"));
+                                result.put("quantity", rs.getBigDecimal("quantity"));
+                                result.put("resource_id", rs.getLong("resource_id"));
+                            }
+                            return result;
+                        }
+                    });
+
+            if (productId.compareTo((Long) oldPosition.get("product_id")) == 0) {
+
+                availableQuantity = ((BigDecimal) oldPosition.get("quantity")).add(availableQuantity);
             }
         }
         return availableQuantity;
