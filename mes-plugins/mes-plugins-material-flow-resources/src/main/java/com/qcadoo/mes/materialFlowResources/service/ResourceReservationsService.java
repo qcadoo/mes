@@ -38,10 +38,10 @@ public class ResourceReservationsService {
                     .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
                     .get(resource.getId());
             if (resource != null) {
-                BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
-                // BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-                // resource.setField(ResourceFields.AVAILABLE_QUANTITY, availableQuantity.subtract(quantityToAdd));
-                resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity.add(quantityToAdd));
+                BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).add(quantityToAdd);
+                BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+                resource.setField(ResourceFields.AVAILABLE_QUANTITY, quantity.subtract(reservedQuantity));
+                resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
                 resource.getDataDefinition().save(resource);
             }
         }

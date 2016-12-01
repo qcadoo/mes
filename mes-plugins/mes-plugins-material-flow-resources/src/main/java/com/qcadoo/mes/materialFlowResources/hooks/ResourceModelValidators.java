@@ -26,8 +26,11 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -48,6 +51,21 @@ public class ResourceModelValidators {
             }
         }
 
+        return true;
+    }
+
+    public boolean checkQuantities(final DataDefinition resourceDD, final Entity resource) {
+        BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
+        BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
+        BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
+        if (quantity == null || reservedQuantity == null || availableQuantity == null) {
+            resource.addGlobalError("materialFlow.error.correction.invalidQuantity");
+            return false;
+        }
+        if (availableQuantity.compareTo(quantity.subtract(reservedQuantity)) != 0) {
+            resource.addGlobalError("materialFlow.error.correction.invalidQuantity");
+            return false;
+        }
         return true;
     }
 

@@ -77,6 +77,10 @@ public class PositionModelHooks {
 
     }
 
+    public void onCopy(final DataDefinition positionDD, final Entity position) {
+        position.setField(PositionFields.RESOURCE, null);
+    }
+
     public void onCreate(final DataDefinition positionDD, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         if (DocumentType.of(document).compareTo(DocumentType.RECEIPT) == 0) {

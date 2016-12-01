@@ -70,14 +70,26 @@
         <hasMany name="reservations" model="reservation" joinField="resource" cascade="delete"/>
 
 
-        <decimal name="reservedQuantity"/>
-        <decimal name="availableQuantity"/>
+        <decimal name="reservedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="availableQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
     </fields>
     <hooks>
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
                 method="checkIfLocationIsWarehouse"/>
+
+        <validatesWith
+                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
+                method="checkQuantities"/>
         <onView
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
                 method="onView"/>

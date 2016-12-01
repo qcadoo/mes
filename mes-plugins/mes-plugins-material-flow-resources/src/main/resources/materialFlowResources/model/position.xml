@@ -72,6 +72,7 @@
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onSave"/>
         <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onDelete"/>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PositionValidators"
