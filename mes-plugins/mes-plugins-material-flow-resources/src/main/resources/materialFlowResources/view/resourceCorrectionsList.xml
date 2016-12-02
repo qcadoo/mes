@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="resourceCorrectionsList"
@@ -52,12 +53,15 @@
             <option type="column" name="newStorageLocation" fields="newStorageLocation" width="110"
                     expression="#newStorageLocation['number']"/>
 
+            <option type="column" name="oldPrice" fields="oldPrice"  width="110"/>
+            <option type="column" name="newPrice" fields="newPrice"  width="110"/>            
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldPrice,newPrice,oldStorageLocation,newStorageLocation"/>
             <option type="orderable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldPrice,newPrice,oldStorageLocation,newStorageLocation"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails"/>
             <option type="correspondingComponent" value="form"/>

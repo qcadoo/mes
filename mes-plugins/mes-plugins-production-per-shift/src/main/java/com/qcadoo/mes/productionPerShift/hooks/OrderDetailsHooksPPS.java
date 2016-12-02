@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -48,6 +41,12 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
 
 @Service
 public class OrderDetailsHooksPPS {
@@ -118,11 +117,19 @@ public class OrderDetailsHooksPPS {
                 }
                 EntityList dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
                 for (Entity dailyProgress : dailyProgresses) {
+
                     Date shiftFinishDate = ppsTimeHelper.findFinishDate(dailyProgress, progressDate, dbOrder);
+
+                    if(shiftFinishDate == null) {
+                        view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
+                        return;
+                    }
+
                     if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
                         ppsFinishDate = shiftFinishDate;
                     }
-                    if (shiftFinishDate == null || shiftFinishDate.before(orderStart)) {
+
+                    if (shiftFinishDate.before(orderStart)) {
                         areDatesCorrect = false;
                     }
                 }

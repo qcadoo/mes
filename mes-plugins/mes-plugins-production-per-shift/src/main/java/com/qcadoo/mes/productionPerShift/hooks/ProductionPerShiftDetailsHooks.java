@@ -175,7 +175,7 @@ public class ProductionPerShiftDetailsHooks {
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
 
-        if(!automaticPpsParametersService.isAutomaticPlanForShiftOn()){
+        if (!automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
             button.setEnabled(false);
             button.requestUpdate(true);
             window.requestRibbonRender();
@@ -233,10 +233,15 @@ public class ProductionPerShiftDetailsHooks {
                 EntityList dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
                 for (Entity dailyProgress : dailyProgresses) {
                     Date shiftFinishDate = ppsTimeHelper.findFinishDate(dailyProgress, progressDate, dbOrder);
+                    if (shiftFinishDate == null) {
+                        view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
+                        return;
+                    }
+
                     if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
                         ppsFinishDate = shiftFinishDate;
                     }
-                    if (shiftFinishDate == null || shiftFinishDate.before(orderStart)) {
+                    if (shiftFinishDate.before(orderStart)) {
                         areDatesCorrect = false;
                     }
                 }
@@ -288,7 +293,8 @@ public class ProductionPerShiftDetailsHooks {
         return view.<CheckBoxComponent> tryFindComponentByReference(VIEW_IS_INITIALIZED_CHECKBOX_REF)
                 .transform(new Function<CheckBoxComponent, Boolean>() {
 
-                    @Override public Boolean apply(final CheckBoxComponent input) {
+                    @Override
+                    public Boolean apply(final CheckBoxComponent input) {
                         return input.isChecked();
                     }
                 }).or(false);
@@ -365,7 +371,7 @@ public class ProductionPerShiftDetailsHooks {
         setProductAndFillProgressForDays(view, progressForDaysADL, orderState, progressType);
     }
 
-    public boolean isCorrectedPlan(final ViewDefinitionState view){
+    public boolean isCorrectedPlan(final ViewDefinitionState view) {
         Optional<Entity> maybeTechnologyOperation = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
         Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(maybeTechnologyOperation);
         List<Entity> progresses = maybeTechnologyOperation.transform(new Function<Entity, List<Entity>>() {
@@ -374,8 +380,8 @@ public class ProductionPerShiftDetailsHooks {
             public List<Entity> apply(final Entity technologyOperation) {
                 return progressForDayDataProvider.findForOperation(technologyOperation, true);
             }
-        }).or(Collections.<Entity>emptyList());
-        if(progresses.isEmpty()){
+        }).or(Collections.<Entity> emptyList());
+        if (progresses.isEmpty()) {
             return false;
         }
         return true;

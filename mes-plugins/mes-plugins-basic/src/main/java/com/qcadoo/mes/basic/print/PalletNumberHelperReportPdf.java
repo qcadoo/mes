@@ -86,15 +86,15 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
                 firstNumberParagraph.setAlignment(Element.ALIGN_CENTER);
                 firstNumberParagraph.setSpacingAfter(20F);
                 numberSmallParagraph.setAlignment(Element.ALIGN_CENTER);
+                numberSmallParagraph.setSpacingBefore(60F);
                 numberSmallParagraph.setSpacingAfter(100F);
 
                 if (i == 0) {
                     Paragraph newLineParagraph = new Paragraph(new Phrase("\n"));
 
-                    newLineParagraph.setSpacingAfter(220f);
+                    newLineParagraph.setSpacingAfter(150F);
 
                     document.add(newLineParagraph);
-
                 }
 
                 document.add(firstNumberParagraph);
@@ -107,10 +107,11 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
             if (i % 2 != 0) {
                 Paragraph secondNumberParagraph = new Paragraph(new Phrase(number, FontUtils.getDejavuBold140Dark()));
                 Paragraph numSmallParagraph = new Paragraph(new Phrase(buildSmallNumber(number), FontUtils.getDejavuBold10Dark()));
-                secondNumberParagraph.setSpacingBefore(180F);
+                secondNumberParagraph.setSpacingBefore(160F);
                 secondNumberParagraph.setAlignment(Element.ALIGN_CENTER);
                 secondNumberParagraph.setSpacingAfter(20F);
                 numSmallParagraph.setAlignment(Element.ALIGN_CENTER);
+                numSmallParagraph.setSpacingBefore(60F);
                 numSmallParagraph.setSpacingAfter(0F);
 
                 secondNumberParagraph.setLeading(0, 0);
@@ -122,9 +123,8 @@ public class PalletNumberHelperReportPdf extends ReportPdfView {
                 if (i < numbers.size() - 1) {
                     document.newPage();
                     Paragraph newp = new Paragraph(new Phrase("\n", FontUtils.getDejavuBold10Dark()));
-                    newp.setSpacingAfter(220F);
+                    newp.setSpacingAfter(150F);
                     document.add(newp);
-
                 }
             }
 
