@@ -532,7 +532,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return Lists.newArrayList(position);
     }
 
-    private BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position) {
+    public BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         String baseUnit = product.getStringField(ProductFields.UNIT);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);

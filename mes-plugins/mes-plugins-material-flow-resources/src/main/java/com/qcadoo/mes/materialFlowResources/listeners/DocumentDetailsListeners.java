@@ -56,6 +56,7 @@ import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -113,6 +114,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private DocumentDetailsHooks documentDetailsHooks;
+
+    @Autowired
+    private ResourceReservationsService resourceReservationsService;
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -488,7 +492,11 @@ public class DocumentDetailsListeners {
     }
 
     public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = form.getPersistedEntityWithIncludedFormValues();
+        document = resourceReservationsService.fillResourcesInDocument(document);
+        form.setEntity(document);
+        view.performEvent(view, "reset");
     }
 
 }

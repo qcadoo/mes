@@ -151,6 +151,7 @@ public class DocumentDetailsHooks {
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
+            changeFillResourceButtonState(window, false);
 
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
