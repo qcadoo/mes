@@ -48,6 +48,7 @@
         <hasMany name="multiAssignmentToShifts" joinField="assignmentToShift"
                  model="multiAssignmentToShift" cascade="delete"/>
 
+        <!-- number generated in database trigger -->
         <integer name="externalNumber" unique="true" copyable="false"/>
         <boolean name="externalSynchronized" default="true" copyable="false"/>
 
