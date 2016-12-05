@@ -89,7 +89,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.product_id = bp.id ");
         queryBuilder.append(
                 " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
-        queryBuilder.append(" AND r.conversion = :conversion ");
+        queryBuilder.append(" AND r.conversion = :conversion AND r.availablequantity > 0 ");
         if (wasteFilterIsWrong) {
             queryBuilder.append(" AND waste IS NULL ");
         }
@@ -135,7 +135,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     @Override
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "expirationDate", "storageLocation", "batch", "palletNumber", "additionalCode", "wasteString" });
+                "reservedQuantity", "availableQuantity", "expirationDate", "storageLocation", "batch", "palletNumber",
+                "additionalCode", "wasteString" });
     }
 
     @Override
@@ -156,8 +157,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     }
 
     private boolean prepareWasteFilter(ResourceDTO record) {
-        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
-                LocaleContextHolder.getLocale()).toLowerCase();
+        String yes = translationService
+                .translate("documentGrid.gridColumn.wasteString.value.yes", LocaleContextHolder.getLocale()).toLowerCase();
         String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
                 .toLowerCase();
         String filter = record.getWasteString();

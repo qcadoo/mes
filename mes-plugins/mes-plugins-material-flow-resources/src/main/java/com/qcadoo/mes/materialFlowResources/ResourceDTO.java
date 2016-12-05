@@ -6,8 +6,7 @@ import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 
-
-public class ResourceDTO implements AbstractDTO{
+public class ResourceDTO implements AbstractDTO {
 
     private Long id;
 
@@ -22,6 +21,10 @@ public class ResourceDTO implements AbstractDTO{
     private BigDecimal quantity;
 
     private BigDecimal quantityInAdditionalUnit;
+
+    private BigDecimal reservedQuantity;
+
+    private BigDecimal availableQuantity;
 
     private BigDecimal price;
 
@@ -200,5 +203,21 @@ public class ResourceDTO implements AbstractDTO{
 
     public void setWasteString(String wasteString) {
         this.wasteString = wasteString;
+    }
+
+    public BigDecimal getReservedQuantity() {
+        return reservedQuantity;
+    }
+
+    public void setReservedQuantity(BigDecimal reservedQuantity) {
+        this.reservedQuantity = reservedQuantity;
+    }
+
+    public BigDecimal getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(BigDecimal availableQuantity) {
+        this.availableQuantity = availableQuantity;
     }
 }
