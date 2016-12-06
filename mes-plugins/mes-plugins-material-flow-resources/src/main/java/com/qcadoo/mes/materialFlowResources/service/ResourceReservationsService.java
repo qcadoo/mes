@@ -71,6 +71,8 @@ public class ResourceReservationsService {
             if (position.getBelongsToField(PositionFields.RESOURCE) == null) {
                 position.getDataDefinition().delete(position.getId());
                 generatedPositions.addAll(matchResourcesToPosition(position, warehouse, warehouseAlgorithm));
+            } else {
+                generatedPositions.add(position);
             }
         }
         document.setField(DocumentFields.POSITIONS, generatedPositions);
