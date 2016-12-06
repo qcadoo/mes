@@ -69,6 +69,7 @@ public class ResourceReservationsService {
 
         for (Entity position : positions) {
             if (position.getBelongsToField(PositionFields.RESOURCE) == null) {
+                position.getDataDefinition().delete(position.getId());
                 generatedPositions.addAll(matchResourcesToPosition(position, warehouse, warehouseAlgorithm));
             }
         }
@@ -110,7 +111,7 @@ public class ResourceReservationsService {
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
 
-                updateResourceQuantites(newPosition, resourceAvailableQuantity);
+                // updateResourceQuantites(newPosition, resourceAvailableQuantity);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
 
@@ -126,7 +127,7 @@ public class ResourceReservationsService {
                 }
             } else {
 
-                updateResourceQuantites(newPosition, quantity);
+                // updateResourceQuantites(newPosition, quantity);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 

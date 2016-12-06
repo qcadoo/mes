@@ -494,8 +494,7 @@ public class DocumentDetailsListeners {
     public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
-        document = resourceReservationsService.fillResourcesInDocument(document);
-        form.setEntity(document);
+        document = resourceReservationsService.fillResourcesInDocument(document);form.setEntity(document);
         view.performEvent(view, "reset");
     }
 

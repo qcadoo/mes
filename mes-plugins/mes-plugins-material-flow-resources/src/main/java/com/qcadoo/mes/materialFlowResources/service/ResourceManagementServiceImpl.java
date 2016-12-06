@@ -507,9 +507,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
                 resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
+                BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
+                        numberService.getMathContext());
                 BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
                 BigDecimal quantityInAdditionalUnit = resourceQuantity.multiply(resourceConversion);
 
+                resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
