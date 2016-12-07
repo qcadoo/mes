@@ -75,7 +75,8 @@
             </group>
             <group name="resources">
                 <bigButton name="fillResources" icon="generateIcon24.png" action="#{form}.fireEvent(fillResources);"
-                           state="enabled"/>
+                           state="enabled"
+                           message="materialFlowResources.documentDetails.window.ribbon.resources.fillResources.message"/>
             </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
