@@ -69,8 +69,13 @@ public class ResourceReservationsService {
 
         for (Entity position : positions) {
             if (position.getBelongsToField(PositionFields.RESOURCE) == null) {
-                position.getDataDefinition().delete(position.getId());
-                generatedPositions.addAll(matchResourcesToPosition(position, warehouse, warehouseAlgorithm));
+                List<Entity> newPositions = matchResourcesToPosition(position, warehouse, warehouseAlgorithm);
+                if (newPositions.isEmpty()) {
+                    generatedPositions.add(position);
+                } else {
+                    position.getDataDefinition().delete(position.getId());
+                    generatedPositions.addAll(newPositions);
+                }
             } else {
                 generatedPositions.add(position);
             }
@@ -141,6 +146,6 @@ public class ResourceReservationsService {
                 return newPositions;
             }
         }
-        return Lists.newArrayList(position);
+        return Lists.newArrayList();
     }
 }
