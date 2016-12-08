@@ -27,6 +27,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.orders.OrderService;
@@ -102,6 +103,9 @@ public class OrderHooks {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private LogService logService;
+    
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         boolean isValid = true;
 
@@ -130,6 +134,8 @@ public class OrderHooks {
         onCorrectingTheRequestedVolume(orderDD, order);
         auditDatesChanges(order);
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
+        
+        logService.add(LogService.Builder.info("order", "Zapis").withMessage("Save order").withItem1(order.getStringField(OrderFields.NUMBER)));
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {
