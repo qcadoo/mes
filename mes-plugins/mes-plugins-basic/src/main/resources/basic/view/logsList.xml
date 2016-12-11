@@ -43,9 +43,9 @@
             <option type="column" name="user" fields="user" expression="#user['userName']" link="true" width="150"/>
             <option type="column" name="message" fields="message" link="true"  width="300"/>        
             <option type="column" name="logLevel" fields="logLevel" width="85"/>
-            <option type="column" name="item1" fields="item1" link="true"  width="150"/>
-            <option type="column" name="item2" fields="item2" link="true"  width="150"/>
-            <option type="column" name="item3" fields="item3" link="true"  width="150"/>
+            <option type="column" name="item1" fields="item1"  width="150"/>
+            <option type="column" name="item2" fields="item2" width="150"/>
+            <option type="column" name="item3" fields="item3" width="150"/>
             
             <option type="order" column="createTime" direction="DESC"/>
 

@@ -45,60 +45,64 @@
             <component type="gridLayout" name="gridLayout" columns="2" rows="7">
                 <layoutElement column="1" row="1">
                     <component type="input" name="createTime" field="createTime" defaultEnabled="never">                                        
-                        <option type="labelWidth" value="10"/>
+                        <option type="labelWidth" value="25"/>
                     </component>
                 </layoutElement>                
+
+                <layoutElement column="1" row="2">
+                    <component type="select" name="logType" field="logType" reference="logType" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>                    
+                </layoutElement>
+
+                <layoutElement column="1" row="3">
+                    <component type="input" name="item1" field="item1" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>             
+                </layoutElement>
+
+                <layoutElement column="1" row="4">
+                    <component type="input" name="item2" field="item2" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>                
+                </layoutElement>
+                
+                <layoutElement column="1" row="5">
+                    <component type="input" name="item3" field="item3" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>            
+                </layoutElement>
+
+                <layoutElement column="1" row="6" height="1" width="1">
+                    <component type="textarea" name="message" field="message" defaultEnabled="never">
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>
+
                 <layoutElement column="2" row="1">
                     <component type="lookup" name="user" field="user" reference="user" defaultEnabled="never" >
                         <option type="column" name="userName" fields="userName" link="true" width="200"/>
                         <option type="fieldCode" value="userName"/>
-                        <option type="expression" value="#uuserName"/>                
-                        <option type="labelWidth" value="10"/>
+                        <option type="expression" value="#uuserName"/>
+                        <option type="labelWidth" value="25"/>
                     </component>
-                </layoutElement>               
-                
-                <layoutElement column="1" row="2">
-                    <component type="select" name="logType" field="logType" reference="logType" defaultEnabled="never">                        
-                        <option type="labelWidth" value="10"/>
-                    </component>                    
                 </layoutElement>
-                <layoutElement column="2" row="2">                    
-                    <component type="input" name="action" field="action" defaultEnabled="never">            
-                        <option type="labelWidth" value="10"/>                        
-                    </component>                    
+
+                <layoutElement column="2" row="2">
+                    <component type="input" name="action" field="action" defaultEnabled="never">
+                        <option type="labelWidth" value="25"/>
+                    </component>
                 </layoutElement>
-                
-                <layoutElement column="1" row="3">
-                    <component type="input" name="item1" field="item1" defaultEnabled="never">                        
-                        <option type="labelWidth" value="10"/>
-                    </component>             
-                </layoutElement>
+
                 <layoutElement column="2" row="3">
-                    <component type="input" name="item2" field="item2" defaultEnabled="never">                        
-                        <option type="labelWidth" value="10"/>
-                    </component>                
-                </layoutElement>
-                
-                <layoutElement column="1" row="4">
-                    <component type="input" name="item3" field="item3" defaultEnabled="never">                        
-                        <option type="labelWidth" value="10"/>
-                    </component>            
-                </layoutElement>
-                <layoutElement column="2" row="4">
-                    <component type="select" name="logLevel" field="logLevel" reference="logLevel" defaultEnabled="never" >                        
-                        <option type="labelWidth" value="10"/>
-                    </component>                    
-                </layoutElement> 
-                
-                <layoutElement column="1" row="5" height="1" width="2">
-                    <component type="textarea" name="message" field="message" defaultEnabled="never">
-                        <option type="labelWidth" value="10"/>
+                    <component type="select" name="logLevel" field="logLevel" reference="logLevel" defaultEnabled="never" >
+                        <option type="labelWidth" value="25"/>
                     </component>
-                </layoutElement> 
-                
-                <layoutElement column="1" row="6" height="2" width="2">
+                </layoutElement>
+
+                <layoutElement column="2" row="4" height="3" width="1">
                     <component type="textarea" name="details" field="details" defaultEnabled="never">                        
-                        <option type="labelWidth" value="10"/>
+                        <option type="labelWidth" value="25"/>
                     </component>
                 </layoutElement>  
                                 
