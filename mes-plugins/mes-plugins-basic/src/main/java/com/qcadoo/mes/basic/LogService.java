@@ -7,7 +7,10 @@ import com.qcadoo.mes.basic.constants.LogLevel;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
+import com.qcadoo.security.constants.UserFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,6 +20,8 @@ import java.util.Date;
 
 @Service
 public class LogService {
+
+    public static final String QCADOO_BOT = "qcadoo_bot";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -111,13 +116,30 @@ public class LogService {
         logEntity.setField(LogFields.LOG_LEVEL, builder.logLevel.getCode());
         logEntity.setField(LogFields.MESSAGE, builder.message);
         logEntity.setField(LogFields.TYPE, builder.type);
-        logEntity.setField(LogFields.USER, securityService.getCurrentUserId());
-
+        Long userId;
+        try {
+            userId = securityService.getCurrentUserId();
+        } catch (Exception ex) {
+            userId = findBotUser().getId();
+        }
+        logEntity.setField(LogFields.USER, userId);
         return logDD.save(logEntity);
     }
 
     private DataDefinition getLogDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_LOG);
+    }
+
+    private Entity findBotUser() {
+        DataDefinition userDD = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
+
+        Entity user = userDD.find().add(SearchRestrictions.eq(UserFields.USER_NAME, QCADOO_BOT)).uniqueResult();
+
+        if (user == null) {
+            throw new RuntimeException("User qcadoo_bot not found.");
+        }
+
+        return user;
     }
 
     private void validate(Builder builder) {
