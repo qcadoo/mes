@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.constants.ShiftFields;
@@ -41,6 +32,14 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PpsTimeHelper {
@@ -71,7 +70,7 @@ public class PpsTimeHelper {
                 endDate = range.getTo();
             }
         }
-        return endDate.toDate();
+        return endDate != null ? endDate.toDate() : null;
     }
 
     public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, Entity shiftEntity, Date dateOfDay) {
