@@ -32,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -55,6 +56,7 @@ import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -113,6 +115,9 @@ public class DocumentDetailsListeners {
     @Autowired
     private DocumentDetailsHooks documentDetailsHooks;
 
+    @Autowired
+    private ResourceReservationsService resourceReservationsService;
+
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -122,8 +127,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -152,8 +157,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
-                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
+                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -203,10 +208,13 @@ public class DocumentDetailsListeners {
 
             return;
         }
+        boolean emptyPositions = false;
 
         if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            emptyPositions = false;
             createResources(documentToCreateResourcesFor);
         } else {
+            emptyPositions = true;
             documentToCreateResourcesFor.setNotValid();
 
             documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
@@ -230,12 +238,12 @@ public class DocumentDetailsListeners {
 
         Entity recentlySavedDocument = documentDD.get(document.getId());
 
-        if (documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
+        if (!emptyPositions && documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
                     dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
                     parameterService);
 
-            boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+            boolean created = tryBuildPz(documentToCreateResourcesFor, receiptDocumentForReleaseHelper);
 
             if (created) {
                 view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
@@ -243,6 +251,12 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(documentToCreateResourcesFor);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private boolean tryBuildPz(Entity documentToCreateResourcesFor,
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
+        return receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
     }
 
     private boolean buildConnectedPZDocument(final Entity document) {
@@ -403,8 +417,8 @@ public class DocumentDetailsListeners {
             boolean result = true;
 
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                        .getField(PositionFields.RESOURCE) != null)
+                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
+                        && position.getField(PositionFields.RESOURCE) != null)
                         || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
                 if (!resultForPosition) {
                     result = false;
@@ -435,8 +449,8 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
-                    (String) givenQuantityField.getFieldValue(), view.getLocale());
+            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
+                    .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
 
             if (maybeQuantity.isRight()) {
                 if (maybeQuantity.getRight().isPresent()) {
@@ -447,8 +461,8 @@ public class DocumentDetailsListeners {
                         position.setField(PositionFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                        UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder
+                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
@@ -475,6 +489,14 @@ public class DocumentDetailsListeners {
             position.setField(PositionFields.UNIT, unit);
             positionForm.setEntity(position);
         }
+    }
+
+    public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = form.getPersistedEntityWithIncludedFormValues();
+        document = resourceReservationsService.fillResourcesInDocument(document);
+        form.setEntity(document);
+        view.performEvent(view, "reset");
     }
 
 }

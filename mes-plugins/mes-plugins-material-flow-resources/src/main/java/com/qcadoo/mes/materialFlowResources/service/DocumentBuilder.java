@@ -6,19 +6,19 @@
  * <p>
  * This file is part of Qcadoo.
  * <p>
- * Qcadoo is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation; either version 3 of the License,
- * or (at your option) any later version.
+ * Qcadoo is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option) any
+ * later version.
  * <p>
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU Affero General Public License for more details.
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
+ * details.
  * <p>
  * You should have received a copy of the GNU Affero General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  * ***************************************************************************
  */
 package com.qcadoo.mes.materialFlowResources.service;
@@ -32,13 +32,14 @@ import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -106,8 +107,8 @@ public class DocumentBuilder {
     }
 
     /**
-     * Add position to document, use this method for outbound and transfer documents where additional attributes should not been
-     * set.
+     * Add position to document, use this method for outbound and transfer
+     * documents where additional attributes should not been set.
      *
      * @param product
      * @param quantity
@@ -118,7 +119,8 @@ public class DocumentBuilder {
     }
 
     /**
-     * Add position to document, use this method for outbound and transfer documents for locations with manual algorithm
+     * Add position to document, use this method for outbound and transfer
+     * documents for locations with manual algorithm
      *
      * @param product
      * @param quantity
@@ -130,7 +132,8 @@ public class DocumentBuilder {
     }
 
     /**
-     * Add position to document, use this method for inbound documents where additional attributes are required sometimes.
+     * Add position to document, use this method for inbound documents where
+     * additional attributes are required sometimes.
      *
      * @param product
      * @param quantity
@@ -181,7 +184,8 @@ public class DocumentBuilder {
     }
 
     /**
-     * Creates position with given field values (with the same base and given unit)
+     * Creates position with given field values (with the same base and given
+     * unit)
      *
      * @param product
      * @param quantity
@@ -211,7 +215,8 @@ public class DocumentBuilder {
     }
 
     /**
-     * Creates position with given field values (with different base unit and given unit)
+     * Creates position with given field values (with different base unit and
+     * given unit)
      *
      * @param product
      * @param quantity
@@ -311,6 +316,31 @@ public class DocumentBuilder {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
+        return savedDocument;
+    }
+
+    public Entity buildWithEntityRuntimeException() {
+        DataDefinition documentDD = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+
+        document.setField(DocumentFields.POSITIONS, positions);
+
+        if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
+            createResources();
+        }
+        Entity savedDocument = documentDD.save(document);
+
+        if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue()
+                .equals(savedDocument.getStringField(DocumentFields.STATE)) && buildConnectedPZDocument(savedDocument)) {
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService, parameterService);
+            receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+        }
+
+        if (!savedDocument.isValid()) {
+            throw new EntityRuntimeException(savedDocument);
+        }
+        
         return savedDocument;
     }
 

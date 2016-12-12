@@ -53,12 +53,15 @@
             <option type="column" name="newStorageLocation" fields="newStorageLocation" width="110"
                     expression="#newStorageLocation['number']"/>
 
+            <option type="column" name="oldPrice" fields="oldPrice"  width="110"/>
+            <option type="column" name="newPrice" fields="newPrice"  width="110"/>            
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldPrice,newPrice,oldStorageLocation,newStorageLocation"/>
             <option type="orderable"
-                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                    value="number,createDate,productNumber,productName,oldQuantity,newQuantity,oldPrice,newPrice,oldStorageLocation,newStorageLocation"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails"/>
             <option type="correspondingComponent" value="form"/>

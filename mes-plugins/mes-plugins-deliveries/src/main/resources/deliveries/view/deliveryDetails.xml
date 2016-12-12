@@ -597,11 +597,23 @@
                         <option type="column" name="deliveredQuantity" fields="deliveredQuantity"
                                 width="80"/>
 
-						<option type="column" name="leftToReceiveQuantity" fields="leftToReceiveQuantity"
+                        <option type="column" name="leftToReceiveQuantity" fields="leftToReceiveQuantity"
                                 width="80"/>
 
                         <option type="column" name="productUnit" fields="productUnit"
                                 width="30"/>
+
+                        <option type="column" name="additionalQuantity"
+                                fields="additionalQuantity"
+                                width="80"/>
+
+                        <option type="column" name="additionalDeliveredQuantity"
+                                fields="additionalDeliveredQuantity"
+                                width="80"/>
+
+                        <option type="column" name="additionalLeftToReceiveQuantity"
+                                fields="additionalLeftToReceiveQuantity"
+                                width="80"/>
 
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
                                 width="60"/>
@@ -618,9 +630,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,orderedQuantity,productUnit,additionalCode,deliveredQuantity,leftToReceiveQuantity"/>
+                                value="productNumber,productName,orderedQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,productUnit,additionalCode,deliveredQuantity,leftToReceiveQuantity"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,orderedQuantity,productUnit,additionalCode,deliveredQuantity,leftToReceiveQuantity"/>
+                                value="succession,productNumber,productName,orderedQuantity,additionalQuantity,additionalDeliveredQuantity,additionalLeftToReceiveQuantity,productUnit,additionalCode,deliveredQuantity,leftToReceiveQuantity"/>
 
                         <option type="correspondingView" value="deliveries/orderedProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
@@ -711,8 +723,8 @@
                         <option type="column" name="palletNumber" fields="palletNumber"
                                 width="80"/>
 
-						<option type="column" name="isWaste" fields="isWaste"
-								width="45"/>
+                        <option type="column" name="isWaste" fields="isWaste"
+                                width="45"/>
 
                         <option type="order" column="succession" direction="asc"/>
 

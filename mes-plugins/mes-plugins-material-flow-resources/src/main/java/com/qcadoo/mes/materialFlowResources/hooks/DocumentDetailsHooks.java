@@ -39,6 +39,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -78,6 +79,9 @@ public class DocumentDetailsHooks {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ReservationsService reservationsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
@@ -147,6 +151,7 @@ public class DocumentDetailsHooks {
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
+            changeFillResourceButtonState(window, false);
 
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
@@ -159,10 +164,12 @@ public class DocumentDetailsHooks {
         } else if (DocumentState.DRAFT.equals(state)) {
             changeAcceptButtonState(window, true);
             changePrintButtonState(window, true);
+            changeFillResourceButtonState(window, reservationsService.reservationsEnabledForDocumentPositions(document));
         } else if (DocumentState.ACCEPTED.equals(state)) {
             documentForm.setFormEnabled(false);
             disableRibbon(window);
             changePrintButtonState(window, true);
+            changeFillResourceButtonState(window, false);
         }
     }
 
@@ -181,6 +188,14 @@ public class DocumentDetailsHooks {
 
         acceptRibbonActionItem.setEnabled(enable);
         acceptRibbonActionItem.requestUpdate(true);
+    }
+
+    private void changeFillResourceButtonState(WindowComponent window, final boolean enable) {
+        RibbonActionItem fillResourcesItem = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
+                .getItemByName("fillResources");
+
+        fillResourcesItem.setEnabled(enable);
+        fillResourcesItem.requestUpdate(true);
     }
 
     private void changePrintButtonState(WindowComponent window, final boolean enable) {

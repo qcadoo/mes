@@ -31,8 +31,10 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -48,6 +50,9 @@ public class PositionModelHooks {
 
     @Autowired
     private PositionValidators positionValidators;
+
+    @Autowired
+    private ResourceReservationsService resourceReservationsService;
 
     public void onSave(final DataDefinition positionDD, final Entity position) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
@@ -72,6 +77,10 @@ public class PositionModelHooks {
 
     }
 
+    public void onCopy(final DataDefinition positionDD, final Entity position) {
+        position.setField(PositionFields.RESOURCE, null);
+    }
+
     public void onCreate(final DataDefinition positionDD, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         if (DocumentType.of(document).compareTo(DocumentType.RECEIPT) == 0) {
@@ -82,6 +91,13 @@ public class PositionModelHooks {
         if (positionValidators.validateAvailableQuantity(positionDD, position)) {
             reservationsService.createReservationFromDocumentPosition(position);
         }
+    }
+
+    public boolean onDelete(final DataDefinition positionDD, final Entity position) {
+
+        resourceReservationsService.updateResourceQuantites(position,
+                position.getDecimalField(ReservationFields.QUANTITY).negate());
+        return true;
     }
 
 }

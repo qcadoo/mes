@@ -67,6 +67,12 @@ public class ResourceModelHooks {
         if (resource.getField(ResourceFields.WASTE) == null) {
             resource.setField(ResourceFields.WASTE, false);
         }
+        if (resource.getDecimalField(ResourceFields.RESERVED_QUANTITY) == null) {
+            resource.setField(ResourceFields.RESERVED_QUANTITY, BigDecimal.ZERO);
+        }
+        if (resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY) == null) {
+            resource.setField(ResourceFields.AVAILABLE_QUANTITY, resource.getDecimalField(ResourceFields.QUANTITY));
+        }
     }
 
     public void generateBatch(final DataDefinition resourceDD, final Entity resource) {

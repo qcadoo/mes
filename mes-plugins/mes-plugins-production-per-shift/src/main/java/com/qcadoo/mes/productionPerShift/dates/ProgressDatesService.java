@@ -23,31 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Ordering;
+import com.google.common.collect.*;
 import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.commons.functional.LazyStream;
 import com.qcadoo.mes.basic.shift.Shift;
@@ -59,6 +38,15 @@ import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.utils.EntityUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
 
 @Service
 public class ProgressDatesService {
@@ -84,12 +72,13 @@ public class ProgressDatesService {
 
     @Transactional
     public void setUpDatesFor(final Entity order) {
-        for (OrderDates orderDates : resolveOrderDates(order).asSet()) {
-            List<Entity> progressesForDays = progressForDayDataProvider.findForOrder(order,
-                    ProgressForDayDataProvider.DEFAULT_SEARCH_ORDER);
-            Multimap<Long, Entity> progressesByOperationId = Multimaps.index(progressesForDays, EXTRACT_TECHNOLOGY_OPERATION_ID);
-            for (Collection<Entity> progresses : progressesByOperationId.asMap().values()) {
-                setupDatesFor(progresses, orderDates);
+        List<Entity> progressesForDays = progressForDayDataProvider.findForOrder(order,
+                ProgressForDayDataProvider.DEFAULT_SEARCH_ORDER);
+        for (Entity progressForDay : progressesForDays) {
+            if (progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY) == null) {
+                Date dateOfDay = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+                progressForDay.setField(ProgressForDayFields.ACTUAL_DATE_OF_DAY, dateOfDay);
+                progressForDay.getDataDefinition().save(progressForDay);
             }
         }
     }

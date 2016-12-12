@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class DeliveredProductHooksDTMF {

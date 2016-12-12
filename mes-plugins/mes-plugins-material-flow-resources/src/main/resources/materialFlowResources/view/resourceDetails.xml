@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_RESOURCE_PRICE" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="resourceDetails" modelName="resource">
@@ -124,7 +124,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="7" width="5">
                         <component type="input" name="price" field="price"
-                                   reference="price" defaultEnabled="false">
+                                   reference="price" defaultEnabled="true">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>                    
@@ -185,13 +185,16 @@
                         expression="#oldStorageLocation['number']"/>
                 <option type="column" name="newStorageLocation" fields="newStorageLocation"
                         expression="#newStorageLocation['number']"/>
+                
+                <option type="column" name="oldPrice" fields="oldPrice" />
+                <option type="column" name="newPrice" fields="newPrice" />
 
                 <option type="order" column="number" direction="desc"/>
 
                 <option type="searchable"
-                        value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                        value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation,oldPrice,newPrice"/>
                 <option type="orderable"
-                        value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation"/>
+                        value="number,createDate,oldQuantity,newQuantity,oldStorageLocation,newStorageLocation,oldPrice,newPrice"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
