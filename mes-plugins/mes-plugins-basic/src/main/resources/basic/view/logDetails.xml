@@ -73,7 +73,7 @@
                     </component>            
                 </layoutElement>
 
-                <layoutElement column="1" row="6" height="1" width="1">
+                <layoutElement column="1" row="6" height="2" width="1">
                     <component type="textarea" name="message" field="message" defaultEnabled="never">
                         <option type="labelWidth" value="25"/>
                     </component>
@@ -100,7 +100,7 @@
                     </component>
                 </layoutElement>
 
-                <layoutElement column="2" row="4" height="3" width="1">
+                <layoutElement column="2" row="4" height="4" width="1">
                     <component type="textarea" name="details" field="details" defaultEnabled="never">                        
                         <option type="labelWidth" value="25"/>
                     </component>
