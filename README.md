@@ -1,9 +1,5 @@
 # mes
 
-When using open source version please change line in *mes-application/conf/tomcat/db.properties* from:
+Tutorial how to build MES from sources:
 
-*hibernateHbm2ddlImportFiles=/views.sql*
-
-to:
-
-*hibernateHbm2ddlImportFiles=/views-os.sql*
+https://qcadoo.atlassian.net/wiki/display/QCDMESDOC/Building+MES+from+sources+tutorial
