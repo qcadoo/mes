@@ -192,6 +192,7 @@ CREATE OR REPLACE VIEW technologies_technologydto AS SELECT technology.id, techn
 
 -- end
 
+
 -- VIEW: orders_orderdto
 
 ALTER TABLE productflowthrudivision_warehouseissue DROP COLUMN order_id;
