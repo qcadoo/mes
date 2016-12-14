@@ -117,7 +117,7 @@ public class OrderHooksPPS {
                         .getHasManyField(TechnologyFields.OPERATION_COMPONENTS).stream()
                         .filter(toc -> !toc.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS).isEmpty())
                         .collect(Collectors.toList());
-                if (operationComponents.isEmpty()) {
+                if (operationComponents.isEmpty() && order.getBooleanField("generatePPS")) {
                     fillWithRootOperation(operationComponents, orderFromDB);
                 }
                 for (Entity toc : operationComponents) {
