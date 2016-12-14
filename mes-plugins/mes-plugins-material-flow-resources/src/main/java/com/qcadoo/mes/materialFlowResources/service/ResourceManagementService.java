@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
@@ -38,4 +39,6 @@ public interface ResourceManagementService {
 
     List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
             WarehouseAlgorithm warehouseAlgorithm);
+
+    BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position);
 }

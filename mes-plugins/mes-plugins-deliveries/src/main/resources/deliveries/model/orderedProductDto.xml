@@ -24,14 +24,15 @@
     ***************************************************************************
 
 -->
-<model name="orderedProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderedProductDto" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
 
         <integer name="succession"/>
 
-        <belongsTo name="delivery" model="delivery" persistent="false" />
+        <belongsTo name="delivery" model="delivery" persistent="false"/>
 
         <integer name="deliveryId"/>
 
@@ -45,9 +46,13 @@
 
         <decimal name="deliveredQuantity"/>
 
+        <decimal name="additionalDeliveredQuantity"/>
+
         <decimal name="leftToReceiveQuantity"/>
 
         <decimal name="additionalQuantity"/>
+
+        <decimal name="additionalLeftToReceiveQuantity"/>
 
         <decimal name="conversion"/>
 
