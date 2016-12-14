@@ -82,7 +82,8 @@ public interface OrderService {
      * @param fieldComponentName
      *            field component name
      */
-    void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName, final String fieldComponentName);
+    void changeFieldState(final ViewDefinitionState view, final String booleanFieldComponentName,
+            final String fieldComponentName);
 
     /**
      * Checks component order has technology
@@ -113,5 +114,12 @@ public interface OrderService {
      * @return boolean
      */
     boolean checkRequiredBatch(final Entity order);
+
+    /**
+     * Checks if PKT is enabled in parameters
+     *
+     * @return boolean
+     */
+    boolean isPktEnabled();
 
 }
