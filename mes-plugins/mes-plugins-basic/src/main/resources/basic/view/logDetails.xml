@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_LOGS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="logDetails" modelName="log">
+
+    <component type="window" name="window">	
+        <ribbon>
+
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
+	
+            <group name="actions">
+                <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;" accesskey="r" />
+            </group>
+	
+        </ribbon>
+		
+        <component type="form" name="machine" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="2" rows="7">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="createTime" field="createTime" defaultEnabled="never">                                        
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>                
+
+                <layoutElement column="1" row="2">
+                    <component type="select" name="logType" field="logType" reference="logType" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>                    
+                </layoutElement>
+
+                <layoutElement column="1" row="3">
+                    <component type="input" name="item1" field="item1" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>             
+                </layoutElement>
+
+                <layoutElement column="1" row="4">
+                    <component type="input" name="item2" field="item2" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>                
+                </layoutElement>
+                
+                <layoutElement column="1" row="5">
+                    <component type="input" name="item3" field="item3" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>            
+                </layoutElement>
+
+                <layoutElement column="1" row="6" height="2" width="1">
+                    <component type="textarea" name="message" field="message" defaultEnabled="never">
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="2" row="1">
+                    <component type="lookup" name="user" field="user" reference="user" defaultEnabled="never" >
+                        <option type="column" name="userName" fields="userName" link="true" width="200"/>
+                        <option type="fieldCode" value="userName"/>
+                        <option type="expression" value="#uuserName"/>
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="2" row="2">
+                    <component type="input" name="action" field="action" defaultEnabled="never">
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="2" row="3">
+                    <component type="select" name="logLevel" field="logLevel" reference="logLevel" defaultEnabled="never" >
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="2" row="4" height="4" width="1">
+                    <component type="textarea" name="details" field="details" defaultEnabled="never">                        
+                        <option type="labelWidth" value="25"/>
+                    </component>
+                </layoutElement>  
+                                
+            </component>
+			
+            <option type="header" value="true" />
+            <option type="expression" value="#logType + ' - ' + #createTime" />
+        </component>
+		
+    </component>
+	
+</view>
