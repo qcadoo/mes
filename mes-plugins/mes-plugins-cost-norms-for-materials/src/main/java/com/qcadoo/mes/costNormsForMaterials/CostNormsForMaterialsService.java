@@ -105,8 +105,9 @@ public class CostNormsForMaterialsService {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
             BigDecimal quantity = productQuantity.getValue();
 
-            Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+            Entity operationProductInComponent = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    .create();
 
             operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, quantity);
@@ -118,8 +119,8 @@ public class CostNormsForMaterialsService {
     }
 
     public Map<Long, BigDecimal> getProductQuantitiesFromTechnology(final Long technologyId) {
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
         Entity operationComponentRoot = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
@@ -157,8 +158,8 @@ public class CostNormsForMaterialsService {
 
         List<Entity> inputProducts = Lists.newArrayList();
 
-        Entity existingOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
+        Entity existingOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .get(orderId);
 
         List<Entity> technologyInstOperProductInComps = existingOrder
                 .getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
@@ -176,8 +177,8 @@ public class CostNormsForMaterialsService {
                 technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST,
                         product.getField(ProductFieldsCNFP.AVERAGE_COST));
 
-                technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition().save(
-                        technologyInstOperProductInComp);
+                technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition()
+                        .save(technologyInstOperProductInComp);
 
                 inputProducts.add(technologyInstOperProductInComp);
             }
@@ -189,7 +190,7 @@ public class CostNormsForMaterialsService {
     public void updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
             final Optional<BigDecimal> costForOrder) {
         Optional<Entity> orderMaterialCostsOpt = orderMaterialCostsDataProvider.find(order.getId(), productId);
- 
+
         if (orderMaterialCostsOpt.isPresent()) {
             Entity orderMaterialCosts = orderMaterialCostsOpt.get();
             orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
@@ -206,8 +207,8 @@ public class CostNormsForMaterialsService {
             orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
         } else {
             if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format(
-                        "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for "
+                LOG.debug(
+                        String.format("TechnologyInstanceOperationProductInComponent (order material costs entity) not found for "
                                 + "product: %d order: %d", productId, order.getId()));
             }
         }
@@ -235,6 +236,9 @@ public class CostNormsForMaterialsService {
     }
 
     private BigDecimal multiply(final BigDecimal value, final BigDecimal factor) {
+        if (value == null || factor == null) {
+            return BigDecimal.ZERO;
+        }
         return numberService.setScale(value.multiply(factor, numberService.getMathContext()));
     }
 
