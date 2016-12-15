@@ -94,6 +94,9 @@
             <model:hasMany name="orderCategoryColors" plugin="orders" model="orderCategoryColor" joinField="parameter"
                            cascade="delete"/>
         </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="enablePkt" default="true"/>
+        </model:model-field>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="mbrStateChange" plugin="orders" model="mbrStateChange"/>

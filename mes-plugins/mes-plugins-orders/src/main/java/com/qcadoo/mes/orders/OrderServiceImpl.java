@@ -39,6 +39,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -55,9 +56,9 @@ public class OrderServiceImpl implements OrderService {
 
     private static final String L_EMPTY_NUMBER = "";
 
-    private static final Set<String> L_ORDER_STARTED_STATES = Collections.unmodifiableSet(Sets.newHashSet(
-            OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
-            OrderState.INTERRUPTED.getStringValue()));
+    private static final Set<String> L_ORDER_STARTED_STATES = Collections
+            .unmodifiableSet(Sets.newHashSet(OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
+                    OrderState.INTERRUPTED.getStringValue()));
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -231,6 +232,11 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean isPktEnabled() {
+        return parameterService.getParameter().getBooleanField(ParameterFieldsO.ENABLE_PKT);
     }
 
 }

@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
@@ -44,11 +46,23 @@ public class ParametersHooksO {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private SecurityService securityService;
+
+    private static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
+
     public void showTimeFields(final ViewDefinitionState view) {
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM, DELAYED_EFFECTIVE_DATE_FROM_TIME);
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM, EARLIER_EFFECTIVE_DATE_FROM_TIME);
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO, DELAYED_EFFECTIVE_DATE_TO_TIME);
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
+    }
+
+    public void hideTabs(final ViewDefinitionState view) {
+        ComponentState pktTab = view.getComponentByReference("pktTab");
+        if (!securityService.hasCurrentUserRole(ROLE_SUPERADMIN)) {
+            pktTab.setVisible(false);
+        }
     }
 
 }

@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -42,20 +53,15 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class OrderHooks {
@@ -216,7 +222,7 @@ public class OrderHooks {
 
     private void backupTechnology(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology != null) {
+        if (technology != null && orderService.isPktEnabled()) {
             String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime() + "_"
                     + technology.getStringField(TechnologyFields.NUMBER);
             bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
@@ -601,7 +607,11 @@ public class OrderHooks {
     }
 
     void setCopyOfTechnology(final Entity order) {
-        order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
+        if (orderService.isPktEnabled()) {
+            order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
+        } else {
+            order.setField(OrderFields.TECHNOLOGY, order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+        }
     }
 
     private Optional<Entity> copyTechnology(final Entity order) {
