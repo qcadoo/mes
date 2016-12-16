@@ -55,7 +55,7 @@ public class DocumentValidators {
     private PositionValidators positionValidators;
 
     public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
-        validateDocumentName(dataDefinition, entity);
+//        validateDocumentName(dataDefinition, entity);
         boolean hasWarehouses = hasWarehouses(dataDefinition, entity);
         // validateAvailableQuantities(entity);
 
