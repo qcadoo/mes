@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.api.validators.GlobalMessage;
@@ -30,6 +31,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -40,6 +42,9 @@ public class ProductImportListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TranslationService translationService;
+
     public void navigateToProductImportPage(final ViewDefinitionState view, final ComponentState state,
                                             final String[] args) {
         view.redirectTo("/page/basic/productsImport.html", false, true);
@@ -47,22 +52,30 @@ public class ProductImportListeners {
 
     public void navigateToProductImportSchema(final ViewDefinitionState view, final ComponentState state,
                                               final String[] args) {
-        view.redirectTo("/basic/resources/productImportSchema.xlsx", true, false);
+        String redirectUrl = new StringBuilder("/basic/resources/")
+                .append("productImportSchema_")
+                .append(LocaleContextHolder.getLocale().getLanguage())
+                .append(".xlsx")
+                .toString();
+        view.redirectTo(redirectUrl, true, false);
     }
 
     public void uploadProductImportFile(final ViewDefinitionState view, final ComponentState state,
                                         final String[] args) {
         Object fieldValue = state.getFieldValue();
         if (StringUtils.isBlank(fieldValue.toString())) {
-            // TODO use translation service instead of using static text
-            state.addMessage(new ErrorMessage("Nie podales pliku"));
+            state.addMessage(new ErrorMessage(
+                    translationService.translate("basic.productsImport.error.file.required",
+                            LocaleContextHolder.getLocale()
+                    )
+            ));
         } else {
             // try to export and check if errors
             if (new Random().nextBoolean()) {
-                // Add error message to page somehow
+                // TODO Find out how to present more detailed error messages to the user
                 state.addMessage(new ErrorMessage("Błąd podczas eksportu"));
             } else {
-                view.addMessage(new GlobalMessage("Pomysnie dodano rekordy"));
+                // TODO It may be wise to inform the user about how many records got created
                 view.redirectTo("/page/basic/productsList.html", false, false);
             }
         }
