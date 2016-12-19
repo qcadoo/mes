@@ -49,7 +49,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private ResourceStockService resourceStockService;
 
     @Override
-    public boolean createCorrectionForResource(final Entity resource, final BigDecimal newQuantity, Entity newStorageLocation, final BigDecimal newPrice) {
+    public boolean createCorrectionForResource(final Entity resource, final BigDecimal newQuantity, Entity newStorageLocation,
+            final BigDecimal newPrice) {
         Entity oldResource = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
                 .get(resource.getId());
@@ -80,6 +81,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource));
+            resource.setField(ResourceFields.AVAILABLE_QUANTITY,
+                    newQuantity.subtract(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY)));
             Entity savedResource = resource.getDataDefinition().save(resource);
             if (savedResource.isValid()) {
 
@@ -95,7 +98,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return false;
     }
 
-    private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation, final BigDecimal newPrice) {
+    private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation,
+            final BigDecimal newPrice) {
         Entity oldStorageLocation = oldStorageLocation(resource);
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
         boolean priceChanged = isPriceChanged(oldPrice(resource), newPrice);

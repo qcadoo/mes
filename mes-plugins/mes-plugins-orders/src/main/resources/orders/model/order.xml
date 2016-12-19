@@ -156,6 +156,9 @@
 
         <boolean name="finalProductionTracking" copyable="false" default="false"/>
 
+        <boolean name="generatePPS" persistent="false" default="false"/>
+
+
 
     </fields>
 

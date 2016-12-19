@@ -123,13 +123,13 @@ public class PositionValidators {
         return validateAvailableQuantity(dataDefinition, position, document);
     }
 
-    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {        
+    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {
         String state = document.getStringField(DocumentFields.STATE);
-        
-        if(DocumentState.ACCEPTED.getStringValue().equals(state)){
+
+        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
             return true;
-        }  
-        
+        }
+
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
 
             BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
@@ -147,7 +147,9 @@ public class PositionValidators {
         BigDecimal oldQuantity = BigDecimal.ZERO;
         if (position.getId() != null) {
             Entity positionFromDB = positionDD.get(position.getId());
-            oldQuantity = positionFromDB.getDecimalField(PositionFields.QUANTITY);
+            if (positionFromDB != null) {
+                oldQuantity = positionFromDB.getDecimalField(PositionFields.QUANTITY);
+            }
         }
         BigDecimal availableQuantity = BigDecimal.ZERO;
         Optional<Entity> resourceStock = resourceStockService.getResourceStockForProductAndLocation(

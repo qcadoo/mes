@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.orders.states;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
+
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -36,15 +50,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 
 @Service
 public class OrderStateValidationService {
@@ -64,20 +69,27 @@ public class OrderStateValidationService {
     @Autowired
     private TechnologyStateChangeAspect technologyStateChangeAspect;
 
+    @Autowired
+    private OrderService orderService;
+
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE);
         checkRequired(references, stateChangeContext);
 
-        validateTechnologyState(stateChangeContext);
+        if (orderService.isPktEnabled()) {
+            validateTechnologyState(stateChangeContext);
+        }
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
         final List<String> references = Arrays.asList(DATE_TO, DATE_FROM);
         checkRequired(references, stateChangeContext);
 
-        validateTechnologyState(stateChangeContext);
+        if (orderService.isPktEnabled()) {
+            validateTechnologyState(stateChangeContext);
+        }
     }
 
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
@@ -125,8 +137,8 @@ public class OrderStateValidationService {
             final StateChangeStatus status = stateChangeContext.getStatus();
 
             if (IN_PROGRESS.equals(status)) {
-                final StateChangeContext stateChangeContextT = stateChangeContextBuilder.build(
-                        technologyStateChangeAspect.getChangeEntityDescriber(), technologyDB, "02accepted");
+                final StateChangeContext stateChangeContextT = stateChangeContextBuilder
+                        .build(technologyStateChangeAspect.getChangeEntityDescriber(), technologyDB, "02accepted");
 
                 stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
                 technologyStateChangeAspect.changeState(stateChangeContextT);

@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -84,6 +85,9 @@ public class CopyOfTechnologyHooks {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private OrderService orderService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         final FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -108,6 +112,7 @@ public class CopyOfTechnologyHooks {
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
         enableGroupField(view, order);
+        disableRibbonForDisabledPKT(view);
     }
 
     private Entity getOrderForTechnology(Entity technology) {
@@ -186,6 +191,24 @@ public class CopyOfTechnologyHooks {
 
             checkTechnology.setEnabled(false);
             checkTechnology.requestUpdate(true);
+        }
+    }
+
+    private void disableRibbonForDisabledPKT(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+
+        RibbonGroup technology = ribbon.getGroupByName(L_TECHNOLOGY);
+        RibbonGroup status = ribbon.getGroupByName(L_STATUS);
+        if (!orderService.isPktEnabled()) {
+            technology.getItems().forEach(item -> {
+                item.setEnabled(false);
+                item.requestUpdate(true);
+            });
+            status.getItems().forEach(item -> {
+                item.setEnabled(false);
+                item.requestUpdate(true);
+            });
         }
     }
 

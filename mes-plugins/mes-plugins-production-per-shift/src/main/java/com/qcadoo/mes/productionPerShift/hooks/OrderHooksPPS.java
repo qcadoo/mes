@@ -40,6 +40,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -116,6 +117,9 @@ public class OrderHooksPPS {
                         .getHasManyField(TechnologyFields.OPERATION_COMPONENTS).stream()
                         .filter(toc -> !toc.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS).isEmpty())
                         .collect(Collectors.toList());
+                if (operationComponents.isEmpty() && order.getBooleanField("generatePPS")) {
+                    fillWithRootOperation(operationComponents, orderFromDB);
+                }
                 for (Entity toc : operationComponents) {
 
                     BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
@@ -166,6 +170,15 @@ public class OrderHooksPPS {
             }
         }
         updateOrderData(order);
+    }
+
+    private void fillWithRootOperation(List<Entity> operationComponents, Entity orderFromDB) {
+        if (OrderState.PENDING == OrderState.of(orderFromDB)) {
+            Entity technology = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY);
+            EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            Entity toc = tree.getRoot();
+            operationComponents.add(toc);
+        }
     }
 
     /**

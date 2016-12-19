@@ -80,19 +80,25 @@ public class TechnologyServiceO {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private OrderService orderService;
+
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
         OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            if (technologyPrototype == null) {
-                removeTechnologyFromOrder(order);
-            } else {
-                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
+        if (orderService.isPktEnabled()) {
+            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+                if (technologyPrototype == null) {
+                    removeTechnologyFromOrder(order);
+                } else {
+                    createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
+                }
+            } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
+                createOrUpdateForOwnTechnology(order, technologyPrototype);
             }
-        } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
-            createOrUpdateForOwnTechnology(order, technologyPrototype);
+        } else {
+            order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
         }
     }
 

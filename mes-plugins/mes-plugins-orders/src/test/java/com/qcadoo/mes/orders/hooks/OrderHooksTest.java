@@ -62,7 +62,6 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class OrderHooksTest {
 
@@ -323,6 +322,7 @@ public class OrderHooksTest {
         // given
         final String generatedNumber = "NEWLY GENERATED NUM";
         given(technologyServiceO.generateNumberForTechnologyInOrder(eq(order), any(Entity.class))).willReturn(generatedNumber);
+        given(orderService.isPktEnabled()).willReturn(true);
 
         DataDefinition technologyDD = mock(DataDefinition.class);
         Entity technology = mockEntity(technologyDD);

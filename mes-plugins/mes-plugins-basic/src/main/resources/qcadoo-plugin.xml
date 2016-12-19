@@ -200,6 +200,7 @@
         <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>    
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>    
+        <security:role identifier="ROLE_LOGS"/>
         
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
@@ -213,6 +214,7 @@
         <model:model model="division" resource="model/division.xml"/>
 
         <model:model model="parameter" resource="model/parameter.xml"/>
+        <model:model model="log" resource="model/log.xml"/>
 
         <model:model model="country" resource="model/country.xml"/>
         <model:model model="address" resource="model/address.xml"/>
@@ -308,6 +310,9 @@
         <menu:menu-item name="factories" category="companyStructure"
                         view="factoriesList" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
+        <menu:menu-item name="logsList" category="administration"
+                        view="logsList" defaultAuthorizationRole="ROLE_LOGS"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -357,6 +362,8 @@
 
         <view:view resource="view/assortmentsList.xml"/>
         <view:view resource="view/assortmentDetails.xml"/>
+        <view:view resource="view/logsList.xml"/>
+        <view:view resource="view/logDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>

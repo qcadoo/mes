@@ -21,24 +21,21 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.service;
+package com.qcadoo.mes.basic.constants;
 
-import java.math.BigDecimal;
-import java.util.List;
+public final class LogFields {
 
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
-import com.qcadoo.model.api.Entity;
+    private LogFields() {
+    }
 
-public interface ResourceManagementService {
-
-    void createResourcesForReceiptDocuments(final Entity document);
-
-    void updateResourcesForReleaseDocuments(final Entity document);
-
-    void moveResourcesForTransferDocument(Entity document);
-
-    List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
-            WarehouseAlgorithm warehouseAlgorithm);
-
-    BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position);
+    public static final String CREATE_TIME = "createTime";
+    public static final String USER = "user";
+    public static final String TYPE = "logType";
+    public static final String ACTION = "action";
+    public static final String MESSAGE = "message";
+    public static final String ITEM_1 = "item1";
+    public static final String ITEM_2 = "item2";
+    public static final String ITEM_3 = "item3";
+    public static final String DETAILS = "details";
+    public static final String LOG_LEVEL = "logLevel";
 }

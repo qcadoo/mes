@@ -73,6 +73,11 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="resources">
+                <bigButton name="fillResources" icon="generateIcon24.png" action="#{form}.fireEvent(fillResources);"
+                           state="enabled"
+                           message="materialFlowResources.documentDetails.window.ribbon.resources.fillResources.message"/>
+            </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
@@ -238,6 +243,10 @@
                 <listener event="save"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="onSave"/>
+
+                <listener event="fillResources"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="fillResources"/>
             </component>
         </windowTab>
 

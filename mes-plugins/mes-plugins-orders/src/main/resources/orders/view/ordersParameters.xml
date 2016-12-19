@@ -25,21 +25,21 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_PARAMETERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  xmlns="http://schema.qcadoo.org/view"
-	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	  name="ordersParameters" modelName="parameter" modelPlugin="basic"
-	  menuAccessible="true">
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="ordersParameters" modelName="parameter" modelPlugin="basic"
+      menuAccessible="true">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<group name="actions" hasLabel="false">
-				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
-			</group>
-			<group name="dictionary" defaultAuthorizationRole="ROLE_DICTIONARY_VIEW">
-				<bigButton name="deviationsDictionary" icon="calendarIcon24.png" action="">
-					<script>
-						<![CDATA[
+        <ribbon>
+            <group name="actions" hasLabel="false">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+            </group>
+            <group name="dictionary" defaultAuthorizationRole="ROLE_DICTIONARY_VIEW">
+                <bigButton name="deviationsDictionary" icon="calendarIcon24.png" action="">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose()) {
@@ -48,231 +48,240 @@
 								}
 							});	
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-		<windowTab name="mainTab" reference="mainTab">
-			<component type="form" name="ordersParameters" reference="form">
-				<component type="gridLayout" name="mainTabGridLayout"
-						   columns="3" rows="3">
-					<layoutElement column="1" row="1">
-						<component type="lookup" name="defaultProductionLine"
-								   field="#{form}.defaultProductionLine" reference="defaultProductionLine">
-							<option type="column" name="name" fields="name" link="true"
-									width="300"/>
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="ordersParameters" reference="form">
+                <component type="gridLayout" name="mainTabGridLayout"
+                           columns="3" rows="3">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="defaultProductionLine"
+                                   field="#{form}.defaultProductionLine" reference="defaultProductionLine">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="300"/>
 
-							<option type="searchable" value="name,number"/>
-							<option type="orderable" value="name,number"/>
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
 
-							<option type="expression"
-									value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-							<option type="fieldCode" value="number"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2">
-						<component type="borderLayout" name="orderValuesLockBorderLayout">
-							<component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
-								<layoutElement column="1" row="1">
-									<component type="checkbox" name="blockAbilityToChangeApprovalOrder"
-											   field="#{form}.blockAbilityToChangeApprovalOrder"
-											   reference="blockAbilityToChangeApprovalOrder">
-										<option type="labelWidth" value="40"/>
-									</component>
-								</layoutElement>
-								<layoutElement column="1" row="2">
-									<component type="checkbox" name="lockTechnologyTree"
-											   field="#{form}.lockTechnologyTree" reference="lockTechnologyTree">
-										<option type="labelWidth" value="40"/>
-									</component>
-								</layoutElement>
-							</component>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="borderLayout" name="orderValuesLockBorderLayout">
+                            <component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
+                                <layoutElement column="1" row="1">
+                                    <component type="checkbox" name="blockAbilityToChangeApprovalOrder"
+                                               field="#{form}.blockAbilityToChangeApprovalOrder"
+                                               reference="blockAbilityToChangeApprovalOrder">
+                                        <option type="labelWidth" value="40"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="checkbox" name="lockTechnologyTree"
+                                               field="#{form}.lockTechnologyTree" reference="lockTechnologyTree">
+                                        <option type="labelWidth" value="40"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
 
-							<option type="label" value="orderValuesLockLabel"/>
-						</component>
-					</layoutElement>
-				</component>
+                            <option type="label" value="orderValuesLockLabel"/>
+                        </component>
+                    </layoutElement>
+                </component>
 
-				<listener event="redirectToDeviationsDictionary"
-						  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-						  method="redirectToDeviationsDictionary"/>
+                <listener event="redirectToDeviationsDictionary"
+                          class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                          method="redirectToDeviationsDictionary"/>
 
-				<option type="header" value="true"/>
-				<option type="expression" value=""/>
-			</component>
-		</windowTab>
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
+            </component>
+        </windowTab>
 
-		<windowTab name="deviationsDocumentationTab" reference="deviationsDocumentationTab">
-			<component type="gridLayout" name="deviationsDocumentationTabGridLayout"
-					   columns="3" rows="2">
-				<layoutElement column="1" row="1" width="3">
-					<component type="label" name="deviationsDocumentation">
-						<option type="labelStyle" value="text"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="gridLayout" name="reasonNeededWhenGridLayout"
-							   columns="1" rows="6">
-						<layoutElement column="1" row="1" height="2">
-							<component type="borderLayout" name="correctionOfDateBorderLayout">
-								<component type="gridLayout" name="correctionOfDateGridLayout"
-										   columns="1" rows="2">
-									<layoutElement column="1" row="1">
-										<component type="checkbox" name="reasonNeededWhenCorrectingDateFrom"
-												   field="#{form}.reasonNeededWhenCorrectingDateFrom"
-												   reference="reasonNeededWhenCorrectingDateFrom">
-											<option type="labelWidth" value="70"/>
-										</component>
-									</layoutElement>
-									<layoutElement column="1" row="2">
-										<component type="checkbox" name="reasonNeededWhenCorrectingDateTo"
-												   field="#{form}.reasonNeededWhenCorrectingDateTo"
-												   reference="reasonNeededWhenCorrectingDateTo">
-											<option type="labelWidth" value="70"/>
-										</component>
-									</layoutElement>
-								</component>
+        <windowTab name="deviationsDocumentationTab" reference="deviationsDocumentationTab">
+            <component type="gridLayout" name="deviationsDocumentationTabGridLayout"
+                       columns="3" rows="2">
+                <layoutElement column="1" row="1" width="3">
+                    <component type="label" name="deviationsDocumentation">
+                        <option type="labelStyle" value="text"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="gridLayout" name="reasonNeededWhenGridLayout"
+                               columns="1" rows="6">
+                        <layoutElement column="1" row="1" height="2">
+                            <component type="borderLayout" name="correctionOfDateBorderLayout">
+                                <component type="gridLayout" name="correctionOfDateGridLayout"
+                                           columns="1" rows="2">
+                                    <layoutElement column="1" row="1">
+                                        <component type="checkbox" name="reasonNeededWhenCorrectingDateFrom"
+                                                   field="#{form}.reasonNeededWhenCorrectingDateFrom"
+                                                   reference="reasonNeededWhenCorrectingDateFrom">
+                                            <option type="labelWidth" value="70"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="1" row="2">
+                                        <component type="checkbox" name="reasonNeededWhenCorrectingDateTo"
+                                                   field="#{form}.reasonNeededWhenCorrectingDateTo"
+                                                   reference="reasonNeededWhenCorrectingDateTo">
+                                            <option type="labelWidth" value="70"/>
+                                        </component>
+                                    </layoutElement>
+                                </component>
 
-								<option type="label" value="correctionOfDate"/>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="3">
-							<component type="checkbox" name="reasonNeededWhenCorrectingTheRequestedVolume"
-									   field="#{form}.reasonNeededWhenCorrectingTheRequestedVolume"
-									   reference="reasonNeededWhenCorrectingTheRequestedVolume">
-								<option type="labelWidth" value="70"/>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="4">
-							<component type="checkbox" name="reasonNeededWhenChangingStateToDeclined"
-									   field="#{form}.reasonNeededWhenChangingStateToDeclined"
-									   reference="reasonNeededWhenChangingStateToDeclined">
-								<option type="labelWidth" value="70"/>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="5">
-							<component type="checkbox" name="reasonNeededWhenChangingStateToInterrupted"
-									   field="#{form}.reasonNeededWhenChangingStateToInterrupted"
-									   reference="reasonNeededWhenChangingStateToInterrupted">
-								<option type="labelWidth" value="70"/>
-							</component>
-						</layoutElement>
-						<layoutElement column="1" row="6">
-							<component type="checkbox" name="reasonNeededWhenChangingStateToAbandoned"
-									   field="#{form}.reasonNeededWhenChangingStateToAbandoned"
-									   reference="reasonNeededWhenChangingStateToAbandoned">
-								<option type="labelWidth" value="70"/>
-							</component>
-						</layoutElement>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="2" width="2">
-					<component type="borderLayout" name="deviationsFromPlannedAndCorretedDatesBorderLayout">
-						<component type="gridLayout" name="deviationsFromPlannedAndCorretedDatesGridLayout"
-								   columns="2" rows="4">
-							<layoutElement column="1" row="1">
-								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateFrom"
-										   field="#{form}.reasonNeededWhenDelayedEffectiveDateFrom"
-										   reference="reasonNeededWhenDelayedEffectiveDateFrom">
-									<option type="labelWidth" value="70"/>
+                                <option type="label" value="correctionOfDate"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="3">
+                            <component type="checkbox" name="reasonNeededWhenCorrectingTheRequestedVolume"
+                                       field="#{form}.reasonNeededWhenCorrectingTheRequestedVolume"
+                                       reference="reasonNeededWhenCorrectingTheRequestedVolume">
+                                <option type="labelWidth" value="70"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4">
+                            <component type="checkbox" name="reasonNeededWhenChangingStateToDeclined"
+                                       field="#{form}.reasonNeededWhenChangingStateToDeclined"
+                                       reference="reasonNeededWhenChangingStateToDeclined">
+                                <option type="labelWidth" value="70"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="5">
+                            <component type="checkbox" name="reasonNeededWhenChangingStateToInterrupted"
+                                       field="#{form}.reasonNeededWhenChangingStateToInterrupted"
+                                       reference="reasonNeededWhenChangingStateToInterrupted">
+                                <option type="labelWidth" value="70"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="6">
+                            <component type="checkbox" name="reasonNeededWhenChangingStateToAbandoned"
+                                       field="#{form}.reasonNeededWhenChangingStateToAbandoned"
+                                       reference="reasonNeededWhenChangingStateToAbandoned">
+                                <option type="labelWidth" value="70"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="2" width="2">
+                    <component type="borderLayout" name="deviationsFromPlannedAndCorretedDatesBorderLayout">
+                        <component type="gridLayout" name="deviationsFromPlannedAndCorretedDatesGridLayout"
+                                   columns="2" rows="4">
+                            <layoutElement column="1" row="1">
+                                <component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateFrom"
+                                           field="#{form}.reasonNeededWhenDelayedEffectiveDateFrom"
+                                           reference="reasonNeededWhenDelayedEffectiveDateFrom">
+                                    <option type="labelWidth" value="70"/>
 
-									<listener event="onChange"
-											  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-											  method="showTimeField"/>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="2">
-								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateFrom"
-										   field="#{form}.reasonNeededWhenEarlierEffectiveDateFrom"
-										   reference="reasonNeededWhenEarlierEffectiveDateFrom">
-									<option type="labelWidth" value="70"/>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                              method="showTimeField"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateFrom"
+                                           field="#{form}.reasonNeededWhenEarlierEffectiveDateFrom"
+                                           reference="reasonNeededWhenEarlierEffectiveDateFrom">
+                                    <option type="labelWidth" value="70"/>
 
-									<listener event="onChange"
-											  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-											  method="showTimeField"/>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="3">
-								<component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateTo"
-										   field="#{form}.reasonNeededWhenDelayedEffectiveDateTo"
-										   reference="reasonNeededWhenDelayedEffectiveDateTo">
-									<option type="labelWidth" value="70"/>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                              method="showTimeField"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="checkbox" name="reasonNeededWhenDelayedEffectiveDateTo"
+                                           field="#{form}.reasonNeededWhenDelayedEffectiveDateTo"
+                                           reference="reasonNeededWhenDelayedEffectiveDateTo">
+                                    <option type="labelWidth" value="70"/>
 
-									<listener event="onChange"
-											  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-											  method="showTimeField"/>
-								</component>
-							</layoutElement>
-							<layoutElement column="1" row="4">
-								<component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateTo"
-										   field="#{form}.reasonNeededWhenEarlierEffectiveDateTo"
-										   reference="reasonNeededWhenEarlierEffectiveDateTo">
-									<option type="labelWidth" value="70"/>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                              method="showTimeField"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
+                                <component type="checkbox" name="reasonNeededWhenEarlierEffectiveDateTo"
+                                           field="#{form}.reasonNeededWhenEarlierEffectiveDateTo"
+                                           reference="reasonNeededWhenEarlierEffectiveDateTo">
+                                    <option type="labelWidth" value="70"/>
 
-									<listener event="onChange"
-											  class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-											  method="showTimeField"/>
-								</component>
-							</layoutElement>
-							<layoutElement column="2" row="1">
-								<component type="time" name="delayedEffectiveDateFromTime"
-										   field="#{form}.delayedEffectiveDateFromTime"
-										   reference="delayedEffectiveDateFromTime"/>
-							</layoutElement>
-							<layoutElement column="2" row="2">
-								<component type="time" name="earlierEffectiveDateFromTime"
-										   field="#{form}.earlierEffectiveDateFromTime"
-										   reference="earlierEffectiveDateFromTime"/>
-							</layoutElement>
-							<layoutElement column="2" row="3">
-								<component type="time" name="delayedEffectiveDateToTime"
-										   field="#{form}.delayedEffectiveDateToTime"
-										   reference="delayedEffectiveDateToTime"/>
-							</layoutElement>
-							<layoutElement column="2" row="4">
-								<component type="time" name="earlierEffectiveDateToTime"
-										   field="#{form}.earlierEffectiveDateToTime"
-										   reference="earlierEffectiveDateToTime"/>
-							</layoutElement>
-						</component>
+                                    <listener event="onChange"
+                                              class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                              method="showTimeField"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="2" row="1">
+                                <component type="time" name="delayedEffectiveDateFromTime"
+                                           field="#{form}.delayedEffectiveDateFromTime"
+                                           reference="delayedEffectiveDateFromTime"/>
+                            </layoutElement>
+                            <layoutElement column="2" row="2">
+                                <component type="time" name="earlierEffectiveDateFromTime"
+                                           field="#{form}.earlierEffectiveDateFromTime"
+                                           reference="earlierEffectiveDateFromTime"/>
+                            </layoutElement>
+                            <layoutElement column="2" row="3">
+                                <component type="time" name="delayedEffectiveDateToTime"
+                                           field="#{form}.delayedEffectiveDateToTime"
+                                           reference="delayedEffectiveDateToTime"/>
+                            </layoutElement>
+                            <layoutElement column="2" row="4">
+                                <component type="time" name="earlierEffectiveDateToTime"
+                                           field="#{form}.earlierEffectiveDateToTime"
+                                           reference="earlierEffectiveDateToTime"/>
+                            </layoutElement>
+                        </component>
 
-						<option type="label" value="deviationsFromPlannedAndCorretedDates"/>
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="label" value="deviationsFromPlannedAndCorretedDates"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-		<windowTab name="orderCategoryColorsTab" reference="orderCategoryColorsTab">
-			<component type="gridLayout" name="orderCategoryColorsTabGridLayout" columns="2" rows="1">
-				<layoutElement column="1" row="1">
-					<component type="awesomeDynamicList" name="orderCategoryColors"
-							   source="#{form}.orderCategoryColors" reference="orderCategoryColors">
-						<components>
-							<component type="gridLayout" name="orderCategoryColorsGridLayout"
-									   columns="2" rows="1">
-								<layoutElement column="1" row="1">
-									<component type="select" name="orderCategory"
-											   field="orderCategory" />
-								</layoutElement>
-								<layoutElement column="2" row="1">
-									<component type="select" name="color"
-											   field="color" />
-								</layoutElement>
-							</component>
-						</components>
+        <windowTab name="orderCategoryColorsTab" reference="orderCategoryColorsTab">
+            <component type="gridLayout" name="orderCategoryColorsTabGridLayout" columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="awesomeDynamicList" name="orderCategoryColors"
+                               source="#{form}.orderCategoryColors" reference="orderCategoryColors">
+                        <components>
+                            <component type="gridLayout" name="orderCategoryColorsGridLayout"
+                                       columns="2" rows="1">
+                                <layoutElement column="1" row="1">
+                                    <component type="select" name="orderCategory"
+                                               field="orderCategory"/>
+                                </layoutElement>
+                                <layoutElement column="2" row="1">
+                                    <component type="select" name="color"
+                                               field="color"/>
+                                </layoutElement>
+                            </component>
+                        </components>
 
-						<option type="hasBorder" value="false"/>
-						<option type="hasButtons" value="true"/>
-					</component>
-				</layoutElement>
-			</component>
-		</windowTab>
+                        <option type="hasBorder" value="false"/>
+                        <option type="hasButtons" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="pktTab" reference="pktTab">
+            <component type="gridLayout" name="pktLayout" columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="enablePkt" field="#{form}.enablePkt" reference="enablePkt"/>
+                </layoutElement>
+            </component>
+        </windowTab>
 
-	</component>
 
-	<hooks>
-		<beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="showTimeFields"/>
-	</hooks>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="showTimeFields"/>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="hideTabs"/>
+    </hooks>
 
 </view>

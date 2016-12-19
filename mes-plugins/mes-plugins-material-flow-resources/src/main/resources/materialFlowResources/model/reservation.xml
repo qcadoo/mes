@@ -32,11 +32,12 @@
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
         <decimal name="quantity" required="true"/>
         <belongsTo name="position" model="position"/>
+        <belongsTo name="resource" model="resource"/>
     </fields>
     <hooks>
         <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onDelete"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onSave"/>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCreate"/>
-        <!--<onCopy class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCopy"/>-->
+        <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.ReservationHooks" method="onCopy"/>
     </hooks>
 </model>

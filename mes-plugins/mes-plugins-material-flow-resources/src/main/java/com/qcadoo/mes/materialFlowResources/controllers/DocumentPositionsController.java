@@ -104,8 +104,7 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
             @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
-            @RequestParam("ac") String additionalCode) {
-        return documentPositionRepository.getResourcesResponse(document, query, product, conversion, additionalCode);
+            @RequestParam("ac") String additionalCode) {return documentPositionRepository.getResourcesResponse(document, query, product, conversion, additionalCode);
     }
 
     @ResponseBody
