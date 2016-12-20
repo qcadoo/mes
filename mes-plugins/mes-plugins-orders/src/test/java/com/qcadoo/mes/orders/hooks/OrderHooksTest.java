@@ -308,6 +308,7 @@ public class OrderHooksTest {
     @Test
     public final void shouldNotSetCopyOfTechnology() {
         // given
+        given(orderService.isPktEnabled()).willReturn(true);
         stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
 
         // when
