@@ -112,7 +112,6 @@ public class CopyOfTechnologyHooks {
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
         enableGroupField(view, order);
-        disableRibbonForDisabledPKT(view);
     }
 
     private Entity getOrderForTechnology(Entity technology) {
@@ -191,24 +190,6 @@ public class CopyOfTechnologyHooks {
 
             checkTechnology.setEnabled(false);
             checkTechnology.requestUpdate(true);
-        }
-    }
-
-    private void disableRibbonForDisabledPKT(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        Ribbon ribbon = window.getRibbon();
-
-        RibbonGroup technology = ribbon.getGroupByName(L_TECHNOLOGY);
-        RibbonGroup status = ribbon.getGroupByName(L_STATUS);
-        if (!orderService.isPktEnabled()) {
-            technology.getItems().forEach(item -> {
-                item.setEnabled(false);
-                item.requestUpdate(true);
-            });
-            status.getItems().forEach(item -> {
-                item.setEnabled(false);
-                item.requestUpdate(true);
-            });
         }
     }
 

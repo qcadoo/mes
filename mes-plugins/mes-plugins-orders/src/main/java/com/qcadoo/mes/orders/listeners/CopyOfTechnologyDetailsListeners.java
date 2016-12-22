@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,8 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
+import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -42,6 +46,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import java.util.Map;
 
 @Service
 public class CopyOfTechnologyDetailsListeners {
@@ -51,6 +56,9 @@ public class CopyOfTechnologyDetailsListeners {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private CopyOfTechnologyStateChangeVC copyOfTechnologyStateChangeVC;
 
     @Transactional
     public void changePatternTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -95,6 +103,44 @@ public class CopyOfTechnologyDetailsListeners {
             final Entity technologyPrototypeOrNull) {
         return technologyPrototypeOrNull != null && orderTechnologyPrototypeOrNull != null
                 && !ObjectUtils.equals(technologyPrototypeOrNull.getId(), orderTechnologyPrototypeOrNull.getId());
+    }
+
+    @Transactional
+    public void checkTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        final FormComponent technologyForm = (FormComponent) state;
+
+        Long technologyId = (Long) state.getFieldValue();
+
+        if (technologyId != null) {
+            Entity technology1 = technologyServiceO.getTechnologyDD().get(technologyId);
+            Entity order = getOrderWithTechnology(technology1);
+
+            technologyServiceO.createOrUpdateTechnologyWithoutPkto(order.getDataDefinition(), order);
+            order.getDataDefinition().save(order);
+            
+            Entity technology2 = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            copyOfTechnologyStateChangeVC.changeState(new ViewContextHolder(view, technologyForm), args[0], technology2);
+
+            if (!Objects.equal(technology1.getId(), technology2.getId())) {
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.id", technology2.getId());
+
+                String url = "../page/orders/copyOfTechnologyDetails.html";
+                view.redirectTo(url, false, false, parameters);
+            }
+        }
+    }
+
+    public void performBack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        Long technologyId = (Long) state.getFieldValue();
+        Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
+        Entity order = getOrderWithTechnology(technology);
+        parameters.put("form.id", order.getId());
+
+        String url = "../page/orders/orderDetails.html";
+        view.redirectTo(url, false, false, parameters);
     }
 
     @Transactional

@@ -128,6 +128,7 @@ public class OrderHooks {
     public void onCreate(final DataDefinition orderDD, final Entity order) {
         setInitialState(orderDD, order);
         setCommissionedPlannedQuantity(orderDD, order);
+        order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
     }
 
     public void onSave(final DataDefinition orderDD, final Entity order) {

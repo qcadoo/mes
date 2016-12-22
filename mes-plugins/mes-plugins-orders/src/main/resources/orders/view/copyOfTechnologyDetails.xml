@@ -31,9 +31,10 @@
 
     <component type="window" name="window" reference="window">
 
-        <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
-
+        <ribbon>        
+            <template name="standardFormTemplate" includeItems="navigation.back,actions.save"/>
+          
+            
             <group name="technology">
                 <bigButton name="clearTechnology" icon="closeIcon24.png"
                            state="disabled">
@@ -93,19 +94,19 @@
                            state="disabled" action="#{form}.changeState(checkTechnology);">
                     <script>
                         <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});					
-						]]>
+                                #{form}.addOnChangeListener({
+                                        onSetValue: function(value) {
+                                                if (! value || ! value.content) {
+                                                        return;
+                                                }
+                                                if (! value.content.entityId) {
+                                                        this.disable();
+                                                } else {
+                                                        this.enable();
+                                                }
+                                        }
+                                });					
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -115,15 +116,15 @@
             <component type="form" name="technology" reference="form">
                 <script>
                     <![CDATA[
-						this.changeState = function(eventPerformer, ribbonItemName) {
-							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
-							var newState = ribbonItem.forState;
-							
-							if (window.confirm(ribbonItem.confirmMessage)) {
-								#{form}.fireEvent(eventPerformer, 'changeState', [newState]);
-							}
-						}
-					]]>
+                        this.changeState = function(eventPerformer, ribbonItemName) {
+                            var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
+                            var newState = ribbonItem.forState;
+
+                            if (window.confirm(ribbonItem.confirmMessage)) {
+                                    #{form}.fireEvent(eventPerformer, 'checkTechnology', [newState]);
+                            }
+                        }
+                    ]]>
                 </script>
 
                 <component type="gridLayout" name="gridsLayout" columns="3"
@@ -159,8 +160,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifires"
-                                    method="showProductForTechnology"/>
+                                class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifires"
+                                method="showProductForTechnology"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1" height="2">
@@ -234,16 +235,15 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' ' + #product['name']"/>
 
-                <listener event="changeState"
-                          class="com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC"
-                          method="changeState"/>
-
                 <listener event="clearTechnology" method="clearTechnology"
                           class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"/>
                 <listener event="clearAndLoadPatternTechnology" method="clearAndLoadPatternTechnology"
                           class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"/>
                 <listener event="save" method="changePatternTechnology"
                           class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"/>
+                <listener event="checkTechnology"
+                          class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"
+                          method="checkTechnology"/>
             </component>
         </windowTab>
 

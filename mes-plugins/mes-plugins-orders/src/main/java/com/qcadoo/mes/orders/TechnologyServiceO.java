@@ -55,6 +55,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import java.util.Objects;
 
 @Service
 public class TechnologyServiceO {
@@ -97,8 +98,21 @@ public class TechnologyServiceO {
             } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
                 createOrUpdateForOwnTechnology(order, technologyPrototype);
             }
-        } else {
-            order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
+        }
+    }
+    @Transactional
+    public void createOrUpdateTechnologyWithoutPkto(final DataDefinition orderDD, final Entity order) {
+        OrderType orderType = OrderType.of(order);
+        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+       
+        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+            if (technologyPrototype == null) {
+                removeTechnologyFromOrder(order);
+            } else {
+                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
+            }
+        } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
+            createOrUpdateForOwnTechnology(order, technologyPrototype);
         }
     }
 
@@ -180,8 +194,13 @@ public class TechnologyServiceO {
 
     private boolean isTechnologyCopied(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if (technology == null) {
+            return false;
+        }
+        
+        if(Objects.equals(technology.getId(), technologyPrototype.getId())){
             return false;
         }
 
@@ -196,8 +215,13 @@ public class TechnologyServiceO {
         }
 
         Entity technology = existingOrder.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity technologyPrototype = existingOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if (technology == null) {
+            return false;
+        }
+        
+        if(Objects.equals(technology.getId(), technologyPrototype.getId())){
             return false;
         }
 
