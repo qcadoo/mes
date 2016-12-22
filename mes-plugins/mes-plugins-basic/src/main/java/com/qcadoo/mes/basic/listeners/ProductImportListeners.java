@@ -23,27 +23,41 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
+import com.google.common.base.Throwables;
+import com.google.common.io.Files;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basic.product.importing.ImportException;
+import com.qcadoo.mes.basic.product.importing.ImportStatus;
+import com.qcadoo.mes.basic.product.importing.XlsImportSevice;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
 @Service
 public class ProductImportListeners {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private static final Logger LOG = LoggerFactory.getLogger(ProductImportListeners.class);
+
+    private final XlsImportSevice xlsImportSevice;
+
+    private final TranslationService translationService;
 
     @Autowired
-    private TranslationService translationService;
+    public ProductImportListeners(XlsImportSevice xlsImportSevice, TranslationService translationService) {
+        this.xlsImportSevice = xlsImportSevice;
+        this.translationService = translationService;
+    }
 
     public void navigateToProductImportPage(final ViewDefinitionState view, final ComponentState state,
                                             final String[] args) {
@@ -61,24 +75,42 @@ public class ProductImportListeners {
     }
 
     public void uploadProductImportFile(final ViewDefinitionState view, final ComponentState state,
-                                        final String[] args) {
+                                        final String[] args) throws IOException {
         Object fieldValue = state.getFieldValue();
-        if (StringUtils.isBlank(fieldValue.toString())) {
+        String filePath = fieldValue.toString();
+        if (StringUtils.isBlank(filePath)) {
             state.addMessage(new ErrorMessage(
                     translationService.translate("basic.productsImport.error.file.required",
                             LocaleContextHolder.getLocale()
                     )
             ));
+        } else if (!Files.getFileExtension(filePath).equalsIgnoreCase("xlsx")) {
+            state.addMessage(new ErrorMessage(
+                    translationService.translate("basic.productsImport.error.file.invalid",
+                            LocaleContextHolder.getLocale()
+                    )
+            ));
         } else {
-            // try to export and check if errors
-            if (new Random().nextBoolean()) {
-                // TODO Find out how to present more detailed error messages to the user
-                state.addMessage(new ErrorMessage("Błąd podczas eksportu"));
-            } else {
-                // TODO It may be wise to inform the user about how many records got created
-                view.redirectTo("/page/basic/productsList.html", false, false);
+            try (FileInputStream fis = new FileInputStream(filePath)) {
+                final ImportStatus importStatus = xlsImportSevice.importFrom(new XSSFWorkbook(fis));
+                if (importStatus.hasErrors()) {
+                    // TODO Find out how to present more detailed error messages to the user
+                    state.addMessage(new ErrorMessage("Błąd podczas eksportu"));
+                } else {
+                    // TODO It may be wise to inform the user about how many records got created
+                    view.redirectTo("/page/basic/productsList.html", false, false);
+                }
+            } catch (ImportException ie) {
+                ie.printStackTrace();
+            } catch (Throwable throwable) {
+                // There is not much we can do about these IO exceptions except rethrowing them
+                Throwables.propagateIfInstanceOf(throwable, FileNotFoundException.class);
+                Throwables.propagateIfInstanceOf(throwable, IOException.class);
+
+                if (LOG.isErrorEnabled()) {
+                    LOG.error("An exception occured while importing products", throwable);
+                }
             }
         }
-
     }
 }
