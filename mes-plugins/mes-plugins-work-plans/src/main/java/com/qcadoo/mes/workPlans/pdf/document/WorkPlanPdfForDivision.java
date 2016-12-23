@@ -304,13 +304,10 @@ public class WorkPlanPdfForDivision {
         int columnCount = operationProductColumnAlignmentMap.size();
 
         Map<String, HeaderAlignment> headerAlignments = new HashMap<>(columnCount);
-        List<String> headers = new ArrayList<>(columnCount);
+        List<String> headers = new ArrayList<String>(columnCount);
         float[] widths = fill(locale, operationProductColumnAlignmentMap, headers, headerAlignments, direction);
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
-        table.setKeepTogether(false);
-        table.setSplitLate(false);
-        table.setSplitRows(false);
         table.setWidths(widths);
         PdfPCell defaultCell = table.getDefaultCell();
         for (Entity operationProduct : operationProductComponents) {
@@ -384,7 +381,6 @@ public class WorkPlanPdfForDivision {
         }
         cell.setBorder(Rectangle.BOX);
         cell.setPadding(2f);
-        cell.setFixedHeight(25f);
     }
 
     private float[] fill(Locale locale, Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap,
