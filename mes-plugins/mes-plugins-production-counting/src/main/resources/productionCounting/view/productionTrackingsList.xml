@@ -192,6 +192,8 @@
 					width="100"/>
 			<option type="column" name="divisionNumber" fields="divisionNumber"
 					width="80"/>
+			<option type="column" name="productionLineNumber" fields="productionLineNumber"
+					width="80"/>
 			<option type="column" name="state" fields="state"
 					width="90"/>
 			<option type="column" name="createDate" fields="createDate"
@@ -209,9 +211,9 @@
 			<option type="order" column="number" direction="desc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 
 			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
 			<option type="correspondingComponent" value="form"/>
