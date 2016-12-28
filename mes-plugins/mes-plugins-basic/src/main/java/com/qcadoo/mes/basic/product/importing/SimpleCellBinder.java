@@ -25,19 +25,28 @@ package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.model.api.Entity;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.springframework.context.i18n.LocaleContextHolder;
 
-import java.util.Locale;
+class SimpleCellBinder implements CellBinder {
 
-public interface CellBinder {
-    void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor);
+    private final String fieldName;
+    private final boolean required;
 
-    String getFieldName();
+    SimpleCellBinder(final String fieldName, final boolean required) {
+        this.fieldName = fieldName;
+        this.required = required;
+    }
 
-    default String formatCell(final Cell cell) {
-        Locale locale = LocaleContextHolder.getLocale();
-        final DataFormatter dataFormatter = new DataFormatter(null == locale ? Locale.getDefault() : locale);
-        return dataFormatter.formatCellValue(cell).trim();
+    @Override
+    public final void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
+        if (required && cell == null) {
+            errorsAccessor.addError("required");
+        } else if (cell != null) {
+            entity.setField(fieldName, formatCell(cell));
+        }
+    }
+
+    @Override
+    public String getFieldName() {
+        return fieldName;
     }
 }

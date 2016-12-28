@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.basic.product.importing;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import org.apache.poi.POIXMLProperties;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -40,55 +35,39 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class XlsImportSevice {
 
-    public static final String SCHEMA_VERSION = "1.0.0";
-    public static final String SCHEMA_VERSION_PROPERTY_NAME = "SchemaVersion";
+    private static final String SCHEMA_VERSION = "1.0.0";
+    private static final String SCHEMA_VERSION_PROPERTY_NAME = "SchemaVersion";
     private static final int COLUMN_NUMBER = 13;
 
-
-    private final DataDefinitionService dataDefinitionService;
-
     @Autowired
-    public XlsImportSevice(DataDefinitionService dataDefinitionService) {
-        this.dataDefinitionService = dataDefinitionService;
-    }
+    private RowProcessorFactory rowProcessorFactory;
 
     @Transactional(rollbackFor = ImportException.class)
     public ImportStatus importFrom(final XSSFWorkbook workbook) throws ImportException {
 
         assureSpreadsheetMatchesCurrentSchemaVersion(workbook);
-        DataDefinition dataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-        ProductRowBuilderFactory builderFactory = new ProductRowBuilderFactory(dataDefinition);
+        final int startRow = 1;
         ImportStatus importStatus = new ImportStatus();
         XSSFSheet sheet = workbook.getSheetAt(0);
 
-        for (int rowIndx = 1; rowIndx < sheet.getLastRowNum(); rowIndx++) {
+        for (int rowIndx = startRow; rowIndx < sheet.getLastRowNum(); rowIndx++) {
 
             Row row = sheet.getRow(rowIndx);
             if (row == null) { // This whole row is empty
-                break; // TODO verify if that's true
+                break;
             }
-            RowBuilder rowBuilder = builderFactory.builder();
+            final RowProcessor rowProcessor = rowProcessorFactory.create(importStatus, rowIndx);
             for (int colIndx = 0; colIndx < COLUMN_NUMBER; colIndx++) {
-                rowBuilder.append(row.getCell(colIndx, Row.RETURN_BLANK_AS_NULL));
+                rowProcessor.append(row.getCell(colIndx, Row.RETURN_BLANK_AS_NULL));
             }
-            if (rowBuilder.isEmpty()) {
+            if (rowProcessor.isEmpty()) {
                 break; // We are done. The whole row was empty so stop processing
             }
-            Entity entity = rowBuilder.build(); // check the difference between entity vs savedEntity
-            Entity savedEntity = dataDefinition.save(entity);
-            if (!savedEntity.isValid()) {
-                for (Map.Entry<String, ErrorMessage> entry : savedEntity.getErrors().entrySet()) {
-                    importStatus.addError(
-                            new ImportStatus.ImportError(
-                                    entry.getKey(), rowIndx, entry.getValue().getMessage())
-                    );
-                }
-            }
+            rowProcessor.process();
         }
 
         if (importStatus.hasErrors()) { // We have to rollback transaction here
@@ -96,6 +75,7 @@ public class XlsImportSevice {
         }
         return importStatus;
     }
+
 
     private void assureSpreadsheetMatchesCurrentSchemaVersion(XSSFWorkbook workbook) throws ImportException {
         POIXMLProperties properties = workbook.getProperties();

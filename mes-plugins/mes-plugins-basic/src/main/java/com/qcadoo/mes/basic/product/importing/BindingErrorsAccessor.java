@@ -23,24 +23,6 @@
  */
 package com.qcadoo.mes.basic.product.importing;
 
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
-class ProductRowBuilderFactory {
-
-    private final DataDefinition dataDefinition;
-    private final RowBuilder rowBuilder;
-
-    ProductRowBuilderFactory(final DataDefinition dataDefinition) {
-        this.dataDefinition = dataDefinition;
-        this.rowBuilder = new RowBuilder();
-    }
-
-    RowBuilder builder() {
-        Entity entity = dataDefinition.create();
-        entity.setField("entityType", ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
-        rowBuilder.initialize(entity); // reuse rowBuilder instead of creating new one for every row
-        return rowBuilder;
-    }
+public interface BindingErrorsAccessor {
+    void addError(String errorCode);
 }

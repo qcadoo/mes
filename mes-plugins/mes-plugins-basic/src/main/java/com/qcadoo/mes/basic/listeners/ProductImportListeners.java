@@ -74,22 +74,22 @@ public class ProductImportListeners {
         view.redirectTo(redirectUrl, true, false);
     }
 
+    private ErrorMessage translatedErrorMessage(final String code) {
+        return new ErrorMessage(
+                translationService.translate(code,
+                        LocaleContextHolder.getLocale()
+                )
+        );
+    }
+
     public void uploadProductImportFile(final ViewDefinitionState view, final ComponentState state,
                                         final String[] args) throws IOException {
         Object fieldValue = state.getFieldValue();
         String filePath = fieldValue.toString();
         if (StringUtils.isBlank(filePath)) {
-            state.addMessage(new ErrorMessage(
-                    translationService.translate("basic.productsImport.error.file.required",
-                            LocaleContextHolder.getLocale()
-                    )
-            ));
+            state.addMessage(translatedErrorMessage("basic.productsImport.error.file.required"));
         } else if (!Files.getFileExtension(filePath).equalsIgnoreCase("xlsx")) {
-            state.addMessage(new ErrorMessage(
-                    translationService.translate("basic.productsImport.error.file.invalid",
-                            LocaleContextHolder.getLocale()
-                    )
-            ));
+            state.addMessage(translatedErrorMessage("basic.productsImport.error.file.invalid"));
         } else {
             try (FileInputStream fis = new FileInputStream(filePath)) {
                 final ImportStatus importStatus = xlsImportSevice.importFrom(new XSSFWorkbook(fis));
