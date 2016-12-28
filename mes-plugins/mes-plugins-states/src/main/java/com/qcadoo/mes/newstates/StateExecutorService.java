@@ -46,18 +46,18 @@ public class StateExecutorService {
 
     public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view,
             String[] args) {
+        componentMessagesHolder = view;
+        
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
                 entity = changeState(serviceMarker, entity, args[0]);
 
-                componentMessagesHolder = view;
                 copyMessages(entity);
             });
 
         } else {
-            componentMessagesHolder = view;
             Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
@@ -263,7 +263,7 @@ public class StateExecutorService {
         if (componentMessagesHolder == null) {
             return;
         }
-        
+
         for (ErrorMessage errorMessage : entity.getGlobalErrors()) {
             componentMessagesHolder.addMessage(errorMessage);
         }
