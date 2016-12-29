@@ -28,7 +28,7 @@
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="documentPositionsList"
-      modelName="position"
+      modelName="positionDto"
       menuAccessible="true">
 
     <component type="window" name="window">
@@ -37,41 +37,34 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
-            <option type="column" name="locationFrom" fields="document"
-                    width="50" expression="#document['locationFrom']?.get('number')"/>
+            <option type="column" name="locationFrom" fields="locationFrom"
+                    width="50"/>
 
-            <option type="column" name="locationTo" fields="document"
-                    width="50" expression="#document['locationTo']?.get('number')"/>
+            <option type="column" name="locationTo" fields="locationTo"
+                    width="50"/>
 
-            <option type="column" name="productNumber" fields="product"
-                    expression="#product['number']"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
 
-            <option type="column" name="productName" fields="product"
-                    expression="#product['name']"/>
+            <option type="column" name="productName" fields="productName"/>
 
             <option type="column" name="quantity" fields="quantity" width="50"/>
 
-            <option type="column" name="unit" fields="product" width="30"
-                    expression="#product['unit']"/>
+            <option type="column" name="productUnit" fields="productUnit" width="30"/>
 
             <option type="column" name="price" fields="price" width="50"/>
 
-            <option type="column" name="documentDate" fields="document"
-                    expression="#document['time']"/>
+            <option type="column" name="documentDate" fields="documentDate"/>
 
-            <option type="column" name="documentType" fields="type"/>
+            <option type="column" name="documentType" fields="documentType"/>
 
-            <option type="column" name="documentNumber" fields="document"
-                    width="50" expression="#document['number']"/>
+            <option type="column" name="documentNumber" fields="documentNumber" width="50"/>
 
-            <option type="column" name="documentName" fields="document"
-                    width="50" expression="#document['name']"/>
+            <option type="column" name="documentName" fields="documentName"
+                    width="50"/>
 
-            <option type="column" name="company" fields="document"
-                    expression="#document['company']?.get('name')"/>
+            <option type="column" name="company" fields="companyName"/>
 
-            <option type="column" name="address" fields="document"
-                    expression="#document['address']?.get('name') == null ? #document['address']?.get('number') : #document['address']?.get('number') + ' - ' + #document['address']?.get('name')"/>
+            <option type="column" name="address" fields="documentAddress"/>
 
             <option type="column" name="batch" fields="batch" width="50"/>
 
@@ -79,8 +72,7 @@
 
             <option type="column" name="productionDate" fields="productionDate" width="60"/>
 
-            <option type="column" name="storageLocation" fields="storageLocation" width="70"
-                    expression="#storageLocation['number']"/>
+            <option type="column" name="storageLocation" fields="storageLocation" width="70"/>
 
             <option type="column" name="waste" fields="waste" width="30"/>
 

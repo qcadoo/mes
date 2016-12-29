@@ -397,17 +397,21 @@
                          searchable="true" orderable="true" width="65"/>
         </view:view-grid-column>
 
+        <model:model-field plugin="materialFlowResources" model="positionDto">
+            <model:string name="maintenanceEventNumber"/>
+        </model:model-field>
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
-            <view:column name="maintenanceEvent" fields="document"
-                         expression="#document['maintenanceEvent']?.get('number')" orderable="true"
+            <view:column name="maintenanceEventNumber" fields="maintenanceEventNumber" orderable="true"
                          searchable="true" width="45"/>
         </view:view-grid-column>
 
+        <model:model-field plugin="materialFlowResources" model="positionDto">
+            <model:string name="plannedEventNumber"/>
+        </model:model-field>
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
-            <view:column name="plannedEvent" fields="document"
-                         expression="#document['plannedEvent']?.get('number')" orderable="true"
+            <view:column name="plannedEventNumber" fields="plannedEventNumber" orderable="true"
                          searchable="true" width="52"/>
         </view:view-grid-column>
 
