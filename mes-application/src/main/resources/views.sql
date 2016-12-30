@@ -270,6 +270,13 @@ DROP TABLE IF EXISTS orders_orderlistdto;
 
 CREATE OR REPLACE VIEW orders_orderlistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.deadline, product.number AS productnumber, technology.number AS technologynumber, product.unit, masterorder.number AS masterordernumber, division.name AS divisionname, company.name AS companyname, masterorderdefinition.number AS masterorderdefinitionnumber, (CASE WHEN (EXISTS (SELECT repairoder.id FROM repairs_repairorder repairoder WHERE repairoder.order_id = ordersorder.id)) THEN TRUE ELSE FALSE END) AS existsrepairorders FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN basic_company company ON company.id = ordersorder.company_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON masterorderdefinition.id = masterorder.masterorderdefinition_id LEFT JOIN basic_division division ON division.id = technology.division_id;
 
+-- VIEW: ordersGroupDto
+
+DROP TABLE IF EXISTS ordersgroups_ordersgroupdto;
+CREATE OR REPLACE VIEW ordersgroups_ordersgroupdto AS SELECT ordersGroup.id AS id, ordersGroup.active AS active, ordersGroup.number AS number, assortment.name AS assortmentName, productionLine.number AS productionLineNumber, ordersGroup.startdate AS startDate, ordersGroup.finishdate AS finishDate, ordersGroup.deadline AS deadline, ordersGroup.quantity AS quantity, ordersGroup.producedquantity AS producedQuantity, ordersGroup.remainingquantity AS remainingQuantity, (select product.unit from basic_product product left join orders_order o ON (o.product_id = product.id) where o.ordersgroup_id = ordersGroup.id limit 1 ) as unit, ordersGroup.state AS state FROM ordersgroups_ordersgroup ordersGroup JOIN basic_assortment assortment ON ordersGroup.assortment_id = assortment.id JOIN productionlines_productionline productionLine ON ordersGroup.productionline_id = productionLine.id;
+	
+-- end
+
 
 DROP TABLE IF EXISTS  productioncounting_productiontrackingdto;
 
@@ -312,13 +319,6 @@ DROP TABLE IF EXISTS deliveries_deliveredproductdto;
 CREATE OR REPLACE VIEW deliveries_deliveredproductdto AS SELECT deliveredproduct.id AS id, deliveredproduct.succession AS succession, deliveredproduct.damagedquantity AS damagedquantity, deliveredproduct.deliveredquantity AS deliveredquantity, deliveredproduct.priceperunit AS priceperunit, deliveredproduct.totalprice AS totalprice, deliveredproduct.conversion AS conversion, deliveredproduct.additionalquantity AS additionalquantity, deliveredproduct.iswaste AS iswaste, delivery.id AS delivery, delivery.id::integer AS deliveryId, delivery.supplier_id AS supplier, product.number AS productNumber, product.name AS productName, product.unit AS productUnit, addcode.code AS additionalCode, offer.number AS offerNumber, operation.number AS operationNumber, slocation.number AS storageLocationNumber, pnumber.number AS palletNumber, (SELECT catalognumber FROM productcatalognumbers_productcatalognumbers WHERE product_id = product.id AND company_id = delivery.supplier_id) AS productCatalogNumber FROM deliveries_deliveredproduct deliveredproduct LEFT JOIN deliveries_delivery delivery ON deliveredproduct.delivery_id = delivery.id LEFT JOIN basic_product product ON deliveredproduct.product_id = product.id LEFT JOIN supplynegotiations_offer offer ON deliveredproduct.offer_id = offer.id LEFT JOIN technologies_operation operation ON deliveredproduct.operation_id = operation.id LEFT JOIN basic_additionalcode addcode ON deliveredproduct.additionalcode_id = addcode.id LEFT JOIN materialflowresources_storagelocation slocation ON deliveredproduct.storagelocation_id = slocation.id LEFT JOIN basic_palletnumber pnumber ON deliveredproduct.palletnumber_id = pnumber.id;
 
  -- end
-
--- VIEW: ordersGroupDto
-
-DROP TABLE IF EXISTS ordersgroups_ordersgroupdto;
-CREATE OR REPLACE VIEW ordersgroups_ordersgroupdto AS SELECT ordersGroup.id AS id, ordersGroup.active AS active, ordersGroup.number AS number, assortment.name AS assortmentName, productionLine.number AS productionLineNumber, ordersGroup.startdate AS startDate, ordersGroup.finishdate AS finishDate, ordersGroup.deadline AS deadline, ordersGroup.quantity AS quantity, ordersGroup.producedquantity AS producedQuantity, ordersGroup.remainingquantity AS remainingQuantity, (select product.unit from basic_product product left join orders_order o ON (o.product_id = product.id) where o.ordersgroup_id = ordersGroup.id limit 1 ) as unit, ordersGroup.state AS state FROM ordersgroups_ordersgroup ordersGroup JOIN basic_assortment assortment ON ordersGroup.assortment_id = assortment.id JOIN productionlines_productionline productionLine ON ordersGroup.productionline_id = productionLine.id;
-	
--- end
 
 -- views for gantt
 DROP TABLE IF EXISTS linechangeovernorms_ordersnormview;
