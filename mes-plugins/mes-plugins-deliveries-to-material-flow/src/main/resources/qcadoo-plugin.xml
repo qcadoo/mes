@@ -103,9 +103,12 @@
                          searchable="true" width="45"/>
         </view:view-grid-column>
 
+        <model:model-field plugin="materialFlowResources" model="positionDto">
+            <model:string name="deliveryNumber"/>
+        </model:model-field>
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentPositionsList" component="grid">
-            <view:column name="delivery" fields="document" expression="#document['delivery']?.get('number')"
+            <view:column name="deliveryNumber" fields="deliveryNumber"
                          orderable="true"
                          searchable="true" width="45"/>
         </view:view-grid-column>

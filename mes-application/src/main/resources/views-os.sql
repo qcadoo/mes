@@ -239,3 +239,11 @@ CREATE OR REPLACE VIEW materialflowresources_storagelocationdto_internal AS SELE
 CREATE OR REPLACE VIEW materialflowresources_storagelocationdto AS SELECT row_number() OVER () AS id, internal.* FROM materialflowresources_storagelocationdto_internal internal;
 
  -- end
+
+ -- VIEW: positionDto
+
+DROP TABLE IF EXISTS materialflowresources_positiondto;
+
+CREATE OR REPLACE VIEW materialflowresources_positiondto AS SELECT position.id AS id, locFrom.number AS locationFrom, locTo.number AS locationTo, product.number AS productNumber, product.name AS productName, position.quantity AS quantity, position.price AS price, product.unit AS productUnit, document.time AS documentDate, position.expirationdate AS expirationDate, position.productiondate AS productionDate, document.type AS documentType, document.state AS state, document.number AS documentNumber, document.name AS documentName, company.name AS companyName, (CASE WHEN address.name IS NULL THEN address.number ELSE address.number::text || ' - '::text || address.name::text END) AS documentAddress, position.batch AS batch, storageLoc.number AS storageLocation, position.waste AS waste, delivery.number AS deliveryNumber, plannedEvent.number AS plannedEventNumber, maintenanceEvent.number AS maintenanceEventNumber FROM materialflowresources_position position JOIN materialflowresources_document document ON position.document_id = document.id LEFT JOIN materialflow_location locFrom ON document.locationfrom_id = locFrom.id LEFT JOIN materialflow_location locTo ON document.locationto_id = locTo.id JOIN basic_product product ON position.product_id = product.id LEFT JOIN basic_company company ON document.company_id = company.id LEFT JOIN basic_address address ON document.address_id = address.id LEFT JOIN materialflowresources_storagelocation storageLoc ON position.storagelocation_id = storageLoc.id LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceEvent ON document.maintenanceevent_id = maintenanceEvent.id LEFT JOIN cmmsmachineparts_plannedevent plannedEvent ON document.plannedevent_id = plannedEvent.id LEFT JOIN deliveries_delivery delivery ON document.delivery_id = delivery.id;
+
+-- end

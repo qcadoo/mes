@@ -54,6 +54,8 @@ import java.util.Locale;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public final class ProductionTrackingListenerService {
@@ -154,6 +156,7 @@ public final class ProductionTrackingListenerService {
         }
     }
 
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void closeOrder(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ORDER);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
