@@ -16,6 +16,8 @@ public class DailyProgressContainer {
 
     private DateTime partCalculationToDate;
 
+    private boolean planForOrderCompleted = false;
+
     public List<Entity> getDailyProgress() {
         return dailyProgress;
     }
@@ -46,5 +48,13 @@ public class DailyProgressContainer {
 
     public void setPartCalculationToDate(DateTime partCalculationToDate) {
         this.partCalculationToDate = partCalculationToDate;
+    }
+
+    public boolean isPlanForOrderCompleted() {
+        return planForOrderCompleted;
+    }
+
+    public void setPlanForOrderCompleted(boolean planForOrderCompleted) {
+        this.planForOrderCompleted = planForOrderCompleted;
     }
 }

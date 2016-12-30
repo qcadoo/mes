@@ -53,6 +53,8 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyType;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -610,7 +612,13 @@ public class OrderHooks {
         if (orderService.isPktEnabled()) {
             order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
         } else {
-            order.setField(OrderFields.TECHNOLOGY, order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
+            Entity prototypeTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            if (TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
+                order.setField(OrderFields.TECHNOLOGY, prototypeTechnology);
+            } else {
+                order.setField(OrderFields.TECHNOLOGY, null);
+                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
+            }
         }
     }
 
@@ -622,6 +630,13 @@ public class OrderHooks {
         String number = generateTechnologyNumberFor(order).orNull();
         Entity copyOfTechnology = technology.getDataDefinition().copy(technology.getId()).get(0);
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
+        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
+        Entity prototype = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_PROTOTYPE);
+        if (prototype == null) {
+            copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technology);
+        } else {
+            copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, prototype);
+        }
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
         if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
             technologyServiceO.changeTechnologyStateToChecked(copyOfTechnology);

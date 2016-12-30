@@ -25,19 +25,19 @@
 
 -->
 <view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="productionTrackingsList"
-	  modelName="productionTrackingDto"
-	  menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	  xmlns="http://schema.qcadoo.org/view"
-	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      modelName="productionTrackingDto"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<component type="window" name="window" reference="window">
+    <component type="window" name="window" reference="window">
 
-		<ribbon>
-			<template name="standardGridTemplate"/>
-			<group name="status">
-				<smallButton name="acceptTracking" icon="startIcon16.png"
-							 state="disabled">
-					<script>
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="acceptTracking" icon="startIcon16.png"
+                                             state="disabled">
+                    <script>
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -47,11 +47,11 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-				<smallButton name="cancelTracking" icon="deleteIcon16.png"
-							 state="disabled">
-					<script>
+                    </script>
+                </smallButton>
+                <smallButton name="cancelTracking" icon="deleteIcon16.png"
+                                             state="disabled">
+                    <script>
 						<![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -61,14 +61,14 @@
 								}
 							});
 						]]>
-					</script>
-				</smallButton>
-			</group>
-		</ribbon>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
 
-		<component type="grid" name="productionTrackingsList"
-				   reference="grid">
-			<script>
+        <component type="grid" name="productionTrackingsList"
+                           reference="grid">
+            <script>
 				<![CDATA[
 					var acceptRecord = #{window}.getRibbonItem("status.acceptTracking"),
 						cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
@@ -85,8 +85,8 @@
 						"cancelProductionRecord"
 					);
 				]]>
-			</script>
-			<script>
+            </script>
+            <script>
 				<![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
@@ -178,59 +178,58 @@
 
 					this.addOnChangeListener(listener);
 				]]>
-			</script>
+            </script>
 
-			<option type="column" name="number" fields="number" link="true"
-					width="120"/>
-			<option type="column" name="orderNumber" fields="orderNumber" link="true"
-					width="200"/>
-			<option type="column" name="technologyOperationComponentNumber"
-					fields="technologyOperationComponentNumber" width="120"/>
-			<option type="column" name="shiftName" fields="shiftName"
-					width="80"/>
-			<option type="column" name="staffName" fields="staffName"
-					width="100"/>
-			<option type="column" name="divisionNumber" fields="divisionNumber"
-					width="80"/>
-			<option type="column" name="state" fields="state"
-					width="90"/>
-			<option type="column" name="createDate" fields="createDate"
-					width="100"/>
-			<option type="column" name="lastTracking" fields="lastTracking"
-					expression="#lastTracking" width="40"/>
-			<option type="column" name="timeRangeFrom" fields="timeRangeFrom"
-					width="100"/>
-			<option type="column" name="timeRangeTo" fields="timeRangeTo"
-					width="100"/>
-			<option type="column" name="correctionNumber" fields="correctionNumber"
-					width="120"/>
-			<option type="column" name="orderState" fields="orderState" hidden="true"/>
+            <option type="column" name="number" fields="number" link="true"
+                                width="120"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                                width="200"/>
+            <option type="column" name="technologyOperationComponentNumber"
+                                fields="technologyOperationComponentNumber" width="120"/>
+            <option type="column" name="shiftName" fields="shiftName"
+                                width="80"/>
+            <option type="column" name="staffName" fields="staffName"
+                                width="100"/>
+            <option type="column" name="divisionNumber" fields="divisionNumber"
+                                width="80"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                                width="80"/>
+            <option type="column" name="state" fields="state"
+                                width="90"/>
+            <option type="column" name="createDate" fields="createDate"
+                                width="100"/>
+            <option type="column" name="lastTracking" fields="lastTracking"
+                                expression="#lastTracking" width="40"/>
+            <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                                width="100"/>
+            <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                                width="100"/>
+            <option type="column" name="correctionNumber" fields="correctionNumber"
+                                width="120"/>
+            <option type="column" name="orderState" fields="orderState" hidden="true"/>
 
-			<option type="order" column="number" direction="desc"/>
+            <option type="order" column="number" direction="desc"/>
 
-			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
-			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber"/>
+            <option type="searchable"
+                                value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+            <option type="orderable"
+                                value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 
-			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
-			<option type="correspondingComponent" value="form"/>
+            <option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
-			<option type="fullscreen" value="true"/>
-			<option type="multiselect" value="true"/>
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
-<!--			<listener event="changeState"
-					  class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-					  method="changeState"/>-->
-                <listener event="changeState"
+            <listener event="changeState"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="changeTrackingState"/>
-		</component>
+        </component>
 
-		<option type="fixedHeight" value="true"/>
-		<option type="header" value="false"/>
-	</component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 
-	<hooks>
-	</hooks>
+    <hooks>
+    </hooks>
 </view>

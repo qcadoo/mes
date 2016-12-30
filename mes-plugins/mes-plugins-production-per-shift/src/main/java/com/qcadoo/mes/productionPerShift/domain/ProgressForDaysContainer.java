@@ -26,6 +26,8 @@ public class ProgressForDaysContainer {
 
     private Entity order;
 
+    private boolean planForOrderCompleted = false;
+
     private boolean shouldBeCorrected = false;
 
     private BigDecimal plannedQuantity = BigDecimal.ZERO;
@@ -122,5 +124,13 @@ public class ProgressForDaysContainer {
 
     public void setPlannedQuantity(BigDecimal plannedQuantity) {
         this.plannedQuantity = plannedQuantity;
+    }
+
+    public boolean isPlanForOrderCompleted() {
+        return planForOrderCompleted;
+    }
+
+    public void setPlanForOrderCompleted(boolean planForOrderCompleted) {
+        this.planForOrderCompleted = planForOrderCompleted;
     }
 }

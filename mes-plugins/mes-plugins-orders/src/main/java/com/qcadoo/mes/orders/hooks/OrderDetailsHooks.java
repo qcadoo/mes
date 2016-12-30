@@ -261,7 +261,8 @@ public class OrderDetailsHooks {
     }
 
     private void checkIfLockTechnologyTree(final ViewDefinitionState view) {
-        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)
+                || !orderService.isPktEnabled()) {
             FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
             orderType.setEnabled(false);
             orderType.requestComponentUpdateState();
