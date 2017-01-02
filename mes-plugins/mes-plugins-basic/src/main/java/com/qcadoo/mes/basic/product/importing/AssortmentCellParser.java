@@ -24,53 +24,40 @@
 package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+import java.util.function.Consumer;
 
 @Component
-public class ProductFamilyCellBinder implements CellBinder {
+public class AssortmentCellParser implements CellParser {
 
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    public ProductFamilyCellBinder(DataDefinitionService dataDefinitionService) {
+    public AssortmentCellParser(DataDefinitionService dataDefinitionService) {
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    private DataDefinition getProductDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+    private DataDefinition getAssortmentDataDefinition() {
+        // TODO assortment model is missing in BasicConstants. Probably we should add it there
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, "assortment");
     }
 
     @Override
-    public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
-        if (null != cell) {
-            String value = formatCell(cell);
-            Entity familyProductCandidate = getProductDataDefinition()
-                    .find()
-                    .add(SearchRestrictions.eq(ProductFields.NUMBER, value))
-                    .uniqueResult();
-
-            if (null == familyProductCandidate) {
-                errorsAccessor.addError("notFound");
-            } else if (!PRODUCTS_FAMILY.getStringValue().equals(familyProductCandidate.getStringField(ENTITY_TYPE))) {
-                errorsAccessor.addError("notFamily");
-            } else {
-                entity.setField(getFieldName(), familyProductCandidate);
-            }
+    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
+        Entity assortment = getAssortmentDataDefinition()
+                .find()
+                .add(SearchRestrictions.eq("name", cellValue))
+                .uniqueResult();
+        if (null != assortment) {
+            valueConsumer.accept(assortment);
+        } else {
+            errorsAccessor.addError("notFound");
         }
-    }
-
-    @Override
-    public String getFieldName() {
-        return "parent";
     }
 }

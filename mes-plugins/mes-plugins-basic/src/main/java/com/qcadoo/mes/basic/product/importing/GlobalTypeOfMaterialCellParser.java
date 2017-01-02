@@ -25,49 +25,39 @@ package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 @Component
-public class GlobalTypeOfMaterialCellBinder implements CellBinder {
+public class GlobalTypeOfMaterialCellParser implements CellParser {
 
     private final TranslationService translationService;
 
     @Autowired
-    public GlobalTypeOfMaterialCellBinder(TranslationService translationService) {
+    public GlobalTypeOfMaterialCellParser(TranslationService translationService) {
         this.translationService = translationService;
     }
 
     @Override
-    public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
-        if (null != cell) {
-            String value = formatCell(cell);
-            if (!StringUtils.isBlank(value)) {
-                Optional<GlobalTypeOfMaterial> match = Arrays.stream(GlobalTypeOfMaterial.values())
-                        .filter(gtom ->
-                                translationService.translate(
-                                        "basic.product.globalTypeOfMaterial.value." + gtom.getStringValue(),
-                                        LocaleContextHolder.getLocale()).equals(value))
-                        .findAny();
-                if (match.isPresent()) {
-                    entity.setField(getFieldName(), match.get().getStringValue());
-                } else {
-                    errorsAccessor.addError("invalid");
-                }
+    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
+        if (!StringUtils.isBlank(cellValue)) {
+            Optional<GlobalTypeOfMaterial> match = Arrays.stream(GlobalTypeOfMaterial.values())
+                    .filter(gtom ->
+                            translationService.translate(
+                                    "basic.product.globalTypeOfMaterial.value." + gtom.getStringValue(),
+                                    LocaleContextHolder.getLocale()).equals(cellValue))
+                    .findAny();
+            if (match.isPresent()) {
+                valueConsumer.accept(match.get().getStringValue());
+            } else {
+                errorsAccessor.addError("invalid");
             }
         }
-    }
-
-    @Override
-    public String getFieldName() {
-        return ProductFields.GLOBAL_TYPE_OF_MATERIAL;
     }
 }

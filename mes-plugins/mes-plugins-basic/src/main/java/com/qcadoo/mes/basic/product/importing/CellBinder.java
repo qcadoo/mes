@@ -29,15 +29,89 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.Locale;
+import java.util.function.Consumer;
 
-public interface CellBinder {
-    void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor);
+abstract class CellBinder {
 
-    String getFieldName();
+    private final String fieldName;
+    private final CellParser cellParser;
 
-    default String formatCell(final Cell cell) {
+    CellBinder(String fieldName, CellParser cellParser) {
+        this.fieldName = fieldName;
+        this.cellParser = cellParser;
+    }
+
+    public static CellBinder required(String fieldName) {
+        return new RequiredCellBinder(fieldName);
+    }
+
+    private static String formatCell(final Cell cell) {
         Locale locale = LocaleContextHolder.getLocale();
         final DataFormatter dataFormatter = new DataFormatter(null == locale ? Locale.getDefault() : locale);
         return dataFormatter.formatCellValue(cell).trim();
+    }
+
+    public static CellBinder optional(String fieldName, CellParser cellParser) {
+        return new OptionalCellBinder(fieldName, cellParser);
+    }
+
+    public static CellBinder optional(String fieldName) {
+        return new OptionalCellBinder(fieldName);
+    }
+
+    CellParser getCellParser() {
+        return cellParser;
+    }
+
+    abstract void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor);
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    private static class DefaultCellParser implements CellParser {
+
+        @Override
+        public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
+            valueConsumer.accept(cellValue);
+        }
+    }
+
+    private static class OptionalCellBinder extends CellBinder {
+
+        OptionalCellBinder(String fieldName, CellParser cellParser) {
+            super(fieldName, cellParser);
+        }
+
+        OptionalCellBinder(String fieldName) {
+            this(fieldName, new DefaultCellParser());
+        }
+
+        @Override
+        public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
+            if (cell != null) {
+                getCellParser().parse(formatCell(cell), errorsAccessor, o -> entity.setField(getFieldName(), o));
+            }
+        }
+    }
+
+    private static class RequiredCellBinder extends CellBinder {
+
+        RequiredCellBinder(String fieldName) {
+            this(fieldName, new DefaultCellParser());
+        }
+
+        RequiredCellBinder(String fieldName, CellParser cellParser) {
+            super(fieldName, cellParser);
+        }
+
+        @Override
+        public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
+            if (cell == null) {
+                errorsAccessor.addError("required");
+            } else {
+                getCellParser().parse(formatCell(cell), errorsAccessor, o -> entity.setField(getFieldName(), o));
+            }
+        }
     }
 }

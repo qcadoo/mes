@@ -34,6 +34,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static com.qcadoo.mes.basic.product.importing.CellBinder.optional;
+import static com.qcadoo.mes.basic.product.importing.CellBinder.required;
+
 @Component
 class RowProcessorFactory {
 
@@ -41,16 +44,16 @@ class RowProcessorFactory {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private CellBinder globalTypeOfMaterialCellBinder;
+    private CellParser globalTypeOfMaterialCellParser;
 
     @Autowired
-    private CellBinder producerCellBinder;
+    private CellParser producerCellParser;
 
     @Autowired
-    private CellBinder assortmentCellBinder;
+    private CellParser assortmentCellParser;
 
     @Autowired
-    private CellBinder productFamilyCellBinder;
+    private CellParser productFamilyCellParser;
 
     private CellBinder[] cellBinders;
 
@@ -60,20 +63,28 @@ class RowProcessorFactory {
 
     @PostConstruct
     private void init() {
+        BigDecimalCellParser bigDecimalCellParser = new BigDecimalCellParser();
         cellBinders = new CellBinder[]{
-                new SimpleCellBinder(ProductFields.NUMBER, true),
-                new SimpleCellBinder(ProductFields.NAME, true),
-                globalTypeOfMaterialCellBinder,
-                new SimpleCellBinder(ProductFields.UNIT, true),
-                new SimpleCellBinder(ProductFields.EAN, false),
-                new SimpleCellBinder(ProductFields.CATEGORY, false), // TODO check if simple binder is enough to validate if category is active
-                new SimpleCellBinder(ProductFields.DESCRIPTION, false),
-                producerCellBinder,
-                assortmentCellBinder,
-                productFamilyCellBinder,
-                new SimpleCellBinder("nominalCost", false),
-                new SimpleCellBinder("lastOfferCost", false),
-                new SimpleCellBinder("averageOfferCost", false),
+                required(ProductFields.NUMBER),
+                required(ProductFields.NAME),
+                optional(ProductFields.GLOBAL_TYPE_OF_MATERIAL, globalTypeOfMaterialCellParser),
+                required(ProductFields.UNIT),
+                optional(ProductFields.EAN),
+                // TODO check if simple binder is enough to validate if category is active
+                optional(ProductFields.CATEGORY),
+                optional(ProductFields.DESCRIPTION),
+                optional(ProductFields.PRODUCER, producerCellParser),
+                optional(ProductFields.ASSORTMENT, assortmentCellParser),
+                optional(ProductFields.PARENT, productFamilyCellParser),
+
+                // TODO That's the reason why we should move import functionality to CNFP plugin
+                // More sophisticated approach is to make import functionality expandable by other plugins
+                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST
+                optional("nominalCost", bigDecimalCellParser),
+                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST
+                optional("lastOfferCost", bigDecimalCellParser),
+                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST
+                optional("averageOfferCost", bigDecimalCellParser)
         };
     }
 

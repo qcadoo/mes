@@ -23,30 +23,26 @@
  */
 package com.qcadoo.mes.basic.product.importing;
 
-import com.qcadoo.model.api.Entity;
-import org.apache.poi.ss.usermodel.Cell;
+import com.google.common.base.Optional;
+import com.qcadoo.commons.functional.Either;
+import com.qcadoo.model.api.BigDecimalUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 
-class SimpleCellBinder implements CellBinder {
+import java.math.BigDecimal;
+import java.util.Locale;
+import java.util.function.Consumer;
 
-    private final String fieldName;
-    private final boolean required;
-
-    SimpleCellBinder(final String fieldName, final boolean required) {
-        this.fieldName = fieldName;
-        this.required = required;
-    }
+public class BigDecimalCellParser implements CellParser {
 
     @Override
-    public final void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
-        if (required && cell == null) {
-            errorsAccessor.addError("required");
-        } else if (cell != null) {
-            entity.setField(fieldName, formatCell(cell));
+    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
+        Locale locale = LocaleContextHolder.getLocale();
+        // TODO add validation here to be more restrictive rather than incorrectly parse big decimal
+        Either<Exception, Optional<BigDecimal>> either = BigDecimalUtils.tryParse(cellValue, locale);
+        if (either.isLeft()) {
+            errorsAccessor.addError("invalid");
+        } else if (either.getRight().isPresent()) {
+            valueConsumer.accept(either.getRight().get());
         }
-    }
-
-    @Override
-    public String getFieldName() {
-        return fieldName;
     }
 }

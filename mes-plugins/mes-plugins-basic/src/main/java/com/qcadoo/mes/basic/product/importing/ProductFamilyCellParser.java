@@ -24,47 +24,46 @@
 package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.function.Consumer;
+
+import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+
 @Component
-public class ProducerCellBinder implements CellBinder {
+public class ProductFamilyCellParser implements CellParser {
 
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    public ProducerCellBinder(DataDefinitionService dataDefinitionService) {
+    public ProductFamilyCellParser(DataDefinitionService dataDefinitionService) {
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    private DataDefinition getCompanyDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+    private DataDefinition getProductDataDefinition() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
     @Override
-    public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
-        if (null != cell) {
-            String value = formatCell(cell);
-            Entity companyCandidate = getCompanyDataDefinition()
-                    .find()
-                    .add(SearchRestrictions.eq(CompanyFields.NUMBER, value))
-                    .uniqueResult();
-            if (null != companyCandidate) {
-                entity.setField(getFieldName(), companyCandidate);
-            } else {
-                errorsAccessor.addError("invalid");
-            }
+    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
+        Entity familyProductCandidate = getProductDataDefinition()
+                .find()
+                .add(SearchRestrictions.eq(ProductFields.NUMBER, cellValue))
+                .uniqueResult();
+
+        if (null == familyProductCandidate) {
+            errorsAccessor.addError("notFound");
+        } else if (!PRODUCTS_FAMILY.getStringValue().equals(familyProductCandidate.getStringField(ENTITY_TYPE))) {
+            errorsAccessor.addError("notFamily");
+        } else {
+            valueConsumer.accept(familyProductCandidate);
         }
-    }
-
-    @Override
-    public String getFieldName() {
-        return "producer";
     }
 }
