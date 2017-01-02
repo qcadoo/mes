@@ -45,6 +45,7 @@
         <integer name="user_id"/>
         <string name="userName"/>
         <string name="description"/>
+        <boolean name="inBuffer" />
     </fields>
 
     <masterModel plugin="materialFlowResources" model="document"/>
