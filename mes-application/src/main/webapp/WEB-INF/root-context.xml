@@ -79,6 +79,6 @@
         <constructor-arg ref="executor"/>
     </bean>
 
-    <task:executor id="executor" rejection-policy="CALLER_RUNS"/>
+    <task:executor id="executor" pool-size="2" rejection-policy="CALLER_RUNS"/>
 
 </beans>
