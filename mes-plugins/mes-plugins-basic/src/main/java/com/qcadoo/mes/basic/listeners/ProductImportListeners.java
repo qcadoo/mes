@@ -26,6 +26,7 @@ package com.qcadoo.mes.basic.listeners;
 import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.product.importing.ImportError;
 import com.qcadoo.mes.basic.product.importing.ImportException;
 import com.qcadoo.mes.basic.product.importing.ImportStatus;
 import com.qcadoo.mes.basic.product.importing.XlsImportSevice;
@@ -43,6 +44,9 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Comparator;
+
+import static com.qcadoo.mes.basic.product.importing.SpreadsheetSchemaInfo.getIndexUsingFieldName;
 
 @Service
 public class ProductImportListeners {
@@ -75,15 +79,14 @@ public class ProductImportListeners {
     }
 
     private ErrorMessage translatedErrorMessage(final String code) {
-        return new ErrorMessage(
-                translationService.translate(code,
-                        LocaleContextHolder.getLocale()
-                )
-        );
+        return new ErrorMessage(translate(code));
     }
 
-    public void uploadProductImportFile(final ViewDefinitionState view, final ComponentState state,
-                                        final String[] args) throws IOException {
+    private String translate(String messageCode, String... args) {
+        return translationService.translate(messageCode, LocaleContextHolder.getLocale(), args);
+    }
+
+    public void uploadProductImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args) throws IOException {
         Object fieldValue = state.getFieldValue();
         String filePath = fieldValue.toString();
         if (StringUtils.isBlank(filePath)) {
@@ -95,13 +98,12 @@ public class ProductImportListeners {
                 final ImportStatus importStatus = xlsImportSevice.importFrom(new XSSFWorkbook(fis));
                 if (importStatus.hasErrors()) {
                     // TODO Find out how to present more detailed error messages to the user
-                    state.addMessage(new ErrorMessage("Błąd podczas eksportu"));
+                    prepareMessages(importStatus, view);
                 } else {
-                    // TODO It may be wise to inform the user about how many records got created
                     view.redirectTo("/page/basic/productsList.html", false, false);
                 }
             } catch (ImportException ie) {
-                ie.printStackTrace();
+                state.addMessage(new ErrorMessage("basic.productsImport.error.file.incorrect.version"));
             } catch (Throwable throwable) {
                 // There is not much we can do about these IO exceptions except rethrowing them
                 Throwables.propagateIfInstanceOf(throwable, FileNotFoundException.class);
@@ -112,5 +114,28 @@ public class ProductImportListeners {
                 }
             }
         }
+    }
+
+    private void prepareMessages(ImportStatus importStatus, ViewDefinitionState view) {
+        Comparator<ImportError> compareByIndex = (o1, o2) ->
+                Integer.valueOf(getIndexUsingFieldName(o1.getFieldName()))
+                        .compareTo(getIndexUsingFieldName(o2.getFieldName()));
+
+        Comparator<ImportError> comparator =
+                Comparator.comparing(ImportError::getRowIndex)
+                        .thenComparing(compareByIndex);
+
+        importStatus.getErrors()
+                .stream()
+                .sorted(comparator)
+                .forEach(importError -> {
+                    String locationString = translate(
+                            "basic.productsImport.error.message",
+                            String.valueOf(importError.getRowIndex()),
+                            String.valueOf(getIndexUsingFieldName(importError.getFieldName()) + 1));
+
+                    String errorMessage = locationString + " " + translate(importError.getCode(), importError.getArgs());
+                    view.addTranslatedMessage(errorMessage, ComponentState.MessageType.FAILURE, false);
+                });
     }
 }

@@ -23,6 +23,6 @@
  */
 package com.qcadoo.mes.basic.product.importing;
 
-public interface BindingErrorsAccessor {
+interface BindingErrorsAccessor {
     void addError(String errorCode);
 }

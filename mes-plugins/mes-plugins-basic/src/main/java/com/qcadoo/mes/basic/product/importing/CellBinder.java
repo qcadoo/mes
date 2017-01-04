@@ -24,6 +24,7 @@
 package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -32,10 +33,8 @@ import java.util.Locale;
 import java.util.function.Consumer;
 
 abstract class CellBinder {
-
     private final String fieldName;
     private final CellParser cellParser;
-
     CellBinder(String fieldName, CellParser cellParser) {
         this.fieldName = fieldName;
         this.cellParser = cellParser;
@@ -43,6 +42,10 @@ abstract class CellBinder {
 
     public static CellBinder required(String fieldName) {
         return new RequiredCellBinder(fieldName);
+    }
+
+    public static CellBinder required(String fieldName, CellParser cellParser) {
+        return new RequiredCellBinder(fieldName, cellParser);
     }
 
     private static String formatCell(final Cell cell) {
@@ -57,6 +60,11 @@ abstract class CellBinder {
 
     public static CellBinder optional(String fieldName) {
         return new OptionalCellBinder(fieldName);
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
     }
 
     CellParser getCellParser() {
@@ -108,7 +116,7 @@ abstract class CellBinder {
         @Override
         public void bind(Cell cell, Entity entity, BindingErrorsAccessor errorsAccessor) {
             if (cell == null) {
-                errorsAccessor.addError("required");
+                errorsAccessor.addError("qcadooView.validate.field.error.missing");
             } else {
                 getCellParser().parse(formatCell(cell), errorsAccessor, o -> entity.setField(getFieldName(), o));
             }

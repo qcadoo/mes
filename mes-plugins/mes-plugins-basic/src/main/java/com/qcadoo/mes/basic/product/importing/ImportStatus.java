@@ -24,14 +24,15 @@
 package com.qcadoo.mes.basic.product.importing;
 
 
+import com.google.common.collect.ImmutableSet;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ImportStatus {
 
-    private List<ImportError> errors = new ArrayList<>();
+    private Set<ImportError> errors = new HashSet<>();
 
     public boolean hasErrors() {
         return !CollectionUtils.isEmpty(errors);
@@ -41,15 +42,8 @@ public class ImportStatus {
         errors.add(importError);
     }
 
-    static class ImportError {
-        private final String fieldName;
-        private final int rowIndex;
-        private final String code;
-
-        ImportError(String fieldName, int rowIndex, String code) {
-            this.fieldName = fieldName;
-            this.rowIndex = rowIndex;
-            this.code = code;
-        }
+    public Set<ImportError> getErrors() {
+        return ImmutableSet.copyOf(errors);
     }
+
 }

@@ -35,12 +35,12 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 @Component
-public class GlobalTypeOfMaterialCellParser implements CellParser {
+class GlobalTypeOfMaterialCellParser implements CellParser {
 
     private final TranslationService translationService;
 
     @Autowired
-    public GlobalTypeOfMaterialCellParser(TranslationService translationService) {
+    GlobalTypeOfMaterialCellParser(TranslationService translationService) {
         this.translationService = translationService;
     }
 
@@ -56,7 +56,7 @@ public class GlobalTypeOfMaterialCellParser implements CellParser {
             if (match.isPresent()) {
                 valueConsumer.accept(match.get().getStringValue());
             } else {
-                errorsAccessor.addError("invalid");
+                errorsAccessor.addError("qcadooView.validate.field.error.invalidDictionaryItem");
             }
         }
     }

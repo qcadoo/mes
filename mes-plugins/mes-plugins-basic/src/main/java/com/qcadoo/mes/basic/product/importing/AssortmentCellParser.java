@@ -34,18 +34,17 @@ import org.springframework.stereotype.Component;
 import java.util.function.Consumer;
 
 @Component
-public class AssortmentCellParser implements CellParser {
+class AssortmentCellParser implements CellParser {
 
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    public AssortmentCellParser(DataDefinitionService dataDefinitionService) {
+    AssortmentCellParser(DataDefinitionService dataDefinitionService) {
         this.dataDefinitionService = dataDefinitionService;
     }
 
     private DataDefinition getAssortmentDataDefinition() {
-        // TODO assortment model is missing in BasicConstants. Probably we should add it there
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, "assortment");
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ASSORTMENT);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class AssortmentCellParser implements CellParser {
         if (null != assortment) {
             valueConsumer.accept(assortment);
         } else {
-            errorsAccessor.addError("notFound");
+            errorsAccessor.addError("qcadooView.validate.field.error.lookupCodeNotFound");
         }
     }
 }

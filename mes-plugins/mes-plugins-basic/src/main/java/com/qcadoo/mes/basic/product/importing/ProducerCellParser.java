@@ -35,12 +35,12 @@ import org.springframework.stereotype.Component;
 import java.util.function.Consumer;
 
 @Component
-public class ProducerCellParser implements CellParser {
+class ProducerCellParser implements CellParser {
 
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    public ProducerCellParser(DataDefinitionService dataDefinitionService) {
+    ProducerCellParser(DataDefinitionService dataDefinitionService) {
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -57,7 +57,7 @@ public class ProducerCellParser implements CellParser {
         if (null != companyCandidate) {
             valueConsumer.accept(companyCandidate);
         } else {
-            errorsAccessor.addError("invalid");
+            errorsAccessor.addError("qcadooView.validate.field.error.lookupCodeNotFound");
         }
     }
 }

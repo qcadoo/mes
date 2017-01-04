@@ -38,12 +38,12 @@ import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_F
 import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 
 @Component
-public class ProductFamilyCellParser implements CellParser {
+class ProductFamilyCellParser implements CellParser {
 
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    public ProductFamilyCellParser(DataDefinitionService dataDefinitionService) {
+    ProductFamilyCellParser(DataDefinitionService dataDefinitionService) {
         this.dataDefinitionService = dataDefinitionService;
     }
 
@@ -59,9 +59,9 @@ public class ProductFamilyCellParser implements CellParser {
                 .uniqueResult();
 
         if (null == familyProductCandidate) {
-            errorsAccessor.addError("notFound");
+            errorsAccessor.addError("qcadooView.validate.field.error.lookupCodeNotFound");
         } else if (!PRODUCTS_FAMILY.getStringValue().equals(familyProductCandidate.getStringField(ENTITY_TYPE))) {
-            errorsAccessor.addError("notFamily");
+            errorsAccessor.addError("basic.productsImport.error.field.notFamily");
         } else {
             valueConsumer.accept(familyProductCandidate);
         }

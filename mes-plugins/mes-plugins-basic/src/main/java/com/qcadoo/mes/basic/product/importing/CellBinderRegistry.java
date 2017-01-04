@@ -23,13 +23,27 @@
  */
 package com.qcadoo.mes.basic.product.importing;
 
-import org.apache.poi.ss.usermodel.Cell;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-public interface RowProcessor {
+@Service
+class CellBinderRegistry {
 
-    boolean isEmpty();
+    private CellBinder[] cellBinders = new CellBinder[SpreadsheetSchemaInfo.COLUMN_NUMBER];
 
-    void append(Cell cell);
+    void setCellBinder(CellBinder cellBinder) {
+        Integer index = SpreadsheetSchemaInfo.getIndexUsingFieldName(cellBinder.getFieldName());
+        Assert.notNull(index, "This binder is not a part of the schema");
+        if (null == cellBinders[index]) {
+            cellBinders[index] = cellBinder;
+        } else {
+            throw new IllegalArgumentException("There is cell binder already registered at given position");
+        }
+    }
 
-    void process();
+    CellBinder getCellBinder(int index) {
+        return cellBinders[index];
+    }
+
 }
+

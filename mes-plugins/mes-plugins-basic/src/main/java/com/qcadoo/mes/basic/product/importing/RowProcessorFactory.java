@@ -29,69 +29,104 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.validators.ErrorMessage;
+import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-
-import static com.qcadoo.mes.basic.product.importing.CellBinder.optional;
-import static com.qcadoo.mes.basic.product.importing.CellBinder.required;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 class RowProcessorFactory {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private final DataDefinitionService dataDefinitionService;
+
+    private final CellBinderRegistry cellBinderRegistry;
 
     @Autowired
-    private CellParser globalTypeOfMaterialCellParser;
+    RowProcessorFactory(DataDefinitionService dataDefinitionService, CellBinderRegistry cellBinderRegistry) {
+        this.dataDefinitionService = dataDefinitionService;
+        this.cellBinderRegistry = cellBinderRegistry;
+    }
 
-    @Autowired
-    private CellParser producerCellParser;
-
-    @Autowired
-    private CellParser assortmentCellParser;
-
-    @Autowired
-    private CellParser productFamilyCellParser;
-
-    private CellBinder[] cellBinders;
 
     private DataDefinition getProductDataDefinition() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
-    @PostConstruct
-    private void init() {
-        BigDecimalCellParser bigDecimalCellParser = new BigDecimalCellParser();
-        cellBinders = new CellBinder[]{
-                required(ProductFields.NUMBER),
-                required(ProductFields.NAME),
-                optional(ProductFields.GLOBAL_TYPE_OF_MATERIAL, globalTypeOfMaterialCellParser),
-                required(ProductFields.UNIT),
-                optional(ProductFields.EAN),
-                // TODO check if simple binder is enough to validate if category is active
-                optional(ProductFields.CATEGORY),
-                optional(ProductFields.DESCRIPTION),
-                optional(ProductFields.PRODUCER, producerCellParser),
-                optional(ProductFields.ASSORTMENT, assortmentCellParser),
-                optional(ProductFields.PARENT, productFamilyCellParser),
-
-                // TODO That's the reason why we should move import functionality to CNFP plugin
-                // More sophisticated approach is to make import functionality expandable by other plugins
-                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST
-                optional("nominalCost", bigDecimalCellParser),
-                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST
-                optional("lastOfferCost", bigDecimalCellParser),
-                // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST
-                optional("averageOfferCost", bigDecimalCellParser)
-        };
-    }
-
-    RowProcessor create(final ImportStatus importStatus, int rowIndx) {
+    RowProcessor create(final ImportStatus importStatus, int rowIndex) {
         DataDefinition dataDefinition = getProductDataDefinition();
         Entity entity = dataDefinition.create();
         entity.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
-        return new RowProcessor(importStatus, dataDefinition, entity, rowIndx, cellBinders);
+        return new RowProcessorImpl(importStatus, entity, rowIndex);
     }
+
+    private class RowProcessorImpl implements RowProcessor {
+
+        private final ImportStatus importStatus;
+        private final Entity entity;
+        private final int currentRow;
+        private boolean finished;
+        private int index;
+        private boolean empty = true;
+        private List<ImportError> rowErrors = new ArrayList<>();
+
+        RowProcessorImpl(ImportStatus importStatus, Entity entity, int rowIndx) {
+            this.importStatus = importStatus;
+            this.entity = entity;
+            this.currentRow = rowIndx;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return empty;
+        }
+
+        @Override
+        public void append(final Cell cell) {
+            assureNotProcessedYet();
+            if (null != cell) {
+                empty = false;
+            }
+            final CellBinder binder = cellBinderRegistry.getCellBinder(index++);
+            binder.bind(
+                    cell,
+                    entity,
+                    errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode))
+            );
+        }
+
+        private void assureNotProcessedYet() {
+            if (finished) {
+                throw new IllegalStateException("Row already processed");
+            }
+        }
+
+        @Override
+        public void process() {
+            assureNotProcessedYet();
+            finished = true;
+            final Entity savedEntity = getProductDataDefinition().save(entity);
+            populateImportStatusWithBindingErrors();
+            populateImportStatusWithEntityErrors(savedEntity);
+        }
+
+        private void populateImportStatusWithBindingErrors() {
+            rowErrors.forEach(importStatus::addError);
+        }
+
+        private void populateImportStatusWithEntityErrors(Entity entity) {
+            if (!entity.isValid()) {
+                for (Map.Entry<String, ErrorMessage> entry : entity.getErrors().entrySet()) {
+                    importStatus.addError(
+                            new ImportError(
+                                    currentRow, entry.getKey(), entry.getValue().getMessage(), entry.getValue().getVars())
+                    );
+                }
+            }
+        }
+    }
+
 }
