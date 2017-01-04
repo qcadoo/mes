@@ -88,6 +88,7 @@ public class DocumentPositionValidator {
             errors.addAll(validateDates(position));
             errors.addAll(checkAttributesRequirement(position, document));
             errors.addAll(validateResources(position, document));
+            errors.addAll(validatePallet(position, document));
 
             if (errors.isEmpty()) {
                 errors.addAll(validateAvailableQuantity(position, document, errors));
@@ -181,17 +182,17 @@ public class DocumentPositionValidator {
             Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
                     new ResultSetExtractor<Map<String, Object>>() {
 
-                        @Override
-                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                            Map<String, Object> result = Maps.newHashMap();
-                            if (rs.next()) {
-                                result.put("product_id", rs.getLong("product_id"));
-                                result.put("quantity", rs.getBigDecimal("quantity"));
-                                result.put("resource_id", rs.getLong("resource_id"));
-                            }
-                            return result;
-                        }
-                    });
+                @Override
+                public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                    Map<String, Object> result = Maps.newHashMap();
+                    if (rs.next()) {
+                        result.put("product_id", rs.getLong("product_id"));
+                        result.put("quantity", rs.getBigDecimal("quantity"));
+                        result.put("resource_id", rs.getLong("resource_id"));
+                    }
+                    return result;
+                }
+            });
             Long oldResource = (Long) oldPosition.get("resource_id");
             if (oldResource != null) {
                 if (oldResource.compareTo(resourceId) == 0) {
@@ -236,17 +237,17 @@ public class DocumentPositionValidator {
             Map<String, Object> oldPosition = jdbcTemplate.query(queryForOld, params,
                     new ResultSetExtractor<Map<String, Object>>() {
 
-                        @Override
-                        public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
-                            Map<String, Object> result = Maps.newHashMap();
-                            if (rs.next()) {
-                                result.put("product_id", rs.getLong("product_id"));
-                                result.put("quantity", rs.getBigDecimal("quantity"));
-                                result.put("resource_id", rs.getLong("resource_id"));
-                            }
-                            return result;
-                        }
-                    });
+                @Override
+                public Map<String, Object> extractData(ResultSet rs) throws SQLException, DataAccessException {
+                    Map<String, Object> result = Maps.newHashMap();
+                    if (rs.next()) {
+                        result.put("product_id", rs.getLong("product_id"));
+                        result.put("quantity", rs.getBigDecimal("quantity"));
+                        result.put("resource_id", rs.getLong("resource_id"));
+                    }
+                    return result;
+                }
+            });
 
             if (productId.compareTo((Long) oldPosition.get("product_id")) == 0) {
 
@@ -393,7 +394,7 @@ public class DocumentPositionValidator {
                 filters.put("productNumber", position.getProduct());
                 Long additionalCodeId = jdbcTemplate.queryForObject(
                         "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
-                                + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
+                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
                         filters, Long.class);
 
             } catch (EmptyResultDataAccessException e) {
@@ -538,5 +539,112 @@ public class DocumentPositionValidator {
         }
 
         return errors;
+    }
+
+    private Collection<? extends String> validatePallet(DocumentPositionDTO position, DocumentDTO document) {
+        List<String> errors = new ArrayList<>();
+
+        if (isInDocument(document)) {
+            if (existsOtherPositionForPalletAndStorageLocation(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
+            }
+
+            if (existsOtherPositionForOtherPalletType(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForOtherPalletType", LocaleContextHolder.getLocale())));
+            }
+
+            if (existsOtherResourceForPalletAndStorageLocation(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
+            }
+
+            if (existsOtherResourceForOtherPalletType(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForOtherPalletType", LocaleContextHolder.getLocale())));
+            }
+        }
+
+        return errors;
+    }
+
+    private boolean isInDocument(DocumentDTO document) {
+        DocumentType type = DocumentType.parseString(document.getType());
+        return type == DocumentType.RECEIPT || type == DocumentType.INTERNAL_INBOUND || type == DocumentType.TRANSFER;
+    }
+
+    private boolean existsOtherPositionForPalletAndStorageLocation(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_position p"
+                + "	JOIN basic_palletnumber pallet ON (p.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
+                + "	LEFT JOIN materialflowresources_storagelocation storage ON (p.storagelocation_id = storage.id)"
+                + " WHERE ";
+
+        Map<String, Object> params = new HashMap<>();
+
+        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
+            query += "( storage.number <> :storageNumber and storage.number is not null)";
+        } else {
+            query += "( storage.number <> :storageNumber OR storage.number is null)";
+        }
+
+        params.put("palletNumber", position.getPalletNumber());
+        params.put("storageNumber", position.getStorageLocation());
+
+        if (position.getId() != null && position.getId() > 0) {
+            query += " AND p.id <> " + position.getId();
+        }
+
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        return count > 0;
+    }
+
+    private boolean existsOtherPositionForOtherPalletType(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_position p"
+                + "	JOIN basic_palletnumber pallet ON (p.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
+                + "	where p.typeofpallet <> :typeOfPallet";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("palletNumber", position.getPalletNumber());
+        params.put("typeOfPallet", position.getTypeOfPallet());
+
+        if (position.getId() != null && position.getId() > 0) {
+            query += " AND p.id <> " + position.getId();
+        }
+
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        return count > 0;
+    }
+
+    private boolean existsOtherResourceForPalletAndStorageLocation(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_resource r"
+                + "	JOIN basic_palletnumber pallet ON (r.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
+                + "	JOIN materialflowresources_storagelocation storage ON (r.storagelocation_id = storage.id ) WHERE ";
+
+        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
+            query += "( storage.number <> :storageNumber and storage.number is not null)";
+        } else {
+            query += "( storage.number <> :storageNumber OR storage.number is null)";
+        }        
+        
+        Map<String, Object> params = new HashMap<>();
+        params.put("palletNumber", position.getPalletNumber());
+        params.put("storageNumber", position.getStorageLocation());
+
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        return count > 0;
+    }
+
+    private boolean existsOtherResourceForOtherPalletType(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_resource r"
+                + "	JOIN basic_palletnumber pallet ON (r.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
+                + "	where r.typeofpallet <> :typeOfPallet";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("palletNumber", position.getPalletNumber());
+        params.put("typeOfPallet", position.getTypeOfPallet());
+
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        return count > 0;
     }
 }
