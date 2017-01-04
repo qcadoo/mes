@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.google.common.base.Strings;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
@@ -35,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
@@ -45,6 +47,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -77,7 +80,7 @@ public class DeliveredProductHooks {
     public boolean validatesWith(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
-                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct);
+                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct) && validatePallet(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -155,6 +158,135 @@ public class DeliveredProductHooks {
 
     private boolean isBiggerDeliveredQuantityAllowed() {
         return parameterService.getParameter().getBooleanField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED);
+    }
+
+    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        return !existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct)
+                && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
+                && !existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct)
+                && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
+    }
+
+    private boolean existsOtherPositionForPalletAndStorageLocation(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        String query = "select count(dp) as cnt from DeliveriesDeliveredProduct dp JOIN dp.palletNumber as pallet JOIN dp.storageLocation as location"
+                + "	where pallet.number = :palletNumber and location.number <> :locationNumber ";
+
+        String palletNumber = "";
+        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+        if (palletNumberEntity != null) {
+            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
+        }
+        String locationNumber = "";
+        Entity locationEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+        if (locationEntity != null) {
+            locationNumber = locationEntity.getStringField("number");
+        }
+
+        if (deliveredProduct.getId() != null && deliveredProduct.getId() > 0) {
+            query += " AND dp.id <> " + deliveredProduct.getId();
+        }
+
+        SearchQueryBuilder find = deliveredProductDD.find(query);
+        find.setString("locationNumber", locationNumber);
+        find.setString("palletNumber", palletNumber);
+        Entity countResults = find.uniqueResult();
+
+        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
+        if (exists) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
+        }
+        return exists;
+    }
+
+    private boolean existsOtherPositionForOtherPalletType(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        String query = "select count(dp) as cnt from DeliveriesDeliveredProduct dp JOIN dp.palletNumber as pallet"
+                + "	where pallet.number = :palletNumber ";
+
+        String palletNumber = "";
+        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+        if (palletNumberEntity != null) {
+            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
+        }
+
+        String palletType = deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
+        if (Strings.isNullOrEmpty(palletType)) {
+            palletType = "";
+            query += "and ( dp.palletType <> :palletType)";
+        } else {
+            query += "and ( dp.palletType is null OR dp.palletType <> :palletType)";
+        }
+
+        if (deliveredProduct.getId() != null && deliveredProduct.getId() > 0) {
+            query += " AND dp.id <> " + deliveredProduct.getId();
+        }
+
+        SearchQueryBuilder find = deliveredProductDD.find(query);
+        find.setString("palletType", palletType);
+        find.setString("palletNumber", palletNumber);
+        Entity countResults = find.uniqueResult();
+
+        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
+        if (exists) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForOtherPalletType");
+        }
+        return exists;
+    }
+
+    private boolean existsOtherResourceForPalletAndStorageLocation(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        String query = "select count(resource) as cnt from MaterialFlowResourcesResource resource JOIN resource.palletNumber as pallet JOIN resource.storageLocation as location"
+                + "	where pallet.number = :palletNumber and location.number <> :locationNumber ";
+
+        String palletNumber = "";
+        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+        if (palletNumberEntity != null) {
+            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
+        }
+        String locationNumber = "";
+        Entity locationEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+        if (locationEntity != null) {
+            locationNumber = locationEntity.getStringField("number");
+        }
+
+        SearchQueryBuilder find = deliveredProductDD.find(query);
+        find.setString("locationNumber", locationNumber);
+        find.setString("palletNumber", palletNumber);
+        Entity countResults = find.uniqueResult();
+
+        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
+        if (exists) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
+        }
+        return exists;
+    }
+
+    private boolean existsOtherResourceForOtherPalletType(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        String query = "select count(resource) as cnt from MaterialFlowResourcesResource resource JOIN resource.palletNumber as pallet"
+                + "	where pallet.number = :palletNumber and resource.typeOfPallet <> :palletType ";
+
+        String palletNumber = "";
+        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+        if (palletNumberEntity != null) {
+            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
+        }
+
+        String palletType = deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
+        if (Strings.isNullOrEmpty(palletType)) {
+            palletType = "";
+            query += "and ( resource.typeOfPallet <> :palletType)";
+        } else {
+            query += "and ( resource.typeOfPallet is null OR resource.typeOfPallet <> :palletType)";
+        }
+
+        SearchQueryBuilder find = deliveredProductDD.find(query);
+        find.setString("palletType", palletType);
+        find.setString("palletNumber", palletNumber);
+        Entity countResults = find.uniqueResult();
+
+        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
+        if (exists) {
+            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherResourceForOtherPalletType");
+        }
+        return exists;
     }
 
 }
