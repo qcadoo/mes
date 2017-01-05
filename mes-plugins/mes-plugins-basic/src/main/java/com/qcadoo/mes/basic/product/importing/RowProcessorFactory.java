@@ -108,6 +108,7 @@ class RowProcessorFactory {
         public void process() {
             assureNotProcessedYet();
             finished = true;
+            importStatus.incrementRowsProcessedCounter();
             final Entity savedEntity = getProductDataDefinition().save(entity);
             populateImportStatusWithBindingErrors();
             populateImportStatusWithEntityErrors(savedEntity);

@@ -32,7 +32,16 @@ import java.util.Set;
 
 public class ImportStatus {
 
+    private int rowsProcessed;
     private Set<ImportError> errors = new HashSet<>();
+
+    public int getRowsProcessed() {
+        return rowsProcessed;
+    }
+
+    void incrementRowsProcessedCounter() {
+        rowsProcessed++;
+    }
 
     public boolean hasErrors() {
         return !CollectionUtils.isEmpty(errors);

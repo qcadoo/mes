@@ -99,6 +99,8 @@ public class ProductImportListeners {
                 if (importStatus.hasErrors()) {
                     // TODO Find out how to present more detailed error messages to the user
                     prepareMessages(importStatus, view);
+                } else if (0 == importStatus.getRowsProcessed()) {
+                    view.addMessage(translatedErrorMessage("basic.productsImport.error.file.empty"));
                 } else {
                     view.redirectTo("/page/basic/productsList.html", false, false);
                 }
@@ -108,6 +110,8 @@ public class ProductImportListeners {
                 // There is not much we can do about these IO exceptions except rethrowing them
                 Throwables.propagateIfInstanceOf(throwable, FileNotFoundException.class);
                 Throwables.propagateIfInstanceOf(throwable, IOException.class);
+
+                view.addMessage(translatedErrorMessage("basic.productsImport.error.generic"));
 
                 if (LOG.isErrorEnabled()) {
                     LOG.error("An exception occured while importing products", throwable);

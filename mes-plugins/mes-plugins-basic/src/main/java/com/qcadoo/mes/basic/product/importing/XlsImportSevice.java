@@ -34,8 +34,12 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 @Service
 public class XlsImportSevice {
 
+    private final RowProcessorFactory rowProcessorFactory;
+
     @Autowired
-    private RowProcessorFactory rowProcessorFactory;
+    public XlsImportSevice(RowProcessorFactory rowProcessorFactory) {
+        this.rowProcessorFactory = rowProcessorFactory;
+    }
 
     @Transactional(rollbackFor = ImportException.class)
     public ImportStatus importFrom(final XSSFWorkbook workbook) throws ImportException {
@@ -44,7 +48,7 @@ public class XlsImportSevice {
         ImportStatus importStatus = new ImportStatus();
         XSSFSheet sheet = workbook.getSheetAt(0);
 
-        for (int rowIndex = SpreadsheetSchemaInfo.START_ROW_INDEX; rowIndex < sheet.getLastRowNum(); rowIndex++) {
+        for (int rowIndex = SpreadsheetSchemaInfo.START_ROW_INDEX; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 
             Row row = sheet.getRow(rowIndex);
             if (row == null) { // This whole row is empty
