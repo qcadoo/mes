@@ -200,37 +200,17 @@
 
                 <component type="select" name="state" field="state"
                            reference="state" hasLabel="false" defaultVisible="false">
+                    
+
                     <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onSetValue: function(newValue) {
-									if (!newValue || !newValue.content) {
-										return;
-									}
-									
-									updateRibbon(newValue.content.value);
-								}
-							});
-					
-							function updateRibbon(state) {
-								var checkState = #{window}.getRibbonItem("status.checkTechnology");
-									
-								checkState.forState="05checked";
-								checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}";
-								checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}");
-								
-								if (state == "05checked") {
-									checkState.enable();
-									checkState.forState="01draft"
-									checkState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}";
-									checkState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}");
-									
-								}
-							}
-							
-							this.updateRibbon = updateRibbon;
-						]]>
-                    </script>
+                        QCD = QCD || {};
+                        QCD.translations = QCD.translations || {};
+                        QCD.translations['technologies.technologyDetails.window.ribbon.status.confirm.checked'] = '#{translate(technologies.technologyDetails.window.ribbon.status.confirm.checked)}';
+                        QCD.translations['technologies.technologyDetails.window.ribbon.status.checkTechnology'] = '#{translate(technologies.technologyDetails.window.ribbon.status.checkTechnology)}';
+                        QCD.translations['technologies.technologyDetails.window.ribbon.status.confirm.draft'] = '#{translate(technologies.technologyDetails.window.ribbon.status.confirm.draft)}';
+                        QCD.translations['technologies.technologyDetails.window.ribbon.status.draftTechnology'] = '#{translate(technologies.technologyDetails.window.ribbon.status.draftTechnology)}';
+                    </script>                    
+                    <script type="text/javascript" src="/orders/public/js/updateribbon.js"></script>
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' ' + #product['name']"/>

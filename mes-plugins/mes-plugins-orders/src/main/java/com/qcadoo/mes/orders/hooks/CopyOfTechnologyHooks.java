@@ -134,7 +134,7 @@ public class CopyOfTechnologyHooks {
                 isDisabled = false;
             }
 
-            if (TechnologyState.CHECKED.getStringValue().equals(technolgyState)) {
+            if (TechnologyState.CHECKED.getStringValue().equals(technolgyState) || TechnologyState.ACCEPTED.getStringValue().equals(technolgyState)) {
                 isDisabled = true;
             }
         }

@@ -38,6 +38,7 @@ import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
@@ -117,9 +118,8 @@ public class CopyOfTechnologyDetailsListeners {
 
             technologyServiceO.createOrUpdateTechnologyWithoutPkto(order.getDataDefinition(), order);
             order.getDataDefinition().save(order);
-            
+
             Entity technology2 = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            copyOfTechnologyStateChangeVC.changeState(new ViewContextHolder(view, technologyForm), args[0], technology2);
 
             if (!Objects.equal(technology1.getId(), technology2.getId())) {
                 Map<String, Object> parameters = Maps.newHashMap();
@@ -127,6 +127,8 @@ public class CopyOfTechnologyDetailsListeners {
 
                 String url = "../page/orders/copyOfTechnologyDetails.html";
                 view.redirectTo(url, false, false, parameters);
+            } else {
+                copyOfTechnologyStateChangeVC.changeState(new ViewContextHolder(view, technologyForm), args[0], technology2);
             }
         }
     }
