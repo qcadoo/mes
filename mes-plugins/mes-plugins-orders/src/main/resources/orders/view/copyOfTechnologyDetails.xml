@@ -130,6 +130,7 @@
                 <component type="gridLayout" name="gridsLayout" columns="3"
                            rows="5" hasBorders="false">
                     <layoutElement column="1" row="1">
+                        <component type="hidden" name="orderId" field="orderId" reference="orderId" />
                         <component type="input" name="number" field="number"
                                    reference="number">
                             <option type="alignment" value="right"/>

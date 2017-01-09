@@ -38,7 +38,6 @@ import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
@@ -124,6 +123,7 @@ public class CopyOfTechnologyDetailsListeners {
             if (!Objects.equal(technology1.getId(), technology2.getId())) {
                 Map<String, Object> parameters = Maps.newHashMap();
                 parameters.put("form.id", technology2.getId());
+                parameters.put("form.orderId", order.getId());
 
                 String url = "../page/orders/copyOfTechnologyDetails.html";
                 view.redirectTo(url, false, false, parameters);

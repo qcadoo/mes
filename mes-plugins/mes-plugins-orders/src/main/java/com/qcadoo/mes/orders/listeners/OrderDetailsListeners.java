@@ -128,6 +128,7 @@ public class OrderDetailsListeners {
             Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.id", technologyId);
+            parameters.put("form.orderId", order.getId());
 
             String url = "../page/orders/copyOfTechnologyDetails.html";
             view.redirectTo(url, false, true, parameters);
