@@ -70,13 +70,13 @@ public class ResourceStockServiceImpl implements ResourceStockService {
             BigDecimal oldAvailableQuantity = resourceStock.getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
             BigDecimal newQuantity = oldQuantity.subtract(quantity);
             BigDecimal newAvailableQuantity = oldAvailableQuantity.subtract(quantity);
-            if (newQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                resourceStock.setField(ResourceStockFields.QUANTITY, newQuantity);
-                resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, newAvailableQuantity);
-                getResourceStockDataDefinition().save(resourceStock);
-            } else {
-                getResourceStockDataDefinition().delete(resourceStock.getId());
+            if (newQuantity.compareTo(BigDecimal.ZERO) <= 0) {
+                newQuantity = BigDecimal.ZERO;
+                newAvailableQuantity = BigDecimal.ZERO;
             }
+            resourceStock.setField(ResourceStockFields.QUANTITY, newQuantity);
+            resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, newAvailableQuantity);
+            getResourceStockDataDefinition().save(resourceStock);
         }
     }
 
@@ -123,8 +123,16 @@ public class ResourceStockServiceImpl implements ResourceStockService {
             Entity resourceStock = maybeResourceStock.get();
             BigDecimal reservedQuantity = resourceStock.getDecimalField(ResourceStockFields.RESERVED_QUANTITY);
             BigDecimal availableQuantity = resourceStock.getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
-            resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, availableQuantity.subtract(quantityToAdd));
-            resourceStock.setField(ResourceStockFields.RESERVED_QUANTITY, reservedQuantity.add(quantityToAdd));
+            BigDecimal quantity = resourceStock.getDecimalField(ResourceStockFields.QUANTITY);
+            if (quantity.compareTo(BigDecimal.ZERO) == 0) {
+                reservedQuantity = BigDecimal.ZERO;
+                availableQuantity = BigDecimal.ZERO;
+            } else {
+                availableQuantity = availableQuantity.subtract(quantityToAdd);
+                reservedQuantity = reservedQuantity.add(quantityToAdd);
+            }
+            resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, availableQuantity);
+            resourceStock.setField(ResourceStockFields.RESERVED_QUANTITY, reservedQuantity);
             resourceStock.getDataDefinition().save(resourceStock);
         }
 

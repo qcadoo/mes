@@ -33,9 +33,9 @@
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy"/>
         </ribbon>
-F
+        F
         <component type="grid" name="grid" reference="grid">
             <option type="column" name="locationNumber" fields="locationNumber" width="100"/>
             <option type="column" name="locationName" fields="locationName" width="140"/>
