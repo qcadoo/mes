@@ -35,7 +35,12 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
+import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -56,6 +61,12 @@ public class OrderDetailsListeners {
     private static final String L_EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
     private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
+
+    @Autowired
+    private OrderStateChangeViewClient orderStateChangeViewClient;
+
+    @Autowired
+    private TechnologyStateChangeViewClient technologyStateChangeViewClient;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -270,5 +281,17 @@ public class OrderDetailsListeners {
         if (!state.isHasError()) {
             view.redirectTo("/orders/ordersOrderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         }
+    }
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        state.performEvent(view, "save", args);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        Entity order = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (!TechnologyStateStringValues.ACCEPTED.equals(technology.getStringField(TechnologyFields.STATE))) {
+            technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
+        }
+        orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0]);
     }
 }
