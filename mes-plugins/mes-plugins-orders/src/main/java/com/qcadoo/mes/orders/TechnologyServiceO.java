@@ -87,13 +87,13 @@ public class TechnologyServiceO {
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
         OrderType orderType = OrderType.of(order);
-
-        if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
-            order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
-        }
-
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
         if (orderService.isPktEnabled()) {
+            if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
+                order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
+            }
+
             if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
                 if (technologyPrototype == null) {
                     removeTechnologyFromOrder(order);
@@ -103,23 +103,35 @@ public class TechnologyServiceO {
             } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
                 createOrUpdateForOwnTechnology(order, technologyPrototype);
             }
+
+        } else {
+            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+                if (technologyPrototype == null) {
+                    removeTechnologyFromOrder(order);
+                } else {
+                    createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype, false);
+                }
+            } else {
+                throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
+            }
         }
     }
 
     @Transactional
-    public void createOrUpdateTechnologyWithoutPkto(final DataDefinition orderDD, final Entity order) {
+    public Entity createTechnologyIfPktDisabled(final DataDefinition orderDD, Entity order) {
         OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            if (technologyPrototype == null) {
-                removeTechnologyFromOrder(order);
+        if (!orderService.isPktEnabled() && !isTechnologyCopied(order)) {
+            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+                order = createTechnologyForWithPatternTechnology(order, technologyPrototype, false);
+                order = order.getDataDefinition().save(order);
             } else {
-                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype, false);
+                throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
             }
-        } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
-            createOrUpdateForOwnTechnology(order, technologyPrototype);
         }
+
+        return order;
     }
 
     private void removeTechnologyFromOrder(final Entity order) {
@@ -127,6 +139,11 @@ public class TechnologyServiceO {
         deleteTechnology(orderTechnology);
 
         order.setField(OrderFields.TECHNOLOGY, null);
+    }
+
+    private Entity createTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype, boolean changeTechnologyStateToChecked) {
+        order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
+        return order;
     }
 
     private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype, boolean changeTechnologyStateToChecked) {
@@ -144,14 +161,18 @@ public class TechnologyServiceO {
 
                 deleteTechnology(technology);
 
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
+                if (orderService.isPktEnabled()) {
+                    order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
+                } else {
+                    order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
+                }                
             }
         } else {
-            if (existingOrder == null) {
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
-            } else if (!isTechnologySet(order)) {
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
-            }
+                if (orderService.isPktEnabled()) {
+                    order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
+                } else {
+                    order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
+                }
         }
     }
 
@@ -306,7 +327,7 @@ public class TechnologyServiceO {
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        if(changeTechnologyStateToChecked){
+        if (changeTechnologyStateToChecked) {
             changeTechnologyStateToChecked(copyOfTechnology);
         }
 
@@ -342,7 +363,10 @@ public class TechnologyServiceO {
         if (technology == null || technology.getId() == null) {
             return;
         }
-        technology.getDataDefinition().delete(technology.getId());
+
+        if (orderService.isPktEnabled()) {
+            technology.getDataDefinition().delete(technology.getId());
+        }
     }
 
     public DataDefinition getTechnologyDD() {

@@ -105,7 +105,6 @@ public class CopyOfTechnologyDetailsListeners {
                 && !ObjectUtils.equals(technologyPrototypeOrNull.getId(), orderTechnologyPrototypeOrNull.getId());
     }
 
-    @Transactional
     public void checkTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FormComponent technologyForm = (FormComponent) state;
 
@@ -115,8 +114,7 @@ public class CopyOfTechnologyDetailsListeners {
             Entity technology1 = technologyServiceO.getTechnologyDD().get(technologyId);
             Entity order = getOrderWithTechnology(technology1);
 
-            technologyServiceO.createOrUpdateTechnologyWithoutPkto(order.getDataDefinition(), order);
-            order.getDataDefinition().save(order);
+            order = technologyServiceO.createTechnologyIfPktDisabled(order.getDataDefinition(), order);            
 
             Entity technology2 = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
