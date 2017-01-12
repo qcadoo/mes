@@ -60,7 +60,15 @@
                     method="fillRowStyles"/>
         </component>
 
+        <component type="checkbox" name="initialized" reference="initialized" defaultVisible="false"/>
+
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.WarehouseStockListHooks"
+                      method="fillDefaultFilters"/>
+    </hooks>
+
 </view>
