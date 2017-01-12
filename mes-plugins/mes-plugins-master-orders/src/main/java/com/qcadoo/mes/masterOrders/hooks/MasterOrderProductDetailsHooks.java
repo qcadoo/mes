@@ -69,7 +69,7 @@ public class MasterOrderProductDetailsHooks {
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity masterOrderProduct = masterOrderProductForm.getEntity();
+        Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();
 
         if ((masterOrderProduct == null) || !masterOrderProduct.isValid()) {
             return;

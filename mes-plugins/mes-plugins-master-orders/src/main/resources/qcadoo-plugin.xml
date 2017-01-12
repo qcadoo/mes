@@ -66,6 +66,7 @@
         <model:model model="masterOrder" resource="model/masterOrder.xml"/>
         <model:model model="masterOrderDefinition" resource="model/masterOrderDefinition.xml"/>
         <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
+        <model:model model="masterOrderPositionDto" resource="model/masterOrderPositionDto.xml"/>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
@@ -122,11 +123,17 @@
         <menu:menu-item name="masterOrders" category="orders"
                         view="masterOrdersList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="masterOrderPositions" category="orders" view="masterOrderPositionsList"
+                        defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
+
         <view:view resource="view/masterOrderProductDetails.xml"/>
 
         <view:view resource="view/masterOrderDefinitionDetails.xml"/>
+
+        <view:view resource="view/masterOrderPositionsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
