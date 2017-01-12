@@ -27,9 +27,8 @@ import com.google.common.base.Throwables;
 import com.google.common.io.Files;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.product.importing.ImportError;
-import com.qcadoo.mes.basic.product.importing.ImportException;
 import com.qcadoo.mes.basic.product.importing.ImportStatus;
-import com.qcadoo.mes.basic.product.importing.XlsImportSevice;
+import com.qcadoo.mes.basic.product.importing.XlsxImportService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -53,13 +52,13 @@ public class ProductImportListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductImportListeners.class);
 
-    private final XlsImportSevice xlsImportSevice;
+    private final XlsxImportService xlsxImportService;
 
     private final TranslationService translationService;
 
     @Autowired
-    public ProductImportListeners(XlsImportSevice xlsImportSevice, TranslationService translationService) {
-        this.xlsImportSevice = xlsImportSevice;
+    public ProductImportListeners(XlsxImportService xlsxImportService, TranslationService translationService) {
+        this.xlsxImportService = xlsxImportService;
         this.translationService = translationService;
     }
 
@@ -95,7 +94,7 @@ public class ProductImportListeners {
             state.addMessage(translatedErrorMessage("basic.productsImport.error.file.invalid"));
         } else {
             try (FileInputStream fis = new FileInputStream(filePath)) {
-                final ImportStatus importStatus = xlsImportSevice.importFrom(new XSSFWorkbook(fis));
+                final ImportStatus importStatus = xlsxImportService.importFrom(new XSSFWorkbook(fis));
                 if (importStatus.hasErrors()) {
                     // TODO Find out how to present more detailed error messages to the user
                     prepareMessages(importStatus, view);
@@ -104,8 +103,6 @@ public class ProductImportListeners {
                 } else {
                     view.redirectTo("/page/basic/productsList.html", false, false);
                 }
-            } catch (ImportException ie) {
-                state.addMessage(new ErrorMessage("basic.productsImport.error.file.incorrect.version"));
             } catch (Throwable throwable) {
                 // There is not much we can do about these IO exceptions except rethrowing them
                 Throwables.propagateIfInstanceOf(throwable, FileNotFoundException.class);

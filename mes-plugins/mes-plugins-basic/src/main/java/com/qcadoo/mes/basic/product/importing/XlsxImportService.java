@@ -32,19 +32,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
-public class XlsImportSevice {
+public class XlsxImportService {
 
     private final RowProcessorFactory rowProcessorFactory;
 
     @Autowired
-    public XlsImportSevice(RowProcessorFactory rowProcessorFactory) {
+    public XlsxImportService(RowProcessorFactory rowProcessorFactory) {
         this.rowProcessorFactory = rowProcessorFactory;
     }
 
-    @Transactional(rollbackFor = ImportException.class)
-    public ImportStatus importFrom(final XSSFWorkbook workbook) throws ImportException {
+    @Transactional
+    public ImportStatus importFrom(final XSSFWorkbook workbook) {
 
-        SpreadsheetSchemaInfo.assureSpreadsheetMatchesCurrentSchemaVersion(workbook);
         ImportStatus importStatus = new ImportStatus();
         XSSFSheet sheet = workbook.getSheetAt(0);
 

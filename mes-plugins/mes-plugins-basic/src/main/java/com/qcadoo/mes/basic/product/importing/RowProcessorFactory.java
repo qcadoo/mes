@@ -34,6 +34,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -56,11 +57,16 @@ class RowProcessorFactory {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
-    RowProcessor create(final ImportStatus importStatus, int rowIndex) {
-        DataDefinition dataDefinition = getProductDataDefinition();
-        Entity entity = dataDefinition.create();
+    private Entity createEntityWithDefaultValues() {
+        final Entity entity = getProductDataDefinition().create();
         entity.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
-        return new RowProcessorImpl(importStatus, entity, rowIndex);
+        // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.COST_FOR_NUMBER
+        entity.setField("costForNumber", BigDecimal.ONE);
+        return entity;
+    }
+
+    RowProcessor create(final ImportStatus importStatus, int rowIndex) {
+        return new RowProcessorImpl(importStatus, createEntityWithDefaultValues(), rowIndex);
     }
 
     private class RowProcessorImpl implements RowProcessor {

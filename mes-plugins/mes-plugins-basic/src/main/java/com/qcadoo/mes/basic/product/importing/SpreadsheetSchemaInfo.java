@@ -24,20 +24,13 @@
 package com.qcadoo.mes.basic.product.importing;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import org.apache.poi.POIXMLProperties;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperties;
-import org.openxmlformats.schemas.officeDocument.x2006.customProperties.CTProperty;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class SpreadsheetSchemaInfo {
     static final int START_ROW_INDEX = 1;
     static final int COLUMN_NUMBER = 13;
-    private static final String SCHEMA_VERSION = "1.0.0";
-    private static final String SCHEMA_VERSION_PROPERTY_NAME = "SchemaVersion";
     private static Map<String, Integer> nameToIndexMap = new HashMap<>(SpreadsheetSchemaInfo.COLUMN_NUMBER);
 
     static {
@@ -65,16 +58,4 @@ public class SpreadsheetSchemaInfo {
         return nameToIndexMap.get(fieldName);
     }
 
-    static void assureSpreadsheetMatchesCurrentSchemaVersion(XSSFWorkbook workbook) throws ImportException {
-        POIXMLProperties properties = workbook.getProperties();
-        POIXMLProperties.CustomProperties customProperties = properties.getCustomProperties();
-        CTProperties underlyingProperties = customProperties.getUnderlyingProperties();
-        List<CTProperty> propertyList = underlyingProperties.getPropertyList();
-        for (CTProperty ctProperty : propertyList) {
-            if (SCHEMA_VERSION_PROPERTY_NAME.equals(ctProperty.getName()) && SCHEMA_VERSION.equals(ctProperty.getLpwstr())) {
-                return;
-            }
-        }
-        throw new ImportException("SchemaVersion metadata is either missing or has incorrect value");
-    }
 }

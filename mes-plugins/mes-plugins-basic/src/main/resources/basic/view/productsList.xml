@@ -50,7 +50,7 @@
                 </bigButton>
             </group>
             <group name="productImport" >
-                <bigButton name="importFromXls" state="enabled" icon="xlsIcon24.png"
+                <bigButton name="importFromXlsx" state="enabled" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(navigateToProductImportPage);" />
             </group>
         </ribbon>
