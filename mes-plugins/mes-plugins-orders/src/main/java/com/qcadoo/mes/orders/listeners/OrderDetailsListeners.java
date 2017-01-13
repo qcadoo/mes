@@ -290,8 +290,10 @@ public class OrderDetailsListeners {
         Entity order = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        if (!TechnologyStateStringValues.ACCEPTED.equals(technology.getStringField(TechnologyFields.STATE))) {
-            technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
+        if (technology != null) {
+            if (!TechnologyStateStringValues.ACCEPTED.equals(technology.getStringField(TechnologyFields.STATE))) {
+                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
+            }
         }
         orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0]);
     }
