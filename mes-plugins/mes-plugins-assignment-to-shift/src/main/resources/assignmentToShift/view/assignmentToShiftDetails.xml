@@ -129,7 +129,7 @@
 								ribbonItem = #{window}.getRibbonItem(ribbonItemName);
 
 								if (!ribbonItem) {
-									QCD.error("Can not find ribbon element: " + ribbonItemName + " - ommiting.");
+									QCD.error("Can not find ribbon element: " + ribbonItemName + " - omitting.");
 									continue;
 								}
 
