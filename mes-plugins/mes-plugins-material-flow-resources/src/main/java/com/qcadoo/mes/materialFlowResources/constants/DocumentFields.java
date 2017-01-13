@@ -56,5 +56,7 @@ public final class DocumentFields {
     public static final String CREATE_LINKED_PZ_DOCUMENT = "createLinkedPZDocument";
 
     public static final String LINKED_PZ_DOCUMENT_LOCATION = "linkedPZDocumentLocation";
+    
+    public static final String IN_BUFFER = "inBuffer";
 
 }

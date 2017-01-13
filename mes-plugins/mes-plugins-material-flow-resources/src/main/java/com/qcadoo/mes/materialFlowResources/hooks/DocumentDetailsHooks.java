@@ -264,13 +264,17 @@ public class DocumentDetailsHooks {
         String errorMessage = null;
 
         if (documentForm.getEntityId() != null) {
-            String documentType = documentForm.getEntity().getStringField(DocumentFields.TYPE);
+            Entity document = documentForm.getEntity();
+            String documentType = document.getStringField(DocumentFields.TYPE);
 
             List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
                     DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
 
             if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
+            }
+            if (document.getBooleanField(DocumentFields.IN_BUFFER)) {
+                errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
             }
         }
 

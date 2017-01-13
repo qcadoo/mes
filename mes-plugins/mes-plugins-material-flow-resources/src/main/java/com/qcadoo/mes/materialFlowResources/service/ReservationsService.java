@@ -78,7 +78,7 @@ public class ReservationsService {
             return ReservationsService.this.reservationsEnabledForDocumentPositions();
         }
         String type = document.getStringField(DocumentFields.TYPE);
-        return ReservationsService.this.reservationsEnabledForDocumentPositions() && DocumentType.isOutbound(type);
+        return ReservationsService.this.reservationsEnabledForDocumentPositions() && DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER);
     }
 
     /**
@@ -128,7 +128,7 @@ public class ReservationsService {
         reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
         reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
         reservation = reservation.getDataDefinition().save(reservation);
-        // updateResourceStock(position, position.getDecimalField(PositionFields.QUANTITY));
+        
         position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
     }
 
@@ -213,7 +213,8 @@ public class ReservationsService {
      * @see ReservationsService#updateReservationFromDocumentPosition(Map)
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+        if (!reservationsEnabledForDocumentPositions(document)){
             return;
         }
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -222,6 +223,7 @@ public class ReservationsService {
         BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
 
         Entity existingReservation = getReservationForPosition(position);
+
         if (existingReservation != null) {
             existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
             existingReservation.setField(ReservationFields.PRODUCT, product);
@@ -274,9 +276,9 @@ public class ReservationsService {
         String query = "SELECT draftmakesreservation FROM materialflowresources_documentpositionparameters LIMIT 1";
         Boolean enabled = jdbcTemplate.queryForObject(query, new HashMap<String, Object>() {
         }, Boolean.class);
-        String queryForDocumentType = "SELECT type FROM materialflowresources_document WHERE id = :document_id";
-        String type = jdbcTemplate.queryForObject(queryForDocumentType, params, String.class);
-        return enabled && DocumentType.isOutbound(type);
+        String queryForDocumentType = "SELECT type, inBuffer FROM materialflowresources_document WHERE id = :document_id";
+        Map<String, Object> documentMap = jdbcTemplate.queryForMap(queryForDocumentType, params);
+        return enabled && DocumentType.isOutbound((String)documentMap.get("type")) && !(boolean)documentMap.get("inBuffer");
     }
 
     public Entity getReservationForPosition(final Entity position) {

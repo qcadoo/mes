@@ -9,6 +9,7 @@ public class DocumentDTO {
     private String type;
     private Long locationTo_id;
     private Long locationFrom_id;
+    private Boolean inBuffer;
 
     public Long getId() {
         return id;
@@ -50,6 +51,16 @@ public class DocumentDTO {
         this.locationFrom_id = locationFrom_id;
     }
 
+    public Boolean getInBuffer() {
+        return inBuffer;
+    }
+
+    public void setInBuffer(Boolean inBuffer) {
+        this.inBuffer = inBuffer;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -58,6 +69,7 @@ public class DocumentDTO {
         hash = 83 * hash + Objects.hashCode(this.type);
         hash = 83 * hash + Objects.hashCode(this.locationTo_id);
         hash = 83 * hash + Objects.hashCode(this.locationFrom_id);
+        hash = 83 * hash + Objects.hashCode(this.inBuffer);
         return hash;
     }
 
@@ -83,6 +95,9 @@ public class DocumentDTO {
             return false;
         }
         if (!Objects.equals(this.locationFrom_id, other.locationFrom_id)) {
+            return false;
+        }
+        if (!Objects.equals(this.inBuffer, other.inBuffer)) {
             return false;
         }
         return true;

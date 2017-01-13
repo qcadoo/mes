@@ -41,9 +41,11 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -52,6 +54,9 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
 
 @Service
 public class CopyOfTechnologyHooks {
@@ -85,9 +90,6 @@ public class CopyOfTechnologyHooks {
     @Autowired
     private ParameterService parameterService;
 
-    @Autowired
-    private OrderService orderService;
-
     public final void onBeforeRender(final ViewDefinitionState view) {
         final FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -98,8 +100,8 @@ public class CopyOfTechnologyHooks {
         }
 
         Entity technology = technologyForm.getEntity().getDataDefinition().get(technologyId);
-
-        Entity order = getOrderForTechnology(technology);
+        
+        Entity order = getOrderForTechnology(view);
 
         String orderType = order.getStringField(OrderFields.ORDER_TYPE);
 
@@ -112,12 +114,16 @@ public class CopyOfTechnologyHooks {
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
         enableGroupField(view, order);
-        disableRibbonForDisabledPKT(view);
     }
 
-    private Entity getOrderForTechnology(Entity technology) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).setMaxResults(1).uniqueResult();
+    private Entity getOrderForTechnology(final ViewDefinitionState state) {
+        try {
+            DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+            String orderId = state.getJsonContext().getString("window.mainTab.technology.orderId");
+            return orderDD.get(Long.valueOf(orderId));
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private void disableForm(final ViewDefinitionState view, final Entity order, final Entity technology) {
@@ -135,7 +141,7 @@ public class CopyOfTechnologyHooks {
                 isDisabled = false;
             }
 
-            if (TechnologyState.CHECKED.getStringValue().equals(technolgyState)) {
+            if (TechnologyState.CHECKED.getStringValue().equals(technolgyState) || TechnologyState.ACCEPTED.getStringValue().equals(technolgyState)) {
                 isDisabled = true;
             }
         }
@@ -191,24 +197,6 @@ public class CopyOfTechnologyHooks {
 
             checkTechnology.setEnabled(false);
             checkTechnology.requestUpdate(true);
-        }
-    }
-
-    private void disableRibbonForDisabledPKT(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        Ribbon ribbon = window.getRibbon();
-
-        RibbonGroup technology = ribbon.getGroupByName(L_TECHNOLOGY);
-        RibbonGroup status = ribbon.getGroupByName(L_STATUS);
-        if (!orderService.isPktEnabled()) {
-            technology.getItems().forEach(item -> {
-                item.setEnabled(false);
-                item.requestUpdate(true);
-            });
-            status.getItems().forEach(item -> {
-                item.setEnabled(false);
-                item.requestUpdate(true);
-            });
         }
     }
 

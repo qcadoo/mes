@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,16 +34,20 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
+import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import java.util.Map;
+import org.json.JSONException;
 
 @Service
 public class CopyOfTechnologyDetailsListeners {
@@ -51,6 +57,9 @@ public class CopyOfTechnologyDetailsListeners {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private CopyOfTechnologyStateChangeVC copyOfTechnologyStateChangeVC;
 
     @Transactional
     public void changePatternTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -62,7 +71,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         if (technologyId != null) {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology);
+            Entity order = getOrderWithTechnology(view);
 
             Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
@@ -97,6 +106,44 @@ public class CopyOfTechnologyDetailsListeners {
                 && !ObjectUtils.equals(technologyPrototypeOrNull.getId(), orderTechnologyPrototypeOrNull.getId());
     }
 
+    public void checkTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        final FormComponent technologyForm = (FormComponent) state;
+
+        Long technologyId = (Long) state.getFieldValue();
+
+        if (technologyId != null) {
+            Entity technology1 = technologyServiceO.getTechnologyDD().get(technologyId);
+            Entity order = getOrderWithTechnology(view);
+
+            order = technologyServiceO.createTechnologyIfPktDisabled(order.getDataDefinition(), order);
+
+            Entity technology2 = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            if (!Objects.equal(technology1.getId(), technology2.getId())) {
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.id", technology2.getId());
+                parameters.put("form.orderId", order.getId());
+
+                String url = "../page/orders/copyOfTechnologyDetails.html";
+                view.redirectTo(url, false, false, parameters);
+            } else {
+                copyOfTechnologyStateChangeVC.changeState(new ViewContextHolder(view, technologyForm), args[0], technology2);
+            }
+        }
+    }
+
+    public void performBack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        Long technologyId = (Long) state.getFieldValue();
+        Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
+        Entity order = getOrderWithTechnology(view);
+        parameters.put("form.id", order.getId());
+
+        String url = "../page/orders/orderDetails.html";
+        view.redirectTo(url, false, false, parameters);
+    }
+
     @Transactional
     public void clearTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FormComponent technologyForm = (FormComponent) state;
@@ -105,7 +152,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         if (technologyId != null) {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology);
+            Entity order = getOrderWithTechnology(view);
 
             Entity newTechnology = createTechnology(order);
 
@@ -132,7 +179,7 @@ public class CopyOfTechnologyDetailsListeners {
         final FormComponent technologyForm = (FormComponent) state;
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
-        Entity order = getOrderWithTechnology(technology);
+        Entity order = getOrderWithTechnology(view);
 
         Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
@@ -155,9 +202,14 @@ public class CopyOfTechnologyDetailsListeners {
 
     }
 
-    private Entity getOrderWithTechnology(final Entity technology) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).setMaxResults(1).uniqueResult();
+    private Entity getOrderWithTechnology(final ViewDefinitionState view) {
+        try {
+            DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+            String orderId = view.getJsonContext().getString("window.mainTab.technology.orderId");
+            return orderDD.get(Long.valueOf(orderId));
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private Entity createTechnology(final Entity order) {
