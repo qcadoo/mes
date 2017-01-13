@@ -38,15 +38,16 @@ import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import java.util.Map;
+import org.json.JSONException;
 
 @Service
 public class CopyOfTechnologyDetailsListeners {
@@ -70,7 +71,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         if (technologyId != null) {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology);
+            Entity order = getOrderWithTechnology(view);
 
             Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
@@ -112,9 +113,9 @@ public class CopyOfTechnologyDetailsListeners {
 
         if (technologyId != null) {
             Entity technology1 = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology1);
+            Entity order = getOrderWithTechnology(view);
 
-            order = technologyServiceO.createTechnologyIfPktDisabled(order.getDataDefinition(), order);            
+            order = technologyServiceO.createTechnologyIfPktDisabled(order.getDataDefinition(), order);
 
             Entity technology2 = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
@@ -136,7 +137,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         Long technologyId = (Long) state.getFieldValue();
         Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-        Entity order = getOrderWithTechnology(technology);
+        Entity order = getOrderWithTechnology(view);
         parameters.put("form.id", order.getId());
 
         String url = "../page/orders/orderDetails.html";
@@ -151,7 +152,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         if (technologyId != null) {
             Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(technology);
+            Entity order = getOrderWithTechnology(view);
 
             Entity newTechnology = createTechnology(order);
 
@@ -178,7 +179,7 @@ public class CopyOfTechnologyDetailsListeners {
         final FormComponent technologyForm = (FormComponent) state;
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
-        Entity order = getOrderWithTechnology(technology);
+        Entity order = getOrderWithTechnology(view);
 
         Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
@@ -201,9 +202,14 @@ public class CopyOfTechnologyDetailsListeners {
 
     }
 
-    private Entity getOrderWithTechnology(final Entity technology) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.belongsTo(OrderFields.TECHNOLOGY, technology)).setMaxResults(1).uniqueResult();
+    private Entity getOrderWithTechnology(final ViewDefinitionState view) {
+        try {
+            DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+            String orderId = view.getJsonContext().getString("window.mainTab.technology.orderId");
+            return orderDD.get(Long.valueOf(orderId));
+        } catch (JSONException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private Entity createTechnology(final Entity order) {
