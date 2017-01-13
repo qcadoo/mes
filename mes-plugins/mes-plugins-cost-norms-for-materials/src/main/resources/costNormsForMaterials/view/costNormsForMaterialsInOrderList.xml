@@ -81,6 +81,9 @@
 							<option type="correspondingView" value="costNormsForMaterials/costNormsForMaterialsInOrderDetails" />
 							<option type="correspondingComponent" value="form" />
 							<option type="correspondingViewInModal" value="false" />
+
+                            <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true" />
 							
 						</component>
 					</layoutElement>
@@ -93,5 +96,6 @@
 		</windowTab>
 		
 		<option type="header" value="false" />
+		<option type="fixedHeight" value="true"/>
 	</component>
 </view>

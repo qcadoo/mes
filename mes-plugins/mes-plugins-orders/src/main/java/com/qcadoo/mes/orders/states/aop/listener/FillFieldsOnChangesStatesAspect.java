@@ -74,5 +74,4 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
     }
-
 }

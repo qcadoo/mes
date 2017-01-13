@@ -519,8 +519,8 @@
                         value="#name + ' - ' + #number + ' - ' + '@orders.order.state.value.' + #state"/>
 
                 <listener event="changeState"
-                          class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
-                          method="changeState"/>
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                          method="changeState"/>                          
                 <listener event="showCopyOfTechnology" method="showCopyOfTechnology"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"
