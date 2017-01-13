@@ -94,7 +94,6 @@ public class PositionModelHooks {
     }
 
     public boolean onDelete(final DataDefinition positionDD, final Entity position) {
-
         resourceReservationsService.updateResourceQuantites(position,
                 position.getDecimalField(ReservationFields.QUANTITY).negate());
         return true;

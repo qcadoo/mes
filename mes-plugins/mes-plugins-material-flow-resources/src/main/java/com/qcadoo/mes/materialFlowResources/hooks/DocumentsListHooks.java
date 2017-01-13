@@ -57,7 +57,10 @@ public class DocumentsListHooks {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
                 break;
             }
-
+            if(document.getBooleanField(DocumentFields.IN_BUFFER)){
+                errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
+                break;                
+            }
         }
 
         dispositionOrderPdfItem.setMessage(errorMessage);

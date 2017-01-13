@@ -124,7 +124,7 @@ public class DocumentPositionValidator {
         String query = "SELECT draftmakesreservation FROM materialflowresources_documentpositionparameters LIMIT 1";
         Boolean enabled = jdbcTemplate.queryForObject(query, new HashMap<String, Object>() {
         }, Boolean.class);
-        if (enabled && DocumentType.isOutbound(type)) {
+        if (enabled && DocumentType.isOutbound(type) && !document.getInBuffer()) {
             BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(position,
                     tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
             BigDecimal quantity = position.getQuantity();

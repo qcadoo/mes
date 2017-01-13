@@ -51,12 +51,12 @@ public class DocumentModelHooks {
     private ReservationsService reservationsService;
 
     public void onCreate(final DataDefinition documentDD, final Entity document) {
-        String translatedType = getTranslatedType(document);
-
-        document.setField(DocumentFields.NUMBER, translatedType);
+        setInitialDocumentNumber(document);
+        setInitialDocumentInBuffer(document);
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
             documentValidators.validateAvailableQuantities(document);
         }
+
     }
 
     public void onCopy(final DataDefinition documentDD, final Entity document) {
@@ -80,6 +80,17 @@ public class DocumentModelHooks {
          */
         return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE),
                 LocaleContextHolder.getLocale());
+    }
+
+    private void setInitialDocumentNumber(Entity document) {
+        String translatedType = getTranslatedType(document);
+        document.setField(DocumentFields.NUMBER, translatedType);
+    }
+
+    private void setInitialDocumentInBuffer(Entity document) {
+        if (null == document.getField(DocumentFields.IN_BUFFER)) {
+            document.setField(DocumentFields.IN_BUFFER, false);
+        }
     }
 
 }
