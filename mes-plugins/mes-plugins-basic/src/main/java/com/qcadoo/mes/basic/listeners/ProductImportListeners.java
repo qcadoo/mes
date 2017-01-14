@@ -101,7 +101,10 @@ public class ProductImportListeners {
                 } else if (0 == importStatus.getRowsProcessed()) {
                     view.addMessage(translatedErrorMessage("basic.productsImport.error.file.empty"));
                 } else {
-                    view.redirectTo("/page/basic/productsList.html", false, false);
+                    view.addMessage("basic.productsImport.success.message",
+                            ComponentState.MessageType.SUCCESS,
+                            false,
+                            String.valueOf(importStatus.getRowsProcessed()));
                 }
             } catch (Throwable throwable) {
                 // There is not much we can do about these IO exceptions except rethrowing them
