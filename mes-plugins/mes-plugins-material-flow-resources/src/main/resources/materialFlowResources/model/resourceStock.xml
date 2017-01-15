@@ -35,4 +35,7 @@
         <decimal name="availableQuantity"/>
 
     </fields>
+    <hooks>
+        <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.ResourceStockHooks" method="onDelete"/>
+    </hooks>
 </model>

@@ -114,6 +114,7 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
+                        <component type="hidden" name="inBuffer" field="inBuffer" reference="inBuffer" />    
                         <component type="input" name="number" reference="number" field="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -148,7 +149,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="6" height="2">
                         <component type="textarea" name="description" field="description"/>
-                    </layoutElement>
+                    </layoutElement>                
                     <layoutElement column="2" row="1">
                         <component type="lookup" name="locationFrom" field="locationFrom"
                                    reference="locationFrom">
@@ -161,8 +162,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
@@ -177,8 +178,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
-                                    method="showWarehousesOnly"/>
+                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                method="showWarehousesOnly"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
@@ -214,8 +215,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers"
-                                    method="showOnlyCompanyAddresses"/>
+                                class="com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers"
+                                method="showOnlyCompanyAddresses"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="5">
@@ -296,8 +297,8 @@
 
     <hooks>
         <beforeRender
-                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
-                method="onBeforeRender"/>
+            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks"
+            method="onBeforeRender"/>
     </hooks>
 
 </view>

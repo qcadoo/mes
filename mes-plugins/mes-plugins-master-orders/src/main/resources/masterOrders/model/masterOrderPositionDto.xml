@@ -24,30 +24,34 @@
     ***************************************************************************
 
 -->
-<model name="documentDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="masterOrderPositionDto" activable="true" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
+        <string name="name"/>
         <string name="number"/>
-        <string name="name">
-            <validatesLength max="255"/>
-        </string>
-        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
-        <datetime name="time"/>
-        <enum name="state" values="01draft,02accepted" default="01draft" required="true"/>
-        <integer name="locationFrom_id"/>
-        <string name="locationFromName"/>
-        <integer name="locationTo_id"/>
-        <string name="locationToName"/>
-        <integer name="company_id"/>
+        <string name="masterOrderName"/>
+        <datetime name="deadline"/>
         <string name="companyName"/>
-        <integer name="user_id"/>
-        <string name="userName"/>
-        <string name="description"/>
-        <boolean name="inBuffer" />
+        <string name="masterOrderStatus"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="technologyName"/>
+        <string name="masterOrderPositionStatus"/>
+        <string name="comments"/>
+        <decimal name="masterOrderQuantity"/>
+        <decimal name="cumulatedMasterOrderQuantity"/>
+        <decimal name="leftToRelease"/>
+        <decimal name="producedOrderQuantity"/>
+        <string name="unit"/>
+
+        <integer name="masterOrderId"/>
+        <string name="masterOrderType"/>
+        <integer name="productId"/>
+        <integer name="masterOrderProductId"/>
     </fields>
 
-    <masterModel plugin="materialFlowResources" model="document"/>
-
+    <masterModel plugin="masterOrders" model="masterOrderProduct"/>
 </model>

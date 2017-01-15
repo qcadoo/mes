@@ -74,6 +74,7 @@
         </decimal>
         <boolean name="template" default="false" copyable="false"/>
 
+        <string name="orderId" persistent="false" />
 
     </fields>
     <hooks>

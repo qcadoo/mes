@@ -82,7 +82,7 @@ public class MasterOrderProductDetailsHooksTest {
         given(view.getComponentByReference("leftToRelease")).willReturn(leftToRelease);
         given(view.getComponentByReference("comments")).willReturn(comments);
         given(view.getComponentByReference("masterOrderPositionStatus")).willReturn(masterOrderPositionStatus);
-        given(masterOrderProductForm.getEntity()).willReturn(masterOrderProduct);
+        given(masterOrderProductForm.getPersistedEntityWithIncludedFormValues()).willReturn(masterOrderProduct);
         given(masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)).willReturn(masterOrder);
     }
 

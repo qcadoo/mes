@@ -47,7 +47,8 @@
         <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true"/>
         <boolean name="createLinkedPZDocument" default="false"/>
         <belongsTo name="linkedPZDocumentLocation"
-                         model="location" plugin="materialFlow"/>
+                   model="location" plugin="materialFlow"/>
+        <boolean name="inBuffer" default="false"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCreate"/>

@@ -33,9 +33,9 @@
 
     <component type="window" name="window">
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy"/>
         </ribbon>
-F
+        F
         <component type="grid" name="grid" reference="grid">
             <option type="column" name="locationNumber" fields="locationNumber" width="100"/>
             <option type="column" name="locationName" fields="locationName" width="140"/>
@@ -60,7 +60,15 @@ F
                     method="fillRowStyles"/>
         </component>
 
+        <component type="checkbox" name="initialized" reference="initialized" defaultVisible="false"/>
+
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.WarehouseStockListHooks"
+                      method="fillDefaultFilters"/>
+    </hooks>
+
 </view>

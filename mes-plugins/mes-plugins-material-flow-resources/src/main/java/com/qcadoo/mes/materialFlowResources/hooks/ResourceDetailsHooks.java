@@ -8,6 +8,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -20,10 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ResourceDetailsHooks {
-    
+
     @Autowired
     private NumberService numberService;
-    
+
+    @Autowired
+    private SecurityService securityService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity resource = form.getPersistedEntityWithIncludedFormValues();
@@ -34,14 +38,15 @@ public class ResourceDetailsHooks {
         filter.put("product", product.getId());
         filter.put("location", warehouse.getId());
         storageLocationLookup.setFilterValue(filter);
-        
+
         fillUnitField(view, resource);
+        togglePriceFields(view, resource);
     }
-    
+
     public void onQuantityChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         FieldComponent quantityField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
-        
+
         Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator((String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
             FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -49,16 +54,16 @@ public class ResourceDetailsHooks {
             BigDecimal quantityInAdditionalUnit = resource.getDecimalField(ResourceFields.CONVERSION).multiply(maybeQuantity.getRight().get());
             String quantityInAdditionalUnitFormatted = numberService.format(quantityInAdditionalUnit);
             quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            
+
         } else {
             quantityInAdditionalUnitField.setFieldValue(null);
         }
     }
-    
+
     public void onQuantityInAdditionalUnitChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         FieldComponent quantityField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
-        
+
         Either<Exception, Optional<BigDecimal>> maybeQuantityInAdditionalUnit = BigDecimalUtils.tryParseAndIgnoreSeparator((String) quantityInAdditionalUnitField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantityInAdditionalUnit.isRight() && maybeQuantityInAdditionalUnit.getRight().isPresent()) {
             FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
@@ -66,15 +71,23 @@ public class ResourceDetailsHooks {
             BigDecimal quantity = maybeQuantityInAdditionalUnit.getRight().get().divide(resource.getDecimalField(ResourceFields.CONVERSION), RoundingMode.HALF_UP);
             String quantityFormatted = numberService.format(quantity);
             quantityField.setFieldValue(quantityFormatted);
-            
+
         } else {
             quantityField.setFieldValue(null);
         }
     }
-    
+
     private void fillUnitField(ViewDefinitionState view, Entity resource) {
         FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ResourceFields.GIVEN_UNIT);
         givenUnitField.setFieldValue(resource.getStringField(ResourceFields.GIVEN_UNIT));
         givenUnitField.requestComponentUpdateState();
+    }
+
+    private void togglePriceFields(ViewDefinitionState view, Entity resource) {
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_RESOURCE_PRICE");
+        FieldComponent priceField = (FieldComponent) view.getComponentByReference("price");
+        priceField.setVisible(hasCurrentUserRole);
+        FieldComponent priceCurrencyField = (FieldComponent) view.getComponentByReference("priceCurrency");
+        priceCurrencyField.setVisible(hasCurrentUserRole);
     }
 }

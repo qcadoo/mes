@@ -128,6 +128,7 @@ public class OrderHooks {
     public void onCreate(final DataDefinition orderDD, final Entity order) {
         setInitialState(orderDD, order);
         setCommissionedPlannedQuantity(orderDD, order);
+        order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
     }
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
@@ -613,7 +614,7 @@ public class OrderHooks {
             order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
         } else {
             Entity prototypeTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            if (TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
+            if (prototypeTechnology != null && TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
                 order.setField(OrderFields.TECHNOLOGY, prototypeTechnology);
             } else {
                 order.setField(OrderFields.TECHNOLOGY, null);

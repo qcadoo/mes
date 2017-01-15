@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" name="masterOrderPositionsList" modelName="masterOrderPositionDto"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"
+                      excludeGroups="states"/>
+            <group name="orders">
+                <bigButton name="createOrder" icon="generateIcon24.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('createOrder', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+
+        <component type="grid" name="masterOrderPositions" reference="grid">
+            <script>
+                <![CDATA[
+                    this.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (selectedEntitiesArray && selectedEntitiesArray.length == 1) {
+								#{window}.getRibbonItem("orders.createOrder").enable();
+							} else {
+								#{window}.getRibbonItem("orders.createOrder").disable();
+							}
+						}
+					});
+				]]>
+            </script>
+
+            <option type="column" name="name" fields="name" link="true"
+                    width="100"/>
+            <option type="column" name="number" fields="number"
+                    width="150" link="true"/>
+            <option type="column" name="masterOrderName" fields="masterOrderName" width="150" link="true"/>
+            <option type="column" name="deadline" fields="deadline"
+                    width="80"/>
+            <option type="column" name="companyName" fields="companyName"
+                    width="55"/>
+            <option type="column" name="masterOrderStatus" fields="masterOrderStatus"
+                    width="55"/>
+            <option type="column" name="productNumber" fields="productNumber"
+                    width="55"/>
+            <option type="column" name="productName" fields="productName"
+                    width="55"/>
+            <option type="column" name="technologyName" fields="technologyName"
+                    width="55"/>
+            <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus" width="55"/>
+            <option type="column" name="comments" fields="comments"
+                    width="45"/>
+            <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" width="35"/>
+            <option type="column" name="cumulatedMasterOrderQuantity" fields="cumulatedMasterOrderQuantity" width="35"/>
+            <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="35"/>
+            <option type="column" name="leftToRelease" fields="leftToRelease"/>
+            <option type="column" name="unit" fields="unit"
+                    width="55"/>
+
+            <option type="order" column="number" direction="desc"/>
+            <option type="searchable"
+                    value="name,number,masterOrderName,deadline,companyName,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+            <option type="orderable"
+                    value="name,number,masterOrderName,deadline,companyName,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+
+            <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <listener event="createOrder"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="createOrder"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderPositionsListHooks"
+                method="disableButton"/>
+    </hooks>
+
+</view>
