@@ -49,7 +49,7 @@
                                    reference="assortmentElements">
 
                             <components>
-                                <component type="gridLayout" name="assortmentElement" columns="1" rows="3">
+                                <component type="gridLayout" name="assortmentElement" columns="1" rows="4">
                                     <layoutElement row="1" column="1">
                                         <component type="select" name="descriptionType" field="descriptionType"
                                                    reference="descriptionType"/>
@@ -57,6 +57,9 @@
                                     <layoutElement column="1" row="2" height="2">
                                         <component type="textarea" name="description" field="description"
                                                    reference="description"/>
+                                    </layoutElement>
+                                    <layoutElement column="1" row="4">
+                                        <component type="checkbox" name="main" field="main" reference="main"/>
                                     </layoutElement>
                                 </component>
                             </components>

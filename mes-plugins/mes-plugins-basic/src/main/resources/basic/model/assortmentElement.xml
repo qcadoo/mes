@@ -33,6 +33,7 @@
             <validatesLength max="255"/>
         </string>
 
+        <boolean name="main" default="false"/>
         <belongsTo name="assortment" model="assortment" required="true"/>
     </fields>
 
