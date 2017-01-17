@@ -30,7 +30,8 @@
     <fields>
         <string name="name" required="true" unique="true"/>
 
-        <hasMany name="assortmentElements" joinField="assortment" model="assortmentElement" cascade="delete"/>
+        <hasMany name="assortmentElements" joinField="assortment" model="assortmentElement" cascade="delete"
+                 copyable="true"/>
         <hasMany name="products" joinField="assortment" model="product" cascade="nullify"/>
     </fields>
 
