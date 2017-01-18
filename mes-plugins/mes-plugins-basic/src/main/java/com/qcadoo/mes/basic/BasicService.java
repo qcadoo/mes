@@ -52,6 +52,8 @@ public class BasicService {
 
     private static final String L_MAIN = "01main";
 
+    private static final String L_SHIPPING = "02shipping";
+
     private static final String L_ADDRESS_TYPE = "addressType";
 
     private static final String L_GET_NUMBERS_QUERY_TEMPLATE = "SELECT "
@@ -68,7 +70,7 @@ public class BasicService {
     public String getMainAddressType() {
         String addressType = null;
 
-        Optional<Entity> mayBeMainAddressType = getMainAddressTypeDictionaryItem();
+        Optional<Entity> mayBeMainAddressType = getAddressTypeDictionaryItem(L_MAIN);
 
         if (mayBeMainAddressType.isPresent()) {
             Entity mainAddressType = mayBeMainAddressType.get();
@@ -79,21 +81,35 @@ public class BasicService {
         return addressType;
     }
 
-    private Optional<Entity> getMainAddressTypeDictionaryItem() {
+    public String getShippingAddressType() {
+        String addressType = null;
+
+        Optional<Entity> mayBeShippingAddressType = getAddressTypeDictionaryItem(L_SHIPPING);
+
+        if (mayBeShippingAddressType.isPresent()) {
+            Entity shippingAddressType = mayBeShippingAddressType.get();
+
+            addressType = shippingAddressType.getStringField(DictionaryItemFields.NAME);
+        }
+
+        return addressType;
+    }
+
+    private Optional<Entity> getAddressTypeDictionaryItem(final String technicalCode) {
         Optional<Entity> mayBeAddressType = getAddressTypeDictionary();
 
         if (mayBeAddressType.isPresent()) {
             Entity addressType = mayBeAddressType.get();
 
-            return Optional.ofNullable(findMainAddressTypeDictionaryItem(addressType));
+            return Optional.ofNullable(findAddressTypeDictionaryItem(addressType, technicalCode));
         }
 
         return Optional.empty();
     }
 
-    private Entity findMainAddressTypeDictionaryItem(final Entity addressType) {
+    private Entity findAddressTypeDictionaryItem(final Entity addressType, final String technicalCode) {
         return getDictionaryItemDD().find().add(SearchRestrictions.belongsTo(DictionaryItemFields.DICTIONARY, addressType))
-                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, L_MAIN)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(DictionaryItemFields.TECHNICAL_CODE, technicalCode)).setMaxResults(1).uniqueResult();
     }
 
     private Optional<Entity> getAddressTypeDictionary() {
