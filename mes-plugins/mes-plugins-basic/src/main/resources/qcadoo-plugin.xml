@@ -327,6 +327,7 @@
         <view:view resource="view/shiftDetails.xml"/>
         <view:view resource="view/shiftTimetableExceptionDetails.xml"/>
         <view:view resource="view/productsList.xml"/>
+        <view:view resource="view/productsImport.xml"/>
         <view:view resource="view/productDetails.xml"/>
         <view:view resource="view/productSubstituteDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>

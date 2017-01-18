@@ -49,6 +49,10 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="productImport" >
+                <bigButton name="importFromXlsx" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(navigateToProductImportPage);" />
+            </group>
         </ribbon>
 
         <component type="grid" name="products" reference="grid">
@@ -109,6 +113,9 @@
             <listener event="getDefaultConversionsForGrid" class="com.qcadoo.mes.basic.ProductService"
                       method="getDefaultConversionsForGrid"/>
         </component>
+
+        <listener event="navigateToProductImportPage" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                  method="navigateToProductImportPage"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
