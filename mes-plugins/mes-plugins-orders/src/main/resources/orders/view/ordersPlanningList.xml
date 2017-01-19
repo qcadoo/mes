@@ -235,8 +235,11 @@
 
             <option type="order" column="dateFrom" direction="desc" />
 
-            <option type="searchable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce" />
+            <option type="searchable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce" />            
             <option type="orderable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce" />
+           
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
 
             <option type="fullscreen" value="true" />
             <option type="multiselect" value="true" />
@@ -277,7 +280,7 @@
             </predefinedFilters>
 
             <listener event="changeState"
-                                  class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState" />
+                      class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState" />
 
         </component>
         <option type="fixedHeight" value="true" />
