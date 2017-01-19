@@ -234,6 +234,8 @@
 
 			<option type="searchable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory" />
 			<option type="orderable" value="name,number,description,state,productNumber,technologyNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory" />
+			<option type="footerRow" value="true"/>
+			<option type="columnsToSummary" value="plannedQuantity"/>
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
