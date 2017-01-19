@@ -364,9 +364,10 @@ public class TechnologyServiceO {
             return;
         }
 
-        if (orderService.isPktEnabled()) {
-            technology.getDataDefinition().delete(technology.getId());
-        }
+        // BTW-154
+//        if (orderService.isPktEnabled()) {
+//            technology.getDataDefinition().delete(technology.getId());
+//        }
     }
 
     public DataDefinition getTechnologyDD() {
