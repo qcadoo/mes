@@ -218,6 +218,7 @@
             <option type="column" name="dateTo" fields="finishDate" width="60" />
             <option type="column" name="productNumber" fields="productNumber" width="50" />
             <option type="column" name="plannedQuantity" fields="plannedQuantity" width="20" />
+            
             <option type="column" name="amountOfProductProduced" fields="amountOfProductProduced" width="20" />
             <option type="column" name="wastesQuantity" fields="wastesQuantity" width="20" />
             <option type="column" name="remainingAmountOfProductToProduce" fields="remainingAmountOfProductToProduce" width="20" />                       
