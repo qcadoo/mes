@@ -25,7 +25,7 @@
 
 -->
 <company>
-	<row NUMBER="1" NAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="PL" EMAIL="welcome@qcadoo.com" WEBSITE="http://www.qcadoo.com/" PHONE="+48 12 633 02 03" OWNER="true" />
+	<row NUMBER="1" NAME="Qcadoo Limited Sp. z o.o." TAX="676-241-35-25" STREET="Basztowa" HOUSE="4" FLAT="4" ZIPCODE="31-134" CITY="Kraków" STATE="małopolskie" COUNTRY="PL" EMAIL="welcome@qcadoo.com" WEBSITE="http://www.qcadoo.com/" PHONE="+48 12 200 25 69" OWNER="true" />
 	<row NUMBER="2" NAME="Dębowa Dolina Sp. z o.o." TAX="123-456-32-18" STREET="Dębowa" HOUSE="1" FLAT="1" ZIPCODE="00-001" CITY="Dębowa dolina" STATE="podkarpackie" COUNTRY="PL" EMAIL="" WEBSITE="" PHONE="" OWNER="false" />
 	<row NUMBER="3" NAME="Metalex Sp. z o.o." TAX="123-456-32-18" STREET="Metalowa" HOUSE="1" FLAT="1" ZIPCODE="00-002" CITY="Metalowo" STATE="podkarpackie" COUNTRY="PL" EMAIL="" WEBSITE="" PHONE="" OWNER="false"/>
 
