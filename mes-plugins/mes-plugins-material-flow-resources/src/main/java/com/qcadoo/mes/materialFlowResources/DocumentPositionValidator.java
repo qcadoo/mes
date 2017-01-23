@@ -545,7 +545,7 @@ public class DocumentPositionValidator {
         List<String> errors = new ArrayList<>();
 
         if (isInDocument(document)) {
-            if (existsOtherPositionForPalletAndStorageLocation(position)) {
+            if (existsOtherPositionForStorageLocationAndPallet(position) || existsOtherPositionForPalletAndStorageLocation(position)) {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
             }
 
@@ -553,7 +553,7 @@ public class DocumentPositionValidator {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForOtherPalletType", LocaleContextHolder.getLocale())));
             }
 
-            if (existsOtherResourceForPalletAndStorageLocation(position)) {
+            if (existsOtherResourceForPalletAndStorageLocation(position) || existsOtherResourceForStorageLocationAndPallet(position)) {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
             }
 
@@ -570,27 +570,64 @@ public class DocumentPositionValidator {
         return type == DocumentType.RECEIPT || type == DocumentType.INTERNAL_INBOUND || type == DocumentType.TRANSFER;
     }
 
-    private boolean existsOtherPositionForPalletAndStorageLocation(DocumentPositionDTO position) {
+    private boolean existsOtherPositionForPalletAndStorageLocation(DocumentPositionDTO position) { 
         String query = "select count(*) from materialflowresources_position p"
-                + "	JOIN basic_palletnumber pallet ON (p.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
+                + "	LEFT JOIN basic_palletnumber pallet ON (p.palletnumber_id = pallet.id)"
                 + "	LEFT JOIN materialflowresources_storagelocation storage ON (p.storagelocation_id = storage.id)"
-                + " WHERE ";
+                + " WHERE  ";
 
         Map<String, Object> params = new HashMap<>();
 
-        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
-            query += "( storage.number <> :storageNumber and storage.number is not null)";
+        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
+            query += "( p.palletnumber_id is null)";
+            
         } else {
-            query += "( storage.number <> :storageNumber OR storage.number is null)";
+            params.put("palletNumber", position.getPalletNumber());
+            query += "( pallet.number = :palletNumber)";
         }
 
-        params.put("palletNumber", position.getPalletNumber());
-        params.put("storageNumber", position.getStorageLocation());
+        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
+            query += " AND ( p.storagelocation_id is not null)";
+            
+        } else {
+            params.put("storageNumber", position.getStorageLocation());
+            query += " AND ( storage.number <> :storageNumber or p.storagelocation_id is null)";
+        }
 
         if (position.getId() != null && position.getId() > 0) {
             query += " AND p.id <> " + position.getId();
         }
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
 
+        return count > 0;       
+    }
+    private boolean existsOtherPositionForStorageLocationAndPallet(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_position p"
+                + "	LEFT JOIN basic_palletnumber pallet ON (p.palletnumber_id = pallet.id)"
+                + "	LEFT JOIN materialflowresources_storagelocation storage ON (p.storagelocation_id = storage.id)"
+                + " WHERE  ";
+
+        Map<String, Object> params = new HashMap<>();
+
+        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
+            query += "( p.storagelocation_id is null)";
+            
+        } else {
+            params.put("storageNumber", position.getStorageLocation());
+            query += "( storage.number = :storageNumber)";
+        }
+
+        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
+            query += " AND ( p.palletnumber_id is not null)";
+            
+        } else {
+            params.put("palletNumber", position.getPalletNumber());
+            query += " AND ( pallet.number <> :palletNumber or p.palletnumber_id is null)";
+        }
+
+        if (position.getId() != null && position.getId() > 0) {
+            query += " AND p.id <> " + position.getId();
+        }
         Long count = jdbcTemplate.queryForObject(query, params, Long.class);
 
         return count > 0;
@@ -614,25 +651,62 @@ public class DocumentPositionValidator {
         return count > 0;
     }
 
-    private boolean existsOtherResourceForPalletAndStorageLocation(DocumentPositionDTO position) {
+    private boolean existsOtherResourceForPalletAndStorageLocation(DocumentPositionDTO position) { 
         String query = "select count(*) from materialflowresources_resource r"
-                + "	JOIN basic_palletnumber pallet ON (r.palletnumber_id = pallet.id AND pallet.number = :palletNumber)"
-                + "	JOIN materialflowresources_storagelocation storage ON (r.storagelocation_id = storage.id ) WHERE ";
+                + "	LEFT JOIN basic_palletnumber pallet ON (r.palletnumber_id = pallet.id)"
+                + "	LEFT JOIN materialflowresources_storagelocation storage ON (r.storagelocation_id = storage.id)"
+                + " WHERE  ";
+
+        Map<String, Object> params = new HashMap<>();
+
+        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
+            query += "( r.palletnumber_id is null)";
+            
+        } else {
+            params.put("palletNumber", position.getPalletNumber());
+            query += "( pallet.number = :palletNumber)";
+        }
 
         if (Strings.isNullOrEmpty(position.getStorageLocation())) {
-            query += "( storage.number <> :storageNumber and storage.number is not null)";
+            query += " AND ( r.storagelocation_id is not null)";
+            
         } else {
-            query += "( storage.number <> :storageNumber OR storage.number is null)";
-        }        
-        
+            params.put("storageNumber", position.getStorageLocation());
+            query += " AND ( storage.number <> :storageNumber or r.storagelocation_id is null)";
+        }
+
+        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
+
+        return count > 0;       
+    }
+    private boolean existsOtherResourceForStorageLocationAndPallet(DocumentPositionDTO position) {
+        String query = "select count(*) from materialflowresources_resource r"
+                + "	LEFT JOIN basic_palletnumber pallet ON (r.palletnumber_id = pallet.id)"
+                + "	LEFT JOIN materialflowresources_storagelocation storage ON (r.storagelocation_id = storage.id)"
+                + " WHERE  ";
+
         Map<String, Object> params = new HashMap<>();
-        params.put("palletNumber", position.getPalletNumber());
-        params.put("storageNumber", position.getStorageLocation());
+
+        if (Strings.isNullOrEmpty(position.getStorageLocation())) {
+            query += "( r.storagelocation_id is null)";
+            
+        } else {
+            params.put("storageNumber", position.getStorageLocation());
+            query += "( storage.number = :storageNumber)";
+        }
+
+        if (Strings.isNullOrEmpty(position.getPalletNumber())) {
+            query += " AND ( r.palletnumber_id is not null)";
+            
+        } else {
+            params.put("palletNumber", position.getPalletNumber());
+            query += " AND ( pallet.number <> :palletNumber or r.palletnumber_id is null)";
+        }
 
         Long count = jdbcTemplate.queryForObject(query, params, Long.class);
 
         return count > 0;
-    }
+    }    
 
     private boolean existsOtherResourceForOtherPalletType(DocumentPositionDTO position) {
         String query = "select count(*) from materialflowresources_resource r"
