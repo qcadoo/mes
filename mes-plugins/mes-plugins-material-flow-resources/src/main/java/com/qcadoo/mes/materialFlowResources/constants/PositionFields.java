@@ -75,4 +75,6 @@ public final class PositionFields {
 
     public static final String WASTE = "waste";
 
+    public static final String RESOURCE_RECEIPT_DOCUMENT = "resourceReceiptDocument";
+
 }

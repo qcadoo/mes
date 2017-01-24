@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
-
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -39,6 +31,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 
 @Service
 public class ResourceModelHooks {
@@ -48,6 +52,9 @@ public class ResourceModelHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void onView(final DataDefinition resourceDD, final Entity resource) {
         BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
@@ -60,6 +67,20 @@ public class ResourceModelHooks {
         }
 
         resource.setField(ResourceFields.VALUE, numberService.setScale(value));
+    }
+
+    public void onSave(final DataDefinition resourceDD, final Entity resource) {
+        if (StringUtils.isEmpty(resource.getStringField(ResourceFields.NUMBER))) {
+            Date time = resource.getDateField(ResourceFields.TIME);
+            if (time == null) {
+                time = new Date();
+            }
+            Map<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("date", time);
+            String number = jdbcTemplate.queryForObject("select generate_and_set_resource_number(:date)", parameters,
+                    String.class);
+            resource.setField(ResourceFields.NUMBER, number);
+        }
     }
 
     public void onCreate(final DataDefinition resourceDD, final Entity resource) {

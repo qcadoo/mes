@@ -23,32 +23,13 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -58,6 +39,17 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -159,7 +151,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
         Entity user = document.getBelongsToField(DocumentFields.USER);
-
         resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
@@ -190,7 +181,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         setResourceAttributesFromPosition(resource, position);
 
         resourceStockService.addResourceStock(resource);
-        return resourceDD.save(resource);
+        resource = resourceDD.save(resource);
+        position.setField("resourceReceiptDocument", resource.getId().toString());
+        return resource;
+
     }
 
     public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
@@ -228,8 +222,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
-        BigDecimal quantityInAdditionalUnit = numberService
-                .setScale(quantity.multiply(resource.getDecimalField(ResourceFields.CONVERSION)));
+        BigDecimal quantityInAdditionalUnit = numberService.setScale(quantity.multiply(resource
+                .getDecimalField(ResourceFields.CONVERSION)));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
@@ -243,8 +237,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return createResource(null, warehouse, resource, quantity, date);
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
-            final Entity warehouse) {
+    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product, final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -291,11 +284,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
 
-                    resources
-                            .addAll(scb
-                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                                    .list().getEntities());
+                    resources.addAll(scb
+                            .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).list().getEntities());
                 }
 
                 if (resources.isEmpty()) {
@@ -316,14 +307,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
                 }
                 if (result.containsKey(productAndPosition.getKey().getId())) {
-                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(reservedQuantity,
-                            BigDecimal::add);
+                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream()
+                            .reduce(reservedQuantity, BigDecimal::add);
 
                     result.put(productAndPosition.getKey().getId(),
-                            (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
-                                    .reduce(BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
+                            (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY)).reduce(
+                                    BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
                 } else {
-                    result.put(productAndPosition.getKey().getId(),
+                    result.put(
+                            productAndPosition.getKey().getId(),
                             resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
                                     .reduce(reservedQuantity, BigDecimal::add));
                 }
@@ -545,8 +537,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, product)));
 
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
@@ -561,8 +553,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!baseUnit.equals(givenUnit)) {
             PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, product)));
 
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
@@ -579,8 +571,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
 
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
-                .parseString(warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
+                .getStringField(LocationFieldsMFR.ALGORITHM));
 
         boolean enoughResources = true;
 
@@ -645,8 +637,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             WarehouseAlgorithm warehouseAlgorithm) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
-        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position,
-                warehouseAlgorithm);
+        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position, warehouseAlgorithm);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
 
@@ -766,8 +757,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             resources.addAll(scb
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                    .addOrder(SearchOrders.asc(TIME)).list().getEntities());
+                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).addOrder(SearchOrders.asc(TIME))
+                    .list().getEntities());
         }
 
         if (resources.isEmpty()) {
