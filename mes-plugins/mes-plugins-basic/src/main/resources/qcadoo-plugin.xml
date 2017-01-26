@@ -197,7 +197,8 @@
         <security:role identifier="ROLE_TERMINAL_EXTRUSION_USER"/>
         <security:role identifier="ROLE_TERMINAL_PALLET_USER"/>
         <security:role identifier="ROLE_PALLET_LIST"/>
-        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>    
+        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
+        <security:role identifier="ROLE_TERMINAL_CONFECTION_PRINT_MULTIPLE"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>    
         <security:role identifier="ROLE_LOGS"/>
