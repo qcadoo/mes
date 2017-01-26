@@ -43,6 +43,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -166,212 +167,24 @@ public class DeliveredProductHooks {
         return parameterService.getParameter().getBooleanField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED);
     }
 
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+    
     private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        return (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-                && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
-                && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-                && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
+        return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
     }
-
-    private boolean existsOtherPositionForPalletAndStorageLocation(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(*) from Deliveries_DeliveredProduct p"
-                + " WHERE  ";
-
-        Map<String, Object> params = new HashMap<>();
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) == null) {
-            query += "( p.palletnumber_id is null)";
-
-        } else {
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-            params.put("palletNumberId", palletNumber.getId());
-            query += "( p.palletnumber_id = :palletNumberId)";
-        }
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION) == null) {
-            query += " AND ( p.storagelocation_id is not null)";
-
-        } else {
-            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            params.put("storageLocationId", storageLocation.getId());
-            query += " AND ( p.storagelocation_id <> :storageLocationId or p.storagelocation_id is null)";
-        }
-
-        if (deliveredProduct.getId() != null && deliveredProduct.getId() > 0) {
-            query += " AND p.id <> " + deliveredProduct.getId();
-        }
-        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
-
-        boolean exists = count > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
-        }
-        return exists;
-    }
-
-    private boolean existsOtherPositionForStorageLocationAndPallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(*) from Deliveries_DeliveredProduct p"
-                + " WHERE  ";
-
-        Map<String, Object> params = new HashMap<>();
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION) == null) {
-            query += "( p.storagelocation_id is null)";
-
-        } else {
-            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            params.put("storageLocationId", storageLocation.getId());
-            query += "( p.storagelocation_id = :storageLocationId)";
-        }
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) == null) {
-            query += " AND ( p.palletnumber_id is not null)";
-
-        } else {
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-            params.put("palletNumberId", palletNumber.getId());
-            query += " AND ( p.palletnumber_id <> :palletNumberId or p.palletnumber_id is null)";
-        }
-
-        if (deliveredProduct.getId() != null && deliveredProduct.getId() > 0) {
-            query += " AND p.id <> " + deliveredProduct.getId();
-        }
-        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
-        boolean exists = count > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
-        }
-        return exists;
-    }
-
-    private boolean existsOtherPositionForOtherPalletType(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(dp) as cnt from DeliveriesDeliveredProduct dp JOIN dp.palletNumber as pallet"
-                + "	where pallet.number = :palletNumber ";
-
-        String palletNumber = "";
-        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-        if (palletNumberEntity != null) {
-            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
-        }
-
-        String palletType = deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
-        if (Strings.isNullOrEmpty(palletType)) {
-            palletType = "";
-            query += "and ( dp.palletType <> :palletType)";
-        } else {
-            query += "and ( dp.palletType is null OR dp.palletType <> :palletType)";
-        }
-
-        if (deliveredProduct.getId() != null && deliveredProduct.getId() > 0) {
-            query += " AND dp.id <> " + deliveredProduct.getId();
-        }
-
-        SearchQueryBuilder find = deliveredProductDD.find(query);
-        find.setString("palletType", palletType);
-        find.setString("palletNumber", palletNumber);
-        Entity countResults = find.uniqueResult();
-
-        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherPositionForOtherPalletType");
-        }
-        return exists;
-    }
-
-    private boolean existsOtherResourceForPalletAndStorageLocation(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(*) from materialflowresources_resource r"
-                + " WHERE  ";
-
-        Map<String, Object> params = new HashMap<>();
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) == null) {
-            query += "( r.palletnumber_id is null)";
-
-        } else {
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-            params.put("palletNumberId", palletNumber.getId());
-            query += "( r.palletnumber_id = :palletNumberId)";
-        }
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION) == null) {
-            query += " AND ( r.storagelocation_id is not null)";
-
-        } else {
-            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            params.put("storageNumberId", storageLocation.getId());
-            query += " AND ( r.storagelocation_id <> :storageNumberId or r.storagelocation_id is null)";
-        }
-
-        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
-
-        boolean exists = count > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
-        }
-        return exists;
-    }
-
-    private boolean existsOtherResourceForStorageLocationAndPallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(*) from materialflowresources_resource r"
-                + " WHERE  ";
-
-        Map<String, Object> params = new HashMap<>();
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION) == null) {
-            query += "( r.storagelocation_id is null)";
-
-        } else {
-            Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
-            params.put("storageId", storageLocation.getId());
-            query += "( r.storagelocation_id = :storageId)";
-        }
-
-        if (deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) == null) {
-            query += " AND ( r.palletnumber_id is not null)";
-
-        } else {
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-            params.put("palletNumberId", palletNumber.getId());
-            query += " AND ( r.palletnumber_id <> :palletNumberId or r.palletnumber_id is null)";
-        }
-
-        Long count = jdbcTemplate.queryForObject(query, params, Long.class);
-
-        boolean exists = count > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
-        }
-        return exists;
-    }
-
-    private boolean existsOtherResourceForOtherPalletType(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        String query = "select count(resource) as cnt from MaterialFlowResourcesResource resource JOIN resource.palletNumber as pallet"
-                + "	where pallet.number = :palletNumber and resource.typeOfPallet <> :palletType ";
-
-        String palletNumber = "";
-        Entity palletNumberEntity = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-        if (palletNumberEntity != null) {
-            palletNumber = palletNumberEntity.getStringField(PalletNumberFields.NUMBER);
-        }
-
-        String palletType = deliveredProduct.getStringField(DeliveredProductFields.PALLET_TYPE);
-        if (Strings.isNullOrEmpty(palletType)) {
-            palletType = "";
-            query += "and ( resource.typeOfPallet <> :palletType)";
-        } else {
-            query += "and ( resource.typeOfPallet is null OR resource.typeOfPallet <> :palletType)";
-        }
-
-        SearchQueryBuilder find = deliveredProductDD.find(query);
-        find.setString("palletType", palletType);
-        find.setString("palletNumber", palletNumber);
-        Entity countResults = find.uniqueResult();
-
-        boolean exists = ((Long) countResults.getField("cnt")) > 0L;
-        if (exists) {
-            deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.PALLET_NUMBER), "documentGrid.error.position.existsOtherResourceForOtherPalletType");
-        }
-        return exists;
-    }
+    
+//    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+//        return (!existsOtherDeliveredProductForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherDeliveredProductForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+//                && !existsOtherDeliveredProductForOtherPalletType(deliveredProductDD, deliveredProduct)
+//                
+////                && (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+////                && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
+//                
+//                && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+//                && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
+//    }
+//    
+ 
 
 }
