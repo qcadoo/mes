@@ -68,6 +68,8 @@
 
         <hasMany name="reservations" model="reservation" joinField="position" copyable="true" cascade="delete"/>
 
+        <string name="resourceReceiptDocument"/>
+
         <boolean name="waste" default="false"/>
     </fields>
     <hooks>

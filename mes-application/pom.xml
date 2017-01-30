@@ -302,10 +302,10 @@
         <dependency>
             <groupId>postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.2-1002</version>
+            <version>postgresql-9.4.1212</version>
             <classifier>jdbc4</classifier>
             <scope>system</scope>
-            <systemPath>${basedir}/driver/postgresql-9.2-1002.jdbc4.jar</systemPath>
+            <systemPath>${basedir}/driver/postgresql-9.4.1212.jar</systemPath>
         </dependency>
     </dependencies>
     <build>
@@ -437,7 +437,7 @@
                         <artifactId>qcadoo-maven-plugin</artifactId>
                         <version>${qcadoo.maven.plugin.version}</version>
                         <configuration>
-                            <jdbcDriver>${basedir}/driver/postgresql-9.2-1002.jdbc4.jar</jdbcDriver>
+                            <jdbcDriver>${basedir}/driver/postgresql-9.4.1212.jar</jdbcDriver>
                             <aspectJWeaver>${basedir}/driver/aspectjweaver-${aspectj.version}.jar</aspectJWeaver>
                             <configuration>${basedir}/conf/${profile.name}/</configuration>
                             <rootFilesDirectory>${basedir}/root/</rootFilesDirectory>

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,14 +53,18 @@ public class OrdersListListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
+
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
         for (Long orderId : gridComponent.getSelectedEntitiesIds()) {
             Entity order = getOrderDD().get(orderId);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-
-            if (!TechnologyStateStringValues.ACCEPTED.equals(technology.getStringField(TechnologyFields.STATE))) {
+            if (TechnologyStateStringValues.DRAFT.equals(technology.getStringField(TechnologyFields.STATE))) {
                 technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
+            } else if (TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
+                technologyServiceO.changeTechnologyStateToAccepted(technology);
             }
             orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0], order);
         }

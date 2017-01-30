@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="masterOrder" activable="true"
+<model name="masterOrder" activable="true" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
@@ -91,7 +91,7 @@
         </belongsTo>
 
         <belongsTo name="address" plugin="basic" model="address"/>
-        
+
         <belongsTo name="product" plugin="basic" model="product">
             <validatesWith
                     class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"

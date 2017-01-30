@@ -63,6 +63,8 @@ public final class ProductFields {
 
     public static final String PRIORITY = "priority";
 
+    public static final String PRODUCER = "producer";
+
     public static final String NODE_NUMBER = "nodeNumber";
 
     public static final String ENTITY_TYPE = "entityType";

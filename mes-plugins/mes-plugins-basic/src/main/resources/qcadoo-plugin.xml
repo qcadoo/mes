@@ -197,7 +197,8 @@
         <security:role identifier="ROLE_TERMINAL_EXTRUSION_USER"/>
         <security:role identifier="ROLE_TERMINAL_PALLET_USER"/>
         <security:role identifier="ROLE_PALLET_LIST"/>
-        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>    
+        <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
+        <security:role identifier="ROLE_TERMINAL_CONFECTION_PRINT_MULTIPLE"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>    
         <security:role identifier="ROLE_LOGS"/>
@@ -327,6 +328,7 @@
         <view:view resource="view/shiftDetails.xml"/>
         <view:view resource="view/shiftTimetableExceptionDetails.xml"/>
         <view:view resource="view/productsList.xml"/>
+        <view:view resource="view/productsImport.xml"/>
         <view:view resource="view/productDetails.xml"/>
         <view:view resource="view/productSubstituteDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>

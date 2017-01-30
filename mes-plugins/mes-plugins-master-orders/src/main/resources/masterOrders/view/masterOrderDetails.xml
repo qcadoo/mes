@@ -151,6 +151,12 @@
                         <component type="select" name="masterOrderState"
                                    reference="masterOrderState" field="masterOrderState"/>
                     </layoutElement>
+                    <layoutElement column="3" row="2">
+                        <component type="calendar" name="createDate" reference="createDate" field="createDate"
+                                   defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

@@ -182,7 +182,7 @@
 
         <view:view-grid-column view="ordersPlanningList" component="grid" plugin="orders">
             <view:column name="workPlanDelivered" fields="workPlanDelivered"
-                         orderable="true" searchable="true" width="40"/>
+                         orderable="true" searchable="true" width="15"/>
         </view:view-grid-column>
 
         <model:model-hook plugin="orders" model="order">
