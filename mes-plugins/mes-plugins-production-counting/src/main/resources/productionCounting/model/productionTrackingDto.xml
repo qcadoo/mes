@@ -40,7 +40,7 @@
         <integer name="order_id"/>
         <string name="orderNumber"/>
         <string name="productNumber"/>
-        <string name="productName"/>
+        <string name="productUnit"/>
 
 
         <decimal name="usedQuantity">

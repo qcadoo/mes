@@ -187,8 +187,8 @@
             <option type="column" name="technologyOperationComponentNumber"
                     fields="technologyOperationComponentNumber" width="120"/>
             <option type="column" name="productNumber" fields="productNumber"/>
-            <option type="column" name="productName" fields="productName"/>
             <option type="column" name="usedQuantity" fields="usedQuantity"/>
+            <option type="column" name="productUnit" fields="productUnit" width="40"/>
             <option type="column" name="shiftName" fields="shiftName"
                     width="80"/>
             <option type="column" name="staffName" fields="staffName"
@@ -214,9 +214,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productName,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productName,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="usedQuantity"/>
