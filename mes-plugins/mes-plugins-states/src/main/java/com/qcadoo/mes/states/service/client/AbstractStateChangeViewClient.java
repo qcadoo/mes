@@ -77,17 +77,20 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
                 entity = optionalMasterModel;
             }
             changeState(viewContext, targetState, entity);
+            optionalMasterModel = null;
+            entity = null;
         }
     }
 
     @Override
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
-            final StateChangeContext stateChangeContext = stateChangeContextBuilder.build(getStateChangeService()
+            StateChangeContext stateChangeContext = stateChangeContextBuilder.build(getStateChangeService()
                     .getChangeEntityDescriber(), entity, targetState);
             getStateChangeService().changeState(stateChangeContext);
             viewClientUtil.refreshComponent(viewContext);
             showMessages(viewContext, stateChangeContext);
+            stateChangeContext = null;
         } catch (AnotherChangeInProgressException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.anotherChangeInProgress",
                     MessageType.FAILURE);

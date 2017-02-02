@@ -43,7 +43,6 @@ public final class ViewContextHolder {
             final ComponentState messagesConsumer) {
         Preconditions.checkNotNull(viewDefinitionState);
         Preconditions.checkNotNull(invoker);
-
         this.viewDefinitionState = viewDefinitionState;
         this.invoker = invoker;
         if (messagesConsumer == null) {

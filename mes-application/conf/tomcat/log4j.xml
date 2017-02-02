@@ -4,7 +4,7 @@
 	<appender name="root-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/root.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -114,12 +114,12 @@
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
 	</appender>
-	
+
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />
@@ -128,7 +128,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.apache">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="net.sf.ehcache">
 		<level value="info" />
@@ -136,76 +136,76 @@
 	<logger name="com.qcadoo.mes.internal">
 		<level value="error" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.model">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="model-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.plugin">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="plugin-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.view">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="view-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.security">
-		<level value="debug" />
+		<level value="warn" />
 		<appender-ref ref="security-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.localization">
-		<level value="debug" />
+		<level value="warn" />
 		<appender-ref ref="localization-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.saas">
-		<level value="debug" />
+		<level value="warn" />
 		<appender-ref ref="saas-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.report">
-		<level value="debug" />
+		<level value="warn" />
 		<appender-ref ref="report-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.mes.integration">
+		<level value="info" />
+		<appender-ref ref="connector-log" />
+	</logger>
+
+	<logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter">
 		<level value="debug" />
 		<appender-ref ref="connector-log" />
 	</logger>
 
-    <logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter">
-        <level value="debug" />
-        <appender-ref ref="connector-log" />
-    </logger>
-	
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="debug" />
-		<appender-ref ref="sql-log" />	
+		<level value="warn" />
+		<appender-ref ref="sql-log" />
 	</logger>
-	
+
 	<logger name="org.hibernate.cache" additivity="false">
-		<level value="debug" />
-		<appender-ref ref="cache-log" />	
+		<level value="warn" />
+		<appender-ref ref="cache-log" />
 	</logger>
-	
+
 	<logger name="PERFORMANCE" additivity="false">
 		<level value="warn" />
 		<appender-ref ref="performance-log" />
 	</logger>
-	
+
 	<logger name="TRANSLATION" additivity="false">
 		<level value="warn" />
 		<appender-ref ref="translation-log" />
 	</logger>
 
-	<root>	
-		<level value="debug" />
+	<root>
+		<level value="info" />
 		<appender-ref ref="root-log" />
 		<appender-ref ref="warn-log" />
 	</root>
-	
+
 </log4j:configuration>
