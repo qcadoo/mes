@@ -23,16 +23,15 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class OrderDetailsListenersPPS {
@@ -61,7 +60,7 @@ public class OrderDetailsListenersPPS {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", ppsId);
 
-        String url = "../page/productionPerShift/productionPerShiftDetails.html";
+        String url = "/page/productionPerShift/productionPerShiftDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 

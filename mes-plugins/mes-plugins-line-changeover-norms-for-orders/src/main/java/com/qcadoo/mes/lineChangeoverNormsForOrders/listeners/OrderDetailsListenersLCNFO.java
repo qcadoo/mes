@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.listeners;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class OrderDetailsListenersLCNFO {
@@ -44,7 +43,7 @@ public class OrderDetailsListenersLCNFO {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", orderId);
 
-        String url = "../page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
+        String url = "/page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 

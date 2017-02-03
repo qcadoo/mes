@@ -129,7 +129,7 @@ public class OrderDetailsListeners {
             parameters.put("form.id", technologyId);
             parameters.put("form.orderId", order.getId());
 
-            String url = "../page/orders/copyOfTechnologyDetails.html";
+            String url = "/page/orders/copyOfTechnologyDetails.html";
             view.redirectTo(url, false, true, parameters);
         }
     }
