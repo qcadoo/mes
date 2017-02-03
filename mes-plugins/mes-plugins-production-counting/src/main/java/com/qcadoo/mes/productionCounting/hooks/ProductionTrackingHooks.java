@@ -37,6 +37,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
@@ -44,7 +45,6 @@ import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
@@ -187,14 +187,19 @@ public class ProductionTrackingHooks {
                     String productionRecordNumber = getProductionRecordNumber(orderNumberSplited);
                     productionTracking.setField(ProductionTrackingFields.NUMBER, productionRecordNumber);
                 } else {
-                    productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
-                            ProductionCountingConstants.PLUGIN_IDENTIFIER, productionTracking.getDataDefinition().getName()));
+                    setNumberFromSequence(productionTracking);
                 }
             } else {
-                productionTracking.setField(ProductionTrackingFields.NUMBER, numberGeneratorService.generateNumber(
-                        ProductionCountingConstants.PLUGIN_IDENTIFIER, productionTracking.getDataDefinition().getName()));
+                setNumberFromSequence(productionTracking);
             }
         }
+    }
+
+    private void setNumberFromSequence(final Entity productionTracking) {
+
+        String number = jdbcTemplate.queryForObject("select generate_productiontracking_number()", Maps.newHashMap(),
+                String.class);
+        productionTracking.setField(ProductionTrackingFields.NUMBER, number);
     }
 
     private String getProductionRecordNumber(final String[] orderNumberSplited) {
@@ -212,23 +217,33 @@ public class ProductionTrackingHooks {
 
     private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
         if (mustRebuildSetTrackingOperationProductsComponents(productionTracking)) {
-            EntityList trackingOperationProductOutComponents = productionTracking.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+            EntityList trackingOperationProductOutComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
             for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-                BigDecimal usedQuantity = trackingOperationProductOutComponent.getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
+                BigDecimal usedQuantity = trackingOperationProductOutComponent
+                        .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
 
-                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-                List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId()).collect(Collectors.toList());
+                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(
+                        TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId())
+                        .collect(Collectors.toList());
                 if (!ids.isEmpty()) {
                     Map<String, Object> parameters = new HashMap<String, Object>() {
+
                         {
                             put("ids", ids);
                         }
                     };
-                    jdbcTemplate.update("DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)", new MapSqlParameterSource(parameters));
+                    jdbcTemplate.update(
+                            "DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)",
+                            new MapSqlParameterSource(parameters));
                 }
-                trackingOperationProductOutComponent = setTrackingOperationProductsComponents.fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent, usedQuantity);
+                trackingOperationProductOutComponent = setTrackingOperationProductsComponents
+                        .fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent,
+                                usedQuantity);
 
-                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(
+                        TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
                 setTrackingOperationProductsInComponents.stream().forEach(entity -> {
                     entity.getDataDefinition().save(entity);
                 });
@@ -279,7 +294,8 @@ public class ProductionTrackingHooks {
             return true;
         }
 
-        Long previousOrderId = productionTracking.getDataDefinition().get(productionTracking.getId()).getBelongsToField(ProductionTrackingFields.ORDER).getId();
+        Long previousOrderId = productionTracking.getDataDefinition().get(productionTracking.getId())
+                .getBelongsToField(ProductionTrackingFields.ORDER).getId();
 
         return !previousOrderId.equals(productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getId());
     }
