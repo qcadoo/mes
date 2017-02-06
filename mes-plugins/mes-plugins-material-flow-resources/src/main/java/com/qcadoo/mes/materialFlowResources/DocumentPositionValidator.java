@@ -545,6 +545,18 @@ public class DocumentPositionValidator {
         List<String> errors = new ArrayList<>();
 
         if (isInDocument(document)) {
+            // resource
+            /*
+            if (existsOtherResourceForPalletAndStorageLocation(position) ) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
+            }
+            if (existsOtherResourceForStorageLocationAndPallet(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForStorageLocationAndPallet", LocaleContextHolder.getLocale())));
+            }
+            if (existsOtherResourceForOtherPalletType(position)) {
+                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForOtherPalletType", LocaleContextHolder.getLocale())));
+            }
+            
             // position
             if (existsOtherPositionForStorageLocationAndPallet(position) ) {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForStorageLocationAndPallet", LocaleContextHolder.getLocale())));
@@ -554,17 +566,6 @@ public class DocumentPositionValidator {
             }          
             if (existsOtherPositionForOtherPalletType(position)) {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherPositionForOtherPalletType", LocaleContextHolder.getLocale())));
-            }
-
-            // resource
-            if (existsOtherResourceForPalletAndStorageLocation(position) ) {
-                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation", LocaleContextHolder.getLocale())));
-            }
-            if (existsOtherResourceForStorageLocationAndPallet(position)) {
-                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForStorageLocationAndPallet", LocaleContextHolder.getLocale())));
-            }
-            if (existsOtherResourceForOtherPalletType(position)) {
-                errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherResourceForOtherPalletType", LocaleContextHolder.getLocale())));
             }
             
             // delivery
@@ -577,6 +578,7 @@ public class DocumentPositionValidator {
             if (existsOtherDeliveredProductForOtherPalletType(position)) {
                 errors.add(String.format(translationService.translate("documentGrid.error.position.existsOtherDeliveredProductForOtherPalletType", LocaleContextHolder.getLocale())));
             }
+*/
         }
 
         return errors;
