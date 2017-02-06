@@ -24,7 +24,7 @@
 
 -- This script is invoked when application starts with hbm2ddlAuto = create.
 
---  Qcadoo-model & Hibernate will automatically generate regular db table due to existence of warehouseStock.xml model,
+-- Qcadoo-model & Hibernate will automatically generate regular db table due to existence of warehouseStock.xml model,
 -- we need to first drop this table, before create table view.
 
 CREATE OR REPLACE FUNCTION drop_all_sequence() RETURNS VOID AS $$ DECLARE ROW record; BEGIN FOR ROW IN SELECT tablename, SUBSTRING(quote_ident(tablename) || '_id_seq' FROM 1 FOR 63) AS seq_name FROM pg_tables p INNER JOIN information_schema.columns c ON p.tablename = c.table_name WHERE c.table_schema = 'public' AND p.schemaname = 'public' AND c.column_name = 'id' AND data_type = 'bigint' LOOP EXECUTE 'ALTER TABLE ' || quote_ident(ROW.tablename) || ' ALTER COLUMN id DROP DEFAULT;';  END LOOP; FOR ROW IN (SELECT c.relname FROM pg_class c WHERE c.relkind = 'S') LOOP EXECUTE 'DROP SEQUENCE ' || row.relname || ';'; END LOOP; END; $$ LANGUAGE 'plpgsql'; 
@@ -277,7 +277,6 @@ CREATE OR REPLACE VIEW ordersgroups_ordersgroupdto AS SELECT ordersGroup.id AS i
 	
 -- end
 
-
 DROP TABLE IF EXISTS  productioncounting_productiontrackingdto;
 
 CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS SELECT productiontracking.id, productiontracking.number, productiontracking.state, productiontracking.createdate, productiontracking.lasttracking, productiontracking.timerangefrom, productiontracking.timerangeto, productiontracking.active, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, ordersorder.state AS orderstate, technologyoperationcomponent.id::integer AS technologyoperationcomponent_id, CASE WHEN technologyoperationcomponent.* IS NULL THEN ''::text ELSE (technologyoperationcomponent.nodenumber::text || ' '::text) || operation.name::text END AS technologyoperationcomponentnumber, operation.id::integer AS operation_id, shift.id::integer AS shift_id, shift.name AS shiftname, staff.id::integer AS staff_id, (staff.name::text || ' '::text) || staff.surname::text AS staffname, division.id::integer AS division_id, division.number AS divisionnumber, subcontractor.id::integer AS subcontractor_id, subcontractor.name AS subcontractorname, repairorderdto.id::integer AS repairorder_id, repairorderdto.number AS repairordernumber, productiontrackingcorrection.number AS correctionnumber, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, ordersgroupdto.number AS ordersgroup, CONCAT(product.number,' - ',product.name) AS productNumber, product.unit AS productUnit, outcomponent.usedquantity AS usedQuantity FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN basic_product product ON ordersorder.product_id = product.id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id LEFT JOIN technologies_operation operation ON operation.id = technologyoperationcomponent.operation_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN basic_division division ON division.id = productiontracking.division_id LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id LEFT JOIN repairs_repairorderdto repairorderdto ON repairorderdto.id = productiontracking.repairorder_id LEFT JOIN ordersgroups_ordersgroupdto ordersgroupdto ON ordersgroupdto.id = ordersorder.ordersgroup_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON (outcomponent.product_id = product.id AND productiontracking.id = outcomponent.productiontracking_id) ;
@@ -353,5 +352,38 @@ CREATE OR REPLACE VIEW masterorders_masterorderposition_oneproduct AS SELECT (SE
 CREATE OR REPLACE VIEW masterorders_masterorderposition_manyproducts AS SELECT COALESCE(masterorderproduct.id, 0::integer), masterorderdefinition.name, masterorder.id::integer AS masterorderid, masterorderproduct.product_id::integer AS productid, masterorderproduct.id::integer AS masterorderproductid, masterorder.masterordertype, masterorder.name AS masterordername, masterorder.number, masterorder.deadline, masterorder.masterorderstate AS masterorderstatus, masterorderproduct.masterorderpositionstatus, COALESCE(masterorderproduct.masterorderquantity, 0::numeric) AS masterorderquantity, COALESCE((SELECT SUM(orders.plannedquantity)), 0::numeric) AS cumulatedmasterorderquantity, COALESCE((SELECT SUM(orders.donequantity)), 0::numeric) AS producedorderquantity, CASE WHEN (COALESCE(masterorderproduct.masterorderquantity, 0::numeric) - COALESCE((SELECT SUM(orders.donequantity)), 0::numeric)) > 0 THEN (COALESCE(masterorderproduct.masterorderquantity, 0::numeric)- COALESCE((SELECT SUM(orders.donequantity)), 0::numeric)) ELSE 0::numeric END AS lefttorelease, masterorderproduct.comments, product.number AS productnumber, product.name AS productname, product.unit, technology.number AS technologyname, company.name AS companyname, masterorder.active FROM masterorders_masterorder masterorder LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON masterorderdefinition.id = masterorder.masterorderdefinition_id LEFT JOIN masterorders_masterorderproduct masterorderproduct ON masterorderproduct.masterorder_id = masterorder.id LEFT JOIN basic_product product ON product.id = masterorderproduct.product_id LEFT JOIN basic_company company ON company.id = masterorder.company_id LEFT JOIN technologies_technology technology ON technology.id = masterorderproduct.technology_id LEFT JOIN orders_order orders ON orders.masterorderproductcomponent_id = masterorderproduct.id AND orders.masterorder_id = masterorderproduct.masterorder_id AND orders.product_id = masterorderproduct.product_id WHERE masterorder.masterordertype = '03manyProducts' AND masterorderproduct.id IS NOT NULL GROUP BY masterorderdefinition.name, masterorder.id, masterorder.product_id, masterorderproduct.id, masterorder.masterordertype, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorder.masterorderpositionstatus, masterorder.comments, product.number, product.name, product.unit, technology.number, company.name, masterorder.active;
 
 CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM masterorders_masterorderposition_oneproduct UNION ALL SELECT * FROM masterorders_masterorderposition_manyproducts;
+
+-- end
+
+-- production tracking number sequence
+
+CREATE SEQUENCE productioncounting_productiontracking_number_seq;
+
+CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS
+$$
+DECLARE
+    _pattern text;
+    _sequence_name text;
+    _sequence_value numeric;
+    _tmp text;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('productioncounting_productiontracking_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$ LANGUAGE 'plpgsql';
 
 -- end
