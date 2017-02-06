@@ -47,17 +47,18 @@ public class PalletValidatorService {
     }
 
     private boolean validatePallet(Entity palletNumber, String palletType, Entity storageLocation, Entity entity, Long deliveredProductId, Long resourceId, Long locationId) {
-        return !existsOtherDeliveredProductForPalletAndStorageLocation(palletNumber, storageLocation, deliveredProductId, entity) 
-                && !existsOtherDeliveredProductForStorageLocationAndPallet(palletNumber, storageLocation, deliveredProductId, entity)
-                && !existsOtherDeliveredProductForOtherPalletType(palletNumber, palletType, deliveredProductId, entity)
-             
-                && !existsOtherPositionForPalletAndStorageLocation(palletNumber, storageLocation, locationId, entity)
-                && !existsOtherPositionForStorageLocationAndPallet(palletNumber, storageLocation, locationId, entity)
-                && !existsOtherPositionForOtherPalletType(palletNumber, palletType, locationId, entity)
-               
-                && !existsOtherResourceForPalletAndStorageLocation(palletNumber, storageLocation, resourceId, entity) 
-                && !existsOtherResourceForStorageLocationAndPallet(palletNumber, storageLocation, resourceId, entity)
-                && !existsOtherResourceForOtherPalletType(palletNumber, palletType, resourceId, entity);
+        return true;
+//        return !existsOtherDeliveredProductForPalletAndStorageLocation(palletNumber, storageLocation, deliveredProductId, entity) 
+//                && !existsOtherDeliveredProductForStorageLocationAndPallet(palletNumber, storageLocation, deliveredProductId, entity)
+//                && !existsOtherDeliveredProductForOtherPalletType(palletNumber, palletType, deliveredProductId, entity)
+//             
+//                && !existsOtherPositionForPalletAndStorageLocation(palletNumber, storageLocation, locationId, entity)
+//                && !existsOtherPositionForStorageLocationAndPallet(palletNumber, storageLocation, locationId, entity)
+//                && !existsOtherPositionForOtherPalletType(palletNumber, palletType, locationId, entity)
+//               
+//                && !existsOtherResourceForPalletAndStorageLocation(palletNumber, storageLocation, resourceId, entity) 
+//                && !existsOtherResourceForStorageLocationAndPallet(palletNumber, storageLocation, resourceId, entity)
+//                && !existsOtherResourceForOtherPalletType(palletNumber, palletType, resourceId, entity);
     }
 
     private boolean existsOtherPositionForOtherPalletType(Entity palletNumberEntity, String palletType, Long positionId, Entity entity) {
