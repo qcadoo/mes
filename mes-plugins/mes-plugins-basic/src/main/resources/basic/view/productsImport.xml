@@ -44,19 +44,24 @@
             </group>
         </ribbon>
 
-        <component type="file" name="spreadsheet" reference="spreadsheet" hasDescription="true">
-            <listener event="uploadProductImportFile" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
-                      method="uploadProductImportFile"/>
+        <component type="gridLayout" name="gridLayout" columns="3"
+               rows="1">
+            <layoutElement column="1" row="1">
+                <component type="file" name="spreadsheet" reference="spreadsheet" hasDescription="true">
+                    <listener event="uploadProductImportFile" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                              method="uploadProductImportFile"/>
 
-            <!-- Consult why onSetValue is not invoked on file type component.
-                 It would allow to enable/disable ribbon import button  -->
+                    <!-- Consult why onSetValue is not invoked on file type component.
+                         It would allow to enable/disable ribbon import button  -->
 
-            <!-- Enable this file component. It's disabled by default when no model field is associated with it -->
-            <script>
-                <![CDATA[
-                    this.setEnabled(true, true);
-                ]]>
-            </script>
+                    <!-- Enable this file component. It's disabled by default when no model field is associated with it -->
+                    <script>
+                        <![CDATA[
+                            this.setEnabled(true, true);
+                        ]]>
+                    </script>
+                </component>
+            </layoutElement>
         </component>
 
         <listener event="navigateToProductImportSchema" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
