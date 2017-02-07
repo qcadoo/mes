@@ -262,3 +262,36 @@ CREATE OR REPLACE VIEW masterorders_masterorderposition_manyproducts AS SELECT C
 CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM masterorders_masterorderposition_oneproduct UNION ALL SELECT * FROM masterorders_masterorderposition_manyproducts;
 
 -- end
+
+-- production tracking number sequence
+
+CREATE SEQUENCE productioncounting_productiontracking_number_seq;
+
+CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS
+$$
+DECLARE
+    _pattern text;
+    _sequence_name text;
+    _sequence_value numeric;
+    _tmp text;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('productioncounting_productiontracking_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$ LANGUAGE 'plpgsql';
+
+-- end
