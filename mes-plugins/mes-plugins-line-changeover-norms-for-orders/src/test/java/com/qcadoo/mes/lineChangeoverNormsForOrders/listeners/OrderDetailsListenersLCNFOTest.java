@@ -23,20 +23,19 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.listeners;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+import java.util.Map;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class OrderDetailsListenersLCNFOTest {
 
@@ -64,7 +63,7 @@ public class OrderDetailsListenersLCNFOTest {
         // given
         given(componentState.getFieldValue()).willReturn(null);
 
-        String url = "../page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
+        String url = "/page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
 
         // when
         orderDetailsListenersLCNFO.showChangeover(view, componentState, null);
@@ -80,7 +79,7 @@ public class OrderDetailsListenersLCNFOTest {
 
         parameters.put("form.id", L_ID);
 
-        String url = "../page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
+        String url = "/page/lineChangeoverNormsForOrders/lineChangeoverNormsForOrderDetails.html";
 
         // when
         orderDetailsListenersLCNFO.showChangeover(view, componentState, null);
