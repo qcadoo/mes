@@ -333,6 +333,10 @@
                         <option type="creatable" value="true"/>
                         <option type="multiselect" value="true"/>
 
+                        <option type="footerRow" value="true"/>
+                        <option type="columnsToSummary"
+                                value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease"/>
+
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                                   method="onProductsChange"/>
