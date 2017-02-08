@@ -616,7 +616,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/rest/rest/documentPositions/product/' + productNumber + ".html", function (product) {
+            $.get('/rest/rest/documentPositions/product/' + encodeURIComponent(productNumber).replace('%2F', '%252F') + ".html", function (product) {
                 updateFieldValue('productName', product.name, _rowID);
             });
         }
@@ -627,7 +627,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/rest/rest/documentPositions/units/' + productNumber + ".html", function (units) {
+            $.get('/rest/rest/documentPositions/units/' + encodeURIComponent(productNumber).replace('%2F', '%252F') + ".html", function (units) {
                 available_additionalunits = units['available_additionalunits'];
                 var gridData = $('#grid').jqGrid('getRowData');
 
@@ -699,7 +699,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var storageLocations = null;
         function updateStorageLocations(productNumber, document) {
-            $.get('/rest/rest/documentPositions/storageLocation/' + productNumber + "/" + document + ".html", function (location) {
+            $.get('/rest/rest/documentPositions/storageLocation/' + encodeURIComponent(productNumber).replace('%2F', '%252F') + "/" + encodeURIComponent(document).replace('%2F', '%252F') + ".html", function (location) {
                 if (location) {
                     var gridData = $('#grid').jqGrid('getRowData');
 

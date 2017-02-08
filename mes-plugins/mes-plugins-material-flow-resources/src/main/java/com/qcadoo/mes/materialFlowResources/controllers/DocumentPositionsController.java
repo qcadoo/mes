@@ -1,20 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
@@ -23,6 +8,29 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 
 @Controller
 @RequestMapping("/rest/documentPositions")
@@ -42,14 +50,16 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "units/{number}")
-    public Map<String, Object> getUnitsForProduct(@PathVariable String number) {
-        return documentPositionRepository.unitsOfProduct(number);
+    public Map<String, Object> getUnitsForProduct(@PathVariable String number) throws UnsupportedEncodingException {
+        String decodedNumber = URLDecoder.decode(number, "UTF-8");
+        return documentPositionRepository.unitsOfProduct(decodedNumber);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "product/{number}")
-    public ProductDTO getProductForProductNumber(@PathVariable String number) {
-        return documentPositionRepository.getProductForProductNumber(number);
+    public ProductDTO getProductForProductNumber(@PathVariable String number) throws UnsupportedEncodingException {
+        String decodedNumber = URLDecoder.decode(number, "UTF-8");
+        return documentPositionRepository.getProductForProductNumber(decodedNumber);
     }
 
     @ResponseBody
@@ -89,8 +99,11 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation/{product}/{document}")
-    public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product, @PathVariable String document) {
-        return documentPositionRepository.getStorageLocation(product, document);
+    public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product,
+            @PathVariable String document) throws UnsupportedEncodingException {
+        String decodedProduct = URLDecoder.decode(product, "UTF-8");
+        String decodedDocument = URLDecoder.decode(document, "UTF-8");
+        return documentPositionRepository.getStorageLocation(decodedProduct, decodedDocument);
     }
 
     @ResponseBody
@@ -104,7 +117,8 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
             @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
-            @RequestParam("ac") String additionalCode) {return documentPositionRepository.getResourcesResponse(document, query, product, conversion, additionalCode);
+            @RequestParam("ac") String additionalCode) {
+        return documentPositionRepository.getResourcesResponse(document, query, product, conversion, additionalCode);
     }
 
     @ResponseBody
