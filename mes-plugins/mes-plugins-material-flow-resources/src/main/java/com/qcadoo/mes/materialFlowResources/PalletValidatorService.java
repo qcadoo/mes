@@ -67,6 +67,7 @@ public class PalletValidatorService {
         if (exists) {
             entity.addError(entity.getDataDefinition().getField("palletNumber"),
                     "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation");
+
         }
         return exists;
     }
@@ -97,6 +98,7 @@ public class PalletValidatorService {
         if (exists) {
             entity.addError(entity.getDataDefinition().getField("palletNumber"),
                     "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation");
+
         }
         return exists;
     }
@@ -120,12 +122,14 @@ public class PalletValidatorService {
         if (entity.getId() != null) {
             find.setLong("dpId", entity.getId());
         }
+
         Entity countResults = find.uniqueResult();
 
         boolean exists = ((Long) countResults.getField("cnt")) > 0L;
         if (exists) {
             entity.addError(entity.getDataDefinition().getField("palletNumber"),
                     "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation");
+
         }
         return exists;
     }

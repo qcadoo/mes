@@ -624,5 +624,4 @@ public class DocumentPositionValidator {
         Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
         return count > 0;
     }
-
 }
