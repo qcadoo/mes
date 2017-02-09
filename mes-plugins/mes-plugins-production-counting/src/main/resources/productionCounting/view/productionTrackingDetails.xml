@@ -51,7 +51,7 @@
             <group name="correction">
                 <bigButton name="correct" icon="copyIcon24.png"
                            state="disabled">
-                     <script>
+                    <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
@@ -62,7 +62,7 @@
 							});
 						]]>
                     </script>
-            	</bigButton>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -160,7 +160,7 @@
                         <component type="checkbox" name="lastTracking" field="lastTracking"
                                    reference="lastTracking" hasDescription="true"/>
                         <component type="input" name="number" field="number"
-                                   reference="number" defaultEnabled="false">
+                                   reference="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
                         <component type="checkbox" name="isCorrection" field="isCorrection"
@@ -430,13 +430,13 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
-<!--                <listener event="changeTrackingState"
-                          class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-                          method="changeState"/>-->
+                <!--                <listener event="changeTrackingState"
+                                          class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
+                                          method="changeState"/>-->
                 <listener event="changeTrackingState"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="changeTrackingState"/>
-                          
+
                 <listener event="copyPlannedQuantityToUsedQuantity"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="copyPlannedQuantityToUsedQuantity"/>
