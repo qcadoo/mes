@@ -453,43 +453,9 @@
         </windowTab>
 
         <windowTab name="productsTab" reference="productsTab">
-            <component type="gridLayout" name="productsGridLayout"
-                       columns="1" rows="2">
-                <layoutElement column="1" row="1">
-                    <component type="grid" name="trackingOperationProductInComponents"
-                               reference="trackingOperationProductInComponents"
-                               source="#{form}.trackingOperationProductInComponents"
-                               defaultEnabled="false">
-                        <option type="column" name="number" fields="product"
-                                expression="#product['number']" link="true" width="100"/>
-                        <option type="column" name="name" fields="product"
-                                expression="#product['name']" link="true" width="200"/>
-                        <option type="column" name="plannedQuantity" fields="plannedQuantity"
-                                width="100"/>
-                        <option type="column" name="usedQuantity" fields="usedQuantity"
-                                width="100"/>
-                        <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" link="false" width="50"/>
-
-                        <option type="correspondingView"
-                                value="productionCounting/trackingOperationProductInComponentDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-
-                        <option type="order" column="number" direction="desc"/>
-
-                        <option type="searchable" value="number,name,usedQuantity,unit"/>
-                        <option type="orderable" value="number,name,usedQuantity,unit"/>
-
-                        <option type="creatable" value="false"/>
-                        <option type="deletable" value="false"/>
-
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="false"/>
-                        <option type="fixedHeight" value="true"/>
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" row="2">
+            <component type="flowGridLayout" name="productsGridLayout"
+                       columns="1" rows="9">
+                <layoutElement column="1" row="1" height="5">
                     <component type="grid" name="trackingOperationProductOutComponents"
                                reference="trackingOperationProductOutComponents"
                                source="#{form}.trackingOperationProductOutComponents"
@@ -533,7 +499,41 @@
 
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="false"/>
-                        <option type="fixedHeight" value="true"/>
+                        <!--<option type="fixedHeight" value="true"/>-->
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="6" minHeight="4">
+                    <component type="grid" name="trackingOperationProductInComponents"
+                               reference="trackingOperationProductInComponents"
+                               source="#{form}.trackingOperationProductInComponents"
+                               defaultEnabled="false">
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true" width="100"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity"
+                                width="100"/>
+                        <option type="column" name="usedQuantity" fields="usedQuantity"
+                                width="100"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" link="false" width="50"/>
+
+                        <option type="correspondingView"
+                                value="productionCounting/trackingOperationProductInComponentDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="searchable" value="number,name,usedQuantity,unit"/>
+                        <option type="orderable" value="number,name,usedQuantity,unit"/>
+
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="false"/>
+                        <!--<option type="fixedHeight" value="true"/>-->
                     </component>
                 </layoutElement>
             </component>
