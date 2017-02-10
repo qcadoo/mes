@@ -137,6 +137,10 @@
 		<level value="error" />
 	</logger>
 
+	<logger name="org.hibernate.dialect.function.TemplateRenderer">
+		<level value="error" />
+	</logger>
+
 	<logger name="com.qcadoo.model">
 		<level value="info" />
 		<appender-ref ref="model-log" />
