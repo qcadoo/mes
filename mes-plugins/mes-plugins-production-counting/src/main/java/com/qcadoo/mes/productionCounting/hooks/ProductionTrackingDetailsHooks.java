@@ -77,8 +77,7 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_CORRECTION = "correction";
 
-    private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(
-            ProductionTrackingFields.LAST_TRACKING, ProductionTrackingFields.NUMBER, ProductionTrackingFields.ORDER,
+    private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION_TYPE, ProductionTrackingFields.DIVISION,
             ProductionTrackingFields.LABOR_TIME, ProductionTrackingFields.MACHINE_TIME,
