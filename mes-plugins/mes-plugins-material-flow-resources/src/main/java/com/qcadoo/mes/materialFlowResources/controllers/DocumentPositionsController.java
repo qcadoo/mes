@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialFlowResources.controllers;
 
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
-import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.google.common.io.BaseEncoding;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
@@ -51,14 +51,14 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "units/{number}")
     public Map<String, Object> getUnitsForProduct(@PathVariable String number) throws UnsupportedEncodingException {
-        String decodedNumber = URLDecoder.decode(number, "UTF-8");
+        String decodedNumber = new String(BaseEncoding.base64Url().decode(number),"utf-8");
         return documentPositionRepository.unitsOfProduct(decodedNumber);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "product/{number}")
     public ProductDTO getProductForProductNumber(@PathVariable String number) throws UnsupportedEncodingException {
-        String decodedNumber = URLDecoder.decode(number, "UTF-8");
+        String decodedNumber = new String(BaseEncoding.base64Url().decode(number),"utf-8");
         return documentPositionRepository.getProductForProductNumber(decodedNumber);
     }
 
@@ -101,8 +101,8 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation/{product}/{document}")
     public StorageLocationDTO getStorageLocationForProductAndWarehouse(@PathVariable String product,
             @PathVariable String document) throws UnsupportedEncodingException {
-        String decodedProduct = URLDecoder.decode(product, "UTF-8");
-        String decodedDocument = URLDecoder.decode(document, "UTF-8");
+        String decodedProduct = new String(BaseEncoding.base64Url().decode(product),"utf-8");
+        String decodedDocument = new String(BaseEncoding.base64Url().decode(document),"utf-8");
         return documentPositionRepository.getStorageLocation(decodedProduct, decodedDocument);
     }
 
@@ -125,7 +125,7 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resourceByNumber/{document}/{resource}")
     public ResourceDTO getBatchForResource(@PathVariable Long document, @PathVariable String resource)
             throws UnsupportedEncodingException {
-        String decodedResource = URLDecoder.decode(resource, "UTF-8");
+        String decodedResource = new String(BaseEncoding.base64Url().decode(resource),"utf-8");
         return documentPositionRepository.getResourceByNumber(decodedResource);
     }
 
