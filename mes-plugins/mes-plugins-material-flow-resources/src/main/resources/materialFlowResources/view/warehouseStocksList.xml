@@ -53,6 +53,11 @@
             <option type="orderable"
                     value="locationNumber,locationName,productNumber,productName,quantity,unit"/>
 
+            <!-- column orderedQuantity from deliveriesToMaterialFlow -->
+            <option type="columnsToSummary"
+                    value="quantity,reservedQuantity,availableQuantity,orderedQuantity"/>
+
+            <option type="footerRow" value="true"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
             <rowStyleResolver

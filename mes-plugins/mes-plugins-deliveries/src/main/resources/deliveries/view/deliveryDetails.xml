@@ -799,6 +799,8 @@
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+                      method="onBeforeRender"/>
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="generateDeliveryNumber"/>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="fillCompanyFieldsForSupplier"/>

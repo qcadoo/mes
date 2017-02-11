@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -51,7 +41,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -70,8 +65,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public void createProductionCountingQuantitiesAndOperationRuns(final Entity order) {
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-        final Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
         final OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentWithQuantities(Arrays.asList(order), operationRuns, nonComponents);

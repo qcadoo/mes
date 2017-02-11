@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class OrderDetailsListenersCC {
@@ -43,7 +42,7 @@ public class OrderDetailsListenersCC {
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put(L_WINDOW_ACTIVE_MENU, "calculations.costCalculation");
 
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
+            String url = "/page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
             view.redirectTo(url, false, true, parameters);
         }
     }

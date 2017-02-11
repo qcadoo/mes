@@ -36,7 +36,7 @@ public class OrderDetailsListenersPS {
         Long orderId = (Long) triggerState.getFieldValue();
 
         if (orderId != null) {
-            String url = "../page/productionScheduling/operationDurationDetailsInOrder.html?context={\"form.id\":\"" + orderId
+            String url = "/page/productionScheduling/operationDurationDetailsInOrder.html?context={\"form.id\":\"" + orderId
                     + "\"}";
             viewDefinitionState.redirectTo(url, false, true);
         }

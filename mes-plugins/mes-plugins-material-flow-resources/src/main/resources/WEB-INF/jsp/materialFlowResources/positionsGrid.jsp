@@ -48,6 +48,7 @@ String ctx = request.getContextPath();
     </c:choose>
 
     <script src="/materialFlowResources/public/js/gridOptions.js?ver=${buildNumber}"></script>
+    <script src="/materialFlowResources/public/js/base64.js?ver=${buildNumber}"></script>
     
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-ui-1.11.4.min.js?ver=${buildNumber}"></script>
     <script src="/qcadooView/public/js/crud/qcd/components/jqGrid/jquery.blockUI.js?ver=${buildNumber}"></script>

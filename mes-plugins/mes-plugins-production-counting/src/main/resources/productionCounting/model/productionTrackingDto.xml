@@ -24,44 +24,53 @@
     ***************************************************************************
 
 -->
-<model name="productionTrackingDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="productionTrackingDto" activable="true" auditable="false" deletable="false" insertable="false"
+       updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<string name="number"/>
-		<enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"/>
-		<datetime name="createDate"/>
-		<boolean name="lastTracking"/>
-		<datetime name="timeRangeFrom"/>
-		<datetime name="timeRangeTo"/>
+    <fields>
+        <string name="number"/>
+        <enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"/>
+        <datetime name="createDate"/>
+        <boolean name="lastTracking"/>
+        <datetime name="timeRangeFrom"/>
+        <datetime name="timeRangeTo"/>
 
-		<integer name="order_id"/>
-		<string name="orderNumber"/>
+        <integer name="order_id"/>
+        <string name="orderNumber"/>
+        <string name="productNumber"/>
+        <string name="productUnit"/>
 
-		<integer name="productionline_id"/>
-		<string name="productionLineNumber"/>
 
-		<enum name="orderState"
-			  values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <integer name="productionline_id"/>
+        <string name="productionLineNumber"/>
 
-		<integer name="technologyOperationComponent_id"/>
-		<string name="technologyOperationComponentNumber"/>
+        <enum name="orderState"
+              values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
 
-		<integer name="operation_id"/>
+        <integer name="technologyOperationComponent_id"/>
+        <string name="technologyOperationComponentNumber"/>
 
-		<integer name="shift_id"/>
-		<string name="shiftName"/>
+        <integer name="operation_id"/>
 
-		<integer name="staff_id"/>
-		<string name="staffName"/>
+        <integer name="shift_id"/>
+        <string name="shiftName"/>
 
-		<integer name="division_id"/>
-		<string name="divisionNumber"/>
+        <integer name="staff_id"/>
+        <string name="staffName"/>
 
-		<string name="correctionNumber"/>
-	</fields>
+        <integer name="division_id"/>
+        <string name="divisionNumber"/>
 
-	<masterModel plugin="productionCounting" model="productionTracking" />
+        <string name="correctionNumber"/>
+    </fields>
+
+    <masterModel plugin="productionCounting" model="productionTracking"/>
 
 </model>

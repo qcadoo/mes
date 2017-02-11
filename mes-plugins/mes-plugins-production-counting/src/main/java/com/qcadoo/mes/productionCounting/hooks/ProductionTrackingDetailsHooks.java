@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -76,8 +77,7 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_CORRECTION = "correction";
 
-    private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(
-            ProductionTrackingFields.LAST_TRACKING, ProductionTrackingFields.NUMBER, ProductionTrackingFields.ORDER,
+    private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION_TYPE, ProductionTrackingFields.DIVISION,
             ProductionTrackingFields.LABOR_TIME, ProductionTrackingFields.MACHINE_TIME,
@@ -112,6 +112,14 @@ public class ProductionTrackingDetailsHooks {
             updateRibbonState(view);
             toggleCorrectButton(view, productionTracking);
             toggleCorrectionFields(view, productionTracking);
+            fetchNumberFromDatabase(view, productionTracking);
+        }
+    }
+
+    private void fetchNumberFromDatabase(final ViewDefinitionState view, final Entity productionTracking) {
+        FieldComponent numberField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.NUMBER);
+        if (Strings.isNullOrEmpty((String) numberField.getFieldValue())) {
+            numberField.setFieldValue(productionTracking.getStringField(ProductionTrackingFields.NUMBER));
         }
     }
 
@@ -140,7 +148,8 @@ public class ProductionTrackingDetailsHooks {
             view.getComponentByReference("productionLine").setEnabled(false);
             view.getComponentByReference("technologyOperationComponent").setEnabled(false);
             view.getComponentByReference("corrects").setVisible(true);
-            view.getComponentByReference("corrects").setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
+            view.getComponentByReference("corrects")
+                    .setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
         }
     }
 
@@ -177,8 +186,9 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private Entity getProductionTrackingFromDB(final Long productionTrackingId) {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionTrackingId);
+        return dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
+                .get(productionTrackingId);
     }
 
     public void initializeProductionTrackingDetailsView(final ViewDefinitionState view) {
@@ -202,7 +212,8 @@ public class ProductionTrackingDetailsHooks {
         }
     }
 
-    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm, final Entity productionTracking) {
+    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm,
+            final Entity productionTracking) {
         boolean lastStateChangeFails = productionTracking.getBooleanField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS);
 
         if (lastStateChangeFails) {

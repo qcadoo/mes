@@ -74,7 +74,6 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
     @Transactional
     private void performStateChange(final StateChangeContext stateChangeContext) {
-        performPreValidation(stateChangeContext);
         final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
 
         describer.checkFields();
@@ -87,16 +86,6 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
         final Entity owner = stateChangeContext.getOwner();
         stateChangeContext.setOwner(owner);
         performChangeEntityState(stateChangeContext);
-    }
-
-    private boolean performPreValidation(final StateChangeContext stateChangeContext) {
-        final StateChangeEntityDescriber describer = stateChangeContext.getDescriber();
-        final Entity ownerCopy = stateChangeContext.getOwner().copy();
-        ownerCopy.setField(describer.getOwnerStateFieldName(),
-                stateChangeContext.getStateChangeEntity().getStringField(describer.getTargetStateFieldName()));
-        ownerCopy.getDataDefinition().callValidators(ownerCopy);
-        ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, ownerCopy);
-        return ownerCopy.isValid();
     }
 
     /**
@@ -126,7 +115,7 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
             }
             return;
         }
-        final Entity owner = describer.getOwnerDataDefinition().save(stateChangeContext.getOwner());
+        final Entity owner = stateChangeContext.getOwner();
         final StateEnum sourceState = stateChangeContext.getStateEnumValue(describer.getSourceStateFieldName());
         final StateEnum targetState = stateChangeContext.getStateEnumValue(describer.getTargetStateFieldName());
 

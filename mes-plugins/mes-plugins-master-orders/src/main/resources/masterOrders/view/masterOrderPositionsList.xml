@@ -102,6 +102,9 @@
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>
 
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary"
+                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -44,6 +45,8 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -306,7 +309,6 @@ public class DeliveryDetailsHooks {
     }
 
     public void processRoles(final ViewDefinitionState view) {
-
         Entity currentUser = userService.getCurrentUserEntity();
         for (DeliveryRole role : DeliveryRole.values()) {
             if (!securityService.hasRole(currentUser, role.toString())) {
@@ -315,4 +317,35 @@ public class DeliveryDetailsHooks {
         }
     }
 
+    public void onBeforeRender(final ViewDefinitionState view) {
+        orderGridByProductNumber(view);
+    }
+
+    private void orderGridByProductNumber(ViewDefinitionState view) {
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference("orderedProducts");
+        String productNumberFilter = gridComponent.getFilters().get("productNumber");
+        if (!Strings.isNullOrEmpty(productNumberFilter) && productNumberFilter.startsWith("[") && productNumberFilter.endsWith("]")) {
+            List<Entity> orderedProductsEntities = gridComponent.getEntities();
+            List<Entity> sortedEntities = new ArrayList<>();
+            for (String f : getSortedItemsFromFilter(productNumberFilter)) {
+                for (Iterator<Entity> iter = orderedProductsEntities.listIterator(); iter.hasNext();) {
+                    Entity entity = iter.next();
+                    if (f.equals(entity.getStringField("productNumber"))) {
+                        sortedEntities.add(entity);
+                        iter.remove();
+                        break;
+                    }
+                }
+            }
+
+            sortedEntities.addAll(orderedProductsEntities);
+            gridComponent.setEntities(sortedEntities);
+        }
+    }
+
+    private String[] getSortedItemsFromFilter(String productNumberFilter) {
+        productNumberFilter = productNumberFilter.substring(1, productNumberFilter.length() - 1);
+
+        return productNumberFilter.split(",");
+    }
 }

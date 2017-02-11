@@ -36,9 +36,9 @@
             <template name="standardGridTemplate"/>
             <group name="status">
                 <smallButton name="acceptTracking" icon="startIcon16.png"
-                                             state="disabled">
+                             state="disabled">
                     <script>
-						<![CDATA[
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.acceptTracking.confirm)}")) {
@@ -50,9 +50,9 @@
                     </script>
                 </smallButton>
                 <smallButton name="cancelTracking" icon="deleteIcon16.png"
-                                             state="disabled">
+                             state="disabled">
                     <script>
-						<![CDATA[
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.declineTracking.confirm)}")) {
@@ -67,9 +67,9 @@
         </ribbon>
 
         <component type="grid" name="productionTrackingsList"
-                           reference="grid">
+                   reference="grid">
             <script>
-				<![CDATA[
+                <![CDATA[
 					var acceptRecord = #{window}.getRibbonItem("status.acceptTracking"),
 						cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
 
@@ -87,7 +87,7 @@
 				]]>
             </script>
             <script>
-				<![CDATA[
+                <![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
 					var acceptTracking = #{window}.getRibbonItem("status.acceptTracking");
@@ -181,39 +181,45 @@
             </script>
 
             <option type="column" name="number" fields="number" link="true"
-                                width="120"/>
+                    width="120"/>
             <option type="column" name="orderNumber" fields="orderNumber" link="true"
-                                width="200"/>
+                    width="200"/>
             <option type="column" name="technologyOperationComponentNumber"
-                                fields="technologyOperationComponentNumber" width="120"/>
+                    fields="technologyOperationComponentNumber" width="120"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity"/>
+            <option type="column" name="productUnit" fields="productUnit" width="40"/>
             <option type="column" name="shiftName" fields="shiftName"
-                                width="80"/>
+                    width="80"/>
             <option type="column" name="staffName" fields="staffName"
-                                width="100"/>
+                    width="100"/>
             <option type="column" name="divisionNumber" fields="divisionNumber"
-                                width="80"/>
+                    width="80"/>
             <option type="column" name="productionLineNumber" fields="productionLineNumber"
-                                width="80"/>
+                    width="80"/>
             <option type="column" name="state" fields="state"
-                                width="90"/>
+                    width="90"/>
             <option type="column" name="createDate" fields="createDate"
-                                width="100"/>
+                    width="100"/>
             <option type="column" name="lastTracking" fields="lastTracking"
-                                expression="#lastTracking" width="40"/>
+                    expression="#lastTracking" width="40"/>
             <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
-                                width="100"/>
+                    width="100"/>
             <option type="column" name="timeRangeTo" fields="timeRangeTo"
-                                width="100"/>
+                    width="100"/>
             <option type="column" name="correctionNumber" fields="correctionNumber"
-                                width="120"/>
+                    width="120"/>
             <option type="column" name="orderState" fields="orderState" hidden="true"/>
 
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                                value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
-                                value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="usedQuantity"/>
 
             <option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
             <option type="correspondingComponent" value="form"/>
@@ -222,8 +228,8 @@
             <option type="multiselect" value="true"/>
 
             <listener event="changeState"
-                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                          method="changeTrackingState"/>
+                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                      method="changeTrackingState"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -36,6 +30,11 @@ import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class OrderHooksBPC {
@@ -86,7 +85,6 @@ public class OrderHooksBPC {
         if (existingOrderPlannedQuantity == null) {
             return true;
         }
-
         return !BigDecimalUtils.valueEquals(existingOrderPlannedQuantity, plannedQuantity);
     }
 
@@ -94,7 +92,12 @@ public class OrderHooksBPC {
         if (order.getId() == null) {
             return null;
         }
-        return order.getDataDefinition().get(order.getId());
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ord.id as id, ord.plannedQuantity as plannedQuantity ");
+        query.append("FROM #orders_order ord WHERE id = :id");
+        Entity orderDB = order.getDataDefinition().find(query.toString()).setLong("id", order.getId()).setMaxResults(1).uniqueResult();
+
+        return orderDB;
     }
 
     boolean checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(final Entity order) {

@@ -20,6 +20,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -30,6 +31,8 @@ import java.util.*;
 
 @Service
 public class StateExecutorService {
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(StateExecutorService.class);
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -111,7 +114,8 @@ public class StateExecutorService {
     @Transactional
     private <M extends StateService> Entity performChangeState(
             List<M> services, Entity entity, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
-
+        LOG.info(String.format("Change state. Entity name : %S id : %d. Target state : %S", entity.getDataDefinition().getName(),
+                entity.getId(), stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
         if (!canChangeState(describer, entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()))) {
             entity.setNotValid();
             return entity;

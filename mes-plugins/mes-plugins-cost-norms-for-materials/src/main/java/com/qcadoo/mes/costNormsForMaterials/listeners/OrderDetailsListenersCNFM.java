@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class OrderDetailsListenersCNFM {
@@ -45,7 +44,7 @@ public class OrderDetailsListenersCNFM {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("order.id", orderId);
 
-        String url = "../page/costNormsForMaterials/costNormsForMaterialsInOrderList.html";
+        String url = "/page/costNormsForMaterials/costNormsForMaterialsInOrderList.html";
         viewState.redirectTo(url, false, true, parameters);
     }
 

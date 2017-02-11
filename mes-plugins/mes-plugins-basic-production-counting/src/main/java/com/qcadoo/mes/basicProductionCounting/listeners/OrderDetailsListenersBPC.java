@@ -47,7 +47,7 @@ public class OrderDetailsListenersBPC {
             throw new IllegalStateException(e);
         }
 
-        String url = "../page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
+        String url = "/page/basicProductionCounting/basicProductionCountingList.html?context=" + json.toString();
         view.redirectTo(url, false, true);
     }
 

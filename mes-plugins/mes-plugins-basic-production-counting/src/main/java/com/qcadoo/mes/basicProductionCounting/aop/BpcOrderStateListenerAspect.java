@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.aop;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.LAST;
-
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.basicProductionCounting.BpcOrderStateListenerService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -41,6 +33,13 @@ import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.states.aop.RunForStateTransitionAspect;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangePhase.LAST;
 
 @Aspect
 @Configurable
