@@ -826,7 +826,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         BigDecimal givenQty = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, givenQty,
+        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, givenQty,
                 MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
