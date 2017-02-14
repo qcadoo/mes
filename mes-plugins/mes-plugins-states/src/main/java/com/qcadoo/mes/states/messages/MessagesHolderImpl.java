@@ -23,13 +23,13 @@
  */
 package com.qcadoo.mes.states.messages;
 
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
-
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
 
 public class MessagesHolderImpl implements MessagesHolder {
 

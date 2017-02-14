@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.states.service.client;
 
-import static com.qcadoo.mes.states.messages.constants.MessageFields.CORRESPOND_FIELD_NAME;
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.isAutoClosed;
-import static org.apache.commons.lang3.StringUtils.join;
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
-
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -51,9 +34,27 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.states.messages.constants.MessageFields.CORRESPOND_FIELD_NAME;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.*;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 @Service
 public class StateChangeViewClientValidationUtil {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractStateChangeViewClient.class);
 
     @Autowired
     private TranslationService translationService;
@@ -90,8 +91,15 @@ public class StateChangeViewClientValidationUtil {
         DataDefinition dataDefinition = entity.getDataDefinition();
         String correspondFieldName = MessagesUtil.getCorrespondFieldName(message);
         if (StringUtils.isNotBlank(correspondFieldName) && dataDefinition.getFields().containsKey(correspondFieldName)) {
+            LOG.info(String.format("Change state error. Entity name : %S id : %d. Field : %S %S", entity.getDataDefinition()
+                    .getName(), entity.getId(), correspondFieldName, translationService.translate(getKey(message),
+                    LocaleContextHolder.getLocale(), getArgs(message))));
             entity.addError(entity.getDataDefinition().getField(correspondFieldName), getKey(message), getArgs(message));
         } else {
+            LOG.info(String.format("Change state error. Entity name : %S id : %d. %S", entity.getDataDefinition().getName(),
+                    entity.getId(),
+                    translationService.translate(getKey(message), LocaleContextHolder.getLocale(), getArgs(message))));
+
             entity.addGlobalError(getKey(message), isAutoClosed(message), getArgs(message));
         }
     }
@@ -102,9 +110,15 @@ public class StateChangeViewClientValidationUtil {
         CollectionUtils.filter(messages, VALIDATION_MESSAGES_PREDICATE);
         for (Entity message : messages) {
             if (MessagesUtil.hasCorrespondField(message)) {
-                errorMessages.add(composeTranslatedFieldValidationMessage(entity, message));
+                String msg = composeTranslatedFieldValidationMessage(entity, message);
+                errorMessages.add(msg);
+                LOG.info(String.format("Change state error. Entity name : %S id : %d. %S", entity.getDataDefinition().getName(),
+                        entity.getId(), msg));
             } else {
-                errorMessages.add(composeTranslatedGlobalValidationMessage(message));
+                String msg = composeTranslatedGlobalValidationMessage(message);
+                errorMessages.add(msg);
+                LOG.info(String.format("Change state error. Entity name : %S id : %d. %S", entity.getDataDefinition().getName(),
+                        entity.getId(), msg));
             }
         }
 

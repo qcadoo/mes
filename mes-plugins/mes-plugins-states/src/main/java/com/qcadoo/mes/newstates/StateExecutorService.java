@@ -2,13 +2,18 @@ package com.qcadoo.mes.newstates;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
 import com.qcadoo.mes.states.exception.StateChangeException;
+import com.qcadoo.mes.states.exception.StateTransitionNotAlloweException;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -29,6 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
+
 @Service
 public class StateExecutorService {
 
@@ -47,10 +55,9 @@ public class StateExecutorService {
 
     private static final Logger LOGGER = Logger.getLogger(StateExecutorService.class);
 
-    public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view,
-            String[] args) {
+    public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view, String[] args) {
         componentMessagesHolder = view;
-        
+
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
@@ -64,7 +71,6 @@ public class StateExecutorService {
             Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
-                formComponent.performEvent(view, "save", new String[0]);
                 Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
                 if (entity.isValid()) {
                     entity = changeState(serviceMarker, entity, args[0]);
@@ -74,8 +80,7 @@ public class StateExecutorService {
         }
     }
 
-    public <M extends StateService> Entity changeState(Class<M> serviceMarker,
-            Entity entity, String targetState) {
+    public <M extends StateService> Entity changeState(Class<M> serviceMarker, Entity entity, String targetState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
         StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
         String sourceState = entity.getStringField(describer.getOwnerStateFieldName());
@@ -83,6 +88,10 @@ public class StateExecutorService {
         Entity stateChangeEntity = buildStateChangeEntity(describer, entity, sourceState, targetState);
 
         try {
+
+            stateChangeEntity = saveStateChangeContext(entity, stateChangeEntity, describer, sourceState, targetState,
+                    StateChangeStatus.IN_PROGRESS);
+
             entity = performChangeState(services, entity, stateChangeEntity, describer);
 
             if (entity.isValid()) {
@@ -102,7 +111,21 @@ public class StateExecutorService {
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             return entity;
 
-        } catch (Exception exception) {
+        } catch (AnotherChangeInProgressException e) {
+            entity = rollbackStateChange(entity, sourceState);
+            saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+            message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            message("states.messages.change.failure.anotherChangeInProgress", ComponentState.MessageType.FAILURE);
+            LOG.info(String.format("Another state change in progress. Entity name : %S id : %d. Target state : %S", entity
+                    .getDataDefinition().getName(), entity.getId(), targetState));
+        }  catch (StateTransitionNotAlloweException e) {
+            entity = rollbackStateChange(entity, sourceState);
+            saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+            message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            message("states.messages.change.failure.transitionNotAllowed", ComponentState.MessageType.FAILURE);
+        LOG.info(String.format("State change - transition not allowed. Entity name : %S id : %d. Target state : %S",
+                entity.getDataDefinition().getName(), entity.getId(), targetState));
+    }catch (Exception exception) {
             LOGGER.warn("Can't perform state change", exception);
 
             throw new StateChangeException(exception);
@@ -111,9 +134,21 @@ public class StateExecutorService {
         return entity;
     }
 
+    private Entity saveStateChangeContext(Entity entity, Entity stateChangeEntity, StateChangeEntityDescriber describer,
+            String _sourceState, String _targetState, StateChangeStatus status) {
+        final StateEnum sourceState = describer.parseStateEnum(_sourceState);
+        final StateEnum targetState = describer.parseStateEnum(_targetState);
+        if (sourceState != null && !sourceState.canChangeTo(targetState)) {
+            throw new StateTransitionNotAlloweException(sourceState, targetState);
+        }
+        checkForUnfinishedStateChange(describer, entity);
+        stateChangeEntity = saveStateChangeEntity(stateChangeEntity, status);
+        return stateChangeEntity;
+    }
+
     @Transactional
-    private <M extends StateService> Entity performChangeState(
-            List<M> services, Entity entity, Entity stateChangeEntity, StateChangeEntityDescriber describer) {
+    private <M extends StateService> Entity performChangeState(List<M> services, Entity entity, Entity stateChangeEntity,
+            StateChangeEntityDescriber describer) {
         LOG.info(String.format("Change state. Entity name : %S id : %d. Target state : %S", entity.getDataDefinition().getName(),
                 entity.getId(), stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
         if (!canChangeState(describer, entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()))) {
@@ -124,7 +159,7 @@ public class StateExecutorService {
         entity = hookOnValidate(entity, services, stateChangeEntity.getStringField(describer.getSourceStateFieldName()),
                 stateChangeEntity.getStringField(describer.getTargetStateFieldName()), stateChangeEntity, describer);
         if (!entity.isValid()) {
-//            copyErrorMessages(entity);
+            // copyErrorMessages(entity);
             return entity;
         }
         entity = changeState(entity, stateChangeEntity.getStringField(describer.getTargetStateFieldName()));
@@ -299,6 +334,20 @@ public class StateExecutorService {
     private void message(String msg, ComponentState.MessageType messageType) {
         if (componentMessagesHolder != null) {
             componentMessagesHolder.addMessage(msg, messageType);
+        }
+    }
+
+    private void checkForUnfinishedStateChange(final StateChangeEntityDescriber describer, final Entity owner) {
+        final String ownerFieldName = describer.getOwnerFieldName();
+        final String statusFieldName = describer.getStatusFieldName();
+        final Set<String> unfinishedStatuses = Sets.newHashSet(IN_PROGRESS.getStringValue(), PAUSED.getStringValue());
+
+        final SearchCriteriaBuilder searchCriteria = describer.getDataDefinition().find();
+        searchCriteria.createAlias(ownerFieldName, ownerFieldName);
+        searchCriteria.add(SearchRestrictions.eq(ownerFieldName + ".id", owner.getId()));
+        searchCriteria.add(SearchRestrictions.in(statusFieldName, unfinishedStatuses));
+        if (searchCriteria.list().getTotalNumberOfEntities() > 0) {
+            throw new AnotherChangeInProgressException();
         }
     }
 }
