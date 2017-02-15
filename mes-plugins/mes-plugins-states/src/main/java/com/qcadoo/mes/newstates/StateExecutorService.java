@@ -98,10 +98,16 @@ public class StateExecutorService {
                 copyMessages(entity);
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
                 message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
+                LOG.info(String.format("Change state successful. Entity name : %S id : %d. Target state : %S",
+                        entity.getDataDefinition().getName(), entity.getId(),
+                        stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
             } else {
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
                 entity = rollbackStateChange(entity, sourceState);
                 message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+                LOG.info(String.format("Change state failure. Entity name : %S id : %d. Target state : %S",
+                        entity.getDataDefinition().getName(), entity.getId(),
+                        stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
             }
 
         } catch (EntityRuntimeException entityException) {
@@ -118,14 +124,14 @@ public class StateExecutorService {
             message("states.messages.change.failure.anotherChangeInProgress", ComponentState.MessageType.FAILURE);
             LOG.info(String.format("Another state change in progress. Entity name : %S id : %d. Target state : %S", entity
                     .getDataDefinition().getName(), entity.getId(), targetState));
-        }  catch (StateTransitionNotAlloweException e) {
+        } catch (StateTransitionNotAlloweException e) {
             entity = rollbackStateChange(entity, sourceState);
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
             message("states.messages.change.failure.transitionNotAllowed", ComponentState.MessageType.FAILURE);
-        LOG.info(String.format("State change - transition not allowed. Entity name : %S id : %d. Target state : %S",
-                entity.getDataDefinition().getName(), entity.getId(), targetState));
-    }catch (Exception exception) {
+            LOG.info(String.format("State change - transition not allowed. Entity name : %S id : %d. Target state : %S", entity
+                    .getDataDefinition().getName(), entity.getId(), targetState));
+        } catch (Exception exception) {
             LOGGER.warn("Can't perform state change", exception);
 
             throw new StateChangeException(exception);
