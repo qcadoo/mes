@@ -98,6 +98,9 @@
         <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"/>
 
         <security:role identifier="ROLE_PLANNING"/>
+        <security:role identifier="ROLE_PLANNING_ORDERS"/>
+        <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
+
 
         <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
@@ -200,9 +203,9 @@
         <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
         <security:role identifier="ROLE_TERMINAL_CONFECTION_PRINT_MULTIPLE"/>
 
-        <security:role identifier="ROLE_SUBCONTRACTOR"/>    
+        <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
-        
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

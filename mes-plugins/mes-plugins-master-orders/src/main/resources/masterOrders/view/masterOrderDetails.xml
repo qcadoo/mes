@@ -30,9 +30,59 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
 
-            <group name="orders">
+            <group name="actions" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;"
+                           accesskey="s"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled"
+                             action="#{form}.performSave; #{window}.performBack;"/>
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled"
+                             action="#{form}.performSaveAndClear;"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
+                             accesskey="c">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
+                             accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
+                             accesskey="x"/>
+            </group>
+
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+
+            <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png">
                     <script>
                         <![CDATA[
@@ -302,7 +352,7 @@
 
                 <layoutElement column="4" row="1" width="7" height="9">
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
-                               source="#{form}.masterOrderProducts">
+                               source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
                         <option type="column" name="productNumber" fields="product"
                                 link="true" expression="#product['number']"/>
                         <option type="column" name="productName" fields="product"
