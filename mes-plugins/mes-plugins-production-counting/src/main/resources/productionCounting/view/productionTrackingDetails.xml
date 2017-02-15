@@ -42,7 +42,9 @@
 					        this.addOnChangeListener({
 						        onClick: function() {
 							        if(window.canClose()) {
-								      #{form}.performEvent('changeTrackingState', ['02accepted']);
+							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}")) {
+								            #{form}.performEvent('changeTrackingState', ['02accepted']);
+								        }
 							        }
 						        }
 					        });
@@ -56,7 +58,9 @@
 					        this.addOnChangeListener({
 						        onClick: function() {
 							        if(window.canClose()) {
-								      #{form}.performEvent('changeTrackingState', ['03declined']);
+							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}")) {
+								            #{form}.performEvent('changeTrackingState', ['03declined']);
+								        }
 							        }
 						        }
 					        });
