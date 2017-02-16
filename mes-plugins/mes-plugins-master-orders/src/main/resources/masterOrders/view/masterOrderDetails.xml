@@ -77,7 +77,7 @@
                              accesskey="x"/>
             </group>
 
-            <group name="actions">
+            <group name="commonActions">
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
                            accesskey="r"/>
             </group>
