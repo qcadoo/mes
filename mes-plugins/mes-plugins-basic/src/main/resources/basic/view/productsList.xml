@@ -102,6 +102,7 @@
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment"/>
+            <option type="multiSearch" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment"/>
             <option type="orderable" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
