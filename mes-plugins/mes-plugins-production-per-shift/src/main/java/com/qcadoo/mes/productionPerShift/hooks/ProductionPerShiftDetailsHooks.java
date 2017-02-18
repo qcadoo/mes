@@ -40,7 +40,6 @@ import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProv
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsParametersService;
 import com.qcadoo.mes.productionPerShift.util.ProgressQuantitiesDeviationNotifier;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyOperationDataProvider;
 import com.qcadoo.model.api.*;
@@ -57,8 +56,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
-
 @Service
 public class ProductionPerShiftDetailsHooks {
 
@@ -73,8 +70,6 @@ public class ProductionPerShiftDetailsHooks {
     private static final String ORDER_LOOKUP_REF = "order";
 
     private static final String TECHNOLOGY_LOOKUP_REF = "technology";
-
-    private static final String OPERATION_LOOKUP_REF = "productionPerShiftOperation";
 
     private static final String PRODUCED_PRODUCT_LOOKUP_REF = "produces";
 
@@ -99,6 +94,8 @@ public class ProductionPerShiftDetailsHooks {
     private static final String SHIFT_LOOKUP_REF = "shift";
 
     private static final String QUANTITY_FIELD_REF = "quantity";
+
+    public static final String L_FORM = "form";
 
     @Autowired
     private ProductionPerShiftDataProvider productionPerShiftDataProvider;
@@ -146,13 +143,10 @@ public class ProductionPerShiftDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         Entity order = getEntityFromLookup(view, ORDER_LOOKUP_REF).get();
         OrderState orderState = OrderState.of(order);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         ProgressType progressType = resolveProgressType(view);
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
         if (!isViewAlreadyInitialized(view)) {
-            fillTechnologyLookup(view, technology);
-            fillTechnologyOperationLookup(view, technology);
             fillOrderDateComponents(view, order);
             setupProgressTypeComboBox(view, orderState, progressType);
             setProductAndFillProgressForDays(view, progressForDaysADL, orderState, progressType);
@@ -163,7 +157,7 @@ public class ProductionPerShiftDetailsHooks {
 
         changeButtonState(view, progressType, orderState);
         updateAutoFillButtonState(view);
-        setupHasBeenCorrectedCheckbox(view, technology);
+        setupHasBeenCorrectedCheckbox(view);
         checkOrderDates(view, order);
         markViewAsInitialized(view);
         deviationNotify(view);
@@ -196,23 +190,21 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void deviationNotify(ViewDefinitionState view) {
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
         ProgressType progressType = resolveProgressType(view);
-        if (!progressForDaysADL.getEntities().isEmpty() && (view.isViewAfterRedirect())) {
-            for (Entity technologyOperation : getEntityFromLookup(view, OPERATION_LOOKUP_REF).asSet()) {
-                for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
-                    progressQuantitiesDeviationNotifier.compareAndNotify(view, order, technologyOperation, isCorrectedPlan(view));
-                }
-            }
+        if (!progressForDaysADL.getEntities().isEmpty() && pps != null && (view.isViewAfterRedirect())) {
+            progressQuantitiesDeviationNotifier.compareAndNotify(view, pps, isCorrectedPlan(view));
         }
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
-        Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId,
-                shouldBeCorrected);
+        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(pps, shouldBeCorrected);
         DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
         Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
@@ -269,9 +261,9 @@ public class ProductionPerShiftDetailsHooks {
         return cal.getTime();
     }
 
-    private Optional<Entity> getMainOutProductFor(final Optional<Entity> maybeTechnologyOperation) {
-        return FluentOptional.wrap(maybeTechnologyOperation).flatMap(EntityUtils.getSafeIdExtractor())
-                .flatMap(mainTocOutputProductProvider.findAsFunction()).toOpt();
+    private Optional<Entity> getMainOutProductFor(final Entity pps) {
+        return Optional
+                .fromNullable(pps.getBelongsToField(ProductionPerShiftFields.ORDER).getBelongsToField(OrderFields.PRODUCT));
     }
 
     public ProgressType resolveProgressType(final ViewDefinitionState view) {
@@ -316,15 +308,6 @@ public class ProductionPerShiftDetailsHooks {
     void fillTechnologyLookup(final ViewDefinitionState view, final Entity technology) {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(TECHNOLOGY_LOOKUP_REF);
         technologyLookup.setFieldValue(technology.getId());
-    }
-
-    void fillTechnologyOperationLookup(final ViewDefinitionState view, final Entity technology) {
-        LookupComponent technologyOperationLookup = (LookupComponent) view.getComponentByReference(OPERATION_LOOKUP_REF);
-        for (Entity rootOperation : technologyOperationDataProvider.findRoot(technology.getId()).asSet()) {
-            technologyOperationLookup.setFieldValue(rootOperation.getId());
-            technologyOperationLookup.requestComponentUpdateState();
-        }
-        technologyOperationLookup.setEnabled(true);
     }
 
     void setupProgressTypeComboBox(final ViewDefinitionState view, final OrderState orderState, final ProgressType progressType) {
@@ -372,15 +355,9 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public boolean isCorrectedPlan(final ViewDefinitionState view) {
-        Optional<Entity> maybeTechnologyOperation = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
-        Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(maybeTechnologyOperation);
-        List<Entity> progresses = maybeTechnologyOperation.transform(new Function<Entity, List<Entity>>() {
-
-            @Override
-            public List<Entity> apply(final Entity technologyOperation) {
-                return progressForDayDataProvider.findForOperation(technologyOperation, true);
-            }
-        }).or(Collections.<Entity> emptyList());
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
+        List<Entity> progresses = progressForDayDataProvider.findForPps(pps, true);
         if (progresses.isEmpty()) {
             return false;
         }
@@ -389,10 +366,11 @@ public class ProductionPerShiftDetailsHooks {
 
     public void setProductAndFillProgressForDays(final ViewDefinitionState view,
             final AwesomeDynamicListComponent progressForDaysADL, final OrderState orderState, final ProgressType progressType) {
-        Optional<Entity> maybeTechnologyOperation = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
-        Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(maybeTechnologyOperation);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
+        Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(pps);
         fillOperationProductLookup(view, maybeMainOperationProduct);
-        fillProgressForDays(progressForDaysADL, maybeTechnologyOperation, maybeMainOperationProduct, progressType, orderState);
+        fillProgressForDays(progressForDaysADL, pps, maybeMainOperationProduct, progressType, orderState);
         fillProgressesUnitFields(progressForDaysADL, maybeMainOperationProduct);
         disableComponents(progressForDaysADL, progressType, orderState);
     }
@@ -403,14 +381,13 @@ public class ProductionPerShiftDetailsHooks {
         producesField.requestComponentUpdateState();
     }
 
-    private void fillProgressForDays(final AwesomeDynamicListComponent progressForDaysADL,
-            final Optional<Entity> maybeTechnologyOperation, final Optional<Entity> maybeMainOperationProduct,
-            final ProgressType progressType, final OrderState orderState) {
-        List<Entity> progresses = maybeTechnologyOperation.transform(new Function<Entity, List<Entity>>() {
+    private void fillProgressForDays(final AwesomeDynamicListComponent progressForDaysADL, final Entity pps,
+            final Optional<Entity> maybeMainOperationProduct, final ProgressType progressType, final OrderState orderState) {
+        List<Entity> progresses = Optional.fromNullable(pps).transform(new Function<Entity, List<Entity>>() {
 
             @Override
-            public List<Entity> apply(final Entity technologyOperation) {
-                return progressForDayDataProvider.findForOperation(technologyOperation, progressType == ProgressType.CORRECTED);
+            public List<Entity> apply(final Entity pps) {
+                return progressForDayDataProvider.findForPps(pps, progressType == ProgressType.CORRECTED);
             }
         }).or(Collections.<Entity> emptyList());
         progressForDaysADL.setFieldValue(progresses);
@@ -463,13 +440,9 @@ public class ProductionPerShiftDetailsHooks {
         }
     }
 
-    void setupHasBeenCorrectedCheckbox(final ViewDefinitionState view, final Entity technology) {
-        long numOfCorrectedOperations = technologyOperationDataProvider.count(and(
-                belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology),
-                eq(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS, true)));
-
+    void setupHasBeenCorrectedCheckbox(final ViewDefinitionState view) {
         CheckBoxComponent hasBeenCorrectedCheckbox = (CheckBoxComponent) view.getComponentByReference(WAS_CORRECTED_CHECKBOX_REF);
-        hasBeenCorrectedCheckbox.setChecked(numOfCorrectedOperations > 0);
+        hasBeenCorrectedCheckbox.setChecked(isCorrectedPlan(view));
         hasBeenCorrectedCheckbox.requestComponentUpdateState();
     }
 
