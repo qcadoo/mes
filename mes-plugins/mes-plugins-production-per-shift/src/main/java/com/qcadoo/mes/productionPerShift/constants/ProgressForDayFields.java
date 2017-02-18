@@ -29,7 +29,7 @@ public final class ProgressForDayFields {
 
     }
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String PRODUCTION_PER_SHIFT = "productionPerShift";
 
     public static final String DAY = "day";
 

@@ -23,11 +23,9 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.*;
-import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.commons.functional.LazyStream;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
@@ -50,16 +48,6 @@ import java.util.*;
 
 @Service
 public class ProgressDatesService {
-
-    private static final Function<Entity, Long> EXTRACT_TECHNOLOGY_OPERATION_ID = new Function<Entity, Long>() {
-
-        @Override
-        public Long apply(final Entity progressForDay) {
-            return FluentOptional
-                    .fromNullable(progressForDay.getBelongsToField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT))
-                    .flatMap(EntityUtils.getSafeIdExtractor()).or(0L);
-        }
-    };
 
     @Autowired
     private ProgressForDayDataProvider progressForDayDataProvider;

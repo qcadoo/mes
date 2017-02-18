@@ -23,49 +23,26 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
+import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
+import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import org.junit.Before;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.TransactionStatus;
+
+import java.util.Collections;
+
 import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubHasManyField;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.aspectj.AnnotationTransactionAspect;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressType;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
-import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 public class ProductionPerShiftViewSaverTest extends PpsDetailsViewAwareTest {
 
@@ -110,8 +87,9 @@ public class ProductionPerShiftViewSaverTest extends PpsDetailsViewAwareTest {
         stubViewComponent("progressForDays", progressForDaysAdl);
         stubViewComponent("form", form);
 
-        stubTransactionStatus();
+        //stubTransactionStatus();
     }
+/*
 
     private void stubPfdDataProviderFindForoperation(final List<Entity> pfds) {
         given(progressForDayDataProvider.findForOperation(any(Entity.class), anyBoolean()))
@@ -372,5 +350,6 @@ public class ProductionPerShiftViewSaverTest extends PpsDetailsViewAwareTest {
         verify(technologyOperation, never()).setField(eq(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS), anyBoolean());
         verify(dataDefinition, never()).save(technologyOperation);
     }
+*/
 
 }

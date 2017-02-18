@@ -23,47 +23,35 @@
  */
 package com.qcadoo.mes.productionPerShift.dataProvider;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
-import java.util.List;
-import java.util.Optional;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.qcadoo.commons.functional.BiFunction;
 import com.qcadoo.commons.functional.Fold;
-import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.*;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class ProgressForDayDataProvider {
 
     public static final SearchOrder[] DEFAULT_SEARCH_ORDER = new SearchOrder[] { asc(ProgressForDayFields.DAY), asc("id") };
-
-    private static final List<String> MODEL_PATH_TO_ORDER = ImmutableList.of(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT,
-            TechnologyOperationComponentFields.TECHNOLOGY, TechnologyFieldsO.ORDERS);
 
     private static final BiFunction<SearchCriteriaBuilder, String, SearchCriteriaBuilder> CREATE_SUB_QUERY = (acc, fieldName) -> acc
             .createCriteria(fieldName, fieldName + "_alias", JoinType.INNER);
@@ -72,32 +60,48 @@ public class ProgressForDayDataProvider {
     private DataDefinitionService dataDefinitionService;
 
     public List<Entity> findForOrder(final Entity order, final SearchOrder... searchOrders) {
-        SearchCriteriaBuilder pfdCriteriaBuilder = getPfdDataDefinition().find();
-        subCriteriaFor(pfdCriteriaBuilder, MODEL_PATH_TO_ORDER).add(idEq(order.getId()));
-        for (SearchOrder searchOrder : searchOrders) {
-            pfdCriteriaBuilder.addOrder(searchOrder);
+        Entity pps = getPpsDataDefinition()
+                .find()
+                .add(SearchRestrictions.belongsTo("order", OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+                        order.getId())).setMaxResults(1).uniqueResult();
+
+        if (pps != null) {
+            SearchCriteriaBuilder pfdCriteriaBuilder = getPfdDataDefinition().find();
+
+            pfdCriteriaBuilder = pfdCriteriaBuilder.add(SearchRestrictions.belongsTo(ProgressForDayFields.PRODUCTION_PER_SHIFT,
+                    pps));
+
+            for (SearchOrder searchOrder : searchOrders) {
+                pfdCriteriaBuilder.addOrder(searchOrder);
+            }
+            return pfdCriteriaBuilder.list().getEntities();
+        } else {
+            return Collections.emptyList();
         }
-        return pfdCriteriaBuilder.list().getEntities();
     }
 
-    public List<Entity> findForOperation(final Entity technologyOperation, final ProgressType progressType) {
-        return findForOperation(technologyOperation, progressType == ProgressType.CORRECTED);
+    public List<Entity> findForPps(final Entity pps, final ProgressType progressType) {
+        return findForPps(pps, progressType == ProgressType.CORRECTED);
     }
 
-    public List<Entity> findForOperation(final Entity technologyOperation, final boolean hasCorrections) {
+    public List<Entity> findForPps(final Entity pps, final boolean hasCorrections) {
+
         return find(
                 and(eq(ProgressForDayFields.CORRECTED, hasCorrections),
-                        belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperation)),
+                        belongsTo(ProgressForDayFields.PRODUCTION_PER_SHIFT, ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                                ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT, pps.getId())),
                 ProgressForDayDataProvider.DEFAULT_SEARCH_ORDER);
     }
 
     public Optional<Entity> findForOperationAndActualDate(final TechnologyOperationId tocId, final ProgressType progressType,
             final LocalDate day) {
+        // todo do przerobienia w zadaniu z gf
         SearchCriteriaBuilder pfdCriteriaBuilder = getPfdDataDefinition().find();
         pfdCriteriaBuilder.add(eq(ProgressForDayFields.CORRECTED, progressType == ProgressType.CORRECTED));
-        pfdCriteriaBuilder
-                .add(belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT, TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT, tocId.get()));
+        /*
+         * pfdCriteriaBuilder .add(belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT,
+         * TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT, tocId.get()));
+         */
         pfdCriteriaBuilder.add(eq(ProgressForDayFields.ACTUAL_DATE_OF_DAY, day.toDate()));
         return Optional.ofNullable(pfdCriteriaBuilder.setMaxResults(1).uniqueResult());
     }
@@ -127,6 +131,11 @@ public class ProgressForDayDataProvider {
     private DataDefinition getPfdDataDefinition() {
         return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                 ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
+    }
+
+    private DataDefinition getPpsDataDefinition() {
+        return dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT);
     }
 
 }

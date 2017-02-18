@@ -87,12 +87,12 @@
 
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
 
-        <model:model-field model="technologyOperationComponent"
+    <!--    <model:model-field model="technologyOperationComponent"
                            plugin="technologies">
             <model:hasMany name="progressForDays" model="progressForDay"
                            plugin="productionPerShift" cascade="delete"
                            joinField="technologyOperationComponent"/>
-        </model:model-field>
+        </model:model-field>-->
         <model:model-field model="technologyOperationComponent"
                            plugin="technologies">
             <model:boolean name="hasCorrections"/>
@@ -121,19 +121,6 @@
         <view:view-hook plugin="orders" view="ordersParameters"
                         type="beforeRender" class="com.qcadoo.mes.productionPerShift.hooks.OrderParametersHooksPPS"
                         method="onBeforeRender"/>
-
-        <model:model-hook model="technologyOperationComponent"
-                          plugin="technologies">
-            <model:validatesWith
-                    class="com.qcadoo.mes.productionPerShift.validators.TechnologyOperationComponentValidatorsPPS"
-                    method="checkGrowingNumberOfDays"/>
-        </model:model-hook>
-        <model:model-hook model="technologyOperationComponent"
-                          plugin="technologies">
-            <model:onCopy
-                    class="com.qcadoo.mes.productionPerShift.hooks.TechnologyOperationComponentHooksPPS"
-                    method="onCopy"/>
-        </model:model-hook>
         <model:model-hook plugin="orders" model="order">
             <model:onUpdate
                     class="com.qcadoo.mes.productionPerShift.hooks.OrderHooksPPS"
