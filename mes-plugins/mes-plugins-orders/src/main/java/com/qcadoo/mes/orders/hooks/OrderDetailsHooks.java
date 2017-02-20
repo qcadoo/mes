@@ -665,8 +665,8 @@ public class OrderDetailsHooks {
 
     private boolean isValidQuantityForAdditionalUnit(final Entity order) {
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
-        BigDecimal expectedVariable = additionalUnitService.getConverter(order, additionalUnitService.getAdditionalUnit(product),
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+        BigDecimal expectedVariable = additionalUnitService.getQuantityAfterConversion(order, additionalUnitService.getAdditionalUnit(product),
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY),"szt");
         BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         if (expectedVariable.compareTo(currentVariable) == 0) {
             return true;

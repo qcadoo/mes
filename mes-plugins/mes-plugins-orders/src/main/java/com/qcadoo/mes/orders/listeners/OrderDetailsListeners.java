@@ -305,11 +305,11 @@ public class OrderDetailsListeners {
         orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0]);
     }
 
-    public void onAdiitionalUnitChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
     }
 
-    public void onUnitChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         additionalUnitService.setQuantityFieldForAdditionalUnit(view,
                 ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
     }
