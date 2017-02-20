@@ -567,53 +567,47 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
-                        <component type="borderLayout" name="basicUnit" hasBorders="false">
-                            <component type="gridLayout" name="basicUnitGrid"
-                                       columns="2" rows="1" hasBorders="false">
-                                <layoutElement column="1" row="1">
-                                    <component type="input" name="plannedQuantity"
-                                               reference="plannedQuantity" field="plannedQuantity">
-                                        <option type="alignment" value="right"/>
-                                        <listener event="onInputChange" method="onUnitChange"
-                                                  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="2" row="1">
-                                    <component type="input" name="unit" reference="unit"
-                                               defaultEnabled="false" hasLabel="false">
-                                        <option type="labelWidth" value="20"/>
-                                        <option type="alignment" value="right"/>
-                                        <option type="textRepresentationOnDisabled" value="true"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
+                        <component type="gridLayout" name="basicUnitGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="plannedQuantity"
+                                           reference="plannedQuantity" field="plannedQuantity">
+                                    <option type="alignment" value="right"/>
+                                    <listener event="onInputChange" method="onUnitChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unit" reference="unit"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
 
 
                     <layoutElement column="2" row="7">
-                        <component type="borderLayout" name="additionalUnit" hasBorders="false">
-                            <component type="gridLayout" name="additionalUnitGrid"
-                                       columns="2" rows="1" hasBorders="false">
-                                <layoutElement column="1" row="1">
-                                    <component type="input" name="plannedQuantityForAdditionalUnit"
-                                               reference="plannedQuantityForAdditionalUnit"
-                                               field="plannedQuantityForAdditionalUnit">
-                                        <option type="alignment" value="right"/>
-                                        <listener event="onInputChange" method="onAdiitionalUnitChange"
-                                                  class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="2" row="1">
-                                    <component type="input" name="unitForAdditionalUnit"
-                                               reference="unitForAdditionalUnit"
-                                               defaultEnabled="false" hasLabel="false">
-                                        <option type="labelWidth" value="20"/>
-                                        <option type="alignment" value="right"/>
-                                        <option type="textRepresentationOnDisabled" value="true"/>
-                                    </component>
-                                </layoutElement>
-                            </component>
+                        <component type="gridLayout" name="additionalUnitGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="plannedQuantityForAdditionalUnit"
+                                           reference="plannedQuantityForAdditionalUnit"
+                                           field="plannedQuantityForAdditionalUnit">
+                                    <option type="alignment" value="right"/>
+                                    <listener event="onInputChange" method="onAdiitionalUnitChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unitForAdditionalUnit"
+                                           reference="unitForAdditionalUnit"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
 

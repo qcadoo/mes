@@ -52,10 +52,13 @@ public class AdditionalUnitService {
     public void setAdditionalUnitField(final ViewDefinitionState state) {
         Entity order = ((FormComponent) state.getComponentByReference("form")).getEntity();
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
-        String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
         FieldComponent additionalUnitField = (FieldComponent) state.getComponentByReference(OrderFields.UNIT_FOR_ADDITIONAL_UNIT);
-        if (additionalUnit == null) {
-            additionalUnit = product.getStringField(ProductFields.UNIT);
+        String additionalUnit = "-";
+        if(product!=null) {
+            additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (additionalUnit == null) {
+                additionalUnit = product.getStringField(ProductFields.UNIT);
+            }
         }
         additionalUnitField.setFieldValue(additionalUnit);
         additionalUnitField.requestComponentUpdateState();
