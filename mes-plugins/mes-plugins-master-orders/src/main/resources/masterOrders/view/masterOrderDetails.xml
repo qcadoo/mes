@@ -81,7 +81,40 @@
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
                            accesskey="r"/>
             </group>
-
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{form}.performActivate;">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && !value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
+                             action="#{form}.performDeactivate;">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
             <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png">
                     <script>
