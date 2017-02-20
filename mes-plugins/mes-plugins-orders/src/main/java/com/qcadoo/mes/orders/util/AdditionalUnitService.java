@@ -46,7 +46,7 @@ public class AdditionalUnitService {
                 .getComponentByReference(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal quantityForAdditionalUnit = getQuantityAfterConversion(order, getAdditionalUnit(product),
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(BasicConstants.MODEL_PRODUCT));
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(ProductFields.UNIT));
         quantityForAdditionalUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
         quantityForAdditionalUnitField.requestComponentUpdateState();
     }
