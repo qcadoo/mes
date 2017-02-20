@@ -414,7 +414,7 @@
                         method="filterByMasterOrderNumber"/>
             </component>
             <component type="grid" name="orders" reference="orders"
-                       source="#{form}.orders">
+                       source="#{form}.orders" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
                 <option type="column" name="number" fields="number" link="true"/>
                 <option type="column" name="productNumber" fields="product"
                         expression="#product['number']" link="true"/>
