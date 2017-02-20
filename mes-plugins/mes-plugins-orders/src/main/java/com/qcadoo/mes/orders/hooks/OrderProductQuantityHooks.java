@@ -23,12 +23,7 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_CORRECTED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER;
 
 import java.util.Arrays;
@@ -70,7 +65,7 @@ public class OrderProductQuantityHooks {
                 || order.getStringField(STATE).equals(OrderState.IN_PROGRESS.getStringValue())
                 || order.getStringField(STATE).equals(OrderState.INTERRUPTED.getStringValue())
                 || order.getStringField(STATE).equals(OrderState.PENDING.getStringValue()))) {
-            List<String> references = Arrays.asList(PLANNED_QUANTITY);
+            List<String> references = Arrays.asList(PLANNED_QUANTITY, PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
             changedEnabledFields(view, references, true);
 
         }

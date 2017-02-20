@@ -89,16 +89,11 @@
             <validatesScale max="5"/>
         </decimal>
 
-
-
-
         <decimal name="plannedQuantityForAdditionalUnit" required="true">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
-
-
 
         <decimal name="doneQuantity">
             <validatesRange from="0" exclusively="false"/>
@@ -169,7 +164,6 @@
         <boolean name="finalProductionTracking" copyable="false" default="false"/>
 
         <boolean name="generatePPS" persistent="false" default="false"/>
-
 
 
     </fields>

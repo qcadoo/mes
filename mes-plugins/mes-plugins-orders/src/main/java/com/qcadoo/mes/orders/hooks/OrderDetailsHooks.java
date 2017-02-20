@@ -44,16 +44,12 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -61,12 +57,7 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -121,6 +112,9 @@ public class OrderDetailsHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         fillProductionLine(view);
         generateOrderNumber(view);
@@ -141,6 +135,7 @@ public class OrderDetailsHooks {
         setFieldsVisibility(view);
         checkIfLockTechnologyTree(view);
         setQuantities(view);
+        additionalUnitService.setAdditionalUnitField(view);
 
     }
 
@@ -605,6 +600,11 @@ public class OrderDetailsHooks {
         }
 
         remainingAmountOfProductToProduceField.requestComponentUpdateState();
+
+        if (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null
+                || !isValidQuantityForAdditionalUnit(order)) {
+            additionalUnitService.setQuantityFieldForAdditionalUnit(view, order);
+        }
     }
 
     private void setDoneQuantity(final ViewDefinitionState view) {
@@ -660,6 +660,16 @@ public class OrderDetailsHooks {
         }
 
         return isValid;
+    }
+
+    private boolean isValidQuantityForAdditionalUnit(final Entity order) {
+        double expectedVariable = order.getDecimalField(OrderFields.PLANNED_QUANTITY).doubleValue()
+                * additionalUnitService.getConverter(order);
+        double currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT).doubleValue();
+        if (expectedVariable == currentVariable) {
+            return true;
+        }
+        return false;
     }
 
 }
