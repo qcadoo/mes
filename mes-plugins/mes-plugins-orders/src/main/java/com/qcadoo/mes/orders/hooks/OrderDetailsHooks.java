@@ -35,6 +35,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -666,7 +667,7 @@ public class OrderDetailsHooks {
     private boolean isValidQuantityForAdditionalUnit(final Entity order) {
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal expectedVariable = additionalUnitService.getQuantityAfterConversion(order, additionalUnitService.getAdditionalUnit(product),
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY),"szt");
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY),product.getStringField(ProductFields.UNIT));
         BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         if (expectedVariable.compareTo(currentVariable) == 0) {
             return true;
