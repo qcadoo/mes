@@ -1,5 +1,7 @@
 package com.qcadoo.mes.orders.util;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -15,17 +17,16 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class AdditionalUnitService {
 
-    public double getConverter(final Entity order) {
+    public BigDecimal getConverter(final Entity order) {
         String additionalUnit = order.getBelongsToField(BasicConstants.MODEL_PRODUCT)
                 .getStringField(ProductFields.ADDITIONAL_UNIT);
-        double converter = 1;
+        BigDecimal converter = BigDecimal.valueOf(1);
         EntityList entityList = order.getBelongsToField(BasicConstants.MODEL_PRODUCT)
                 .getHasManyField(ProductFields.CONVERSION_ITEMS);
         for (Entity entity : entityList) {
             String unitTo = entity.getStringField(UnitConversionItemFields.UNIT_TO);
             if (unitTo.equals(additionalUnit)) {
-                converter = entity.getDecimalField(UnitConversionItemFields.QUANTITY_TO).doubleValue()
-                        / entity.getDecimalField(UnitConversionItemFields.QUANTITY_FROM).doubleValue();
+                converter = entity.getDecimalField(UnitConversionItemFields.QUANTITY_TO).divide(entity.getDecimalField(UnitConversionItemFields.QUANTITY_FROM));
                 break;
             }
         }
@@ -35,16 +36,14 @@ public class AdditionalUnitService {
     public void setQuantityFieldForAdditionalUnit(final ViewDefinitionState view, final Entity order) {
         FieldComponent quantityForAdditionalUnitField = (FieldComponent) view
                 .getComponentByReference(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
-        double quantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY).doubleValue()
-                * getConverter(order);
+        BigDecimal quantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY).multiply(getConverter(order));
         quantityForAdditionalUnitField.setFieldValue(quantityForAdditionalUnit);
         quantityForAdditionalUnitField.requestComponentUpdateState();
     }
 
     public void setQuantityForUnit(final ViewDefinitionState view, final Entity order) {
         FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
-        double unitQuantity = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT).doubleValue()
-                / getConverter(order);
+        BigDecimal unitQuantity = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT).divide(getConverter(order));
         quantityForUnitField.setFieldValue(unitQuantity);
         quantityForUnitField.requestComponentUpdateState();
     }

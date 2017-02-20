@@ -663,9 +663,8 @@ public class OrderDetailsHooks {
     }
 
     private boolean isValidQuantityForAdditionalUnit(final Entity order) {
-        double expectedVariable = order.getDecimalField(OrderFields.PLANNED_QUANTITY).doubleValue()
-                * additionalUnitService.getConverter(order);
-        double currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT).doubleValue();
+        BigDecimal expectedVariable = order.getDecimalField(OrderFields.PLANNED_QUANTITY).multiply(additionalUnitService.getConverter(order));
+        BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         if (expectedVariable == currentVariable) {
             return true;
         }
