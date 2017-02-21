@@ -32,6 +32,9 @@ public class AdditionalUnitService {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
                 searchCriteriaBuilder -> searchCriteriaBuilder
                         .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+        if(quantity == null){
+            return BigDecimal.valueOf(0);
+        }
         if (!baseUnit.equals(givenUnit)) {
             if (unitConversions.isDefinedFor(givenUnit)) {
                 return unitConversions.convertTo(quantity, givenUnit);
@@ -47,6 +50,11 @@ public class AdditionalUnitService {
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal quantityForAdditionalUnit = getQuantityAfterConversion(order, getAdditionalUnit(product),
                 order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(ProductFields.UNIT));
+        if(quantityForAdditionalUnit.compareTo(BigDecimal.valueOf(0)) == 0){
+            FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
+            quantityForUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
+            quantityForUnitField.requestComponentUpdateState();
+        }
         quantityForAdditionalUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
         quantityForAdditionalUnitField.requestComponentUpdateState();
     }
