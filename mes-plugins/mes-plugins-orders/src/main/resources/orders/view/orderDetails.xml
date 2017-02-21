@@ -245,26 +245,27 @@
             <component type="form" name="order" reference="form">
                 <script>
                     <![CDATA[
-					var save = #{window}.getRibbonItem("actions.save");
-					var saveBack = #{window}.getRibbonItem("actions.saveBack");
-					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var del = #{window}.getRibbonItem("actions.delete");
-					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
-					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
-					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
-					
+					var save = #{window}.getRibbonItemOrNull("actions.save");
+					var saveBack = #{window}.getRibbonItemOrNull("actions.saveBack");
+					var saveNew = #{window}.getRibbonItemOrNull("actions.saveNew");
+					var del = #{window}.getRibbonItemOrNull("actions.delete");
+					var acceptOrder = #{window}.getRibbonItemOrNull("status.acceptOrder");
+					var declineOrder = #{window}.getRibbonItemOrNull("status.declineOrder");
+					var interruptOrder = #{window}.getRibbonItemOrNull("status.interruptOrder");
+					if (save)
 					QCDTrack.track(
 							save,
 							"onClick",
 							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
 					);
-					
+
+					if (saveBack)
 					QCDTrack.track(
 							saveBack,
 							"onClick",
 							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
 					);
-					
+					if (saveNew)
 					QCDTrack.track(
 							saveNew,
 							"onClick",
@@ -276,16 +277,18 @@
 							if (! value || ! value.content) {
 								return;
 							}
-							save.enable();
-							saveBack.enable();
-							saveNew.enable();
+							if (save) save.enable();
+							if (saveBack) saveBack.enable();
+							if (saveNew) saveNew.enable();
 							if (! value.content.entityId) {
+							    if (del)
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								return;
 							}
+							if (del)
 							del.enable();
 							var state = #{state}.getValue().content.value;
 							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
@@ -312,7 +315,7 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.disable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "03inProgress") {
 								acceptOrder.enable();
 								acceptOrder.state = "finish";
@@ -323,9 +326,9 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.enable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "04completed") { 
-								del.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable()
@@ -343,27 +346,27 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.disable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "07abandoned") { 
-								del.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable()
 							} else {
-								save.disable();
-								saveBack.disable();
-								saveNew.disable();
-								del.disable();
+								if (save) save.disable();
+								if (saveBack) saveBack.disable();
+								if (saveNew) saveNew.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 							}
 							
 							if (externalSynchronized == '0') {
-								save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (save) save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (saveBack) saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (saveNew) saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
@@ -1068,14 +1071,14 @@
         <windowTab name="integrationTab">
             <script>
                 <![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
+						var del = #{window}.getRibbonItemOrNull("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
 								
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								}
 							}
 						};
