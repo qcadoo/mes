@@ -145,13 +145,17 @@ public class OrderHooksPPS {
                             order.setField(OrderFields.DATE_TO, finishDate);
                         }
                     }
+                    productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "01planned");
 
                     if (shouldBeCorrected) {
+                        productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "02corrected");
+
                         progressForDays
                                 .addAll(productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).stream()
                                         .filter(progressForDay -> !progressForDay.getBooleanField(ProgressForDayFields.CORRECTED))
                                         .collect(Collectors.toList()));
                     }
+
                     productionPerShift.setField(ProductionPerShiftFields.PROGRES_FOR_DAYS, progressForDays);
                     productionPerShift.getDataDefinition().save(productionPerShift);
                 }

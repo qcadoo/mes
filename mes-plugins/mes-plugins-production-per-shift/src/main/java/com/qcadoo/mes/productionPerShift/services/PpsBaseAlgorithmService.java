@@ -57,7 +57,7 @@ public abstract class PpsBaseAlgorithmService {
         if (progressForDaysContainer.getOrder() != null) {
             order = progressForDaysContainer.getOrder();
         }
-        //TODO do weryfikacji
+        // TODO do weryfikacji
         Entity operationComponent = progressForDaysContainer.getOperationComponent();
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         if (orderStartDate == null) {
@@ -232,9 +232,9 @@ public abstract class PpsBaseAlgorithmService {
         BigDecimal alreadyRegisteredQuantity = progressForDaysContainer.getAlreadyRegisteredQuantity();
         if (pps != null) {
             dailyProgressesWithTrackingRecords = dailyProgressService.getDailyProgressesWithTrackingRecords(pps);
-            for (Entity trackingRecord : dailyProgressesWithTrackingRecords.values()) {
-                alreadyRegisteredQuantity = alreadyRegisteredQuantity.add(trackingRecord
-                        .getDecimalField(DailyProgressFields.QUANTITY));
+
+            for (Map.Entry<DailyProgressKey, Entity> entry : dailyProgressesWithTrackingRecords.entrySet()) {
+                alreadyRegisteredQuantity = alreadyRegisteredQuantity.add(entry.getKey().getQuantity());
             }
             progressForDaysContainer.setAlreadyRegisteredQuantity(alreadyRegisteredQuantity);
         } else {

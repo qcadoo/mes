@@ -113,9 +113,9 @@ public class ProgressPerShiftViewSaver {
             List<Entity> pfds = Lists.newArrayList();
             pfds.addAll(progressForDayDataProvider.findForPps(pps, true));
             pfds.addAll(progressForDayDataProvider.findForPps(pps, false));
-            pps.setField(ProductionPerShiftFields.PROGRES_FOR_DAYS, pfds);
             pps = pps.getDataDefinition().save(pps);
             form.setEntity(pps);
+            form.addMessage("qcadooView.message.saveMessage", ComponentState.MessageType.SUCCESS);
 
             return true;
            // return saveForm(view);

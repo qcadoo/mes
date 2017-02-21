@@ -37,7 +37,7 @@
         <!-- Not persistent fields below -->
 
         <enum name="plannedProgressType" values="01planned,02corrected"
-              default="01planned" persistent="false"/>
+              default="01planned" persistent="false" required="true"/>
 
         <belongsTo name="technology" model="technology" plugin="technologies"
                    persistent="false"/>

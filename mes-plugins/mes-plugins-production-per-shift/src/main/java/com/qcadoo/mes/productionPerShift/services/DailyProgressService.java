@@ -25,9 +25,7 @@ package com.qcadoo.mes.productionPerShift.services;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
@@ -35,8 +33,10 @@ import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.domain.DailyProgressKey;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -64,12 +64,18 @@ public class DailyProgressService {
      */
     public Map<DailyProgressKey, Entity> getDailyProgressesWithTrackingRecords(final Entity pps) {
 
-        //TODO trzeba rozpatrzeć dwa przypadki - rr dla jedej operacji (bierzeby tylko dla roota), zbiorcza
+        // TODO trzeba rozpatrzeć dwa przypadki - rr dla jedej operacji (bierzeby tylko dla roota), zbiorcza
         Map<DailyProgressKey, Entity> dailyProgresses = Maps.newHashMap();
         Entity order = pps.getBelongsToField(ProductionPerShiftFields.ORDER);
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-
-        List<Entity> mainOutProductComponents = getMainOutProductComponentsForOrderAndProduct(order, product);
+        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        Entity toc = null;
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            EntityTree operationsTree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+            toc = operationsTree.getRoot();
+        }
+        List<Entity> mainOutProductComponents = getMainOutProductComponentsForOrderAndProduct(order, toc, product);
         for (Entity outProduct : mainOutProductComponents) {
             Entity trackingRecord = outProduct.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
             Long shiftId = trackingRecord.getBelongsToField(ProductionTrackingFields.SHIFT).getId();
@@ -78,13 +84,15 @@ public class DailyProgressService {
             DailyProgressKey key = new DailyProgressKey(
                     outProduct.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY), shiftId, startDate);
             if (dailyProgress.isPresent()) {
-                dailyProgresses.put(key, dailyProgress.get());
+                Entity entity = dailyProgress.get();
+                entity.setField(DailyProgressFields.QUANTITY, key.getQuantity());
+                dailyProgresses.put(key, entity);
             }
         }
         return dailyProgresses;
     }
 
-    private List<Entity> getMainOutProductComponentsForOrderAndProduct(final Entity order, final Entity product) {
+    private List<Entity> getMainOutProductComponentsForOrderAndProduct(final Entity order, final Entity toc, final Entity product) {
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                         ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT)
@@ -93,11 +101,10 @@ public class DailyProgressService {
                         TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, JoinType.INNER)
                 .add(SearchRestrictions.eq(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING + ".order.id",
                         order.getId()));
-        //TODO co z tym
-/*        if (operationComponent != null) {
+        if (toc != null) {
             scb.add(SearchRestrictions.eq(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING
-                    + ".technologyOperationComponent.id", operationComponent.getId()));
-        }*/
+                    + ".technologyOperationComponent.id", toc.getId()));
+        }
         // scb.add(SearchRestrictions.eq(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING + ".state",
         // ProductionTrackingState.ACCEPTED.getStringValue()));
 
@@ -132,8 +139,8 @@ public class DailyProgressService {
                 .createAlias(DailyProgressFields.SHIFT, DailyProgressFields.SHIFT, JoinType.INNER)
                 .createAlias(DailyProgressFields.PROGRESS_FOR_DAY, DailyProgressFields.PROGRESS_FOR_DAY, JoinType.INNER)
                 .add(SearchRestrictions.eq(DailyProgressFields.SHIFT + ".id", shiftId))
-                .add(SearchRestrictions.eq(DailyProgressFields.PROGRESS_FOR_DAY + "."
-                        + ProgressForDayFields.PRODUCTION_PER_SHIFT + ".id", pps.getId()))
+                .add(SearchRestrictions.eq(DailyProgressFields.PROGRESS_FOR_DAY + "." + ProgressForDayFields.PRODUCTION_PER_SHIFT
+                        + ".id", pps.getId()))
                 .add(SearchRestrictions.eq(DailyProgressFields.PROGRESS_FOR_DAY + "." + ProgressForDayFields.ACTUAL_DATE_OF_DAY,
                         startDate)).list().getEntities();
         for (Entity dp : dailyProgress) {
