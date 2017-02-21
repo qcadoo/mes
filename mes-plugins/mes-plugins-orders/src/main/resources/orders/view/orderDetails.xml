@@ -613,13 +613,25 @@
 
 
                     <layoutElement column="2" row="8">
-                        <component type="input" name="doneQuantity" field="doneQuantity"
-                                   reference="doneQuantity" hasDescription="true">
-                            <option type="labelWidth" value="55"/>
-                            <option type="alignment" value="right"/>
+                        <component type="gridLayout" name="doneQuantityGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="doneQuantity" field="doneQuantity"
+                                           reference="doneQuantity" hasDescription="true">
+                                    <option type="labelWidth" value="55"/>
+                                    <option type="alignment" value="right"/>
 
-                            <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
-                            <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                                    <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
+                                    <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unitForDone" reference="unitForDone"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
 

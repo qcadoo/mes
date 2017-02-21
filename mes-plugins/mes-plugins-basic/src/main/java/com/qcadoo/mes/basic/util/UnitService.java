@@ -52,13 +52,17 @@ public class UnitService {
     public void fillProductUnitBeforeRender(final ViewDefinitionState state) {
         FieldComponent productState = (FieldComponent) state.getComponentByReference("product");
         FieldComponent unitState = (FieldComponent) state.getComponentByReference("unit");
+        FieldComponent unitForDoneState = (FieldComponent) state.getComponentByReference("unitForDone");
         unitState.requestComponentUpdateState();
+        unitForDoneState.requestComponentUpdateState();
         if (productState.getFieldValue() == null) {
             unitState.setFieldValue("");
+            unitForDoneState.setFieldValue("");
         } else {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     (Long) productState.getFieldValue());
             unitState.setFieldValue(product.getStringField("unit"));
+            unitForDoneState.setFieldValue(product.getStringField("unit"));
         }
     }
 
