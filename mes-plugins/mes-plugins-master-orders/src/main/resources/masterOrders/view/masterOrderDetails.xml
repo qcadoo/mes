@@ -73,8 +73,6 @@
 				});
 			]]></script>
                 </smallButton>
-                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
-                             accesskey="x"/>
             </group>
 
             <group name="commonActions">

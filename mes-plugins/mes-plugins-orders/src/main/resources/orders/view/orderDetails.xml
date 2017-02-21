@@ -75,8 +75,6 @@
 				});
 			]]></script>
                 </smallButton>
-                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
-                             accesskey="x"/>
             </group>
 
             <group name="actions">
@@ -250,7 +248,6 @@
 					var save = #{window}.getRibbonItem("actions.save");
 					var saveBack = #{window}.getRibbonItem("actions.saveBack");
 					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var cancel = #{window}.getRibbonItem("actions.cancel");
 					var del = #{window}.getRibbonItem("actions.delete");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
@@ -283,14 +280,12 @@
 							saveBack.enable();
 							saveNew.enable();
 							if (! value.content.entityId) {
-								cancel.disable();
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								return;
 							}
-							cancel.enable();
 							del.enable();
 							var state = #{state}.getValue().content.value;
 							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
@@ -330,13 +325,11 @@
 								interruptOrder.enable();
 								del.disable();
 							} else if (state == "04completed") { 
-								cancel.disable();
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable()
 							} else if (state == "05declined") {
-								cancel.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
@@ -352,7 +345,6 @@
 								interruptOrder.disable();
 								del.disable();
 							} else if (state == "07abandoned") { 
-								cancel.disable();
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
@@ -361,7 +353,6 @@
 								save.disable();
 								saveBack.disable();
 								saveNew.disable();
-								cancel.disable();
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
@@ -372,7 +363,6 @@
 								save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								acceptOrder.disable();
 								declineOrder.disable();
