@@ -8,7 +8,6 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.exception.AnotherChangeInProgressException;
-import com.qcadoo.mes.states.exception.StateChangeException;
 import com.qcadoo.mes.states.exception.StateTransitionNotAlloweException;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
@@ -98,16 +97,16 @@ public class StateExecutorService {
                 copyMessages(entity);
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
                 message("states.messages.change.successful", ComponentState.MessageType.SUCCESS);
-                LOG.info(String.format("Change state successful. Entity name : %S id : %d. Target state : %S",
-                        entity.getDataDefinition().getName(), entity.getId(),
-                        stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
+                LOG.info(String.format("Change state successful. Entity name : %S id : %d. Target state : %S", entity
+                        .getDataDefinition().getName(), entity.getId(), stateChangeEntity.getStringField(describer
+                        .getTargetStateFieldName())));
             } else {
                 saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
                 entity = rollbackStateChange(entity, sourceState);
                 message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
-                LOG.info(String.format("Change state failure. Entity name : %S id : %d. Target state : %S",
-                        entity.getDataDefinition().getName(), entity.getId(),
-                        stateChangeEntity.getStringField(describer.getTargetStateFieldName())));
+                LOG.info(String.format("Change state failure. Entity name : %S id : %d. Target state : %S", entity
+                        .getDataDefinition().getName(), entity.getId(), stateChangeEntity.getStringField(describer
+                        .getTargetStateFieldName())));
             }
 
         } catch (EntityRuntimeException entityException) {
@@ -132,9 +131,12 @@ public class StateExecutorService {
             LOG.info(String.format("State change - transition not allowed. Entity name : %S id : %d. Target state : %S", entity
                     .getDataDefinition().getName(), entity.getId(), targetState));
         } catch (Exception exception) {
-            LOGGER.warn("Can't perform state change", exception);
-
-            throw new StateChangeException(exception);
+            entity = rollbackStateChange(entity, sourceState);
+            saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
+            message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            LOG.info(String.format("State change exception. Entity name : %S id : %d. Target state : %S", entity
+                    .getDataDefinition().getName(), entity.getId(), targetState));
+            LOG.warn("Can't perform state change", exception);
         }
 
         return entity;
