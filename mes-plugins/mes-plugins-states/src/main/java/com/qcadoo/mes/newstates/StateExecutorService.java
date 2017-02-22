@@ -134,6 +134,7 @@ public class StateExecutorService {
             entity = rollbackStateChange(entity, sourceState);
             saveStateChangeEntity(stateChangeEntity, StateChangeStatus.FAILURE);
             message("states.messages.change.failure", ComponentState.MessageType.FAILURE);
+            message("states.messages.change.failure.internalServerError", ComponentState.MessageType.FAILURE);
             LOG.info(String.format("State change exception. Entity name : %S id : %d. Target state : %S", entity
                     .getDataDefinition().getName(), entity.getId(), targetState));
             LOG.warn("Can't perform state change", exception);
