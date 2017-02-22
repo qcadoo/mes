@@ -138,6 +138,7 @@ public class OrderDetailsHooks {
         checkIfLockTechnologyTree(view);
         setQuantities(view);
         additionalUnitService.setAdditionalUnitField(view);
+        unitService.fillProductForAdditionalUnitBeforeRender(view);
 
     }
 
