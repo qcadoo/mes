@@ -572,6 +572,7 @@
                             <layoutElement column="1" width="6" row="1">
                                 <component type="input" name="plannedQuantity"
                                            reference="plannedQuantity" field="plannedQuantity">
+                                    <option type="labelWidth" value="55"/>
                                     <option type="alignment" value="right"/>
                                     <listener event="onInputChange" method="onQuantityChange"
                                               class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
@@ -595,6 +596,7 @@
                                 <component type="input" name="plannedQuantityForAdditionalUnit"
                                            reference="plannedQuantityForAdditionalUnit"
                                            field="plannedQuantityForAdditionalUnit">
+                                    <option type="labelWidth" value="55"/>
                                     <option type="alignment" value="right"/>
                                     <listener event="onInputChange" method="onQuantityForAdditionalUnitChange"
                                               class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
