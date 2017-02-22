@@ -8,12 +8,13 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventRealizationDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.NumberService;
-import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.qcadoo.model.api.BigDecimalUtils.*;
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class PlannedEventsXlsService {
@@ -226,8 +227,6 @@ public class PlannedEventsXlsService {
                         realizationDurationNumberCell.setCellStyle(timeStyle);
                         realizationDurationNumberCell.setCellValue(convertTimeInternal(XlsDataType.getValue(realization
                                 .getRealizationDuration())));
-                        realizationDurationNumberCell.setCellValue(DateUtil.convertTime(DurationFormatUtils.formatDuration(
-                                realization.getRealizationDuration() * 1000l, "HH:mm:ss")));
                         realizationDurationNumberCell.setCellType(Cell.CELL_TYPE_NUMERIC);
                     }
                 }
