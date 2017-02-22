@@ -236,7 +236,6 @@
             <option type="column" name="productNumber" fields="productNumber" width="60"/>
             <option type="column" name="plannedQuantity" fields="plannedQuantity" width="35"/>
             <option type="column" name="unit" fields="unit" width="30"/>
-            <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
             <option type="column" name="companyName" fields="companyName" width="50"/>
             <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
             <option type="column" name="externalSynchronized" fields="externalSynchronized"
@@ -248,11 +247,11 @@
             <option type="order" column="deadline" direction="desc"/>
 
             <option type="searchable"
-                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,plannedQuantityForAdditionalUnit,unit,companyName"/>
+                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName"/>
             <option type="orderable"
-                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,plannedQuantityForAdditionalUnit,unit,companyName"/>
+                    value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName"/>
             <option type="footerRow" value="true"/>
-            <option type="columnsToSummary" value="plannedQuantity,plannedQuantityForAdditionalUnit"/>
+            <option type="columnsToSummary" value="plannedQuantity"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
