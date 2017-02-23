@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -49,6 +43,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class OrderDetailsListeners {
@@ -84,6 +83,17 @@ public class OrderDetailsListeners {
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         address.setFieldValue(null);
+    }
+
+    public void onTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        setDefaultNameUsingTechnology(view, state, args);
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = technologyLookup.getEntity();
+        Entity defaultProductionLine = orderService.getDefaultProductionLine();
+        if (technology != null) {
+           orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+        }
     }
 
     public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -198,7 +208,8 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
         }
-        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)
                 || OrderState.COMPLETED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
@@ -224,12 +235,10 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
         }
-        if (OrderState.COMPLETED.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_EFFECTIVE_DATE_TO);
         }
-        if (OrderState.ACCEPTED.getStringValue().equals(orderState)
-                || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO);
         }
     }
@@ -271,8 +280,8 @@ public class OrderDetailsListeners {
         if (orderId != null) {
             FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
 
-            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue()
-                    .equals(orderTypeField.getFieldValue());
+            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
+                    orderTypeField.getFieldValue());
 
             if (selectForPatternTechnology) {
                 orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);
@@ -305,7 +314,8 @@ public class OrderDetailsListeners {
         orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0]);
     }
 
-    public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
     }
 

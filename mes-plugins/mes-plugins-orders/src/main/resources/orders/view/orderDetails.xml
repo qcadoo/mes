@@ -518,7 +518,7 @@
 
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                                                  method="setDefaultNameUsingTechnology"/>
+                                                  method="onTechnologyChange"/>
                                     </component>
                                 </layoutElement>
 
