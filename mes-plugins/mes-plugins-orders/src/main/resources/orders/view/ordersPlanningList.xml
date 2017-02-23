@@ -228,32 +228,31 @@
             <option type="column" name="dateTo" fields="finishDate" width="60"/>
             <option type="column" name="productNumber" fields="productNumber" width="50"/>
             <option type="column" name="plannedQuantity" fields="plannedQuantity" width="20"/>
-
             <option type="column" name="amountOfProductProduced" fields="amountOfProductProduced" width="20"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity" width="20"/>
             <option type="column" name="remainingAmountOfProductToProduce" fields="remainingAmountOfProductToProduce" width="20"/>
-
             <option type="column" name="unit" fields="unit" width="15"/>
-
+            <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
+            <option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
             <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
             <option type="column" name="externalSynchronized" fields="externalSynchronized"
                     expression="#externalSynchronized?'1':'0'" hidden="true"/>
 
             <option type="column" name="productionLineNumber" fields="productionLineNumber" width="40"/>
-            <option type="column" name="orderCategory" fields="orderCategory" width="60"/>
+            <option type="column" name="orderCategory" fields="orderCategory" width="40"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>
             <option type="correspondingComponent" value="form"/>
 
             <option type="order" column="dateFrom" direction="desc"/>
 
-            <option type="searchable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
-            <option type="multiSearch" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
-            <option type="orderable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,unit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
+            <option type="searchable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
+            <option type="multiSearch" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
+            <option type="orderable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
-                    value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce"/>
+                    value="plannedQuantity,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,plannedQuantityForAdditionalUnit"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
