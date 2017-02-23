@@ -153,25 +153,6 @@ public class OrderDetailsHooksTest {
     }
 
     @Test
-    public void shouldFillProductionLineIfFormIsntSaved() {
-        // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
-        given(orderForm.getEntityId()).willReturn(null);
-
-        given(view.getComponentByReference(OrderFields.PRODUCTION_LINE)).willReturn(productionLineLookup);
-
-        given(orderService.getDefaultProductionLine()).willReturn(defaultProductionLine);
-
-        given(defaultProductionLine.getId()).willReturn(L_ID);
-
-        // when
-        orderDetailsHooks.fillProductionLine(view);
-
-        // then
-        verify(productionLineLookup).setFieldValue(L_ID);
-    }
-
-    @Test
     public void shouldSetAndDisableState() throws Exception {
         // given
         given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
