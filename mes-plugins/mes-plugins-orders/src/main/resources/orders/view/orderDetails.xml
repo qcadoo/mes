@@ -484,7 +484,7 @@
                                       method="fillProductUnit"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                                      method="setDefaultNameUsingTechnology"/>
+                                      method="onTechnologyChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="2">

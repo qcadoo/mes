@@ -153,7 +153,7 @@ public class OrderDetailsHooks {
         LookupComponent defaultTechnologyField = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity technology = defaultTechnologyField.getEntity();
 
-        if (orderForm.getEntityId() == null && productionLineLookup.getFieldValue() == null && technology != null) {
+        if (orderForm.getEntityId() == null && productionLineLookup.getFieldValue() == null) {
             Entity defaultProductionLine = orderService.getDefaultProductionLine();
             fillProductionLine(productionLineLookup, technology, defaultProductionLine);
         }
@@ -161,7 +161,7 @@ public class OrderDetailsHooks {
 
     public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
             final Entity defaultProductionLine) {
-        if (PluginUtils.isEnabled("productFlowThruDivision") && "01oneDivision".equals(technology.getField("range"))
+        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision") && "01oneDivision".equals(technology.getField("range"))
                 && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
             productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             productionLineLookup.requestComponentUpdateState();
