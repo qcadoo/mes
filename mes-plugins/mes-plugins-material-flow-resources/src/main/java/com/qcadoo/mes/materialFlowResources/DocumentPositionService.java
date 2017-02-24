@@ -1,21 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -28,6 +12,16 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -338,7 +332,7 @@ public class DocumentPositionService {
         if (StringUtils.isEmpty(location)) {
             return null;
         }
-        String query = "SELECT p.name FROM materialflowresources_storagelocation l join basic_product p on l.product_id = p.id WHERE l.number = :location;";
+        String query = "SELECT p.number FROM materialflowresources_storagelocation l join basic_product p on l.product_id = p.id WHERE l.number = :location;";
         Map<String, Object> filter = new HashMap<>();
         filter.put("location", location);
         List<ProductDTO> products = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ProductDTO.class));

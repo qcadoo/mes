@@ -149,7 +149,7 @@
 
         <view:view-grid-column plugin="orders"
                                view="ordersPlanningList" component="grid">
-            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" searchable="true"
+            <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" multiSearch="true" searchable="true"
                          width="50"/>
         </view:view-grid-column>
 

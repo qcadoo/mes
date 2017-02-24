@@ -561,7 +561,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function fillWithAttributesFromResource(resource, rowId) {
-            $.get('/rest/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + encodeURIComponent(resource).replace('%2F', '%252F') + ".html", function (resource) {
+            $.get('/rest/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + Base64.encodeURI(resource) + ".html", function (resource) {
                 updateFieldValue('batch', resource['batch'], rowId);
                 updateFieldValue('productionDate', resource['productionDate'], rowId);
                 updateFieldValue('expirationDate', resource['expirationDate'], rowId);
@@ -616,7 +616,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/rest/rest/documentPositions/product/' + productNumber + ".html", function (product) {
+            $.get('/rest/rest/documentPositions/product/' + Base64.encodeURI(productNumber) + ".html", function (product) {
                 updateFieldValue('productName', product.name, _rowID);
             });
         }
@@ -627,7 +627,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             if (!productNumber) {
                 return;
             }
-            $.get('/rest/rest/documentPositions/units/' + productNumber + ".html", function (units) {
+            $.get('/rest/rest/documentPositions/units/' + Base64.encodeURI(productNumber) + ".html", function (units) {
                 available_additionalunits = units['available_additionalunits'];
                 var gridData = $('#grid').jqGrid('getRowData');
 
@@ -699,7 +699,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         var storageLocations = null;
         function updateStorageLocations(productNumber, document) {
-            $.get('/rest/rest/documentPositions/storageLocation/' + productNumber + "/" + document + ".html", function (location) {
+            $.get('/rest/rest/documentPositions/storageLocation/' + Base64.encodeURI(productNumber) + "/" + Base64.encodeURI(document) + ".html", function (location) {
                 if (location) {
                     var gridData = $('#grid').jqGrid('getRowData');
 
@@ -908,7 +908,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateProductFromLocation(location, rowNumber) {
             $.get('/rest/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
                 if (newProduct) {
-                    var productField = updateFieldValue('product', newProduct['name'], rowNumber);
+                    var productField = updateFieldValue('product', newProduct['number'], rowNumber);
                     productField.trigger('change');
                 }
 

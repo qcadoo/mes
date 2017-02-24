@@ -1055,7 +1055,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             component.setField(L_LABOR_HOURLY_COST, operation.getField(L_LABOR_HOURLY_COST));
             component.setField("numberOfOperations", operation.getField("numberOfOperations"));
         }
-        
+
         component.setField("assignedToOperation", values.get("assignedtooperation"));
         component.setField("quantityOfWorkstations", values.get("quantityofworkstations"));
 
@@ -1173,7 +1173,7 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         Entity operation = getOperationByNumber(values.get(L_OPERATION));
         Entity technologyOperationComponent = getTechnologyOperationComponentByNumber(order, operation);
 
-        productionTracking.setField(L_NUMBER, values.get(L_NUMBER));
+        //productionTracking.setField(L_NUMBER, values.get(L_NUMBER));
         productionTracking.setField(L_ORDER, order);
         productionTracking.setField(L_LAST_TRACKING, values.get("lasttracking"));
         productionTracking.setField(L_MACHINE_TIME, values.get("machinetime"));

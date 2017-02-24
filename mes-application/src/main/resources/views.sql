@@ -80,8 +80,7 @@ CREATE TABLE jointable_coverageorderhelper_orderdto (coverageorderhelper_id bigi
 
 DROP TABLE IF EXISTS orders_orderplanninglistdto;
 
-CREATE OR REPLACE VIEW orders_orderplanninglistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.ordercategory, coalesce(ordersorder.amountOfProductProduced, 0) as amountOfProductProduced, coalesce(ordersorder.wastesQuantity, 0) as wastesQuantity, coalesce(ordersorder.remainingAmountOfProductToProduce,0) as remainingAmountOfProductToProduce, product.number AS productnumber, technology.number AS technologynumber, product.unit AS unit, productionline.number AS productionlinenumber, masterorder.number AS masterordernumber, division.name AS divisionname, division.number as divisionnumber FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN basic_division division ON division.id = technology.division_id;
-
+CREATE OR REPLACE VIEW public.orders_orderplanninglistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.ordercategory, COALESCE(ordersorder.amountofproductproduced, 0::numeric) AS amountofproductproduced, COALESCE(ordersorder.wastesquantity, 0::numeric) AS wastesquantity, COALESCE(ordersorder.remainingamountofproducttoproduce, 0::numeric) AS remainingamountofproducttoproduce, product.number AS productnumber, technology.number AS technologynumber, product.unit, productionline.number AS productionlinenumber, masterorder.number AS masterordernumber, division.name AS divisionname, division.number AS divisionnumber, coalesce(ordersorder.plannedquantityforadditionalunit,ordersorder.plannedquantity) AS plannedquantityforadditionalunit, coalesce(product.additionalunit,product.unit) AS unitforadditionalunit FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN basic_division division ON division.id = technology.division_id;
 -- end
 
 
@@ -98,7 +97,7 @@ CREATE OR REPLACE VIEW basic_subassemblyListDto AS SELECT s.id, s.active, s.numb
 
 DROP TABLE IF EXISTS goodfood_palletdto;
 
-CREATE OR REPLACE VIEW goodfood_palletdto AS SELECT pallet.id AS id, staff.name AS palletContextOperatorName, staff.surname AS palletContextOperatorSurname, productionline.number AS productionLineNumber, masterorder.number AS masterOrderNumber, product.number AS productNumber, pallet.registrationDate AS registrationDate, pallet.state AS state, pallet.ssccNumber AS ssccNumber, secondPallet.palletNumber AS secondPalletNumber, pallet.lastStateChangeFails AS lastStateChangeFails, pallet.active AS active, pallet.palletNumber AS palletNumber FROM goodfood_pallet pallet LEFT JOIN goodfood_palletcontext palletcontext ON pallet.palletcontext_id = palletcontext.id LEFT JOIN basic_staff staff ON palletcontext.operator_id = staff.id LEFT JOIN goodfood_label label ON pallet.label_id = label.id LEFT JOIN productionlines_productionline productionline ON label.productionline_id = productionline.id LEFT JOIN masterorders_masterorder masterorder ON label.masterorder_id = masterorder.id LEFT JOIN basic_product product ON masterorder.product_id = product.id LEFT JOIN goodfood_pallet secondPallet ON pallet.secondpallet_id = secondPallet.id;
+CREATE OR REPLACE VIEW goodfood_palletdto AS SELECT pallet.id AS id, staff.name AS palletContextOperatorName, staff.surname AS palletContextOperatorSurname, productionline.number AS productionLineNumber, masterorder.number AS masterOrderNumber, product.number AS productNumber, pallet.registrationDate AS registrationDate, pallet.sendDate AS sendDate, palletcontext.day AS palletContextDay, pallet.state AS state, pallet.ssccNumber AS ssccNumber, secondPallet.palletNumber AS secondPalletNumber, pallet.lastStateChangeFails AS lastStateChangeFails, pallet.active AS active, pallet.palletNumber AS palletNumber FROM goodfood_pallet pallet LEFT JOIN goodfood_palletcontext palletcontext ON pallet.palletcontext_id = palletcontext.id LEFT JOIN basic_staff staff ON palletcontext.operator_id = staff.id LEFT JOIN goodfood_label label ON pallet.label_id = label.id LEFT JOIN productionlines_productionline productionline ON label.productionline_id = productionline.id LEFT JOIN masterorders_masterorder masterorder ON label.masterorder_id = masterorder.id LEFT JOIN basic_product product ON masterorder.product_id = product.id LEFT JOIN goodfood_pallet secondPallet ON pallet.secondpallet_id = secondPallet.id;
 
 
 DROP TABLE IF EXISTS goodfood_labeldto;
@@ -325,11 +324,11 @@ DROP TABLE IF EXISTS linechangeovernorms_ordersnormview;
 DROP TABLE IF EXISTS linechangeovernorms_normflatview;
 DROP TABLE IF EXISTS linechangeovernorms_groupsview;
 
-CREATE OR REPLACE VIEW linechangeovernorms_groupsview AS SELECT norms.number as number, norms.name as name, norms.duration as duration, '02forTechnologyGroup'::text as changeovertype, norms.productionline_id as productionLineId, technologyGroupFrom.id as technologyGroupFromId, technologyGroupTo.id as technologyGroupToId, technologyFrom.id as technologyFromId, technologyTo.id as technologyToId FROM linechangeovernorms_linechangeovernorms norms LEFT JOIN technologies_technologygroup technologyGroupFrom ON technologyGroupFrom.id = norms.fromtechnologygroup_id LEFT JOIN technologies_technology technologyFrom ON technologyFrom.technologygroup_id = technologyGroupFrom.id and technologyFrom.active = true and technologyFrom.technologyprototype_id IS NULL LEFT JOIN technologies_technologygroup technologyGroupTo ON technologyGroupTo.id = norms.totechnologygroup_id LEFT JOIN technologies_technology technologyTo ON technologyTo.technologygroup_id = technologyGroupTo.id and technologyTo.active = true and technologyTo.technologyprototype_id IS NULL WHERE changeovertype='02forTechnologyGroup';
+CREATE OR REPLACE VIEW linechangeovernorms_groupsview AS SELECT norms.number, norms.name, norms.duration, '02forTechnologyGroup'::text AS changeovertype, norms.productionline_id AS productionlineid, technologygroupfrom.id AS technologygroupfromid, technologygroupto.id AS technologygrouptoid, technologyfrom.id AS technologyfromid, technologyto.id AS technologytoid, technologyfrom.number AS technologyfromnumber, technologyto.number AS technologytonumber FROM linechangeovernorms_linechangeovernorms norms LEFT JOIN technologies_technologygroup technologygroupfrom ON technologygroupfrom.id = norms.fromtechnologygroup_id LEFT JOIN technologies_technology technologyfrom ON technologyfrom.technologygroup_id = technologygroupfrom.id AND technologyfrom.active = true AND technologyfrom.technologyprototype_id IS NULL LEFT JOIN technologies_technologygroup technologygroupto ON technologygroupto.id = norms.totechnologygroup_id LEFT JOIN technologies_technology technologyto ON technologyto.technologygroup_id = technologygroupto.id AND technologyto.active = true AND technologyto.technologyprototype_id IS NULL WHERE norms.changeovertype::text = '02forTechnologyGroup'::text;
 
-CREATE OR REPLACE VIEW linechangeovernorms_normflatview AS SELECT groupnorms.number as number, groupnorms.name as name, groupnorms.duration as duration, groupnorms.changeovertype as changeovertype, groupnorms.productionLineId as productionLineId, groupnorms.technologyFromId as technnolgyFromId, groupnorms.technologyToId as technologyToId FROM linechangeovernorms_groupsview groupnorms WHERE groupnorms.technologyFromId IS NOT NULL AND groupnorms.technologyToId IS NOT NULL UNION ALL SELECT norms.number as number, norms.name as name, norms.duration as duration, norms.changeovertype as changeovertype, norms.productionline_id as productionLineId, norms.fromtechnology_id as technnolgyFromId, norms.totechnology_id as technologyToId FROM linechangeovernorms_linechangeovernorms norms WHERE changeovertype='01forTechnology' AND norms.fromtechnology_id IS NOT NULL AND norms.totechnology_id IS NOT NULL;
+CREATE OR REPLACE VIEW linechangeovernorms_normflatview AS SELECT groupnorms.number, groupnorms.name, groupnorms.duration, groupnorms.changeovertype, groupnorms.productionlineid, groupnorms.technologyfromid AS technnolgyfromid, groupnorms.technologytoid, groupnorms.technologyfromnumber, groupnorms.technologytonumber FROM linechangeovernorms_groupsview groupnorms WHERE groupnorms.technologyfromid IS NOT NULL AND groupnorms.technologytoid IS NOT NULL UNION ALL SELECT norms.number, norms.name, norms.duration, norms.changeovertype, norms.productionline_id AS productionlineid, norms.fromtechnology_id AS technnolgyfromid, norms.totechnology_id AS technologytoid, technologyfrom.number AS technologyfromnumber, technologyto.number AS technologytonumber FROM linechangeovernorms_linechangeovernorms norms LEFT JOIN technologies_technology technologyfrom ON technologyfrom.id = norms.fromtechnology_id LEFT JOIN technologies_technology technologyto ON technologyto.id = norms.totechnology_id WHERE norms.changeovertype::text = '01forTechnology'::text AND norms.fromtechnology_id IS NOT NULL AND norms.totechnology_id IS NOT NULL;
 
-CREATE OR REPLACE VIEW linechangeovernorms_ordersnormview AS SELECT o.id::text || ', ' || norms.number::text as id, o.number as number, o.id as orderId, norms.number as normNumber, norms.duration as duration FROM orders_order o LEFT JOIN linechangeovernorms_normflatview norms ON norms.technologyToId = o.technologyprototype_id and norms.technnolgyFromId = (SELECT ord.technologyprototype_id FROM orders_order ord WHERE ord.active = true AND ord.productionline_id = o.productionline_id AND ord.finishdate < o.finishdate and state not in ('05declined','07abandoned') ORDER BY ord.finishdate DESC LIMIT 1) WHERE o.active = true and o.finishdate > now() - interval '1 month' ORDER BY norms.productionLineId, norms.changeovertype;
+CREATE OR REPLACE VIEW linechangeovernorms_ordersnormview AS SELECT (o.id::text || ', '::text) || norms.number::text AS id, o.number, o.id AS orderid, norms.number AS normnumber, norms.name AS normname, norms.duration, norms.technologyfromnumber, norms.technologytonumber FROM orders_order o LEFT JOIN linechangeovernorms_normflatview norms ON norms.technologytoid = o.technologyprototype_id AND norms.technnolgyfromid = (( SELECT ord.technologyprototype_id FROM orders_order ord WHERE ord.active = true AND ord.productionline_id = o.productionline_id AND ord.finishdate < o.finishdate AND (ord.state::text <> ALL (ARRAY['05declined'::character varying::text, '07abandoned'::character varying::text])) ORDER BY ord.finishdate DESC LIMIT 1)) WHERE o.active = true AND o.finishdate > (now() - '1 mon'::interval) AND norms.number IS NOT NULL ORDER BY norms.productionlineid, norms.changeovertype;
 
 -- end
 
@@ -359,31 +358,5 @@ CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM mast
 
 CREATE SEQUENCE productioncounting_productiontracking_number_seq;
 
-CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS
-$$
-DECLARE
-    _pattern text;
-    _sequence_name text;
-    _sequence_value numeric;
-    _tmp text;
-    _seq text;
-    _number text;
-BEGIN
-    _pattern := '#seq';
-
-    select nextval('productioncounting_productiontracking_number_seq') into _sequence_value;
-
-    _seq := to_char(_sequence_value, 'fm000000');
-
-    if _seq like '%#%' then
-        _seq := _sequence_value;
-    end if;
-
-    _number := _pattern;
-    _number := replace(_number, '#seq', _seq);
-
-    RETURN _number;
-END;
-$$ LANGUAGE 'plpgsql';
-
+CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('productioncounting_productiontracking_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
 -- end

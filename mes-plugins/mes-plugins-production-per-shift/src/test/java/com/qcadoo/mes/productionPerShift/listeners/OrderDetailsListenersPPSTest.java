@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,10 +34,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.productionPerShift.PPSHelper;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
+import java.util.Map;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class OrderDetailsListenersPPSTest {
 
@@ -99,7 +98,7 @@ public class OrderDetailsListenersPPSTest {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", expectedPpsId);
 
-        verify(view).redirectTo("../page/productionPerShift/productionPerShiftDetails.html", false, true, parameters);
+        verify(view).redirectTo("/page/productionPerShift/productionPerShiftDetails.html", false, true, parameters);
     }
 
     @Test

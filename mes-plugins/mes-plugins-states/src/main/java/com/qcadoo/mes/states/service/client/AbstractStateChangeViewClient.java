@@ -39,6 +39,8 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
@@ -47,6 +49,8 @@ import static com.qcadoo.mes.states.constants.StateChangeStatus.*;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.hasFailureMessages;
 
 public abstract class AbstractStateChangeViewClient implements StateChangeViewClient {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractStateChangeViewClient.class);
 
     @Autowired
     private StateChangeContextBuilder stateChangeContextBuilder;
@@ -85,6 +89,8 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
     @Override
     public final void changeState(final ViewContextHolder viewContext, final String targetState, final Entity entity) {
         try {
+            LOG.info(String.format("Change state. Entity name : %S id : %d. Target state : %S", entity.getDataDefinition().getName(),
+                    entity.getId(), targetState));
             StateChangeContext stateChangeContext = stateChangeContextBuilder.build(getStateChangeService()
                     .getChangeEntityDescriber(), entity, targetState);
             getStateChangeService().changeState(stateChangeContext);

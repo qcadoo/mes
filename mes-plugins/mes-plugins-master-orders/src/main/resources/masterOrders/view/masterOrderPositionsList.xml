@@ -67,10 +67,10 @@
             </script>
 
             <option type="column" name="name" fields="name" link="true"
-                    width="100"/>
+                    width="50"/>
             <option type="column" name="number" fields="number"
-                    width="150" link="true"/>
-            <option type="column" name="masterOrderName" fields="masterOrderName" width="150" link="true"/>
+                    width="140" link="true"/>
+            <option type="column" name="masterOrderName" fields="masterOrderName" width="140" link="true"/>
             <option type="column" name="deadline" fields="deadline"
                     width="80"/>
             <option type="column" name="companyName" fields="companyName"
@@ -86,12 +86,12 @@
             <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus" width="55"/>
             <option type="column" name="comments" fields="comments"
                     width="45"/>
-            <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" width="35"/>
-            <option type="column" name="cumulatedMasterOrderQuantity" fields="cumulatedMasterOrderQuantity" width="35"/>
-            <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="35"/>
-            <option type="column" name="leftToRelease" fields="leftToRelease"/>
+            <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" width="45"/>
+            <option type="column" name="cumulatedMasterOrderQuantity" fields="cumulatedMasterOrderQuantity" width="45"/>
+            <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="45"/>
+            <option type="column" name="leftToRelease" fields="leftToRelease" width="45"/>
             <option type="column" name="unit" fields="unit"
-                    width="55"/>
+                    width="35"/>
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
@@ -102,6 +102,9 @@
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>
 
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary"
+                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 

@@ -90,6 +90,10 @@
             <option type="prioritizable" value="false"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary"
+                    value="quantity"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

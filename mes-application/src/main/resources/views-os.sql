@@ -73,8 +73,7 @@ ALTER TABLE technologies_technology ADD CONSTRAINT technology_division_fkey FORE
 
 DROP TABLE IF EXISTS orders_orderplanninglistdto;
 
-CREATE OR REPLACE VIEW orders_orderplanninglistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.ordercategory, coalesce(ordersorder.amountOfProductProduced, 0) as amountOfProductProduced, coalesce(ordersorder.wastesQuantity, 0) as wastesQuantity, coalesce(ordersorder.remainingAmountOfProductToProduce,0) as remainingAmountOfProductToProduce,product.number AS productnumber, technology.number AS technologynumber, product.unit AS unit, productionline.number AS productionlinenumber, masterorder.number AS masterordernumber, division.name AS divisionname, division.number as divisionnumber FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN basic_division division ON division.id = technology.division_id;
-
+CREATE OR REPLACE VIEW public.orders_orderplanninglistdto AS SELECT ordersorder.id, ordersorder.active, ordersorder.number, ordersorder.name, ordersorder.datefrom, ordersorder.dateto, ordersorder.startdate, ordersorder.finishdate, ordersorder.state, ordersorder.externalnumber, ordersorder.externalsynchronized, ordersorder.issubcontracted, ordersorder.plannedquantity, ordersorder.workplandelivered, ordersorder.ordercategory, COALESCE(ordersorder.amountofproductproduced, 0::numeric) AS amountofproductproduced, COALESCE(ordersorder.wastesquantity, 0::numeric) AS wastesquantity, COALESCE(ordersorder.remainingamountofproducttoproduce, 0::numeric) AS remainingamountofproducttoproduce, product.number AS productnumber, technology.number AS technologynumber, product.unit, productionline.number AS productionlinenumber, masterorder.number AS masterordernumber, division.name AS divisionname, division.number AS divisionnumber, coalesce(ordersorder.plannedquantityforadditionalunit,ordersorder.plannedquantity) AS plannedquantityforadditionalunit, coalesce(product.additionalunit,product.unit) AS unitforadditionalunit FROM orders_order ordersorder JOIN basic_product product ON product.id = ordersorder.product_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN masterorders_masterorder masterorder ON masterorder.id = ordersorder.masterorder_id LEFT JOIN basic_division division ON division.id = technology.division_id;
 -- end
 
 
@@ -114,7 +113,7 @@ CREATE OR REPLACE VIEW cmmsmachineparts_maintenanceeventlistdto AS SELECT mainte
 
 DROP TABLE IF EXISTS productioncounting_productiontrackingdto;
 
-CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS SELECT productiontracking.id AS id, productiontracking.number AS number, productiontracking.state AS state, productiontracking.createdate AS createdate, productiontracking.lasttracking AS lasttracking, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, productiontracking.active AS active, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, ordersorder.state AS orderstate, technologyoperationcomponent.id::integer AS technologyoperationcomponent_id, (CASE WHEN technologyoperationcomponent IS NULL THEN '' ELSE (technologyoperationcomponent.nodenumber::text || ' '::text) || operation.name::text END) AS technologyoperationcomponentnumber, operation.id::integer AS operation_id, shift.id::integer AS shift_id, shift.name AS shiftname, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, division.id::integer AS division_id, division.number AS divisionnumber, subcontractor.id::integer AS subcontractor_id, subcontractor.name AS subcontractorname, productiontrackingcorrection.number AS correctionnumber, productionline.id::integer AS productionline_id, productionline.number AS productionLineNumber, CONCAT(product.number,' - ',product.name) AS productNumber, product.unit AS productUnit, outcomponent.usedquantity AS usedQuantity FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id LEFT JOIN technologies_operation operation ON operation.id = technologyoperationcomponent.operation_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN basic_division division ON division.id = productiontracking.division_id LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON (outcomponent.product_id = product.id AND productiontracking.id = outcomponent.productiontracking_id) LEFT JOIN basic_product product ON ordersorder.product_id = product.id ;
+CREATE OR REPLACE VIEW productioncounting_productiontrackingdto AS SELECT productiontracking.id AS id, productiontracking.number AS number, productiontracking.state AS state, productiontracking.createdate AS createdate, productiontracking.lasttracking AS lasttracking, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, productiontracking.active AS active, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber, ordersorder.state AS orderstate, technologyoperationcomponent.id::integer AS technologyoperationcomponent_id, (CASE WHEN technologyoperationcomponent IS NULL THEN '' ELSE (technologyoperationcomponent.nodenumber::text || ' '::text) || operation.name::text END) AS technologyoperationcomponentnumber, operation.id::integer AS operation_id, shift.id::integer AS shift_id, shift.name AS shiftname, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, division.id::integer AS division_id, division.number AS divisionnumber, subcontractor.id::integer AS subcontractor_id, subcontractor.name AS subcontractorname, productiontrackingcorrection.number AS correctionnumber, productionline.id::integer AS productionline_id, productionline.number AS productionLineNumber, CONCAT(product.number,' - ',product.name) AS productNumber, product.unit AS productUnit, outcomponent.usedquantity AS usedQuantity FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id LEFT JOIN technologies_operation operation ON operation.id = technologyoperationcomponent.operation_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN basic_division division ON division.id = productiontracking.division_id LEFT JOIN basic_company subcontractor ON subcontractor.id = productiontracking.subcontractor_id LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON productiontrackingcorrection.id = productiontracking.correction_id  LEFT JOIN basic_product product ON ordersorder.product_id = product.id LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON (outcomponent.product_id = product.id AND productiontracking.id = outcomponent.productiontracking_id);
 
 
 DROP TABLE IF EXISTS productioncounting_trackingoperationproductincomponentdto;
@@ -267,31 +266,6 @@ CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM mast
 
 CREATE SEQUENCE productioncounting_productiontracking_number_seq;
 
-CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS
-$$
-DECLARE
-    _pattern text;
-    _sequence_name text;
-    _sequence_value numeric;
-    _tmp text;
-    _seq text;
-    _number text;
-BEGIN
-    _pattern := '#seq';
-
-    select nextval('productioncounting_productiontracking_number_seq') into _sequence_value;
-
-    _seq := to_char(_sequence_value, 'fm000000');
-
-    if _seq like '%#%' then
-        _seq := _sequence_value;
-    end if;
-
-    _number := _pattern;
-    _number := replace(_number, '#seq', _seq);
-
-    RETURN _number;
-END;
-$$ LANGUAGE 'plpgsql';
+CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('productioncounting_productiontracking_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
 
 -- end
