@@ -61,9 +61,9 @@ public class DocumentPositionValidator {
         Preconditions.checkNotNull(position, "documentGrid.required.documentPosition");
         Preconditions.checkNotNull(position.getDocument(), "documentGrid.required.documentPosition.document");
 
-        DocumentDTO document = jdbcTemplate.queryForObject("SELECT * FROM materialflowresources_document WHERE id = :id",
-                Collections.singletonMap("id", position.getDocument()),
-                new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
+        DocumentDTO document = jdbcTemplate
+                .queryForObject("SELECT * FROM materialflowresources_document WHERE id = :id", Collections.singletonMap("id",
+                        position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
 
         List<String> errors = new ArrayList<>();
         Map<String, Object> params = null;
@@ -392,10 +392,11 @@ public class DocumentPositionValidator {
                 Map<String, Object> filters = new HashMap<>();
                 filters.put("code", additionalCode);
                 filters.put("productNumber", position.getProduct());
-                Long additionalCodeId = jdbcTemplate.queryForObject(
-                        "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
-                                + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
-                        filters, Long.class);
+                Long additionalCodeId = jdbcTemplate
+                        .queryForObject(
+                                "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
+                                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
+                                filters, Long.class);
 
             } catch (EmptyResultDataAccessException e) {
                 return Arrays.asList("documentGrid.error.position.additionalCode.doesntMatch");
@@ -488,9 +489,10 @@ public class DocumentPositionValidator {
         }
 
         try {
-            Long storageLocationId = jdbcTemplate.queryForObject(
-                    "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
-                    Collections.singletonMap("number", storageLocationNumber), Long.class);
+            Long storageLocationId = jdbcTemplate
+                    .queryForObject(
+                            "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
+                            Collections.singletonMap("number", storageLocationNumber), Long.class);
 
             return storageLocationId;
 
@@ -530,12 +532,14 @@ public class DocumentPositionValidator {
         String fieldName = translationService.translate("documentGrid.gridColumn." + field, LocaleContextHolder.getLocale());
 
         if (scale > maxScale) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                    LocaleContextHolder.getLocale()), fieldName, maxScale));
+            errors.add(String.format(
+                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                            LocaleContextHolder.getLocale()), fieldName, maxScale));
         }
         if ((precision - scale) > maxPrecision) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
-                    LocaleContextHolder.getLocale()), fieldName, maxPrecision));
+            errors.add(String.format(
+                    translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
+                            LocaleContextHolder.getLocale()), fieldName, maxPrecision));
         }
 
         return errors;
@@ -545,15 +549,15 @@ public class DocumentPositionValidator {
         List<String> errors = new ArrayList<>();
 
         if (isInDocument(document)) {
-            if (existsNotMatchingResourceForPalletNumber(position)) {
-                errors.add(
-                        translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
-                                LocaleContextHolder.getLocale()));
-            } else if (existsNotMatchingPositionForPalletNumber(position)) {
-                errors.add(
-                        translationService.translate("documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
-                                LocaleContextHolder.getLocale()));
-            } else if (existsNotMatchingDeliveredProductForPalletNumber(position)) {
+            if (existsNotMatchingResourceForPalletNumber(position, document)) {
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
+                        LocaleContextHolder.getLocale()));
+            } else if (existsNotMatchingPositionForPalletNumber(position, document)) {
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
+                        LocaleContextHolder.getLocale()));
+            } else if (existsNotMatchingDeliveredProductForPalletNumber(position, document)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
                         LocaleContextHolder.getLocale()));
@@ -568,7 +572,7 @@ public class DocumentPositionValidator {
         return type == DocumentType.RECEIPT || type == DocumentType.INTERNAL_INBOUND || type == DocumentType.TRANSFER;
     }
 
-    private boolean existsNotMatchingResourceForPalletNumber(DocumentPositionDTO position) {
+    private boolean existsNotMatchingResourceForPalletNumber(DocumentPositionDTO position, DocumentDTO document) {
         if (Strings.isNullOrEmpty(position.getPalletNumber())) {
             return false;
         }
@@ -576,18 +580,19 @@ public class DocumentPositionValidator {
         query.append("SELECT count(*) FROM materialflowresources_resource resource ");
         query.append("JOIN basic_palletnumber pallet ON (resource.palletnumber_id = pallet.id) ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (resource.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR resource.typeofpallet <> :typeOfPallet)");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR resource.typeofpallet <> :typeOfPallet) ");
+        query.append("AND resource.location_id = :locationId");
         Map<String, Object> params = new HashMap<>();
         params.put("palletNumber", position.getPalletNumber());
         params.put("storageNumber", position.getStorageLocation());
         params.put("typeOfPallet", position.getTypeOfPallet());
+        params.put("locationId", document.getLocationTo_id());
         Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
         return count > 0;
 
     }
 
-    private boolean existsNotMatchingPositionForPalletNumber(DocumentPositionDTO position) {
+    private boolean existsNotMatchingPositionForPalletNumber(DocumentPositionDTO position, DocumentDTO document) {
         if (Strings.isNullOrEmpty(position.getPalletNumber())) {
             return false;
         }
@@ -595,8 +600,7 @@ public class DocumentPositionValidator {
         query.append("SELECT count(*) FROM materialflowresources_position position ");
         query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
         query.append("AND position.document_id = :documentId ");
         Map<String, Object> params = new HashMap<>();
         params.put("palletNumber", position.getPalletNumber());
@@ -607,20 +611,22 @@ public class DocumentPositionValidator {
         return count > 0;
     }
 
-    private boolean existsNotMatchingDeliveredProductForPalletNumber(DocumentPositionDTO position) {
+    private boolean existsNotMatchingDeliveredProductForPalletNumber(DocumentPositionDTO position, DocumentDTO document) {
         if (Strings.isNullOrEmpty(position.getPalletNumber())) {
             return false;
         }
         StringBuilder query = new StringBuilder();
         query.append("SELECT count(*) FROM deliveries_deliveredproduct position ");
         query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
+        query.append("JOIN deliveries_delivery delivery ON position.delivery_id = delivery.id ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.pallettype <> :typeOfPallet) ");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.pallettype <> :typeOfPallet) ");
+        query.append("AND delivery.location_id = :locationId");
         Map<String, Object> params = new HashMap<>();
         params.put("palletNumber", position.getPalletNumber());
         params.put("storageNumber", position.getStorageLocation());
         params.put("typeOfPallet", position.getTypeOfPallet());
+        params.put("locationId", document.getLocationTo_id());
         Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
         return count > 0;
     }

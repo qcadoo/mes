@@ -23,13 +23,33 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,17 +59,7 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
+import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -189,6 +199,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
             Object date) {
+        return createResource(position, warehouse, resource, quantity, date, false);
+    }
+
+    public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
+            Object date, final boolean assignNewStorageLocation) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -215,7 +230,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.BATCH, resource.getField(PositionFields.BATCH));
         newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(PositionFields.EXPIRATION_DATE));
         newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
-        newResource.setField(ResourceFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+        if (!assignNewStorageLocation) {
+            newResource.setField(ResourceFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+        } else {
+            newResource.setField(ResourceFields.STORAGE_LOCATION,
+                    findStorageLocationForProduct(warehouse, resource.getBelongsToField(ResourceFields.PRODUCT)));
+        }
         newResource.setField(ResourceFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
@@ -231,6 +251,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         resourceStockService.addResourceStock(newResource);
         return resourceDD.save(newResource);
+    }
+
+    private Entity findStorageLocationForProduct(final Entity warehouse, final Entity product) {
+        List<Entity> storageLocations = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION)
+                .find().add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, warehouse))
+                .add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product)).list().getEntities();
+        if (storageLocations.isEmpty()) {
+            return null;
+        } else {
+            return storageLocations.get(0);
+        }
     }
 
     public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
@@ -639,8 +671,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position, warehouseAlgorithm);
 
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-
         resourceStockService.removeResourceStock(product, warehouseFrom, quantity);
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
@@ -661,10 +694,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     resource.getDataDefinition().save(resource);
                 }
 
-                createResource(position, warehouseTo, resource, resourceAvailableQuantity, date);
+                Entity newResource = createResource(position, warehouseTo, resource, resourceAvailableQuantity, date, true);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
-                    return;
+                    if (newResource.isValid()) {
+                        return;
+                    } else {
+                        for (Map.Entry<String, ErrorMessage> error : newResource.getErrors().entrySet()) {
+                            position.addError(positionDD.getField(error.getKey()), error.getValue().getMessage());
+                        }
+                    }
                 }
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
@@ -678,9 +717,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().save(resource);
 
-                createResource(position, warehouseTo, resource, quantity, date);
+                Entity newResource = createResource(position, warehouseTo, resource, quantity, date, true);
 
-                return;
+                if (newResource.isValid()) {
+                    return;
+                } else {
+
+                    for (Map.Entry<String, ErrorMessage> error : newResource.getErrors().entrySet()) {
+                        position.addError(positionDD.getField(error.getKey()), error.getValue().getMessage());
+                    }
+                }
             }
         }
 
