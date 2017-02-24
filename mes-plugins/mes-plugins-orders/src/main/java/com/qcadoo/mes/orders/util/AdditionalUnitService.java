@@ -30,9 +30,9 @@ public class AdditionalUnitService {
     public BigDecimal getQuantityAfterConversion(final Entity order, String givenUnit, BigDecimal quantity, String baseUnit) {
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
-        if(quantity == null){
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
+        if (quantity == null) {
             return BigDecimal.valueOf(0);
         }
         if (!baseUnit.equals(givenUnit)) {
@@ -48,9 +48,12 @@ public class AdditionalUnitService {
         FieldComponent quantityForAdditionalUnitField = (FieldComponent) view
                 .getComponentByReference(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
-        BigDecimal quantityForAdditionalUnit = getQuantityAfterConversion(order, getAdditionalUnit(product),
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(ProductFields.UNIT));
-        if(quantityForAdditionalUnit.compareTo(BigDecimal.valueOf(0)) == 0){
+        BigDecimal quantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+        if (product != null) {
+            quantityForAdditionalUnit = getQuantityAfterConversion(order, getAdditionalUnit(product),
+                    order.getDecimalField(OrderFields.PLANNED_QUANTITY), product.getStringField(ProductFields.UNIT));
+        }
+        if (quantityForAdditionalUnit.compareTo(BigDecimal.valueOf(0)) == 0) {
             FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
             quantityForUnitField.setFieldValue(numberService.format(quantityForAdditionalUnit));
             quantityForUnitField.requestComponentUpdateState();
