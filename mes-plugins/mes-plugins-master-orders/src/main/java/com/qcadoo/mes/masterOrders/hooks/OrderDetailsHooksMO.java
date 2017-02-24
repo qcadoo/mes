@@ -181,7 +181,7 @@ public class OrderDetailsHooksMO {
             }
 
             if ((technologyPrototypeLookup.getEntity() == null) && (masterOrderTechnology != null)) {
-                technologyPrototypeLookup.setFieldValue(masterOrderTechnology);
+                technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
             }
 
             if (StringUtils.isEmpty((String) plannedQuantityField.getFieldValue()) && (plannedQuantity != null)
