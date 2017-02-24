@@ -168,9 +168,6 @@ public class OrderDetailsHooks {
         } else if (defaultProductionLine != null) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
-        } else {
-            productionLineLookup.setFieldValue(null);
-            productionLineLookup.requestComponentUpdateState();
         }
     }
 
