@@ -908,7 +908,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function updateProductFromLocation(location, rowNumber) {
             $.get('/rest/rest/documentPositions/productFromLocation/' + location + ".html", function (newProduct) {
                 if (newProduct) {
-                    var productField = updateFieldValue('product', newProduct['name'], rowNumber);
+                    var productField = updateFieldValue('product', newProduct['number'], rowNumber);
                     productField.trigger('change');
                 }
 

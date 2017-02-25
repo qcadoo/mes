@@ -132,7 +132,6 @@ public class OrderHooks {
     }
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
-        fillProductionLine(orderDD, order);
         copyStartDate(orderDD, order);
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
@@ -268,22 +267,6 @@ public class OrderHooks {
             return false;
         } else {
             return true;
-        }
-    }
-
-    public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
-        if (order.getId() != null) {
-            return;
-        }
-
-        if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) != null) {
-            return;
-        }
-
-        Entity defaultProductionLine = orderService.getDefaultProductionLine();
-
-        if (defaultProductionLine != null) {
-            order.setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
         }
     }
 

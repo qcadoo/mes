@@ -31,6 +31,7 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
@@ -76,9 +77,23 @@ public class OrderDetailsListeners {
     @Autowired
     private OrderDetailsHooks orderDetailsHooks;
 
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
+
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         address.setFieldValue(null);
+    }
+
+    public void onTechnologyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        setDefaultNameUsingTechnology(view, state, args);
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = technologyLookup.getEntity();
+        Entity defaultProductionLine = orderService.getDefaultProductionLine();
+        if (technology != null) {
+           orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+        }
     }
 
     public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -290,11 +305,23 @@ public class OrderDetailsListeners {
 
         if (technology != null) {
             if (TechnologyStateStringValues.DRAFT.equals(technology.getStringField(TechnologyFields.STATE))) {
-                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
+                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
+                        TechnologyStateStringValues.ACCEPTED, technology);
             } else if (TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
                 technologyServiceO.changeTechnologyStateToAccepted(technology);
             }
         }
         orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0]);
     }
+
+    public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
+    }
+
+    public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        additionalUnitService.setQuantityFieldForAdditionalUnit(view,
+                ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
+    }
+
 }

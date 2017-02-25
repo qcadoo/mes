@@ -23,17 +23,11 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -44,33 +38,33 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderDetailsHooks {
@@ -121,10 +115,13 @@ public class OrderDetailsHooks {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
-        fillProductionLine(view);
         generateOrderNumber(view);
         fillDefaultTechnology(view);
+        fillProductionLine(view);
         disableFieldOrderForm(view);
         disableTechnologiesIfProductDoesNotAny(view);
         setAndDisableState(view);
@@ -141,6 +138,8 @@ public class OrderDetailsHooks {
         setFieldsVisibility(view);
         checkIfLockTechnologyTree(view);
         setQuantities(view);
+        additionalUnitService.setAdditionalUnitField(view);
+        unitService.fillProductForAdditionalUnitBeforeRender(view);
 
     }
 
@@ -150,13 +149,24 @@ public class OrderDetailsHooks {
 
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+        LookupComponent defaultTechnologyField = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = defaultTechnologyField.getEntity();
 
-        Entity defaultProductionLine = orderService.getDefaultProductionLine();
+        if (orderForm.getEntityId() == null && productionLineLookup.getFieldValue() == null) {
+            Entity defaultProductionLine = orderService.getDefaultProductionLine();
+            fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+        }
+    }
 
-        if ((orderForm.getEntityId() == null) && (productionLineLookup.getFieldValue() == null)
-                && (defaultProductionLine != null)) {
+    public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
+            final Entity defaultProductionLine) {
+        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision")
+                && "01oneDivision".equals(technology.getField("range"))
+                && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
+            productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+            productionLineLookup.requestComponentUpdateState();
+        } else if (defaultProductionLine != null) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
         }
@@ -278,8 +288,8 @@ public class OrderDetailsHooks {
             return;
         }
 
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                .get(orderId);
+        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                orderId);
 
         if (order == null) {
             return;
@@ -506,8 +516,7 @@ public class OrderDetailsHooks {
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderState.PENDING.getStringValue().equals(state) || OrderState.ACCEPTED.getStringValue().equals(state)
-                || OrderState.IN_PROGRESS.getStringValue().equals(state)
-                || OrderState.INTERRUPTED.getStringValue().equals(state)) {
+                || OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.INTERRUPTED.getStringValue().equals(state)) {
             FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
 
             descriptionField.setEnabled(true);
@@ -593,10 +602,10 @@ public class OrderDetailsHooks {
         amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
-                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                        numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+                numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
@@ -605,6 +614,13 @@ public class OrderDetailsHooks {
         }
 
         remainingAmountOfProductToProduceField.requestComponentUpdateState();
+        Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+
+        if (product != null
+                && (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null || !isValidQuantityForAdditionalUnit(
+                        order, product))) {
+            additionalUnitService.setQuantityFieldForAdditionalUnit(view, order);
+        }
     }
 
     private void setDoneQuantity(final ViewDefinitionState view) {
@@ -627,10 +643,10 @@ public class OrderDetailsHooks {
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
-                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                        numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
             remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
@@ -660,6 +676,14 @@ public class OrderDetailsHooks {
         }
 
         return isValid;
+    }
+
+    private boolean isValidQuantityForAdditionalUnit(final Entity order, final Entity product) {
+        BigDecimal expectedVariable = additionalUnitService.getQuantityAfterConversion(order,
+                additionalUnitService.getAdditionalUnit(product), order.getDecimalField(OrderFields.PLANNED_QUANTITY),
+                product.getStringField(ProductFields.UNIT));
+        BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
+        return expectedVariable.compareTo(currentVariable) == 0;
     }
 
 }

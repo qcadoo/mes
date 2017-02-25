@@ -21,6 +21,18 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -33,20 +45,9 @@ import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.stereotype.Service;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class DocumentsListListeners {
@@ -70,7 +71,7 @@ public class DocumentsListListeners {
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
         Set<Long> invalidEntities = new HashSet<>();
         if (acceptanceOfDocumentBeforePrinting) {
-            invalidEntities = createResourcesForDocuments(view);
+            invalidEntities = createResourcesForDocuments(view, componentState, args);
         }
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
         Set<Long> selectedEntitiesIds = grid.getSelectedEntitiesIds();
@@ -80,7 +81,7 @@ public class DocumentsListListeners {
         }
     }
 
-    private Set<Long> createResourcesForDocuments(final ViewDefinitionState view) {
+    public Set<Long> createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -149,9 +150,7 @@ public class DocumentsListListeners {
             String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
             boolean result = true;
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
-                        && position.getField(PositionFields.RESOURCE) != null)
-                        || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
+                boolean resultForPosition = !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) || position.getField(PositionFields.RESOURCE) != null;
                 if (!resultForPosition) {
                     result = false;
                     position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
