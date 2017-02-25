@@ -161,7 +161,8 @@ public class OrderDetailsHooks {
 
     public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
             final Entity defaultProductionLine) {
-        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision") && "01oneDivision".equals(technology.getField("range"))
+        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision")
+                && "01oneDivision".equals(technology.getField("range"))
                 && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
             productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             productionLineLookup.requestComponentUpdateState();
@@ -601,9 +602,9 @@ public class OrderDetailsHooks {
         amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
-                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
                 numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
@@ -613,9 +614,11 @@ public class OrderDetailsHooks {
         }
 
         remainingAmountOfProductToProduceField.requestComponentUpdateState();
+        Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
-        if (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null
-                || !isValidQuantityForAdditionalUnit(order)) {
+        if (product != null
+                && (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null || !isValidQuantityForAdditionalUnit(
+                        order, product))) {
             additionalUnitService.setQuantityFieldForAdditionalUnit(view, order);
         }
     }
@@ -640,8 +643,9 @@ public class OrderDetailsHooks {
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
-                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
         if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
@@ -674,8 +678,7 @@ public class OrderDetailsHooks {
         return isValid;
     }
 
-    private boolean isValidQuantityForAdditionalUnit(final Entity order) {
-        Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+    private boolean isValidQuantityForAdditionalUnit(final Entity order, final Entity product) {
         BigDecimal expectedVariable = additionalUnitService.getQuantityAfterConversion(order,
                 additionalUnitService.getAdditionalUnit(product), order.getDecimalField(OrderFields.PLANNED_QUANTITY),
                 product.getStringField(ProductFields.UNIT));
