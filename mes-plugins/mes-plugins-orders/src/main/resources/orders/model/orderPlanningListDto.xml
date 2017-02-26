@@ -37,6 +37,7 @@
         <datetime name="finishDate"/>
         <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
         <decimal name="plannedQuantity"/>
+        <decimal name="plannedQuantityForAdditionalUnit"/>
         <string name="externalNumber"/>
         <boolean name="externalSynchronized" default="true"/>
         <boolean name="isSubcontracted" default="false"/>
@@ -44,6 +45,7 @@
         <string name="orderCategory"/>
         <string name="productNumber"/>
         <string name="unit"/>
+        <string name="unitForAdditionalUnit"/>
         <string name="technologyNumber"/>
         <string name="productionLineNumber"/>
         <string name="masterOrderNumber"/>

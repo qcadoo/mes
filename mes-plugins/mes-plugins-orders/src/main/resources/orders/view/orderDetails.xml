@@ -32,7 +32,90 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+
+            <group name="actions" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;"
+                           accesskey="s"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled"
+                             action="#{form}.performSave; #{window}.performBack;"/>
+                <smallButton name="saveNew" icon="saveNewIcon16.png" state="enabled"
+                             action="#{form}.performSaveAndClear;"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;"
+                             accesskey="c">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;"
+                             accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
+
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+
+            <group name="states" if="#view.getComponentByReference('form').dataDefinition.activable">
+                <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
+                             action="#{form}.performActivate;">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && !value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
+                             action="#{form}.performDeactivate;">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId && value.content.isActive) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+            </group>
             <group name="status">
                 <smallButton name="acceptOrder" icon="startIcon16.png"
                              state="disabled">
@@ -162,27 +245,27 @@
             <component type="form" name="order" reference="form">
                 <script>
                     <![CDATA[
-					var save = #{window}.getRibbonItem("actions.save");
-					var saveBack = #{window}.getRibbonItem("actions.saveBack");
-					var saveNew = #{window}.getRibbonItem("actions.saveNew");
-					var cancel = #{window}.getRibbonItem("actions.cancel");
-					var del = #{window}.getRibbonItem("actions.delete");
-					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
-					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
-					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
-					
+					var save = #{window}.getRibbonItemOrNull("actions.save");
+					var saveBack = #{window}.getRibbonItemOrNull("actions.saveBack");
+					var saveNew = #{window}.getRibbonItemOrNull("actions.saveNew");
+					var del = #{window}.getRibbonItemOrNull("actions.delete");
+					var acceptOrder = #{window}.getRibbonItemOrNull("status.acceptOrder");
+					var declineOrder = #{window}.getRibbonItemOrNull("status.declineOrder");
+					var interruptOrder = #{window}.getRibbonItemOrNull("status.interruptOrder");
+					if (save)
 					QCDTrack.track(
 							save,
 							"onClick",
 							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
 					);
-					
+
+					if (saveBack)
 					QCDTrack.track(
 							saveBack,
 							"onClick",
 							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
 					);
-					
+					if (saveNew)
 					QCDTrack.track(
 							saveNew,
 							"onClick",
@@ -194,18 +277,18 @@
 							if (! value || ! value.content) {
 								return;
 							}
-							save.enable();
-							saveBack.enable();
-							saveNew.enable();
+							if (save) save.enable();
+							if (saveBack) saveBack.enable();
+							if (saveNew) saveNew.enable();
 							if (! value.content.entityId) {
-								cancel.disable();
+							    if (del)
 								del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 								return;
 							}
-							cancel.enable();
+							if (del)
 							del.enable();
 							var state = #{state}.getValue().content.value;
 							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
@@ -232,7 +315,7 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.disable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "03inProgress") {
 								acceptOrder.enable();
 								acceptOrder.state = "finish";
@@ -243,15 +326,13 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.enable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "04completed") { 
-								cancel.disable();
-								del.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable()
 							} else if (state == "05declined") {
-								cancel.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
@@ -265,30 +346,27 @@
 								declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 								declineOrder.setIcon('deleteIcon16.png');
 								interruptOrder.disable();
-								del.disable();
+								if (del) del.disable();
 							} else if (state == "07abandoned") { 
-								cancel.disable();
-								del.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable()
 							} else {
-								save.disable();
-								saveBack.disable();
-								saveNew.disable();
-								cancel.disable();
-								del.disable();
+								if (save) save.disable();
+								if (saveBack) saveBack.disable();
+								if (saveNew) saveNew.disable();
+								if (del) del.disable();
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
 							}
 							
 							if (externalSynchronized == '0') {
-								save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								cancel.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (save) save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (saveBack) saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (saveNew) saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+								if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
@@ -388,7 +466,8 @@
                                    field="product">
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
-                            <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" link="true"/>
+                            <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"
+                                    link="true"/>
 
 
                             <option type="searchable" value="name,globalTypeOfMaterial"/>
@@ -405,7 +484,7 @@
                                       method="fillProductUnit"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                                      method="setDefaultNameUsingTechnology"/>
+                                      method="onTechnologyChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="2">
@@ -439,7 +518,7 @@
 
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                                                  method="setDefaultNameUsingTechnology"/>
+                                                  method="onTechnologyChange"/>
                                     </component>
                                 </layoutElement>
 
@@ -481,33 +560,82 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
-                        <component type="input" name="plannedQuantity"
-                                   reference="plannedQuantity" field="plannedQuantity">
-                            <option type="labelWidth" value="55"/>
-                            <option type="alignment" value="right"/>
+                        <component type="gridLayout" name="basicUnitGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="plannedQuantity"
+                                           reference="plannedQuantity" field="plannedQuantity">
+                                    <option type="labelWidth" value="55"/>
+                                    <option type="alignment" value="right"/>
+                                    <listener event="onInputChange" method="onQuantityChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unit" reference="unit"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
-                        <component type="input" name="doneQuantity" field="doneQuantity"
-                                   reference="doneQuantity" hasDescription="true">
-                            <option type="labelWidth" value="55"/>
-                            <option type="alignment" value="right"/>
 
-                            <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
-                            <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+
+                    <layoutElement column="2" row="7">
+                        <component type="gridLayout" name="additionalUnitGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="plannedQuantityForAdditionalUnit"
+                                           reference="plannedQuantityForAdditionalUnit"
+                                           field="plannedQuantityForAdditionalUnit">
+                                    <option type="labelWidth" value="55"/>
+                                    <option type="alignment" value="right"/>
+                                    <listener event="onInputChange" method="onQuantityForAdditionalUnitChange"
+                                              class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unitForAdditionalUnit"
+                                           reference="unitForAdditionalUnit"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
+
+
                     <layoutElement column="2" row="8">
-                        <component type="input" name="unit" reference="unit"
-                                   defaultEnabled="false">
-                            <option type="labelWidth" value="55"/>
-                            <option type="alignment" value="right"/>
+                        <component type="gridLayout" name="doneQuantityGrid"
+                                   columns="7" rows="1" hasBorders="false">
+                            <layoutElement column="1" width="6" row="1">
+                                <component type="input" name="doneQuantity" field="doneQuantity"
+                                           reference="doneQuantity" hasDescription="true">
+                                    <option type="labelWidth" value="55"/>
+                                    <option type="alignment" value="right"/>
+
+                                    <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
+                                    <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1">
+                                <component type="input" name="unitForDone" reference="unitForDone"
+                                           defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="2" row="9">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultVisible="false"/>
                     </layoutElement>
+
+
                     <layoutElement column="3" row="1">
                         <component type="select" name="orderCategory" field="orderCategory"
                                    reference="orderCategory" hasDescription="true"/>
@@ -520,7 +648,7 @@
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                          method="changeState"/>                          
+                          method="changeState"/>
                 <listener event="showCopyOfTechnology" method="showCopyOfTechnology"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"
@@ -993,14 +1121,14 @@
         <windowTab name="integrationTab">
             <script>
                 <![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
+						var del = #{window}.getRibbonItemOrNull("actions.delete");
 						var externalNumberListener = {
 							onSetValue: function(value) {
 								
 								var externalNumber = #{externalNumber}.getValue().content.value;
 								
 								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
+									if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
 								}
 							}
 						};

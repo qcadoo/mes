@@ -215,6 +215,8 @@
 
             <option type="searchable"
                     value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+            <option type="multiSearch"
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
                     value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 

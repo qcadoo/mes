@@ -32,7 +32,7 @@
 
 		<ribbon>
 			<template name="standardFormTemplate"
-				excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh" />
+				excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh,actions.saveNew" />
 		</ribbon>
 
 		<component type="form" name="productionCountingQuantityDetails"

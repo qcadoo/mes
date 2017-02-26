@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -60,6 +44,21 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -151,44 +150,6 @@ public class OrderDetailsHooksTest {
         given(view.getComponentByReference(OrderFields.DATE_TO)).willReturn(dateToField);
         given(view.getComponentByReference(OrderFields.EFFECTIVE_DATE_FROM)).willReturn(effectiveDateFromField);
         given(view.getComponentByReference(OrderFields.ADDRESS)).willReturn(addressLookup);
-    }
-
-    @Test
-    public void shouldntFillProductionLineIfFormIsSaved() {
-        // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
-        given(orderForm.getEntityId()).willReturn(L_ID);
-
-        given(view.getComponentByReference(OrderFields.PRODUCTION_LINE)).willReturn(productionLineLookup);
-
-        given(orderService.getDefaultProductionLine()).willReturn(defaultProductionLine);
-
-        given(defaultProductionLine.getId()).willReturn(L_ID);
-
-        // when
-        orderDetailsHooks.fillProductionLine(view);
-
-        // then
-        verify(productionLineLookup, never()).setFieldValue(L_ID);
-    }
-
-    @Test
-    public void shouldFillProductionLineIfFormIsntSaved() {
-        // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
-        given(orderForm.getEntityId()).willReturn(null);
-
-        given(view.getComponentByReference(OrderFields.PRODUCTION_LINE)).willReturn(productionLineLookup);
-
-        given(orderService.getDefaultProductionLine()).willReturn(defaultProductionLine);
-
-        given(defaultProductionLine.getId()).willReturn(L_ID);
-
-        // when
-        orderDetailsHooks.fillProductionLine(view);
-
-        // then
-        verify(productionLineLookup).setFieldValue(L_ID);
     }
 
     @Test
