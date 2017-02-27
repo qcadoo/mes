@@ -34,6 +34,7 @@ import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
+
 @Service
 public class PalletNumberHelperHooks {
 
@@ -56,7 +57,8 @@ public class PalletNumberHelperHooks {
 
         List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
 
-        if ((quantity != null) && palletNumbers.isEmpty()) {
+
+        if ((quantity != null) && palletNumbers.isEmpty() && quantity<=PalletNumberHelperFields.QUANTITY_MAX_VALUE) {
             String firstNumber = palletNumberGenerator.generate();
 
             palletNumbers = palletNumbersService.createPalletNumbers(palletNumberGenerator.list(firstNumber, quantity));
