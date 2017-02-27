@@ -11,11 +11,11 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class PalletNumberHelperValidators {
 
-    public static boolean checkQuantity(final DataDefinition dataDefinition, final Entity pallet) {
+    public static boolean checkQuantity(final DataDefinition palletHelperDefinition, final Entity pallet) {
 
         Object fieldValue = pallet.getField(PalletNumberHelperFields.QUANTITY);
 
-        int quantity = 0;
+        Integer quantity = 0;
         if (fieldValue != null) {
             if (fieldValue instanceof Long) {
                 quantity = ((Long) fieldValue).intValue();
@@ -24,10 +24,10 @@ public class PalletNumberHelperValidators {
                 quantity = (Integer) fieldValue;
             }
         }
-        if (quantity <= PalletNumberHelperFields.QUANTITY_MAX_VALUE) {
+        if (quantity.compareTo(PalletNumberHelperFields.QUANTITY_MAX_VALUE) <= 0) {
             return true;
         }
-        pallet.addError(dataDefinition.getField(QUANTITY), "basic.palleteNumberHelperDetails.field.error.invalidQuantityRange");
+        pallet.addError(palletHelperDefinition.getField(QUANTITY), "basic.palleteNumberHelperDetails.field.error.invalidQuantityRange");
         return false;
     }
 }
