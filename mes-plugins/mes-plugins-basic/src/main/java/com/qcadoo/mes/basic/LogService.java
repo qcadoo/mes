@@ -1,6 +1,16 @@
 package com.qcadoo.mes.basic;
 
+import java.util.Date;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.LogFields;
 import com.qcadoo.mes.basic.constants.LogLevel;
@@ -11,12 +21,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.security.constants.UserFields;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
+import com.qcadoo.tenant.api.MultiTenantCallback;
+import com.qcadoo.tenant.api.MultiTenantService;
 
 @Service
 public class LogService {
@@ -27,7 +33,13 @@ public class LogService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private MultiTenantService multiTenantService;
+
+    @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public final static class Builder {
 
@@ -35,12 +47,19 @@ public class LogService {
         }
 
         private String type;
+
         private String action;
+
         private String item1;
+
         private String item2;
+
         private String item3;
+
         private String message;
+
         private String details;
+
         private LogLevel logLevel = LogLevel.TRACE;
 
         public static Builder newBuilder(LogLevel logLevel, String type, String action) {
@@ -131,7 +150,8 @@ public class LogService {
     }
 
     private Entity findBotUser() {
-        DataDefinition userDD = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
+        DataDefinition userDD = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER,
+                QcadooSecurityConstants.MODEL_USER);
 
         Entity user = userDD.find().add(SearchRestrictions.eq(UserFields.USER_NAME, QCADOO_BOT)).uniqueResult();
 
@@ -146,6 +166,25 @@ public class LogService {
         if (Strings.isNullOrEmpty(builder.type) || Strings.isNullOrEmpty(builder.action) || builder.logLevel == null) {
             throw new IllegalStateException("Type, action and logLevel is required!");
         }
+    }
+
+    public void deleteOldLogsTrigger() {
+        multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
+
+            @Override
+            public void invoke() {
+                deleteOldLogs();
+            }
+
+        });
+    }
+
+    private void deleteOldLogs() {
+        String sql = "DELETE FROM basic_log WHERE createtime < (now() - interval '3 month');";
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        jdbcTemplate.update(sql, params);
     }
 
 }
