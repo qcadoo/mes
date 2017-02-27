@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import static com.qcadoo.mes.basic.validators.PalletNumberHelperValidators.checkQuantity;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,7 @@ public class PalletNumberHelperHooks {
         List<Entity> palletNumbers = palletNumberHelper.getManyToManyField(PalletNumberHelperFields.PALLET_NUMBERS);
 
 
-        if ((quantity != null) && palletNumbers.isEmpty() && quantity<=PalletNumberHelperFields.QUANTITY_MAX_VALUE) {
+        if ((quantity != null) && palletNumbers.isEmpty() && checkQuantity(palletNumberHelper.getDataDefinition(),palletNumberHelper)) {
             String firstNumber = palletNumberGenerator.generate();
 
             palletNumbers = palletNumbersService.createPalletNumbers(palletNumberGenerator.list(firstNumber, quantity));
