@@ -72,7 +72,10 @@ public class ResourceDetailsListeners {
                     if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
                         boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity,
                                 newStorageLocation, correctedPrice);
-                        if (!corrected) {
+                        if (!resource.isValid()) {
+                            copyErrors(resource, resourceForm);
+
+                        } else if (!corrected) {
                             resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
 
                         } else {
@@ -80,9 +83,11 @@ public class ResourceDetailsListeners {
                             quantityInput.requestComponentUpdateState();
                             resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
                         }
+
                     } else {
                         quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanReserved", MessageType.FAILURE);
                     }
+
                 } else {
                     quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
                 }
@@ -93,5 +98,15 @@ public class ResourceDetailsListeners {
             quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
         }
 
+    }
+
+    private void copyErrors(Entity resource, FormComponent resourceForm) {
+        resource.getGlobalErrors().forEach(error -> {
+            resourceForm.addMessage(error);
+        });
+
+        resource.getErrors().values().forEach(error -> {
+            resourceForm.addMessage(error);
+        });
     }
 }

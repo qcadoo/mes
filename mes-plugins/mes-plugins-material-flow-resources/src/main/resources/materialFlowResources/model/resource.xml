@@ -82,14 +82,10 @@
         </decimal>
 
     </fields>
-    <hooks>
+    <hooks>        
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
-                method="checkIfLocationIsWarehouse"/>
-
-        <validatesWith
-                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
-                method="checkQuantities"/>
+                method="validatesWith"/>
         <onView
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
                 method="onView"/>
