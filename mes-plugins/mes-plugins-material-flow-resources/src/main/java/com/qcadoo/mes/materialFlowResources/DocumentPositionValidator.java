@@ -601,12 +601,13 @@ public class DocumentPositionValidator {
         query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
         query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
-        query.append("AND position.document_id = :documentId ");
+        query.append("AND position.document_id = :documentId AND position.id <> :positionId ");
         Map<String, Object> params = new HashMap<>();
         params.put("palletNumber", position.getPalletNumber());
         params.put("storageNumber", position.getStorageLocation());
         params.put("typeOfPallet", position.getTypeOfPallet());
         params.put("documentId", position.getDocument());
+        params.put("positionId", position.getId());
         Long count = jdbcTemplate.queryForObject(query.toString(), params, Long.class);
         return count > 0;
     }

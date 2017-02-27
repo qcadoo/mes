@@ -58,13 +58,18 @@ public class PalletValidatorService {
         query.append("AND document.state = '01draft' ");
         query.append("AND (storageLocation.number <> :storageLocation OR dp.typeOfPallet <> :palletType) ");
         query.append("AND location.id = :locationId");
-
+        if (entity.getId() != null) {
+            query.append("AND dp.id <> :dpId ");
+        }
         SearchQueryBuilder find = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION).find(query.toString());
         find.setString("palletType", palletType);
         find.setString("palletNumber", palletNumber);
         find.setString("storageLocation", storageLocation);
         find.setLong("locationId", location.getId());
+        if (entity.getId() != null) {
+            find.setLong("dpId", entity.getId());
+        }
         Entity countResults = find.uniqueResult();
 
         boolean exists = ((Long) countResults.getField("cnt")) > 0L;
