@@ -232,14 +232,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
         if (!assignNewStorageLocation) {
             newResource.setField(ResourceFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+
+            newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
+            newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         } else {
             newResource.setField(ResourceFields.STORAGE_LOCATION,
                     findStorageLocationForProduct(warehouse, resource.getBelongsToField(ResourceFields.PRODUCT)));
+
+            newResource.setField(ResourceFields.PALLET_NUMBER, null);
+            newResource.setField(ResourceFields.TYPE_OF_PALLET, null);
         }
         newResource.setField(ResourceFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
-        newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-        newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
         BigDecimal quantityInAdditionalUnit = numberService.setScale(quantity.multiply(resource
