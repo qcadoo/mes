@@ -18,13 +18,16 @@ public class PalletValidatorService {
     private DataDefinitionService dataDefinitionService;
 
     public boolean validatePalletForDeliveredProduct(Entity deliveredProduct) {
+        Entity location = deliveredProduct.getBelongsToField("delivery").getBelongsToField("location");
+        if (location == null) {
+            return true;
+        }
         Entity palletNumberEntity = deliveredProduct.getBelongsToField("palletNumber");
         Entity storageLocationEntity = deliveredProduct.getBelongsToField("storageLocation");
         String palletType = deliveredProduct.getStringField("palletType");
         String palletNumber = palletNumberEntity != null ? palletNumberEntity.getStringField(PalletNumberFields.NUMBER) : null;
         String storageLocation = storageLocationEntity != null ? storageLocationEntity
                 .getStringField(StorageLocationFields.NUMBER) : null;
-        Entity location = deliveredProduct.getBelongsToField("delivery").getBelongsToField("location");
         return validatePallet(palletNumber, palletType, storageLocation, deliveredProduct, location);
     }
 
@@ -57,7 +60,7 @@ public class PalletValidatorService {
         query.append("WHERE pallet.number = :palletNumber ");
         query.append("AND document.state = '01draft' ");
         query.append("AND (storageLocation.number <> :storageLocation OR dp.typeOfPallet <> :palletType) ");
-        query.append("AND location.id = :locationId");
+        query.append("AND location.id = :locationId ");
         if (entity.getId() != null) {
             query.append("AND dp.id <> :dpId ");
         }
