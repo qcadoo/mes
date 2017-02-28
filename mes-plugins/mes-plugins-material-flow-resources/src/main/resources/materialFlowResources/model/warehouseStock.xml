@@ -33,6 +33,7 @@
         <belongsTo name="product" model="product" plugin="basic" required="true" />
         <decimal name="quantity" required="true">
             <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
         <decimal name="orderedQuantity"></decimal>
         <decimal name="minimumState"></decimal>

@@ -32,9 +32,11 @@
         <belongsTo name="product" model="product" plugin="basic"/>
         <decimal name="newQuantity">
             <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
         <decimal name="oldQuantity">
             <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
         </decimal>
         <belongsTo name="location" model="location" plugin="materialFlow"/>
         <datetime name="time"/>
