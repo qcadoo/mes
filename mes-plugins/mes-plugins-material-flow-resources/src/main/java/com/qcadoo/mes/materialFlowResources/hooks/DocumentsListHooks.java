@@ -25,10 +25,10 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -40,43 +40,7 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 public class DocumentsListHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        lockDeleteAndAcceptButtons(view);
         lockDispositionOrder(view);
-    }
-
-    private void lockDeleteAndAcceptButtons(ViewDefinitionState view) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-
-        RibbonActionItem acceptItem = (RibbonActionItem) window.getRibbon().getGroupByName("state").getItemByName("accept");
-        RibbonActionItem deleteItem = (RibbonActionItem) window.getRibbon().getGroupByName("actions").getItemByName("delete");
-        acceptItem.setEnabled(false);
-        deleteItem.setEnabled(false);
-
-        String errorMessage = null;
-        for (Entity document : gridComponent.getSelectedEntities()) {
-            DocumentState state = DocumentState.of(document);
-            if(DocumentState.ACCEPTED.equals(state)){
-                errorMessage = "materialFlowResources.actions.error";
-                break;
-            }
-        }
-
-        acceptItem.setMessage(errorMessage);
-        acceptItem.setEnabled(!gridComponent.getSelectedEntities().isEmpty() && errorMessage == null);
-        acceptItem.requestUpdate(true);
-        deleteItem.setMessage(errorMessage);
-        deleteItem.setEnabled(!gridComponent.getSelectedEntities().isEmpty() && errorMessage == null);
-        deleteItem.requestUpdate(true);
-
-        for (Entity document : gridComponent.getSelectedEntities()) {
-            if(document.getBooleanField(DocumentFields.IN_BUFFER)){
-                errorMessage = "materialFlowResources.actions.errorInBuffer";
-                acceptItem.setMessage(errorMessage);
-                acceptItem.setEnabled(false);
-                break;
-            }
-        }
     }
 
     private void lockDispositionOrder(ViewDefinitionState view) {
