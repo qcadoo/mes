@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.google.common.base.Strings;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
 import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
@@ -35,17 +36,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import java.util.HashMap;
+import java.util.Map;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Service
 public class DeliveredProductHooks {
@@ -62,6 +69,9 @@ public class DeliveredProductHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     public void onCreate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.createDefaultReservationsForDeliveredProduct(deliveredProduct);
     }
@@ -77,7 +87,7 @@ public class DeliveredProductHooks {
     public boolean validatesWith(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
-                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct);
+                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct) && validatePallet(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -156,5 +166,25 @@ public class DeliveredProductHooks {
     private boolean isBiggerDeliveredQuantityAllowed() {
         return parameterService.getParameter().getBooleanField(ParameterFieldsD.DELIVERED_BIGGER_THAN_ORDERED);
     }
+
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+    
+    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+        return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+    }
+    
+//    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+//        return (!existsOtherDeliveredProductForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherDeliveredProductForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+//                && !existsOtherDeliveredProductForOtherPalletType(deliveredProductDD, deliveredProduct)
+//                
+////                && (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+////                && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
+//                
+//                && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+//                && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
+//    }
+//    
+ 
 
 }

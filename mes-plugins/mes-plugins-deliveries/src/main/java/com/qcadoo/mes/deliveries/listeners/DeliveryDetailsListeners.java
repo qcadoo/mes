@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -31,13 +41,23 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -49,11 +69,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -176,7 +191,7 @@ public class DeliveryDetailsListeners {
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
         deliveredProductMulti.setField("delivery", delivery);
         List<Entity> orderedProducts = getSelectedProducts(view);
-        List<Entity> deliveredProducts =delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
         List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
         DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 "deliveredProductMultiPosition");
@@ -256,31 +271,33 @@ public class DeliveryDetailsListeners {
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        copyOrderedProductToDelivered(delivery, copyQuantityAndPrice);
+        deliveryForm.setEntity(copyOrderedProductToDelivered(delivery, copyQuantityAndPrice));
     }
 
-    private void copyOrderedProductToDelivered(final Entity delivery, final boolean copyQuantityAndPrice) {
+    private Entity copyOrderedProductToDelivered(final Entity delivery, final boolean copyQuantityAndPrice) {
         // ALBR deliveredProduct has a validation so we have to delete all
         // entities before save HM field in delivery
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
-        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS,
-                createDeliveredProducts(delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
-
-        delivery.getDataDefinition().save(delivery);
+        delivery.setField(
+                DeliveryFields.DELIVERED_PRODUCTS,
+                createDeliveredProducts(delivery, delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
+        return delivery;
+        // delivery.getDataDefinition().save(delivery);
     }
 
-    private List<Entity> createDeliveredProducts(final List<Entity> orderedProducts, final boolean copyQuantityAndPrice) {
+    private List<Entity> createDeliveredProducts(final Entity delivery, final List<Entity> orderedProducts,
+            final boolean copyQuantityAndPrice) {
         List<Entity> deliveredProducts = Lists.newArrayList();
 
         for (Entity orderedProduct : orderedProducts) {
-            deliveredProducts.add(createDeliveredProduct(orderedProduct, copyQuantityAndPrice));
+            deliveredProducts.add(createDeliveredProduct(delivery, orderedProduct, copyQuantityAndPrice));
         }
 
         return deliveredProducts;
     }
 
-    private Entity createDeliveredProduct(final Entity orderedProduct, final boolean copyQuantityAndPrice) {
+    private Entity createDeliveredProduct(final Entity delivery, final Entity orderedProduct, final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
@@ -290,7 +307,7 @@ public class DeliveryDetailsListeners {
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);
-
+        deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
         if (copyQuantityAndPrice) {
             BigDecimal deliverdQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
             deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY, numberService.setScale(deliverdQuantity));
@@ -301,6 +318,8 @@ public class DeliveryDetailsListeners {
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
                     numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
+
+        deliveredProduct.getDataDefinition().save(deliveredProduct);
 
         return deliveredProduct;
     }
@@ -406,8 +425,8 @@ public class DeliveryDetailsListeners {
         if (orderedAdditionalCode != null && deliveredAdditionalCode != null) {
             additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
         }
-        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(
-                deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId()))
+        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(deliveredProduct.getBelongsToField(
+                DeliveredProductFields.PRODUCT).getId()))
                 && additionalCodesMatching;
     }
 
@@ -444,8 +463,8 @@ public class DeliveryDetailsListeners {
             Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
             BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
 
-            BigDecimal quantity = BigDecimalUtils.convertNullToZero(
-                    oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
+            BigDecimal quantity = BigDecimalUtils.convertNullToZero(oldReservation
+                    .getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
 
             if (availableQuantity.compareTo(quantity) < 0) {
                 quantity = availableQuantity;
@@ -496,8 +515,8 @@ public class DeliveryDetailsListeners {
             return BigDecimal.ONE;
         }
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(
-                        SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {

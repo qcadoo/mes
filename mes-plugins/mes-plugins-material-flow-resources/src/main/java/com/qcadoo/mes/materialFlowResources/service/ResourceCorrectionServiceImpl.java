@@ -76,8 +76,6 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
             correction.setField(ResourceCorrectionFields.RESOURCE, oldResource);
 
-            correction.getDataDefinition().save(correction);
-
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource));
@@ -85,6 +83,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                     newQuantity.subtract(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY)));
             Entity savedResource = resource.getDataDefinition().save(resource);
             if (savedResource.isValid()) {
+                correction.getDataDefinition().save(correction);
 
                 BigDecimal difference = newQuantity.subtract(oldQuantity);
                 if (difference.compareTo(BigDecimal.ZERO) > 0) {
@@ -92,8 +91,11 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                 } else {
                     resourceStockService.removeResourceStock(product(oldResource), location(oldResource), difference.abs());
                 }
+                return true;
+
+            } else {
+                return false;
             }
-            return true;
         }
         return false;
     }
