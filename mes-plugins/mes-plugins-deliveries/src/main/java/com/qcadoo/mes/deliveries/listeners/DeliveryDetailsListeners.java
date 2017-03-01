@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -208,6 +210,7 @@ public class DeliveryDetailsListeners {
 
     private List<Entity> getSelectedProducts(ViewDefinitionState view) {
         GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference("orderedProducts");
+
         List<Entity> result = Lists.newArrayList();
         Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
         if (ids != null && !ids.isEmpty()) {
@@ -215,6 +218,17 @@ public class DeliveryDetailsListeners {
             searchCriteria.add(SearchRestrictions.in("id", ids));
             result = searchCriteria.list().getEntities();
         }
+
+        String numbersFilter = orderdProductGrid.getFilters().get("productNumber");
+        if (!Strings.isNullOrEmpty(numbersFilter)) {
+            ArrayList<String> numbersOrder = Lists.newArrayList(numbersFilter.replace("[", "").replace("]", "").split(","));
+            result.sort((o1, o2) -> {
+                String number1 = o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+                String number2 = o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+                return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
+            });
+        }
+
         return result;
     }
 
