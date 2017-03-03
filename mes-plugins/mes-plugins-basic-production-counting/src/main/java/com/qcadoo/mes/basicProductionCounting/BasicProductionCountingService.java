@@ -189,7 +189,6 @@ public interface BasicProductionCountingService {
      */
     Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
-
     /**
      * Update producted quantity
      *
@@ -197,4 +196,11 @@ public interface BasicProductionCountingService {
      */
     void updateProducedQuantity(final Entity order);
 
+    /**
+     * Get used components from production counting quantities for order
+     * 
+     * @param order
+     * @return
+     */
+    List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order);
 }
