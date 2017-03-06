@@ -84,10 +84,10 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
 
     private List<Entity> createMissingOrderMaterialCostsEntities(final Entity order,
             final List<ProductWithCosts> allTechnologyRawProductsWithCosts, final List<Entity> existingOrderMaterialCosts) {
+        final Set<Long> existingMaterialCostIds = existingOrderMaterialCosts.stream()
+                .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
+                .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
         if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
-            final Set<Long> existingMaterialCostIds = existingOrderMaterialCosts.stream()
-                    .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
-                    .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
             List<Entity> allOrderMaterialCosts = allTechnologyRawProductsWithCosts.stream()
                     .filter(productWithCosts -> !existingMaterialCostIds.contains(productWithCosts.getProductId()))
                     .map(productWithCosts -> orderMaterialCostsEntityBuilder.create(order, productWithCosts))
@@ -95,11 +95,23 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
             allOrderMaterialCosts.addAll(existingOrderMaterialCosts);
             return allOrderMaterialCosts;
         } else {
-            return basicProductionCountingService
+            List<Entity> allOrderMaterialCosts = basicProductionCountingService
                     .getUsedMaterialsFromProductionCountingQuantities(order, true)
                     .stream()
                     .map(material -> orderMaterialCostsEntityBuilder.create(order,
                             material.getBelongsToField(ProductionCountingQuantityFields.PRODUCT))).collect(Collectors.toList());
+            final Set<Long> allMaterialCostIds = allOrderMaterialCosts.stream()
+                    .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
+                    .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
+            List<Entity> mergedOrderMaterialCosts = existingOrderMaterialCosts
+                    .stream()
+                    .filter(materialCost -> allMaterialCostIds.contains(materialCost.getBelongsToField(
+                            TechnologyInstOperProductInCompFields.PRODUCT).getId())).collect(Collectors.toList());
+            mergedOrderMaterialCosts.addAll(allOrderMaterialCosts
+                    .stream()
+                    .filter(materialCost -> !existingMaterialCostIds.contains(materialCost.getBelongsToField(
+                            TechnologyInstOperProductInCompFields.PRODUCT).getId())).collect(Collectors.toList()));
+            return mergedOrderMaterialCosts;
         }
     }
 
