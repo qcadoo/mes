@@ -52,4 +52,10 @@ final class OrderMaterialCostsEntityBuilderImpl implements OrderMaterialCostsEnt
         return orderMaterialCosts;
     }
 
+    @Override
+    public Entity create(Entity order, Entity product) {
+        ProductWithCosts productWithCosts = ProductWithCostsBuilder.fromProduct(product);
+        return create(order, productWithCosts);
+    }
+
 }

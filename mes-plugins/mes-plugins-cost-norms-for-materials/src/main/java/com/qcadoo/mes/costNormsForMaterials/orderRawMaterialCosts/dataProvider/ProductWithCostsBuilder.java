@@ -67,6 +67,15 @@ public final class ProductWithCostsBuilder {
         return new ProductWithCosts(productId, costForNumber, nominalCost, lastPurchaseCost, averageCost);
     }
 
+    public static ProductWithCosts fromProduct(final Entity product) {
+        Long productId = product.getId();
+        BigDecimal costForNumber = product.getDecimalField(ProductFieldsCNFP.COST_FOR_NUMBER);
+        BigDecimal nominalCost = product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST);
+        BigDecimal lastPurchaseCost = product.getDecimalField(ProductFieldsCNFP.LAST_PURCHASE_COST);
+        BigDecimal averageCost = product.getDecimalField(ProductFieldsCNFP.AVERAGE_COST);
+        return new ProductWithCosts(productId, costForNumber, nominalCost, lastPurchaseCost, averageCost);
+    }
+
     public static SearchProjection buildProjectionForProduct(final String prefix) {
         return list().add(fieldProj(prefix, "id", PRODUCT_ID))
                 .add(fieldProj(prefix, ProductFieldsCNFP.COST_FOR_NUMBER, COST_FOR_NUMBER))

@@ -57,6 +57,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -419,12 +420,23 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public List<Entity> getUsedMaterialsFromProductionCountingQuantities(Entity order) {
-        List<Entity> productionCountingQuantities = order
+
+        return getUsedMaterialsFromProductionCountingQuantities(order, false);
+    }
+
+    @Override
+    public List<Entity> getUsedMaterialsFromProductionCountingQuantities(Entity order, boolean onlyComponents) {
+
+        SearchCriteriaBuilder scb = order
                 .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
                 .find()
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
-                        ProductionCountingQuantityRole.USED.getStringValue())).list().getEntities();
-        return productionCountingQuantities;
+                        ProductionCountingQuantityRole.USED.getStringValue()));
+        if (onlyComponents) {
+            scb.add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                    ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
+        }
+        return scb.list().getEntities();
     }
 
     @Override

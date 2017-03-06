@@ -48,4 +48,6 @@ interface OrderMaterialCostsEntityBuilder {
      */
     Entity create(final Entity order, final ProductWithCosts productWithCosts);
 
+    Entity create(final Entity order, final Entity product);
+
 }
