@@ -197,10 +197,19 @@ public interface BasicProductionCountingService {
     void updateProducedQuantity(final Entity order);
 
     /**
-     * Get used components from production counting quantities for order
+     * Get used materials from production counting quantities for order (components and intermediates)
      * 
      * @param order
      * @return
      */
     List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order);
+
+    /**
+     * Get used components from production counting quantities for order
+     *
+     * @param order
+     * @param onlyComponents
+     * @return
+     */
+    List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents);
 }
