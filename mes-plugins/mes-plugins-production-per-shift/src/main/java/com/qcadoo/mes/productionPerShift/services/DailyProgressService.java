@@ -63,8 +63,6 @@ public class DailyProgressService {
      * @return
      */
     public Map<DailyProgressKey, Entity> getDailyProgressesWithTrackingRecords(final Entity pps) {
-
-        // TODO trzeba rozpatrzeć dwa przypadki - rr dla jedej operacji (bierzeby tylko dla roota), zbiorcza
         Map<DailyProgressKey, Entity> dailyProgresses = Maps.newHashMap();
         Entity order = pps.getBelongsToField(ProductionPerShiftFields.ORDER);
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);

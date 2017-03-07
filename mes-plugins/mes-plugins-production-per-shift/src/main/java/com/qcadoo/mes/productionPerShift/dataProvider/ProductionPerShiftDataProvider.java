@@ -28,19 +28,19 @@ import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.domain.ProductionPerShiftId;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchProjectionList;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -86,23 +86,6 @@ import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
             TECHNOLOGY_OPERATION_COMPONENT_ALIAS + DOT + TechnologyOperationComponentFields.PARENT);
 
     @Autowired private DataDefinitionService dataDefinitionService;
-
-    /**
-     * Returns id of production per shift record, that belongs to the same production order as given technology operation.
-     *
-     * @param tocId identifier of the technology operation component
-     * @return production per shift record id or none, if such pps cannot be found
-     * @since 1.4
-     */
-    public Optional<ProductionPerShiftId> find(final TechnologyOperationId tocId) {
-        //TODO fix in mesc issue
-      /*  SearchQueryBuilder sqb = getProductionPerShiftDD().find(PPS_FOR_TOC_ID_QUERY).setLong("tocId", tocId.get());
-        sqb.setMaxResults(1);
-        return Optional.ofNullable(sqb.uniqueResult()).flatMap(e -> Optional.ofNullable((Long) e.getField("ppsId")))
-                .map(ProductionPerShiftId::new);*/
-        return Optional.empty();
-    }
-
 
     public Set<Long> findIdsOfEffectiveProgressForDay(Entity pps, boolean corrected) {
         Set<Long> pfdIds = Sets.newHashSet();

@@ -31,7 +31,6 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
-import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -93,15 +92,13 @@ public class ProgressForDayDataProvider {
                 ProgressForDayDataProvider.DEFAULT_SEARCH_ORDER);
     }
 
-    public Optional<Entity> findForOperationAndActualDate(final TechnologyOperationId tocId, final ProgressType progressType,
+    public Optional<Entity> findForOperationAndActualDate(final Entity pps, final ProgressType progressType,
             final LocalDate day) {
-        // todo do przerobienia w zadaniu z gf
         SearchCriteriaBuilder pfdCriteriaBuilder = getPfdDataDefinition().find();
         pfdCriteriaBuilder.add(eq(ProgressForDayFields.CORRECTED, progressType == ProgressType.CORRECTED));
-        /*
-         * pfdCriteriaBuilder .add(belongsTo(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT,
-         * TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT, tocId.get()));
-         */
+
+        pfdCriteriaBuilder .add(belongsTo(ProgressForDayFields.PRODUCTION_PER_SHIFT, pps));
+
         pfdCriteriaBuilder.add(eq(ProgressForDayFields.ACTUAL_DATE_OF_DAY, day.toDate()));
         return Optional.ofNullable(pfdCriteriaBuilder.setMaxResults(1).uniqueResult());
     }

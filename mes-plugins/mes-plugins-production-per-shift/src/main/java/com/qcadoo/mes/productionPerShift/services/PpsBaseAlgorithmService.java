@@ -57,8 +57,7 @@ public abstract class PpsBaseAlgorithmService {
         if (progressForDaysContainer.getOrder() != null) {
             order = progressForDaysContainer.getOrder();
         }
-        // TODO do weryfikacji
-        Entity operationComponent = progressForDaysContainer.getOperationComponent();
+
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         if (orderStartDate == null) {
             progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.order.startDateRequired",
