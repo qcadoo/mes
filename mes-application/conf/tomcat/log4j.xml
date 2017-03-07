@@ -4,7 +4,7 @@
 	<appender name="root-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/root.log" />
 		<param name="MaxFileSize" value="100MB" />
-		<param name="MaxBackupIndex" value="5" />
+		<param name="MaxBackupIndex" value="10" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
@@ -119,7 +119,7 @@
 		<level value="debug" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />
@@ -128,7 +128,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.apache">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="net.sf.ehcache">
 		<level value="info" />
@@ -137,43 +137,47 @@
 		<level value="error" />
 	</logger>
 
+	<logger name="org.hibernate.dialect.function.TemplateRenderer">
+		<level value="error" />
+	</logger>
+
 	<logger name="com.qcadoo.model">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="model-log" />
 	</logger>
 
 	<logger name="com.qcadoo.plugin">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="plugin-log" />
 	</logger>
 
 	<logger name="com.qcadoo.view">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="view-log" />
 	</logger>
 
 	<logger name="com.qcadoo.security">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="security-log" />
 	</logger>
 
 	<logger name="com.qcadoo.localization">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="localization-log" />
 	</logger>
 
 	<logger name="com.qcadoo.saas">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="saas-log" />
 	</logger>
 
 	<logger name="com.qcadoo.report">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="report-log" />
 	</logger>
 
 	<logger name="com.qcadoo.mes.integration">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="connector-log" />
 	</logger>
 
@@ -183,12 +187,12 @@
 	</logger>
 
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="sql-log" />
 	</logger>
 
 	<logger name="org.hibernate.cache" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="cache-log" />
 	</logger>
 
@@ -203,7 +207,7 @@
 	</logger>
 
 	<root>
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="root-log" />
 		<appender-ref ref="warn-log" />
 	</root>
