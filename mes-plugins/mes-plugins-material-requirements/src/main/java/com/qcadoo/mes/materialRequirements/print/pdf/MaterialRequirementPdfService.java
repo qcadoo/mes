@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,11 +45,9 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
@@ -154,7 +151,8 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
                 .getStringField(MaterialRequirementFields.MRP_ALGORITHM));
 
-        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(orders, algorithm);
+        Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
+                algorithm);
 
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
@@ -175,37 +173,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             }
         }
         document.add(table);
-    }
-
-    private Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm) {
-
-        List<Entity> draftOrders = orders.stream()
-                .filter(order -> OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
-                .collect(Collectors.toList());
-        List<Entity> otherOrders = orders.stream()
-                .filter(order -> !OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
-                .collect(Collectors.toList());
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(draftOrders,
-                algorithm, true);
-        if (neededProductQuantities == null) {
-            neededProductQuantities = Maps.newHashMap();
-        }
-
-        for (Entity order : otherOrders) {
-            List<Entity> productionCountingQuantities = basicProductionCountingService
-                    .getUsedMaterialsFromProductionCountingQuantities(order);
-            for (Entity pcq : productionCountingQuantities) {
-                Long productId = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId();
-                if (neededProductQuantities.containsKey(productId)) {
-                    neededProductQuantities.put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY)
-                            .add(neededProductQuantities.get(productId)));
-                } else {
-                    neededProductQuantities
-                            .put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
-                }
-            }
-        }
-        return neededProductQuantities;
     }
 
     private void addOrderSeries(final Document document, final Entity materialRequirement,

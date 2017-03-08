@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +46,9 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -447,6 +450,36 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                         operationComponent));
         return scb.list().getEntities();
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getNeededProductQuantities(List<Entity> orders, MrpAlgorithm algorithm) {
+        List<Entity> draftOrders = orders.stream()
+                .filter(order -> OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
+                .collect(Collectors.toList());
+        List<Entity> otherOrders = orders.stream()
+                .filter(order -> !OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
+                .collect(Collectors.toList());
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(draftOrders,
+                algorithm, true);
+        if (neededProductQuantities == null) {
+            neededProductQuantities = Maps.newHashMap();
+        }
+
+        for (Entity order : otherOrders) {
+            List<Entity> productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order);
+            for (Entity pcq : productionCountingQuantities) {
+                Long productId = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId();
+                if (neededProductQuantities.containsKey(productId)) {
+                    neededProductQuantities.put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY)
+                            .add(neededProductQuantities.get(productId)));
+                } else {
+                    neededProductQuantities
+                            .put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+                }
+            }
+        }
+        return neededProductQuantities;
     }
 
     @Override

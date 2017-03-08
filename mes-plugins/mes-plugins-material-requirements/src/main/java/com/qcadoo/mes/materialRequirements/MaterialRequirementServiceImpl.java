@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lowagie.text.DocumentException;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.print.pdf.MaterialRequirementPdfService;
 import com.qcadoo.mes.materialRequirements.print.xls.MaterialRequirementXlsService;
@@ -49,6 +50,9 @@ public class MaterialRequirementServiceImpl implements MaterialRequirementServic
 
     @Autowired
     private MaterialRequirementXlsService materialRequirementXlsService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Override
     public boolean checkIfInputProductsRequiredForTypeIsSelected(final DataDefinition entityDD, final Entity entity,

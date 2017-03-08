@@ -25,8 +25,10 @@ package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -221,4 +223,13 @@ public interface BasicProductionCountingService {
      * @return
      */
     List<Entity> getMaterialsForOperationFromProductionCountingQuantities(final Entity order, final Entity operationComponent);
+
+    /**
+     * Get needed product quantites from production counting quantities
+     * 
+     * @param orders
+     * @param algorithm
+     * @return
+     */
+    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm);
 }
