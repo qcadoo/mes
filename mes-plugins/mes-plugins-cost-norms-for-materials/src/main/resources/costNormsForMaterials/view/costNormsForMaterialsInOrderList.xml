@@ -35,6 +35,7 @@
 			
 			<group name="costs">
 				<bigButton name="copyCostsFromProducts" icon="copyIcon24.png"  state="enabled" action="#{form}.fireEvent(copyCostsFromProducts);" />
+				<bigButton name="updateCosts" icon="updateIcon24.png"  state="enabled" action="#{form}.fireEvent(updateCosts);" />
 			</group>
 		</ribbon>
 		
@@ -92,6 +93,10 @@
 				<listener event="copyCostsFromProducts"
 					class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
 					method="copyCostsFromProducts" />
+
+				<listener event="updateCosts"
+						  class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
+						  method="updateCosts" />
 			</component>
 		</windowTab>
 		
