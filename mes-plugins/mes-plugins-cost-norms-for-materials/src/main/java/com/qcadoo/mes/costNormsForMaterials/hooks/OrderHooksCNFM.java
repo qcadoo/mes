@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -40,8 +41,19 @@ public class OrderHooksCNFM {
     private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
 
     public void fillOrderOperationProductsInComponents(final DataDefinition orderDD, final Entity order) {
-        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
-        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology != null) {
+            boolean shouldUpdate;
+            if (order.getId() != null) {
+                Entity orderFromDb = orderDD.get(order.getId());
+                shouldUpdate = orderFromDb.getBelongsToField(OrderFields.TECHNOLOGY) == null;
+            } else {
+                shouldUpdate = true;
+            }
+            if (shouldUpdate) {
+                List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
+                order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+            }
+        }
     }
-
 }
