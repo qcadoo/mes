@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 
 import java.util.Arrays;
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;

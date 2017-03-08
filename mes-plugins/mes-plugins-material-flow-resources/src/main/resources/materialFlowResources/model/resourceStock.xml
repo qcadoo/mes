@@ -30,9 +30,18 @@
     <fields>
         <belongsTo name="location" model="location" plugin="materialFlow" required="true"/>
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
-        <decimal name="quantity"/>
-        <decimal name="reservedQuantity"/>
-        <decimal name="availableQuantity"/>
+        <decimal name="quantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="reservedQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="availableQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
 
     </fields>
     <hooks>

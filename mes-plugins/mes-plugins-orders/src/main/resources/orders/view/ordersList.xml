@@ -116,8 +116,8 @@
         <component type="grid" name="orders" reference="grid">
             <script>
                 <![CDATA[
-					var deleteButton = #{window}.getRibbonItem("orderListActions.delete");
-					var copyButton = #{window}.getRibbonItem("orderListActions.copy");
+					var deleteButton = #{window}.getRibbonItemOrNull("orderListActions.delete");
+					var copyButton = #{window}.getRibbonItemOrNull("orderListActions.copy");
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
@@ -128,8 +128,10 @@
 							    acceptOrder.disable();
 								declineOrder.disable();
 								interruptOrder.disable();
-								deleteButton.disable();
-								copyButton.disable();
+								if (deleteButton)
+								    deleteButton.disable();
+								if (copyButton)
+								    copyButton.disable();
 							} else {
 							    var noDifferentStates = true;
 
@@ -198,7 +200,7 @@
 									interruptOrder.disable("#{translate(orders.orders.ribbon.message.ordersWithDifferentStatesSelected)}");
 								}
 
-								copyButton.enable();
+								if (copyButton) copyButton.enable();
 
 								var canNotDelete = false;
 								var hasExternal = false;
@@ -213,13 +215,14 @@
 										break;
 									}
 								}
-
-								if (canNotDelete) {
-                  					deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
-								} else if (hasExternal) {
-									deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
-								} else {
-									deleteButton.enable();
+                                if (deleteButton){
+                                    if (canNotDelete) {
+                                        deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
+                                    } else if (hasExternal) {
+                                        deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
+                                    } else {
+                                        deleteButton.enable();
+                                    }
 								}
 							}
 						}

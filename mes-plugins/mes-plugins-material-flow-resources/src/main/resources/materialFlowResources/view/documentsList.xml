@@ -32,9 +32,9 @@
       modelName="documentDto"
       menuAccessible="true">
 
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
         <ribbon>
-            <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete"/>
+            <template name="standardGridTemplate" excludeItems="actions.copy"/>
             <group name="print">
                 <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" state="enabled">
                     <script>
@@ -55,9 +55,60 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="state">
+                <smallButton name="accept" icon="startIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent({
+                                        name    : 'createResourcesForDocuments',
+                                        args    : undefined,
+                                        type    : undefined,
+                                        callback : undefined
+                                    });
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <script>
+                <![CDATA[
+                    var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var acceptButton = #{window}.getRibbonItem("state.accept");
+
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+						    acceptButton.enable();
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								deleteButton.disable();
+								acceptButton.disable();
+							} else {
+							    for (var i in selectedEntitiesArray) {
+							        if (selectedEntitiesArray[i].fields.state == "02accepted") {
+                                        deleteButton.disable("#{translate(materialFlowResources.actions.error)}");
+									    acceptButton.disable("#{translate(materialFlowResources.actions.error)}");
+									    break;
+							        }
+							    }
+
+							    for (var i in selectedEntitiesArray) {
+							        if (selectedEntitiesArray[i].fields.inBuffer == '1') {
+									    acceptButton.disable("#{translate(materialFlowResources.actions.errorInBuffer)}");
+									    break;
+							        }
+							    }
+							}
+						}
+					}
+
+					this.addOnChangeListener(listener);
+				]]>
+            </script>
             <option type="column" name="number" fields="number" link="true" width="70"/>
             <option type="column" name="name" fields="name" link="true" width="70"/>
             <option type="column" name="type" fields="type" link="true"/>
@@ -88,6 +139,9 @@
             <listener event="printDispositionOrder"
                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
                       method="printDispositionOrder"/>
+            <listener event="createResourcesForDocuments"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
+                      method="createResourcesForDocuments"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

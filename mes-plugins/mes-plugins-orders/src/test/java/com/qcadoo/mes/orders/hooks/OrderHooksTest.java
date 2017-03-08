@@ -27,7 +27,6 @@ import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubId;
 import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -65,8 +64,6 @@ import com.qcadoo.model.api.FieldDefinition;
 
 public class OrderHooksTest {
 
-    private static final Long L_ID = 1L;
-
     private OrderHooks orderHooks;
 
     @Mock
@@ -85,7 +82,7 @@ public class OrderHooksTest {
     private TechnologyServiceO technologyServiceO;
 
     @Mock
-    private Entity order, product, productionLine, defaultProductionLine;
+    private Entity order, product;
 
     @Before
     public void init() {
@@ -96,61 +93,6 @@ public class OrderHooksTest {
         setField(orderHooks, "orderService", orderService);
         setField(orderHooks, "orderDatesService", orderDatesService);
         setField(orderHooks, "technologyServiceO", technologyServiceO);
-    }
-
-    @Test
-    public void shouldntFillProductionLineIfFormIsSavedAndProductionLineIsntNull() {
-        // given
-        stubId(order, null);
-        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
-
-        // when
-        orderHooks.fillProductionLine(orderDD, order);
-
-        // then
-        verify(order, never()).setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
-    }
-
-    @Test
-    public void shouldntFillProductionLineIfOrderIsntSaved() {
-        // given
-        stubId(order, L_ID);
-
-        // when
-        orderHooks.fillProductionLine(orderDD, order);
-
-        // then
-        verify(order, never()).setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
-    }
-
-    @Test
-    public void shouldntFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsNull() {
-        // given
-        stubId(order, null);
-        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, null);
-
-        given(orderService.getDefaultProductionLine()).willReturn(null);
-
-        // when
-        orderHooks.fillProductionLine(orderDD, order);
-
-        // then
-        verify(order, never()).setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
-    }
-
-    @Test
-    public void shouldFillProductionLineIfOrderIsSavedAndProductionLineIsNullAndDefaultProductionLineIsntNull() {
-        // given
-        stubId(order, null);
-        stubBelongsToField(order, OrderFields.PRODUCTION_LINE, null);
-
-        given(orderService.getDefaultProductionLine()).willReturn(defaultProductionLine);
-
-        // when
-        orderHooks.fillProductionLine(orderDD, order);
-
-        // then
-        verify(order).setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
     }
 
     @Test

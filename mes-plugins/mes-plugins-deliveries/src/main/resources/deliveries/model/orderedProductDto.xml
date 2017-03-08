@@ -74,6 +74,21 @@
 
         <string name="actualVersion"/>
 
+        <datetime name="deliveryDate"/>
+
+        <enum name="deliveryState" values="01draft,02prepared,03duringCorrection,04declined,05approved,06received,07receiveConfirmWaiting"/>
+
+        <string name="deliveryNumber"/>
+
+        <string name="deliveryName"/>
+
+        <string name="deliveryCurrency"/>
+
+        <string name="supplierName"/>
+
+        <string name="negotiationNumber"/>
+
+        <boolean name="deliveryActive"/>
 
     </fields>
     <masterModel plugin="deliveries" model="orderedProduct"/>

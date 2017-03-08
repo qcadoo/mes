@@ -132,13 +132,13 @@ public class OrderHooks {
     }
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
-        fillProductionLine(orderDD, order);
         copyStartDate(orderDD, order);
         copyEndDate(orderDD, order);
         copyProductQuantity(orderDD, order);
         onCorrectingTheRequestedVolume(orderDD, order);
         auditDatesChanges(order);
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
+        setRemainingQuantity(order);
     }
 
     public void onCopy(final DataDefinition orderDD, final Entity order) {
@@ -146,6 +146,14 @@ public class OrderHooks {
         clearOrSetSpecyfiedValueOrderFieldsOnCopy(orderDD, order);
         setProductQuantity(orderDD, order);
         setCopyOfTechnology(order);
+    }
+
+    public void setRemainingQuantity(final Entity order) {
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
+        order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfProductToProduce);
     }
 
     public void onDelete(final DataDefinition orderDD, final Entity order) {
@@ -268,22 +276,6 @@ public class OrderHooks {
             return false;
         } else {
             return true;
-        }
-    }
-
-    public void fillProductionLine(final DataDefinition orderDD, final Entity order) {
-        if (order.getId() != null) {
-            return;
-        }
-
-        if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) != null) {
-            return;
-        }
-
-        Entity defaultProductionLine = orderService.getDefaultProductionLine();
-
-        if (defaultProductionLine != null) {
-            order.setField(OrderFields.PRODUCTION_LINE, defaultProductionLine);
         }
     }
 

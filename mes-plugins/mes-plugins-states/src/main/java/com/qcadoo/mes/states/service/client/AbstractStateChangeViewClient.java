@@ -100,9 +100,13 @@ public abstract class AbstractStateChangeViewClient implements StateChangeViewCl
         } catch (AnotherChangeInProgressException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.anotherChangeInProgress",
                     MessageType.FAILURE);
+            LOG.info(String.format("Another state change in progress. Entity name : %S id : %d. Target state : %S",
+                    entity.getDataDefinition().getName(), entity.getId(), targetState));
         } catch (StateTransitionNotAlloweException e) {
             viewContext.getMessagesConsumer().addMessage("states.messages.change.failure.transitionNotAllowed",
                     MessageType.FAILURE);
+            LOG.info(String.format("State change - transition not allowed. Entity name : %S id : %d. Target state : %S",
+                    entity.getDataDefinition().getName(), entity.getId(), targetState));
         } catch (Exception e) {
             throw new StateChangeException(e);
         }

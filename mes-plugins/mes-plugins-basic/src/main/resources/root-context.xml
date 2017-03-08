@@ -42,9 +42,21 @@
     <bean id="schedulerFactoryBeanBasic" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+                <ref bean="deleteOldLogsTrigger"/>
                 <ref bean="deleteTemporaryPalletNumberHelpersTrigger"/>
             </list>
         </property>
+    </bean>
+
+    <bean id="deleteOldLogsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+        <property name="jobDetail" ref="deleteOldLogs"/>
+        <property name="cronExpression" value="0 0 3 * * ?"/>
+    </bean>
+
+    <bean id="deleteOldLogs"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="logService"/>
+        <property name="targetMethod" value="deleteOldLogsTrigger"/>
     </bean>
 
     <bean id="deleteTemporaryPalletNumberHelpersTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">

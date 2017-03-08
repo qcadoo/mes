@@ -82,7 +82,7 @@
                     QCDTrack.track(
 						cancelRecord,
 						"onClick",
-						"cancelProductionRecord"
+					    "cancelProductionRecord"
 					);
 				]]>
             </script>
@@ -106,8 +106,7 @@
 							} else {
 								var noDifferentStates = true;
 
-								if (selectedEntitiesArray.length > 1)
-								{
+								if (selectedEntitiesArray.length > 1){
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
 										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
 											noDifferentStates = false;
@@ -214,6 +213,8 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+            <option type="multiSearch"
                     value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
                     value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>

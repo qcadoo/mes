@@ -332,6 +332,7 @@ public final class ProductionTrackingListenerService {
 
     public void onCorrected(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
+        setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
 
     private interface Operation {
