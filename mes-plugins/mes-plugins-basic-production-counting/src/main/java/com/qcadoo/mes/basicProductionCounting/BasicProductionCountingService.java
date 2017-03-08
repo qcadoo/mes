@@ -212,4 +212,13 @@ public interface BasicProductionCountingService {
      * @return
      */
     List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents);
+
+    /**
+     * Get materials from production counting quantities for order and operation
+     *
+     * @param order
+     * @param operationComponent
+     * @return
+     */
+    List<Entity> getMaterialsForOperationFromProductionCountingQuantities(final Entity order, final Entity operationComponent);
 }
