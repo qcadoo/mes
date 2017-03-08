@@ -440,6 +440,16 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     @Override
+    public List<Entity> getMaterialsForOperationFromProductionCountingQuantities(Entity order, Entity operationComponent) {
+        SearchCriteriaBuilder scb = order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        operationComponent));
+        return scb.list().getEntities();
+    }
+
+    @Override
     public Entity getBasicProductionCounting(final Long basicProductionCoutningId) {
         return getBasicProductionCountingDD().get(basicProductionCoutningId);
     }
