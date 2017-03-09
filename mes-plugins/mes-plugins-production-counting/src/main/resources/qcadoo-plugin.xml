@@ -162,9 +162,9 @@
                            joinField="staff" plugin="productionCounting"/>
         </model:model-field>
 
-        <model:model-field model="workstationType" plugin="basic">
+        <model:model-field model="workstation" plugin="basic">
             <model:hasMany name="productionTrackings" model="productionTracking"
-                           joinField="workstationType" plugin="productionCounting"/>
+                           joinField="workstation" plugin="productionCounting"/>
         </model:model-field>
 
         <model:model-field model="division" plugin="basic">

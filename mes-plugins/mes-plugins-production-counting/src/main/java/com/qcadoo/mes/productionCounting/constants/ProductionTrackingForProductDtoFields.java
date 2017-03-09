@@ -75,6 +75,6 @@ public final class ProductionTrackingForProductDtoFields {
 
     public static final String USED_QUANTITY = "usedQuantity";
 
-    public static final String PRODUCTION_TRACKING = "productiontracking_id";
+    public static final String PRODUCTION_TRACKING_ID = "productiontracking_id";
 
 }
