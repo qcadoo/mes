@@ -74,28 +74,50 @@ public class Shift {
 
     public Shift(final Entity shiftEntity) {
         Entity shiftEntityCopy = shiftEntity.copy();
+
         this.shift = shiftEntityCopy;
         this.shiftId = shiftEntityCopy.getId();
-        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy);
+        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy, true);
         this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
     }
 
     public Shift(final Entity shiftEntity, final DateTime day) {
         Entity shiftEntityCopy = shiftEntity.copy();
+
         this.shift = shiftEntityCopy;
         this.shiftId = shiftEntityCopy.getId();
-        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy);
+        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy, true);
         this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
+
+        getShiftDates(day);
+    }
+
+    public Shift(final Entity shiftEntity, final DateTime day, final boolean checkWorking) {
+        Entity shiftEntityCopy = shiftEntity.copy();
+
+        this.shift = shiftEntityCopy;
+        this.shiftId = shiftEntityCopy.getId();
+        this.workingHoursPerDay = getWorkingHoursPerDay(shiftEntityCopy, checkWorking);
+        this.timetableExceptions = new ShiftTimetableExceptions(shiftEntityCopy);
+
+        getShiftDates(day);
+    }
+
+    private void getShiftDates(DateTime day) {
         DateTime dateTime = day.withTimeAtStartOfDay();
+
         Optional<TimeRange> orange = findWorkTimeAt(dateTime.getDayOfWeek());
+
         if (orange.isPresent()) {
             TimeRange range = orange.get();
+
             shiftStartDate = dateTime;
             shiftStartDate = shiftStartDate.withHourOfDay(range.getFrom().getHourOfDay());
             shiftStartDate = shiftStartDate.withMinuteOfHour(range.getFrom().getMinuteOfHour());
             shiftEndDate = dateTime;
             shiftEndDate = shiftEndDate.withHourOfDay(range.getTo().getHourOfDay());
             shiftEndDate = shiftEndDate.withMinuteOfHour(range.getTo().getMinuteOfHour());
+
             if (shiftStartDate.isAfter(shiftEndDate)) {
                 shiftEndDate = shiftEndDate.plusDays(1);
             }
@@ -103,18 +125,21 @@ public class Shift {
             shiftStartDate = null;
             shiftEndDate = null;
         }
-
     }
 
-    private Multimap<Integer, WorkingHours> getWorkingHoursPerDay(final Entity shiftEntity) {
+    private Multimap<Integer, WorkingHours> getWorkingHoursPerDay(final Entity shiftEntity, final boolean checkWorking) {
         ImmutableSetMultimap.Builder<Integer, WorkingHours> builder = ImmutableSetMultimap.builder();
+
         for (Entry<Integer, String> dayNumToName : Constants.DAYS_OF_WEEK.entrySet()) {
-            if (shiftEntity.getBooleanField(dayNumToName.getValue() + "Working")) {
+            boolean isWorking = checkWorking ? shiftEntity.getBooleanField(dayNumToName.getValue() + "Working") : true;
+
+            if (isWorking) {
                 String hoursRanges = shiftEntity.getStringField(dayNumToName.getValue() + "Hours");
                 WorkingHours workingHoursForGivenDay = new WorkingHours(hoursRanges);
                 builder.put(dayNumToName.getKey(), workingHoursForGivenDay);
             }
         }
+
         return builder.build();
     }
 

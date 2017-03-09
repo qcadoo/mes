@@ -55,7 +55,7 @@
 		<belongsTo name="shift" model="shift" plugin="basic"/>
 
 		<belongsTo name="staff" model="staff" plugin="basic"/>
-		<belongsTo name="workstationType" model="workstationType"
+		<belongsTo name="workstation" model="workstation"
 				   plugin="basic"/>
 		<belongsTo name="division" model="division" plugin="basic"/>
 
