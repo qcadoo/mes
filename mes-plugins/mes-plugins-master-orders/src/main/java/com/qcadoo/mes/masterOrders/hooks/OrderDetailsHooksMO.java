@@ -161,49 +161,46 @@ public class OrderDetailsHooksMO {
             }
 
             numberField.setFieldValue(generatedNumber);
+            numberField.requestComponentUpdateState();
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
+                companyLookup.requestComponentUpdateState();
             }
             if ((addressLookup.getEntity() == null) && (masterOrderAddress != null)) {
                 addressLookup.setFieldValue(masterOrderAddress.getId());
+                addressLookup.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && (masterOrderDeadline != null)) {
                 deadlineField.setFieldValue(DateUtils.toDateTimeString(masterOrderDeadline));
+                deadlineField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) dateFromField.getFieldValue()) && (masterOrderStartDate != null)) {
                 dateFromField.setFieldValue(DateUtils.toDateTimeString(masterOrderStartDate));
+                dateFromField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) dateToField.getFieldValue()) && (masterOrderFinishDate != null)) {
                 dateToField.setFieldValue(DateUtils.toDateTimeString(masterOrderFinishDate));
-            }
-
-            if ((productLookup.getEntity() == null) && (masterOrderProduct != null)) {
-                productLookup.setFieldValue(masterOrderProduct.getId());
+                dateToField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) plannedQuantityField.getFieldValue()) && (plannedQuantity != null)
                     && (BigDecimal.ZERO.compareTo(plannedQuantity) < 0)) {
                 plannedQuantityField.setFieldValue(numberService.format(plannedQuantity));
+                plannedQuantityField.requestComponentUpdateState();
             }
 
-            numberField.requestComponentUpdateState();
-            companyLookup.requestComponentUpdateState();
-            deadlineField.requestComponentUpdateState();
-            dateFromField.requestComponentUpdateState();
-            dateToField.requestComponentUpdateState();
-            productLookup.requestComponentUpdateState();
-            plannedQuantityField.requestComponentUpdateState();
+            if ((productLookup.getEntity() == null) && (masterOrderProduct != null)) {
+                productLookup.setFieldValue(masterOrderProduct.getId());
+                productLookup.requestComponentUpdateState();
+                productLookup.performEvent(view, "onSelectedEntityChange", "");
+            }
 
-            productLookup.performEvent(view, "onSelectedEntityChange", "");
-
-            if(view.isViewAfterRedirect()){
-                if (masterOrderTechnology != null) {
-                    technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
-                }
+            if (view.isViewAfterRedirect() && masterOrderTechnology != null) {
+                technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
                 technologyPrototypeLookup.requestComponentUpdateState();
                 technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
             }
