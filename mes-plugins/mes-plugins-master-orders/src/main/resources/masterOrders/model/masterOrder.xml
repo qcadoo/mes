@@ -90,6 +90,13 @@
                     method="checkIfCanChangeCompany"/>
         </belongsTo>
 
+
+        <belongsTo name="companyPayer" plugin="basic" model="company">
+            <validatesWith
+                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
+                    method="checkIfCanChangeCompany"/>
+        </belongsTo>
+
         <belongsTo name="address" plugin="basic" model="address"/>
 
         <belongsTo name="product" plugin="basic" model="product">
