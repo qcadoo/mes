@@ -50,9 +50,9 @@
 			<option type="order" column="deliveryDate" direction="asc" />
 
 			<option type="searchable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
 			<option type="orderable"
-				value="deliveryDate,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
