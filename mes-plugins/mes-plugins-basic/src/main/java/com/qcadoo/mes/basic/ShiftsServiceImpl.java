@@ -745,6 +745,11 @@ public class ShiftsServiceImpl implements ShiftsService {
                 .add(SearchRestrictions.eq(getDayOfWeekName(date) + WORKING_LITERAL, true)).list().getEntities();
     }
 
+    @Override
+    public List<Entity> getShifts() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list().getEntities();
+    }
+
     /**
      * @deprecated Use Shift#worksAt
      */

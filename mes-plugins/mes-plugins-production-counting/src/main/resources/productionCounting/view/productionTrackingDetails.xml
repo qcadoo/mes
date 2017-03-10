@@ -260,10 +260,6 @@
                             <criteriaModifier
                                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
                                     method="restrictTechnologyOperationComponentsToOrderTechnology"/>
-
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="fillWorkstationTypeField"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
@@ -421,8 +417,8 @@
                                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                                       method="fillShiftAndDivisionField"/>
                         </component>
-                        <component type="lookup" name="workstationType"
-                                   reference="workstationType" field="workstationType">
+                        <component type="lookup" name="workstation"
+                                   reference="workstation" field="workstation">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="name,number"/>
