@@ -30,7 +30,7 @@
 
     <fields>
         <integer name="quantity" required="true">
-            <validatesRange from="0" to="100"/>
+            <validatesRange from="0"/>
         </integer>
         <string name="numbers" persistent="false">
             <validatesLength max="2048"/>
@@ -47,6 +47,9 @@
 
         <onCopy class="com.qcadoo.mes.basic.hooks.PalletNumberHelperHooks"
                   method="onCopy"/>
+
+        <validatesWith class="com.qcadoo.mes.basic.validators.PalletNumberHelperValidators"
+                       method="checkQuantity"/>
     </hooks>
 
 </model>
