@@ -645,11 +645,7 @@ public class OrderDetailsHooks {
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
-        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
-        } else {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
-        }
+        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
     }
