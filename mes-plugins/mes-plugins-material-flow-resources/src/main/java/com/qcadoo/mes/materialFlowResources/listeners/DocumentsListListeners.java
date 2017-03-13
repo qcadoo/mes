@@ -114,7 +114,6 @@ public class DocumentsListListeners {
 
             if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
                 createResources(documentToCreateResourcesFor);
-
             } else {
                 documentToCreateResourcesFor.setNotValid();
                 gridComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", ComponentState.MessageType.FAILURE);

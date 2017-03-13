@@ -23,17 +23,23 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class DeliveredProductHooksDTMF {
 
-    public boolean validateDates(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+    @Autowired
+    private PalletValidatorService palletValidatorService;
+
+    public boolean validate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         Date productionDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
         Date expirationDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
         if (productionDate != null && expirationDate != null) {
@@ -43,7 +49,7 @@ public class DeliveredProductHooksDTMF {
                 return false;
             }
         }
-        return true;
+        return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
     }
 
 }

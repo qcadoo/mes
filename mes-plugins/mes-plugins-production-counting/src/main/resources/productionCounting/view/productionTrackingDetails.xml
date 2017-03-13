@@ -36,9 +36,37 @@
 
             <group name="status">
                 <smallButton name="acceptTracking" icon="startIcon16.png"
-                             state="disabled" action="#{form}.changeTrackingState(acceptTracking)"/>
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}")) {
+								            #{form}.performEvent('changeTrackingState', ['02accepted']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
+                        </smallButton>
                 <smallButton name="cancelTracking" icon="deleteIcon16.png"
-                             state="disabled" action="#{form}.changeTrackingState(cancelTracking)"/>
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}")) {
+								            #{form}.performEvent('changeTrackingState', ['03declined']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
+                        </smallButton>
             </group>
             <group name="productsQuantities">
                 <bigButton name="copyPlannedQuantityToUsedQuantity" icon="copyIcon24.png"
@@ -232,10 +260,6 @@
                             <criteriaModifier
                                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
                                     method="restrictTechnologyOperationComponentsToOrderTechnology"/>
-
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="fillWorkstationTypeField"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">
@@ -393,8 +417,8 @@
                                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                                       method="fillShiftAndDivisionField"/>
                         </component>
-                        <component type="lookup" name="workstationType"
-                                   reference="workstationType" field="workstationType">
+                        <component type="lookup" name="workstation"
+                                   reference="workstation" field="workstation">
                             <option type="column" name="name" fields="name" link="true"/>
 
                             <option type="searchable" value="name,number"/>

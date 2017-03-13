@@ -52,6 +52,8 @@ public interface ShiftsService {
 
     List<Entity> getShiftsWorkingAtDate(final Date date);
 
+    List<Entity> getShifts();
+
     /**
      * @deprecated use {@link Shift#worksAt(int)} instead.
      */

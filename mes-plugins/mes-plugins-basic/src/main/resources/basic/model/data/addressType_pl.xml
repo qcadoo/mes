@@ -26,4 +26,5 @@
 -->
 <addressType>
     <row NAME="główny" TECHNICALCODE="01main"/>
+    <row NAME="wysyłkowy" TECHNICALCODE="02shipping"/>
 </addressType>

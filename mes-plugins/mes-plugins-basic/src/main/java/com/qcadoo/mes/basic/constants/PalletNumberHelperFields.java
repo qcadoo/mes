@@ -37,4 +37,6 @@ public final class PalletNumberHelperFields {
 
     public static final String PALLET_NUMBERS = "palletNumbers";
 
+    public static final int QUANTITY_MAX_VALUE = 100;
+
 }

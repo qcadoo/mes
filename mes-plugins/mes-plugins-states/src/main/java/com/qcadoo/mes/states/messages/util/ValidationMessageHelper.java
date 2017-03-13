@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.states.messages.util;
 
-import java.util.Map.Entry;
-
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
+
+import java.util.Map.Entry;
 
 public final class ValidationMessageHelper {
 

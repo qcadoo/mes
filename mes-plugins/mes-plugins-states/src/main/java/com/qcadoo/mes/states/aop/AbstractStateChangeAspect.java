@@ -112,6 +112,8 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
             if (!stateChangeContext.isOwnerValid()) {
                 stateChangeContext.setStatus(StateChangeStatus.FAILURE);
                 stateChangeContext.setField(describer.getDateTimeFieldName(), new Date());
+                LOGGER.info(String.format("State change : failure. Entity name : %S id : %d.",
+                        stateChangeContext.getOwner().getDataDefinition().getName(), stateChangeContext.getOwner().getId()));
             }
             return;
         }
@@ -131,7 +133,11 @@ public abstract class AbstractStateChangeAspect implements StateChangeService {
 
         if (ownerIsValid) {
             stateChangeContext.setStatus(SUCCESSFUL);
+            LOGGER.info(String.format("State change : successful. Entity name : %S id : %d. Target state : %S",
+                    owner.getDataDefinition().getName(), owner.getId(), targetState));
         } else {
+            LOGGER.info(String.format("State change : failure. Entity name : %S id : %d. Target state : %S",
+                    owner.getDataDefinition().getName(), owner.getId(), targetState));
             ValidationMessageHelper.copyErrorsFromEntity(stateChangeContext, owner);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
         }

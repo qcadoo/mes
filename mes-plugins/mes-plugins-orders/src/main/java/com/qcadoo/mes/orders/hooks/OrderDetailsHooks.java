@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -43,7 +52,12 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -52,19 +66,16 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class OrderDetailsHooks {
@@ -596,24 +607,10 @@ public class OrderDetailsHooks {
 
         FieldComponent amountOfProductProducedField = (FieldComponent) view
                 .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
-        FieldComponent remainingAmountOfProductToProduceField = (FieldComponent) view
-                .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
         amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
         amountOfProductProducedField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)),
-                numberService.getMathContext());
-
-        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
-            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
-        } else {
-            remainingAmountOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
-        }
-
-        remainingAmountOfProductToProduceField.requestComponentUpdateState();
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
         if (product != null
@@ -648,11 +645,7 @@ public class OrderDetailsHooks {
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
-        if (remainingAmountOfProductToProduce.compareTo(BigDecimal.ZERO) == -1) {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(BigDecimal.ZERO));
-        } else {
-            remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
-        }
+        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
     }

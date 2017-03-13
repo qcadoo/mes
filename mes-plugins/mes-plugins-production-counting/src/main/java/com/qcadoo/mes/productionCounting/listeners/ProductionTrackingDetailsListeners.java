@@ -24,7 +24,6 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,16 +34,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -57,14 +60,13 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 
 @Service
 public class ProductionTrackingDetailsListeners {
 
     private static final String L_FORM = "form";
 
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    private static final String L_GRID = "grid";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingDetailsListeners.class);
 
@@ -84,12 +86,16 @@ public class ProductionTrackingDetailsListeners {
     private StateExecutorService stateExecutorService;
 
     public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
         if (!grid.getSelectedEntitiesIds().isEmpty()) {
             String url = "../page/productionCounting/productionTrackingDetails.html";
-            Entity e = grid.getSelectedEntities().get(0).getDataDefinition().get(grid.getSelectedEntities().get(0).getId());
 
-            view.redirectTo(url, false, true, ImmutableMap.of("form.id", e.getIntegerField("productiontracking_id")));
+            Entity productionTrackingForProductDto = grid.getSelectedEntities().get(0).getDataDefinition()
+                    .get(grid.getSelectedEntities().get(0).getId());
+
+            view.redirectTo(url, false, true, ImmutableMap.of("form.id", productionTrackingForProductDto
+                    .getIntegerField(ProductionTrackingForProductDtoFields.PRODUCTION_TRACKING_ID)));
         }
     }
 
@@ -98,19 +104,25 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void calcTotalLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Long id = form.getEntityId();
-        if (id == null) {
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long productionTrackingId = productionTrackingForm.getEntityId();
+
+        if (productionTrackingId == null) {
             return;
         }
-        Long totalLabor = staffTimeCalculator.countTotalLaborTime(id);
-        FieldComponent laborTimeInput = (FieldComponent) view.getComponentByReference("laborTime");
-        laborTimeInput.setFieldValue(totalLabor);
+
+        Long totalLabor = staffTimeCalculator.countTotalLaborTime(productionTrackingId);
+
+        FieldComponent laborTimeField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.LABOR_TIME);
+
+        laborTimeField.setFieldValue(totalLabor);
     }
 
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Long productionRecordId = productionRecordForm.getEntityId();
 
         if (productionRecordId == null) {
@@ -128,6 +140,7 @@ public class ProductionTrackingDetailsListeners {
     private void copyPlannedQuantityToUsedQuantity(List<Entity> recordOperationProductComponents) {
         for (Entity recordOperationProductComponent : recordOperationProductComponents) {
             Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(
                     recordOperationProductComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
@@ -135,6 +148,7 @@ public class ProductionTrackingDetailsListeners {
 
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String baseUnit = product.getStringField(ProductFields.UNIT);
+
             if (StringUtils.isEmpty(additionalUnit)) {
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
                         numberService.setScale(plannedQuantity));
@@ -142,7 +156,7 @@ public class ProductionTrackingDetailsListeners {
             } else {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
                         searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                 if (unitConversions.isDefinedFor(additionalUnit)) {
                     BigDecimal convertedQuantity = unitConversions.convertTo(plannedQuantity, additionalUnit);
                     recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
@@ -151,8 +165,10 @@ public class ProductionTrackingDetailsListeners {
                     recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
                             numberService.setScale(plannedQuantity));
                 }
+
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, additionalUnit);
             }
+
             recordOperationProductComponent.getDataDefinition().save(recordOperationProductComponent);
         }
     }
@@ -160,6 +176,7 @@ public class ProductionTrackingDetailsListeners {
     public void disableFields(final ViewDefinitionState viewDefinitionState, final ComponentState componentState,
             final String[] args) {
         productionTrackingService.changeProducedQuantityFieldState(viewDefinitionState);
+
         Object recordingTypeValue = ((FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).getFieldValue();
         boolean recordingTypeEqualsCumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(recordingTypeValue);
@@ -176,50 +193,63 @@ public class ProductionTrackingDetailsListeners {
 
     public void enableOrDisableFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity order = getOrderFromLookup(view);
+
         if (order == null) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("order is null");
             }
+
             return;
         }
+
         productionTrackingService.setTimeAndPieceworkComponentsVisible(view, order);
     }
 
     private Entity getOrderFromLookup(final ViewDefinitionState view) {
-        LookupComponent lookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
-        return lookup.getEntity();
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
+
+        return orderLookup.getEntity();
     }
 
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity order = getOrderFromLookup(view);
+
         if (order == null) {
             return;
         }
-        FieldComponent lastRecord = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.LAST_TRACKING);
+
+        FieldComponent lastTrackingField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.LAST_TRACKING);
+
         boolean justOneRecord = order.getBooleanField(OrderFieldsPC.JUST_ONE);
+
         if (justOneRecord) {
-            lastRecord.setFieldValue(justOneRecord);
-            lastRecord.setEnabled(!justOneRecord);
-            lastRecord.requestComponentUpdateState();
+            lastTrackingField.setFieldValue(justOneRecord);
+            lastTrackingField.setEnabled(!justOneRecord);
+            lastTrackingField.requestComponentUpdateState();
         } else {
-            lastRecord.setEnabled(true);
+            lastTrackingField.setEnabled(true);
         }
     }
 
     public void clearFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FieldComponent operation = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
-        operation.setFieldValue("");
+        FieldComponent technologyOperationComponentField = (FieldComponent) view
+                .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        technologyOperationComponentField.setFieldValue("");
+
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
         if (form.getEntityId() == null) {
             return;
         }
-        GridComponent productsIn = (GridComponent) view
+
+        GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        GridComponent productOut = (GridComponent) view
+        GridComponent trackingOperationProductOutComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
-        productOut.setEntities(new ArrayList<>());
-        productsIn.setEntities(new ArrayList<>());
+        trackingOperationProductInComponentsGrid.setEntities(Lists.newArrayList());
+        trackingOperationProductOutComponentsGrid.setEntities(Lists.newArrayList());
     }
 
     public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
@@ -235,7 +265,7 @@ public class ProductionTrackingDetailsListeners {
             return;
         }
 
-        Entity shift = staff.getBelongsToField(ProductionTrackingFields.SHIFT);
+        Entity shift = staff.getBelongsToField(StaffFields.SHIFT);
 
         if (shift == null) {
             shiftLookup.setFieldValue(null);
@@ -243,7 +273,7 @@ public class ProductionTrackingDetailsListeners {
             shiftLookup.setFieldValue(shift.getId());
         }
 
-        Entity division = staff.getBelongsToField(ProductionTrackingFields.DIVISION);
+        Entity division = staff.getBelongsToField(StaffFields.DIVISION);
 
         if (division == null) {
             divisionLookup.setFieldValue(null);
@@ -253,19 +283,18 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void fillDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        LookupComponent workstationTypeLookup = (LookupComponent) view
-                .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.WORKSTATION);
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
 
-        Entity workstationType = workstationTypeLookup.getEntity();
+        Entity workstation = workstationLookup.getEntity();
 
-        if (workstationType == null) {
+        if (workstation == null) {
             divisionLookup.setFieldValue(null);
 
             return;
         }
 
-        Entity division = workstationType.getBelongsToField(ProductionTrackingFields.DIVISION);
+        Entity division = workstation.getBelongsToField(WorkstationFields.DIVISION);
 
         if (division == null) {
             divisionLookup.setFieldValue(null);
@@ -274,32 +303,18 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
-    public void fillWorkstationTypeField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        LookupComponent tocLookup = (LookupComponent) view.getComponentByReference("technologyOperationComponent");
-        LookupComponent workstationTypeLookup = (LookupComponent) view
-                .getComponentByReference(ProductionTrackingFields.WORKSTATION_TYPE);
-        Entity toc = tocLookup.getEntity();
-
-        if (toc == null) {
-            return;
-        }
-
-        Entity workstationType = toc.getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-        if (workstationType == null) {
-            workstationTypeLookup.setFieldValue(null);
-        } else {
-            workstationTypeLookup.setFieldValue(workstationType.getId());
-        }
-
-    }
-
     public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Entity productionRecord = productionRecordForm.getPersistedEntityWithIncludedFormValues();
+
         if (productionRecord != null) {
             Long id = productionTrackingService.correct(productionRecord).getId();
+
             String url = "../page/productionCounting/productionTrackingDetails.html";
+
             view.redirectTo(url, false, true, ImmutableMap.of("form.id", id));
         }
     }
+
 }

@@ -46,13 +46,14 @@ public class DeliveryDetailsListenersTSFDOverrideAspect {
     private DeliveryDetailsListenersTSFDOverrideUtil deliveryDetailsListenersTSFDOverrideUtil;
 
     @Pointcut("execution(private com.qcadoo.model.api.Entity com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners.createDeliveredProduct(..)) "
-            + " && args(orderedProduct, copyQuantityAndPrice)")
-    public void createDeliveredProductExecution(final Entity orderedProduct, final boolean copyQuantityAndPrice) {
+            + " && args(delivery, orderedProduct, copyQuantityAndPrice)")
+    public void createDeliveredProductExecution(final Entity delivery, final Entity orderedProduct,
+            final boolean copyQuantityAndPrice) {
     }
 
-    @AfterReturning(value = "createDeliveredProductExecution(orderedProduct, copyQuantityAndPrice)", returning = "deliveredProduct")
-    public void afterCreateDeliveredProductExecution(final Entity orderedProduct, final boolean copyQuantityAndPrice,
-            final Entity deliveredProduct) {
+    @AfterReturning(value = "createDeliveredProductExecution(delivery, orderedProduct, copyQuantityAndPrice)", returning = "deliveredProduct")
+    public void afterCreateDeliveredProductExecution(final Entity delivery, final Entity orderedProduct,
+            final boolean copyQuantityAndPrice, final Entity deliveredProduct) {
         deliveryDetailsListenersTSFDOverrideUtil.fillDeliveredProductOperation(orderedProduct, deliveredProduct);
     }
 
