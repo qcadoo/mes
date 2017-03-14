@@ -23,30 +23,49 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basicProductionCounting.constants.*;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.Map.Entry;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -116,7 +135,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
-            Entity productionCountingQuantity = createProductionCountingQuantity(order, technologyOperationComponent, product, role, isNonComponent, plannedQuantity);
+            Entity productionCountingQuantity = createProductionCountingQuantity(order, technologyOperationComponent, product,
+                    role, isNonComponent, plannedQuantity);
             productionCountingQuantities.add(productionCountingQuantity);
         }
 
@@ -331,9 +351,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                     .find()
                     .add(SearchRestrictions.or(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.USED.getStringValue()), SearchRestrictions.and(SearchRestrictions.eq(
-                                    ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
-                                    SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
-                                            ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
+                            ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()),
+                            SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                                    ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue())))).list().getEntities();
 
             Set<Long> alreadyAddedProducts = Sets.newHashSet();
 
@@ -394,10 +414,72 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
 
             if (order.getBelongsToField(OrderFields.PRODUCT).getId().equals(product.getId())) {
-                basicProductionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY, order.getDecimalField(OrderFields.DONE_QUANTITY));
+                basicProductionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY,
+                        order.getDecimalField(OrderFields.DONE_QUANTITY));
                 basicProductionCounting.getDataDefinition().save(basicProductionCounting);
             }
         }
+    }
+
+    @Override
+    public List<Entity> getUsedMaterialsFromProductionCountingQuantities(Entity order) {
+
+        return getUsedMaterialsFromProductionCountingQuantities(order, false);
+    }
+
+    @Override
+    public List<Entity> getUsedMaterialsFromProductionCountingQuantities(Entity order, boolean onlyComponents) {
+
+        SearchCriteriaBuilder scb = order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.USED.getStringValue()));
+        if (onlyComponents) {
+            scb.add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                    ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
+        }
+        return scb.list().getEntities();
+    }
+
+    @Override
+    public List<Entity> getMaterialsForOperationFromProductionCountingQuantities(Entity order, Entity operationComponent) {
+        SearchCriteriaBuilder scb = order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        operationComponent));
+        return scb.list().getEntities();
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getNeededProductQuantities(List<Entity> orders, MrpAlgorithm algorithm) {
+        List<Entity> draftOrders = orders.stream()
+                .filter(order -> OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
+                .collect(Collectors.toList());
+        List<Entity> otherOrders = orders.stream()
+                .filter(order -> !OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
+                .collect(Collectors.toList());
+        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(draftOrders,
+                algorithm, true);
+        if (neededProductQuantities == null) {
+            neededProductQuantities = Maps.newHashMap();
+        }
+
+        for (Entity order : otherOrders) {
+            List<Entity> productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order);
+            for (Entity pcq : productionCountingQuantities) {
+                Long productId = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId();
+                if (neededProductQuantities.containsKey(productId)) {
+                    neededProductQuantities.put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY)
+                            .add(neededProductQuantities.get(productId)));
+                } else {
+                    neededProductQuantities
+                            .put(productId, pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
+                }
+            }
+        }
+        return neededProductQuantities;
     }
 
     @Override
