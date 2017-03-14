@@ -41,6 +41,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -55,7 +56,13 @@ public class OrderHooksCNFMTest {
     private Entity order;
 
     @Mock
+    private Entity orderFromDB;
+
+    @Mock
     private DataDefinition orderDD;
+
+    @Mock
+    private Entity technology;
 
     @Before
     public void init() {
@@ -81,7 +88,11 @@ public class OrderHooksCNFMTest {
         // given
         List<Entity> generatorResults = Lists.newArrayList(mockEntity(), mockEntity());
         stubGeneratorResults(generatorResults);
+        given(order.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(technology);
 
+        given(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY)).willReturn(null);
+        given(order.getId()).willReturn(1L);
+        given(orderDD.get(1L)).willReturn(orderFromDB);
         // when
         orderHooksCNFM.fillOrderOperationProductsInComponents(orderDD, order);
 
