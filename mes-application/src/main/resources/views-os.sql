@@ -262,10 +262,29 @@ CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM mast
 
 -- end
 
+
 -- production tracking number sequence
 
 CREATE SEQUENCE productioncounting_productiontracking_number_seq;
 
 CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _number text; BEGIN _pattern := '#seq'; select nextval('productioncounting_productiontracking_number_seq') into _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; end if; _number := _pattern; _number := replace(_number, '#seq', _seq); RETURN _number; END; $$ LANGUAGE 'plpgsql';
+
+-- end
+
+
+-- VIEW: productioncounting_performanceanalysisdetaildto
+
+DROP TABLE IF EXISTS productioncounting_performanceanalysisdetaildto;
+
+CREATE OR REPLACE VIEW productioncounting_performanceanalysisdetaildto AS SELECT productiontracking.id AS id, productiontracking.active AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, technology.standardperformancetechnology AS performancenorm, COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0) AS donequantity, COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0) / technology.standardperformancetechnology AS timebasedonnorms, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id;
+
+-- end
+
+
+-- VIEW: productioncounting_performanceanalysisdto
+
+DROP TABLE IF EXISTS productioncounting_performanceanalysisdto;
+
+CREATE OR REPLACE VIEW productioncounting_performanceanalysisdto AS SELECT row_number() OVER () AS id, BOOL_OR(performanceanalysisdetaildto.active) AS active, performanceanalysisdetaildto.productionline_id::integer AS productionline_id, performanceanalysisdetaildto.productionlinenumber AS productionlinenumber, performanceanalysisdetaildto.staff_id::integer AS staff_id, performanceanalysisdetaildto.staffname AS staffname, SUM(performanceanalysisdetaildto.timebasedonnorms) AS timebasedonnormssum, 8 * 60 * 60 AS labortimesum, SUM(performanceanalysisdetaildto.timebasedonnorms) - 8 * 60 * 60 AS timedeviation, SUM(performanceanalysisdetaildto.timebasedonnorms) * 100 / 8 * 60 * 60 AS performance, performanceanalysisdetaildto.shift_id::integer AS shift_id, performanceanalysisdetaildto.shiftname AS shiftname, MIN(performanceanalysisdetaildto.timerangefrom) AS timerangefrom, MAX(performanceanalysisdetaildto.timerangeto) AS timerangeto FROM productioncounting_performanceanalysisdetaildto performanceanalysisdetaildto GROUP BY productionline_id, productionlinenumber, staff_id, staffname, shift_id, shiftname;
 
 -- end

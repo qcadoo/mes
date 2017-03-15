@@ -15,6 +15,8 @@ public class PerformanceAnalysisListeners {
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
+    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         Map<String, String> filters = Maps.newHashMap();
@@ -24,6 +26,8 @@ public class PerformanceAnalysisListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "analysis.performanceAnalysis");
 
         String url = "../page/productionCounting/performanceAnalysisDetails.html";
         view.redirectTo(url, false, true, parameters);

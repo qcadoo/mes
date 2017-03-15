@@ -35,9 +35,33 @@
             <group name="navigation">
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
-            <group name="commonActions">
+            <group name="actions">
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
                            accesskey="r"/>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
             </group>
         </ribbon>
 
@@ -46,25 +70,52 @@
 
             <option type="column" name="productionLineNumber" fields="productionLineNumber"
                     width="80"/>
+            <option type="column" name="assortmentName" fields="assortmentName"
+                    width="80"/>
+            <option type="column" name="productNumber" fields="productNumber"
+                    width="80"/>
+            <option type="column" name="productName" fields="productName"
+                    width="80"/>
+            <option type="column" name="productUnit" fields="productUnit"
+                    width="80"/>
+            <option type="column" name="size" fields="size"
+                    width="80"/>
+            <option type="column" name="performanceNorm" fields="performanceNorm"
+                    width="80"/>
+            <option type="column" name="doneQuantity" fields="doneQuantity"
+                    width="80"/>
+            <option type="column" name="timeBasedOnNorms" fields="timeBasedOnNorms"
+                    width="80"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeBasedOnNorms)"/>
+            <option type="column" name="shiftName" fields="shiftName"
+                    width="80"/>
+            <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                    width="80"/>
+            <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                    width="80"/>
+            <option type="column" name="orderNumber" fields="orderNumber"
+                    width="80"/>
 
             <option type="order" column="productionLineNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="productionLineNumber"/>
+                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
             <option type="multiSearch"
-                    value="productionLineNumber"/>
+                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
             <option type="orderable"
-                    value="productionLineNumber"/>
+                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
 
             <option type="footerRow" value="true"/>
-            <!--<option type="columnsToSummary" value="usedQuantity"/>-->
+            <option type="columnsToSummary" value="doneQuantity"/>
+            <option type="columnsToSummaryTime" value="timeBasedOnNorms"/>
 
             <option type="fullscreen" value="true"/>
 
         </component>
 
         <option type="fixedHeight" value="true"/>
-        <option type="header" value="false"/>
+
+        <option type="header" value="true"/>
     </component>
 
     <hooks>

@@ -33,6 +33,34 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
             <group name="analysis">
                 <bigButton name="showDetails" icon="generateIcon24.png">
                     <script>
@@ -63,38 +91,76 @@
             </group>
         </ribbon>
 
-        <component type="grid" name="performanceAnalysisList"
-                   reference="grid">
+        <component type="flowGridLayout" name="gridLayout" columns="4"
+                   rows="5">
+            <layoutElement column="1" row="1">
 
-            <option type="column" name="productionLineNumber" fields="productionLineNumber"
-                    width="80"/>
+            </layoutElement>
+            <layoutElement column="2" row="1">
 
-            <option type="order" column="productionLineNumber" direction="asc"/>
+            </layoutElement>
+            <layoutElement column="3" row="1">
 
-            <option type="searchable"
-                    value="productionLineNumber"/>
-            <option type="multiSearch"
-                    value="productionLineNumber"/>
-            <option type="orderable"
-                    value="productionLineNumber"/>
+            </layoutElement>
+            <layoutElement column="4" row="1">
 
-            <option type="footerRow" value="true"/>
-            <!--<option type="columnsToSummary" value="usedQuantity"/>-->
+            </layoutElement>
 
-            <option type="fullscreen" value="true"/>
+            <layoutElement column="1" row="2" width="4" minHeight="4">
+                <component type="grid" name="performanceAnalysisList"
+                           reference="grid">
 
+                    <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                            width="80"/>
+                    <option type="column" name="staffName" fields="staffName"
+                            width="80"/>
+                    <option type="column" name="timeBasedOnNormsSum" fields="timeBasedOnNormsSum"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeBasedOnNormsSum)"/>
+                    <option type="column" name="laborTimeSum" fields="laborTimeSum"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTimeSum)"/>
+                    <option type="column" name="timeDeviation" fields="timeDeviation"
+                            width="80"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeDeviation)"/>
+                    <option type="column" name="performance" fields="performance"
+                            width="80"/>
+                    <option type="column" name="shiftName" fields="shiftName"
+                            width="80"/>
+                    <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                            width="80"/>
+                    <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                            width="80"/>
+
+                    <option type="order" column="productionLineNumber" direction="asc"/>
+
+                    <option type="searchable"
+                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+                    <option type="multiSearch"
+                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+                    <option type="orderable"
+                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+
+                    <option type="footerRow" value="true"/>
+                    <option type="columnsToSummaryTime" value="timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
+
+                    <option type="fullscreen" value="true"/>
+                    <option type="fixedHeight" value="true"/>
+
+                    <listener event="showDetails"
+                              class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
+                              method="showDetails"/>
+
+                    <listener event="calculateTotalTime"
+                              class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
+                              method="calculateTotalTime"/>
+                </component>
+            </layoutElement>
         </component>
 
         <option type="fixedHeight" value="true"/>
-        <option type="header" value="false"/>
 
-        <listener event="showDetails"
-                  class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
-                  method="showDetails"/>
-
-        <listener event="calculateTotalTime"
-                  class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
-                  method="calculateTotalTime"/>
+        <option type="header" value="true"/>
     </component>
 
     <hooks>
