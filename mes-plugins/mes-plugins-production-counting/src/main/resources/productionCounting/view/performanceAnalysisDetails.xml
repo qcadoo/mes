@@ -70,6 +70,8 @@
 
             <option type="column" name="productionLineNumber" fields="productionLineNumber"
                     width="80"/>
+            <option type="column" name="staffName" fields="staffName"
+                    width="80"/>
             <option type="column" name="assortmentName" fields="assortmentName"
                     width="80"/>
             <option type="column" name="productNumber" fields="productNumber"
@@ -99,11 +101,11 @@
             <option type="order" column="productionLineNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="productionLineNumber,staffName,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
             <option type="multiSearch"
-                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="productionLineNumber,staffName,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
             <option type="orderable"
-                    value="productionLineNumber,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="productionLineNumber,staffName,assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,shiftName,timeRangeFrom,timeRangeTo,orderNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="doneQuantity"/>
@@ -115,7 +117,7 @@
 
         <option type="fixedHeight" value="true"/>
 
-        <option type="header" value="true"/>
+        <option type="header" value="false"/>
     </component>
 
     <hooks>
