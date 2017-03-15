@@ -76,6 +76,8 @@
 
         <string name="orderId" persistent="false" />
 
+        <boolean name="additionalActions" default="false"/>
+
     </fields>
     <hooks>
         <validatesWith
