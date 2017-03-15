@@ -74,9 +74,14 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     public List<Entity> generateUpdatedMaterialsListFor(final Entity order) {
         for (Long technologyId : extractTechnologyIdFrom(order).asSet()) {
             List<ProductWithCosts> allTechnologyRawProductsWithCosts = findRawInputProductsFor(technologyId);
-            final Set<Long> technologyRawProductIds = allTechnologyRawProductsWithCosts.stream()
-                    .map(ProductWithCosts.EXTRACT_ID::apply).collect(Collectors.toSet());
-            List<Entity> existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, technologyRawProductIds);
+            List<Entity> existingOrderMaterialCosts;
+            if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
+                final Set<Long> technologyRawProductIds = allTechnologyRawProductsWithCosts.stream()
+                        .map(ProductWithCosts.EXTRACT_ID::apply).collect(Collectors.toSet());
+                existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, technologyRawProductIds);
+            } else {
+                existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, null);
+            }
             return createMissingOrderMaterialCostsEntities(order, allTechnologyRawProductsWithCosts, existingOrderMaterialCosts);
         }
         return ImmutableList.of();
@@ -116,11 +121,13 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     }
 
     private List<Entity> findExistingOrderMaterialCosts(final Entity order, final Collection<Long> productIds) {
-        if (order.getId() == null || productIds.isEmpty()) {
+        if (order.getId() == null) {
             return Collections.emptyList();
         }
         OrderMaterialCostsCriteria criteria = OrderMaterialCostsCriteria.forOrder(order.getId());
-        criteria.setProductCriteria(in("id", productIds));
+        if (productIds != null) {
+            criteria.setProductCriteria(in("id", productIds));
+        }
         return orderMaterialCostsDataProvider.findAll(criteria);
     }
 
