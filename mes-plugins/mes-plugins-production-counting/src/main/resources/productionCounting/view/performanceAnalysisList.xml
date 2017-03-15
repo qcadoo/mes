@@ -155,6 +155,7 @@
                     <option type="columnsToSummaryTime" value="timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
 
                     <option type="fullscreen" value="true"/>
+                    <option type="fixedHeight" value="true"/>
 
                     <listener event="showDetails"
                               class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
