@@ -51,10 +51,12 @@ import com.qcadoo.view.api.components.LookupComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static org.json.XMLTokener.entity;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -409,5 +411,23 @@ public class CostCalculationDetailsListeners {
             calculateOperationCostsModeComponent.setFieldValue(CalculateOperationCostMode.HOURLY.getStringValue());
         }
     }
+
+    public void saveNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args){
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity costsEntity = formComponent.getEntity();
+        Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+        BigDecimal tkw = costsEntity.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
+        product.setField("nominalCost", tkw);
+        Entity savedEntity = product.getDataDefinition().save(product);
+        if (!savedEntity.isValid()) {
+            view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsFailure",
+                    MessageType.FAILURE);
+        }
+
+        view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess",
+                MessageType.SUCCESS);
+
+    }
+
 
 }
