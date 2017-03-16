@@ -312,6 +312,11 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="3" row="2">
+                        <component type="checkbox" name="additionalActions" field="additionalActions"
+                                   reference="additionalActions" hasDescription="true"/>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"
