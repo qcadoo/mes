@@ -29,20 +29,16 @@
         xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
         xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:menu="http://schema.qcadoo.org/modules/menu"
         xmlns:localization="http://schema.qcadoo.org/modules/localization"
-        xmlns:custom="http://schema.qcadoo.org/modules/custom"
-        xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
-		http://schema.qcadoo.org/plugin.xsd 
-		http://schema.qcadoo.org/modules/model 
-		http://schema.qcadoo.org/modules/model.xsd 
-		http://schema.qcadoo.org/modules/view 
-		http://schema.qcadoo.org/modules/view.xsd 
-		http://schema.qcadoo.org/modules/localization 
-		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/menu 
-		http://schema.qcadoo.org/modules/menu.xsd 
-		http://schema.qcadoo.org/modules/custom 
-		http://schema.qcadoo.org/modules/custom.xsd">
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd
+		http://schema.qcadoo.org/modules/model
+		http://schema.qcadoo.org/modules/model.xsd
+		http://schema.qcadoo.org/modules/view
+		http://schema.qcadoo.org/modules/view.xsd
+		http://schema.qcadoo.org/modules/localization
+		http://schema.qcadoo.org/modules/localization.xsd
+		http://schema.qcadoo.org/modules/menu
+		http://schema.qcadoo.org/modules/menu.xsd">
 
     <information>
         <name>MES - Production Counting and Balance</name>
@@ -116,6 +112,9 @@
 
         <model:model model="performanceAnalysisDto" resource="model/performanceAnalysisDto.xml"/>
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
+
+        <model:model model="finalProductAnalysisDto" resource="model/finalProductAnalysisDto.xml"/>
+        <model:model model="finalProductAnalysisGenerator" resource="model/finalProductAnalysisGenerator.xml"/>
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
@@ -314,6 +313,9 @@
         <menu:menu-item name="performanceAnalysis" category="analysis"
                         view="performanceAnalysisList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
+        <menu:menu-item name="finalProductAnalysis" category="analysis"
+                        view="finalProductAnalysisGenerator" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
         <menu:menu-item name="productionBalance" category="ordersTracking"
@@ -345,6 +347,8 @@
 
         <view:view resource="view/performanceAnalysisList.xml"/>
         <view:view resource="view/performanceAnalysisDetails.xml"/>
+
+        <view:view resource="view/finalProductAnalysisGenerator.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
