@@ -370,16 +370,10 @@ public class CostCalculationDetailsHooks {
     private void setButtonEnabled(ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS).getItemByName(CostCalculationFields.NOMINAL_COSTS);
-        //RibbonActionItem saveNominalCostsForComponent = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS).getItemByName(CostCalculationFields.NOMINAL_COSTS_FOR_COMPONENTS);
         CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
-       // CheckBoxComponent includeComponents = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.INCLUDE_COMPONENTS);
         if(generatedField.isChecked()){
             saveNominalCosts.setEnabled(true);
             saveNominalCosts.requestUpdate(true);
-         /*   if(includeComponents.isChecked()) {
-                saveNominalCostsForComponent.setEnabled(true);
-                saveNominalCostsForComponent.requestUpdate(true);
-            }*/
         }
     }
 }

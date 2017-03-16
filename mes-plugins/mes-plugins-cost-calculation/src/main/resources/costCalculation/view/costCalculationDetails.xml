@@ -61,8 +61,6 @@
             <group name="saveCosts">
                 <bigButton name="nominalCosts" icon="saveIcon24.png"
                            action="#{form}.fireEvent(saveNominalCosts);" state="disabled"/>
-                <!--<bigButton name="nominalCostsForComponent" icon="saveIcon24.png"
-                           action="#{form}.fireEvent(saveNominalCosts);" state="disabled"/>-->
             </group>
 
         </ribbon>
