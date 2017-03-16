@@ -21,33 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
+package com.qcadoo.mes.productionCounting.constants;
 
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
-import com.qcadoo.model.api.Entity;
+public final class PerformanceAnalysisDtoFields {
 
-/**
- * Builder for entities representing raw material costs in scope of given production order.
- * 
- * @since 1.4
- */
-interface OrderMaterialCostsEntityBuilder {
+    private PerformanceAnalysisDtoFields() {
 
-    /**
-     * Create a new, not persisted entity representing raw material costs in scope of given production order.
-     * 
-     * Created entity will be belonging to a given production order.
-     * 
-     * @param order
-     *            order entity to which new material costs entity will be belonging to.
-     * @param productWithCosts
-     *            product and costs information provider
-     * @return new material costs entity
-     * 
-     * @since 1.4
-     */
-    Entity create(final Entity order, final ProductWithCosts productWithCosts);
+    }
 
-    Entity create(final Entity order, final Entity product);
+    public static final String PRODUCTION_LINE_ID = "productionline_id";
+
+    public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
+
+    public static final String STAFF_ID = "staff_id";
+
+    public static final String STAFF_NAME = "staffName";
+
+    public static final String TIME_BASED_ON_NORMS = "timeBasedOnNormsSum";
+
+    public static final String LABOR_TIME_SUM = "laborTimeSum";
+
+    public static final String TIME_DEVIATION = "timeDeviation";
+
+    public static final String PERFORMANCE = "performance";
+
+    public static final String SHIFT_ID = "shift_id";
+
+    public static final String SHIFT_NAME = "shiftName";
+
+    public static final String TIME_RANGE_FROM = "timeRangeFrom";
+
+    public static final String TIME_RANGE_TO = "timeRangeTo";
 
 }

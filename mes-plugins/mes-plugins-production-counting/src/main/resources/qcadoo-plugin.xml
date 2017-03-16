@@ -114,6 +114,9 @@
         <model:model model="productionCountingQuantitySetComponent"
                      resource="model/productionCountingQuantitySetComponent.xml"/>
 
+        <model:model model="performanceAnalysisDto" resource="model/performanceAnalysisDto.xml"/>
+        <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
+
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
@@ -306,6 +309,11 @@
                     method="onView"/>
         </model:model-hook>
 
+        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
+        <menu:menu-item name="performanceAnalysis" category="analysis"
+                        view="performanceAnalysisList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
         <menu:menu-item name="productionBalance" category="ordersTracking"
@@ -334,6 +342,9 @@
         <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
 
         <view:view resource="view/productionCountingQuantitySetDetails.xml"/>
+
+        <view:view resource="view/performanceAnalysisList.xml"/>
+        <view:view resource="view/performanceAnalysisDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
