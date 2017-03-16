@@ -91,22 +91,32 @@
             </group>
         </ribbon>
 
-        <component type="flowGridLayout" name="gridLayout" columns="4"
+        <component type="flowGridLayout" name="flowGridLayout" columns="1"
                    rows="5">
             <layoutElement column="1" row="1">
-
+                <component type="gridLayout" name="gridLayout" columns="4"
+                       rows="1">
+                    <layoutElement column="1" row="1">
+                        <component type="time" name="totalTimeBasedOnNorms" reference="totalTimeBasedOnNorms"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="time" name="totalLaborTime" reference="totalLaborTime"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="time" name="totalDeviationTime" reference="totalDeviationTime"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="4" row="1">
+                        <component type="input" name="totalPerformance" reference="totalPerformance"
+                                   defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                </component>
             </layoutElement>
-            <layoutElement column="2" row="1">
-
-            </layoutElement>
-            <layoutElement column="3" row="1">
-
-            </layoutElement>
-            <layoutElement column="4" row="1">
-
-            </layoutElement>
-
-            <layoutElement column="1" row="2" width="4" minHeight="4">
+            <layoutElement column="1" row="2" minHeight="4">
                 <component type="grid" name="performanceAnalysisList"
                            reference="grid">
 
@@ -160,9 +170,12 @@
 
         <option type="fixedHeight" value="true"/>
 
-        <option type="header" value="true"/>
+        <option type="header" value="false"/>
     </component>
 
     <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productionCounting.hooks.PerformanceAnalysisHooks"
+                method="toggleShowDetailsButton"/>
     </hooks>
 </view>
