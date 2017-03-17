@@ -24,18 +24,48 @@
     ***************************************************************************
 
 -->
-<model name="finalProductAnalysisGenerator"
+<model name="finalProductAnalysisEntry" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <enum name="analysisFor" values="01beforeAdditionalActions,02finalProducts" default="01beforeAdditionalActions" required="true"/>
+        <string name="productionLineNumber"/>
 
-        <decimal name="totalQuantity">
+        <string name="companyNumber"/>
+
+        <string name="assortmentName"/>
+
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productUnit"/>
+        <string name="size"/>
+
+        <decimal name="quantity">
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <hasMany name="finalProductAnalysisDtos" model="finalProductAnalysisDto" joinField="finalProductAnalysisGenerator" cascade="delete"/>
+
+        <decimal name="wastes">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="doneQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <string name="shiftName"/>
+
+        <date name="timeRangeFrom"/>
+        <date name="timeRangeTo"/>
+
+        <string name="technologyGeneratorNumber"/>
+
+        <string name="orderNumber"/>
+
     </fields>
 
 </model>

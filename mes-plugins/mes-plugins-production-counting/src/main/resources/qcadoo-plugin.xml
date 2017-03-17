@@ -113,8 +113,7 @@
         <model:model model="performanceAnalysisDto" resource="model/performanceAnalysisDto.xml"/>
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
 
-        <model:model model="finalProductAnalysisDto" resource="model/finalProductAnalysisDto.xml"/>
-        <model:model model="finalProductAnalysisGenerator" resource="model/finalProductAnalysisGenerator.xml"/>
+        <model:model model="finalProductAnalysisEntry" resource="model/finalProductAnalysisEntry.xml"/>
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
