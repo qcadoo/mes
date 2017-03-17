@@ -310,12 +310,15 @@
                                    field="standardPerformanceTechnology" reference="standardPerformanceTechnology"
                                    hasDescription="true">
                             <option type="alignment" value="right"/>
+                            <option type="labelWidth" value="40" />
                         </component>
                     </layoutElement>
 
                     <layoutElement column="3" row="2">
                         <component type="checkbox" name="additionalActions" field="additionalActions"
-                                   reference="additionalActions" hasDescription="true"/>
+                                   reference="additionalActions" hasDescription="true">
+                            <option type="labelWidth" value="40" />
+                        </component>
                     </layoutElement>
                 </component>
 
