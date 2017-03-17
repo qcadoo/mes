@@ -145,11 +145,11 @@
                     <option type="order" column="timeRangeFrom" direction="desc"/>
 
                     <option type="searchable"
-                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,performance,shiftName,timeRangeFrom,timeRangeTo"/>
                     <option type="multiSearch"
-                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,performance,shiftName,timeRangeFrom,timeRangeTo"/>
                     <option type="orderable"
-                            value="productionLineNumber,staffName,timeBasedOnNormsSum,laborTimeSum,timeDeviation,performance,shiftName,timeRangeFrom,timeRangeTo"/>
+                            value="productionLineNumber,staffName,performance,shiftName,timeRangeFrom,timeRangeTo"/>
 
                     <option type="footerRow" value="true"/>
                     <option type="columnsToSummaryTime" value="timeBasedOnNormsSum,laborTimeSum,timeDeviation"/>
