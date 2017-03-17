@@ -96,35 +96,34 @@
                 <component type="grid" name="productionAnalysisList"
                            reference="grid">
 
-                    <option type="column" name="productionLineNumber" fields="productionLineNumber" width="80"/>
-                    <!--<option type="column" name="companyName" fields="companyName" width="80"/>-->
-                    <option type="column" name="assortmentName" fields="assortmentName" width="80"/>
-                    <option type="column" name="productNumber" fields="productNumber" width="80"/>
-                    <option type="column" name="productName" fields="productName" width="80"/>
-                    <option type="column" name="size" fields="size" width="80"/>
-                    <option type="column" name="usedQuantity" fields="usedQuantity" width="80"/>
-                    <option type="column" name="wastesQuantity" fields="wastesQuantity" width="80"/>
-                    <option type="column" name="doneQuantity" fields="doneQuantity" width="80"/>
-                    <option type="column" name="productUnit" fields="productUnit" width="80"/>
-                    <option type="column" name="staffName" fields="staffName" width="80"/>
-                    <option type="column" name="shiftName" fields="shiftName" width="80"/>
-                    <option type="column" name="timeRangeFrom" fields="timeRangeFrom" width="80"/>
-                    <option type="column" name="timeRangeTo" fields="timeRangeTo" width="80"/>
-                    <option type="column" name="generatorName" fields="generatorName" width="80"/>
-                    <option type="column" name="orderNumber" fields="orderNumber" width="80"/>
+                    <option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+                    <option type="column" name="companyNumber" fields="companyNumber"/>
+                    <option type="column" name="assortmentName" fields="assortmentName"/>
+                    <option type="column" name="productNumber" fields="productNumber"/>
+                    <option type="column" name="productName" fields="productName"/>
+                    <option type="column" name="size" fields="size"/>
+                    <option type="column" name="usedQuantity" fields="usedQuantity"/>
+                    <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
+                    <option type="column" name="doneQuantity" fields="doneQuantity"/>
+                    <option type="column" name="productUnit" fields="productUnit"/>
+                    <option type="column" name="staffName" fields="staffName"/>
+                    <option type="column" name="shiftName" fields="shiftName"/>
+                    <option type="column" name="timeRangeFrom" fields="timeRangeFrom"/>
+                    <option type="column" name="timeRangeTo" fields="timeRangeTo"/>
+                    <option type="column" name="generatorName" fields="generatorName"/>
+                    <option type="column" name="orderNumber" fields="orderNumber"/>
 
                     <option type="order" column="productionLineNumber" direction="asc"/>
-<!--
+
                     <option type="searchable"
-                            value="productionLineNumber,companyName,assortmentName,productNumber,productName,size,quantity,lack,producedQuantity,unit,staffName,shift,producedFrom,producedTo,generatorName,orderNumber"/>
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber"/>
                     <option type="multiSearch"
-                            value="productionLineNumber,companyName,assortmentName,productNumber,productName,size,quantity,lack,producedQuantity,unit,staffName,shift,producedFrom,producedTo,generatorName,orderNumber"/>
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber"/>
                     <option type="orderable"
-                            value="productionLineNumber,companyName,assortmentName,productNumber,productName,size,quantity,lack,producedQuantity,unit,staffName,shift,producedFrom,producedTo,generatorName,orderNumber"/>
--->
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber"/>
 
                     <option type="footerRow" value="true"/>
-                    <option type="columnsToSummary" value="quantity,lack,producedQuantity"/>
+                    <option type="columnsToSummary" value="usedQuantity,wastesQuantity,doneQuantity"/>
 
                     <option type="fullscreen" value="true"/>
                     <option type="fixedHeight" value="true"/>

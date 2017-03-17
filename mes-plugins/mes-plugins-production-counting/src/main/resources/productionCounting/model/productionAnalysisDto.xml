@@ -69,6 +69,7 @@
         <date name="timeRangeFrom"/>
         <date name="timeRangeTo"/>
 
+        <integer name="generator_id"/>
         <string name="generatorName"/>
 
         <integer name="order_id"/>
