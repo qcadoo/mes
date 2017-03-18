@@ -50,9 +50,11 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -92,6 +94,8 @@ public class ProductionTrackingHooks {
     }
 
     public void onSave(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
         generateNumberIfNeeded(productionTracking);
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
@@ -101,6 +105,57 @@ public class ProductionTrackingHooks {
 
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         productionTrackingService.unCorrect(productionTracking);
+    }
+
+    private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final Entity order) {
+
+        Entity technologyOperationComponent = productionTracking
+                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        final List<Entity> productionTrackings = productionTrackingDD
+                .find()
+                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent)).list().getEntities();
+
+        return willOrderAcceptOneMoreValidator(productionTrackingDD, productionTracking, productionTrackings);
+    }
+
+    private boolean willOrderAcceptOneMoreValidator(final DataDefinition productionTrackingDD, final Entity productionTracking,
+            final List<Entity> productionTrackings) {
+        for (Entity tracking : productionTrackings) {
+            if (productionTracking.getId() != null && productionTracking.getId().equals(tracking.getId())) {
+                if (checkLastProductionTracking(productionTrackingDD, productionTracking)) {
+                    return false;
+                }
+            } else {
+                if (checkLastProductionTracking(productionTrackingDD, tracking)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private boolean checkLastProductionTracking(DataDefinition productionTrackingDD, Entity productionTracking) {
+        if (productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)
+                && !productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION)) {
+
+            if (productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT) == null) {
+                productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
+                        "productionCounting.productionTracking.messages.error.final");
+            } else {
+                productionTracking.addError(
+                        productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        "productionCounting.productionTracking.messages.error.operationFinal");
+            }
+
+            return true;
+        }
+        return false;
     }
 
     private void copyProducts(final Entity productionTracking) {
@@ -223,8 +278,8 @@ public class ProductionTrackingHooks {
                 BigDecimal usedQuantity = trackingOperationProductOutComponent
                         .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
 
-                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(
-                        TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent
+                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
                 List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId())
                         .collect(Collectors.toList());
                 if (!ids.isEmpty()) {
@@ -242,8 +297,8 @@ public class ProductionTrackingHooks {
                         .fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent,
                                 usedQuantity);
 
-                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent.getHasManyField(
-                        TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
+                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent
+                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
                 setTrackingOperationProductsInComponents.stream().forEach(entity -> {
                     entity.getDataDefinition().save(entity);
                 });

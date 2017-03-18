@@ -117,10 +117,9 @@ public final class ProductionTrackingListenerService {
     }
 
     private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
-        if (!checkIfUsedQuantitiesWereFilled(productionTracking)
-                && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
-            productionTracking.addGlobalError(
-                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+        if (!checkIfUsedQuantitiesWereFilled(productionTracking) && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
+            productionTracking
+                    .addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -134,14 +133,20 @@ public final class ProductionTrackingListenerService {
 
     public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
         final SearchCriteriaBuilder searchBuilder = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)
+                .find()
+                .add(SearchRestrictions.or(
+                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)));
 
         return (searchBuilder.list().getTotalNumberOfEntities() != 0);
     }
 
     public void checkIfExistsFinalRecord(final Entity productionTracking) {
+        if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION)
+                && !productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
+            return;
+        }
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -171,8 +176,8 @@ public final class ProductionTrackingListenerService {
             productionTracking.addGlobalMessage("productionCounting.order.orderIsAlreadyClosed", false, false);
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
-                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
@@ -300,9 +305,8 @@ public final class ProductionTrackingListenerService {
                 && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
             Integer machineTimie = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
             if (machineTimie == null || machineTimie == 0) {
-                productionTracking.addError(
-                        productionTracking.getDataDefinition().getField(ProductionTrackingFields.MACHINE_TIME),
-                        "qcadooView.validate.field.error.missing");
+                productionTracking.addError(productionTracking.getDataDefinition()
+                        .getField(ProductionTrackingFields.MACHINE_TIME), "qcadooView.validate.field.error.missing");
             }
             Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
             if (laborTime == null || laborTime == 0) {
@@ -318,8 +322,7 @@ public final class ProductionTrackingListenerService {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
 
         for (Entity basicProductionCounting : basicProductionCountings) {
-            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId()
-                    .equals(product.getId())) {
+            if (basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT).getId().equals(product.getId())) {
                 return basicProductionCounting;
             }
         }

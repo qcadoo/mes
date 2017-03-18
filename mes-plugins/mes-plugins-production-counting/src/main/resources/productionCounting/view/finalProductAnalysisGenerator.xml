@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="finalProductAnalysisGenerator"
+      modelName="finalProductAnalysisEntry"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="analysis">
+                <bigButton name="calculateTotalQuantity" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('calculateTotalTime', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+            <component type="flowGridLayout" name="gridLayout" columns="1"
+                       rows="5">
+                <layoutElement column="1" row="1">
+                    <component type="gridLayout" name="innerGridLayout" columns="3" rows="1" hasBorders="false">
+                        <layoutElement column="1" row="1">
+                            <component type="input" name="totalQuantity" reference="totalQuantity" defaultEnabled="never"/>
+                        </layoutElement>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" minHeight="4">
+                    <component type="grid" name="finalProductAnalysisEntries"
+                               reference="grid">
+
+                        <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                                width="50"/>
+                        <option type="column" name="companyNumber" fields="companyNumber"
+                                width="60"/>
+                        <option type="column" name="assortmentName" fields="assortmentName"
+                                width="60"/>
+                        <option type="column" name="productNumber" fields="productNumber"
+                                width="70"/>
+                        <option type="column" name="productName" fields="productName"
+                                width="80"/>
+                        <option type="column" name="size" fields="size"
+                                width="40"/>
+                        <option type="column" name="quantity" fields="quantity"
+                                width="40"/>
+                        <option type="column" name="wastes" fields="wastes"
+                                width="40"/>
+                        <option type="column" name="doneQuantity" fields="doneQuantity"
+                                width="40"/>
+                        <option type="column" name="productUnit" fields="productUnit"
+                                width="40"/>
+                        <option type="column" name="shiftName" fields="shiftName"
+                                width="40"/>
+                        <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                                width="80"/>
+                        <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                                width="80"/>
+                        <option type="column" name="technologyGeneratorNumber" fields="technologyGeneratorNumber"
+                                width="80"/>
+                        <option type="column" name="orderNumber" fields="orderNumber"
+                                width="80"/>
+
+                        <option type="order" column="productionLineNumber" direction="asc"/>
+
+                        <option type="searchable"
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+                        <option type="multiSearch"
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+                        <option type="orderable"
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+
+                        <option type="footerRow" value="true"/>
+                        <option type="columnsToSummary" value="quantity,wastes,doneQuantity"/>
+
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="header" value="true"/>
+                    </component>
+
+                </layoutElement>
+            </component>
+
+            <option type="header" value="false"/>
+
+        </component>
+
+    <hooks>
+    </hooks>
+</view>

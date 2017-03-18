@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -32,7 +31,6 @@ import org.springframework.stereotype.Service;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -70,6 +68,9 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
     @Autowired
     private EntityTreeUtilsService entityTreeUtilsService;
 
+    @Autowired
+    private WorkPlanPdfService workPlanPdfService;
+
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("workPlans.workPlan.report.title", locale);
@@ -87,7 +88,8 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
         for (Entity order : orders) {
             removeAlreadyExistsMergesForOrder(order);
             for (Entity operationComponent : operationComponents(technology(order))) {
-                groupingContainer.add(order, operationComponent, productQuantities);
+                Entity updatedComponent = workPlanPdfService.updateOperationProductComponents(order, operationComponent);
+                groupingContainer.add(order, updatedComponent, productQuantities);
             }
         }
 

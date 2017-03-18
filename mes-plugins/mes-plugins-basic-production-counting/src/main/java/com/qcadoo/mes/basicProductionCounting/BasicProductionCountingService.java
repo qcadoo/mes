@@ -25,8 +25,10 @@ package com.qcadoo.mes.basicProductionCounting;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -189,7 +191,6 @@ public interface BasicProductionCountingService {
      */
     Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity);
 
-
     /**
      * Update producted quantity
      *
@@ -197,4 +198,38 @@ public interface BasicProductionCountingService {
      */
     void updateProducedQuantity(final Entity order);
 
+    /**
+     * Get used materials from production counting quantities for order (components and intermediates)
+     * 
+     * @param order
+     * @return
+     */
+    List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order);
+
+    /**
+     * Get used components from production counting quantities for order
+     *
+     * @param order
+     * @param onlyComponents
+     * @return
+     */
+    List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents);
+
+    /**
+     * Get materials from production counting quantities for order and operation
+     *
+     * @param order
+     * @param operationComponent
+     * @return
+     */
+    List<Entity> getMaterialsForOperationFromProductionCountingQuantities(final Entity order, final Entity operationComponent);
+
+    /**
+     * Get needed product quantites from production counting quantities
+     * 
+     * @param orders
+     * @param algorithm
+     * @return
+     */
+    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm);
 }
