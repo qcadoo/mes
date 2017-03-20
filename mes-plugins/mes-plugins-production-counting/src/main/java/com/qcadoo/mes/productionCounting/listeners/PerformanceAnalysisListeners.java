@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.productionCounting.constants.PerformanceAnalysisDetailsDtoFields;
+import com.qcadoo.mes.productionCounting.constants.PerformanceAnalysisDtoFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -37,6 +38,8 @@ public class PerformanceAnalysisListeners {
 
     private static final String ISNULL = "ISNULL";
 
+    private static final String TABLE_PRODUCTIONCOUNTING_PERFORMANCEANALYSISDTO = "productioncounting_performanceanalysisdto";
+
     @Autowired
     private NumberService numberService;
 
@@ -60,34 +63,34 @@ public class PerformanceAnalysisListeners {
         productionLineNumberBuilder.append("]");
 
         String productionLineNumber = productionLineNumberBuilder.toString();
-        filters.put("productionLineNumber", productionLineNumber);
+        filters.put(PerformanceAnalysisDetailsDtoFields.PRODUCTION_LINE_NUMBER, productionLineNumber);
 
         String staffName = analysis.getStringField(PerformanceAnalysisDetailsDtoFields.STAFF_NAME);
         if (!Objects.isNull(staffName)) {
-            filters.put("staffName", "[" + staffName + "]");
+            filters.put(PerformanceAnalysisDetailsDtoFields.STAFF_NAME, "[" + staffName + "]");
         } else {
-            filters.put("staffName", ISNULL);
+            filters.put(PerformanceAnalysisDetailsDtoFields.STAFF_NAME, ISNULL);
         }
 
         String shiftName = analysis.getStringField(PerformanceAnalysisDetailsDtoFields.SHIFT_NAME);
         if (!Objects.isNull(shiftName)) {
-            filters.put("shiftName", "[" + shiftName + "]");
+            filters.put(PerformanceAnalysisDetailsDtoFields.SHIFT_NAME, "[" + shiftName + "]");
         } else {
-            filters.put("shiftName", ISNULL);
+            filters.put(PerformanceAnalysisDetailsDtoFields.SHIFT_NAME, ISNULL);
         }
 
         Date timeRangeFrom = analysis.getDateField(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_FROM);
         if (!Objects.isNull(timeRangeFrom)) {
-            filters.put("timeRangeFrom", DateUtils.toDateString(timeRangeFrom));
+            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_FROM, DateUtils.toDateString(timeRangeFrom));
         } else {
-            filters.put("timeRangeFrom", ISNULL);
+            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_FROM, ISNULL);
         }
         Date timeRangeTo = analysis.getDateField(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO);
         if (!Objects.isNull(timeRangeTo)) {
-            filters.put("timeRangeTo",
+            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO,
                     DateUtils.toDateString(analysis.getDateField(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO)));
         } else {
-            filters.put("timeRangeTo", ISNULL);
+            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO, ISNULL);
         }
 
         Map<String, Object> gridOptions = Maps.newHashMap();
@@ -103,10 +106,14 @@ public class PerformanceAnalysisListeners {
     }
 
     public void calculateTotalTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FieldComponent totalTimeBasedOnNorms = (FieldComponent) view.getComponentByReference("totalTimeBasedOnNorms");
-        FieldComponent totalLaborTime = (FieldComponent) view.getComponentByReference("totalLaborTime");
-        FieldComponent totalDeviationTime = (FieldComponent) view.getComponentByReference("totalDeviationTime");
-        FieldComponent totalPerformance = (FieldComponent) view.getComponentByReference("totalPerformance");
+        FieldComponent totalTimeBasedOnNorms = (FieldComponent) view
+                .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_TIME_BASED_ON_NORMS);
+        FieldComponent totalLaborTime = (FieldComponent) view
+                .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_LABOR_TIME);
+        FieldComponent totalDeviationTime = (FieldComponent) view
+                .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_DEVIATION_TIME);
+        FieldComponent totalPerformance = (FieldComponent) view
+                .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_PERFORMANCE);
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         String query = buildQuery();
@@ -116,12 +123,14 @@ public class PerformanceAnalysisListeners {
         String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(),
-                    "productioncounting_performanceanalysisdto",
-                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "performanceAnalysisDto"));
+                    TABLE_PRODUCTIONCOUNTING_PERFORMANCEANALYSISDTO,
+                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            PerformanceAnalysisDtoFields.MODEL_PERFORMANCE_ANALYSIS_DTO));
             filterQ += " AND ";
             filterQ += GridComponentFilterSQLUtils.addMultiSearchFilter(multiSearchFilter, grid.getColumns(),
-                    "productioncounting_performanceanalysisdto",
-                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "performanceAnalysisDto"));
+                    TABLE_PRODUCTIONCOUNTING_PERFORMANCEANALYSISDTO,
+                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            PerformanceAnalysisDtoFields.MODEL_PERFORMANCE_ANALYSIS_DTO));
         } catch (Exception e) {
             filterQ = "";
         }
