@@ -35,6 +35,7 @@
         <string name="masterOrderName"/>
         <datetime name="deadline"/>
         <string name="companyName"/>
+        <string name="companyPayer"/>
         <string name="masterOrderStatus"/>
         <string name="productNumber"/>
         <string name="productName"/>

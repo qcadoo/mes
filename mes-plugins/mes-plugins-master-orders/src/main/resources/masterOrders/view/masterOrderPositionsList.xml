@@ -75,6 +75,8 @@
                     width="80"/>
             <option type="column" name="companyName" fields="companyName"
                     width="55"/>
+            <option type="column" name="companyPayer" fields="companyPayer"
+                    width="55"/>
             <option type="column" name="masterOrderStatus" fields="masterOrderStatus"
                     width="55"/>
             <option type="column" name="productNumber" fields="productNumber"
@@ -95,9 +97,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
-                    value="name,number,masterOrderName,deadline,companyName,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+                    value="name,number,masterOrderName,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
             <option type="orderable"
-                    value="name,number,masterOrderName,deadline,companyName,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+                    value="name,number,masterOrderName,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>
