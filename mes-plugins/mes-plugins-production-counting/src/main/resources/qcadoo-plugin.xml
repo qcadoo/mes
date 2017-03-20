@@ -114,6 +114,7 @@
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
 
         <model:model model="finalProductAnalysisEntry" resource="model/finalProductAnalysisEntry.xml"/>
+        <model:model model="beforeAdditionalActionsAnalysisEntry" resource="model/beforeAdditionalActionsAnalysisEntry.xml"/>
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
@@ -317,6 +318,9 @@
         <menu:menu-item name="finalProductAnalysis" category="analysis"
                         view="finalProductAnalysisGenerator" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
+        <menu:menu-item name="beforeAdditionalActionsAnalysis" category="analysis"
+                        view="beforeAdditionalActionsAnalysisGenerator" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
         <menu:menu-item name="productionBalance" category="ordersTracking"
@@ -350,6 +354,7 @@
         <view:view resource="view/performanceAnalysisDetails.xml"/>
 
         <view:view resource="view/finalProductAnalysisGenerator.xml"/>
+        <view:view resource="view/beforeAdditionalActionsAnalysisGenerator.xml"/>
 
         <view:view resource="view/productionAnalysisList.xml"/>
 

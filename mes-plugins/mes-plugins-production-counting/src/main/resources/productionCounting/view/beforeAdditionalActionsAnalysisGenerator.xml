@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="finalProductAnalysisGenerator"
-      modelName="finalProductAnalysisEntry"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="beforeAdditionalActionsAnalysisGenerator"
+      modelName="beforeAdditionalActionsAnalysisEntry"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -86,7 +86,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" minHeight="4">
-                    <component type="grid" name="finalProductAnalysisEntries"
+                    <component type="grid" name="beforeAdditionalActionsAnalysisEntries"
                                reference="grid">
 
                         <option type="column" name="productionLineNumber" fields="productionLineNumber"
@@ -139,18 +139,14 @@
                         <option type="fixedHeight" value="true"/>
                         <option type="header" value="true"/>
 
-                        <listener event="calculateTotalQuantity"
-                                  class="com.qcadoo.mes.productionCounting.listeners.FinalProductAnalysisGeneratorListeners"
-                                  method="calculateTotalQuantity"/>
+
                     </component>
 
                 </layoutElement>
             </component>
 
             <option type="header" value="false"/>
-
             <option type="fixedHeight" value="true"/>
-
         </component>
 
     <hooks>
