@@ -23,29 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -68,18 +48,22 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.IntegerUtils;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.*;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
@@ -541,7 +525,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
         Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, quantity,
-                MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+                MrpAlgorithm.ONLY_COMPONENTS);
 
         MathContext mathContext = numberService.getMathContext();
         List<CostCalculationMaterial> sortedMaterials = costCalculationMaterialsService
@@ -827,7 +811,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         BigDecimal givenQty = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
         Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, givenQty,
-                MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
+                MrpAlgorithm.ONLY_COMPONENTS);
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
