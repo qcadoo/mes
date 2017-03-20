@@ -210,14 +210,16 @@
                     width="120"/>
             <option type="column" name="orderState" fields="orderState" hidden="true"/>
 
+            <option type="column" name="companyNumber" fields="companyNumber"/>
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="multiSearch"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="usedQuantity"/>
