@@ -87,7 +87,7 @@ public class EventsListListeners {
     public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
-        String filterQ = "";
+        String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "maintenanceevent",
                     dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "maintenanceEventListDto"));
@@ -110,12 +110,8 @@ public class EventsListListeners {
                 contextFilter += " division.id = " + division.getId();
 
             }
-            if (filterQ.length() > 1) {
-                if (contextFilter.length() > 1) {
-                    filterQ = contextFilter + " AND " + filterQ;
-                }
-            } else {
-                filterQ = contextFilter;
+            if (contextFilter.length() > 1) {
+                filterQ = contextFilter + " AND " + filterQ;
             }
         }
 
@@ -140,7 +136,7 @@ public class EventsListListeners {
 
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
-        String filterQ = "";
+        String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "event",
                     dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventListDto"));
@@ -163,12 +159,8 @@ public class EventsListListeners {
                 contextFilter += " division.id = " + division.getId();
 
             }
-            if (filterQ.length() > 1) {
-                if (contextFilter.length() > 1) {
-                    filterQ = contextFilter + " AND " + filterQ;
-                }
-            } else {
-                filterQ = contextFilter;
+            if (contextFilter.length() > 1) {
+                filterQ = contextFilter + " AND " + filterQ;
             }
         }
 

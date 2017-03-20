@@ -118,15 +118,16 @@ public class PerformanceAnalysisListeners {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(),
                     "productioncounting_performanceanalysisdto",
                     dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "performanceAnalysisDto"));
-            // filterQ += GridComponentFilterSQLUtils.addMultiSearchFilter(multiSearchFilter, grid.getColumns(),
-            // "productioncounting_performanceanalysisdto",
-            // dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "performanceAnalysisDto"));
+            filterQ += " AND ";
+            filterQ += GridComponentFilterSQLUtils.addMultiSearchFilter(multiSearchFilter, grid.getColumns(),
+                    "productioncounting_performanceanalysisdto",
+                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "performanceAnalysisDto"));
         } catch (Exception e) {
             filterQ = "";
         }
 
-        if (StringUtils.isNoneBlank(filterQ) && filterQ.length() > 1) {
-            query = query + " where " + filterQ;
+        if (StringUtils.isNoneBlank(filterQ)) {
+            query = query + " WHERE " + filterQ;
         }
 
         Map<String, Object> values = jdbcTemplate.queryForMap(query, Collections.emptyMap());
