@@ -24,17 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="finalProductAnalysisDto" activable="true" auditable="false" deletable="false" insertable="false"
-       updatable="false"
+<model name="productionAnalysisDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="productionLine_id"/>
+        <integer name="productionline_id"/>
         <string name="productionLineNumber"/>
 
         <integer name="company_id"/>
-        <string name="companyName"/>
+        <string name="companyNumber"/>
+
+        <integer name="staff_id"/>
+        <string name="staffName"/>
 
         <integer name="assortment_id"/>
         <string name="assortmentName"/>
@@ -45,16 +47,16 @@
         <string name="productUnit"/>
         <string name="size"/>
 
-        <decimal name="quantity">
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-
-        <decimal name="wastes">
+        <decimal name="wastesQuantity">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-
         <decimal name="doneQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
@@ -64,18 +66,16 @@
         <integer name="shift_id"/>
         <string name="shiftName"/>
 
-        <datetime name="timeRangeFrom"/>
-        <datetime name="timeRangeTo"/>
+        <date name="timeRangeFrom"/>
+        <date name="timeRangeTo"/>
 
-        <integer name="technologyGenerator_id"/>
-        <string name="technologyGeneratorNumber"/>
+        <integer name="generator_id"/>
+        <string name="generatorName"/>
 
         <integer name="order_id"/>
         <string name="orderNumber"/>
-
-        <belongsTo name="finalProductAnalysisGenerator" model="finalProductAnalysisGenerator"/>
     </fields>
 
-    <masterModel plugin="productionCounting" model="productionTracking"/>
+    <!--<masterModel plugin="productionCounting" model="productionTracking"/>-->
 
 </model>

@@ -9,6 +9,6 @@ public final class FinalProductAnalysisGeneratorFields {
 
     public static final String TOTAL_QUANTITY = "totalQuntity";
 
-    public static final String FINAL_PRODUCT_ANALYSIS_DTOS = "finalProductAnalysisDtos";
+    public static final String FINAL_PRODUCT_ANALYSIS_ENTRIES = "finalProductAnalysisEntries";
 
 }

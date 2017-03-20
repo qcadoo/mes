@@ -101,11 +101,11 @@
             <option type="order" column="assortmentName" direction="asc"/>
 
             <option type="searchable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
             <option type="multiSearch"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
             <option type="orderable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeRangeFrom,timeRangeTo,orderNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="doneQuantity"/>
