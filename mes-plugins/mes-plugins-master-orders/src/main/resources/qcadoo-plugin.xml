@@ -67,6 +67,7 @@
         <model:model model="masterOrderDefinition" resource="model/masterOrderDefinition.xml"/>
         <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
         <model:model model="masterOrderPositionDto" resource="model/masterOrderPositionDto.xml"/>
+        <model:model model="masterOrderDto" resource="model/masterOrderDto.xml"/>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
