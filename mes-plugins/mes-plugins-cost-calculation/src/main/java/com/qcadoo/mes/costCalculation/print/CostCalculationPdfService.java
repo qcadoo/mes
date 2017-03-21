@@ -47,6 +47,7 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
@@ -183,7 +184,30 @@ public class CostCalculationPdfService extends PdfDocumentService {
             throw new IllegalStateException("Unsupported CalculateOperationCostMode");
         }
 
+        PdfPTable componentsTable = addComponentsTable(costCalculation, locale);
+        //document.add(componentsTable);
+
         printMaterialAndOperationNorms(document, costCalculation, locale);
+    }
+
+    private PdfPTable addComponentsTable(final Entity costCalculation, final Locale locale) {
+        Entity technology;
+        Entity order = costCalculation.getBelongsToField(CostCalculationFields.ORDER);
+
+        if (order == null) {
+            technology = costCalculation.getBelongsToField(CostCalculationFields.TECHNOLOGY);
+        } else {
+            technology = costCalculation.getBelongsToField(CostCalculationFields.ORDER)
+                    .getBelongsToField(CostCalculationFields.TECHNOLOGY);
+        }
+
+        BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
+        Map<OperationProductComponentHolder, BigDecimal> productQuantitiesByOPC = productQuantitiesService.getNeededProductQuantitiesByOPC(
+                technology, quantity, MrpAlgorithm.ONLY_MATERIALS);
+
+        productQuantitiesByOPC.size();
+
+        return null;
     }
 
     public PdfPTable addTopPanelToReport(final Entity costCalculation, final Locale locale) {

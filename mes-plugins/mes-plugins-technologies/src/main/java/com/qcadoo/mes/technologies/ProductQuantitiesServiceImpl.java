@@ -144,6 +144,70 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
+    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(Entity technology,
+            BigDecimal givenQuantity, MrpAlgorithm mrpAlgorithm) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
+
+        OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
+                technology, givenQuantity, operationRuns, nonComponents);
+
+        // TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT
+
+        OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
+                .getAllWithSameEntityType(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+
+        if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false);
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true);
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false);
+        } else {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, true);
+        }
+
+    }
+
+    private Map<OperationProductComponentHolder, BigDecimal> getOperationProductComponentWithQuantities(
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents) {
+        return getOperationProductComponentWithQuantities(productComponentWithQuantities, nonComponents, onlyComponents, false);
+    }
+
+    private Map<OperationProductComponentHolder, BigDecimal> getOperationProductComponentWithQuantities(
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents, final boolean onlyMaterials) {
+        Map<OperationProductComponentHolder, BigDecimal> productWithQuantities = Maps.newHashMap();
+
+        for (Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : productComponentWithQuantities
+                .asMap().entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
+
+            if (onlyComponents && nonComponents.contains(operationProductComponentHolder)) {
+                continue;
+            }
+            if (onlyMaterials) {
+                Entity product = operationProductComponentHolder.getProduct();
+                if (hasAcceptedMasterTechnology(product)) {
+                    continue;
+                }
+            }
+
+            addOPCQuantitiesToList(productComponentWithQuantity, productWithQuantities);
+        }
+
+        return productWithQuantities;
+    }
+
+    public void addOPCQuantitiesToList(final Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity,
+            final Map<OperationProductComponentHolder, BigDecimal> productWithQuantities) {
+        OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
+        BigDecimal quantity = productComponentWithQuantity.getValue();
+        productWithQuantities.put(operationProductComponentHolder, quantity);
+    }
+
+    @Override
     public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm) {
         return getNeededProductQuantities(orders, mrpAlgorithm, false);
     }
@@ -364,6 +428,74 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
         for (Entity child : operationComponent.getHasManyField(TechnologyOperationComponentFields.CHILDREN)) {
             traverseProductQuantitiesAndOperationRuns(technology, givenQuantity, child, operationComponent,
+                    operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+        }
+    }
+
+    @Override
+    public void traverseProductQuantitiesAndOperationRuns(final Entity technology, Map<Long, Entity> entitiesById,
+            final BigDecimal givenQuantity, final Entity operationComponent, final Entity previousOperationComponent,
+            final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+            final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
+        if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
+            Entity referenceTechnology = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
+            EntityTree referenceOperationComponent = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+            traverseProductQuantitiesAndOperationRuns(referenceTechnology, givenQuantity, referenceOperationComponent.getRoot(),
+                    previousOperationComponent, operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+
+            return;
+        }
+
+        if (previousOperationComponent == null) {
+            Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+
+            for (Entity operationProductOutComponent : operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                        .equals(technologyProduct.getId())) {
+                    BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
+
+                    multiplyProductQuantitiesAndAddOperationRuns(operationComponent, givenQuantity, outQuantity,
+                            operationProductComponentWithQuantityContainer, operationRuns);
+
+                    break;
+                }
+            }
+        } else {
+            for (Entity operationProductInComponent : previousOperationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
+                boolean isntComponent = false;
+
+                for (Entity operationProductOutComponent : operationComponent
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                    if (operationProductOutComponent
+                            .getBelongsToField(OperationProductOutComponentFields.PRODUCT)
+                            .getId()
+                            .equals(operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT)
+                                    .getId())) {
+                        isntComponent = true;
+
+                        BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
+                        BigDecimal inQuantity = operationProductComponentWithQuantityContainer.get(operationProductInComponent);
+
+                        multiplyProductQuantitiesAndAddOperationRuns(operationComponent, inQuantity, outQuantity,
+                                operationProductComponentWithQuantityContainer, operationRuns);
+
+                        break;
+                    }
+                }
+
+                if (isntComponent) {
+                    nonComponents.add(new OperationProductComponentHolder(operationProductInComponent));
+                }
+            }
+        }
+
+        for (Entity child : entitiesById.get(operationComponent.getId()).getHasManyField(
+                TechnologyOperationComponentFields.CHILDREN)) {
+            traverseProductQuantitiesAndOperationRuns(technology, entitiesById, givenQuantity, child, operationComponent,
                     operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
         }
     }
