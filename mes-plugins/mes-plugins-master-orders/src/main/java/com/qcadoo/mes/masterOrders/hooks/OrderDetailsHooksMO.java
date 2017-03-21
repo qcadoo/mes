@@ -113,6 +113,10 @@ public class OrderDetailsHooksMO {
         LookupComponent technologyPrototypeLookup = (LookupComponent) view
                 .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
+        String poNumber = "";
+        String direction = "";
+        StringBuilder buildDescription = new StringBuilder();
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
 
@@ -126,6 +130,23 @@ public class OrderDetailsHooksMO {
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
+
+            if (masterOrder.getStringField("poNumber") != null) {
+                poNumber = masterOrder.getStringField("poNumber");
+            }
+            if (masterOrder.getStringField("direction") != null) {
+                direction = masterOrder.getStringField("direction");
+            }
+
+            if (!poNumber.isEmpty()) {
+                buildDescription.append("PO");
+                buildDescription.append(poNumber);
+                buildDescription.append("-");
+            }
+            if (!direction.isEmpty()) {
+                buildDescription.append(direction);
+            }
+
             BigDecimal masterOrderQuantity;
             BigDecimal cumulatedOrderQuantity;
             if (productComponent == null) {
@@ -162,6 +183,12 @@ public class OrderDetailsHooksMO {
 
             numberField.setFieldValue(generatedNumber);
             numberField.requestComponentUpdateState();
+
+            if(StringUtils.isEmpty((String) descriptionField.getFieldValue())){
+                descriptionField.setFieldValue(buildDescription.toString());
+                descriptionField.requestComponentUpdateState();
+            }
+
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
