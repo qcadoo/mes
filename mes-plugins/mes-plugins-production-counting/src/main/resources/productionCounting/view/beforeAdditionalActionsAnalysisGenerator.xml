@@ -140,6 +140,9 @@
                         <option type="header" value="true"/>
 
 
+                        <listener event="calculateTotalQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.BeforeAdditionalActionsAnalysisGeneratorListeners"
+                                  method="calculateTotalQuantity"/>
                     </component>
 
                 </layoutElement>

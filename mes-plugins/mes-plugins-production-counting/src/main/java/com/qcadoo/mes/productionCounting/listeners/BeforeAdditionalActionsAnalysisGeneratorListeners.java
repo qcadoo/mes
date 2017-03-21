@@ -19,7 +19,7 @@ import com.qcadoo.view.api.components.grid.GridComponentFilterSQLUtils;
 import com.qcadoo.view.api.components.grid.GridComponentMultiSearchFilter;
 
 @Service
-public class FinalProductAnalysisGeneratorListeners {
+public class BeforeAdditionalActionsAnalysisGeneratorListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -40,14 +40,14 @@ public class FinalProductAnalysisGeneratorListeners {
         String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(),
-                    "productioncounting_finalproductanalysisentry", dataDefinitionService.get(
+                    "productioncounting_beforeadditionalactionsanalysisentry", dataDefinitionService.get(
                             ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY));
+                            ProductionCountingConstants.MODEL_BEFORE_ADDITIONAL_ACTIONS_ANALYSIS_ENTRY));
 
             String multiFilterQ = GridComponentFilterSQLUtils.addMultiSearchFilter(multiSearchFilter, grid.getColumns(),
-                    "productioncounting_finalproductanalysisentry", dataDefinitionService.get(
+                    "productioncounting_beforeadditionalactionsanalysisentry", dataDefinitionService.get(
                             ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY));
+                            ProductionCountingConstants.MODEL_BEFORE_ADDITIONAL_ACTIONS_ANALYSIS_ENTRY));
             if (!Strings.isNullOrEmpty(multiFilterQ)) {
                 if (!Strings.isNullOrEmpty(filterQ))
                     filterQ += " AND ";
@@ -72,8 +72,7 @@ public class FinalProductAnalysisGeneratorListeners {
     private String buildQuery() {
         StringBuilder query = new StringBuilder();
         query.append("SELECT SUM(doneQuantity) AS totalDoneQuantity ");
-        query.append("FROM productioncounting_finalproductanalysisentry ");
+        query.append("FROM productioncounting_beforeadditionalactionsanalysisentry ");
         return query.toString();
     }
-
 }
