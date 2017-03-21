@@ -23,13 +23,12 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.IOException;
 
-public class IntegrationJsonMessage {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
-    public static final IntegrationJsonMessage EMPTY_MESSAGE = new IntegrationJsonMessage();
+public class IntegrationJsonMessage {
 
     public String toJsonString() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
