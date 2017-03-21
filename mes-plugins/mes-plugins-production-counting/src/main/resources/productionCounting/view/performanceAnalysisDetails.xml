@@ -73,39 +73,39 @@
             <option type="column" name="staffName" fields="staffName"
                     width="80"/>
             <option type="column" name="assortmentName" fields="assortmentName"
-                    width="80"/>
+                    width="100"/>
             <option type="column" name="productNumber" fields="productNumber"
                     width="80"/>
             <option type="column" name="productName" fields="productName"
                     width="80"/>
             <option type="column" name="productUnit" fields="productUnit"
-                    width="80"/>
+                    width="40"/>
             <option type="column" name="size" fields="size"
-                    width="80"/>
+                    width="40"/>
             <option type="column" name="performanceNorm" fields="performanceNorm"
-                    width="80"/>
+                    width="40"/>
             <option type="column" name="doneQuantity" fields="doneQuantity"
-                    width="80"/>
+                    width="40"/>
             <option type="column" name="timeBasedOnNorms" fields="timeBasedOnNorms"
-                    width="80"
+                    width="60"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeBasedOnNorms)"/>
             <option type="column" name="shiftName" fields="shiftName"
-                    width="80"/>
+                    width="40"/>
             <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
                     width="80"/>
             <option type="column" name="timeRangeTo" fields="timeRangeTo"
                     width="80"/>
             <option type="column" name="orderNumber" fields="orderNumber"
-                    width="80"/>
+                    width="100"/>
 
-            <option type="order" column="timeRangeFrom" direction="asc"/>
+            <option type="order" column="assortmentName" direction="asc"/>
 
             <option type="searchable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
             <option type="multiSearch"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
             <option type="orderable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeBasedOnNorms,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeRangeFrom,timeRangeTo,orderNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="doneQuantity"/>

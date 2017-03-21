@@ -27,6 +27,8 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String WASTES_SUM = "wastesSum";
 
+    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
+
     private TrackingOperationProductOutComponentFields() {
 
     }

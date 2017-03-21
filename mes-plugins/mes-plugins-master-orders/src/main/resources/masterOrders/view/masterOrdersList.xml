@@ -79,13 +79,16 @@
                     width="250"/>
             <option type="column" name="deadline" fields="deadline"/>
             <option type="column" name="company" fields="company" expression="#company['name']" width="150"/>
+
+            <option type="column" name="companyPayer" fields="companyPayer" expression="#companyPayer['name']" width="150"/>
+
             <option type="column" name="masterOrderState" fields="masterOrderState" width="100"/>
 
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,name,number,deadline,company,masterOrderState"/>
-            <option type="orderable" value="masterOrderDefinitionNumber,name,number,deadline,company,masterOrderState"/>
+                    value="masterOrderDefinitionNumber,name,number,deadline,company,companyPayer,masterOrderState"/>
+            <option type="orderable" value="masterOrderDefinitionNumber,name,number,deadline,company,companyPayer,masterOrderState"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderDetails"/>
             <option type="correspondingComponent" value="form"/>

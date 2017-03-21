@@ -24,35 +24,48 @@
     ***************************************************************************
 
 -->
-<model name="masterOrderPositionDto" activable="true" auditable="false" deletable="false" insertable="false"
+<model name="finalProductAnalysisEntry" activable="false" auditable="false" deletable="false" insertable="false"
        updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="name"/>
-        <string name="number"/>
-        <string name="masterOrderName"/>
-        <datetime name="deadline"/>
-        <string name="companyName"/>
-        <string name="companyPayer"/>
-        <string name="masterOrderStatus"/>
+        <string name="productionLineNumber"/>
+
+        <string name="companyNumber"/>
+
+        <string name="assortmentName"/>
+
         <string name="productNumber"/>
         <string name="productName"/>
-        <string name="technologyName"/>
-        <string name="masterOrderPositionStatus"/>
-        <string name="comments"/>
-        <decimal name="masterOrderQuantity"/>
-        <decimal name="cumulatedMasterOrderQuantity"/>
-        <decimal name="leftToRelease"/>
-        <decimal name="producedOrderQuantity"/>
-        <string name="unit"/>
+        <string name="productUnit"/>
+        <string name="size"/>
 
-        <integer name="masterOrderId"/>
-        <string name="masterOrderType"/>
-        <integer name="productId"/>
-        <integer name="masterOrderProductId"/>
+        <decimal name="quantity">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="wastes">
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="doneQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <string name="shiftName"/>
+
+        <date name="timeRangeFrom"/>
+        <date name="timeRangeTo"/>
+
+        <string name="technologyGeneratorNumber"/>
+
+        <string name="orderNumber"/>
+
     </fields>
 
-    <masterModel plugin="masterOrders" model="masterOrderProduct"/>
 </model>
