@@ -67,6 +67,7 @@
         <tree name="productStructureTree" model="productStructureTreeNode"
               joinField="technology" cascade="delete" persistent="false"/>
 
+
         <decimal name="standardPerformanceTechnology">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
