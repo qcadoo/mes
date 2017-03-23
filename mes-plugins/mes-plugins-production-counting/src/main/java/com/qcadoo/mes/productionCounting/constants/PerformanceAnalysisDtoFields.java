@@ -29,6 +29,8 @@ public final class PerformanceAnalysisDtoFields {
 
     }
 
+    public static final String MODEL_PERFORMANCE_ANALYSIS_DTO = "performanceAnalysisDto";
+
     public static final String PRODUCTION_LINE_ID = "productionline_id";
 
     public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
@@ -52,5 +54,14 @@ public final class PerformanceAnalysisDtoFields {
     public static final String TIME_RANGE_FROM = "timeRangeFrom";
 
     public static final String TIME_RANGE_TO = "timeRangeTo";
+
+
+    public static final String TOTAL_TIME_BASED_ON_NORMS = "totalTimeBasedOnNorms";
+
+    public static final String TOTAL_LABOR_TIME = "totalLaborTime";
+
+    public static final String TOTAL_DEVIATION_TIME = "totalDeviationTime";
+
+    public static final String TOTAL_PERFORMANCE = "totalPerformance";
 
 }

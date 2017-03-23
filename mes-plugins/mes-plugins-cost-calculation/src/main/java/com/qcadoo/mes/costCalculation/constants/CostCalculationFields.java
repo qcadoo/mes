@@ -109,4 +109,8 @@ public final class CostCalculationFields {
 
     public static final String FILE_NAME = "fileName";
 
+    public static final String SAVE_COSTS = "saveCosts";
+
+    public static final String NOMINAL_COSTS = "nominalCosts";
+
 }

@@ -1,6 +1,20 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents;
 
-import com.google.common.collect.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.MachinePartForEventDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventDTO;
@@ -8,16 +22,6 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEven
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.plannedEvents.dto.PlannedEventStateChangeDTO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class PlannedEventsXLSDataProvider {
@@ -67,7 +71,7 @@ public class PlannedEventsXLSDataProvider {
         Entity helperEntity = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventXLSHelper")
                 .get(helperModelId);
         String _query = QUERY;
-        if (StringUtils.isNoneBlank(helperEntity.getStringField("query")) && helperEntity.getStringField("query").length() > 1) {
+        if (StringUtils.isNoneBlank(helperEntity.getStringField("query"))) {
             _query = QUERY + " where " + PlannedEventsFilterUtils.processFilter(helperEntity.getStringField("query"));
         }
         _query = _query + ORDER_BY;
