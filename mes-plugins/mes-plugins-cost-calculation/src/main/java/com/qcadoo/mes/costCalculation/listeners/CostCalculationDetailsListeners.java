@@ -417,7 +417,7 @@ public class CostCalculationDetailsListeners {
         Entity costsEntity = formComponent.getEntity();
         Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal tkw = costsEntity.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
-        product.setField("nominalCost", tkw);
+        product.setField("nominalCost", numberService.setScale(tkw));
         Entity savedEntity = product.getDataDefinition().save(product);
         if (!savedEntity.isValid()) {
             view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsFailure",
