@@ -23,25 +23,21 @@
  */
 package com.qcadoo.mes.technologies.tree;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductStructureTreeService {
@@ -69,9 +65,13 @@ public class ProductStructureTreeService {
 
     private static final String L_COMPONENT = "component";
 
+    private static final String L_DIVISION = "division";
+
+    private static final String L_PARENT = "parent";
+
     private static final String L_MATERIAL = "material";
 
-    private static final String L_DIVISION = "division";
+    private static final String ENTITY_TYPE = "entityType";
 
     private void addChild(final List<Entity> tree, final Entity child, final Entity parent, final String entityType) {
         child.setField("parent", parent);
@@ -240,5 +240,62 @@ public class ProductStructureTreeService {
         EntityTree productStructureTree = EntityTreeUtilsService.getDetachedEntityTree(productStructureList);
 
         return productStructureTree;
+    }
+
+    public EntityTree getOperationComponentsFromTechnology(final Entity technology) {
+
+        EntityTree productStructureTree = generateProductStructureTree(null, technology);
+        return transformProductStructureTreeToTOCTree(productStructureTree);
+    }
+
+    private EntityTree transformProductStructureTreeToTOCTree(final EntityTree productStructureTree) {
+        List<Entity> tocTree = Lists.newArrayList();
+        DataDefinition tocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+        Entity parent = null;
+        Entity root = productStructureTree.getRoot();
+        Long rootTocID = root.getBelongsToField(L_OPERATION).getId();
+        addChildTOC(tocTree, tocDD.get(rootTocID), parent, root.getBelongsToField(L_PRODUCT), L_FINAL_PRODUCT);
+        for (Entity node : productStructureTree) {
+            String entityType = node.getStringField(ENTITY_TYPE);
+            if (!entityType.equals(L_MATERIAL) && !entityType.equals(L_FINAL_PRODUCT)) {
+                Long tocId = node.getBelongsToField(L_OPERATION).getId();
+                Entity toc = tocDD.get(tocId);
+                Long parentId = node.getBelongsToField(L_PARENT) != null ? node.getBelongsToField(L_PARENT)
+                        .getBelongsToField(L_OPERATION).getId() : node.getBelongsToField(L_OPERATION).getId();
+                parent = getEntityById(tocTree, parentId);
+                addChildTOC(tocTree, toc, parent, node.getBelongsToField(L_PRODUCT), entityType);
+            }
+        }
+        return EntityTreeUtilsService.getDetachedEntityTree(tocTree);
+    }
+
+    private Entity getEntityById(final List<Entity> tree, final Long id) {
+        for (Entity entity : tree) {
+            if (entity.getId().equals(id)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    private Entity addChildTOC(final List<Entity> tree, final Entity child, final Entity parent, final Entity product, String type) {
+        child.setField(TechnologyOperationComponentFields.PARENT, parent);
+        child.setField(TechnologyOperationComponentFields.PRIORITY, 1);
+        child.setField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE, type);
+        child.setField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE, product);
+        if (parent != null) {
+            List<Entity> children = Lists.newArrayList();
+            EntityList tocChildren = parent.getHasManyField(TechnologyOperationComponentFields.CHILDREN);
+            if (!tocChildren.isEmpty()) {
+                children = Lists.newArrayList(tocChildren);
+            }
+            if (!tocChildren.stream().filter(e -> e.getId().equals(child.getId())).findAny().isPresent()) {
+                children.add(child);
+            }
+            parent.setField(TechnologyOperationComponentFields.CHILDREN, children);
+        }
+        tree.add(child);
+        return child;
     }
 }

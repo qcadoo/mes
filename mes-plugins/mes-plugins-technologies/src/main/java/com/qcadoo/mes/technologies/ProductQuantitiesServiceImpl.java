@@ -368,6 +368,74 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         }
     }
 
+    @Override
+    public void traverseProductQuantitiesAndOperationRuns(final Entity technology, Map<Long, Entity> entitiesById,
+            final BigDecimal givenQuantity, final Entity operationComponent, final Entity previousOperationComponent,
+            final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+            final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
+        if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
+            Entity referenceTechnology = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
+            EntityTree referenceOperationComponent = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+            traverseProductQuantitiesAndOperationRuns(referenceTechnology, givenQuantity, referenceOperationComponent.getRoot(),
+                    previousOperationComponent, operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+
+            return;
+        }
+
+        if (previousOperationComponent == null) {
+            Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
+
+            for (Entity operationProductOutComponent : operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                        .equals(technologyProduct.getId())) {
+                    BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
+
+                    multiplyProductQuantitiesAndAddOperationRuns(operationComponent, givenQuantity, outQuantity,
+                            operationProductComponentWithQuantityContainer, operationRuns);
+
+                    break;
+                }
+            }
+        } else {
+            for (Entity operationProductInComponent : previousOperationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
+                boolean isntComponent = false;
+
+                for (Entity operationProductOutComponent : operationComponent
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
+                    if (operationProductOutComponent
+                            .getBelongsToField(OperationProductOutComponentFields.PRODUCT)
+                            .getId()
+                            .equals(operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT)
+                                    .getId())) {
+                        isntComponent = true;
+
+                        BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
+                        BigDecimal inQuantity = operationProductComponentWithQuantityContainer.get(operationProductInComponent);
+
+                        multiplyProductQuantitiesAndAddOperationRuns(operationComponent, inQuantity, outQuantity,
+                                operationProductComponentWithQuantityContainer, operationRuns);
+
+                        break;
+                    }
+                }
+
+                if (isntComponent) {
+                    nonComponents.add(new OperationProductComponentHolder(operationProductInComponent));
+                }
+            }
+        }
+
+        for (Entity child : entitiesById.get(operationComponent.getId()).getHasManyField(
+                TechnologyOperationComponentFields.CHILDREN)) {
+            traverseProductQuantitiesAndOperationRuns(technology, entitiesById, givenQuantity, child, operationComponent,
+                    operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
+        }
+    }
+
     private void multiplyProductQuantitiesAndAddOperationRuns(final Entity operationComponent, final BigDecimal needed,
             final BigDecimal actual,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
