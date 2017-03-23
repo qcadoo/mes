@@ -76,6 +76,4 @@
         <string name="orderNumber"/>
     </fields>
 
-    <!--<masterModel plugin="productionCounting" model="productionTracking"/>-->
-
 </model>

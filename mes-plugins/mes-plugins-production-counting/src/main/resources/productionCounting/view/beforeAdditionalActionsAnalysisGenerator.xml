@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="beforeAdditionalActionsAnalysisGenerator"
+<view defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER" name="beforeAdditionalActionsAnalysisGenerator"
       modelName="beforeAdditionalActionsAnalysisEntry"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
@@ -140,6 +140,9 @@
                         <option type="header" value="true"/>
 
 
+                        <listener event="calculateTotalQuantity"
+                                  class="com.qcadoo.mes.productionCounting.listeners.BeforeAdditionalActionsAnalysisGeneratorListeners"
+                                  method="calculateTotalQuantity"/>
                     </component>
 
                 </layoutElement>

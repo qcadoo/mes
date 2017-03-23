@@ -111,4 +111,8 @@ public final class CostCalculationFields {
 
     public static final String COMPONENT_COST = "componentCosts";
 
+    public static final String SAVE_COSTS = "saveCosts";
+
+    public static final String NOMINAL_COSTS = "nominalCosts";
+
 }
