@@ -57,6 +57,12 @@
                 <bigButton name="pdf" icon="pdfIcon24.png"
                            action="#{form}.fireEvent(printCostCalculation,pdf);" state="disabled"/>
             </group>
+
+            <group name="saveCosts">
+                <bigButton name="nominalCosts" icon="saveIcon24.png"
+                           action="#{form}.fireEvent(saveNominalCosts);" state="disabled"/>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -287,6 +293,10 @@
                 <listener event="printCostCalculation"
                           class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
                           method="printCostCalculationReport"/>
+
+                <listener event="saveNominalCosts"
+                          class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
+                          method="saveNominalCosts"/>
             </component>
         </windowTab>
 
