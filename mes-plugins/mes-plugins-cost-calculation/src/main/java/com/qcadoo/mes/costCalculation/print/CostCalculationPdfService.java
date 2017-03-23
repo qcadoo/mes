@@ -193,14 +193,17 @@ public class CostCalculationPdfService extends PdfDocumentService {
             throw new IllegalStateException("Unsupported CalculateOperationCostMode");
         }
 
-        document.add(Chunk.NEWLINE);
+        boolean includeComponents = costCalculation.getBooleanField("includeComponents");
 
-        document.add(new Paragraph(translationService.translate(
-                "costCalculation.costCalculationDetails.report.componentsParagraph", locale), FontUtils.getDejavuBold11Dark()));
+        if (includeComponents) {
+            document.add(Chunk.NEWLINE);
 
-        PdfPTable componentsTable = addComponentsTable(costCalculation, locale);
-        document.add(componentsTable);
+            document.add(new Paragraph(translationService.translate(
+                    "costCalculation.costCalculationDetails.report.componentsParagraph", locale), FontUtils.getDejavuBold11Dark()));
 
+            PdfPTable componentsTable = addComponentsTable(costCalculation, locale);
+            document.add(componentsTable);
+        }
         printMaterialAndOperationNorms(document, costCalculation, locale);
     }
 
@@ -276,24 +279,25 @@ public class CostCalculationPdfService extends PdfDocumentService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        DataDefinition ccDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COMPONENT_COST);
+        DataDefinition ccDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                CostCalculationConstants.MODEL_COMPONENT_COST);
         List<Entity> componentsCost = Lists.newArrayList();
         for (ComponentsCalculationHolder component : basicComponentsMap.values()) {
             componentsTable.addCell(new Phrase(component.getProduct().getStringField(ProductFields.NUMBER), FontUtils
                     .getDejavuRegular7Dark()));
-            componentsTable.addCell(
-                    new Phrase(component.getProduct().getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(new Phrase(component.getProduct().getStringField(ProductFields.NAME), FontUtils
+                    .getDejavuRegular7Dark()));
             componentsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            componentsTable.addCell(
-                    new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getMaterialCost())),
-                            FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(new Phrase(
+                    numberService.format(BigDecimalUtils.convertNullToZero(component.getMaterialCost())), FontUtils
+                            .getDejavuRegular7Dark()));
             componentsTable.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getLaborCost())),
                     FontUtils.getDejavuRegular7Dark()));
             componentsTable.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getSumOfCost())),
                     FontUtils.getDejavuRegular7Dark()));
-            componentsTable.addCell(
-                    new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getCostPerUnit())),
-                            FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(new Phrase(
+                    numberService.format(BigDecimalUtils.convertNullToZero(component.getCostPerUnit())), FontUtils
+                            .getDejavuRegular7Dark()));
 
             componentsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             Entity cc = ccDD.create();
