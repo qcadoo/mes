@@ -262,6 +262,12 @@ CREATE OR REPLACE VIEW masterorders_masterorderpositiondto AS SELECT * FROM mast
 -- end
 
 
+-- VIEW masterorders_masterorderdto
+
+CREATE OR REPLACE VIEW masterorders_masterorderdto AS SELECT masterorder.id, masterorderdefinition.number AS masterOrderDefinition, masterorder.number, masterorder.name, masterorder.deadline, company.name AS company, companyPayer.name AS companyPayer, masterorder.masterorderpositionstatus AS status, (select count(*) from masterorders_masterorderpositiondto masterorderposition where masterorderposition.masterorderid = masterorder.id )::int AS orderedPositionQuantity, (select count(*) from masterorders_masterorderpositiondto masterorderposition where masterorderposition.masterorderid = masterorder.id and masterorderposition.masterorderquantity > 0 )::int AS commissionedPositionQuantity, ((select count(*) from masterorders_masterorderpositiondto masterorderposition where masterorderposition.masterorderid = masterorder.id )::int - (select count(*) from masterorders_masterorderpositiondto masterorderposition where masterorderposition.masterorderid = masterorder.id and masterorderposition.masterorderquantity > 0 )::int ) AS quantityForCommission, masterorder.masterOrderState, masterorder.active FROM masterorders_masterorder masterorder LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON masterorderdefinition.id = masterorder.masterorderdefinition_id LEFT JOIN basic_company company ON company.id = masterorder.company_id LEFT JOIN basic_company companyPayer ON companyPayer.id = masterorder.companypayer_id;
+
+-- end
+
 -- production tracking number sequence
 
 CREATE SEQUENCE productioncounting_productiontracking_number_seq;
