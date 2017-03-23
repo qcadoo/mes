@@ -258,8 +258,8 @@ public class ProductionTrackingDetailsHooks {
 
         GridComponent stateChangesGrid = (GridComponent) view.getComponentByReference(ProductionTrackingFields.STATE_CHANGES);
 
-        trackingOperationProductInComponentsGrid.setEditable(isEnabled);
-        trackingOperationProductOutComponentsGrid.setEditable(isEnabled);
+        trackingOperationProductInComponentsGrid.setEnabled(isEnabled);
+        trackingOperationProductOutComponentsGrid.setEnabled(isEnabled);
 
         stateChangesGrid.setEditable(isEnabled);
     }

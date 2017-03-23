@@ -48,17 +48,17 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class CostCalculationDetailsHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_WINDOW = "window";
 
     private static final String L_PRODUCTION_COST_MARGIN_PROC = "productionCostMarginProc";
 
@@ -138,6 +138,7 @@ public class CostCalculationDetailsHooks {
         fillOverheadsFromParameters(view);
         toggleCalculateOperationCostsModeComponent(view);
         roundResults(view);
+        setButtonEnabled(view);
     }
 
     private void roundResults(final ViewDefinitionState view) {
@@ -157,7 +158,7 @@ public class CostCalculationDetailsHooks {
             if (eitherValue.isRight()) {
                 Optional<BigDecimal> maybeValue = eitherValue.getRight();
                 if (maybeValue.isPresent()) {
-                    component.setFieldValue(numbersService.setScale(maybeValue.get(), 2));
+                    component.setFieldValue(numbersService.format(numbersService.setScale(maybeValue.get(), 2)));
                     component.requestComponentUpdateState();
                 }
             }
@@ -362,6 +363,17 @@ public class CostCalculationDetailsHooks {
             } else {
                 component.setFieldValue(0);
             }
+        }
+    }
+
+
+    private void setButtonEnabled(ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS).getItemByName(CostCalculationFields.NOMINAL_COSTS);
+        CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
+        if(generatedField.isChecked()){
+            saveNominalCosts.setEnabled(true);
+            saveNominalCosts.requestUpdate(true);
         }
     }
 }
