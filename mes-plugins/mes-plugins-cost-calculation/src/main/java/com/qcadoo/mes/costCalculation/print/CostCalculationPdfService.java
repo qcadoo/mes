@@ -43,7 +43,11 @@ import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationCompone
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
@@ -97,8 +101,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     private static final String L_TAB_IN_TEXT = "\t \t \t";
 
-    private static final String L_COMPONENT = "component";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -133,7 +135,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private ParameterService parameterService;
 
     @Autowired
-    ProductStructureTreeService productStructureTreeService;
+    private ProductStructureTreeService productStructureTreeService;
+
+    @Autowired
+    private CostCalculationComponentsService costCalculationComponentsService;
+
+    @Autowired
+    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -185,8 +193,13 @@ public class CostCalculationPdfService extends PdfDocumentService {
             throw new IllegalStateException("Unsupported CalculateOperationCostMode");
         }
 
+        document.add(Chunk.NEWLINE);
+
+        document.add(new Paragraph(translationService.translate(
+                "costCalculation.costCalculationDetails.report.componentsParagraph", locale), FontUtils.getDejavuBold11Dark()));
+
         PdfPTable componentsTable = addComponentsTable(costCalculation, locale);
-        // document.add(componentsTable);
+        document.add(componentsTable);
 
         printMaterialAndOperationNorms(document, costCalculation, locale);
     }
@@ -203,26 +216,96 @@ public class CostCalculationPdfService extends PdfDocumentService {
         }
 
         BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
-        Map<OperationProductComponentHolder, BigDecimal> productQuantitiesByOPC = productQuantitiesService
+        Map<OperationProductComponentHolder, BigDecimal> materialQuantitiesByOPC = productQuantitiesWithComponentsService
                 .getNeededProductQuantitiesByOPC(technology, quantity, MrpAlgorithm.ONLY_MATERIALS);
 
-        productQuantitiesByOPC.size();
+        materialQuantitiesByOPC.size();
 
         EntityTree operationComponents = productStructureTreeService.getOperationComponentsFromTechnology(technology);
-        List<Entity> tocs = operationComponents.stream()
-                .filter(pc -> L_COMPONENT.equals(pc.getStringField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE)))
-                .collect(Collectors.toList());
 
-        List<ComponentsCalculationHolder> basicComponents = Lists.newArrayList();
-        for (Entity toc : tocs) {
-            ComponentsCalculationHolder component = new ComponentsCalculationHolder(toc,
-                    toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE));
-            //jeśli jest zestaw to dodajemy produkty/operacje z zestawu
-            //informacja czy zestaw jest w produkcie wyjściowym 
-            basicComponents.add(component);
+        List<ComponentsCalculationHolder> basicComponents = costCalculationComponentsService
+                .fillBasicComponents(operationComponents);
+        List<ComponentsCalculationHolder> allOperations = costCalculationComponentsService.fillAllOperations(operationComponents);
+
+        Map<Long, ComponentsCalculationHolder> basicComponentsMap = basicComponents.stream().collect(
+                Collectors.toMap(x -> x.getToc().getId(), x -> x));
+        Map<Long, ComponentsCalculationHolder> allOperationsMap = allOperations.stream().collect(
+                Collectors.toMap(x -> x.getToc().getId(), x -> x));
+        costCalculationComponentsService.addMaterialOperationCost(costCalculation, allOperationsMap, materialQuantitiesByOPC);
+
+        costCalculationComponentsService.addOperationCost(costCalculation, allOperationsMap);
+
+        costCalculationComponentsService.fillBasicComponentsCosts(operationComponents, basicComponentsMap, allOperationsMap,
+                quantity);
+        List<String> componentsTableHeader = Lists.newArrayList();
+        Map<String, HeaderAlignment> alignments = Maps.newHashMap();
+
+        componentsTableHeader.addAll(Arrays
+                .asList("costCalculation.costCalculationDetails.report.columnHeader.components.number",
+                        "costCalculation.costCalculationDetails.report.columnHeader.components.name",
+                        "costCalculation.costCalculationDetails.report.columnHeader.components.costOfMaterials",
+                        "costCalculation.costCalculationDetails.report.columnHeader.components.costOfLabor",
+                        "costCalculation.costCalculationDetails.report.columnHeader.components.sumOfCosts",
+                        "costCalculation.costCalculationDetails.report.columnHeader.components.costPerUnit").stream()
+                .map(translate -> translationService.translate(translate, locale)).collect(Collectors.toList()));
+
+        alignments.put(translationService.translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.components.number", locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate("costCalculation.costCalculationDetails.report.columnHeader.components.name",
+                locale), HeaderAlignment.LEFT);
+        alignments.put(translationService.translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.components.costOfMaterials", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.components.costOfLabor", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.components.sumOfCosts", locale),
+                HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "costCalculation.costCalculationDetails.report.columnHeader.components.costPerUnit", locale),
+                HeaderAlignment.RIGHT);
+
+        PdfPTable componentsTable = pdfHelper.createTableWithHeader(componentsTableHeader.size(), componentsTableHeader, false,
+                alignments);
+
+        try {
+            float[] columnWidths = { 1.5f, 1.5f, 1f, 1f, 1f, 1f };
+            componentsTable.setWidths(columnWidths);
+        } catch (DocumentException e) {
+            throw new IllegalStateException(e.getMessage(), e);
         }
-        basicComponents.size();
-        return null;
+
+        DataDefinition ccDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COMPONENT_COST);
+        List<Entity> componentsCost = Lists.newArrayList();
+        for (ComponentsCalculationHolder component : basicComponentsMap.values()) {
+            componentsTable.addCell(new Phrase(component.getProduct().getStringField(ProductFields.NUMBER), FontUtils
+                    .getDejavuRegular7Dark()));
+            componentsTable.addCell(
+                    new Phrase(component.getProduct().getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            componentsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            componentsTable.addCell(
+                    new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getMaterialCost())),
+                            FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getLaborCost())),
+                    FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getSumOfCost())),
+                    FontUtils.getDejavuRegular7Dark()));
+            componentsTable.addCell(
+                    new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(component.getCostPerUnit())),
+                            FontUtils.getDejavuRegular7Dark()));
+
+            componentsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            Entity cc = ccDD.create();
+            cc.setField("product", component.getProduct());
+            cc.setField("pricePerUnit", component.getCostPerUnit());
+            componentsCost.add(cc);
+
+        }
+        Entity costCalculationDB = costCalculation.getDataDefinition().get(costCalculation.getId());
+        costCalculationDB.setField(CostCalculationFields.COMPONENT_COST, componentsCost);
+        costCalculationDB.getDataDefinition().save(costCalculationDB);
+        return componentsTable;
     }
 
     public PdfPTable addTopPanelToReport(final Entity costCalculation, final Locale locale) {

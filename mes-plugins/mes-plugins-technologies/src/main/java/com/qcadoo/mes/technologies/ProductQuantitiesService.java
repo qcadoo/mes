@@ -93,14 +93,6 @@ public interface ProductQuantitiesService {
             final MrpAlgorithm mrpAlgorithm);
 
     /**
-     * @param technology    Given technology
-     * @param givenQuantity How many products, that are outcomes of this technology, we want.
-     * @param mrpAlgorithm  MRP Algorithm
-     */
-    Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology, final BigDecimal givenQuantity,
-            final MrpAlgorithm mrpAlgorithm);
-
-    /**
      * @param orders       Given list of orders
      * @param mrpAlgorithm MRP Algorithm
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are

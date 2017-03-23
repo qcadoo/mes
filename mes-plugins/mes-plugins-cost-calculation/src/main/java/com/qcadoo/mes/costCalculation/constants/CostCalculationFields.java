@@ -109,4 +109,6 @@ public final class CostCalculationFields {
 
     public static final String FILE_NAME = "fileName";
 
+    public static final String COMPONENT_COST = "componentCosts";
+
 }
