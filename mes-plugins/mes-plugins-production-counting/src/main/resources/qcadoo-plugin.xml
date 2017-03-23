@@ -310,16 +310,19 @@
                     method="onView"/>
         </model:model-hook>
 
-        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+        <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="performanceAnalysis" category="analysis"
-                        view="performanceAnalysisList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+                        view="performanceAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+
+        <menu:menu-item name="productionAnalysis" category="analysis"
+                        view="productionAnalysisList" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="finalProductAnalysis" category="analysis"
-                        view="finalProductAnalysisGenerator" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+                        view="finalProductAnalysisGenerator" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="beforeAdditionalActionsAnalysis" category="analysis"
-                        view="beforeAdditionalActionsAnalysisGenerator" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+                        view="beforeAdditionalActionsAnalysisGenerator" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
