@@ -34,6 +34,10 @@ public final class ProductionCountingConstants {
     // MODEL
     public static final String MODEL_PRODUCTION_TRACKING = "productionTracking";
 
+    public static final String MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY = "finalProductAnalysisEntry";
+
+    public static final String MODEL_BEFORE_ADDITIONAL_ACTIONS_ANALYSIS_ENTRY = "beforeAdditionalActionsAnalysisEntry";
+
     public static final String MODEL_PRODUCTION_TRACKING_STATE_CHANGE = "productionTrackingStateChange";
 
     public static final String MODEL_PRODUCTION_BALANCE = "productionBalance";
@@ -70,7 +74,7 @@ public final class ProductionCountingConstants {
     public static final String VIEW_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "trackingOperationProductInComponentDetails";
 
     public static final String VIEW_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "trackingOperationProductOutComponentDetails";
-    
+
     public static final String MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS = "setTrackingOperationProductInComponents";
 
     public static final String MODEL_SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";

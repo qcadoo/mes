@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
@@ -36,15 +44,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.internal.components.grid.GridComponentFilterException;
-import com.qcadoo.view.internal.components.grid.GridComponentFilterSQLUtils;
-import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import com.qcadoo.view.api.components.grid.GridComponentFilterSQLUtils;
 
 @Service
 public class EventsListListeners {
@@ -87,11 +87,11 @@ public class EventsListListeners {
     public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
-        String filterQ = "";
+        String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "maintenanceevent",
                     dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "maintenanceEventListDto"));
-        } catch (GridComponentFilterException e) {
+        } catch (Exception e) {
             filterQ = "";
         }
 
@@ -110,12 +110,8 @@ public class EventsListListeners {
                 contextFilter += " division.id = " + division.getId();
 
             }
-            if (filterQ.length() > 1) {
-                if (contextFilter.length() > 1) {
-                    filterQ = contextFilter + " AND " + filterQ;
-                }
-            } else {
-                filterQ = contextFilter;
+            if (contextFilter.length() > 1) {
+                filterQ = contextFilter + " AND " + filterQ;
             }
         }
 
@@ -140,11 +136,11 @@ public class EventsListListeners {
 
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
-        String filterQ = "";
+        String filterQ;
         try {
             filterQ = GridComponentFilterSQLUtils.addFilters(filter, grid.getColumns(), "event",
                     dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "plannedEventListDto"));
-        } catch (GridComponentFilterException e) {
+        } catch (Exception e) {
             filterQ = "";
         }
 
@@ -163,12 +159,8 @@ public class EventsListListeners {
                 contextFilter += " division.id = " + division.getId();
 
             }
-            if (filterQ.length() > 1) {
-                if (contextFilter.length() > 1) {
-                    filterQ = contextFilter + " AND " + filterQ;
-                }
-            } else {
-                filterQ = contextFilter;
+            if (contextFilter.length() > 1) {
+                filterQ = contextFilter + " AND " + filterQ;
             }
         }
 

@@ -56,7 +56,7 @@ public class ProductionTrackingValidators {
         boolean isValid = true;
 
         isValid = isValid && checkTypeOfProductionRecording(productionTrackingDD, productionTracking, order);
-        isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
+        //isValid = isValid && willOrderAcceptOneMore(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
@@ -118,55 +118,7 @@ public class ProductionTrackingValidators {
         return isValid;
     }
 
-    private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final Entity order) {
 
-        Entity technologyOperationComponent = productionTracking
-                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        final List<Entity> productionTrackings = productionTrackingDD
-                .find()
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
-                        technologyOperationComponent)).list().getEntities();
-
-        return willOrderAcceptOneMoreValidator(productionTrackingDD, productionTracking, productionTrackings);
-    }
-
-    private boolean willOrderAcceptOneMoreValidator(final DataDefinition productionTrackingDD, final Entity productionTracking,
-            final List<Entity> productionTrackings) {
-        for (Entity tracking : productionTrackings) {
-            if (productionTracking.getId() != null && productionTracking.getId().equals(tracking.getId())) {
-                if (checkLastProductionTracking(productionTrackingDD, productionTracking)) {
-                    return false;
-                }
-            } else {
-                if (checkLastProductionTracking(productionTrackingDD, tracking)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private boolean checkLastProductionTracking(DataDefinition productionTrackingDD, Entity productionTracking) {
-        if (productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
-
-            if (productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT) == null) {
-                productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.ORDER),
-                        "productionCounting.productionTracking.messages.error.final");
-            } else {
-                productionTracking.addError(
-                        productionTrackingDD.getField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT),
-                        "productionCounting.productionTracking.messages.error.operationFinal");
-            }
-
-            return true;
-        }
-        return false;
-    }
 
     private boolean checkIfOrderIsStarted(final DataDefinition productionTrackingDD, final Entity productionTracking,
             final Entity order) {

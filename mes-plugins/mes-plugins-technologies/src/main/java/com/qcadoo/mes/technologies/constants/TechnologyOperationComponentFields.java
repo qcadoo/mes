@@ -71,4 +71,7 @@ public final class TechnologyOperationComponentFields {
 
     public static final String PRODUCTION_LINE = "productionLine";
 
+    public static final String TYPE_FROM_STRUCTURE_TREE = "typeFromStructureTree";
+    public static final String PRODUCT_FROM_STRUCTURE_TREE = "productFromStructureTree";
+
 }

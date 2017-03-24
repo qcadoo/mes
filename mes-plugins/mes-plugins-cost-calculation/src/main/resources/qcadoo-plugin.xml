@@ -66,6 +66,7 @@
         <localization:translation path="locales"/>
 
         <model:model model="costCalculation" resource="model/costCalculation.xml"/>
+        <model:model model="componentCost" resource="model/componentCost.xml"/>
 
         <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 

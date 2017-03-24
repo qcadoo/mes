@@ -24,6 +24,9 @@
 package com.qcadoo.mes.materialRequirements;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -88,5 +91,6 @@ public interface MaterialRequirementService {
      */
     void generateMaterialRequirementDocuments(final ComponentState state, final Entity materialRequirement) throws IOException,
             DocumentException;
+
 
 }

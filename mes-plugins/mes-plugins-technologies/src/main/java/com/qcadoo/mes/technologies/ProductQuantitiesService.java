@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface ProductQuantitiesService {
 
@@ -198,6 +198,11 @@ public interface ProductQuantitiesService {
             final Map<Long, BigDecimal> operationRunsFromProductionQuantities);
 
     void traverseProductQuantitiesAndOperationRuns(Entity technology, BigDecimal givenQuantity, Entity operationComponent,
+            Entity previousOperationComponent,
+            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
+            Set<OperationProductComponentHolder> nonComponents, Map<Long, BigDecimal> operationRuns);
+
+    void traverseProductQuantitiesAndOperationRuns(Entity technology,  Map<Long, Entity> entitiesById, BigDecimal givenQuantity, Entity operationComponent,
             Entity previousOperationComponent,
             OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             Set<OperationProductComponentHolder> nonComponents, Map<Long, BigDecimal> operationRuns);
