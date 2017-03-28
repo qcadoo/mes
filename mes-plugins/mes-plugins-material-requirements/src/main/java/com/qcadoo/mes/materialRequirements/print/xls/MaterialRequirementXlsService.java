@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
@@ -59,6 +60,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity materialRequirement) {
@@ -84,8 +88,8 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
                 .getStringField(MaterialRequirementFields.MRP_ALGORITHM));
 
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
-                true);
+        Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
+                algorithm);
 
         for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());

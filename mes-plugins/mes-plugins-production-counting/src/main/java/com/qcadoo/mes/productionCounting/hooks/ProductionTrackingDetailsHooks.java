@@ -79,7 +79,7 @@ public class ProductionTrackingDetailsHooks {
 
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
-            ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION_TYPE, ProductionTrackingFields.DIVISION,
+            ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION, ProductionTrackingFields.DIVISION,
             ProductionTrackingFields.LABOR_TIME, ProductionTrackingFields.MACHINE_TIME,
             ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
@@ -258,8 +258,8 @@ public class ProductionTrackingDetailsHooks {
 
         GridComponent stateChangesGrid = (GridComponent) view.getComponentByReference(ProductionTrackingFields.STATE_CHANGES);
 
-        trackingOperationProductInComponentsGrid.setEditable(isEnabled);
-        trackingOperationProductOutComponentsGrid.setEditable(isEnabled);
+        trackingOperationProductInComponentsGrid.setEnabled(isEnabled);
+        trackingOperationProductOutComponentsGrid.setEnabled(isEnabled);
 
         stateChangesGrid.setEditable(isEnabled);
     }

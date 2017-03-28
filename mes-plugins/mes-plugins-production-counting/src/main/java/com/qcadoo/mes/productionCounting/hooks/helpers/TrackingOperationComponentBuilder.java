@@ -64,13 +64,15 @@ public class TrackingOperationComponentBuilder {
 
         ProductionCountingQuantityRole role = ProductionCountingQuantityRole.parseString(roleString);
 
-        return fromProduct(product, role);
+        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+        return fromProduct(product, role, typeOfMaterial);
     }
 
     public Entity fromOperationProductComponentHolder(final OperationProductComponentHolder operationProductComponentHolder) {
         String modelName = operationProductComponentHolder.getEntityType().getStringValue();
         ProductionCountingQuantityRole role = null;
 
+        String typeOfMaterial = operationProductComponentHolder.getProductMaterialType().getStringValue();
         if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
             role = ProductionCountingQuantityRole.USED;
         } else if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT.equals(modelName)) {
@@ -81,7 +83,7 @@ public class TrackingOperationComponentBuilder {
 
         Entity product = operationProductComponentHolder.getProduct();
 
-        return fromProduct(product, role);
+        return fromProduct(product, role, typeOfMaterial);
     }
 
     public Entity fromOperationProductComponent(final Entity operationProductComponent) {
@@ -101,19 +103,22 @@ public class TrackingOperationComponentBuilder {
 
         Entity product = operationProductComponent.getBelongsToField(productFieldName);
 
-        return fromProduct(product, role);
+        return fromProduct(product, role, null);
     }
 
-    public Entity fromProduct(final Entity product, final ProductionCountingQuantityRole role) {
+    public Entity fromProduct(final Entity product, final ProductionCountingQuantityRole role, final String typeOfMaterial) {
         String modelName = null;
         String productFieldName = null;
 
+        String typeOfMaterialFieldName = null;
         if (role == ProductionCountingQuantityRole.PRODUCED) {
             modelName = ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT;
             productFieldName = TrackingOperationProductOutComponentFields.PRODUCT;
+            typeOfMaterialFieldName = TrackingOperationProductOutComponentFields.TYPE_OF_MATERIAL;
         } else if (role == ProductionCountingQuantityRole.USED) {
             modelName = ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT;
             productFieldName = TrackingOperationProductInComponentFields.PRODUCT;
+            typeOfMaterialFieldName = TrackingOperationProductInComponentFields.TYPE_OF_MATERIAL;
         } else {
             throw new IllegalArgumentException(String.format("Unsupported product role: %s", role));
         }
@@ -121,6 +126,7 @@ public class TrackingOperationComponentBuilder {
         DataDefinition dataDefinition = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, modelName);
         Entity trackingOperationProductComponent = dataDefinition.create();
         trackingOperationProductComponent.setField(productFieldName, product);
+        trackingOperationProductComponent.setField(typeOfMaterialFieldName, typeOfMaterial);
 
         return trackingOperationProductComponent;
     }

@@ -44,6 +44,7 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -74,6 +75,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Autowired
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity materialRequirement, final Locale locale)
@@ -147,9 +151,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
                 .getStringField(MaterialRequirementFields.MRP_ALGORITHM));
 
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(orders, algorithm,
-                true);
-        
+        Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
+                algorithm);
+
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidth, headersWithAlignments);

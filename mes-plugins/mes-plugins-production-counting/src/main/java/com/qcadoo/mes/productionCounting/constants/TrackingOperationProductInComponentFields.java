@@ -29,6 +29,8 @@ public final class TrackingOperationProductInComponentFields {
 
     }
 
+    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
+
     public static final String PRODUCTION_TRACKING = "productionTracking";
 
     public static final String PRODUCT = "product";

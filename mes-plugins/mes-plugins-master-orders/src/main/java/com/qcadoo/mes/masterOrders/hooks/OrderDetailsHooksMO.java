@@ -23,9 +23,20 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -38,12 +49,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -108,6 +113,10 @@ public class OrderDetailsHooksMO {
         LookupComponent technologyPrototypeLookup = (LookupComponent) view
                 .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
+        String poNumber = "";
+        String direction = "";
+        StringBuilder buildDescription = new StringBuilder();
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
 
@@ -121,6 +130,23 @@ public class OrderDetailsHooksMO {
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
+
+            if (masterOrder.getStringField("poNumber") != null) {
+                poNumber = masterOrder.getStringField("poNumber");
+            }
+            if (masterOrder.getStringField("direction") != null) {
+                direction = masterOrder.getStringField("direction");
+            }
+
+            if (!poNumber.isEmpty()) {
+                buildDescription.append("PO");
+                buildDescription.append(poNumber);
+                buildDescription.append("-");
+            }
+            if (!direction.isEmpty()) {
+                buildDescription.append(direction);
+            }
+
             BigDecimal masterOrderQuantity;
             BigDecimal cumulatedOrderQuantity;
             if (productComponent == null) {
@@ -156,50 +182,55 @@ public class OrderDetailsHooksMO {
             }
 
             numberField.setFieldValue(generatedNumber);
+            numberField.requestComponentUpdateState();
+
+            if(StringUtils.isEmpty((String) descriptionField.getFieldValue())){
+                descriptionField.setFieldValue(buildDescription.toString());
+                descriptionField.requestComponentUpdateState();
+            }
+
 
             if ((companyLookup.getEntity() == null) && (masterOrderCompany != null)) {
                 companyLookup.setFieldValue(masterOrderCompany.getId());
+                companyLookup.requestComponentUpdateState();
             }
             if ((addressLookup.getEntity() == null) && (masterOrderAddress != null)) {
                 addressLookup.setFieldValue(masterOrderAddress.getId());
+                addressLookup.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) deadlineField.getFieldValue()) && (masterOrderDeadline != null)) {
                 deadlineField.setFieldValue(DateUtils.toDateTimeString(masterOrderDeadline));
+                deadlineField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) dateFromField.getFieldValue()) && (masterOrderStartDate != null)) {
                 dateFromField.setFieldValue(DateUtils.toDateTimeString(masterOrderStartDate));
+                dateFromField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) dateToField.getFieldValue()) && (masterOrderFinishDate != null)) {
                 dateToField.setFieldValue(DateUtils.toDateTimeString(masterOrderFinishDate));
-            }
-
-            if ((productLookup.getEntity() == null) && (masterOrderProduct != null)) {
-                productLookup.setFieldValue(masterOrderProduct.getId());
-            }
-
-            if ((technologyPrototypeLookup.getEntity() == null) && (masterOrderTechnology != null)) {
-                technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
+                dateToField.requestComponentUpdateState();
             }
 
             if (StringUtils.isEmpty((String) plannedQuantityField.getFieldValue()) && (plannedQuantity != null)
                     && (BigDecimal.ZERO.compareTo(plannedQuantity) < 0)) {
                 plannedQuantityField.setFieldValue(numberService.format(plannedQuantity));
+                plannedQuantityField.requestComponentUpdateState();
             }
 
-            numberField.requestComponentUpdateState();
-            companyLookup.requestComponentUpdateState();
-            deadlineField.requestComponentUpdateState();
-            dateFromField.requestComponentUpdateState();
-            dateToField.requestComponentUpdateState();
-            productLookup.requestComponentUpdateState();
-            technologyPrototypeLookup.requestComponentUpdateState();
-            plannedQuantityField.requestComponentUpdateState();
+            if ((productLookup.getEntity() == null) && (masterOrderProduct != null)) {
+                productLookup.setFieldValue(masterOrderProduct.getId());
+                productLookup.requestComponentUpdateState();
+                productLookup.performEvent(view, "onSelectedEntityChange", "");
+            }
 
-            productLookup.performEvent(view, "onSelectedEntityChange", "");
-            technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
+            if (view.isViewAfterRedirect() && masterOrderTechnology != null) {
+                technologyPrototypeLookup.setFieldValue(masterOrderTechnology.getId());
+                technologyPrototypeLookup.requestComponentUpdateState();
+                technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
+            }
         }
     }
 

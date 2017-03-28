@@ -108,6 +108,8 @@
         <security:role identifier="ROLE_PRODUCTION_COUNTING"/>
         <security:role identifier="ROLE_PRODUCTION_TRACKING"/>
 
+        <security:role identifier="ROLE_ANALYSIS_VIEWER"/>
+
         <security:role identifier="ROLE_ORDERS_TRACKING"/>
 
         <security:role identifier="ROLE_GENEALOGY"/>

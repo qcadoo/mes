@@ -67,7 +67,7 @@ public final class ProductionTrackingFields {
 
     public static final String STAFF_WORK_TIMES = "staffWorkTimes";
 
-    public static final String WORKSTATION_TYPE = "workstationType";
+    public static final String WORKSTATION = "workstation";
 
     public static final String DIVISION = "division";
 

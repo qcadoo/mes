@@ -28,6 +28,7 @@ import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubId;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static junit.framework.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -38,7 +39,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +59,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsCriteria;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsDataProvider;
 import com.qcadoo.model.api.Entity;
@@ -99,6 +100,7 @@ public class OrderMaterialCostsDataGeneratorImplTest {
         stubId(order, 101L);
         stubId(technology, 202L);
         stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
+        stubStringField(order, OrderFields.STATE, OrderState.PENDING.getStringValue());
     }
 
     private void stubMaterialCostEntityBuilder(final Map<Long, Entity> entitiesByProductId) {

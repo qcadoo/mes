@@ -67,6 +67,7 @@
         <tree name="productStructureTree" model="productStructureTreeNode"
               joinField="technology" cascade="delete" persistent="false"/>
 
+
         <decimal name="standardPerformanceTechnology">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
@@ -75,6 +76,8 @@
         <boolean name="template" default="false" copyable="false"/>
 
         <string name="orderId" persistent="false" />
+
+        <boolean name="additionalActions" default="false"/>
 
     </fields>
     <hooks>
