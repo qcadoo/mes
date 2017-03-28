@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -30,23 +44,17 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
+import com.qcadoo.plugin.api.PluginManager;
 
 @Service
 public class DeliveryStateValidationService {
 
     @Autowired ParameterService parameterService;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     private static final String ENTITY_IS_NULL = "entity is null";
 
@@ -62,6 +70,21 @@ public class DeliveryStateValidationService {
 
         if(parameterService.getParameter().getBooleanField("positivePurchasePrice")) {
             checkDeliveredPurchasePrices(stateChangeContext);
+        }
+        if (pluginManager.isPluginEnabled("integration")) {
+            checkDeliveredProductsSynchronizationStatus(stateChangeContext, stateChangeContext.getOwner());
+        }
+    }
+
+    private void checkDeliveredProductsSynchronizationStatus(StateChangeContext stateChangeContext, Entity owner) {
+        final Set<String> notSynchronizedOrderedProducts = owner.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
+                .map(productsHolder -> productsHolder.getBelongsToField(DeliveredProductFields.PRODUCT))
+                .filter(product -> isBlank(product.getStringField(ProductFields.EXTERNAL_NUMBER)))
+                .map(product -> product.getStringField(ProductFields.NUMBER)).collect(Collectors.toSet());
+
+        if(!notSynchronizedOrderedProducts.isEmpty()){
+            stateChangeContext.addValidationError("deliveries.deliveredProducts.notSynchronized", false,
+                    String.join(", ", notSynchronizedOrderedProducts));
         }
     }
 
