@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.constants.ShiftFields;
@@ -32,14 +41,6 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.Entity;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PpsTimeHelper {
@@ -50,6 +51,7 @@ public class PpsTimeHelper {
         DateTime orderStartDate = new DateTime(order.getDateField(OrderFields.START_DATE), DateTimeZone.getDefault());
         Entity shiftEntity = dailyProgress.getBelongsToField(DailyProgressFields.SHIFT);
         Shift shift = new Shift(shiftEntity);
+        int time = dailyProgress.getIntegerField(DailyProgressFields.EFFICIENCY_TIME);
         List<TimeRange> shiftWorkTime = Lists.newArrayList();
         List<DateTimeRange> shiftWorkDateTime = Lists.newArrayList();
         if (shift.worksAt(dateOfDay.getDay() == 0 ? 7 : dateOfDay.getDay())) {
@@ -66,8 +68,12 @@ public class PpsTimeHelper {
         shiftWorkDateTime = manageExceptions(shiftWorkDateTime, shift.getEntity(), dateOfDay);
 
         for (DateTimeRange range : shiftWorkDateTime) {
-            if (endDate == null || endDate.isBefore(range.getTo())) {
+            if (range.durationInMins() >= time && time > 0) {
+                endDate = range.getFrom().plusMinutes(time);
+                time = 0;
+            } else {
                 endDate = range.getTo();
+                time -= range.durationInMins();
             }
         }
         return endDate != null ? endDate.toDate() : null;
