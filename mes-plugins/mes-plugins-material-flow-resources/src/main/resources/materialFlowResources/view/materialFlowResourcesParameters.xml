@@ -76,6 +76,24 @@
             </component>
         </windowTab>
 
+        <windowTab name="warehouseState">
+                <component type="gridLayout" name="inputDataForWarehouseGridLayout"
+                           reference="inputDataForWarehouseGridLayout" columns="1" rows="2">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="palletToShift" reference="palletToShift"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="palletWithFreePlace" reference="palletWithFreePlace"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                </component>
+        </windowTab>
+
     </component>
 
     <hooks>
