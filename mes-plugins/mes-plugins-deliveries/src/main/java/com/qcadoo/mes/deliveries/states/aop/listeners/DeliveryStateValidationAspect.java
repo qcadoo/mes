@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.states.aop.listeners;
 
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
-
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.states.DeliveryStateValidationService;
 import com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect;
@@ -42,6 +34,13 @@ import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
 @Aspect
 @Configurable

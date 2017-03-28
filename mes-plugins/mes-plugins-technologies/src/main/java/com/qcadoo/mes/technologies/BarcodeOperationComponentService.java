@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
@@ -34,18 +35,26 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
+import java.util.Collections;
+
 @Service
 public class BarcodeOperationComponentService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void createBarcodeOperationComponent(final Entity operationComponent) {
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
+    public void createBarcodeOperationComponent(Entity order, final Entity operationComponent) {
 
         if (!checkIfBarcodeForOperationComponentExist(operationComponent)) {
             Entity barcodeOCEntity = getBarcodeOperationComponentDD().create();
             barcodeOCEntity.setField(BarcodeOperationComponentFields.OPERATION_COMPONENT, operationComponent);
-            barcodeOCEntity.setField(BarcodeOperationComponentFields.CODE, operationComponent.getId().toString());
+            barcodeOCEntity.setField("order", order);
+            Long number = jdbcTemplate.queryForObject("select nextval('technologies_barcodeoperationcomponent_number_seq')",
+                    Collections.emptyMap(), Long.class);
+            barcodeOCEntity.setField(BarcodeOperationComponentFields.CODE, number.toString());
             barcodeOCEntity.getDataDefinition().save(barcodeOCEntity);
         }
     }
