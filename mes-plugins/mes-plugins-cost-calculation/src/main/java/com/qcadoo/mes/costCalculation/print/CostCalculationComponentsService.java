@@ -144,7 +144,7 @@ public class CostCalculationComponentsService {
                     BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
             BigDecimal costPerUnit = sumOfCost.divide(quantity, mathContext);
             component.setSumOfCost(sumOfCost);
-            component.setCostPerUnit(costPerUnit);
+            component.setCostPerUnit(numberService.setScale(costPerUnit));
         }
 
     }
