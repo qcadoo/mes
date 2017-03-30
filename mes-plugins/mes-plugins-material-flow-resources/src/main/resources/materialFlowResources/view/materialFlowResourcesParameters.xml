@@ -78,7 +78,7 @@
 
         <windowTab name="warehouseState">
                 <component type="gridLayout" name="inputDataForWarehouseGridLayout"
-                           reference="inputDataForWarehouseGridLayout" columns="1" rows="2">
+                           reference="inputDataForWarehouseGridLayout" columns="1" rows="2" hasBorders="true">
                     <layoutElement column="1" row="1">
                         <component type="input" name="palletToShift" reference="palletToShift"
                                    hasDescription="true">
