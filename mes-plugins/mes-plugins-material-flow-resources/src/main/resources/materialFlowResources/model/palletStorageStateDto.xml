@@ -29,16 +29,15 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <!--<integer name="palletNumber_id"/>-->
         <string name="palletNumber"/>
-
         <string name="typeOfPallet"/>
-
-        <!--<integer name="storageLocation_id"/>-->
         <string name="storageLocationNumber"/>
-
-        <!--<integer name="location_id"/>-->
         <string name="locationNumber"/>
+        <decimal name="totalQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
     </fields>
 
 </model>

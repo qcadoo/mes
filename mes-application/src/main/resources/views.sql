@@ -478,6 +478,6 @@ CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedetailsdto AS SEL
 
 DROP TABLE IF EXISTS materialflowresources_palletstoragestatedto;
 
-CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedto AS SELECT ROW_NUMBER() OVER () AS id, TRUE AS active, palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber FROM materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails GROUP BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
+CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedto AS SELECT ROW_NUMBER() OVER () AS id, TRUE AS active, palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, SUM(palletstoragestatedetails.quantity)::NUMERIC(14,5) AS totalquantity FROM materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails GROUP BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
 
 -- end
