@@ -393,18 +393,75 @@ CREATE OR REPLACE VIEW productioncounting_productionanalysisdto AS SELECT ROW_NU
 
 -- end
 
+
 -- VIEW: productioncounting_beforeadditionalactionsanalysisentry
 
 DROP TABLE IF EXISTS productioncounting_beforeadditionalactionsanalysisentry;
 
 CREATE OR REPLACE VIEW productioncounting_beforeadditionalactionsanalysisentry AS SELECT row_number() OVER () AS id, pl.number AS productionLineNumber, ord.number AS orderNumber, c.number AS companyNumber, assortment.name AS assortmentName, product.number AS productNumber,product.name AS productName, product.unit AS productUnit, product.size AS size, SUM(COALESCE(topoc.usedquantity, 0)) AS quantity, SUM(COALESCE(topoc.wastesquantity,0)) AS wastes, SUM(COALESCE(topoc.usedquantity, 0)) + SUM(COALESCE(topoc.wastesquantity,0)) AS doneQuantity, DATE(date_trunc('day',pt.timerangefrom)) AS timeRangeFrom, DATE(date_trunc('day',pt.timerangeto)) AS timeRangeTo, shift.name AS shiftName, tcontext.number AS technologyGeneratorNumber FROM productioncounting_trackingoperationproductoutcomponent topoc JOIN productioncounting_productiontracking pt ON pt.id = topoc.productiontracking_id JOIN orders_order ord ON ord.id = pt.order_id JOIN basic_product product ON topoc.product_id = product.id JOIN technologies_technology technologyPrototype ON technologyPrototype.id = ord.technologyprototype_id JOIN technologies_technology technology ON technology.id = ord.technology_id LEFT JOIN orders_order parentOrder ON ord.parent_id = parentOrder.id LEFT JOIN technologies_technology parentTechnology ON parentTechnology.id = parentOrder.technology_id LEFT JOIN basic_shift shift ON pt.shift_id = shift.id LEFT JOIN basic_assortment assortment ON product.assortment_id = assortment.id LEFT JOIN productionlines_productionline pl ON ord.productionline_id = pl.id LEFT JOIN basic_company c ON c.id = ord.company_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON technologyPrototype.id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE (technology.additionalActions = FALSE AND (parentTechnology.additionalActions = TRUE OR ord.parent_id IS NULL)) AND (product.id = ord.product_id OR (pt.technologyoperationcomponent_id IS NOT NULL AND topoc.typeofmaterial = '02intermediate')) GROUP BY ord.number, shift.name, date_trunc('day',pt.timerangefrom), date_trunc('day',pt.timerangeto), productionLineNumber, companyNumber, assortmentName, productNumber, productName, productUnit, size, technologyGeneratorNumber;
+
 -- end
+
 
 -- VIEW: productioncounting_finalproductanalysisentry
 
 DROP TABLE IF EXISTS productioncounting_finalproductanalysisentry;
 
 CREATE OR REPLACE VIEW productioncounting_finalproductanalysisentry AS SELECT row_number() OVER () AS id, pl.number AS productionLineNumber, ord.number AS orderNumber, c.number AS companyNumber, assortment.name AS assortmentName, product.number AS productNumber,product.name AS productName, product.unit AS productUnit, product.size AS size, SUM(COALESCE(topoc.usedquantity, 0)) AS quantity, SUM(COALESCE(topoc.wastesquantity,0)) AS wastes, SUM(COALESCE(topoc.usedquantity, 0)) + SUM(COALESCE(topoc.wastesquantity,0)) AS doneQuantity, DATE(date_trunc('day',pt.timerangefrom)) AS timeRangeFrom, DATE(date_trunc('day',pt.timerangeto)) AS timeRangeTo, shift.name AS shiftName, tcontext.number AS technologyGeneratorNumber FROM productioncounting_trackingoperationproductoutcomponent topoc JOIN productioncounting_productiontracking pt ON pt.id = topoc.productiontracking_id JOIN orders_order ord ON ord.id = pt.order_id JOIN basic_product product ON topoc.product_id = product.id JOIN technologies_technology technology ON technology.id = ord.technologyprototype_id LEFT JOIN basic_shift shift ON pt.shift_id = shift.id LEFT JOIN basic_assortment assortment ON product.assortment_id = assortment.id LEFT JOIN productionlines_productionline pl ON ord.productionline_id = pl.id LEFT JOIN basic_company c ON c.id = ord.company_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON technology.id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE ord.parent_id IS NULL AND (product.id = ord.product_id OR (pt.technologyoperationcomponent_id IS NOT NULL AND topoc.typeofmaterial = '02intermediate')) GROUP BY ord.number, shift.name, date_trunc('day',pt.timerangefrom), date_trunc('day',pt.timerangeto), productionLineNumber, companyNumber, assortmentName, productNumber, productName, productUnit, size, technologyGeneratorNumber;
+
+-- end
+
+
+-- TRIGGER: assignmenttoshift_assignmenttoshift
+
+CREATE SEQUENCE assignmenttoshift_assignmenttoshift_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_assignmenttoshift_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('assignmenttoshift_assignmenttoshift_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_assignmenttoshift_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_assignmenttoshift_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE INSERT ON assignmenttoshift_assignmenttoshift FOR EACH ROW EXECUTE PROCEDURE generate_and_set_assignmenttoshift_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_pallet
+
+CREATE SEQUENCE goodfood_pallet_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_pallet_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_pallet_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_pallet_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_pallet_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_pallet FOR EACH ROW EXECUTE PROCEDURE generate_and_set_pallet_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_confectionprotocol
+
+
+CREATE SEQUENCE goodfood_confectionprotocol_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_confectionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_confectionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_confectionprotocol_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_confectionprotocol_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_confectionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_confectionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_confectionprotocol_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_extrusionprotocol
+
+CREATE SEQUENCE goodfood_extrusionprotocol_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_extrusionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_extrusionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_extrusionprotocol_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_extrusionprotocol_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_extrusionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_extrusionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_extrusionprotocol_externalnumber_trigger();
+
 -- end
 
 

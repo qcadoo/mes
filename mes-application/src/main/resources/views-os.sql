@@ -271,7 +271,6 @@ CREATE OR REPLACE FUNCTION generate_productiontracking_number() RETURNS text AS 
 -- end
 
 
-
 -- VIEW: productioncounting_performanceanalysisdetaildto
 
 DROP TABLE IF EXISTS productioncounting_performanceanalysisdetaildto;
@@ -297,6 +296,20 @@ DROP TABLE IF EXISTS productioncounting_productionanalysisdto;
 CREATE OR REPLACE VIEW productioncounting_productionanalysisdto AS SELECT ROW_NUMBER() OVER () AS id, BOOL_OR(productiontracking.active) AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, basiccompany.id::integer as company_id, basiccompany.number as companynumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, SUM(COALESCE(trackingoperationproductoutcomponent.usedquantity, 0)::numeric(14,5)) AS usedquantity, SUM(COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0)::numeric(14,5)) as wastesquantity, SUM((COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric(14,5)) AS donequantity, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom::date AS timerangefrom, productiontracking.timerangeto::date AS timerangeto, tcontext.id::integer AS generator_id, tcontext.number AS generatorname, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN basic_company basiccompany ON basiccompany.id = ordersorder.company_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON ordersorder.technologyprototype_id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE productiontracking.state IN ('01draft', '02accepted') GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, timerangefrom::date, timerangeto::date, ordersorder.id, tcontext.id;
 
 -- end
+
+
+-- TRIGGER: assignmenttoshift_assignmenttoshift
+
+CREATE SEQUENCE assignmenttoshift_assignmenttoshift_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_assignmenttoshift_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('assignmenttoshift_assignmenttoshift_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_assignmenttoshift_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_assignmenttoshift_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE INSERT ON assignmenttoshift_assignmenttoshift FOR EACH ROW EXECUTE PROCEDURE generate_and_set_assignmenttoshift_externalnumber_trigger();
+
+-- end
+
 
 
 -- VIEW: materialflowresources_palletstoragestatedetailsdto
