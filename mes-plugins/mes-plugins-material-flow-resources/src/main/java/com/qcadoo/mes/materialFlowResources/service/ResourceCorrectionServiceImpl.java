@@ -49,19 +49,27 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private ResourceStockService resourceStockService;
 
     @Override
-    public boolean createCorrectionForResource(final Entity resource, final BigDecimal newQuantity, Entity newStorageLocation,
-            final BigDecimal newPrice) {
-        Entity oldResource = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
-                .get(resource.getId());
-        if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice)) {
+    public boolean createCorrectionForResource(final Entity resource) {
+        Entity oldResource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
+        BigDecimal newQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
+        BigDecimal newPrice = resource.getDecimalField(ResourceFields.PRICE);
+        Entity newStorageLocation = resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
+        String newBatch = resource.getStringField(ResourceFields.BATCH);
+        String newTypeOfPallet = resource.getStringField(ResourceFields.TYPE_OF_PALLET);
+        Date newExpirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
+        Entity newPalletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
+        if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet,
+                newPalletNumber, newExpirationDate)) {
 
             Entity correction = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION).create();
             BigDecimal oldQuantity = oldQuantity(oldResource);
             BigDecimal oldPrice = oldPrice(oldResource);
 
-            correction.setField(ResourceCorrectionFields.BATCH, batch(oldResource));
+            correction.setField(ResourceCorrectionFields.OLD_BATCH, oldBatch(oldResource));
+            correction.setField(ResourceCorrectionFields.NEW_BATCH, newBatch);
             correction.setField(ResourceCorrectionFields.LOCATION, location(oldResource));
             correction.setField(ResourceCorrectionFields.OLD_QUANTITY, oldQuantity);
             correction.setField(ResourceCorrectionFields.NEW_QUANTITY, newQuantity);
@@ -71,6 +79,13 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             correction.setField(ResourceCorrectionFields.NEW_STORAGE_LOCATION, newStorageLocation);
             correction.setField(ResourceCorrectionFields.PRODUCT, product(oldResource));
             correction.setField(ResourceCorrectionFields.TIME, time(oldResource));
+            correction.setField(ResourceCorrectionFields.NEW_TYPE_OF_PALLET, newTypeOfPallet);
+            correction.setField(ResourceCorrectionFields.OLD_TYPE_OF_PALLET, oldTypeOfPallet(oldResource));
+            correction.setField(ResourceCorrectionFields.OLD_EXPIRATION_DATE, oldExpirationDate(oldResource));
+            correction.setField(ResourceCorrectionFields.NEW_EXPIRATION_DATE, newExpirationDate);
+            correction.setField(ResourceCorrectionFields.NEW_PALLET_NUMBER, newPalletNumber);
+            correction.setField(ResourceCorrectionFields.OLD_PALLET_NUMBER, oldPalletNumber(oldResource));
+            correction.setField(ResourceCorrectionFields.PRODUCTION_DATE, productionDate(oldResource));
             correction.setField(ResourceCorrectionFields.NUMBER, numberGeneratorService.generateNumber(
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION));
 
@@ -101,15 +116,20 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     }
 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation,
-            final BigDecimal newPrice) {
+            final BigDecimal newPrice, final String newBatch, final String newTypeOfPallet, final Entity newPalletNumber,
+            final Date newExpirationDate) {
         Entity oldStorageLocation = oldStorageLocation(resource);
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
         boolean priceChanged = isPriceChanged(oldPrice(resource), newPrice);
+        boolean batchChanged = isStringChanged(oldBatch(resource), newBatch);
+        boolean typeOfPalletChanged = isStringChanged(oldTypeOfPallet(resource), newTypeOfPallet);
+        boolean palletNumberChanged = isPalletNumberChanged(oldPalletNumber(resource), newPalletNumber);
+        boolean expirationDateChanged = isExpirationDateChanged(oldExpirationDate(resource), newExpirationDate);
 
-        boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null)
-                ? (newStorageLocation.getId().compareTo(oldStorageLocation.getId()) != 0)
-                : !(newStorageLocation == null && oldStorageLocation == null);
-        return quantityChanged || storageLocationChanged || priceChanged;
+        boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation.getId()
+                .compareTo(oldStorageLocation.getId()) != 0) : !(newStorageLocation == null && oldStorageLocation == null);
+        return quantityChanged || storageLocationChanged || priceChanged || batchChanged || typeOfPalletChanged
+                || palletNumberChanged || expirationDateChanged;
     }
 
     private Entity product(final Entity resource) {
@@ -132,8 +152,24 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return resource.getDateField(ResourceFields.TIME);
     }
 
-    private String batch(final Entity resource) {
+    private String oldBatch(final Entity resource) {
         return resource.getStringField(ResourceFields.BATCH);
+    }
+
+    private String oldTypeOfPallet(final Entity resource) {
+        return resource.getStringField(ResourceFields.TYPE_OF_PALLET);
+    }
+
+    private Entity oldPalletNumber(final Entity resource) {
+        return resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+    }
+
+    private Date oldExpirationDate(final Entity resource) {
+        return resource.getDateField(ResourceFields.EXPIRATION_DATE);
+    }
+
+    private Date productionDate(final Entity resource) {
+        return resource.getDateField(ResourceFields.PRODUCTION_DATE);
     }
 
     private Entity oldStorageLocation(final Entity resource) {
@@ -148,13 +184,24 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     }
 
     private boolean isPriceChanged(BigDecimal oldPrice, BigDecimal newPrice) {
-        if (oldPrice == null && newPrice == null) {
-            return false;
-        }
-        if (oldPrice == null || newPrice == null) {
-            return true;
-        }
+        return !(oldPrice == null && newPrice == null)
+                && (oldPrice == null || newPrice == null || newPrice.compareTo(oldPrice) != 0);
 
-        return newPrice.compareTo(oldPrice) != 0;
     }
+
+    private boolean isStringChanged(String oldString, String newString) {
+        return !(oldString == null && newString == null)
+                && (oldString == null || newString == null || oldString.equals(newString));
+    }
+
+    private boolean isPalletNumberChanged(Entity oldPalletNumber, Entity newPalletNumber) {
+        return !(oldPalletNumber == null && newPalletNumber == null)
+                && (oldPalletNumber == null || newPalletNumber == null || oldPalletNumber.getId().equals(newPalletNumber.getId()));
+    }
+
+    private boolean isExpirationDateChanged(Date oldExpirationDate, Date newExpirationDate) {
+        return !(oldExpirationDate == null && newExpirationDate == null)
+                && (oldExpirationDate == null || newExpirationDate == null || oldExpirationDate.equals(newExpirationDate));
+    }
+
 }

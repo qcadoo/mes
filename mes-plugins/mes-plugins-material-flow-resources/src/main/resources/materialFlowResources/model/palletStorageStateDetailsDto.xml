@@ -24,46 +24,30 @@
     ***************************************************************************
 
 -->
-<model name="resourceCorrection"
+<model name="palletStorageStateDetailsDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" auditable="true">
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number"/>
-        <belongsTo name="product" model="product" plugin="basic"/>
-        <decimal name="newQuantity">
+        <string name="resourceNumber"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="additionalCode"/>
+        <decimal name="quantity">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="oldQuantity">
+        <string name="unit"/>
+        <decimal name="additionalQuantity">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <belongsTo name="location" model="location" plugin="materialFlow"/>
-        <datetime name="time"/>
-
-        <string name="oldBatch"/>
-        <string name="newBatch"/>
-
-        <belongsTo name="resource" model="resource"/>
-        <!--<dictionary name="oldStorageLocation" dictionary="storageLocations" />-->
-        <!--<dictionary name="newStorageLocation" dictionary="storageLocations" />-->
-
-        <belongsTo name="oldStorageLocation" model="storageLocation"/>
-        <belongsTo name="newStorageLocation" model="storageLocation"/>
-        
-        <decimal name="oldPrice"/>
-        <decimal name="newPrice"/>
-
-        <belongsTo name="oldPalletNumber" model="palletNumber" plugin="basic"/>
-        <belongsTo name="newPalletNumber" model="palletNumber" plugin="basic"/>
-
-        <dictionary name="oldTypeOfPallet" dictionary="typeOfPallet"/>
-        <dictionary name="newTypeOfPallet" dictionary="typeOfPallet"/>
-
-        <date name="oldExpirationDate"/>
-        <date name="newExpirationDate"/>
-        <date name="productionDate"/>
-
+        <string name="additionalUnit"/>
+        <date name="expirationDate"/>
+        <string name="palletNumber"/>
+        <string name="typeOfPallet"/>
+        <string name="storageLocationNumber"/>
+        <string name="locationNumber"/>
     </fields>
-    <hooks/>
 </model>
