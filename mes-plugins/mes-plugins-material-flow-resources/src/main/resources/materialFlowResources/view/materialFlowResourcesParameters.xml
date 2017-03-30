@@ -80,13 +80,13 @@
                 <component type="gridLayout" name="inputDataForWarehouseGridLayout"
                            reference="inputDataForWarehouseGridLayout" columns="1" rows="2" hasBorders="true">
                     <layoutElement column="1" row="1">
-                        <component type="input" name="palletToShift" reference="palletToShift"
+                        <component type="input" name="palletToShift" reference="palletToShift" field="palletToShift"
                                    hasDescription="true">
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="input" name="palletWithFreePlace" reference="palletWithFreePlace"
+                        <component type="input" name="palletWithFreePlace" reference="palletWithFreePlace" field="palletWithFreePlace"
                                    hasDescription="true">
                             <option type="labelWidth" value="60" />
                         </component>
