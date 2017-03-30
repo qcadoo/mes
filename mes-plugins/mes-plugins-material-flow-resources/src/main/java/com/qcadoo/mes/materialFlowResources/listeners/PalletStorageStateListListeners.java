@@ -1,15 +1,22 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
@@ -22,6 +29,9 @@ public class PalletStorageStateListListeners {
     private static final String L_FILTERS = "filters";
     private static final String L_GRID_OPTIONS = "grid.options";
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
@@ -58,4 +68,26 @@ public class PalletStorageStateListListeners {
         };
     }
 
+    public void showPallestWithFreeSpace(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        ViewDefinitionState viewDefinitionState = view;
+        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
+        BigDecimal palletToShift = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField("palletToShift");
+        BigDecimal palletWithFreePlace = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField("palletWithFreePlace");
+        palletGrid.setCustomRestriction(new CustomRestriction() {
+            @Override
+            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
+                searchBuilder.add(SearchRestrictions.ge(String.valueOf(palletToShift),10));
+            }
+
+        });
+
+    }
+
+    public void showAllPallets(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+    }
+
+    public void showPalletsWithProductToShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+
+    }
 }
