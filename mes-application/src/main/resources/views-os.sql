@@ -300,6 +300,8 @@ CREATE OR REPLACE VIEW productioncounting_productionanalysisdto AS SELECT ROW_NU
 
 -- TRIGGER: assignmenttoshift_assignmenttoshift
 
+CREATE SEQUENCE assignmenttoshift_assignmenttoshift_externalnumber_seq;
+
 CREATE OR REPLACE FUNCTION generate_assignmenttoshift_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('assignmenttoshift_assignmenttoshift_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION generate_and_set_assignmenttoshift_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_assignmenttoshift_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';

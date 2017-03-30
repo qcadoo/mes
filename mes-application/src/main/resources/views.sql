@@ -414,6 +414,8 @@ CREATE OR REPLACE VIEW productioncounting_finalproductanalysisentry AS SELECT ro
 
 -- TRIGGER: assignmenttoshift_assignmenttoshift
 
+CREATE SEQUENCE assignmenttoshift_assignmenttoshift_externalnumber_seq;
+
 CREATE OR REPLACE FUNCTION generate_assignmenttoshift_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('assignmenttoshift_assignmenttoshift_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION generate_and_set_assignmenttoshift_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_assignmenttoshift_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
@@ -424,6 +426,8 @@ CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE
 
 
 -- TRIGGER: goodfood_pallet
+
+CREATE SEQUENCE goodfood_pallet_externalnumber_seq;
 
 CREATE OR REPLACE FUNCTION generate_pallet_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_pallet_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
 
@@ -436,6 +440,9 @@ CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_
 
 -- TRIGGER: goodfood_confectionprotocol
 
+
+CREATE SEQUENCE goodfood_confectionprotocol_externalnumber_seq;
+
 CREATE OR REPLACE FUNCTION generate_confectionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_confectionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
 
 CREATE OR REPLACE FUNCTION generate_and_set_confectionprotocol_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_confectionprotocol_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
@@ -446,6 +453,8 @@ CREATE TRIGGER goodfood_confectionprotocol_trigger_externalnumber BEFORE INSERT 
 
 
 -- TRIGGER: goodfood_extrusionprotocol
+
+CREATE SEQUENCE goodfood_extrusionprotocol_externalnumber_seq;
 
 CREATE OR REPLACE FUNCTION generate_extrusionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_extrusionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
 
