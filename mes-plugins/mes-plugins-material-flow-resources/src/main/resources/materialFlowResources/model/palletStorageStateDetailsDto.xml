@@ -24,21 +24,46 @@
     ***************************************************************************
 
 -->
-<model name="palletStorageStateDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="palletStorageStateDetailsDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
+
+        <string name="resourceNumber"/>
+
+        <!--<integer name="product_id"/>-->
+        <string name="productNumber"/>
+        <string name="productName"/>
+
+        <string name="additionalCode"/>
+
+        <decimal name="quantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <string name="unit"/>
+
+        <decimal name="additionalQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <string name="additionalUnit"/>
+
+        <date name="expirationDate"/>
+
+
         <!--<integer name="palletNumber_id"/>-->
         <string name="palletNumber"/>
 
         <string name="typeOfPallet"/>
 
-        <!--<integer name="storageLocation_id"/>-->
+        <!--<integer name="storageLocation_id" />-->
         <string name="storageLocationNumber"/>
 
         <!--<integer name="location_id"/>-->
         <string name="locationNumber"/>
-    </fields>
 
+    </fields>
 </model>

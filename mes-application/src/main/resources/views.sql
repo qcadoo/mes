@@ -408,10 +408,19 @@ CREATE OR REPLACE VIEW productioncounting_finalproductanalysisentry AS SELECT ro
 -- end
 
 
+-- VIEW: materialflowresources_palletstoragestatedetailsdto
+
+DROP TABLE IF EXISTS materialflowresources_palletstoragestatedetailsdto;
+
+CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedetailsdto AS SELECT resource.id AS id, TRUE AS active, resource.number AS resourcenumber, product.number AS productnumber, product.name AS productname, additionalcode.code AS additionalcode, resource.quantity, product.unit, resource.quantityinadditionalunit AS additionalquantity, resource.givenunit AS additionalunit, resource.expirationdate, palletnumber.number AS palletnumber, resource.typeofpallet, storagelocation.number AS storagelocationnumber, location.number AS locationnumber FROM materialflowresources_resource resource LEFT JOIN basic_product product ON product.id = resource.product_id LEFT JOIN basic_additionalcode additionalcode ON additionalcode.id = resource.additionalcode_id LEFT JOIN basic_palletnumber palletnumber ON palletnumber.id = resource.palletnumber_id LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id LEFT JOIN materialflow_location location ON location.id = resource.location_id WHERE resource.palletnumber_id IS NOT NULL ORDER BY palletnumber.number;
+
+-- end
+
+
 -- VIEW: materialflowresources_palletstoragestatedto
 
 DROP TABLE IF EXISTS materialflowresources_palletstoragestatedto;
 
-CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedto AS SELECT DISTINCT ROW_NUMBER() OVER () AS id, TRUE AS active, palletnumber.id::INTEGER AS palletnumber_id, palletnumber.number AS palletnumber, resource.typeofpallet AS typeofpallet, storagelocation.id::INTEGER AS storagelocation_id, storagelocation.number AS storagelocationnumber, location.id::INTEGER AS location_id, location.number AS locationnumber FROM materialflowresources_resource resource LEFT JOIN basic_palletnumber palletnumber ON palletnumber.id = resource.palletnumber_id LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id LEFT JOIN materialflow_location location ON location.id = resource.location_id WHERE resource.palletnumber_id IS NOT NULL ORDER BY palletnumber.number;
+CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedto AS SELECT ROW_NUMBER() OVER () AS id, TRUE AS active, palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber FROM materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails GROUP BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
 
 -- end

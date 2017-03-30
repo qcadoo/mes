@@ -88,6 +88,7 @@
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
+        <model:model model="palletStorageStateDetailsDto" resource="model/palletStorageStateDetailsDto.xml"/>
 
         <model:model model="resourceStock" resource="model/resourceStock.xml"/>
         <model:model model="resourceStockDto" resource="model/resourceStockDto.xml"/>
@@ -305,6 +306,7 @@
         <view:view resource="view/reservationsList.xml"/>
         <view:view resource="view/storageLocationsStateList.xml"/>
         <view:view resource="view/palletStorageStateList.xml"/>
+        <view:view resource="view/palletStorageStateDetails.xml"/>
 
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
