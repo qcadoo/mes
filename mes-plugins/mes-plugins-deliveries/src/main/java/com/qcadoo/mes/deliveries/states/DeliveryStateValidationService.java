@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.ProductSynchronizationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -56,6 +57,9 @@ public class DeliveryStateValidationService {
     @Autowired
     private PluginManager pluginManager;
 
+    @Autowired
+    private ProductSynchronizationService productSynchronizationService;
+
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnApproved(final StateChangeContext stateChangeContext) {
@@ -71,13 +75,15 @@ public class DeliveryStateValidationService {
         if(parameterService.getParameter().getBooleanField("positivePurchasePrice")) {
             checkDeliveredPurchasePrices(stateChangeContext);
         }
-        if (pluginManager.isPluginEnabled("integration")) {
-            checkDeliveredProductsSynchronizationStatus(stateChangeContext, stateChangeContext.getOwner());
+        if (pluginManager.isPluginEnabled("integration") && productSynchronizationService.shouldSynchronize(stateChangeContext)) {
+            checkDeliveredProductsSynchronizationStatus(stateChangeContext);
+            productSynchronizationService.synchronizeProducts(stateChangeContext, false);
         }
     }
 
-    private void checkDeliveredProductsSynchronizationStatus(StateChangeContext stateChangeContext, Entity owner) {
-        final Set<String> notSynchronizedOrderedProducts = owner.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
+    private void checkDeliveredProductsSynchronizationStatus(StateChangeContext stateChangeContext) {
+        final Set<String> notSynchronizedOrderedProducts = stateChangeContext.getOwner()
+                .getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
                 .map(productsHolder -> productsHolder.getBelongsToField(DeliveredProductFields.PRODUCT))
                 .filter(product -> isBlank(product.getStringField(ProductFields.EXTERNAL_NUMBER)))
                 .map(product -> product.getStringField(ProductFields.NUMBER)).collect(Collectors.toSet());

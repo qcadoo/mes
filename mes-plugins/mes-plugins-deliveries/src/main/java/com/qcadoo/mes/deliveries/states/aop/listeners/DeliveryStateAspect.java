@@ -24,10 +24,6 @@
 package com.qcadoo.mes.deliveries.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
-import java.util.HashSet;
-import java.util.Set;
 
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -35,13 +31,8 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.ProductSynchronizationService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.ProductFieldsD;
 import com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangePhase;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
@@ -49,10 +40,6 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
@@ -61,7 +48,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 public class DeliveryStateAspect extends AbstractStateListenerAspect {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private ProductSynchronizationService productSynchronizationService;
 
     @Pointcut(DeliveryStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
@@ -71,39 +58,9 @@ public class DeliveryStateAspect extends AbstractStateListenerAspect {
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = DeliveryStateStringValues.APPROVED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void makeProductsSynchronized(final StateChangeContext stateChangeContext, final int phase) {
-        Entity owner = stateChangeContext.getOwner();
-        Set<String> productNamesToSynchronize = new HashSet<>();
-
-        productNamesToSynchronize.addAll(
-                makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.ORDERED_PRODUCTS, OrderedProductFields.PRODUCT));
-
-        productNamesToSynchronize.addAll(
-                makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.DELIVERED_PRODUCTS, DeliveredProductFields.PRODUCT));
-
-        if (!productNamesToSynchronize.isEmpty()) {
-            stateChangeContext.addMessage("deliveries.deliveredProducts.willSynchronize", StateMessageType.INFO, false,
-                    String.join(", ", productNamesToSynchronize));
+        if (productSynchronizationService.shouldSynchronize(stateChangeContext)) {
+            productSynchronizationService.synchronizeProducts(stateChangeContext, true);
         }
-
-    }
-
-    private Set<String> makeAssociatedProductEntitiesSynchronized(Entity owner, final String productsHolderKey,
-            final String productKey) {
-        Set<String> result = new HashSet<>();
-        for (Entity productContainingEntity : owner.getHasManyField(productsHolderKey)) {
-            Entity product = productContainingEntity.getBelongsToField(productKey);
-            if (!product.getBooleanField(ProductFieldsD.SYNCHRONIZE)
-                    && isBlank(product.getStringField(ProductFields.EXTERNAL_NUMBER))) {
-                result.add(product.getStringField(ProductFields.NUMBER));
-                product.setField(ProductFieldsD.SYNCHRONIZE, Boolean.TRUE);
-                getProductDataDefinition().save(product);
-            }
-        }
-        return result;
-    }
-
-    private DataDefinition getProductDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
 }
