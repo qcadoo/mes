@@ -24,8 +24,11 @@
 package com.qcadoo.mes.deliveries.states.aop.listeners;
 
 import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
-import org.apache.commons.lang3.StringUtils;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -46,6 +49,7 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -68,18 +72,34 @@ public class DeliveryStateAspect extends AbstractStateListenerAspect {
     @Before(PHASE_EXECUTION_POINTCUT)
     public void makeProductsSynchronized(final StateChangeContext stateChangeContext, final int phase) {
         Entity owner = stateChangeContext.getOwner();
-        makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.ORDERED_PRODUCTS, OrderedProductFields.PRODUCT);
-        makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.DELIVERED_PRODUCTS, DeliveredProductFields.PRODUCT);
+        Set<String> productNamesToSynchronize = new HashSet<>();
+
+        productNamesToSynchronize.addAll(
+                makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.ORDERED_PRODUCTS, OrderedProductFields.PRODUCT));
+
+        productNamesToSynchronize.addAll(
+                makeAssociatedProductEntitiesSynchronized(owner, DeliveryFields.DELIVERED_PRODUCTS, DeliveredProductFields.PRODUCT));
+
+        if (!productNamesToSynchronize.isEmpty()) {
+            stateChangeContext.addMessage("deliveries.deliveredProducts.willSynchronize", StateMessageType.INFO, false,
+                    String.join(", ", productNamesToSynchronize));
+        }
+
     }
 
-    private void makeAssociatedProductEntitiesSynchronized(Entity owner, final String productsHolderKey, final String productKey) {
+    private Set<String> makeAssociatedProductEntitiesSynchronized(Entity owner, final String productsHolderKey,
+            final String productKey) {
+        Set<String> result = new HashSet<>();
         for (Entity productContainingEntity : owner.getHasManyField(productsHolderKey)) {
             Entity product = productContainingEntity.getBelongsToField(productKey);
-            if (StringUtils.isBlank(product.getStringField(ProductFields.EXTERNAL_NUMBER))) {
+            if (!product.getBooleanField(ProductFieldsD.SYNCHRONIZE)
+                    && isBlank(product.getStringField(ProductFields.EXTERNAL_NUMBER))) {
+                result.add(product.getStringField(ProductFields.NUMBER));
                 product.setField(ProductFieldsD.SYNCHRONIZE, Boolean.TRUE);
                 getProductDataDefinition().save(product);
             }
         }
+        return result;
     }
 
     private DataDefinition getProductDataDefinition() {
