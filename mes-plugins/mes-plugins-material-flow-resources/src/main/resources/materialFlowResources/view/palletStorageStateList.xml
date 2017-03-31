@@ -72,6 +72,22 @@
                     </script>
                 </bigButton>
             </group>
+
+            <group name="movePallets">
+                <bigButton name="moveToStorageLocation" icon="startIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('moveToStorageLocation', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -89,10 +105,15 @@
                     value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
 
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
             <listener event="showDetails"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="showDetails"/>
+
+            <listener event="moveToStorageLocation"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="moveToStorageLocation"/>
 
         </component>
 
@@ -103,7 +124,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.materialFlowResources.hooks.PalletStorageStateListHooks"
-                method="toggleShowDetailsButton"/>
+                method="toggleButtons"/>
     </hooks>
 
 </view>

@@ -19,7 +19,9 @@ public class PalletStorageStateListHooks {
 
     private static final String L_SHOW_DETAILS = "showDetails";
 
-    public void toggleShowDetailsButton(final ViewDefinitionState view) {
+    private static final String L_MOVE_PALLETS = "movePallets";
+
+    public void toggleButtons(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup analysis = window.getRibbon().getGroupByName(L_DETAILS);
         RibbonActionItem showDetails = analysis.getItemByName(L_SHOW_DETAILS);
@@ -27,6 +29,12 @@ public class PalletStorageStateListHooks {
         showDetails.setEnabled(1 == palletStorageStateGrid.getSelectedEntities().size());
         showDetails.setMessage("materialFlowResources.palletStorageStateList.ribbon.message.selectOneRecord");
         showDetails.requestUpdate(true);
+
+        RibbonGroup movePallets = window.getRibbon().getGroupByName(L_MOVE_PALLETS);
+        movePallets.getItems().forEach(item -> {
+            item.setEnabled(!palletStorageStateGrid.getSelectedEntitiesIds().isEmpty());
+            item.requestUpdate(true);
+        });
     }
 
 }
