@@ -24,22 +24,24 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ResourceModelValidators {
-    
+
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
-        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource) && checkPallet(resourceDD, resource);
+        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource)
+                && checkPallet(resourceDD, resource);
     }
-    
+
     public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
         Entity location = resource.getBelongsToField(LOCATION);
 
@@ -71,12 +73,15 @@ public class ResourceModelValidators {
         // }
         return true;
     }
-    
+
     @Autowired
     private PalletValidatorService palletValidatorService;
 
     private boolean checkPallet(DataDefinition resourceDD, Entity resource) {
-        return palletValidatorService.validatePalletForResource(resource);
+        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
+            return palletValidatorService.validatePalletForResource(resource);
+        }
+        return true;
     }
 
 }

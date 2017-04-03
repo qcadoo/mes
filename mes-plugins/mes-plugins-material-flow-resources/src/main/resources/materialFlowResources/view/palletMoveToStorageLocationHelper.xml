@@ -35,13 +35,22 @@
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
             </group>
             <group name="action">
-                <bigButton name="movePallets" icon="saveIcon24.png" state="enabled">
+                <bigButton name="movePallets" icon="saveBackIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 										#{form}.performEvent('movePallets', []);
-										#{window}.performBackWithoutConfirm();
+
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
 								}
 							});
 						]]>
@@ -109,9 +118,13 @@
                                 </component>
                             </components>
                         </component>
-                        <component type="input" name="palletNumberFilter" reference="palletNumberFilter" field="palletNumberFilter" defaultVisible="false"/>
-                        <component type="input" name="selectedEntities" reference="selectedEntities" field="selectedEntities" defaultVisible="false"/>
+                        <component type="input" name="palletNumberFilter" reference="palletNumberFilter"
+                                   field="palletNumberFilter" defaultVisible="false" defaultEnabled="false"/>
+                        <component type="input" name="selectedEntities" reference="selectedEntities"
+                                   field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
 
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false" />
                     </layoutElement>
 
 
