@@ -31,6 +31,7 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
+import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
@@ -72,6 +73,9 @@ public class TechnologyServiceO {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private BarcodeOperationComponentService barcodeOperationComponentService;
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
@@ -145,6 +149,8 @@ public class TechnologyServiceO {
                 deleteTechnology(technology);
 
                 order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
+                barcodeOperationComponentService.removeBarcode(order);
+
             } else if (technologyWasChanged(order)) {
                 Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
@@ -154,7 +160,8 @@ public class TechnologyServiceO {
                     order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
                 } else {
                     order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
-                }                
+                }
+                barcodeOperationComponentService.removeBarcode(order);
             }
         } else {
                 if (orderService.isPktEnabled()) {
