@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -69,25 +70,29 @@ public class PalletStorageStateListListeners {
     }
 
     public void showPallestWithFreeSpace(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        ViewDefinitionState viewDefinitionState = view;
         GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
-        BigDecimal palletToShift = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField("palletToShift");
-        BigDecimal palletWithFreePlace = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField("palletWithFreePlace");
-        palletGrid.setCustomRestriction(new CustomRestriction() {
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.ge(String.valueOf(palletToShift),10));
-            }
-
-        });
+        BigDecimal palletWithFreePlace = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField(DocumentPositionParametersItemValues.PALLET_WITH_FREE_PALECE);
+        if(palletWithFreePlace == null){
+            palletGrid.addMessage("materialFlowResources.pallet.missing.parameter.palletWithFreeSpace.error", ComponentState.MessageType.FAILURE);
+        }else {
+            palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.lt(PalletStorageStateDtoFields.TOTAL_QUANTITY, palletWithFreePlace)));
+        }
 
     }
 
     public void showAllPallets(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
+        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
+        palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.ge(PalletStorageStateDtoFields.TOTAL_QUANTITY,BigDecimal.ZERO)));
     }
 
     public void showPalletsWithProductToShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
+        BigDecimal palletToShift = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getDecimalField(DocumentPositionParametersItemValues.PALLET_TO_SHIFT);
+        if(palletToShift == null){
+            palletGrid.addMessage("materialFlowResources.pallet.missing.parameter.palletToShift.error", ComponentState.MessageType.FAILURE);
+        }else {
+            palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.lt(PalletStorageStateDtoFields.TOTAL_QUANTITY, palletToShift)));
+        }
 
     }
 }

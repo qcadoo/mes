@@ -33,6 +33,8 @@ public final class PalletStorageStateDtoFields {
 
     public static final String LOCATION_NUMBER = "locationNumber";
 
+    public static final String TOTAL_QUANTITY = "totalQuantity";
+
     private PalletStorageStateDtoFields() {
 
     }
