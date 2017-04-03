@@ -257,9 +257,14 @@ public class CostNormsForMaterialsService {
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
+        form.setEntity(updateCostsInOrder(order));
+    }
+
+    private Entity updateCostsInOrder(Entity order) {
+
         List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
-        form.setEntity(order.getDataDefinition().save(order));
+        return order.getDataDefinition().save(order);
     }
 
 }

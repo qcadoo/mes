@@ -154,6 +154,9 @@
 		<boolean name="generated" />
 		<string name="fileName" />
 		<boolean name="justCreated" persistent="false" default="true"/>
+
+		<hasMany name="componentCosts" joinField="costCalculation" model="componentCost"
+				 cascade="delete" />
 	</fields>
 	<hooks>
 		<validatesWith

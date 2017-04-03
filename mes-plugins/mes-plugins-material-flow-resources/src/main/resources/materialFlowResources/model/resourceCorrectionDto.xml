@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,12 +24,26 @@
     ***************************************************************************
 
 -->
-<!DOCTYPE aspectj PUBLIC
-        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
-<aspectj>
-	<aspects>
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect" />
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateValidationAspect" />
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateAspect" />
-	</aspects>
-</aspectj>
+<model name="resourceCorrectionDto"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
+       activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+    <fields>
+        <string name="correctionNumber"/>
+
+        <datetime name="createDate"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="resourceNumber"/>
+
+        <boolean name="quantityCorrected"/>
+        <boolean name="priceCorrected"/>
+        <boolean name="batchCorrected"/>
+        <boolean name="expirationDateCorrected"/>
+        <boolean name="storageLocationCorrected"/>
+        <boolean name="palletNumberCorrected"/>
+        <boolean name="typeOfPalletCorrected"/>
+
+    </fields>
+    <masterModel plugin="materialFlowResources" model="resourceCorrection"/>
+</model>

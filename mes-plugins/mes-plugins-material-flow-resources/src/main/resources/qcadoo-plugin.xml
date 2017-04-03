@@ -78,6 +78,7 @@
         <model:model model="warehouseStock" resource="model/warehouseStock.xml"/>
         <model:model model="warehouseStockListDto" resource="model/warehouseStockListDto.xml"/>
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
+        <model:model model="resourceCorrectionDto" resource="model/resourceCorrectionDto.xml"/>
         <model:model model="attribute" resource="model/attribute.xml"/>
         <model:model model="attributeValue" resource="model/attributeValue.xml"/>
 
@@ -87,6 +88,8 @@
         <model:model model="storageLocation" resource="model/storageLocation.xml"/>
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
+        <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
+        <model:model model="palletStorageStateDetailsDto" resource="model/palletStorageStateDetailsDto.xml"/>
 
         <model:model model="resourceStock" resource="model/resourceStock.xml"/>
         <model:model model="resourceStockDto" resource="model/resourceStockDto.xml"/>
@@ -260,6 +263,9 @@
         <menu:menu-item name="storageLocationsState" category="materialFlow"
                         view="storageLocationsStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="palletStorageState" category="materialFlow"
+                        view="palletStorageStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
@@ -300,6 +306,9 @@
         <view:view resource="view/storageLocationList.xml"/>
         <view:view resource="view/reservationsList.xml"/>
         <view:view resource="view/storageLocationsStateList.xml"/>
+        <view:view resource="view/palletStorageStateList.xml"/>
+        <view:view resource="view/palletStorageStateDetails.xml"/>
+
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>

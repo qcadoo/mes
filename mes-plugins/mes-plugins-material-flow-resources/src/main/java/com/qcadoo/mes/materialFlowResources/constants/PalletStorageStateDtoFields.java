@@ -21,11 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.service;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-import com.qcadoo.model.api.Entity;
+public final class PalletStorageStateDtoFields {
 
-public interface ResourceCorrectionService {
+    public static final String PALLET_NUMBER = "palletNumber";
 
-    boolean createCorrectionForResource(final Entity resource);
+    public static final String TYPE_OF_PALLET = "typeOfPallet";
+
+    public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
+
+    public static final String LOCATION_NUMBER = "locationNumber";
+
+    private PalletStorageStateDtoFields() {
+
+    }
+
 }

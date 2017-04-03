@@ -75,6 +75,11 @@
 
         <hasMany name="barcodeOperationComponents" joinField="operationComponent" model="barcodeOperationComponent"
                  cascade="delete" copyable="false"/>
+
+        <string name="typeFromStructureTree" persistent="false" />
+
+        <belongsTo name="productFromStructureTree" plugin="basic"
+                   model="product"  persistent="false"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
