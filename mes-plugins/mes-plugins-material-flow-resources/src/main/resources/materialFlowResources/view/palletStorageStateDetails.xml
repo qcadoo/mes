@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" name="palletStorageStateDetails" modelName="palletStorageStateDetailsDto"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
+                           accesskey="r"/>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <component type="flowGridLayout" name="flowGridLayout" columns="1" rows="5">
+
+            <layoutElement column="1" row="1">
+                <component type="input" name="palletStorageDetailsHeaderLabel" reference="palletStorageDetailsHeaderLabel"
+                           hasLabel="false">
+                    <option type="boldTextRepresentationOnDisabled" value="true" />
+                </component>
+            </layoutElement>
+
+            <layoutElement column="1" row="2" minHeight="4">
+                <component type="grid" name="palletStorageStateDetails" reference="grid">
+
+                    <option type="column" name="palletNumber" fields="palletNumber" hidden="true"/>
+                    <option type="column" name="typeOfPallet" fields="typeOfPallet" hidden="true"/>
+                    <option type="column" name="storageLocationNumber" fields="storageLocationNumber" hidden="true"/>
+                    <option type="column" name="locationNumber" fields="locationNumber" hidden="true"/>
+
+                    <option type="column" name="resourceNumber" fields="resourceNumber"/>
+                    <option type="column" name="productNumber" fields="productNumber"/>
+                    <option type="column" name="productName" fields="productName"/>
+                    <option type="column" name="additionalCode" fields="additionalCode"/>
+                    <option type="column" name="quantity" fields="quantity"/>
+                    <option type="column" name="unit" fields="unit"/>
+                    <option type="column" name="additionalQuantity" fields="additionalQuantity"/>
+                    <option type="column" name="additionalUnit" fields="additionalUnit"/>
+                    <option type="column" name="expirationDate" fields="expirationDate"/>
+
+
+
+                    <option type="order" column="assortmentName" direction="asc"/>
+
+                    <option type="searchable"
+                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+                    <option type="multiSearch"
+                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+                    <option type="orderable"
+                            value="resourceNumber,productNumber,productName,additionalCode,quantity,unit,additionalQuantity,additionalUnit,expirationDate"/>
+
+                    <option type="footerRow" value="true" />
+                    <option type="columnsToSummary" value="quantity,additionalQuantity"/>
+
+                    <option type="fullscreen" value="true"/>
+                    <option type="fixedHeight" value="true"/>
+
+                </component>
+            </layoutElement>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.materialFlowResources.hooks.PalletStorageStateDetailsHooks"
+                method="setupHeaderLabel"/>
+    </hooks>
+
+</view>

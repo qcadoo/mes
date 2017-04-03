@@ -376,7 +376,7 @@ CREATE OR REPLACE VIEW masterorders_masterorderdto AS SELECT masterorder.id, mas
 
 DROP TABLE IF EXISTS productioncounting_performanceanalysisdetaildto;
 
-CREATE OR REPLACE VIEW productioncounting_performanceanalysisdetaildto AS SELECT productiontracking.id AS id, productiontracking.active AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, technology.standardperformancetechnology AS performancenorm, (COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric(14,5) AS donequantity, ((COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric * 60 / technology.standardperformancetechnology)::integer AS timebasedonnorms, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id WHERE productiontracking.state = '02accepted';
+CREATE OR REPLACE VIEW productioncounting_performanceanalysisdetaildto AS SELECT productiontracking.id AS id, productiontracking.active AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, technology.standardperformancetechnology AS performancenorm, (COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric(14,5) AS donequantity, ((COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric * 60 / technology.standardperformancetechnology)::integer AS timebasedonnorms, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom AS timerangefrom, productiontracking.timerangeto AS timerangeto, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN technologies_technology technology ON technology.id = ordersorder.technology_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id WHERE productiontracking.state IN ('01draft', '02accepted');
 
 -- end
 
@@ -390,10 +390,99 @@ CREATE OR REPLACE VIEW productioncounting_performanceanalysisdto AS SELECT row_n
 -- end
 
 
--- VIEW: productioncounting_productioneanalysisdto
+-- VIEW: productioncounting_productionanalysisdto
 
 DROP TABLE IF EXISTS productioncounting_productionanalysisdto;
 
-CREATE OR REPLACE VIEW productioncounting_productionanalysisdto AS SELECT ROW_NUMBER() OVER () AS id, BOOL_OR(productiontracking.active) AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, basiccompany.id as company_id, basiccompany.number as companynumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, SUM(COALESCE(trackingoperationproductoutcomponent.usedquantity, 0)::numeric(14,5)) AS usedquantity, SUM(COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0)::numeric(14,5)) as wastesquantity, SUM((COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric(14,5)) AS donequantity, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom::date AS timerangefrom, productiontracking.timerangeto::date AS timerangeto, tcontext.id AS generator_id, tcontext.number AS generatorname, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN basic_company basiccompany ON basiccompany.id = ordersorder.company_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON ordersorder.technologyprototype_id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE productiontracking.state = '02accepted' GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, timerangefrom::date, timerangeto::date, ordersorder.id, tcontext.id;
+CREATE OR REPLACE VIEW productioncounting_productionanalysisdto AS SELECT ROW_NUMBER() OVER () AS id, BOOL_OR(productiontracking.active) AS active, productionline.id::integer AS productionline_id, productionline.number AS productionlinenumber, basiccompany.id::integer as company_id, basiccompany.number as companynumber, staff.id::integer AS staff_id, staff.name || ' ' || staff.surname AS staffname, assortment.id::integer AS assortment_id, assortment.name AS assortmentname, product.id::integer AS product_id, product.number AS productnumber, product.name AS productname, product.unit AS productunit, product.size AS size, SUM(COALESCE(trackingoperationproductoutcomponent.usedquantity, 0)::numeric(14,5)) AS usedquantity, SUM(COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0)::numeric(14,5)) as wastesquantity, SUM((COALESCE(trackingoperationproductoutcomponent.usedquantity, 0) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, 0))::numeric(14,5)) AS donequantity, shift.id::integer AS shift_id, shift.name AS shiftname, productiontracking.timerangefrom::date AS timerangefrom, productiontracking.timerangeto::date AS timerangeto, tcontext.id::integer AS generator_id, tcontext.number AS generatorname, ordersorder.id::integer AS order_id, ordersorder.number AS ordernumber FROM productioncounting_productiontracking productiontracking LEFT JOIN orders_order ordersorder ON ordersorder.id = productiontracking.order_id LEFT JOIN basic_company basiccompany ON basiccompany.id = ordersorder.company_id LEFT JOIN productionlines_productionline productionline ON productionline.id = ordersorder.productionline_id LEFT JOIN basic_staff staff ON staff.id = productiontracking.staff_id LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id LEFT JOIN basic_product product ON product.id = trackingoperationproductoutcomponent.product_id LEFT JOIN basic_assortment assortment ON assortment.id = product.assortment_id LEFT JOIN basic_shift shift ON shift.id = productiontracking.shift_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON ordersorder.technologyprototype_id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE productiontracking.state IN ('01draft', '02accepted') GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, timerangefrom::date, timerangeto::date, ordersorder.id, tcontext.id;
+
+-- end
+
+
+-- VIEW: productioncounting_beforeadditionalactionsanalysisentry
+
+DROP TABLE IF EXISTS productioncounting_beforeadditionalactionsanalysisentry;
+
+CREATE OR REPLACE VIEW productioncounting_beforeadditionalactionsanalysisentry AS SELECT row_number() OVER () AS id, pl.number AS productionLineNumber, ord.number AS orderNumber, c.number AS companyNumber, assortment.name AS assortmentName, product.number AS productNumber,product.name AS productName, product.unit AS productUnit, product.size AS size, SUM(COALESCE(topoc.usedquantity, 0)) AS quantity, SUM(COALESCE(topoc.wastesquantity,0)) AS wastes, SUM(COALESCE(topoc.usedquantity, 0)) + SUM(COALESCE(topoc.wastesquantity,0)) AS doneQuantity, DATE(date_trunc('day',pt.timerangefrom)) AS timeRangeFrom, DATE(date_trunc('day',pt.timerangeto)) AS timeRangeTo, shift.name AS shiftName, tcontext.number AS technologyGeneratorNumber FROM productioncounting_trackingoperationproductoutcomponent topoc JOIN productioncounting_productiontracking pt ON pt.id = topoc.productiontracking_id JOIN orders_order ord ON ord.id = pt.order_id JOIN basic_product product ON topoc.product_id = product.id JOIN technologies_technology technologyPrototype ON technologyPrototype.id = ord.technologyprototype_id JOIN technologies_technology technology ON technology.id = ord.technology_id LEFT JOIN orders_order parentOrder ON ord.parent_id = parentOrder.id LEFT JOIN technologies_technology parentTechnology ON parentTechnology.id = parentOrder.technology_id LEFT JOIN basic_shift shift ON pt.shift_id = shift.id LEFT JOIN basic_assortment assortment ON product.assortment_id = assortment.id LEFT JOIN productionlines_productionline pl ON ord.productionline_id = pl.id LEFT JOIN basic_company c ON c.id = ord.company_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON technologyPrototype.id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE (technology.additionalActions = FALSE AND (parentTechnology.additionalActions = TRUE OR ord.parent_id IS NULL)) AND (product.id = ord.product_id OR (pt.technologyoperationcomponent_id IS NOT NULL AND topoc.typeofmaterial = '02intermediate')) GROUP BY ord.number, shift.name, date_trunc('day',pt.timerangefrom), date_trunc('day',pt.timerangeto), productionLineNumber, companyNumber, assortmentName, productNumber, productName, productUnit, size, technologyGeneratorNumber;
+
+-- end
+
+
+-- VIEW: productioncounting_finalproductanalysisentry
+
+DROP TABLE IF EXISTS productioncounting_finalproductanalysisentry;
+
+CREATE OR REPLACE VIEW productioncounting_finalproductanalysisentry AS SELECT row_number() OVER () AS id, pl.number AS productionLineNumber, ord.number AS orderNumber, c.number AS companyNumber, assortment.name AS assortmentName, product.number AS productNumber,product.name AS productName, product.unit AS productUnit, product.size AS size, SUM(COALESCE(topoc.usedquantity, 0)) AS quantity, SUM(COALESCE(topoc.wastesquantity,0)) AS wastes, SUM(COALESCE(topoc.usedquantity, 0)) + SUM(COALESCE(topoc.wastesquantity,0)) AS doneQuantity, DATE(date_trunc('day',pt.timerangefrom)) AS timeRangeFrom, DATE(date_trunc('day',pt.timerangeto)) AS timeRangeTo, shift.name AS shiftName, tcontext.number AS technologyGeneratorNumber FROM productioncounting_trackingoperationproductoutcomponent topoc JOIN productioncounting_productiontracking pt ON pt.id = topoc.productiontracking_id JOIN orders_order ord ON ord.id = pt.order_id JOIN basic_product product ON topoc.product_id = product.id JOIN technologies_technology technology ON technology.id = ord.technologyprototype_id LEFT JOIN basic_shift shift ON pt.shift_id = shift.id LEFT JOIN basic_assortment assortment ON product.assortment_id = assortment.id LEFT JOIN productionlines_productionline pl ON ord.productionline_id = pl.id LEFT JOIN basic_company c ON c.id = ord.company_id LEFT JOIN technologiesgenerator_generatortechnologiesforproduct tgenn ON technology.id = tgenn.technology_id LEFT JOIN technologiesgenerator_generatorcontext tcontext ON tcontext.id = tgenn.generatorcontext_id WHERE ord.parent_id IS NULL AND (product.id = ord.product_id OR (pt.technologyoperationcomponent_id IS NOT NULL AND topoc.typeofmaterial = '02intermediate')) GROUP BY ord.number, shift.name, date_trunc('day',pt.timerangefrom), date_trunc('day',pt.timerangeto), productionLineNumber, companyNumber, assortmentName, productNumber, productName, productUnit, size, technologyGeneratorNumber;
+
+-- end
+
+
+-- TRIGGER: assignmenttoshift_assignmenttoshift
+
+CREATE SEQUENCE assignmenttoshift_assignmenttoshift_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_assignmenttoshift_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('assignmenttoshift_assignmenttoshift_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_assignmenttoshift_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_assignmenttoshift_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE INSERT ON assignmenttoshift_assignmenttoshift FOR EACH ROW EXECUTE PROCEDURE generate_and_set_assignmenttoshift_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_pallet
+
+CREATE SEQUENCE goodfood_pallet_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_pallet_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_pallet_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_pallet_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_pallet_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_pallet FOR EACH ROW EXECUTE PROCEDURE generate_and_set_pallet_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_confectionprotocol
+
+
+CREATE SEQUENCE goodfood_confectionprotocol_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_confectionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_confectionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_confectionprotocol_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_confectionprotocol_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_confectionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_confectionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_confectionprotocol_externalnumber_trigger();
+
+-- end
+
+
+-- TRIGGER: goodfood_extrusionprotocol
+
+CREATE SEQUENCE goodfood_extrusionprotocol_externalnumber_seq;
+
+CREATE OR REPLACE FUNCTION generate_extrusionprotocol_externalnumber() RETURNS text AS $$ DECLARE _pattern text; _sequence_name text; _sequence_value numeric; _tmp text; _seq text; _externalnumber text; BEGIN _pattern := '#seq'; SELECT nextval('goodfood_extrusionprotocol_externalnumber_seq') INTO _sequence_value; _seq := to_char(_sequence_value, 'fm000000'); if _seq like '%#%' then _seq := _sequence_value; END IF; _externalnumber := _pattern; _externalnumber := replace(_externalnumber, '#seq', _seq); RETURN _externalnumber; END; $$ LANGUAGE 'plpgsql';
+
+CREATE OR REPLACE FUNCTION generate_and_set_extrusionprotocol_externalnumber_trigger() RETURNS trigger AS $$ BEGIN NEW.externalnumber := generate_extrusionprotocol_externalnumber(); RETURN NEW; END; $$ LANGUAGE 'plpgsql';
+
+CREATE TRIGGER goodfood_extrusionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_extrusionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_extrusionprotocol_externalnumber_trigger();
+
+-- end
+
+
+-- VIEW: materialflowresources_palletstoragestatedetailsdto
+
+DROP TABLE IF EXISTS materialflowresources_palletstoragestatedetailsdto;
+
+CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedetailsdto AS SELECT resource.id AS id, TRUE AS active, resource.number AS resourcenumber, product.number AS productnumber, product.name AS productname, additionalcode.code AS additionalcode, resource.quantity, product.unit, resource.quantityinadditionalunit AS additionalquantity, resource.givenunit AS additionalunit, resource.expirationdate, palletnumber.number AS palletnumber, resource.typeofpallet, storagelocation.number AS storagelocationnumber, location.number AS locationnumber FROM materialflowresources_resource resource LEFT JOIN basic_product product ON product.id = resource.product_id LEFT JOIN basic_additionalcode additionalcode ON additionalcode.id = resource.additionalcode_id LEFT JOIN basic_palletnumber palletnumber ON palletnumber.id = resource.palletnumber_id LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id LEFT JOIN materialflow_location location ON location.id = resource.location_id WHERE resource.palletnumber_id IS NOT NULL ORDER BY palletnumber.number;
+
+-- end
+
+
+-- VIEW: materialflowresources_palletstoragestatedto
+
+DROP TABLE IF EXISTS materialflowresources_palletstoragestatedto;
+
+CREATE OR REPLACE VIEW materialflowresources_palletstoragestatedto AS SELECT ROW_NUMBER() OVER () AS id, TRUE AS active, palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, SUM(palletstoragestatedetails.quantity)::NUMERIC(14,5) AS totalquantity FROM materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails GROUP BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
 
 -- end

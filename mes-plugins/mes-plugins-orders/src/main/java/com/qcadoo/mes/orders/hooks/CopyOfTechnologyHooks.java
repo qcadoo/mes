@@ -44,6 +44,7 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -100,7 +101,6 @@ public class CopyOfTechnologyHooks {
         }
 
         Entity technology = technologyForm.getEntity().getDataDefinition().get(technologyId);
-        
         Entity order = getOrderForTechnology(view);
 
         String orderType = order.getStringField(OrderFields.ORDER_TYPE);
@@ -117,13 +117,18 @@ public class CopyOfTechnologyHooks {
     }
 
     private Entity getOrderForTechnology(final ViewDefinitionState state) {
-        try {
-            DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
-            String orderId = state.getJsonContext().getString("window.mainTab.technology.orderId");
-            return orderDD.get(Long.valueOf(orderId));
+        DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+        String orderId = null;
+       try {
+           orderId = state.getJsonContext().getString("window.mainTab.technology.orderId");
         } catch (JSONException ex) {
-            throw new RuntimeException(ex);
+           // throw new RuntimeException(ex);
+           EntityList entities = ((FormComponent) state.getComponentByReference(L_FORM)).getPersistedEntityWithIncludedFormValues().getHasManyField("orders");
+           if(!entities.isEmpty()){
+               orderId = String.valueOf(entities.get(0).getId());
+           }
         }
+        return orderDD.get(Long.valueOf(orderId));
     }
 
     private void disableForm(final ViewDefinitionState view, final Entity order, final Entity technology) {

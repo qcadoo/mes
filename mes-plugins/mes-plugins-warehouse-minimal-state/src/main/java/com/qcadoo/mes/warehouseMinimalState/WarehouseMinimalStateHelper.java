@@ -59,7 +59,8 @@ public class WarehouseMinimalStateHelper {
                 .setMaxResults(1).uniqueResult().getDecimalField("orderedQuantity");
     }
 
-    public List<Entity> getWarehouseStockWithTooSmallMinState(final Entity warehouse) {
+    // WARNING unused argument is used in aspect in plugin integration
+    public List<Entity> getWarehouseStockWithTooSmallMinState(final Entity warehouse, final List<Entity> product) {
 
         String query = "select stock from #materialFlowResources_warehouseStock as stock where stock.minimumState > 0"
                 + " and stock.location.id = :warehouseId";
@@ -74,8 +75,8 @@ public class WarehouseMinimalStateHelper {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
         if (product != null) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                    product.getStringField(ProductFields.ENTITY_TYPE))) {
+            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                    .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
                 Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
                 if (defaultSupplier != null) {
                     return defaultSupplier;

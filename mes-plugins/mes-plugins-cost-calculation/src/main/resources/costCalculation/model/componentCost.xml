@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,12 +24,21 @@
     ***************************************************************************
 
 -->
-<!DOCTYPE aspectj PUBLIC
-        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
-<aspectj>
-	<aspects>
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect" />
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateValidationAspect" />
-		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateAspect" />
-	</aspects>
-</aspectj>
+<model name="componentCost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="costCalculation" model="costCalculation" required="true"/>
+
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true" />
+        <decimal name="pricePerUnit">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+
+    </fields>
+    <hooks>
+    </hooks>
+
+</model>

@@ -39,7 +39,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ResourceDetailsListeners {
@@ -56,8 +55,6 @@ public class ResourceDetailsListeners {
         String newQuantity = (String) quantityInput.getFieldValue();
         String newPrice = (String) priceInput.getFieldValue();
 
-        LookupComponent storageLocation = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
-        Entity newStorageLocation = storageLocation.getEntity();
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity,
                 view.getLocale());
         Either<Exception, Optional<BigDecimal>> price = BigDecimalUtils.tryParseAndIgnoreSeparator(newPrice, view.getLocale());
@@ -66,12 +63,10 @@ public class ResourceDetailsListeners {
             if (price.isRight()) {
                 Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
                 BigDecimal correctQuantity = quantity.getRight().get();
-                BigDecimal correctedPrice = price.getRight().isPresent() ? price.getRight().get() : null;
                 BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
                 if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
                     if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
-                        boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, correctQuantity,
-                                newStorageLocation, correctedPrice);
+                        boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
                         if (!resource.isValid()) {
                             copyErrors(resource, resourceForm);
 
