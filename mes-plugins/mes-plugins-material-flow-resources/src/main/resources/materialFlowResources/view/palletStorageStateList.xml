@@ -87,6 +87,19 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="transferResources" icon="startIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('transferResources', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -114,6 +127,10 @@
             <listener event="moveToStorageLocation"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="moveToStorageLocation"/>
+
+            <listener event="transferResources"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="transferResources"/>
 
         </component>
 

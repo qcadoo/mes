@@ -315,6 +315,7 @@
         <view:view resource="view/palletStorageStateList.xml"/>
         <view:view resource="view/palletStorageStateDetails.xml"/>
         <view:view resource="view/palletMoveToStorageLocationHelper.xml"/>
+        <view:view resource="view/palletResourcesTransferHelper.xml"/>
 
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>

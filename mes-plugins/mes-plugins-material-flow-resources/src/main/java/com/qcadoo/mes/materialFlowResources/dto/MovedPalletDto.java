@@ -1,10 +1,22 @@
 package com.qcadoo.mes.materialFlowResources.dto;
 
+import java.util.Objects;
+
 public class MovedPalletDto {
 
     private String palletNumber;
 
     private String storageLocationNumber;
+
+    private String locationNumber;
+
+    public String getLocationNumber() {
+        return locationNumber;
+    }
+
+    public void setLocationNumber(String locationNumber) {
+        this.locationNumber = locationNumber;
+    }
 
     public String getPalletNumber() {
         return palletNumber;
@@ -24,23 +36,16 @@ public class MovedPalletDto {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
-
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         MovedPalletDto that = (MovedPalletDto) o;
-
-        if (palletNumber != null ? !palletNumber.equals(that.palletNumber) : that.palletNumber != null)
-            return false;
-        return storageLocationNumber != null ? storageLocationNumber.equals(that.storageLocationNumber)
-                : that.storageLocationNumber == null;
+        return Objects.equals(palletNumber, that.palletNumber) &&
+                Objects.equals(storageLocationNumber, that.storageLocationNumber) &&
+                Objects.equals(locationNumber, that.locationNumber);
     }
 
     @Override
     public int hashCode() {
-        int result = palletNumber != null ? palletNumber.hashCode() : 0;
-        result = 31 * result + (storageLocationNumber != null ? storageLocationNumber.hashCode() : 0);
-        return result;
+        return Objects.hash(palletNumber, storageLocationNumber, locationNumber);
     }
 }

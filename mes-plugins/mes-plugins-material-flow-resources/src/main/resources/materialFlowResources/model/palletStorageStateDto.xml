@@ -30,6 +30,7 @@
 
     <fields>
         <string name="palletNumber"/>
+        <boolean name="palletNumberActive"/>
         <string name="typeOfPallet"/>
         <string name="storageLocationNumber"/>
         <string name="locationNumber"/>
@@ -42,6 +43,9 @@
         <!-- fields for moving pallets -->
         <belongsTo name="palletMoveHelper" model="palletMoveHelper"/>
         <belongsTo name="newStorageLocation" model="storageLocation"/>
+
+        <!-- fields used to transfer resources from one pallet to another -->
+        <belongsTo name="newPalletNumber" model="palletStorageStateDto"/>
     </fields>
 
 </model>

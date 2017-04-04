@@ -66,19 +66,23 @@ public class PalletStorageStateListListeners {
     }
 
     public void moveToStorageLocation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        performActionBasedOnSelectedEntities(view, "palletMoveToStorageLocationHelper");
+    }
+
+    public void transferResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        performActionBasedOnSelectedEntities(view, "palletResourcesTransferHelper");
+    }
+
+    private void performActionBasedOnSelectedEntities(ViewDefinitionState view, String viewName) {
         GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
         Set<Long> selectedEntities = palletStorageStateGrid.getSelectedEntitiesIds();
         String palletNumberFilter = palletStorageStateGrid.getFilters().get("palletNumber");
 
-        final Map<String, Object> parameters = new HashMap<String, Object>() {
-
-            {
-                put("selectedEntities", selectedEntities);
-                put("palletNumberFilter", palletNumberFilter);
-            }
-        };
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("selectedEntities", selectedEntities);
+        parameters.put("palletNumberFilter", palletNumberFilter);
         JSONObject context = new JSONObject(parameters);
-        StringBuilder url = new StringBuilder("../page/materialFlowResources/palletMoveToStorageLocationHelper.html");
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/" + viewName + ".html");
         url.append("?context=");
         url.append(context.toString());
 
