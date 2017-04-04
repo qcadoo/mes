@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +29,9 @@ public class PalletMoveToStorageLocationHelperListeners {
 
     private final static String L_PALLET_NUMBER = "palletNumber";
 
-    public static final String L_PALLET_STORAGE_STATE_DTOS = "palletStorageStateDtos";
+    private static final String L_PALLET_STORAGE_STATE_DTOS = "palletStorageStateDtos";
 
-    public static final String L_NEW_STORAGE_LOCATION = "newStorageLocation";
+    private static final String L_NEW_STORAGE_LOCATION = "newStorageLocation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -43,11 +44,11 @@ public class PalletMoveToStorageLocationHelperListeners {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
-        if (!validateRequiredFields(view)) {
+        List<Entity> dtos = helper.getHasManyField(L_PALLET_STORAGE_STATE_DTOS);
+        if (!validateRequiredFields(view, dtos)) {
             generated.setChecked(false);
             return;
         }
-        List<Entity> dtos = helper.getHasManyField(L_PALLET_STORAGE_STATE_DTOS);
 
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -83,7 +84,27 @@ public class PalletMoveToStorageLocationHelperListeners {
         generated.setChecked(true);
     }
 
-    private boolean validateRequiredFields(final ViewDefinitionState view) {
+    private long getPalletsCountInStorageLocation(final Entity newStorageLocation) {
+        StringBuilder hql = new StringBuilder();
+        hql.append("select count(distinct p.number) as palletsCount from #materialFlowResources_resource r ");
+        hql.append("join r.palletNumber p ");
+        hql.append("join r.storageLocation sl ");
+        hql.append("where sl.id = '").append(newStorageLocation.getId()).append("'");
+
+        Entity result = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
+                .find(hql.toString()).setMaxResults(1).uniqueResult();
+        return result.getLongField("palletsCount");
+    }
+
+    private long getNewPalletsCountInStorageLocation(final Entity newStorageLocation, final List<Entity> dtos) {
+        return dtos
+                .stream()
+                .filter(dto -> dto.getBelongsToField(L_NEW_STORAGE_LOCATION) != null
+                        && dto.getBelongsToField(L_NEW_STORAGE_LOCATION).getId().equals(newStorageLocation.getId())).count();
+    }
+
+    private boolean validateRequiredFields(final ViewDefinitionState view, final List<Entity> dtos) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
         boolean isValid = true;
         for (FormComponent form : adl.getFormComponents()) {
@@ -92,8 +113,22 @@ public class PalletMoveToStorageLocationHelperListeners {
                 newStorageLocation.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
                 isValid = false;
             }
+            Entity newLocation = newStorageLocation.getEntity();
+            BigDecimal maxNumberOfPallets = null;
+            if (newLocation != null) {
+                maxNumberOfPallets = newLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
+            }
+
+            if (maxNumberOfPallets != null) {
+                BigDecimal totalPallets = BigDecimal.valueOf(getNewPalletsCountInStorageLocation(newLocation, dtos)
+                        + getPalletsCountInStorageLocation(newLocation));
+                if (totalPallets.compareTo(maxNumberOfPallets) > 0) {
+                    newStorageLocation.addMessage("materialFlowResources.palletMoveToStorageLocation.error.tooManyPallets",
+                            ComponentState.MessageType.FAILURE);
+                    isValid = false;
+                }
+            }
         }
         return isValid;
     }
-
 }

@@ -107,6 +107,11 @@
                            plugin="materialFlowResources" joinField="company" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="palletNumber" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="address">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="address" cascade="nullify"/>
