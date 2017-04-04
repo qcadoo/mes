@@ -123,7 +123,7 @@ public class TechnologyServiceO {
                 throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
             }
         }
-
+        barcodeOperationComponentService.removeBarcode(order);
         return order;
     }
 

@@ -83,6 +83,17 @@ public class BarcodeOperationComponentService {
         return barcode.getStringField(BarcodeOperationComponentFields.CODE);
     }
 
+    public Optional<String> findBarcode(final Entity order, final Entity operationComponent) {
+        Entity barcode = getBarcodeOperationComponentDD().find()
+                .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.OPERATION_COMPONENT, operationComponent))
+                .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.ORDER, order))
+                .setMaxResults(1).uniqueResult();
+        if(barcode == null) {
+            return Optional.absent();
+        }
+        return Optional.of(barcode.getStringField(BarcodeOperationComponentFields.CODE));
+    }
+
     public Optional<Entity> getOperationComponentForBarcode(final String code) {
         Entity barcode = getBarcodeOperationComponentDD().find()
                 .add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1).uniqueResult();
