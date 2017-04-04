@@ -24,22 +24,37 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ResourceModelValidators {
-    
+
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
-        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource) && checkPallet(resourceDD, resource);
+        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource)
+                && checkPallet(resourceDD, resource) && checkProductionAndExpirationDate(resourceDD, resource);
     }
-    
+
+    private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
+        Date productionDate = resource.getDateField(ResourceFields.PRODUCTION_DATE);
+        Date expirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
+        boolean isValid = expirationDate == null || productionDate == null || productionDate.before(expirationDate);
+        if (!isValid) {
+            resource.addError(resourceDD.getField(ResourceFields.EXPIRATION_DATE),
+                    "materialFlowResources.resource.validate.error.expirationBeforeProduction");
+        }
+        return isValid;
+    }
+
     public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
         Entity location = resource.getBelongsToField(LOCATION);
 
@@ -71,7 +86,7 @@ public class ResourceModelValidators {
         // }
         return true;
     }
-    
+
     @Autowired
     private PalletValidatorService palletValidatorService;
 
