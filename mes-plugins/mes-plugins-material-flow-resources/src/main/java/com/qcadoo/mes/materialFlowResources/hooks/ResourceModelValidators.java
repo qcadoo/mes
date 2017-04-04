@@ -32,16 +32,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ResourceModelValidators {
 
+    @Autowired
+    private PositionValidators positionValidators;
+
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
         return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource)
-                && checkPallet(resourceDD, resource) && checkProductionAndExpirationDate(resourceDD, resource);
+                && checkPallet(resourceDD, resource) && checkProductionAndExpirationDate(resourceDD, resource)
+                && validateRequiredAttributes(resourceDD, resource);
     }
 
     private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
@@ -53,6 +59,15 @@ public class ResourceModelValidators {
                     "materialFlowResources.resource.validate.error.expirationBeforeProduction");
         }
         return isValid;
+    }
+
+    private boolean validateRequiredAttributes(final DataDefinition resourceDD, final Entity resource) {
+        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
+        return positionValidators.validatePositionAttributes(resourceDD, resource,
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
     }
 
     public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
