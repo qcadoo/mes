@@ -106,7 +106,10 @@ public class ResourceModelValidators {
     private PalletValidatorService palletValidatorService;
 
     private boolean checkPallet(DataDefinition resourceDD, Entity resource) {
-        return palletValidatorService.validatePalletForResource(resource);
+        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
+            return palletValidatorService.validatePalletForResource(resource);
+        }
+        return true;
     }
 
 }

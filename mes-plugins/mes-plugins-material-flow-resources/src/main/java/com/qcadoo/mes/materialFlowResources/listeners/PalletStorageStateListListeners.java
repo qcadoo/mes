@@ -1,9 +1,12 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Consumer;
 
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
@@ -18,9 +21,13 @@ import com.qcadoo.view.api.components.GridComponent;
 public class PalletStorageStateListListeners {
 
     public static final String L_ISNULL = "ISNULL";
+
     private static final String L_GRID = "grid";
+
     private static final String L_FILTERS = "filters";
+
     private static final String L_GRID_OPTIONS = "grid.options";
+
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -56,6 +63,30 @@ public class PalletStorageStateListListeners {
                 filters.put(fieldName, "[" + fieldValue + "]");
             }
         };
+    }
+
+    public void moveToStorageLocation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        performActionBasedOnSelectedEntities(view, "palletMoveToStorageLocationHelper");
+    }
+
+    public void transferResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        performActionBasedOnSelectedEntities(view, "palletResourcesTransferHelper");
+    }
+
+    private void performActionBasedOnSelectedEntities(ViewDefinitionState view, String viewName) {
+        GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        Set<Long> selectedEntities = palletStorageStateGrid.getSelectedEntitiesIds();
+        String palletNumberFilter = palletStorageStateGrid.getFilters().get("palletNumber");
+
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("selectedEntities", selectedEntities);
+        parameters.put("palletNumberFilter", palletNumberFilter);
+        JSONObject context = new JSONObject(parameters);
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/" + viewName + ".html");
+        url.append("?context=");
+        url.append(context.toString());
+
+        view.openModal(url.toString());
     }
 
 }

@@ -85,6 +85,8 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <boolean name="validatePallet" default="true" persistent="false"/>
+
     </fields>
     <hooks>        
         <validatesWith
