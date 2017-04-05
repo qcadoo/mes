@@ -78,4 +78,3 @@ public class StaffCriteriaModifier {
         staffLookup.setFilterValue(filter);
     }
 }
-g
