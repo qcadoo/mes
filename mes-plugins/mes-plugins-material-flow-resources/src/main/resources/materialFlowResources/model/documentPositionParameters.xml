@@ -34,16 +34,14 @@
         <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
         <boolean name="notShowPrices" default="false"/>
         <boolean name="presentTotalAmountAndRest" default="false"/>
-        <decimal name="palletToShift">
+        <integer  name="palletToShift">
             <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="palletWithFreePlace">
+            <validatesUnscaledValue max="7" />
+        </integer >
+        <integer  name="palletWithFreePlace">
             <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
+            <validatesUnscaledValue max="7" />
+        </integer >
 
     </fields>
     <hooks>

@@ -78,20 +78,23 @@
 
         <windowTab name="warehouseState">
             <component type="form" name="inputDataForWarehouse" reference="inputDataForWarehouse">
-                <component type="gridLayout" name="inputDataForWarehouseGridLayout"
-                           reference="inputDataForWarehouseGridLayout" columns="1" rows="2" hasBorders="true">
-                    <layoutElement column="1" row="1">
-                        <component type="input" name="palletToShift" reference="palletToShift" field="#{form}.palletToShift"
-                                   hasDescription="true">
-                            <option type="labelWidth" value="60" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="input" name="palletWithFreePlace" reference="palletWithFreePlace" field="#{form}.palletWithFreePlace"
-                                   hasDescription="true">
-                            <option type="labelWidth" value="60" />
-                        </component>
-                    </layoutElement>
+                <component type="borderLayout" name="workPlansBasicBorderLayout" reference="workPlansBasicBorderLayout">
+                    <component type="gridLayout" name="inputDataForWarehouseGridLayout"
+                               reference="inputDataForWarehouseGridLayout" columns="4" rows="2" hasBorders="true">
+                            <layoutElement column="1" row="1">
+                                <component type="input" name="palletToShift" reference="palletToShift" field="#{form}.palletToShift"
+                                           hasDescription="true">
+                                    <option type="labelWidth" value="60" />
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="input" name="palletWithFreePlace" reference="palletWithFreePlace" field="#{form}.palletWithFreePlace"
+                                           hasDescription="true">
+                                    <option type="labelWidth" value="60" />
+                                </component>
+                            </layoutElement>
+                    </component>
+                    <option type="label" value="params" />
                 </component>
             </component>
         </windowTab>
