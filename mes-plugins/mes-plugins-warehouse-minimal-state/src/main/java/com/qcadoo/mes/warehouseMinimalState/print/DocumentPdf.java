@@ -142,14 +142,16 @@ public class DocumentPdf extends ReportPdfView {
 
         PdfPTable warehouseTable = createTable();
 
-        List<Entity> stocks = warehouseMinimalStateHelper.getWarehouseStockWithTooSmallMinState(warehouse);
-        Map<Long, Entity> stocksByProduct = stocks.stream()
-                .collect(Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
+
         Collection<Entity> minimumStates = warehouseToMinimumStateMap.get(warehouse.getId());
         minimumStates = minimumStates.stream()
                 .sorted((ms1, ms2) -> ms1.getBelongsToField("product").getStringField(ProductFields.NUMBER)
                         .compareToIgnoreCase(ms2.getBelongsToField("product").getStringField(ProductFields.NUMBER)))
                 .collect(Collectors.toList());
+
+        List<Entity> stocks = warehouseMinimalStateHelper.getWarehouseStockWithTooSmallMinState(warehouse,minimumStates.stream().map(res -> res.getBelongsToField("product")).collect(Collectors.toList()));
+        Map<Long, Entity> stocksByProduct = stocks.stream()
+                .collect(Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
         boolean rowsWereAdded = false;
         for (Entity minimumState : minimumStates) {
             rowsWereAdded |= addRow(minimumState, stocksByProduct, warehouseTable);

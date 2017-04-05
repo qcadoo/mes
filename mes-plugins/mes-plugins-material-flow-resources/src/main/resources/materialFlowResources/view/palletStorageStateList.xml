@@ -111,7 +111,6 @@
             <option type="column" name="locationNumber" fields="locationNumber"/>
 
             <option type="order" column="palletNumber" direction="asc"/>
-            <option type="footerRow" value="true"/>
             <option type="searchable"
                     value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
             <option type="orderable"
