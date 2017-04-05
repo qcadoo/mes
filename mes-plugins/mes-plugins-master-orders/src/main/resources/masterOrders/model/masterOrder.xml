@@ -76,24 +76,6 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <decimal name="orderedPositionQuantity">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
-        <decimal name="commissionedPositionQuantity">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
-        <decimal name="quantityForCommission">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
         <enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
               default="01undefined" required="true">
             <validatesWith
