@@ -51,6 +51,10 @@
 
                             <option type="expression" value="#number + ' - ' + #surname + ' ' + #name"/>
                             <option type="fieldCode" value="surname"/>
+
+                            <criteriaModifier
+                                class="com.qcadoo.mes.assignmentToShift.criteriaModifiers.StaffCriteriaModifier"
+                                method="hideAssignedWorkers"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2" >
@@ -109,5 +113,9 @@
         <beforeRender
                 class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
                 method="setFieldsEnabledWhenTypeIsSpecific"/>
+
+        <beforeRender
+                class="com.qcadoo.mes.assignmentToShift.hooks.StaffAssignmentToShiftDetailsHooks"
+                method="setCriteriaModifiers"/>
     </hooks>
 </view>

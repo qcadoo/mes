@@ -41,7 +41,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="1">
+                           columns="2" rows="3">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="hideAssignedStaff" field="#{form}.hideAssignedStaff"
                                    reference="hideAssignedStaff" hasDescription="true"/>
