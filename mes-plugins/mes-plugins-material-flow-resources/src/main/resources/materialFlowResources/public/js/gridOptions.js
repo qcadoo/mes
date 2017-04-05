@@ -367,7 +367,11 @@ function updateFieldValue(field, value, rowId) {
         element = $('input', element);
     }
 
-    return element.val(value);
+    if (element.is(':checkbox')) {
+        return element.prop('checked', value);
+    } else {
+        return element.val(value);
+    }
 }
 
 function clearSelect(field,rowId)
