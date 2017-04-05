@@ -116,6 +116,8 @@ public class MultiAssignmentToShiftDetailsHooks {
             LookupComponent staffLookup = (LookupComponent) view.getComponentByReference("staffLookup");
 
             staffCriteriaModifier.putCrewNumber(staffLookup, crew);
+
+            staffCriteriaModifier.setFilterParameters(staffLookup, assignment);
         }
     }
 
