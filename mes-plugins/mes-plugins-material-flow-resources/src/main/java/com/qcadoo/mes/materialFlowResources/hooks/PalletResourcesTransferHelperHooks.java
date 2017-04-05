@@ -3,6 +3,7 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import static com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields.LOCATION_NUMBER;
 import static com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields.PALLET_NUMBER;
 import static com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER;
+import static com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields.TYPE_OF_PALLET;
 import static java.util.Comparator.comparing;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -33,7 +34,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class PalletResourcesTransferHelperHooks {
 
-    public static final String L_PALLET_STORAGE_STATE_DTOS = "palletStorageStateDtos";
+    private static final String L_PALLET_STORAGE_STATE_DTOS = "palletStorageStateDtos";
 
     private static final String L_PALLET_NUMBER = "palletNumber";
 
@@ -69,7 +70,7 @@ public class PalletResourcesTransferHelperHooks {
 
     private List<Entity> createHelperEntities(final Set<Long> palletIds) {
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT palletNumber, storageLocationNumber, locationNumber ");
+        sql.append("SELECT palletNumber, storageLocationNumber, locationNumber, typeOfPallet ");
         sql.append("FROM materialflowresources_palletstoragestatedto ");
         sql.append("WHERE id IN (:ids)");
 
@@ -85,6 +86,7 @@ public class PalletResourcesTransferHelperHooks {
         entity.setField(PALLET_NUMBER, dto.getPalletNumber());
         entity.setField(STORAGE_LOCATION_NUMBER, dto.getStorageLocationNumber());
         entity.setField(LOCATION_NUMBER, dto.getLocationNumber());
+        entity.setField(TYPE_OF_PALLET, dto.getTypeOfPallet());
         return entity;
     }
 

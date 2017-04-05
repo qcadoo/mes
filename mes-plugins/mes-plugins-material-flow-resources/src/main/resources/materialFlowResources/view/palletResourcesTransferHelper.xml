@@ -35,13 +35,22 @@
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
             </group>
             <group name="action">
-                <bigButton name="transferResources" icon="saveIcon24.png" state="enabled">
+                <bigButton name="transferResources" icon="saveBackIcon24.png" state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 										#{form}.performEvent('transferResources', []);
-										#{window}.performBackWithoutConfirm();
+
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
 								}
 							});
 						]]>
@@ -80,7 +89,7 @@
                             </header>
                             <components>
                                 <component type="gridLayout" name="positions"
-                                           columns="3" rows="1">
+                                           columns="4" rows="1">
                                     <layoutElement column="1" row="1">
                                         <component type="input" name="palletNumber" field="palletNumber"
                                                    defaultEnabled="never" hasLabel="false" reference="palletNumber">
@@ -115,18 +124,31 @@
                                                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletResourcesTransferHelperListeners"/>
                                         </component>
                                     </layoutElement>
+                                    <layoutElement column="4" row="1">
+                                        <component type="input" name="newStorageLocation"
+                                                   reference="newStorageLocation" defaultEnabled="never"
+                                                   hasLabel="false">
+                                        </component>
+                                    </layoutElement>
                                 </component>
 
                                 <component type="input" name="locationNumber" reference="locationNumber"
                                            field="locationNumber" defaultVisible="false" defaultEnabled="false"/>
+
+                                <component type="input" name="typeOfPallet" reference="typeOfPallet"
+                                           field="typeOfPallet" defaultVisible="false" defaultEnabled="false"/>
 
                             </components>
                         </component>
 
                         <component type="input" name="palletNumberFilter" reference="palletNumberFilter"
                                    field="palletNumberFilter" defaultVisible="false" defaultEnabled="false"/>
+
                         <component type="input" name="selectedEntities" reference="selectedEntities"
                                    field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
+
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false" />
 
                     </layoutElement>
 
