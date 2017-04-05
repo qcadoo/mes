@@ -30,7 +30,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="masterOrderDefinition"/>
+        <string name="masterOrderDefinitionNumber"/>
         <string name="number"/>
         <string name="name"/>
         <datetime name="deadline"/>
