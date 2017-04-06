@@ -59,7 +59,7 @@ public class CostCalculationComponentsService {
                         .getTechnologyOperationComponentId());
                 BigDecimal materialCost = BigDecimalUtils.convertNullToZero(cc.getMaterialCost()).add(
                         BigDecimalUtils.convertNullToZero(costForGivenQuantity), mathContext);
-                cc.setMaterialCost(materialCost);
+                cc.setMaterialCost(numberService.setScale(materialCost, 2));
             }
 
         }
@@ -81,7 +81,7 @@ public class CostCalculationComponentsService {
                         "technologyOperationComponent").getId());
                 BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost).add(
                         BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
-                holder.setLaborCost(cost);
+                holder.setLaborCost(numberService.setScale(cost, 2));
             }
         }
 
@@ -143,8 +143,8 @@ public class CostCalculationComponentsService {
             BigDecimal sumOfCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
                     BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
             BigDecimal costPerUnit = sumOfCost.divide(quantity, mathContext);
-            component.setSumOfCost(sumOfCost);
-            component.setCostPerUnit(numberService.setScale(costPerUnit));
+            component.setSumOfCost(numberService.setScale(sumOfCost, 2));
+            component.setCostPerUnit(numberService.setScale(costPerUnit, 2));
         }
 
     }
@@ -158,8 +158,8 @@ public class CostCalculationComponentsService {
                     BigDecimalUtils.convertNullToZero(child.getMaterialCost()), mathContext);
             BigDecimal laborCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
                     BigDecimalUtils.convertNullToZero(child.getLaborCost()), mathContext);
-            component.setLaborCost(laborCost);
-            component.setMaterialCost(materialCost);
+            component.setLaborCost(numberService.setScale(laborCost, 2));
+            component.setMaterialCost(numberService.setScale(materialCost, 2));
             _component = child;
         }
 
