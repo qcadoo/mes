@@ -44,7 +44,9 @@
                            columns="2" rows="3">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="hideAssignedStaff" field="#{form}.hideAssignedStaff"
-                                   reference="hideAssignedStaff" hasDescription="true"/>
+                                   reference="hideAssignedStaff" hasDescription="true">
+                        <option type="labelWidth" value="40"/>
+                        </component>
                     </layoutElement>
                 </component>
 
