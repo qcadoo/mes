@@ -180,6 +180,8 @@
                       method="transferResources"/>
 
         </component>
+        <component type="checkbox" name="isShiftFilter" reference="isShiftFilter" defaultVisible="false" defaultEnabled="false"/>
+        <component type="checkbox" name="isFreeFilter" reference="isFreeFilter" defaultVisible="false" defaultEnabled="false"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>

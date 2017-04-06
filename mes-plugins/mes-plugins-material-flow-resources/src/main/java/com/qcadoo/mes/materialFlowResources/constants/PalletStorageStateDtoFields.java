@@ -39,6 +39,10 @@ public final class PalletStorageStateDtoFields {
 
     public static final String NEW_PALLET_NUMBER = "newPalletNumber";
 
+    public static final String IS_SHIFT_FILTER = "isShiftFilter";
+
+    public static final String IS_FREE_FILTER = "isFreeFilter";
+
     private PalletStorageStateDtoFields() {
 
     }

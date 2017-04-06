@@ -13,16 +13,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 @Service
@@ -77,29 +74,32 @@ public class PalletStorageStateListListeners {
     }
 
     public void showPallestWithFreeSpace(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
-        Integer palletWithFreePlace = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getIntegerField(DocumentPositionParametersItemValues.PALLET_WITH_FREE_PALECE);
-        if(palletWithFreePlace == null){
-            palletGrid.addMessage("materialFlowResources.pallet.missing.parameter.palletWithFreeSpace.error", ComponentState.MessageType.FAILURE);
-        }else {
-            palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.lt(PalletStorageStateDtoFields.TOTAL_QUANTITY,  BigDecimal.valueOf(palletWithFreePlace))));
-        }
-
+        CheckBoxComponent isShiftFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_SHIFT_FILTER);
+        CheckBoxComponent isFreeFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_FREE_FILTER);
+        isShiftFilter.setChecked(false);
+        isFreeFilter.setChecked(true);
+        isShiftFilter.requestComponentUpdateState();
+        isFreeFilter.requestComponentUpdateState();
     }
 
     public void showAllPallets(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
         palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.ge(PalletStorageStateDtoFields.TOTAL_QUANTITY,BigDecimal.ZERO)));
+        CheckBoxComponent isShiftFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_SHIFT_FILTER);
+        CheckBoxComponent isFreeFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_FREE_FILTER);
+        isShiftFilter.setChecked(false);
+        isFreeFilter.setChecked(false);
+        isShiftFilter.requestComponentUpdateState();
+        isFreeFilter.requestComponentUpdateState();
     }
 
     public void showPalletsWithProductToShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
-        Integer palletToShift = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getIntegerField(DocumentPositionParametersItemValues.PALLET_TO_SHIFT);
-        if(palletToShift == null){
-            palletGrid.addMessage("materialFlowResources.pallet.missing.parameter.palletToShift.error", ComponentState.MessageType.FAILURE);
-        }else {
-            palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.lt(PalletStorageStateDtoFields.TOTAL_QUANTITY, BigDecimal.valueOf(palletToShift))));
-        }
+        CheckBoxComponent isShiftFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_SHIFT_FILTER);
+        CheckBoxComponent isFreeFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_FREE_FILTER);
+        isShiftFilter.setChecked(true);
+        isFreeFilter.setChecked(false);
+        isShiftFilter.requestComponentUpdateState();
+        isFreeFilter.requestComponentUpdateState();
 
     }
     public void moveToStorageLocation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
