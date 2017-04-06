@@ -23,19 +23,8 @@
  */
 package com.qcadoo.mes.costNormsForMaterials;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -43,6 +32,15 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -153,7 +151,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
             return orderMaterialCosts;
         }
-        throw new IllegalStateException("Product with id=" + product.getStringField(ProductFields.NUMBER)
+        throw new IllegalStateException("Product with number=" + product.getId()
                 + " doesn't exists for order with id=" + order.getId());
     }
 

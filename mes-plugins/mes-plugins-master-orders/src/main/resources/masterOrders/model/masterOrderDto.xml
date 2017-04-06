@@ -38,9 +38,9 @@
         <string name="companyPayer"/>
         <string name="status"/>
         <string name="masterOrderState"/>
-        <decimal name="orderedPositionQuantity"/>
-        <decimal name="commissionedPositionQuantity"/>
-        <decimal name="quantityForCommission"/>
+        <integer name="orderedPositionQuantity"/>
+        <integer name="commissionedPositionQuantity"/>
+        <integer name="quantityForCommission"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrder"/>

@@ -48,10 +48,10 @@ public class OperationBarcode {
         this.barcodeOperationComponentService = barcodeOperationComponentService;
     }
 
-    public void print(PdfWriter pdfWriter, Entity operationComponent, Document document) throws DocumentException {
+    public void print(PdfWriter pdfWriter, Entity order, Entity operationComponent, Document document) throws DocumentException {
         PdfContentByte cb = pdfWriter.getDirectContent();
         Barcode128 code128 = new Barcode128();
-        code128.setCode(barcodeOperationComponentService.getCodeFromBarcodeForOperationComponet(operationComponent));
+        code128.setCode(barcodeOperationComponentService.getCodeFromBarcode(order, operationComponent));
         PdfPTable barcodeTable = new PdfPTable(1);
         barcodeTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_CENTER);
         barcodeTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_TOP);
