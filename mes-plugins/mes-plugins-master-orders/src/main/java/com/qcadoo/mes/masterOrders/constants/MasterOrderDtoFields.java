@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.masterOrders.constants;
 
-public final class MasterOrderPositionDtoFields {
+public final class MasterOrderDtoFields {
 
-    private MasterOrderPositionDtoFields() {
+    private MasterOrderDtoFields() {
 
     }
 
@@ -37,30 +37,18 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String DEADLINE = "deadline";
 
-    public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
+    public static final String COMPANY = "company";
 
-    public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
+    public static final String COMPANY_PAYER = "companyPayer";
 
-    public static final String PRODUCED_QUANTITY = "producedOrderQuantity";
+    public static final String STATUS = "status";
 
-    public static final String COMMENTS = "comments";
+    public static final String MASTER_ORDER_STATE = "masterOrderState";
 
-    public static final String LEFT_TO_RELEASE = "leftToRelease";
+    public static final String ORDERED_POSITION_QUANTITY = "orderedPositionQuantity";
 
-    public static final String PRODUCT_NUMBER = "productNumber";
+    public static final String COMMISSIONED_POSITION_QUANTITY = "commissionedPositionQuantity";
 
-    public static final String UNIT = "unit";
-
-    public static final String TECHNOLOGY_NAME = "technologyName";
-
-    public static final String COMPANY_NAME = "companyName";
-
-    public static final String MASTER_ORDER_ID = "masterOrderId";
-
-    public static final String MASTER_ORDER_TYPE = "masterOrderType";
-
-    public static final String PRODUCT_ID = "productId";
-
-    public static final String MASTER_ORDER_PRODUCT_ID = "masterOrderProductId";
+    public static final String QUANTITY_FOR_COMMISSION = "quantityForCommission";
 
 }

@@ -125,16 +125,16 @@ public class DocumentsListListeners {
                 recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
                 documentDD.save(recentlySavedDocument);
                 documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-                
+
                 documentToCreateResourcesFor.getGlobalErrors().forEach(error -> {
                     gridComponent.addMessage(error);
                 });
                 documentToCreateResourcesFor.getErrors().values().forEach(error -> {
                     gridComponent.addMessage(error);
                 });
-                
+
                 invalidEntities.add(documentId);
-            } 
+            }
             documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
             updatePositions(documentToCreateResourcesFor);
         }

@@ -111,6 +111,35 @@
                     </script>
                 </bigButton>
             </group>
+
+            <group name="movePallets">
+                <bigButton name="moveToStorageLocation" icon="startIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('moveToStorageLocation', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="transferResources" icon="startIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('transferResources', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -121,13 +150,13 @@
             <option type="column" name="locationNumber" fields="locationNumber"/>
 
             <option type="order" column="palletNumber" direction="asc"/>
-            <option type="footerRow" value="true"/>
             <option type="searchable"
                     value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
             <option type="orderable"
                     value="palletNumber,typeOfPallet,storageLocationNumber,locationNumber"/>
 
             <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
             <listener event="showDetails"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
@@ -142,6 +171,14 @@
                        class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                        method="showPallestWithFreeSpace"/>
 
+            <listener event="moveToStorageLocation"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="moveToStorageLocation"/>
+
+            <listener event="transferResources"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                      method="transferResources"/>
+
         </component>
 
         <option type="fixedHeight" value="true"/>
@@ -151,7 +188,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.materialFlowResources.hooks.PalletStorageStateListHooks"
-                method="toggleShowDetailsButton"/>
+                method="toggleButtons"/>
     </hooks>
 
 </view>

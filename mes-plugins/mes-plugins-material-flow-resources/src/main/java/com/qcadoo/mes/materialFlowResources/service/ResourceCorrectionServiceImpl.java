@@ -29,6 +29,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -184,24 +185,43 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     }
 
     private boolean isPriceChanged(BigDecimal oldPrice, BigDecimal newPrice) {
-        return !(oldPrice == null && newPrice == null)
-                && (oldPrice == null || newPrice == null || newPrice.compareTo(oldPrice) != 0);
-
+        if (oldPrice == null && newPrice == null) {
+            return false;
+        }
+        if (oldPrice == null || newPrice == null) {
+            return true;
+        }
+        return oldPrice.compareTo(newPrice) != 0;
     }
 
     private boolean isStringChanged(String oldString, String newString) {
-        return !(oldString == null && newString == null)
-                && (oldString == null || newString == null || oldString.equals(newString));
+        if (Strings.isNullOrEmpty(oldString) && Strings.isNullOrEmpty(newString)) {
+            return false;
+        }
+        if (Strings.isNullOrEmpty(oldString) || Strings.isNullOrEmpty(newString)) {
+            return true;
+        }
+        return oldString.compareTo(newString) != 0;
     }
 
     private boolean isPalletNumberChanged(Entity oldPalletNumber, Entity newPalletNumber) {
-        return !(oldPalletNumber == null && newPalletNumber == null)
-                && (oldPalletNumber == null || newPalletNumber == null || oldPalletNumber.getId().equals(newPalletNumber.getId()));
+        if (oldPalletNumber == null && newPalletNumber == null) {
+            return false;
+        }
+        if (oldPalletNumber == null || newPalletNumber == null) {
+            return true;
+        }
+        return oldPalletNumber.getId().compareTo(newPalletNumber.getId()) != 0;
     }
 
     private boolean isExpirationDateChanged(Date oldExpirationDate, Date newExpirationDate) {
-        return !(oldExpirationDate == null && newExpirationDate == null)
-                && (oldExpirationDate == null || newExpirationDate == null || oldExpirationDate.equals(newExpirationDate));
+        if (oldExpirationDate == null && newExpirationDate == null) {
+            return false;
+        }
+        if (oldExpirationDate == null || newExpirationDate == null) {
+            return true;
+        }
+        return oldExpirationDate.compareTo(newExpirationDate) != 0;
     }
 
 }

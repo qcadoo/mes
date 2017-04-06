@@ -24,28 +24,25 @@
     ***************************************************************************
 
 -->
-<model name="palletStorageStateDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="masterOrderDto" activable="true" auditable="false" deletable="false" insertable="false"
+        updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="palletNumber"/>
-        <boolean name="palletNumberActive"/>
-        <string name="typeOfPallet"/>
-        <string name="storageLocationNumber"/>
-        <string name="locationNumber"/>
-        <decimal name="totalQuantity">
-            <validatesRange from="0" exclusively="false"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
-        <!-- fields for moving pallets -->
-        <belongsTo name="palletMoveHelper" model="palletMoveHelper"/>
-        <belongsTo name="newStorageLocation" model="storageLocation"/>
-
-        <!-- fields used to transfer resources from one pallet to another -->
-        <belongsTo name="newPalletNumber" model="palletStorageStateDto"/>
+        <string name="masterOrderDefinitionNumber"/>
+        <string name="number"/>
+        <string name="name"/>
+        <datetime name="deadline"/>
+        <string name="company"/>
+        <string name="companyPayer"/>
+        <string name="status"/>
+        <string name="masterOrderState"/>
+        <decimal name="orderedPositionQuantity"/>
+        <decimal name="commissionedPositionQuantity"/>
+        <decimal name="quantityForCommission"/>
     </fields>
+
+    <masterModel plugin="masterOrders" model="masterOrder"/>
 
 </model>
