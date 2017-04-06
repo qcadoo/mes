@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.basic.tree;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.basic.constants.ProductFields.NODE_NUMBER;
-import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
-import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDRENS;
-
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -43,12 +30,30 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.List;
+
+import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
+import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
+import static com.qcadoo.mes.basic.constants.ProductFields.*;
 
 @Service
 public class ProductNumberingServiceImpl implements ProductNumberingService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProductNumberingServiceImpl.class);
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public Entity getRoot(final Entity product) {
@@ -115,13 +120,11 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
                         generateNodeNumberForProductsFamily(product, parent);
                     } else if (PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                         generateNodeNumberForParticularProduct(product, parent);
-
                         updateProductFamilyChildrensNodeNumbers(product, null);
                     }
                 } else {
                     if (PRODUCTS_FAMILY.getStringValue().equals(entityType)) {
                         generateNodeNumberForProductsFamily(product, parent);
-
                         updateProductFamilyChildrensNodeNumbers(product, product);
                     } else if (PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                         generateNodeNumberForParticularProduct(product, parent);
@@ -191,15 +194,13 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
 
             nodeNumber = parentNodeNumber.concat(".").concat(number.toString());
         } else {
-            String productNodeNumber = product.getStringField(NODE_NUMBER);
-
-            number = Integer.parseInt(productNodeNumber.replace(parentNodeNumber.concat("."), ""));
-
-            do {
-                number++;
-
-                nodeNumber = parentNodeNumber.concat(".").concat(number.toString());
-            } while (checkIfNodeNumberIsUnique(nodeNumber));
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT max(substring(nodenumber, POSITION('.' IN nodenumber) + 1, length(nodenumber)) ::int) + 1 ");
+            query.append("FROM basic_product WHERE nodenumber like '");
+            query.append(parentNodeNumber);
+            query.append(".%'");
+            number = jdbcTemplate.queryForObject(query.toString(), Collections.emptyMap(),Integer.class);
+            nodeNumber = parentNodeNumber.concat(".").concat(number.toString());
         }
 
         return nodeNumber;
