@@ -99,12 +99,14 @@ public class PalletMoveToStorageLocationHelperHooks {
             FilterValueHolder filter = newStorageLocation.getFilterValue();
             Entity dto = form.getPersistedEntityWithIncludedFormValues();
             String oldStorageLocationNumber = dto.getStringField("storageLocationNumber");
-            Entity oldStorageLocation = storageLocationDD.find()
-                    .add(SearchRestrictions.eq(StorageLocationFields.NUMBER, oldStorageLocationNumber)).setMaxResults(1)
-                    .uniqueResult();
-            Entity location = oldStorageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-            filter.put(StorageLocationFields.LOCATION, location.getId());
-            newStorageLocation.setFilterValue(filter);
+            if (!Strings.isNullOrEmpty(oldStorageLocationNumber)) {
+                Entity oldStorageLocation = storageLocationDD.find()
+                        .add(SearchRestrictions.eq(StorageLocationFields.NUMBER, oldStorageLocationNumber)).setMaxResults(1)
+                        .uniqueResult();
+                Entity location = oldStorageLocation.getBelongsToField(StorageLocationFields.LOCATION);
+                filter.put(StorageLocationFields.LOCATION, location.getId());
+                newStorageLocation.setFilterValue(filter);
+            }
 
         }
     }
