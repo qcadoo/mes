@@ -33,4 +33,6 @@ public final class BarcodeOperationComponentFields {
 
     public static final String OPERATION_COMPONENT = "operationComponent";
 
+    public static final String ORDER = "order";
+
 }
