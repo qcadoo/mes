@@ -47,9 +47,8 @@ public class ResourceReservationsService {
     public void updateResourceQuantites(Entity position, BigDecimal quantityToAdd) {
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
         if (resource != null) {
-            resource = dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
-                    .get(resource.getId());
+            resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
             if (resource != null) {
                 BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).add(quantityToAdd);
                 BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
@@ -63,8 +62,8 @@ public class ResourceReservationsService {
     public Entity fillResourcesInDocument(final Entity document) {
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
-                .parseString(warehouse.getStringField(LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
+                .getStringField(LocationFieldsMFR.ALGORITHM));
         List<Entity> generatedPositions = Lists.newArrayList();
 
         for (Entity position : positions) {
@@ -114,6 +113,7 @@ public class ResourceReservationsService {
             newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+            newPosition.setField(PositionFields.WASTE, resource.getField(PositionFields.WASTE));
 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
