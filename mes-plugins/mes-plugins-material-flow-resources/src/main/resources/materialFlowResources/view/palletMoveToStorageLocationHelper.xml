@@ -116,6 +116,13 @@
                                         </component>
                                     </layoutElement>
                                 </component>
+
+                                <component type="input" name="locationNumber" reference="locationNumber"
+                                           field="locationNumber" defaultVisible="false" defaultEnabled="false"/>
+
+                                <component type="input" name="typeOfPallet" reference="typeOfPallet"
+                                           field="typeOfPallet" defaultVisible="false" defaultEnabled="false"/>
+
                             </components>
                         </component>
                         <component type="input" name="palletNumberFilter" reference="palletNumberFilter"
