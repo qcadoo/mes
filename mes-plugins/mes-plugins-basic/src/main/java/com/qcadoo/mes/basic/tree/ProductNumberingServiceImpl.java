@@ -194,12 +194,15 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
 
             nodeNumber = parentNodeNumber.concat(".").concat(number.toString());
         } else {
+
+            int size = parentNodeNumber.split("\\.").length + 1;
             StringBuilder query = new StringBuilder();
-            query.append("SELECT max(substring(nodenumber, POSITION('.' IN nodenumber) + 1, length(nodenumber)) ::int) + 1 ");
+
+            query.append("SELECT max((regexp_split_to_array(nodenumber, E'\\\\.'))["+size+"] ::int) + 1 ");
             query.append("FROM basic_product WHERE nodenumber like '");
             query.append(parentNodeNumber);
             query.append(".%'");
-            number = jdbcTemplate.queryForObject(query.toString(), Collections.emptyMap(),Integer.class);
+            number = jdbcTemplate.queryForObject(query.toString(), Collections.emptyMap(), Integer.class);
             nodeNumber = parentNodeNumber.concat(".").concat(number.toString());
         }
 
