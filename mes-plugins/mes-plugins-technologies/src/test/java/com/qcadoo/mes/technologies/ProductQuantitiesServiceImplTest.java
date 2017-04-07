@@ -205,14 +205,14 @@ public class ProductQuantitiesServiceImplTest {
         when(order.getBelongsToField("technology")).thenReturn(null);
 
         // when
-        productQuantitiesService.getProductComponentQuantities(orders);
+        productQuantitiesService.getProductComponentQuantities(order);
     }
 
     @Test
     public void shouldReturnCorrectQuantities() {
         // when
         OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(orders);
+                .getProductComponentQuantities(order);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -242,7 +242,7 @@ public class ProductQuantitiesServiceImplTest {
     public void shouldReturnQuantitiesOfInputProductsForOrdersAndIfToldCountOnlyComponents() {
         // given
         // when
-        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(orders,
+        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(order,
                 MrpAlgorithm.ONLY_COMPONENTS);
 
         // then
@@ -288,7 +288,7 @@ public class ProductQuantitiesServiceImplTest {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         // when
-        productQuantitiesService.getProductComponentQuantities(orders, operationRuns);
+        productQuantitiesService.getProductComponentQuantities(order, operationRuns);
 
         // then
         assertEquals(2, operationRuns.size());
@@ -328,7 +328,7 @@ public class ProductQuantitiesServiceImplTest {
 
         // when
         OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(orders);
+                .getProductComponentQuantities(order);
 
         // then
         assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
@@ -366,7 +366,7 @@ public class ProductQuantitiesServiceImplTest {
 
         // when
         OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(orders);
+                .getProductComponentQuantities(order);
 
         // then
         assertEquals(0, new BigDecimal(45).compareTo(productQuantities.get(productInComponent1)));

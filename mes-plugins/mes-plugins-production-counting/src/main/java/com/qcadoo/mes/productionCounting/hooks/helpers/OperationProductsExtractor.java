@@ -94,7 +94,7 @@ public class OperationProductsExtractor {
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
-                .getProductComponentQuantities(asList(order));
+                .getProductComponentQuantities(order);
 
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
                 .entrySet()) {
