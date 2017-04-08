@@ -66,11 +66,11 @@
 				]]>
             </script>
 
-            <option type="column" name="name" fields="name" link="true"
+            <option type="column" name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber" link="true"
                     width="50"/>
             <option type="column" name="number" fields="number"
                     width="140" link="true"/>
-            <option type="column" name="masterOrderName" fields="masterOrderName" width="140" link="true"/>
+            <option type="column" name="name" fields="name" width="140" link="true"/>
             <option type="column" name="deadline" fields="deadline"
                     width="80"/>
             <option type="column" name="companyName" fields="companyName"
@@ -97,9 +97,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
-                    value="name,number,masterOrderName,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
             <option type="orderable"
-                    value="name,number,masterOrderName,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>

@@ -34,18 +34,33 @@ import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.criteriaModifiers.StaffCriteriaModifier;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class StaffAssignmentToShiftDetailsHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private StaffCriteriaModifier staffCriteriaModifier;
+
+    public void setCriteriaModifiers(final ViewDefinitionState view) {
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(StaffAssignmentToShiftFields.WORKER);
+
+        FormComponent staffAssignmentToShiftForm = (FormComponent) view.getComponentByReference("form");
+        Entity staffAssignmentToShift = staffAssignmentToShiftForm.getEntity();
+        Entity assignmentToShift = staffAssignmentToShift.getBelongsToField(StaffAssignmentToShiftFields.ASSIGNMENT_TO_SHIFT);
+        staffCriteriaModifier.setFilterParameters(staffLookup, assignmentToShift);
+    }
 
     public void setFieldsEnabledWhenTypeIsSpecific(final ViewDefinitionState view) {
         FieldComponent occupationType = (FieldComponent) view.getComponentByReference(OCCUPATION_TYPE);

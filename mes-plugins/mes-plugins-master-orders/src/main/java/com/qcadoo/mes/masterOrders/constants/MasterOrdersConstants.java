@@ -41,4 +41,6 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_MASTER_ORDER_POSITION_DTO = "masterOrderPositionDto";
 
+    public static final String MODEL_MASTER_ORDER_DTO = "masterOrderDto";
+
 }

@@ -59,4 +59,6 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_RESERVATION = "reservation";
 
+    public static final String MODEL_PALLET_STORAGE_STATE_DTO = "palletStorageStateDto";
+
 }
