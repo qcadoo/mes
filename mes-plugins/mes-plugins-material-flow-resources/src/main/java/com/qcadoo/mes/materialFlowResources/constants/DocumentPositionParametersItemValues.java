@@ -45,4 +45,8 @@ public final class DocumentPositionParametersItemValues {
 
     public static final String PRICE = "price";
 
+    public static final String PALLET_WITH_FREE_PALECE = "palletWithFreePlace";
+
+    public static final String PALLET_TO_SHIFT = "palletToShift";
+
 }

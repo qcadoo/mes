@@ -71,6 +71,45 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="showPalletsWithProductsToShift" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showPalletsWithProductToShift', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showPalletsWithFreeSpace" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showPallestWithFreeSpace', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showAllPallets" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showAllPallets', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
 
             <group name="movePallets">
@@ -122,6 +161,15 @@
             <listener event="showDetails"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="showDetails"/>
+             <listener event="showAllPallets"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showAllPallets"/>
+             <listener event="showPalletsWithProductToShift"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showPalletsWithProductToShift"/>
+             <listener event="showPallestWithFreeSpace"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showPallestWithFreeSpace"/>
 
             <listener event="moveToStorageLocation"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
@@ -132,6 +180,8 @@
                       method="transferResources"/>
 
         </component>
+        <component type="checkbox" name="isShiftFilter" reference="isShiftFilter" defaultVisible="false" defaultEnabled="false"/>
+        <component type="checkbox" name="isFreeFilter" reference="isFreeFilter" defaultVisible="false" defaultEnabled="false"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
