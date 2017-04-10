@@ -3,8 +3,8 @@ package com.qcadoo.mes.materialFlowResources.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Strings;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -26,24 +26,22 @@ public class PalletMoveToStorageLocationHelperHooks extends PalletStorageStateHo
 
     @Override
     protected void setStorageLocationFilters(final ViewDefinitionState view) {
-        DataDefinition storageLocationDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
+        DataDefinition locationDD = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowConstants.MODEL_LOCATION);
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference("palletStorageStateDtos");
 
         for (FormComponent form : adl.getFormComponents()) {
             LookupComponent newStorageLocation = (LookupComponent) form.findFieldComponentByName("newStorageLocation");
             FilterValueHolder filter = newStorageLocation.getFilterValue();
             Entity dto = form.getPersistedEntityWithIncludedFormValues();
-            String oldStorageLocationNumber = dto.getStringField("storageLocationNumber");
-            if (!Strings.isNullOrEmpty(oldStorageLocationNumber)) {
-                Entity oldStorageLocation = storageLocationDD.find()
-                        .add(SearchRestrictions.eq(StorageLocationFields.NUMBER, oldStorageLocationNumber)).setMaxResults(1)
-                        .uniqueResult();
-                Entity location = oldStorageLocation.getBelongsToField(StorageLocationFields.LOCATION);
-                filter.put(StorageLocationFields.LOCATION, location.getId());
-                newStorageLocation.setFilterValue(filter);
-            }
+
+            String locationNumber = dto.getStringField("locationNumber");
+            Entity location = locationDD.find().add(SearchRestrictions.eq(LocationFields.NUMBER, locationNumber))
+                    .setMaxResults(1).uniqueResult();
+            filter.put(StorageLocationFields.LOCATION, location.getId());
+            newStorageLocation.setFilterValue(filter);
 
         }
+
     }
 }
