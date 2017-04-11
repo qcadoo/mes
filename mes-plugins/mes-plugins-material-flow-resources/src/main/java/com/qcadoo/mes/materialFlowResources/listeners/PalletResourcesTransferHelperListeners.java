@@ -136,7 +136,7 @@ public class PalletResourcesTransferHelperListeners {
     private boolean validate(ViewDefinitionState view, List<Entity> dtos) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
         boolean isValid = true;
-        Set<String> ambigiousPalletNumbers = Sets.newHashSet();
+        Set<String> ambiguousPalletNumbers = Sets.newHashSet();
         for (FormComponent form : adl.getFormComponents()) {
             LookupComponent newPalletNumber = (LookupComponent) form.findFieldComponentByName(L_NEW_PALLET_NUMBER);
             if (newPalletNumber.getFieldValue() == null) {
@@ -146,20 +146,27 @@ public class PalletResourcesTransferHelperListeners {
             }
 
             Entity newPalletNumberEntity = newPalletNumber.getEntity();
-            String selectedPalletNumber = newPalletNumberEntity.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
-            SearchResult searchResult = newPalletNumberEntity.getDataDefinition().find()
-                    .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER, selectedPalletNumber)).list();
-            if (searchResult.getTotalNumberOfEntities() > 1) {
-                ambigiousPalletNumbers.add(selectedPalletNumber);
+            if (isSelectedPalletNumberAmbiguous(newPalletNumberEntity, form)) {
+                ambiguousPalletNumbers.add(newPalletNumberEntity.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
                 isValid = false;
             }
         }
-        if (!ambigiousPalletNumbers.isEmpty()) {
-            view.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambigiousPalletNumbers", FAILURE, false,
-                    String.join(", ", ambigiousPalletNumbers));
+        if (!ambiguousPalletNumbers.isEmpty()) {
+            view.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambiguousPalletNumbers", FAILURE, false,
+                    String.join(", ", ambiguousPalletNumbers));
         }
         return isValid;
 
+    }
+
+    private boolean isSelectedPalletNumberAmbiguous(Entity selectedPallet, FormComponent modifiedForm) {
+        SearchResult searchResult = selectedPallet.getDataDefinition().find()
+                .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER,
+                        selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER)))
+                .add(eq(PalletStorageStateDtoFields.LOCATION_NUMBER,
+                        modifiedForm.getEntity().getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
+                .list();
+        return searchResult.getTotalNumberOfEntities() > 1;
     }
 
     public void onPalletNumberSelected(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -167,28 +174,24 @@ public class PalletResourcesTransferHelperListeners {
         Entity entity = lookupComponent.getEntity();
 
         if (null != entity) {
-            String selectedPalletNumber = entity.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
-            SearchResult searchResult = entity.getDataDefinition().find()
-                    .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER, selectedPalletNumber)).list();
-            if (searchResult.getTotalNumberOfEntities() > 1) {
-                state.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambigiousPalletNumber", FAILURE);
-            } else if (searchResult.getTotalNumberOfEntities() == 1) {
 
-                AwesomeDynamicListComponent palletStorageStateDtos = (AwesomeDynamicListComponent) view
-                        .getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
+            AwesomeDynamicListComponent palletStorageStateDtos = (AwesomeDynamicListComponent) view
+                    .getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
 
-                List<FormComponent> formComponents = palletStorageStateDtos.getFormComponents();
-                for (FormComponent formComponent : formComponents) {
-                    LookupComponent newPalletNumber = (LookupComponent) formComponent
-                            .findFieldComponentByName(L_NEW_PALLET_NUMBER);
-                    if (newPalletNumber.getUuid().equals(state.getUuid())) {
-                        String storageLocationNumber = searchResult.getEntities().get(0)
-                                .getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
+            for (FormComponent formComponent : palletStorageStateDtos.getFormComponents()) {
+                LookupComponent newPalletNumber = (LookupComponent) formComponent.findFieldComponentByName(L_NEW_PALLET_NUMBER);
+                if (newPalletNumber.getUuid().equals(state.getUuid())) {
+
+                    if (isSelectedPalletNumberAmbiguous(entity, formComponent)) {
+                        state.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambiguousPalletNumber",
+                                FAILURE);
+                    } else {
+                        String storageLocationNumber = entity.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
                         FieldComponent newStorageLocationNumber = formComponent.findFieldComponentByName(L_NEW_STORAGE_LOCATION);
                         newStorageLocationNumber.setFieldValue(storageLocationNumber);
                         newStorageLocationNumber.requestComponentUpdateState();
-                        break;
                     }
+                    break;
                 }
             }
         }
