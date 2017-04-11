@@ -1,6 +1,8 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParameters
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -42,7 +45,11 @@ public class PalletStorageStateListHooks {
         RibbonActionItem showPalletsToShift = analysis.getItemByName("showPalletsWithProductsToShift");
         RibbonActionItem showFree = analysis.getItemByName("showPalletsWithFreeSpace");
         GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
-        showDetails.setEnabled(1 == palletStorageStateGrid.getSelectedEntities().size());
+        if(palletStorageStateGrid.getSelectedEntities().size() == 1 && selectedEntityAfterFilterExist(palletStorageStateGrid,palletStorageStateGrid.getSelectedEntities().get(0))){
+            showDetails.setEnabled(true);
+        }else {
+            showDetails.setEnabled(false);
+        }
         showDetails.setMessage("materialFlowResources.palletStorageStateList.ribbon.message.selectOneRecord");
         showPalletsToShift.setMessage("materialFlowResources.palletStorageStateList.window.ribbon.details.showPalletsWithProductsToShift.description");
         showFree.setMessage("materialFlowResources.palletStorageStateList.window.ribbon.details.showPalletsWithFreeSpace.description");
@@ -78,6 +85,16 @@ public class PalletStorageStateListHooks {
         }
 
     }
+
+    private boolean selectedEntityAfterFilterExist(GridComponent palletGridComponent, Entity selectedEntity){
+        for(Entity entity : palletGridComponent.getEntities()){
+            if(entity.getId().equals(selectedEntity.getId())){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
 
