@@ -57,10 +57,12 @@
             <option type="column" name="productName" fields="product"
                     expression="#product['name']" />
 
+            <option type="column" name="highStorageLocation" fields="highStorageLocation"/>
+
             <option type="order" column="number" direction="desc" width="200" />
 
             <option type="searchable"
-                    value="number,locationNumber,locationName,productNumber,productName" />
+                    value="number,locationNumber,locationName,productNumber,productName,highStorageLocation" />
             <option type="orderable"
                     value="number,locationNumber,locationName,productNumber,productName" />
 
