@@ -563,7 +563,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         OperationProductComponentWithQuantityContainer productComponents = productQuantitiesService
-                .getProductComponentQuantities(asList(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER)),
+                .getProductComponentQuantities(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER),
                         operationRuns);
 
         if (!productComponents.asMap().isEmpty()) {

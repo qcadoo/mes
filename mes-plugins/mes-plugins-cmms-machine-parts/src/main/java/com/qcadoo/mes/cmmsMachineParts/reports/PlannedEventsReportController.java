@@ -29,7 +29,6 @@ import java.util.Iterator;
             filtersMap = new HashMap<String, String>();
         }
         return new ModelAndView("plannedEventsXlsView", "filtersMap", filtersMap);
-
     }
 
 }

@@ -166,32 +166,32 @@ public class PalletResourcesTransferHelperListeners {
         LookupComponent lookupComponent = (LookupComponent) state;
         Entity entity = lookupComponent.getEntity();
 
-        String selectedPalletNumber = entity.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
-        SearchResult searchResult = entity.getDataDefinition().find()
-                .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER, selectedPalletNumber)).list();
-        if (searchResult.getTotalNumberOfEntities() > 1) {
-            state.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambigiousPalletNumber", FAILURE);
-        } else if (searchResult.getTotalNumberOfEntities() == 1) {
+        if (null != entity) {
+            String selectedPalletNumber = entity.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
+            SearchResult searchResult = entity.getDataDefinition().find()
+                    .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER, selectedPalletNumber)).list();
+            if (searchResult.getTotalNumberOfEntities() > 1) {
+                state.addMessage("materialFlowResources.palletResourcesTransferHelper.message.ambigiousPalletNumber", FAILURE);
+            } else if (searchResult.getTotalNumberOfEntities() == 1) {
 
-            AwesomeDynamicListComponent palletStorageStateDtos = (AwesomeDynamicListComponent) view
-                    .getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
+                AwesomeDynamicListComponent palletStorageStateDtos = (AwesomeDynamicListComponent) view
+                        .getComponentByReference(L_PALLET_STORAGE_STATE_DTOS);
 
-            List<FormComponent> formComponents = palletStorageStateDtos.getFormComponents();
-            for (FormComponent formComponent : formComponents) {
-                LookupComponent newPalletNumber = (LookupComponent) formComponent.findFieldComponentByName(L_NEW_PALLET_NUMBER);
-                if (newPalletNumber.getUuid().equals(state.getUuid())) {
-                    String storageLocationNumber = searchResult.getEntities().get(0)
-                            .getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
-                    FieldComponent newStorageLocationNumber = formComponent.findFieldComponentByName(L_NEW_STORAGE_LOCATION);
-                    newStorageLocationNumber.setFieldValue(storageLocationNumber);
-                    newStorageLocationNumber.requestComponentUpdateState();
-                    break;
+                List<FormComponent> formComponents = palletStorageStateDtos.getFormComponents();
+                for (FormComponent formComponent : formComponents) {
+                    LookupComponent newPalletNumber = (LookupComponent) formComponent
+                            .findFieldComponentByName(L_NEW_PALLET_NUMBER);
+                    if (newPalletNumber.getUuid().equals(state.getUuid())) {
+                        String storageLocationNumber = searchResult.getEntities().get(0)
+                                .getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER);
+                        FieldComponent newStorageLocationNumber = formComponent.findFieldComponentByName(L_NEW_STORAGE_LOCATION);
+                        newStorageLocationNumber.setFieldValue(storageLocationNumber);
+                        newStorageLocationNumber.requestComponentUpdateState();
+                        break;
+                    }
                 }
             }
-        } else {
-            throw new IllegalStateException("This code shouldn't be executed if no entries have been selected");
         }
-
     }
 
 }
