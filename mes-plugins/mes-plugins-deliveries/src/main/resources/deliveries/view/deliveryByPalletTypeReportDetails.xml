@@ -42,15 +42,15 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="2">
                     <layoutElement column="1" row="1">
-                        <component type="calendar" name="from" field="from"
-                                   reference="from">
+                        <component type="calendar" name="fromDate" field="fromDate"
+                                   reference="fromDate">
                             <option type="labelWidth" value="50"/>
                             <option type="withTimePicker" value="false"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="calendar" name="to" field="to"
-                                   reference="to">
+                        <component type="calendar" name="toDate" field="toDate"
+                                   reference="toDate">
                             <option type="labelWidth" value="50"/>
                             <option type="withTimePicker" value="false"/>
                         </component>

@@ -13,7 +13,7 @@ public class DeliveryByPalletTypeReportHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
 
         if (view.isViewAfterRedirect()) {
-            FieldComponent dateToField = (FieldComponent) view.getComponentByReference("to");
+            FieldComponent dateToField = (FieldComponent) view.getComponentByReference("toDate");
             dateToField.setFieldValue(DateUtils.toDateTimeString(new Date()));
             dateToField.requestComponentUpdateState();
         }

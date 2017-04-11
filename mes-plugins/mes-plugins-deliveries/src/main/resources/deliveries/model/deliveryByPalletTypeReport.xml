@@ -29,8 +29,8 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
        cacheable="true">
     <fields>
-        <date name="from"/>
-        <date name="to"/>
+        <date name="fromDate"/>
+        <date name="toDate"/>
     </fields>
 
     <hooks>
