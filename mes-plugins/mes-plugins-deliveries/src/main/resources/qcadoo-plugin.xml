@@ -97,6 +97,8 @@
         <model:model model="deliveryStateChange" resource="model/deliveryStateChange.xml"/>
         <model:model model="parameterDeliveryOrderColumn" resource="model/parameterDeliveryOrderColumn.xml"/>
 
+        <model:model model="deliveryByPalletTypeReport" resource="model/deliveryByPalletTypeReport.xml"/>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="deliveryStateChange" plugin="deliveries"
                              model="deliveryStateChange"/>
@@ -215,6 +217,9 @@
         <menu:menu-item name="supplyItems" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
                         view="supplyItems"/>
 
+        <menu:menu-item name="deliveryByPalletTypeReport" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
+                        view="deliveryByPalletTypeReportDetails"/>
+
         <view:view resource="view/companyProductDetails.xml"/>
         <view:view resource="view/companyProductsFamilyDetails.xml"/>
         <view:view resource="view/deliveriesList.xml"/>
@@ -227,6 +232,7 @@
         <view:view resource="view/supplyItems.xml"/>
         <view:view resource="view/supplyParameters.xml"/>
         <view:view resource="view/parameterOrderColumnDetails.xml"/>
+        <view:view resource="view/deliveryByPalletTypeReportDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/companyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml"/>
