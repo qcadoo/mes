@@ -260,6 +260,11 @@
             <version>${qcadoo.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.qcadoo</groupId>
+            <artifactId>qcadoo-plugins-plugin-management</artifactId>
+            <version>${qcadoo.version}</version>
+        </dependency>
+        <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>2.2</version>
@@ -307,6 +312,41 @@
             <scope>system</scope>
             <systemPath>${basedir}/driver/postgresql-9.4.1212.jar</systemPath>
         </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-product-catalog-numbers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontracting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-pack-open-source</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-samples</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -319,10 +359,6 @@
                         <scanTarget>driver/</scanTarget>
                     </scanTargets>
                     <systemProperties>
-                        <systemProperty>
-                            <name>spring.profiles.default</name>
-                            <value>standalone</value>
-                        </systemProperty>
                         <systemProperty>
                             <name>QCADOO_CONF</name>
                             <value>${basedir}/conf/${profile.name}</value>
@@ -397,38 +433,6 @@
 
     <profiles>
         <profile>
-            <id>standalone</id>
-            <activation>
-                <property>
-                    <name>spring.profiles.active</name>
-                    <value>!saas</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.qcadoo</groupId>
-                    <artifactId>qcadoo-plugins-plugin-management</artifactId>
-                    <version>${qcadoo.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>saas</id>
-            <activation>
-                <property>
-                    <name>spring.profiles.active</name>
-                    <value>saas</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.qcadoo.saas</groupId>
-                    <artifactId>qcadoo-saas-plugins-plugin-management</artifactId>
-                    <version>${qcadoo.saas.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>tomcat</id>
             <build>
                 <plugins>
@@ -454,46 +458,6 @@
                     </plugin>
                 </plugins>
             </build>
-        </profile>
-        <profile>
-            <id>extra</id>
-            <dependencies>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-product-catalog-numbers</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-tech-subcontracting</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-tech-subcontr-for-oper-tasks</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-tech-subcontr-for-deliveries</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-tech-subcontr-for-production-counting</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-pack-open-source</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.mes</groupId>
-                    <artifactId>mes-plugins-samples</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
         </profile>
         <profile>
             <id>muffinka</id>

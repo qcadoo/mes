@@ -38,6 +38,5 @@
 		<exclude within="org.hibernate..*" />
 		<exclude within="$Proxy*" />
 		<exclude within="org.apache.log4j..*" />
-		<exclude within="com.qcadoo.saas.shop.api.jaxws..*" />
 	</weaver>
 </aspectj>
