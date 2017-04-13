@@ -239,4 +239,44 @@ public class OrderServiceImpl implements OrderService {
         return parameterService.getParameter().getBooleanField(ParameterFieldsO.ENABLE_PKT);
     }
 
+    @Override
+    public String buildOrderDescription(Entity masterOrder,Entity technology,boolean fillOrderDescriptionBasedOnTechnology){
+        StringBuilder builder = new StringBuilder();
+        if(masterOrder !=null){
+            String poNumber = "";
+            String direction = "";
+            if (masterOrder.getStringField("poNumber") != null) {
+                poNumber = masterOrder.getStringField("poNumber");
+            }
+            if (masterOrder.getStringField("direction") != null) {
+                direction = masterOrder.getStringField("direction");
+            }
+
+            if (!poNumber.isEmpty()) {
+                builder.append("PO");
+                builder.append(poNumber);
+                if(direction.isEmpty()){
+                    builder.append("\n");
+                }
+            }
+
+            if (!direction.isEmpty()) {
+                builder.append("-");
+                builder.append(direction);
+                builder.append("\n");
+            }
+        }
+        if(technology != null){
+            if(fillOrderDescriptionBasedOnTechnology) {
+                String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
+                if (technologyDescription != null) {
+                    builder.append(technologyDescription);
+                }
+            }
+        }
+
+        return builder.toString();
+
+    }
+
 }

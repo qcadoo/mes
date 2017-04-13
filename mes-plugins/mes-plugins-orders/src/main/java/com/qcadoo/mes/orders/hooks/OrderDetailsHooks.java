@@ -77,6 +77,7 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+
 @Service
 public class OrderDetailsHooks {
 
@@ -151,6 +152,7 @@ public class OrderDetailsHooks {
         setQuantities(view);
         additionalUnitService.setAdditionalUnitField(view);
         unitService.fillProductForAdditionalUnitBeforeRender(view);
+        fillOrderDescriptionIfTechnologyHasDescription(view);
 
     }
 
@@ -679,4 +681,20 @@ public class OrderDetailsHooks {
         return expectedVariable.compareTo(currentVariable) == 0;
     }
 
+
+    public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view){
+        LookupComponent technologyLookup = (LookupComponent)view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent descriptionField = (FieldComponent)view.getComponentByReference(OrderFields.DESCRIPTION);
+        LookupComponent masterOrderlookup = (LookupComponent)view.getComponentByReference("masterOrder");
+        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult().getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+        Entity masterOrder = masterOrderlookup.getEntity();
+        Entity technology = technologyLookup.getEntity();
+
+        String orderDescription = orderService.buildOrderDescription(masterOrder,technology,fillOrderDescriptionBasedOnTechnology);
+
+        descriptionField.setFieldValue("");
+        descriptionField.requestComponentUpdateState();
+        descriptionField.setFieldValue(orderDescription);
+        descriptionField.requestComponentUpdateState();
+    }
 }
