@@ -158,14 +158,15 @@ public class ProductStructureTreeService {
             Entity subOperation = findOperationForProductAndTechnology(product, technology);
             BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
             Entity subTechnology = findTechnologyForProduct(product);
-            Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-            BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+
 
             if (subTechnology != null) {
                 if (!usedTechnologies.contains(subTechnology.getId())) {
                     if (subOperation == null) {
                         Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
                         BigDecimal quantityForTechnology = findQuantityOfProductInOperation(product, operationForTechnology);
+                        Entity technologyGroup = subTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
+                        BigDecimal standardPerformanceTechnology = subTechnology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
 
                         child.setField(L_TECHNOLOGY, subTechnology);
                         child.setField(L_OPERATION, operationForTechnology);
@@ -206,6 +207,8 @@ public class ProductStructureTreeService {
                                     product.getStringField("number") + " " + product.getStringField("name"));
                 }
             } else {
+                Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
+                BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
                 child.setField(L_TECHNOLOGY, technology);
                 child.setField(L_PRODUCT, product);
                 child.setField(L_QUANTITY, quantity);
@@ -221,6 +224,8 @@ public class ProductStructureTreeService {
                 } else {
                     child.setField(L_OPERATION, operation);
                     child.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+                    child.setField(L_TECHNOLOGY_GROUP,technologyGroup);
+                    child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY,standardPerformanceTechnology);
 
                     addChild(tree, child, parent, L_MATERIAL);
                 }
