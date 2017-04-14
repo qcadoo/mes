@@ -230,11 +230,6 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
     }
 
     @Override
-    public boolean hasManyOrders() {
-        return groupingContainer.hasManyOrders();
-    }
-
-    @Override
     public Map<OrderColumn, ColumnAlignment> getOrderColumnToAlignment() {
         return groupingContainer.getOrderColumnToAlignment();
     }

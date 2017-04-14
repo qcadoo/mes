@@ -24,6 +24,7 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,9 @@ import org.springframework.stereotype.Component;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -51,12 +54,12 @@ public class OperationOrderInfoHeader {
 
     public void print(Entity order, PdfPTable operationTable, Locale locale) throws DocumentException {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        String technologyName = null;
+        String technologyNumber = null;
         if (technology != null) {
-            technologyName = technology.getStringField(TechnologyFields.NAME);
+            technologyNumber = technology.getStringField(TechnologyFields.NUMBER);
         }
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
-                translationService.translate("workPlans.workPlan.report.operation.technology", locale), technologyName);
+                translationService.translate("workPlans.workPlan.report.operation.technology", locale), technologyNumber);
 
         String orderName = order.getStringField(OrderFields.NAME);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
@@ -65,6 +68,37 @@ public class OperationOrderInfoHeader {
         String orderNumber = order.getStringField(OrderFields.NUMBER);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.orderNumber", locale), orderNumber);
+
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        String productionLineNumber = null;
+        if (productionLine != null) {
+            productionLineNumber = productionLine.getStringField(ProductionLineFields.NUMBER);
+        }
+        pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                translationService.translate("workPlans.workPlan.report.operation.productionLineNumber", locale), productionLineNumber);
+
+        String orderCategory = order.getStringField(OrderFields.ORDER_CATEGORY);
+        if(!Objects.isNull(orderCategory)){
+            pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                    translationService.translate("workPlans.workPlan.report.operation.orderCategory", locale), orderCategory);
+        }
+
+        Entity company = order.getBelongsToField(OrderFields.COMPANY);
+        String companyNumber = null;
+        if (company != null) {
+            companyNumber = company.getStringField(CompanyFields.NUMBER);
+        }
+        if(!Objects.isNull(companyNumber)) {
+            pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                    translationService.translate("workPlans.workPlan.report.operation.companyNumber", locale), companyNumber);
+        }
+
+        String orderDescription = order.getStringField(OrderFields.DESCRIPTION);
+        if(!Objects.isNull(orderDescription)) {
+            pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                    translationService.translate("workPlans.workPlan.report.operation.orderDescription", locale), orderDescription);
+        }
+        operationTable.completeRow();
     }
 
 }
