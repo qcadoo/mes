@@ -58,6 +58,9 @@
 
         <boolean name="production" default="true"/>
 
+        <tree name="factoryStructure" model="factoryStructureElement"
+              joinField="productionLine" cascade="delete" plugin="productionLines"/>
+
     </fields>
     <hooks>
         <onDelete class="com.qcadoo.mes.productionLines.hooks.ProductionLineHooks" method="onDelete"/>
