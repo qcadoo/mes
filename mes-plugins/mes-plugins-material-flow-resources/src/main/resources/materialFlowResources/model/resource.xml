@@ -40,11 +40,8 @@
             <validatesScale max="5"/>
         </decimal>
         <decimal name="price" default="0"/>
-        <decimal name="value" persistent="false">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="12"/>
-            <validatesScale max="5"/>
-        </decimal>
+
+        <decimal name="value" persistent="false"/>
         <string name="batch"/>
         <datetime name="time" required="true"/>
         <date name="productionDate"/>
