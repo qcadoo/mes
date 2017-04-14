@@ -219,10 +219,13 @@ public class OrderDetailsHooksMO {
 
             String orderDescription = orderService.buildOrderDescription(masterOrder,masterOrderTechnology,fillOrderDescriptionBasedOnTechnology);
 
-            descriptionField.setFieldValue("");
-            descriptionField.requestComponentUpdateState();
-            descriptionField.setFieldValue(orderDescription);
-            descriptionField.requestComponentUpdateState();
+            if(((String)descriptionField.getFieldValue()).isEmpty()){
+                descriptionField.setFieldValue("");
+                descriptionField.requestComponentUpdateState();
+                descriptionField.setFieldValue(orderDescription);
+                descriptionField.requestComponentUpdateState();
+            }
+
         }
     }
 

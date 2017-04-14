@@ -685,16 +685,23 @@ public class OrderDetailsHooks {
     public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view){
         LookupComponent technologyLookup = (LookupComponent)view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent descriptionField = (FieldComponent)view.getComponentByReference(OrderFields.DESCRIPTION);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent masterOrderlookup = (LookupComponent)view.getComponentByReference("masterOrder");
         boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult().getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
         Entity masterOrder = masterOrderlookup.getEntity();
         Entity technology = technologyLookup.getEntity();
+        Entity order = orderForm.getEntity();
 
         String orderDescription = orderService.buildOrderDescription(masterOrder,technology,fillOrderDescriptionBasedOnTechnology);
 
+        String currentDescription = order.getStringField(OrderFields.DESCRIPTION);
         descriptionField.setFieldValue("");
         descriptionField.requestComponentUpdateState();
-        descriptionField.setFieldValue(orderDescription);
+        if(currentDescription !=null && !currentDescription.isEmpty()){
+            descriptionField.setFieldValue(currentDescription);
+        }else {
+            descriptionField.setFieldValue(orderDescription);
+        }
         descriptionField.requestComponentUpdateState();
     }
 }
