@@ -36,6 +36,8 @@
                             message="basic.palletNumber.number.error.shouldContainOnlyNumbers"/>
         </string>
 
+        <datetime name="issueDateTime"/>
+
         <manyToMany name="palletNumberHelpers" model="palletNumberHelper" joinField="palletNumbers"
                     cascade="nullify" plugin="basic"/>
     </fields>
