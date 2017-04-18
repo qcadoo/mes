@@ -31,7 +31,9 @@
     <component type="window" name="window">
 
         <ribbon>
-            <group template="navigation" />
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.fireEvent(preformActionOnBack); #{window}.performBack" />
+            </group>
 
             <template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
         </ribbon>
@@ -98,9 +100,12 @@
                 <listener event="removeSelectedProductionCountingQuantities"
                                   method="onRemoveSelectedProductionCountingQuantities"
                                   class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingListHooks"/>
-            </component>
-        </component>
 
+            </component>
+
+        </component>
+        <listener event="preformActionOnBack" method="preformActionOnBack"
+                  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingListHooks"/>
         <option type="fixedHeight" value="true" />
         <option type="header" value="false" />
     </component>

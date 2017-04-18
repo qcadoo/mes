@@ -46,16 +46,6 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-quality-controls</artifactId>
-            <version>1.5-SNAPSHOT-DEV</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-quality-controls-for-operation</artifactId>
-            <version>1.5-SNAPSHOT-DEV</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-material-requirements</artifactId>
             <version>1.5-SNAPSHOT-DEV</version>
         </dependency>

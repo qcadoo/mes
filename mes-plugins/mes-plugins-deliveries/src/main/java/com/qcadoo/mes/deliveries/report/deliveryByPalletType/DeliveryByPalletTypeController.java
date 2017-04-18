@@ -9,7 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.HashMap;
 
 @Controller
-public class DeliveryByPalletTypeController {
+class DeliveryByPalletTypeController {
 
     @RequestMapping(value = "/deliveries/deliveryByPalletType.xlsx", method = RequestMethod.GET)
     public ModelAndView generatePlannedEventsReport(@RequestParam("from") final Long from, @RequestParam("to") final Long to) {
