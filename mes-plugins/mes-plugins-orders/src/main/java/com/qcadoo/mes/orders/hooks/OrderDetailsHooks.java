@@ -686,21 +686,49 @@ public class OrderDetailsHooks {
         LookupComponent technologyLookup = (LookupComponent)view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent descriptionField = (FieldComponent)view.getComponentByReference(OrderFields.DESCRIPTION);
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-        LookupComponent masterOrderlookup = (LookupComponent)view.getComponentByReference("masterOrder");
+        LookupComponent masterOrderLookup = (LookupComponent)view.getComponentByReference("masterOrder");
+        FieldComponent oldTechnologyField = (FieldComponent)view.getComponentByReference("oldTechnologyId");
+
         boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult().getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
-        Entity masterOrder = masterOrderlookup.getEntity();
+        boolean technologyChanged = false;
+
+        Entity masterOrder = masterOrderLookup.getEntity();
         Entity technology = technologyLookup.getEntity();
         Entity order = orderForm.getEntity();
+        Entity oldTechnology = null;
+
+        if(!((String)oldTechnologyField.getFieldValue()).isEmpty()) {
+            Long oldTechnologyId = Long.parseLong((String)oldTechnologyField.getFieldValue());
+            oldTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(oldTechnologyId);
+        }
+
+        if(technology != null){
+            oldTechnologyField.setFieldValue(technology.getId());
+            oldTechnologyField.requestComponentUpdateState();
+            if(oldTechnology !=null){
+                if(!oldTechnology.getStringField(TechnologyFields.DESCRIPTION).equals(technology.getStringField(TechnologyFields.DESCRIPTION))) {
+                    technologyChanged = true;
+                }
+            }
+        }
 
         String orderDescription = orderService.buildOrderDescription(masterOrder,technology,fillOrderDescriptionBasedOnTechnology);
 
         String currentDescription = order.getStringField(OrderFields.DESCRIPTION);
         descriptionField.setFieldValue("");
         descriptionField.requestComponentUpdateState();
-        if(currentDescription !=null && !currentDescription.isEmpty()){
-            descriptionField.setFieldValue(currentDescription);
+        if(technologyChanged){
+            if(fillOrderDescriptionBasedOnTechnology) {
+                descriptionField.setFieldValue(orderDescription);
+            }else{
+                descriptionField.setFieldValue(currentDescription);
+            }
         }else {
-            descriptionField.setFieldValue(orderDescription);
+            if (currentDescription != null && !currentDescription.isEmpty()) {
+                descriptionField.setFieldValue(currentDescription);
+            } else {
+                descriptionField.setFieldValue(orderDescription);
+            }
         }
         descriptionField.requestComponentUpdateState();
     }
