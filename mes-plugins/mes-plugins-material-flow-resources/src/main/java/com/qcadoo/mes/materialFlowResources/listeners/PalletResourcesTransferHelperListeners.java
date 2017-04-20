@@ -4,6 +4,7 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,7 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.service.PalletNumberDisposalService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceCorrectionService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -45,6 +47,9 @@ public class PalletResourcesTransferHelperListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private PalletNumberDisposalService palletNumberDisposalService;
 
     @Autowired
     private ResourceCorrectionService resourceCorrectionService;
@@ -78,12 +83,15 @@ public class PalletResourcesTransferHelperListeners {
             return;
         }
 
+        Set<Entity> palletNumbersToDispose = Sets.newHashSet();
+
         DataDefinition resourceDD = resourceDataDefinition();
-        DataDefinition palletNumberDD = palletNumberDataDefinition();
-        DataDefinition storageLocationDD = storageLocationDataDefinition();
         for (Entity dto : dtos) {
             Entity selectedPallet = dto.getBelongsToField(PalletStorageStateDtoFields.NEW_PALLET_NUMBER);
             if (selectedPallet != null) {
+
+                String oldPalletNumber = dto.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
+                palletNumbersToDispose.add(findPalletNumberByNumber(oldPalletNumber));
 
                 final List<Entity> resources = resourceDD.find()
                         .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
@@ -95,17 +103,12 @@ public class PalletResourcesTransferHelperListeners {
                                 dto.getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
                         .add(storageLocationCriterion(dto)).add(typeOfPalletCriterion(dto)).list().getEntities();
 
-                final Entity palletNumberEntity = palletNumberDD.find().add(
-                        eq(PalletNumberFields.NUMBER, selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER)))
-                        .uniqueResult();
-
-                final Entity storageLocationEntity = storageLocationDD.find()
-                        .add(eq(StorageLocationFields.NUMBER,
-                                selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER)))
-                        .uniqueResult();
+                final Entity palletNumberEntity = findPalletNumberByNumber(
+                        selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
+                final Entity storageLocationEntity = findStorageLocationByNumber(
+                        selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER));
 
                 for (Entity resource : resources) {
-                    System.out.println(resource);
                     resource.setField(ResourceFields.PALLET_NUMBER, palletNumberEntity);
                     resource.setField(ResourceFields.STORAGE_LOCATION, storageLocationEntity);
                     resource.setField(ResourceFields.TYPE_OF_PALLET,
@@ -115,8 +118,19 @@ public class PalletResourcesTransferHelperListeners {
                 }
             }
         }
+        palletNumbersToDispose.forEach(pn -> palletNumberDisposalService.tryToDispose(pn));
         view.addMessage("materialFlowResources.palletResourcesTransfer.success", ComponentState.MessageType.SUCCESS);
         generated.setChecked(true);
+    }
+
+    private Entity findStorageLocationByNumber(final String storageLocationNumber) {
+        return Objects.requireNonNull(storageLocationDataDefinition().find()
+                .add(eq(StorageLocationFields.NUMBER, storageLocationNumber)).uniqueResult());
+    }
+
+    private Entity findPalletNumberByNumber(final String palletNumber) {
+        return Objects.requireNonNull(
+                palletNumberDataDefinition().find().add(eq(PalletNumberFields.NUMBER, palletNumber)).uniqueResult());
     }
 
     private DataDefinition resourceDataDefinition() {
