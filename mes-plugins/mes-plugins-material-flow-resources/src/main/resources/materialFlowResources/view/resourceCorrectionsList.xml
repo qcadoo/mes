@@ -51,12 +51,14 @@
             <option type="column" name="palletNumberCorrected" fields="palletNumberCorrected" width="60"/>
             <option type="column" name="typeOfPalletCorrected" fields="typeOfPalletCorrected" width="60"/>
 
+            <option type="column" name="deliveryNumber" fields="deliveryNumber" width="60"/>
+
             <option type="order" column="correctionNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber"/>
             <option type="orderable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails"/>
             <option type="correspondingComponent" value="form"/>
