@@ -706,9 +706,13 @@ public class OrderDetailsHooks {
             oldTechnologyField.setFieldValue(technology.getId());
             oldTechnologyField.requestComponentUpdateState();
             if(oldTechnology !=null){
-                if(!oldTechnology.getStringField(TechnologyFields.DESCRIPTION).equals(technology.getStringField(TechnologyFields.DESCRIPTION))) {
-                    technologyChanged = true;
+                if(!oldTechnology.getId().equals(technology.getId())){
+                    technologyChanged =  true;
                 }
+            }
+        }else{
+            if(oldTechnology != null){
+                technologyChanged = true;
             }
         }
 
