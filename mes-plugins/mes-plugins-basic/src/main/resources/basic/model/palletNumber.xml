@@ -48,6 +48,8 @@
 
         <onCopy class="com.qcadoo.mes.basic.hooks.PalletNumberHooks"
                 method="onCopy"/>
+
+        <onSave class="com.qcadoo.mes.basic.hooks.PalletNumberHooks" method="onSave"/>
     </hooks>
 
 </model>
