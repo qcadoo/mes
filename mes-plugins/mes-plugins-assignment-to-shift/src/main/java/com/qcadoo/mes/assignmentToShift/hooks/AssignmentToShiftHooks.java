@@ -23,29 +23,8 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.gt;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.FluentIterable;
@@ -62,6 +41,15 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.utils.EntityUtils;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class AssignmentToShiftHooks {
@@ -113,8 +101,9 @@ public class AssignmentToShiftHooks {
         LocalDate startDate = LocalDate.fromDateFields(assignmentToShift.getDateField(AssignmentToShiftFields.START_DATE));
         Shift shift = shiftsFactory.buildFrom(assignmentToShift.getBelongsToField(AssignmentToShiftFields.SHIFT));
         Entity factory = assignmentToShift.getBelongsToField(AssignmentToShiftFields.FACTORY);
+        Entity crew = assignmentToShift.getBelongsToField(AssignmentToShiftFields.CREW);
         Set<LocalDate> occupiedDates = findNextStartDatesMatching(assignmentToShift.getDataDefinition(), startDate, shift,
-                factory);
+                factory, crew);
 
         Calendar cal = Calendar.getInstance();
         cal.setTime(new Date());
@@ -130,13 +119,16 @@ public class AssignmentToShiftHooks {
     private static final Function<LocalDate, Date> TO_DATE = LocalDate::toDate;
 
     private Set<LocalDate> findNextStartDatesMatching(final DataDefinition assignmentToShiftDD, final LocalDate laterThan,
-            final Shift shift, final Entity factory) {
+            final Shift shift, final Entity factory, Entity crew) {
         AssignmentToShiftCriteria criteria = AssignmentToShiftCriteria.empty();
 
         criteria.withCriteria(gt(AssignmentToShiftFields.START_DATE, laterThan.toDate()));
 
         criteria.withShiftCriteria(idEq(shift.getId()));
         criteria.withFactoryCriteria(idEq(factory.getId()));
+        if(Objects.nonNull(crew)){
+            criteria.withCrewCriteria(idEq(crew.getId()));
+        }
 
         List<Entity> matchingStartDatesProjection = assignmentToShiftDataProvider.findAll(criteria,
                 Optional.of(alias(field(AssignmentToShiftFields.START_DATE), AssignmentToShiftFields.START_DATE)),
