@@ -133,6 +133,10 @@
 	<logger name="com.qcadoo.mes.internal">
 		<level value="error" />
 	</logger>
+
+	<logger name="org.springframework.security.access.hierarchicalroles">
+		<level value="info" />
+	</logger>
 	
 	<logger name="com.qcadoo.model">
 		<level value="debug" />
