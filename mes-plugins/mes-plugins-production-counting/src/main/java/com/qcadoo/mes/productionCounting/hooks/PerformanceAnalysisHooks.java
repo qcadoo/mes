@@ -1,7 +1,5 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.Set;
-
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -27,9 +25,8 @@ public class PerformanceAnalysisHooks {
         RibbonActionItem showDetails = (RibbonActionItem) analysis.getItemByName(L_SHOW_DETAILS);
 
         GridComponent performanceAnalysisGrid = (GridComponent) view.getComponentByReference(L_GRID);
-        Set<Long> ids = performanceAnalysisGrid.getSelectedEntitiesIds();
 
-        if (ids.size() != 1) {
+        if (performanceAnalysisGrid.getSelectedEntitiesIds().size() != 1) {
             showDetails.setEnabled(false);
         } else {
             showDetails.setEnabled(true);
