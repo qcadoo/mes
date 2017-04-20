@@ -265,6 +265,16 @@ public class OrderServiceImpl implements OrderService {
                 builder.append(direction);
                 builder.append("\n");
             }
+
+            if(technology == null && masterOrder.getBelongsToField("technology") !=null){
+                if(fillOrderDescriptionBasedOnTechnology){
+                    String technologyDescription = masterOrder.getBelongsToField("technology").getStringField(TechnologyFields.DESCRIPTION);
+                    if (technologyDescription != null) {
+                        builder.append(technologyDescription);
+                    }
+                }
+            }
+
         }
         if(technology != null){
             if(fillOrderDescriptionBasedOnTechnology) {
