@@ -46,6 +46,12 @@ public class PalletNumberHooks {
         generateNumber(palletNumber);
     }
 
+    public void onSave(final DataDefinition palletNumberDD, final Entity palletNumber) {
+        if (palletNumber.getDateField(PalletNumberFields.ISSUE_DATE_TIME) != null) {
+            palletNumber.setActive(false);
+        }
+    }
+
     private void generateNumber(final Entity palletNumber) {
         String number = palletNumber.getStringField(PalletNumberFields.NUMBER);
 

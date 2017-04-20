@@ -48,6 +48,8 @@
         <hasMany name="newResourceCorrections" model="resourceCorrection" cascade="nullify" copyable="false"
                  joinField="newStorageLocation"/>
 
+        <boolean name="highStorageLocation" default="false"/>
+
     </fields>
     <hooks>
         <validatesWith

@@ -78,13 +78,13 @@
                     width="80"/>
             <option type="column" name="productName" fields="productName"
                     width="80"/>
-            <option type="column" name="productUnit" fields="productUnit"
-                    width="40"/>
             <option type="column" name="size" fields="size"
                     width="40"/>
             <option type="column" name="performanceNorm" fields="performanceNorm"
                     width="40"/>
             <option type="column" name="doneQuantity" fields="doneQuantity"
+                    width="40"/>
+            <option type="column" name="productUnit" fields="productUnit"
                     width="40"/>
             <option type="column" name="timeBasedOnNorms" fields="timeBasedOnNorms"
                     width="60"
@@ -97,15 +97,17 @@
                     width="80"/>
             <option type="column" name="orderNumber" fields="orderNumber"
                     width="100"/>
+            <option type="column" name="generatorName" fields="generatorName"
+                    width="80"/>
 
             <option type="order" column="assortmentName" direction="asc"/>
 
             <option type="searchable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,generatorName,orderNumber"/>
             <option type="multiSearch"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,generatorName,orderNumber"/>
             <option type="orderable"
-                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeRangeFrom,timeRangeTo,orderNumber"/>
+                    value="assortmentName,productNumber,productName,productUnit,size,performanceNorm,doneQuantity,timeRangeFrom,timeRangeTo,generatorName,orderNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="doneQuantity"/>

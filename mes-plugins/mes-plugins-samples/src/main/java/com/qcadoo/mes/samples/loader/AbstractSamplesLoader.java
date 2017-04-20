@@ -156,11 +156,6 @@ public abstract class AbstractSamplesLoader implements SamplesLoader {
             parameter.setField("autoCloseOrder", false);
         }
 
-        if (isEnabledOrEnabling("qualityControls")) {
-            parameter.setField("checkDoneOrderForQuality", false);
-            parameter.setField("autoGenerateQualityControl", false);
-        }
-
         if (isEnabledOrEnabling("genealogies")) {
             parameter.setField("batchForDoneOrder", "01none");
         }

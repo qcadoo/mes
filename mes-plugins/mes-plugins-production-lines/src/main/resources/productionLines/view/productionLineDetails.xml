@@ -119,6 +119,27 @@
 			]]></script>
                 </smallButton>
             </group>
+            <group name="factoryStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                <bigButton name="generate" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generateFactoryStructure);" state="disabled">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="productionLine" reference="form"
@@ -149,6 +170,11 @@
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#name"/>
+
+                <listener event="generateFactoryStructure"
+                          class="com.qcadoo.mes.productionLines.listeners.ProductionLineDetailsListeners"
+                          method="generateFactoryStructure"/>
+
             </component>
         </windowTab>
         <windowTab name="workstationTypesTab">
@@ -345,6 +371,92 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="factoryStructureTab">
+            <component type="flowGridLayout" name="factoryStructureLayout" rows="4" columns="1">
+                <layoutElement column="1" row="1" minHeight="4">
+                    <component type="tree" name="factoryStructure" reference="factoryStructure"
+                               field="#{form}.factoryStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
+                        <script>
+                            <![CDATA[
+                            this.addOnChangeListener({
+                                onSetValue: function (value) {
+                                    var currentElement = $(".currentNode");
+                                    if (!currentElement) {
+                                        return;
+                                    }
+
+                                    this.collapseTree();
+                                    currentElement.parent().parent().filter(function (i, e) {
+                                        return $(e).attr("id");
+                                    }).map(function (i, e) {
+                                        return $(e).attr("id").split("_")[2];
+                                    }).each(function (i, e) {
+                                        this.expandParents(e);
+                                    });
+                                }
+                            })
+                            ]]>
+                        </script>
+                        <dataType name="company">
+                            <option type="nodeLabelExpression"
+                                    value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/companyIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/companyIcon16.png"/>
+                        </dataType>
+                        <dataType name="factory">
+                            <option type="nodeLabelExpression"
+                                    value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                        </dataType>
+                        <dataType name="division">
+                            <option type="nodeLabelExpression"
+                                    value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/factoryIcon16.png"/>
+                        </dataType>
+                        <dataType name="productionLine">
+                            <option type="nodeLabelExpression"
+                                    value="#current ? ' &lt;span class=&quot;currentNode&quot; style=&quot;background: #BFF589; border: solid #8BD73E 1px;&quot;&gt;' + #number + ' - ' + #name + '&lt;/span&gt;'
+                                    : ' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                        </dataType>
+                        <dataType name="workstation">
+                            <option type="nodeLabelExpression"
+                                    value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/workstationIcon16.png"/>
+                        </dataType>
+                        <dataType name="subassembly">
+                            <option type="nodeLabelExpression"
+                                    value="' &lt;span class=&quot;grey&quot;&gt;' + #number + ' &lt;/span&gt; - ' + #name"/>
+                            <option type="nodeIcon"
+                                    value="/productionLines/public/css/icons/intermediateIcon16.png"/>
+                            <option type="newIcon"
+                                    value="/productionLines/public/css/icons/intermediateIcon16.png"/>
+                        </dataType>
+                        <option type="selectableWhenDisabled" value="true"/>
+
+                        <option type="hasNewButtons" value="false"/>
+                        <option type="hasDeleteButton" value="false"/>
+                        <option type="hasEditButton" value="false"/>
+                        <option type="hasMoveButton" value="false"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
 
     </component>
     <hooks>

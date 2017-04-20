@@ -44,6 +44,9 @@
 
         <decimal name="usedQuantity"/>
         <decimal name="plannedQuantity"/>
+
+        <enum name="typeOfRecord" values="01in,02out"/>
+
     </fields>
 
 </model>

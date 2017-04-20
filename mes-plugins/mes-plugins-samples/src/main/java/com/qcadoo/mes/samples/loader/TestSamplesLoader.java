@@ -122,10 +122,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             readDataFromXML(dataset, L_STOCK_CORRECTION, locale);
         }
 
-        if (isEnabledOrEnabling(L_QUALITY_CONTROLS)) {
-            readDataFromXML(dataset, L_QUALITY_CONTROLS, locale);
-        }
-
         if (isEnabledOrEnabling(L_MATERIAL_REQUIREMENTS)) {
             readDataFromXML(dataset, L_MATERIAL_REQUIREMENTS, locale);
         }
@@ -219,8 +215,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             addUsedBatch(values);
         } else if (L_GENEALOGY_TABLES.equals(type)) {
             addGenealogyTables(values);
-        } else if (L_QUALITY_CONTROLS.equals(type)) {
-            addQualityControl(values);
         } else if (L_MATERIAL_REQUIREMENTS.equals(type)) {
             addMaterialRequirements(values);
         } else if (L_WORK_PLANS.equals(type)) {
@@ -949,21 +943,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
             technology.setField("shiftFeatureRequired", false);
             technology.setField("technologyBatchRequired", false);
             technology.setField("externalSynchronized", true);
-            if (isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION)
-                    && L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-                technology.setField(L_QUALITY_CONTROL_TYPE2, L_QUALITY_CONTROLS_FOR_OPERATION);
-            }
-
-            if (!(isEnabledOrEnabling(L_QUALITY_CONTROLS_FOR_OPERATION) && "04forOperation".equals(values
-                    .get(L_QUALITY_CONTROL_TYPE)))
-                    && isEnabledOrEnabling(L_QUALITY_CONTROLS)
-                    && ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE)) || "03forOrder".equals(values
-                            .get(L_QUALITY_CONTROL_TYPE)))) {
-                technology.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITY_CONTROL_TYPE));
-                if ("02forUnit".equals(values.get(L_QUALITY_CONTROL_TYPE))) {
-                    technology.setField("unitSamplingNr", values.get("unit_sampling_nr"));
-                }
-            }
 
             if (!values.get("minimal").isEmpty()) {
                 technology.setField("minimalQuantity", values.get("minimal"));
@@ -1253,51 +1232,6 @@ public class TestSamplesLoader extends MinimalSamplesLoader {
         }
 
         productionBalance.getDataDefinition().save(productionBalance);
-    }
-
-    private void addQualityControl(final Map<String, String> values) {
-        Entity qualityControl = dataDefinitionService.get(SamplesConstants.L_QUALITYCONTROL_PLUGIN_IDENTIFIER,
-                SamplesConstants.L_QUALITYCONTROL_MODEL_QUALITYCONTROL).create();
-
-        if ("qualityControlsForUnit".equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
-            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
-            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
-            qualityControl.setField("controlledQuantity", values.get("controlledquantity"));
-            qualityControl.setField("takenForControlQuantity", values.get("takenforcontrolquantity"));
-            qualityControl.setField("rejectedQuantity", values.get("rejectedquantity"));
-            qualityControl.setField("acceptedDefectsQuantity", values.get("accepteddefectsquantity"));
-            qualityControl.setField(L_STAFF, values.get(L_STAFF));
-            qualityControl.setField(L_DATE, values.get(L_DATE));
-            qualityControl.setField("controlInstruction", values.get("controlinstruction"));
-            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-        } else if ("qualityControlsForOrder".equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
-            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualityControl.setField("ControlResult", values.get("controlresult"));
-            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
-            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
-            qualityControl.setField("controlInstruction", values.get("controlinstruction"));
-            qualityControl.setField(L_STAFF, values.get(L_STAFF));
-            qualityControl.setField(L_DATE, values.get(L_DATE));
-            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-        } else if (L_QUALITY_CONTROLS_FOR_OPERATION.equals(values.get(L_QUALITYCONTROLTYPE_3))) {
-            qualityControl.setField(L_NUMBER, values.get(L_NUMBER));
-            qualityControl.setField(L_ORDER, getOrderByNumber(values.get(L_ORDER)));
-            qualityControl.setField(
-                    L_OPERATION,
-                    getTechnologyOperationComponentByNumber(getOrderByNumber(values.get(L_ORDER)),
-                            getOperationByNumber(values.get(L_OPERATION))));
-            qualityControl.setField("ControlResult", values.get("controlresult"));
-            qualityControl.setField(L_COMMENT, values.get(L_COMMENT));
-            qualityControl.setField(L_CLOSED, values.get(L_CLOSED));
-            qualityControl.setField(L_STAFF, values.get(L_STAFF));
-            qualityControl.setField(L_DATE, values.get(L_DATE));
-            qualityControl.setField(L_QUALITY_CONTROL_TYPE2, values.get(L_QUALITYCONTROLTYPE_3));
-        }
-
-        qualityControl.getDataDefinition().save(qualityControl);
     }
 
     private void addWageGroups(final Map<String, String> values) {

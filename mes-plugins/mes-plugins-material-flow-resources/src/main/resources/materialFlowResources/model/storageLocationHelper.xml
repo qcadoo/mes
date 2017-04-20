@@ -42,6 +42,8 @@
             <validatesUnscaledValue max="7"/>
             <validatesScale max="0"/>
         </decimal>
+
+        <boolean name="highStorageLocation" default="false"/>
     </fields>
     <hooks>
 

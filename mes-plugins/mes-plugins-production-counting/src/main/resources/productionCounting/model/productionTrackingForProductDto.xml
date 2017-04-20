@@ -66,6 +66,9 @@
 		<integer name="productiontracking_id"></integer>
 
 		<string name="batchNumber"/>
+
+		<enum name="typeOfRecord" values="01in,02out"/>
+
 	</fields>
 
 	<masterModel plugin="productionCounting" model="productionTracking"/>

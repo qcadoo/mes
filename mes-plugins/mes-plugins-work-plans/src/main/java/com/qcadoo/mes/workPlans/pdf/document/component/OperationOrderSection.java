@@ -23,18 +23,26 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.pdf.document.operation.component.*;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationAdditionalFields;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationBarcode;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationCommentOperation;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationOrderHeader;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductInTable;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductInTableHeader;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTable;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTableHeader;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationOrderSection {
@@ -76,7 +84,7 @@ public class OperationOrderSection {
 
     public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent,
             Document document, Locale locale) throws DocumentException {
-        operationOrderHeader.print(order, groupingContainer, operationComponent, document, locale);
+        operationOrderHeader.print(order, operationComponent, document, locale);
 
         if (isCommentEnabled()) {
             operationComment.print(operationComponent, document, locale);

@@ -92,6 +92,22 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="productionCountingQuantities" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING">
+                <bigButton name="productionCountingQuantities" icon="copyIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('goToProductionCountingQuantities', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -152,6 +168,10 @@
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var isDisabled = (#{isDisabled}.getValue().content.value == "1");
 								var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack"];
+					            var productionCountingQuantitiesBtn = #{window}.getRibbonItemOrNull("productionCountingQuantities.productionCountingQuantities");
+								if(productionCountingQuantitiesBtn) {
+								    productionCountingQuantitiesBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.productionCountingQuantities.label)}");
+                                }
 
 								for (var elementKey in itemNames) {
 									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
@@ -161,6 +181,15 @@
 									} else {
 										ribbonItem.disable();
 									}
+								}
+
+								if (productionCountingQuantitiesBtn && isSaved) {
+								    var state = #{state}.getValue().content.value;
+								    if (state == "01draft") {
+								        productionCountingQuantitiesBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.productionCountingQuantities.label)}");
+								    } else {
+								        productionCountingQuantitiesBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.productionCountingQuantities.label)}");
+								    }
 								}
  								
    								for(var elementKey in itemsToDisable){  
@@ -472,6 +501,10 @@
                 <listener event="correct"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="correct"/>
+
+                <listener event="goToProductionCountingQuantities"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="goToProductionCountingQuantities"/>
 
             </component>
         </windowTab>

@@ -75,6 +75,7 @@ public class StorageLocationsListener {
             sl.setField(StorageLocationFields.PLACE_STORAGE_LOCATION,
                     entity.getBooleanField(StorageLocationHelperFields.PLACE_STORAGE_LOCATION));
             sl.setField(StorageLocationFields.NUMBER, fillNumber(i, numberLength, entity));
+            sl.setField(StorageLocationFields.HIGH_STORAGE_LOCATION,entity.getBooleanField(StorageLocationHelperFields.HIGH_STORAGE_LOCATION));
             sl = sl.getDataDefinition().save(sl);
             if (!sl.isValid()) {
                 state.addMessage("materialFlowResources.storageLocationsHelper.error.locationExist",

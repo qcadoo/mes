@@ -33,7 +33,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
-import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.pdf.PdfHelper;
 
@@ -61,13 +60,13 @@ public class OperationOrderHeader {
         this.operationOrderInfoOperation = operationOrderInfoOperation;
     }
 
-    public void print(Entity order, GroupingContainer groupingContainer, Entity operationComponent, Document document,
+    public void print(Entity order, Entity operationComponent, Document document,
             Locale locale) throws DocumentException {
         PdfPTable operationTable = pdfHelper.createPanelTable(3);
 
         operationOrderInfoOperation.print(operationComponent, operationTable, locale);
 
-        if (groupingContainer.hasManyOrders() && isOrderInfoEnabled()) {
+        if (isOrderInfoEnabled()) {
             operationOrderInfoHeader.print(order, operationTable, locale);
         }
 
