@@ -35,6 +35,7 @@ public class PalletBalanceDetailsHooks {
             form.setEntity(palletBalance);
         }
         changeRibbonState(view, generated);
+        form.setFormEnabled(!generated);
     }
 
     private void changeRibbonState(final ViewDefinitionState view, final boolean generated) {

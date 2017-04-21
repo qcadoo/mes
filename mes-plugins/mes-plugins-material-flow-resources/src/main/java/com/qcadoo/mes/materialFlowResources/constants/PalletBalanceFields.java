@@ -5,6 +5,8 @@ public final class PalletBalanceFields {
     private PalletBalanceFields() {
     }
 
+    public static final String INCLUDE_WEEKENDS = "includeWeekends";
+
     public static final String NUMBER = "number";
 
     public static final String GENERATED = "generated";

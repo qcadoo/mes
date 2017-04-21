@@ -1,11 +1,12 @@
 package com.qcadoo.mes.materialFlowResources.palletBalance;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
@@ -15,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,14 +93,33 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         int lastColumnIndex = typesOfPalletCount + columnIndex - 1;
 
         for (String key : HEADER_KEYS) {
-            addHeaderCell(sheet, translationService.translate("materialFlowResource.palletBalance.report.header." + key, locale),
-                    headerRow, columnIndex, lastColumnIndex, stylesContainer);
-            for (int i = 0; i < typesOfPalletCount; i++) {
-                createHeaderCell(stylesContainer, typesOfPalletRow, typesOfPallet.get(i), columnIndex + i,
-                        HSSFCellStyle.ALIGN_LEFT);
+            if (key.equals("moves")) {
+
+                addHeaderCell(sheet,
+                        translationService.translate("materialFlowResource.palletBalance.report.header." + key, locale),
+                        headerRow, columnIndex, columnIndex + 1, stylesContainer);
+                createHeaderCell(stylesContainer, typesOfPalletRow,
+                        translationService.translate("materialFlowResource.palletBalance.report.header.movesIn", locale),
+                        columnIndex, HSSFCellStyle.ALIGN_LEFT);
+                columnIndex++;
+
+                createHeaderCell(stylesContainer, typesOfPalletRow,
+                        translationService.translate("materialFlowResource.palletBalance.report.header.movesOut", locale),
+                        columnIndex, HSSFCellStyle.ALIGN_LEFT);
+                columnIndex++;
+                lastColumnIndex = columnIndex + typesOfPalletCount - 1;
+
+            } else {
+                addHeaderCell(sheet,
+                        translationService.translate("materialFlowResource.palletBalance.report.header." + key, locale),
+                        headerRow, columnIndex, lastColumnIndex, stylesContainer);
+                for (int i = 0; i < typesOfPalletCount; i++) {
+                    createHeaderCell(stylesContainer, typesOfPalletRow, typesOfPallet.get(i), columnIndex + i,
+                            HSSFCellStyle.ALIGN_LEFT);
+                }
+                columnIndex = lastColumnIndex + 1;
+                lastColumnIndex += typesOfPalletCount;
             }
-            columnIndex = lastColumnIndex + 1;
-            lastColumnIndex += typesOfPalletCount;
         }
     }
 
@@ -118,33 +139,46 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
 
         Date dateFrom = palletBalance.getDateField(PalletBalanceFields.DATE_FROM);
-        Date dateTo = palletBalance.getDateField(PalletBalanceFields.DATE_TO);
+        Date dateTo = DateUtils.truncate(palletBalance.getDateField(PalletBalanceFields.DATE_TO), Calendar.DATE);
+        boolean includeWeekends = palletBalance.getBooleanField(PalletBalanceFields.INCLUDE_WEEKENDS);
         List<String> typesOfPallet = palletBalanceReportHelper.getTypesOfPallet();
 
         Map<Date, List<PalletBalanceRowDto>> inbounds = palletBalanceReportHelper.getInbounds(dateFrom);
         Map<Date, List<PalletBalanceRowDto>> outbounds = palletBalanceReportHelper.getOutbounds(dateFrom);
         Map<Date, List<PalletBalanceRowDto>> initialState = Maps.newHashMap();
-        Map<Date, List<PalletBalanceRowDto>> moves = Maps.newHashMap();
-        Map<Date, List<PalletBalanceRowDto>> finalState = Maps.newHashMap();
+        Map<Date, Integer> moves = palletBalanceReportHelper.getMoves(dateFrom);
+        Map<Date, List<PalletBalanceRowDto>> finalState = palletBalanceReportHelper.getCurrentState(dateTo);
+        palletBalanceReportHelper.fillFinalAndInitialState(typesOfPallet, finalState, initialState, inbounds, outbounds,
+                dateFrom, dateTo);
 
         int columnIndex = 1;
 
         int rowIndex = 2;
+        int columnMax = 0;
         DateTime currentDate = new DateTime(dateFrom);
         while (currentDate.toDate().compareTo(dateTo) <= 0) {
+            if (!includeWeekends && currentDate.getDayOfWeek() > DateTimeConstants.FRIDAY) {
+                currentDate = currentDate.plusDays(1);
+                continue;
+            }
             HSSFRow row = sheet.createRow(rowIndex);
 
             createRegularCell(stylesContainer, row, 0, currentDate.toString("dd.MM.yyyy"));
+            Date current = currentDate.toDate();
 
-            columnIndex = createRowPart(initialState, row, columnIndex, typesOfPallet, currentDate.toDate(), stylesContainer);
-            columnIndex = createRowPart(inbounds, row, columnIndex, typesOfPallet, currentDate.toDate(), stylesContainer);
-            columnIndex = createRowPart(outbounds, row, columnIndex, typesOfPallet, currentDate.toDate(), stylesContainer);
-            columnIndex = createRowPart(moves, row, columnIndex, typesOfPallet, currentDate.toDate(), stylesContainer);
-            createRowPart(finalState, row, columnIndex, typesOfPallet, currentDate.toDate(), stylesContainer);
+            columnIndex = createRowPart(initialState, row, columnIndex, typesOfPallet, current, stylesContainer);
+            columnIndex = createRowPart(inbounds, row, columnIndex, typesOfPallet, current, stylesContainer);
+            columnIndex = createRowPart(outbounds, row, columnIndex, typesOfPallet, current, stylesContainer);
+            columnIndex = createMovesRowPart(moves, row, columnIndex, current, stylesContainer);
+            createRowPart(finalState, row, columnIndex, typesOfPallet, current, stylesContainer);
 
+            columnMax = columnIndex;
             columnIndex = 1;
             rowIndex++;
             currentDate = currentDate.plusDays(1);
+        }
+        for (int i = 0; i <= columnMax; i++) {
+            sheet.autoSizeColumn(i, false);
         }
     }
 
@@ -152,16 +186,29 @@ public class PalletBalanceXlsService extends XlsDocumentService {
             List<String> typesOfPallet, Date currentDate, StylesContainer stylesContainer) {
         for (String typeOfPallet : typesOfPallet) {
             if (data.containsKey(currentDate)) {
-                Optional<PalletBalanceRowDto> stateForDay = data.get(currentDate).stream()
-                        .filter(dto -> typeOfPallet.equals(dto.getTypeOfPallet())).findAny();
-                if (stateForDay.isPresent()) {
-                    createNumericCell(stylesContainer, row, columnIndex, stateForDay.get().getPalletsCount());
-                } else {
-                    createNumericCell(stylesContainer, row, columnIndex, 0);
-                }
+                PalletBalanceRowDto stateForDay = data.get(currentDate).stream()
+                        .filter(dto -> typeOfPallet.equals(dto.getTypeOfPallet())).findAny().orElse(new PalletBalanceRowDto());
+                createNumericCell(stylesContainer, row, columnIndex, stateForDay.getPalletsCount());
+
             } else {
                 createNumericCell(stylesContainer, row, columnIndex, 0);
             }
+            columnIndex++;
+        }
+        return columnIndex;
+    }
+
+    private int createMovesRowPart(Map<Date, Integer> data, HSSFRow row, int columnIndex, Date currentDate,
+            StylesContainer stylesContainer) {
+        if (data.containsKey(currentDate)) {
+            createNumericCell(stylesContainer, row, columnIndex, data.get(currentDate));
+            columnIndex++;
+            createNumericCell(stylesContainer, row, columnIndex, data.get(currentDate));
+            columnIndex++;
+        } else {
+            createNumericCell(stylesContainer, row, columnIndex, 0);
+            columnIndex++;
+            createNumericCell(stylesContainer, row, columnIndex, 0);
             columnIndex++;
         }
         return columnIndex;

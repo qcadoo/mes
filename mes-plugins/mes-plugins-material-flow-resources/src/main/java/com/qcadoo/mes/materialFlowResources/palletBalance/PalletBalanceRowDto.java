@@ -34,6 +34,16 @@ public class PalletBalanceRowDto {
         this.palletsCount = palletsCount;
     }
 
+    public PalletBalanceRowDto() {
+        palletsCount = 0;
+    }
+
+    public PalletBalanceRowDto(String typeOfPallet, Date day, int palletsCount) {
+        this.typeOfPallet = typeOfPallet;
+        this.day = day;
+        this.palletsCount = palletsCount;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
