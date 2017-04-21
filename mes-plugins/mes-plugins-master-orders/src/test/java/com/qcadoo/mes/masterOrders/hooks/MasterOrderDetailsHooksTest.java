@@ -24,7 +24,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
@@ -97,7 +96,6 @@ public class MasterOrderDetailsHooksTest {
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "technologyServiceO", technologyServiceO);
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "expressionService", expressionService);
         given(view.getComponentByReference("form")).willReturn(form);
-        given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderTypeField);
         given(view.getComponentByReference(MasterOrderFields.PRODUCT)).willReturn(productField);
         given(view.getComponentByReference(MasterOrderFields.TECHNOLOGY)).willReturn(technologyField);
         given(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
@@ -126,71 +124,6 @@ public class MasterOrderDetailsHooksTest {
         given(ribbon.getGroupByName("orders")).willReturn(ordersRibbonGroup);
         RibbonActionItem createOrderButton = mock(RibbonActionItem.class);
         given(ordersRibbonGroup.getItemByName("createOrder")).willReturn(createOrderButton);
-    }
-
-    @Test
-    public final void shouldInvisibleFieldWhenMasterOrderTypeValueIsEmty() {
-        given(masterOrderTypeField.getFieldValue()).willReturn(null);
-        // given
-        masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
-        // then
-        Mockito.verify(productField).setVisible(false);
-        Mockito.verify(defaultTechnologyField).setVisible(false);
-        Mockito.verify(cumulatedQuantityField).setVisible(false);
-        Mockito.verify(technologyField).setVisible(false);
-        Mockito.verify(masterOrderQuantityField).setVisible(false);
-        Mockito.verify(borderLayoutProductQuantity).setVisible(false);
-        Mockito.verify(masterOrderProducts).setVisible(false);
-    }
-
-    @Test
-    public final void shouldInvisibleFieldWhenMasterOrderTypeIsManyProducts() {
-        // given
-        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.MANY_PRODUCTS.getStringValue());
-        // given
-        masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
-        // then
-        Mockito.verify(productField).setVisible(false);
-        Mockito.verify(defaultTechnologyField).setVisible(false);
-        Mockito.verify(cumulatedQuantityField).setVisible(false);
-        Mockito.verify(technologyField).setVisible(false);
-        Mockito.verify(masterOrderQuantityField).setVisible(false);
-        Mockito.verify(borderLayoutProductQuantity).setVisible(false);
-        Mockito.verify(masterOrderProducts).setVisible(true);
-    }
-
-    @Test
-    public final void shouldInvisibleFieldWhenMasterOrderTypeIsUndefined() {
-        // given
-        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.UNDEFINED.getStringValue());
-        // given
-        masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
-        // then
-        Mockito.verify(productField).setVisible(false);
-        Mockito.verify(defaultTechnologyField).setVisible(false);
-        Mockito.verify(cumulatedQuantityField).setVisible(false);
-        Mockito.verify(technologyField).setVisible(false);
-        Mockito.verify(masterOrderQuantityField).setVisible(false);
-        Mockito.verify(borderLayoutProductQuantity).setVisible(false);
-        Mockito.verify(masterOrderProducts).setVisible(false);
-
-    }
-
-    @Test
-    public final void shouldVisibleFieldWhenMasterOrderTypeIsOnProduct() {
-        // given
-        given(masterOrderTypeField.getFieldValue()).willReturn(MasterOrderType.ONE_PRODUCT.getStringValue());
-        // given
-        masterOrderDetailsHooks.hideFieldDependOnMasterOrderType(view);
-        // then
-        verify(productField).setVisible(true);
-        verify(defaultTechnologyField).setVisible(true);
-        verify(cumulatedQuantityField).setVisible(true);
-        verify(technologyField).setVisible(true);
-        verify(masterOrderQuantityField).setVisible(true);
-        verify(borderLayoutProductQuantity).setVisible(true);
-        verify(masterOrderProducts).setVisible(false);
-
     }
 
     @Test
@@ -224,9 +157,7 @@ public class MasterOrderDetailsHooksTest {
         // given
         BigDecimal cumulatedQuantity = BigDecimal.ONE;
         BigDecimal masterQuantity = BigDecimal.TEN;
-        String masterOrderType = "02oneProduct";
         given(form.getEntity()).willReturn(masterOrderEntity);
-        given(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
         given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
         given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
         // when
@@ -241,9 +172,7 @@ public class MasterOrderDetailsHooksTest {
         // given
         BigDecimal cumulatedQuantity = BigDecimal.TEN;
         BigDecimal masterQuantity = BigDecimal.ONE;
-        String masterOrderType = "02oneProduct";
         given(form.getEntity()).willReturn(masterOrderEntity);
-        given(masterOrderEntity.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
         given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
         given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
         // when

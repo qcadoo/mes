@@ -23,25 +23,18 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubHasManyField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubId;
-import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.testing.model.EntityListMock;
 import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,17 +48,17 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.testing.model.EntityListMock;
+import java.math.BigDecimal;
+import java.util.List;
+
+import static com.qcadoo.testing.model.EntityTestUtils.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -112,7 +105,6 @@ public class MasterOrderHooksTest {
     public final void shouldReturnWhenMasterOrderTypeIsIncorrect() {
         // given
         stubId(masterOrder, MASTER_ORDER_ID);
-        stubMasterOrderType(MasterOrderType.UNDEFINED);
         // when
         masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
         // then
@@ -124,7 +116,6 @@ public class MasterOrderHooksTest {
         // given
         stubId(masterOrder, MASTER_ORDER_ID);
         MasterOrderType masterOrderType = MasterOrderType.ONE_PRODUCT;
-        stubMasterOrderType(masterOrderType);
         stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
 
         BigDecimal quantitiesSum = BigDecimal.valueOf(20L);
@@ -141,7 +132,6 @@ public class MasterOrderHooksTest {
     public final void shouldSetZeroWhenOrderDoesnotExists() {
         // given
         stubId(masterOrder, MASTER_ORDER_ID);
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT);
         stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
 
         stubOrdersPlannedQuantitiesSum(masterOrder, BigDecimal.ZERO);
@@ -253,10 +243,6 @@ public class MasterOrderHooksTest {
         assertEquals(2, actualOrders.size());
         assertTrue(actualOrders.contains(order1));
         assertTrue(actualOrders.contains(order2));
-    }
-
-    private void stubMasterOrderType(final MasterOrderType masterOrderType) {
-        stubStringField(masterOrder, MasterOrderFields.MASTER_ORDER_TYPE, masterOrderType.getStringValue());
     }
 
     private void stubOrdersPlannedQuantitiesSum(final Entity masterOrder, final BigDecimal quantitiesSum) {

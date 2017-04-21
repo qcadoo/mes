@@ -272,138 +272,7 @@
         </windowTab>
 
         <windowTab name="productsTab">
-            <component type="gridLayout" name="gridLayout" reference="productsTabGridLayout"
-                       columns="10" rows="9">
-                <layoutElement column="1" width="3" row="1">
-                    <component type="select" name="masterOrderType"
-                               reference="masterOrderType" field="#{form}.masterOrderType">
 
-                        <listener event="onSelectedEntityChange" method="hideFieldDependOnMasterOrderType"
-                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
-                        <listener event="onSelectedEntityChange" method="setUneditableWhenEntityHasUnsaveChanges"
-                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="2">
-                    <component type="lookup" name="product" reference="product"
-                               field="#{form}.product" hasDescription="true" defaultVisible="false">
-                        <option type="column" name="name" fields="name" link="true"
-                                width="200"/>
-                        <option type="column" name="ean" fields="ean"/>
-
-                        <option type="searchable" value="name,ean"/>
-                        <option type="orderable" value="name,ean"/>
-
-                        <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-
-                        <listener event="onSelectedEntityChange" method="fillUnitField"
-                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
-                        <listener event="onSelectedEntityChange" method="fillDefaultTechnology"
-                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="3">
-                    <component type="input" name="defaultTechnology"
-                               reference="defaultTechnology" field="#{form}.defaultTechnology"
-                               defaultEnabled="never" defaultVisible="false"/>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="4">
-                    <component type="lookup" name="technology" reference="technology"
-                               field="#{form}.technology" source="#{product}.technologies"
-                               hasDescription="true" defaultVisible="false">
-                        <option type="column" name="name" fields="name" link="true"
-                                width="300"/>
-
-                        <option type="searchable" value="name,number"/>
-                        <option type="orderable" value="name,number"/>
-
-                        <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-                        <criteriaModifier
-                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                method="showPatternTechnology"/>
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="5" height="2">
-                    <component type="textarea" name="comments" field="#{form}.comments"
-                               reference="comments"/>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="7">
-                    <component type="select" name="masterOrderPositionStatus"
-                               reference="masterOrderPositionStatus" field="#{form}.masterOrderPositionStatus"
-                               hasDescription="true"/>
-                </layoutElement>
-                <layoutElement column="1" width="3" row="8">
-                    <component type="borderLayout" name="productQuantity"
-                               reference="borderLayoutProductQuantity">
-                        <component type="gridLayout" name="productQuantityGridLayout"
-                                   columns="4" rows="4" reference="productQuantityGridLayout"
-                                   hasBorders="false">
-                            <layoutElement column="1" row="1" width="3">
-                                <component type="input" name="masterOrderQuantity"
-                                           field="#{form}.masterOrderQuantity" reference="masterOrderQuantity"
-                                           defaultVisible="false">
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="4" row="1">
-                                <component type="input" name="masterOrderQuantityUnit"
-                                           reference="masterOrderQuantityUnit" hasLabel="false"
-                                           defaultVisible="false">
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="2" width="3">
-                                <component type="input" name="cumulatedOrderQuantity"
-                                           field="#{form}.cumulatedOrderQuantity" reference="cumulatedOrderQuantity"
-                                           defaultVisible="false" defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="4" row="2">
-                                <component type="input" name="cumulatedOrderQuantityUnit"
-                                           reference="cumulatedOrderQuantityUnit" hasLabel="false"
-                                           defaultVisible="false">
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="3" width="3">
-                                <component type="input" name="leftToRelease"
-                                           field="leftToRelease" reference="leftToRelease"
-                                           defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="4" row="3">
-                                <component type="input" name="leftToReleaseUnit"
-                                           reference="leftToReleaseUnit" hasLabel="false">
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="4" width="3">
-                                <component type="input" name="producedOrderQuantity"
-                                           field="#{form}.producedOrderQuantity" reference="producedOrderQuantity"
-                                           defaultVisible="false" defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="4" row="4">
-                                <component type="input" name="producedOrderQuantityUnit"
-                                           reference="producedOrderQuantityUnit" hasLabel="false"
-                                           defaultVisible="false">
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
-                        </component>
-
-                        <option type="label" value="productQuantityLabel"/>
-                    </component>
-                </layoutElement>
-
-                <layoutElement column="4" row="1" width="7" height="9">
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
                         <option type="column" name="productNumber" fields="product"
@@ -435,6 +304,8 @@
                         <option type="deletable" value="true"/>
                         <option type="creatable" value="true"/>
                         <option type="multiselect" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="fixedHeight" value="true"/>
 
                         <option type="footerRow" value="true"/>
                         <option type="columnsToSummary"
@@ -445,8 +316,7 @@
                                   method="onProductsChange"/>
 
                     </component>
-                </layoutElement>
-            </component>
+
         </windowTab>
 
         <windowTab name="ordersTab">
@@ -518,9 +388,6 @@
     </component>
 
     <hooks>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="hideFieldDependOnMasterOrderType"/>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
                 method="fillUnitField"/>

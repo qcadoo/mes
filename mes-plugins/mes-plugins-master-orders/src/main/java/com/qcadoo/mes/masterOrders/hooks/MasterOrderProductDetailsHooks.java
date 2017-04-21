@@ -24,9 +24,7 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -77,10 +75,6 @@ public class MasterOrderProductDetailsHooks {
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
 
-        if (!masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE).equals(
-                MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            return;
-        }
 
         BigDecimal cumulatedQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
         BigDecimal masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
