@@ -91,6 +91,7 @@
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
         <model:model model="palletStorageStateDetailsDto" resource="model/palletStorageStateDetailsDto.xml"/>
         <model:model model="palletMoveHelper" resource="model/palletMoveHelper.xml"/>
+        <model:model model="palletBalance" resource="model/palletBalance.xml"/>
 
         <model:model model="resourceStock" resource="model/resourceStock.xml"/>
         <model:model model="resourceStockDto" resource="model/resourceStockDto.xml"/>
@@ -272,6 +273,10 @@
         <menu:menu-item name="palletStorageState" category="materialFlow"
                         view="palletStorageStateList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="palletBalances" category="materialFlow"
+                        view="palletBalancesList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
+
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
@@ -317,6 +322,8 @@
         <view:view resource="view/palletMoveToStorageLocationHelper.xml"/>
         <view:view resource="view/palletResourcesTransferHelper.xml"/>
 
+        <view:view resource="view/palletBalanceDetails.xml"/>
+        <view:view resource="view/palletBalancesList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
