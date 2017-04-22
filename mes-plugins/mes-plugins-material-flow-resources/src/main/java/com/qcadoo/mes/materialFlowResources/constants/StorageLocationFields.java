@@ -18,4 +18,7 @@ public final class StorageLocationFields {
 
     public static final String MAXIMUM_NUMBER_OF_PALLETS = "maximumNumberOfPallets";
 
+    public static final String HIGH_STORAGE_LOCATION = "highStorageLocation";
+
+
 }

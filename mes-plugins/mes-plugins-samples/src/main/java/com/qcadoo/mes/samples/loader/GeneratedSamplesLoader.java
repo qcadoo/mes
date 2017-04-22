@@ -61,7 +61,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import com.qcadoo.security.api.SecurityRolesService;
 
 @Component
 @Transactional
@@ -281,10 +280,6 @@ public class GeneratedSamplesLoader extends AbstractSamplesLoader {
         technology.setField("shiftFeatureRequired", false);
         technology.setField("minimalQuantity", RANDOM.nextInt(40) + 10);
         technology.setField("technologyBatchRequired", false);
-
-        technology.setField("qualityControlType", "02forUnit");
-        technology.setField("unitSamplingNr", "123");
-        technology.setField("qualityControlInstruction", "asd23");
 
         technology = dataDefinitionService.get(TECHNOLOGIES_PLUGIN, L_TECHNOLOGY_MODEL_TECHNOLOGY).save(technology);
         generateAndAddTechnologyOperationComponent(technology);

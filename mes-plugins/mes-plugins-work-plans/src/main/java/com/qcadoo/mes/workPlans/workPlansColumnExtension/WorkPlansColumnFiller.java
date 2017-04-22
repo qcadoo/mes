@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.workPlans.workPlansColumnExtension;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -36,15 +46,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Component
 public class WorkPlansColumnFiller implements ColumnFiller {
@@ -84,10 +85,9 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
         Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
 
-        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(orders);
-
         for (Entity order : orders) {
+            OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
+                    .getProductComponentQuantities(order);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             fillProductNames(technology, values);
             fillPlannedQuantities(technology, productQuantities, values);

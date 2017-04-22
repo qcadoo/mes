@@ -104,12 +104,15 @@
 					width="100"/>
 			<option type="column" name="orderState" fields="orderState" hidden="true"/>
 
+			<option type="column" name="typeOfRecord" fields="typeOfRecord"
+					width="60"/>
+
 			<option type="order" column="number" direction="asc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
 			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber"/>
+					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
 
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>

@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="palletStorageStateList" modelName="palletStorageStateDto" menuAccessible="true">
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
         <ribbon>
             <group name="actions">
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
@@ -58,7 +58,7 @@
                 </smallButton>
             </group>
             <group name="details">
-                <bigButton name="showDetails" icon="generateIcon24.png">
+                <bigButton name="showDetails" icon="generateIcon24.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -71,10 +71,49 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="showPalletsWithProductsToShift" icon="generateIcon24.png" message="materialFlowResources.palletStorageStateList.window.ribbon.details.showPalletsWithProductsToShift.description">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showPalletsWithProductToShift', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showPalletsWithFreeSpace" icon="generateIcon24.png" message="materialFlowResources.palletStorageStateList.window.ribbon.details.showPalletsWithFreeSpace.description">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showPallestWithFreeSpace', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showAllPallets" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showAllPallets', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
 
             <group name="movePallets">
-                <bigButton name="moveToStorageLocation" icon="startIcon24.png">
+                <bigButton name="moveToStorageLocation" icon="startIcon24.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -87,7 +126,7 @@
 						]]>
                     </script>
                 </bigButton>
-                <bigButton name="transferResources" icon="startIcon24.png">
+                <bigButton name="transferResources" icon="startIcon24.png" state="disabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -104,6 +143,28 @@
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
+            <script>
+                <![CDATA[
+					var moveToStorageLocationButton = #{window}.getRibbonItem("movePallets.moveToStorageLocation");
+					var transferResourcesButton = #{window}.getRibbonItem("movePallets.transferResources");
+					var showDetailsButton = #{window}.getRibbonItem("details.showDetails");
+					this.addOnChangeListener({
+                        onChange: function(selectedEntitiesArray) {
+                            moveToStorageLocationButton.disable();
+                            transferResourcesButton.disable();
+                            showDetailsButton.disable("#{translate(materialFlowResources.palletStorageStateList.ribbon.message.selectOneRecord)}");
+
+                            if (selectedEntitiesArray && selectedEntitiesArray.length > 0) {
+                                if (selectedEntitiesArray.length === 1) {
+                                    showDetailsButton.enable();
+                                }
+                                moveToStorageLocationButton.enable();
+                                transferResourcesButton.enable();
+                            }
+                        }
+                    });
+				]]>
+            </script>
 
             <option type="column" name="palletNumber" fields="palletNumber"/>
             <option type="column" name="typeOfPallet" fields="typeOfPallet"/>
@@ -122,6 +183,15 @@
             <listener event="showDetails"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="showDetails"/>
+             <listener event="showAllPallets"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showAllPallets"/>
+             <listener event="showPalletsWithProductToShift"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showPalletsWithProductToShift"/>
+             <listener event="showPallestWithFreeSpace"
+                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
+                       method="showPallestWithFreeSpace"/>
 
             <listener event="moveToStorageLocation"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
@@ -132,6 +202,8 @@
                       method="transferResources"/>
 
         </component>
+        <component type="checkbox" name="isShiftFilter" reference="isShiftFilter" defaultVisible="false" defaultEnabled="false"/>
+        <component type="checkbox" name="isFreeFilter" reference="isFreeFilter" defaultVisible="false" defaultEnabled="false"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
@@ -140,7 +212,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.materialFlowResources.hooks.PalletStorageStateListHooks"
-                method="toggleButtons"/>
+                method="applyFilters"/>
     </hooks>
 
 </view>

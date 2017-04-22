@@ -45,6 +45,7 @@ import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
@@ -92,6 +93,26 @@ public class FactoryStructureGenerationService {
         return generateFactoryStructureForEntity(subassembly, FactoryStructureElementFields.SUBASSEMBLY);
     }
 
+    public EntityTree generateFactoryStructureForProductionLine(Entity productionLineEntity) {
+        Entity productionLine = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
+                .get(productionLineEntity.getId());
+
+        EntityList divisions = productionLine.getHasManyField(ProductionLineFields.DIVISIONS);
+        if (productionLine.getId() == null || divisions == null || divisions.isEmpty()) {
+            return null;
+        }
+        boolean valid = false;
+        for (Entity division : divisions) {
+            Entity factory = division.getBelongsToField(DivisionFields.FACTORY);
+            if (factory != null) {
+                valid = true;
+                break;
+            }
+        }
+        return valid ? generateFactoryStructureForEntity(productionLine, FactoryStructureElementFields.PRODUCTION_LINE) : null;
+    }
+
     public EntityTree generateFactoryStructureForEntity(final Entity entity, final String belongsToField) {
         List<Entity> factoryStructureList = Lists.newArrayList();
         Entity root = addRoot(factoryStructureList, entity, belongsToField);
@@ -129,6 +150,9 @@ public class FactoryStructureGenerationService {
                             productionLine.getStringField(ProductionLineFields.NUMBER),
                             productionLine.getStringField(ProductionLineFields.NAME), FactoryStructureElementType.PRODUCTION_LINE,
                             productionLine.getId());
+                    if (areEntitiesEqual(productionLine, belongsToEntity)) {
+                        productionLineNode.setField(FactoryStructureElementFields.CURRENT, true);
+                    }
                     addChild(tree, productionLineNode, divisionNode);
 
                     List<Entity> workstations = getWorkstationsForProductionLineAndDivision(productionLine, division);

@@ -29,6 +29,8 @@ public final class PalletNumberFields {
 
     }
 
+    public static final String ISSUE_DATE_TIME = "issueDateTime";
+
     public static final String NUMBER = "number";
 
     public static final String PALLET_NUMBER_HELPERS = "palletNumberHelpers";

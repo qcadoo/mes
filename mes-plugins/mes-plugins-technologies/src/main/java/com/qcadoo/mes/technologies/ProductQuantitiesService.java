@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.technologies;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 public interface ProductQuantitiesService {
 
@@ -52,20 +52,20 @@ public interface ProductQuantitiesService {
     ProductQuantitiesHolder getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity);
 
     /**
-     * @param orders List of orders
+     * @param order Order
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      * products that are the same, but are related to different operations are here as different entries.
      */
-    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders);
+    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order);
 
     /**
-     * @param orders        List of orders
+     * @param order        Order
      * @param operationRuns Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
      *                      run.
      * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
      * products that are the same, but are related to different operations are here as different entries.
      */
-    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders,
+    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
             Map<Long, BigDecimal> operationRuns);
 
     /**
@@ -93,12 +93,12 @@ public interface ProductQuantitiesService {
             final MrpAlgorithm mrpAlgorithm);
 
     /**
-     * @param orders       Given list of orders
+     * @param order       Order
      * @param mrpAlgorithm MRP Algorithm
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      * aggregated)
      */
-    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm);
+    Map<Long, BigDecimal> getNeededProductQuantities(final Entity order, final MrpAlgorithm mrpAlgorithm);
 
     /**
      * @param orders       Given list of orders

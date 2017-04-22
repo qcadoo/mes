@@ -94,6 +94,8 @@
                 <option type="correspondingView" value="technologies/technologyDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="fullscreen" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
                 <option type="multiselect" value="true"/>
 
                 <option type="creatable" value="true"/>

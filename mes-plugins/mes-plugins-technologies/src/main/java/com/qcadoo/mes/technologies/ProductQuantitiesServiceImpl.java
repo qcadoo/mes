@@ -23,25 +23,37 @@
  */
 package com.qcadoo.mes.technologies;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.technologies.constants.*;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -78,28 +90,28 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders) {
-        return getProductComponentQuantities(orders, false);
+    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order) {
+        return getProductComponentQuantities(order, false);
     }
 
-    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders,
+    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
             final boolean onTheFly) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
-        return getProductComponentQuantities(orders, operationRuns, onTheFly);
+        return getProductComponentQuantities(order, operationRuns, onTheFly);
     }
 
     @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders,
+    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
             final Map<Long, BigDecimal> operationRuns) {
-        return getProductComponentQuantities(orders, operationRuns, false);
+        return getProductComponentQuantities(order, operationRuns, false);
     }
 
-    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final List<Entity> orders,
+    private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
             final Map<Long, BigDecimal> operationRuns, final boolean onTheFly) {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
-        return getProductComponentWithQuantitiesForOrders(orders, operationRuns, nonComponents, onTheFly);
+        return getProductComponentWithQuantitiesForOrders(Lists.newArrayList(order), operationRuns, nonComponents, onTheFly);
     }
 
     @Override
@@ -144,8 +156,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm) {
-        return getNeededProductQuantities(orders, mrpAlgorithm, false);
+    public Map<Long, BigDecimal> getNeededProductQuantities(final Entity order, final MrpAlgorithm mrpAlgorithm) {
+        return getNeededProductQuantities(Lists.newArrayList(order), mrpAlgorithm, false);
     }
 
     @Override

@@ -56,10 +56,6 @@ public final class SamplesConstants {
 
     public static final String L_BASICPRODUCTIONCOUNTING_PLUGIN_IDENTIFIER = "basicProductionCounting";
 
-    public static final String L_QUALITYCONTROL_MODEL_QUALITYCONTROL = "qualityControl";
-
-    public static final String L_QUALITYCONTROL_PLUGIN_IDENTIFIER = "qualityControls";
-
     public static final String L_MATERIALREQUIREMENTS_MODEL_MATERIALREQUIREMENTS = "materialRequirement";
 
     public static final String L_MATERIALREQUIREMENTS_PLUGIN_IDENTIFIER = "materialRequirements";
@@ -196,8 +192,6 @@ public final class SamplesConstants {
 
     public static final String L_STOCK_CORRECTION = "stockCorrection";
 
-    public static final String L_QUALITY_CONTROLS = "qualityControls";
-
     public static final String L_MATERIAL_REQUIREMENTS = "materialRequirements";
 
     public static final String L_PRODUCTION_COUNTING = "productionCounting";
@@ -243,14 +237,6 @@ public final class SamplesConstants {
     public static final String L_DEADLINE = "deadline";
 
     public static final String L_PRODUCTION_LINE = "productionLine";
-
-    public static final String L_QUALITY_CONTROLS_FOR_OPERATION = "qualityControlsForOperation";
-
-    public static final String L_QUALITY_CONTROL_TYPE = "quality_control_type";
-
-    public static final String L_QUALITY_CONTROL_TYPE2 = "qualityControlType";
-
-    public static final String L_QUALITYCONTROLTYPE_3 = "qualitycontroltype";
 
     public static final String L_GOOD_FOOD = "goodFood";
 
