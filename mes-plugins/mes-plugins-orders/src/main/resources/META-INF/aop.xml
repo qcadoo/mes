@@ -29,7 +29,7 @@
     <aspects>
         <aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
 		
-        <aspect name="com.qcadoo.mes.orders.states.aop.listener.ClearBarCodesOnOrderChangeState" />
+        <aspect name="com.qcadoo.mes.orders.states.aop.listener.ClearBarCodesOnOrderChangeStateAspect" />
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateChangeReasonAspect" />
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStatesAspect" />
