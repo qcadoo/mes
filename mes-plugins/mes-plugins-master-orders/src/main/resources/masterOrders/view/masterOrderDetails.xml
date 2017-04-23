@@ -390,35 +390,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="fillUnitField"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="fillDefaultTechnology"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="showErrorWhenCumulatedQuantity"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="disabledGridWhenMasterOrderDoesnotHaveProduct"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setUneditableWhenEntityHasUnsaveChanges"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setOrderLookupCriteriaModifier"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setProductLookupRequired"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="setDefaultMasterOrderNumber"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="calculateMasterOrderFields"/>
-
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks"
-                method="disableFields"/>
+                method="onBeforeRender"/>
     </hooks>
 
 </view>

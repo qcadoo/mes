@@ -23,19 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -44,6 +32,15 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.COMPANY;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
 
 @Service
 public class MasterOrderHooks {
@@ -59,7 +56,6 @@ public class MasterOrderHooks {
     }
 
     public void onSave(final DataDefinition dataDefinition, final Entity masterOrder) {
-        onTypeTransitionFromOneToOther(masterOrder);
         onTypeTransitionFromManyToOther(masterOrder);
     }
 
@@ -73,18 +69,6 @@ public class MasterOrderHooks {
 
     protected void setExternalSynchronizedField(final Entity masterOrder) {
         masterOrder.setField(MasterOrderFields.EXTERNAL_SYNCHRONIZED, true);
-    }
-
-    protected void calculateCumulativeQuantityFromOrders(final Entity masterOrder) {
-        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
-            return;
-        }
-
-        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-
-        BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
-
-        masterOrder.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, quantitiesSum);
     }
 
     protected void changedDeadlineAndInOrder(final Entity masterOrder) {
@@ -119,29 +103,6 @@ public class MasterOrderHooks {
             masterOrder.setField(MasterOrderFields.ORDERS, allOrders);
         }
 
-    }
-
-    private void onTypeTransitionFromOneToOther(final Entity masterOrder) {
-        if (masterOrder.getId() == null || isNotLeavingType(masterOrder, MasterOrderType.ONE_PRODUCT)) {
-            return;
-        }
-        if (isTransitionToManyProducts(masterOrder)) {
-            clearAndRegenerateProducts(masterOrder);
-        }
-        clearFieldsForOneProduct(masterOrder);
-    }
-
-    private void clearAndRegenerateProducts(final Entity masterOrder) {
-        // to avoid uniqueness validation issues on the old data
-        masterOrderProductsDataService.deleteExistingMasterOrderProducts(masterOrder);
-        Entity masterOrderProduct = masterOrderProductsDataService.createProductEntryFor(masterOrder);
-        masterOrder.setField(MasterOrderFields.MASTER_ORDER_PRODUCTS, Lists.newArrayList(masterOrderProduct));
-    }
-
-    private void clearFieldsForOneProduct(final Entity masterOrder) {
-        masterOrder.setField(MasterOrderFields.PRODUCT, null);
-        masterOrder.setField(MasterOrderFields.TECHNOLOGY, null);
-        masterOrder.setField(MasterOrderFields.MASTER_ORDER_QUANTITY, null);
     }
 
     private void onTypeTransitionFromManyToOther(final Entity masterOrder) {

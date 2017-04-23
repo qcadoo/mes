@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -73,7 +72,7 @@ public class MasterOrderProductHooks {
     private void fillRegisteredQuantity(Entity masterOrderProduct) {
         BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(
                 masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER),
-                masterOrderProduct.getBelongsToField(MasterOrderFields.PRODUCT));
+                masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT));
         masterOrderProduct.setField("producedOrderQuantity", doneQuantity);
 
     }
@@ -84,8 +83,8 @@ public class MasterOrderProductHooks {
         }
         BigDecimal cumulativeQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(
                 masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER),
-                masterOrderProduct.getBelongsToField(MasterOrderFields.PRODUCT));
-        masterOrderProduct.setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, cumulativeQuantity);
+                masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT));
+        masterOrderProduct.setField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY, cumulativeQuantity);
     }
 
     private boolean checkAssignedOrder(final Entity masterOrderProduct) {

@@ -80,37 +80,6 @@ public class MasterOrderDetailsListeners {
         createOrder.requestUpdate(true);
     }
 
-    public void fillUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        masterOrderDetailsHooks.fillUnitField(view);
-    }
-
-    public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderFields.PRODUCT);
-        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY);
-        FieldComponent technology = (FieldComponent) view.getComponentByReference(MasterOrderFields.TECHNOLOGY);
-
-        Entity product = productField.getEntity();
-
-        if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
-            defaultTechnology.setFieldValue(null);
-            technology.setFieldValue(null);
-            defaultTechnology.requestComponentUpdateState();
-            technology.requestComponentUpdateState();
-
-            return;
-        }
-
-        Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
-        String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
-                view.getLocale());
-
-        defaultTechnology.setFieldValue(defaultTechnologyValue);
-        technology.setFieldValue(defaultTechnologyEntity.getId());
-
-        defaultTechnology.requestComponentUpdateState();
-        technology.requestComponentUpdateState();
-    }
-
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         masterOrderForm.performEvent(view, "refresh");

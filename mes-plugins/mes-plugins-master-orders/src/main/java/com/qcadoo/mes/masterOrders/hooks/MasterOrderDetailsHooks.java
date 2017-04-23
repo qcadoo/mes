@@ -24,30 +24,24 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.*;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -80,26 +74,82 @@ public class MasterOrderDetailsHooks {
     @Autowired
     private NumberService numberService;
 
+    public void onBeforeRender(final ViewDefinitionState view) {
+        setOrderLookupCriteriaModifier(view);
+        setDefaultMasterOrderNumber(view);
+        disableFields(view);
+        ribbonRender(view);
+    }
 
-    public void fillUnitField(final ViewDefinitionState view) {
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(PRODUCT);
-        Entity product = productField.getEntity();
-        String unit = null;
+    public void ribbonRender(final ViewDefinitionState view) {
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
-        if (product != null) {
-            unit = product.getStringField(UNIT);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName(L_CREATE_ORDER);
+
+        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
+            createOrder.setEnabled(false);
+        } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
+            createOrder.setEnabled(true);
+        } else {
+            createOrder.setEnabled(false);
         }
+        createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
+        createOrder.requestUpdate(true);
+        window.requestRibbonRender();
+    }
 
-        for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
-                "producedOrderQuantityUnit", "leftToReleaseUnit")) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(unit);
+    private void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-            if (unit != null) {
-                field.setVisible(true);
-            }
+        Entity masterOrder = masterOrderForm.getEntity();
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
+        if (masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
+            orderCriteriaModifier.putMasterOrderNumberFilter(orderLookup, masterOrder.getStringField(NUMBER));
+        } else {
+            orderCriteriaModifier.clearMasterOrderNumberFilter(orderLookup);
+        }
+    }
 
-            field.requestComponentUpdateState();
+    private void setDefaultMasterOrderNumber(final ViewDefinitionState view) {
+        if (checkIfShouldInsertNumber(view)) {
+            FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
+            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                    MasterOrdersConstants.MODEL_MASTER_ORDER));
+            numberField.requestComponentUpdateState();
+        }
+    }
+
+    private boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
+        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        FieldComponent number = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
+        if (form.getEntityId() != null) {
+            // form is already saved
+            return false;
+        }
+        if (StringUtils.isNotBlank((String) number.getFieldValue())) {
+            // number is already chosen
+            return false;
+        }
+        if (number.isHasError()) {
+            // there is a validation message for that field
+            return false;
+        }
+        return true;
+    }
+
+    private void disableFields(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrder = form.getEntity();
+        Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
+        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+        if (company == null) {
+            addressLookup.setFieldValue(null);
+            addressLookup.setEnabled(false);
+        } else {
+            addressLookup.setEnabled(true);
         }
     }
 
@@ -121,135 +171,6 @@ public class MasterOrderDetailsHooks {
 
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         defaultTechnology.requestComponentUpdateState();
-    }
-
-    public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity masterOrder = form.getEntity();
-
-        if (masterOrder == null) {
-            return;
-        }
-
-        BigDecimal cumulatedQuantity = masterOrder.getDecimalField(CUMULATED_ORDER_QUANTITY);
-        BigDecimal masterQuantity = masterOrder.getDecimalField(MASTER_ORDER_QUANTITY);
-
-        if (cumulatedQuantity != null && masterQuantity != null && cumulatedQuantity.compareTo(masterQuantity) == -1) {
-            form.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO, false);
-        }
-    }
-
-       public void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Entity masterOrder = masterOrderForm.getEntity();
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
-        if (masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
-            orderCriteriaModifier.putMasterOrderNumberFilter(orderLookup, masterOrder.getStringField(NUMBER));
-        } else {
-            orderCriteriaModifier.clearMasterOrderNumberFilter(orderLookup);
-        }
-    }
-
-    public void setProductLookupRequired(final ViewDefinitionState view) {
-        FieldComponent productField = (FieldComponent) view.getComponentByReference(PRODUCT);
-        productField.setRequired(true);
-    }
-
-    public void setDefaultMasterOrderNumber(final ViewDefinitionState view) {
-        if (checkIfShouldInsertNumber(view)) {
-            FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
-            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                    MasterOrdersConstants.MODEL_MASTER_ORDER));
-            numberField.requestComponentUpdateState();
-        }
-    }
-
-    public boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
-        FieldComponent number = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
-        if (form.getEntityId() != null) {
-            // form is already saved
-            return false;
-        }
-        if (StringUtils.isNotBlank((String) number.getFieldValue())) {
-            // number is already chosen
-            return false;
-        }
-        if (number.isHasError()) {
-            // there is a validation message for that field
-            return false;
-        }
-        return true;
-    }
-
-    public void calculateMasterOrderFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Long masterOrderId = form.getEntityId();
-
-        if (masterOrderId == null) {
-            return;
-        }
-        Entity masterOrder = form.getEntity();
-
-        calculateCumulativeQuantityFromOrders(view, masterOrder);
-        fillRegisteredQuantity(view, masterOrder);
-
-    }
-
-    private void fillRegisteredQuantity(final ViewDefinitionState view, final Entity masterOrder) {
-        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
-            return;
-        }
-        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-
-        FieldComponent producedOrderQuantityField = (FieldComponent) view
-                .getComponentByReference(MasterOrderFields.PRODUCED_ORDER_QUQNTITY);
-        FieldComponent leftToReleaseField = (FieldComponent) view.getComponentByReference(MasterOrderFields.LEFT_TO_RELASE);
-
-        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(masterOrder, product);
-
-        producedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(doneQuantity, 0));
-
-        producedOrderQuantityField.requestComponentUpdateState();
-
-        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrder.getDecimalField("masterOrderQuantity"))
-                .subtract(BigDecimalUtils.convertNullToZero(doneQuantity), numberService.getMathContext());
-        if (BigDecimal.ZERO.compareTo(value) == 1) {
-            value = BigDecimal.ZERO;
-        }
-        leftToReleaseField.setFieldValue(numberService.formatWithMinimumFractionDigits(value, 0));
-
-        leftToReleaseField.requestComponentUpdateState();
-    }
-
-    private void calculateCumulativeQuantityFromOrders(final ViewDefinitionState view, final Entity masterOrder) {
-        if (masterOrder.getId() == null || MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT) {
-            return;
-        }
-        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-
-        FieldComponent cumulatedOrderQuantityField = (FieldComponent) view
-                .getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY);
-
-        BigDecimal quantitiesSum = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(masterOrder, product);
-
-        cumulatedOrderQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(quantitiesSum, 0));
-
-        cumulatedOrderQuantityField.requestComponentUpdateState();
-    }
-
-    public void disableFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity masterOrder = form.getEntity();
-        Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
-        LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
-        if (company == null) {
-            addressLookup.setFieldValue(null);
-            addressLookup.setEnabled(false);
-        } else {
-            addressLookup.setEnabled(true);
-        }
     }
 
 }

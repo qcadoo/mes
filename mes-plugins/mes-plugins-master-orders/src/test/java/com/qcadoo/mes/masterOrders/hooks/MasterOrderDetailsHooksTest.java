@@ -28,7 +28,6 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -41,15 +40,11 @@ import com.qcadoo.view.internal.components.window.WindowComponentState;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.math.BigDecimal;
 import java.util.Locale;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.CUMULATED_ORDER_QUANTITY;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.MASTER_ORDER_QUANTITY;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -96,22 +91,7 @@ public class MasterOrderDetailsHooksTest {
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "technologyServiceO", technologyServiceO);
         ReflectionTestUtils.setField(masterOrderDetailsHooks, "expressionService", expressionService);
         given(view.getComponentByReference("form")).willReturn(form);
-        given(view.getComponentByReference(MasterOrderFields.PRODUCT)).willReturn(productField);
-        given(view.getComponentByReference(MasterOrderFields.TECHNOLOGY)).willReturn(technologyField);
-        given(view.getComponentByReference(MasterOrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
-        given(view.getComponentByReference(MasterOrderFields.CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantityField);
-        given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_QUANTITY)).willReturn(masterOrderQuantityField);
-        given(view.getComponentByReference("producedOrderQuantity")).willReturn(producedOrderQuantityField);
         given(view.getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS)).willReturn(masterOrderProducts);
-        given(view.getComponentByReference("borderLayoutProductQuantity")).willReturn(borderLayoutProductQuantity);
-        given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
-        given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
-        given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
-        given(view.getComponentByReference("leftToReleaseUnit")).willReturn(leftToReleaseUnit);
-        given(view.getComponentByReference("leftToRelease")).willReturn(leftToRelease);
-        given(view.getComponentByReference("comments")).willReturn(comments);
-        given(view.getComponentByReference("masterOrderPositionStatus")).willReturn(masterOrderPositionStatus);
-
         WindowComponentState windowComponent = mock(WindowComponentState.class);
         mockRibbon(windowComponent);
     }
@@ -152,60 +132,5 @@ public class MasterOrderDetailsHooksTest {
         verify(defaultTechnologyField).setFieldValue(null);
     }
 
-    @Test
-    public final void shouldShowMessageError() {
-        // given
-        BigDecimal cumulatedQuantity = BigDecimal.ONE;
-        BigDecimal masterQuantity = BigDecimal.TEN;
-        given(form.getEntity()).willReturn(masterOrderEntity);
-        given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
-        given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
-        // when
-        masterOrderDetailsHooks.showErrorWhenCumulatedQuantity(view);
-        // then
-        verify(form).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity", MessageType.INFO,
-                false);
-    }
-
-    @Test
-    public final void shouldDonotShowMessageError() {
-        // given
-        BigDecimal cumulatedQuantity = BigDecimal.TEN;
-        BigDecimal masterQuantity = BigDecimal.ONE;
-        given(form.getEntity()).willReturn(masterOrderEntity);
-        given(masterOrderEntity.getDecimalField(MASTER_ORDER_QUANTITY)).willReturn(masterQuantity);
-        given(masterOrderEntity.getDecimalField(CUMULATED_ORDER_QUANTITY)).willReturn(cumulatedQuantity);
-        // when
-        masterOrderDetailsHooks.showErrorWhenCumulatedQuantity(view);
-        // then
-        verify(form, Mockito.never()).addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
-                MessageType.INFO, false);
-    }
-
-    @Test
-    public final void shouldSetNullToUnitField() {
-        // given
-        given(productField.getEntity()).willReturn(null);
-
-        // when
-        masterOrderDetailsHooks.fillUnitField(view);
-        // then
-        verify(masterOrderQuantityUnitField).setFieldValue(null);
-        verify(cumulatedOrderQuantityUnitField).setFieldValue(null);
-    }
-
-    @Test
-    public final void shouldSetproductUnitToField() {
-        String unit = "szt";
-        // given
-        given(productField.getEntity()).willReturn(productEntity);
-        given(productEntity.getStringField("unit")).willReturn(unit);
-        // when
-        masterOrderDetailsHooks.fillUnitField(view);
-        // then
-        verify(masterOrderQuantityUnitField).setFieldValue(unit);
-        verify(cumulatedOrderQuantityUnitField).setFieldValue(unit);
-
-    }
 
 }

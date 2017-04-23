@@ -25,7 +25,6 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -89,59 +88,6 @@ public class MasterOrderHooksTest {
         ReflectionTestUtils.setField(masterOrderHooks, "masterOrderOrdersDataProvider", masterOrderOrdersDataProvider);
 
         PowerMockito.mockStatic(SearchRestrictions.class);
-    }
-
-    @Test
-    public final void shouldReturnWhenMasterOrderDoesnotSave() {
-        // given
-        stubId(masterOrder, null);
-        // when
-        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
-        // then
-        verify(masterOrder, never()).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ONE);
-    }
-
-    @Test
-    public final void shouldReturnWhenMasterOrderTypeIsIncorrect() {
-        // given
-        stubId(masterOrder, MASTER_ORDER_ID);
-        // when
-        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
-        // then
-        verify(masterOrder, never()).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ONE);
-    }
-
-    @Test
-    public final void shouldSetCumulatedQuantity() {
-        // given
-        stubId(masterOrder, MASTER_ORDER_ID);
-        MasterOrderType masterOrderType = MasterOrderType.ONE_PRODUCT;
-        stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
-
-        BigDecimal quantitiesSum = BigDecimal.valueOf(20L);
-        stubOrdersPlannedQuantitiesSum(masterOrder, quantitiesSum);
-
-        // when
-        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
-
-        // then
-        verify(masterOrder).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, new BigDecimal(20));
-    }
-
-    @Test
-    public final void shouldSetZeroWhenOrderDoesnotExists() {
-        // given
-        stubId(masterOrder, MASTER_ORDER_ID);
-        stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
-
-        stubOrdersPlannedQuantitiesSum(masterOrder, BigDecimal.ZERO);
-
-        // when
-        masterOrderHooks.calculateCumulativeQuantityFromOrders(masterOrder);
-
-        // then
-        verify(masterOrder).setField(MasterOrderFields.CUMULATED_ORDER_QUANTITY, BigDecimal.ZERO);
-
     }
 
     @Test
