@@ -5,6 +5,7 @@ import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -105,8 +106,9 @@ public class PalletResourcesTransferHelperListeners {
 
                 final Entity palletNumberEntity = findPalletNumberByNumber(
                         selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
-                final Entity storageLocationEntity = findStorageLocationByNumber(
-                        selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER));
+                final Entity storageLocationEntity = Optional
+                        .ofNullable(selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER))
+                        .map(this::findStorageLocationByNumber).orElse(null);
 
                 for (Entity resource : resources) {
                     resource.setField(ResourceFields.PALLET_NUMBER, palletNumberEntity);
