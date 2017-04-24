@@ -32,7 +32,7 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+			<template name="standardFormTemplate"/>
 
             <group name="status">
                 <smallButton name="acceptTracking" icon="startIcon16.png"
@@ -502,7 +502,7 @@
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="correct"/>
 
-                <listener event="goToProductionCountingQuantities"
+				<listener event="goToProductionCountingQuantities"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="goToProductionCountingQuantities"/>
 
