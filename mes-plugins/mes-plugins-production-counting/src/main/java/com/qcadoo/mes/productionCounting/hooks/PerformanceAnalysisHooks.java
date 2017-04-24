@@ -26,15 +26,12 @@ public class PerformanceAnalysisHooks {
 
         GridComponent performanceAnalysisGrid = (GridComponent) view.getComponentByReference(L_GRID);
 
-        if (performanceAnalysisGrid.getSelectedEntities().isEmpty()) {
+        if (performanceAnalysisGrid.getSelectedEntitiesIds().size() != 1) {
             showDetails.setEnabled(false);
-        } else if (performanceAnalysisGrid.getSelectedEntities().size() == 1) {
-            showDetails.setEnabled(true);
         } else {
-            showDetails.setEnabled(false);
+            showDetails.setEnabled(true);
         }
         showDetails.setMessage("productionCounting.analysis.ribbon.message.selectOneRecord");
         showDetails.requestUpdate(true);
-
     }
 }
