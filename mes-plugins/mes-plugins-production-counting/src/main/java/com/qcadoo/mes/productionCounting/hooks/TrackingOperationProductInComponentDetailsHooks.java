@@ -52,6 +52,7 @@ public class TrackingOperationProductInComponentDetailsHooks {
         Entity trackingOperationProductInComponent = trackingOperationProductInComponentForm
                 .getPersistedEntityWithIncludedFormValues();
 
+        trackingOperationProductComponentDetailsListeners.toggleEnabledForWastes(view);
         hideOrShowSetTab(view, trackingOperationProductInComponent);
     }
 
