@@ -41,6 +41,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class ProductionLineDetailsListeners {
@@ -110,6 +111,8 @@ public class ProductionLineDetailsListeners {
         EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForProductionLine(productionLine);
         productionLine.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
         form.setEntity(productionLine);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        window.setActiveTab("factoryStructureTab");
     }
 
 }
