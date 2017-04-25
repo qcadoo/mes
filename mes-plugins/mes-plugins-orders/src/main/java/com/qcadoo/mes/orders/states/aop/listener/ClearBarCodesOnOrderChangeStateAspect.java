@@ -23,7 +23,7 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
-public class ClearBarCodesOnOrderChangeState extends AbstractStateListenerAspect {
+public class ClearBarCodesOnOrderChangeStateAspect extends AbstractStateListenerAspect {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;

@@ -139,8 +139,9 @@ public class ProductionTrackingDetailsListeners {
                 productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
         logService.add(LogService.Builder.info("productionTracking",
                 translationService.translate("productionCounting.productionTracking.delete", LocaleContextHolder.getLocale()))
-                .withItem1(productionTracking.getId().toString())
-                .withItem2(productionTracking.getStringField(ProductionTrackingFields.NUMBER)).withItem3(username));
+                .withItem1("ID: " + productionTracking.getId().toString())
+                .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
+                .withItem3("User: " + username));
     }
 
     public void logPerformDeleteList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -152,8 +153,9 @@ public class ProductionTrackingDetailsListeners {
                         productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
                 logService.add(LogService.Builder.info("productionTracking",
                         translationService.translate("productionCounting.productionTracking.delete", LocaleContextHolder.getLocale()))
-                        .withItem1(productionTracking.getId().toString())
-                        .withItem2(productionTracking.getStringField(ProductionTrackingFields.NUMBER)).withItem3(username));
+                        .withItem1("ID: " + productionTracking.getId().toString())
+                        .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
+                        .withItem3("User: " + username));
             });
         }
     }

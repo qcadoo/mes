@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -56,6 +57,7 @@ public class MasterOrderProductHooks {
         countCumulativeOrderQuantity(masterOrderProduct);
         fillRegisteredQuantity(masterOrderProduct);
         calculateLeftToRelease(masterOrderProduct);
+        fillProductAssortment(masterOrderProduct);
 
     }
 
@@ -104,5 +106,20 @@ public class MasterOrderProductHooks {
             return false;
         }
         return true;
+    }
+
+    private void fillProductAssortment(Entity masterOrderProduct) {
+        if (masterOrderProduct.getId() == null) {
+            return;
+        }
+        Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+        if(product != null) {
+            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
+            if (assortment != null) {
+                String assortmentName = assortment.getStringField("name");
+                masterOrderProduct.setField("assortmentName", assortmentName);
+            }
+        }
+
     }
 }
