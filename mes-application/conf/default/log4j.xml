@@ -111,12 +111,12 @@
 			<param name="ConversionPattern" value="%d %m%n" />
 		</layout>
 	</appender>
-	
+
 	<logger name="com.qcadoo.mes">
 		<level value="debug" />
 	</logger>
 	<logger name="org.springframework">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.hibernate">
 		<level value="info" />
@@ -125,7 +125,7 @@
 		<level value="info" />
 	</logger>
 	<logger name="org.apache">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="net.sf.ehcache">
 		<level value="info" />
@@ -133,37 +133,37 @@
 	<logger name="com.qcadoo.mes.internal">
 		<level value="error" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.model">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="model-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.plugin">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="plugin-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.view">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="view-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.security">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="security-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.localization">
 		<level value="debug" />
 		<appender-ref ref="localization-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.report">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="report-log" />
 	</logger>
-	
+
 	<logger name="com.qcadoo.mes.integration">
 		<level value="debug" />
 		<appender-ref ref="connector-log" />

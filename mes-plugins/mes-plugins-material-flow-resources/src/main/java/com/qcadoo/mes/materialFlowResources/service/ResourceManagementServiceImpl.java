@@ -78,6 +78,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private UnitConversionService unitConversionService;
 
     @Autowired
+    private PalletNumberDisposalService palletNumberDisposalService;
+
+    @Autowired
     private ResourceStockService resourceStockService;
 
     @Autowired
@@ -510,7 +513,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
+                    Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
                     resource.getDataDefinition().delete(resource.getId());
+                    palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
@@ -687,7 +692,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
+                    Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
                     resource.getDataDefinition().delete(resource.getId());
+                    palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);

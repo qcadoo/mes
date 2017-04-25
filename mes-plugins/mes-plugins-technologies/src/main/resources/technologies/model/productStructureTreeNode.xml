@@ -40,6 +40,13 @@
 		<string name="nodeNumber" />
 		<enum name="entityType" values="finalProduct,intermediate,component,material" default="material"
 			persistent="false" />
+
+		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup"/>
+		<decimal name="standardPerformanceTechnology">
+			<validatesRange from="0" exclusively="true"/>
+			<validatesUnscaledValue max="7"/>
+			<validatesScale max="5"/>
+		</decimal>
 	</fields>
 	<hooks>
 	</hooks>

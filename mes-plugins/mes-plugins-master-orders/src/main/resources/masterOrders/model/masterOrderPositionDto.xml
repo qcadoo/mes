@@ -47,6 +47,7 @@
         <decimal name="leftToRelease"/>
         <decimal name="producedOrderQuantity"/>
         <string name="unit"/>
+        <string name="assortmentName"/>
 
         <integer name="masterOrderId"/>
         <string name="masterOrderType"/>

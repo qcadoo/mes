@@ -33,6 +33,8 @@ public final class MaterialFlowResourcesConstants {
 
     // MODEL
 
+    public static final String MODEL_PALLET_BALANCE = "palletBalance";
+
     public static final String MODEL_RESOURCE_STOCK = "resourceStock";
 
     public static final String MODEL_RESOURCE = "resource";
