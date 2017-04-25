@@ -164,6 +164,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
         Entity user = document.getBelongsToField(DocumentFields.USER);
+        Entity delivery = document.getBelongsToField(ResourceFields.DELIVERY);
         resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
@@ -180,6 +181,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
+        resource.setField(ResourceFields.DELIVERY_NUMBER,delivery.getStringField("number"));
 
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));
