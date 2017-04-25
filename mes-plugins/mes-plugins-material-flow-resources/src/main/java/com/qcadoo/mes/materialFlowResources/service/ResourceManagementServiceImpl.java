@@ -181,7 +181,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
-        resource.setField(ResourceFields.DELIVERY_NUMBER,delivery.getStringField("number"));
+        if(delivery != null) {
+            String deliveryNumber = delivery.getStringField("number");
+            if(deliveryNumber != null) {
+                resource.setField(ResourceFields.DELIVERY_NUMBER, deliveryNumber);
+            }
+        }
 
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));
