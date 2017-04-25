@@ -114,8 +114,8 @@
             <option type="column" name="type" fields="type" link="true"/>
             <option type="column" name="time" fields="time" width="100"/>
             <option type="column" name="state" fields="state" width="100"/>
-            <option type="column" name="locationFromName" fields="locationFromName"/>
-            <option type="column" name="locationToName" fields="locationToName"/>
+            <option type="column" name="locationFromName" fields="locationFromName" width="70"/>
+            <option type="column" name="locationToName" fields="locationToName" width="70"/>
             <option type="column" name="description" fields="description"/>
             <option type="column" name="companyName" fields="companyName"/>
             <option type="column" name="userName" fields="userName" width="150"/>
