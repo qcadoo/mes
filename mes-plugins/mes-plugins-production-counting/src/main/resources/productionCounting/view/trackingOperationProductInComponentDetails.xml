@@ -94,19 +94,19 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="7" width="5">
-						<component type="checkbox" name="wasteUsedOnly" field="wasteUsedOnly" reference="wasteUsedOnly" hasDescription="true" defaultEnabled="false">
+						<component type="checkbox" name="wasteUsedOnly" field="wasteUsedOnly" reference="wasteUsedOnly" hasDescription="true">
 							<listener event="onChange" class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners" method="onWasteUsedOnlyChange"/>
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="8" width="5">
 						<component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
-								   reference="wasteUsedQuantity" defaultEnabled="false">
+								   reference="wasteUsedQuantity">
 							<option type="alignment" value="right" />
 						</component>
 					</layoutElement>
 					<layoutElement column="6" row="8">
 						<component type="select" name="wasteUnit" reference="wasteUnit" field="wasteUnit"
-								   hasLabel="false" defaultEnabled="false">
+								   hasLabel="false">
 						</component>
 					</layoutElement>
 					<layoutElement column="1" row="9" width="5" height="2">
