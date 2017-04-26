@@ -231,60 +231,6 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     }
 
-    public void onWasteUsedChange(final ViewDefinitionState view, final ComponentState wasteUsed, final String[] args) {
-        CheckBoxComponent wasteUsedOnly = (CheckBoxComponent) view.getComponentByReference(L_WASTE_USED_ONLY);
-        FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
-        FieldComponent wasteUnit = (FieldComponent) view.getComponentByReference(L_WASTE_UNIT);
-
-        if (((CheckBoxComponent) wasteUsed).isChecked()) {
-            String productUnit = getFormEntity(view).getBelongsToField(L_PRODUCT).getStringField(ProductFields.UNIT);
-            if (StringUtils.isEmpty((CharSequence) wasteUnit.getFieldValue())) {
-                wasteUnit.setFieldValue(productUnit);
-            }
-        } else {
-            wasteUsedOnly.setFieldValue(Boolean.FALSE);
-            wasteUsedQuantity.setFieldValue(null);
-            wasteUnit.setFieldValue(null);
-        }
-    }
-
-    public void onWasteUsedOnlyChange(final ViewDefinitionState view, final ComponentState wasteUsedOnly, final String[] args) {
-        FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
-        FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
-
-        if (((CheckBoxComponent) wasteUsedOnly).isChecked()) {
-            wasteUsedQuantity.setFieldValue(usedQuantity.getFieldValue());
-            usedQuantity.setFieldValue(BigDecimal.ZERO);
-            calculateQuantityToGiven(view, usedQuantity, ArrayUtils.EMPTY_STRING_ARRAY);
-        }
-    }
-
-    public void toggleEnabledForWastes(final ViewDefinitionState view) {
-        CheckBoxComponent wasteUsed = (CheckBoxComponent) view.getComponentByReference(L_WASTE_USED);
-        CheckBoxComponent wasteUsedOnly = (CheckBoxComponent) view.getComponentByReference(L_WASTE_USED_ONLY);
-        FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
-        FieldComponent wasteUnit = (FieldComponent) view.getComponentByReference(L_WASTE_UNIT);
-        if (wasteUsed.isChecked()) {
-            wasteUsedOnly.setEnabled(true);
-            wasteUsedQuantity.setEnabled(true);
-            wasteUnit.setEnabled(true);
-        } else {
-            wasteUsedOnly.setEnabled(false);
-            wasteUsedQuantity.setEnabled(false);
-            wasteUnit.setEnabled(false);
-        }
-
-        FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
-        FieldComponent givenQuantity = (FieldComponent) view.getComponentByReference(L_GIVEN_QUANTITY);
-        if (wasteUsedOnly.isChecked()) {
-            usedQuantity.setEnabled(false);
-            givenQuantity.setEnabled(false);
-        } else {
-            usedQuantity.setEnabled(true);
-            givenQuantity.setEnabled(true);
-        }
-    }
-
     private void calculateQuantityFromSets(ViewDefinitionState view) {
         FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
 

@@ -80,7 +80,9 @@
                 class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
                 method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
-                       method="validatesWith"/>                
+                       method="validatesWith"/>
+        <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductInComponentValidators"
+                       method="validateIfOnlyWasteUsed"/>
     </hooks>
 
 </model>
