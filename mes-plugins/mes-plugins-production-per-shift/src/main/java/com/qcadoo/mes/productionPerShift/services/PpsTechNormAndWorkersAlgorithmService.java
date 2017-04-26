@@ -2,6 +2,7 @@ package com.qcadoo.mes.productionPerShift.services;
 
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionPerShift.DateTimeRange;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.domain.ShiftEfficiencyCalculationHolder;
@@ -15,7 +16,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
-public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmService{
+public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmService {
 
     @Autowired
     private NumberService numberService;
@@ -31,7 +32,8 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
         int workersOnLine = workersOnLineService.getWorkersOnLine(order.getBelongsToField(OrderFields.PRODUCTION_LINE),
                 shift.getEntity(), range.getFrom());
         if (workersOnLine == 0) {
-            progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.noAssignmentForShift", false));
+            progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.noAssignmentForShift",
+                    false, order.getBelongsToField(OrderFields.PRODUCTION_LINE).getStringField(ProductionLineFields.NUMBER)));
             throw new IllegalStateException("No assignment for shift");
         }
         BigDecimal scaledNorm = getStandardPerformanceNorm(progressForDaysContainer, order);
@@ -62,10 +64,12 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     }
 
     protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY).getDataDefinition().get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY).getDataDefinition()
+                .get(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
         BigDecimal norm = technology.getDecimalField("standardPerformanceTechnology");
         if (norm == null) {
-            progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
+            progressForDaysContainer.addError(new ErrorMessage(
+                    "productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
             throw new IllegalStateException("No standard performance norm in technology");
         }
         return norm;
