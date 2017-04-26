@@ -142,7 +142,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
         Map<Entity, BigDecimal> results = Maps.newHashMap();
-        if (OrderState.PENDING.getStringValue().equals(OrderState.of(order))) {
+        if (OrderState.PENDING.equals(OrderState.of(order))) {
             Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
                     quantity, MrpAlgorithm.ONLY_COMPONENTS);
 
