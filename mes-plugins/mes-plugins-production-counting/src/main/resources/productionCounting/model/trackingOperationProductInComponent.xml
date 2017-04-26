@@ -64,6 +64,9 @@
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
+            <validatesWith
+                    class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductInComponentValidators"
+                    method="validateWasteUsedQuantity"/>
         </decimal>
         <dictionary name="wasteUnit" dictionary="units"/>
         <string name="additionalInformation"/>
