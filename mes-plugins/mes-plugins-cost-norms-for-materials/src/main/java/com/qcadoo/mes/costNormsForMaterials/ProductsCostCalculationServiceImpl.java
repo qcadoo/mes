@@ -23,24 +23,34 @@
  */
 package com.qcadoo.mes.costNormsForMaterials;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class ProductsCostCalculationServiceImpl implements ProductsCostCalculationService {
@@ -53,6 +63,9 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Override
     public void calculateTotalProductsCost(final Entity entity, final String sourceOfMaterialCosts) {
@@ -89,8 +102,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Override
     public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
             final String calculateMaterialCostsMode) {
-        BigDecimal cost = BigDecimalUtils
-                .convertNullToZero(product.getField(ProductsCostFields.forMode(calculateMaterialCostsMode).getStrValue()));
+        BigDecimal cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.forMode(
+                calculateMaterialCostsMode).getStrValue()));
         BigDecimal costForNumber = BigDecimalUtils.convertNullToOne(product.getDecimalField("costForNumber"));
         if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
             costForNumber = BigDecimal.ONE;
@@ -128,16 +141,41 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Override
     public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
             final String calculateMaterialCostsMode, final Entity order) {
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology, quantity,
-                MrpAlgorithm.ONLY_COMPONENTS);
         Map<Entity, BigDecimal> results = Maps.newHashMap();
+        if (OrderState.PENDING.getStringValue().equals(OrderState.of(order))) {
+            Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                    quantity, MrpAlgorithm.ONLY_COMPONENTS);
 
-        for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
-            for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
-                BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts, productQuantity.getValue(),
-                        calculateMaterialCostsMode);
-                results.put(product, thisProductsCost);
+            for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+                Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
+                for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
+                    BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts,
+                            productQuantity.getValue(), calculateMaterialCostsMode);
+                    results.put(product, thisProductsCost);
+                }
+            }
+        } else {
+
+            List<Entity> usedMaterials = basicProductionCountingService.getUsedMaterialsFromProductionCountingQuantities(order);
+            usedMaterials = usedMaterials
+                    .stream()
+                    .filter(material -> material.getStringField(ProductionCountingQuantityFields.ROLE).equals(
+                            ProductionCountingQuantityRole.USED.getStringValue())
+                            && material.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL).equals(
+                                    ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                    .collect(Collectors.toList());
+            List<Entity> allOrderMaterialCosts = order.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
+            for (Entity usedMaterial : usedMaterials) {
+                Entity product = usedMaterial.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+                for (Entity orderMaterialCosts : allOrderMaterialCosts
+                        .stream()
+                        .filter(cost -> cost.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT).getId()
+                                .equals(product.getId())).collect(Collectors.toList())) {
+                    BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(orderMaterialCosts,
+                            usedMaterial.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY),
+                            calculateMaterialCostsMode);
+                    results.put(product, thisProductsCost);
+                }
             }
         }
         return results;
@@ -151,8 +189,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         for (Entity orderMaterialCosts : findOrderMaterialCosts(order, product).asSet()) {
             return orderMaterialCosts;
         }
-        throw new IllegalStateException("Product with number=" + product.getId()
-                + " doesn't exists for order with id=" + order.getId());
+        throw new IllegalStateException("Product with number=" + product.getId() + " doesn't exists for order with id="
+                + order.getId());
     }
 
     private Optional<Entity> findOrderMaterialCosts(final Entity order, final Entity product) {
