@@ -190,7 +190,7 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
-    public void updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
+    public Entity updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
             final Optional<BigDecimal> costForOrder) {
         Optional<Entity> orderMaterialCostsOpt = orderMaterialCostsDataProvider.find(order.getId(), productId);
 
@@ -207,7 +207,7 @@ public class CostNormsForMaterialsService {
             } else {
                 updateCosts(zeroToOne(newQuantity.or(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
             }
-            orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
+            return orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug(String.format(
@@ -215,6 +215,7 @@ public class CostNormsForMaterialsService {
                                 + "product: %d order: %d", productId, order.getId()));
             }
         }
+        return null;
     }
 
     private BigDecimal zeroToOne(final BigDecimal bigDecimal) {
