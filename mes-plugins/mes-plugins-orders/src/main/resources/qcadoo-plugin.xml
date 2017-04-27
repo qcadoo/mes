@@ -211,6 +211,12 @@
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="blockAbilityToChangeApprovalOrder" default="false"/>
         </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="fillOrderDescriptionBasedOnTechnologyDescription" default="false"/>
+        </model:model-field>
+
+
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="lockTechnologyTree" default="false"/>
         </model:model-field>
