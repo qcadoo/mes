@@ -84,6 +84,8 @@
 
         <boolean name="validatePallet" default="true" persistent="false"/>
 
+        <string name="deliveryNumber"/>
+
     </fields>
     <hooks>        
         <validatesWith

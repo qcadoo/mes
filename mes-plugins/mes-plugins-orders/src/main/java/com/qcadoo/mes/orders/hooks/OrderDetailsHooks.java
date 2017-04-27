@@ -77,6 +77,7 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+
 @Service
 public class OrderDetailsHooks {
 
@@ -151,6 +152,7 @@ public class OrderDetailsHooks {
         setQuantities(view);
         additionalUnitService.setAdditionalUnitField(view);
         unitService.fillProductForAdditionalUnitBeforeRender(view);
+        fillOrderDescriptionIfTechnologyHasDescription(view);
 
     }
 
@@ -679,4 +681,59 @@ public class OrderDetailsHooks {
         return expectedVariable.compareTo(currentVariable) == 0;
     }
 
+
+    public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view){
+        LookupComponent technologyLookup = (LookupComponent)view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent descriptionField = (FieldComponent)view.getComponentByReference(OrderFields.DESCRIPTION);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent masterOrderLookup = (LookupComponent)view.getComponentByReference("masterOrder");
+        FieldComponent oldTechnologyField = (FieldComponent)view.getComponentByReference("oldTechnologyId");
+
+        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult().getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+        boolean technologyChanged = false;
+
+        Entity masterOrder = masterOrderLookup.getEntity();
+        Entity technology = technologyLookup.getEntity();
+        Entity order = orderForm.getEntity();
+        Entity oldTechnology = null;
+
+        if(!((String)oldTechnologyField.getFieldValue()).isEmpty()) {
+            Long oldTechnologyId = Long.parseLong((String)oldTechnologyField.getFieldValue());
+            oldTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(oldTechnologyId);
+        }
+
+        if(technology != null){
+            oldTechnologyField.setFieldValue(technology.getId());
+            oldTechnologyField.requestComponentUpdateState();
+            if(oldTechnology !=null){
+                if(!oldTechnology.getId().equals(technology.getId())){
+                    technologyChanged =  true;
+                }
+            }
+        }else{
+            if(oldTechnology != null){
+                technologyChanged = true;
+            }
+        }
+
+        String orderDescription = orderService.buildOrderDescription(masterOrder,technology,fillOrderDescriptionBasedOnTechnology);
+
+        String currentDescription = order.getStringField(OrderFields.DESCRIPTION);
+        descriptionField.setFieldValue("");
+        descriptionField.requestComponentUpdateState();
+        if(technologyChanged){
+            if(fillOrderDescriptionBasedOnTechnology) {
+                descriptionField.setFieldValue(orderDescription);
+            }else{
+                descriptionField.setFieldValue(currentDescription);
+            }
+        }else {
+            if (currentDescription != null && !currentDescription.isEmpty()) {
+                descriptionField.setFieldValue(currentDescription);
+            } else {
+                descriptionField.setFieldValue(orderDescription);
+            }
+        }
+        descriptionField.requestComponentUpdateState();
+    }
 }

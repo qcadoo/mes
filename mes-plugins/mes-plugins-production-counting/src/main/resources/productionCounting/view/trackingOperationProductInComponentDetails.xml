@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="trackingOperationProductInComponentDetails" modelName="trackingOperationProductInComponent">
+      name="trackingOperationProductInComponentDetails" modelName="trackingOperationProductInComponent" windowHeight="610">
 
     <component type="window" name="window">
 
@@ -39,7 +39,7 @@
 		<windowTab name="mainTab">
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="grid" reference="grid"
-						   columns="6" rows="5" hasBorders="false">
+						   columns="6" rows="10" hasBorders="false">
 					<layoutElement column="1" row="1" width="5">
 						<component type="input" name="number" reference="number"
 								   defaultEnabled="false">
@@ -87,6 +87,41 @@
 							<listener event="onSelectedEntityChange" method="calculateQuantity"
 									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
 						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6" width="5">
+						<component type="checkbox" name="wasteUsed" field="wasteUsed" reference="wasteUsed"
+								   hasDescription="true">
+							<listener event="onChange"
+									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
+									  method="onWasteUsedChange"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="7" width="5">
+						<component type="checkbox" name="wasteUsedOnly" field="wasteUsedOnly" reference="wasteUsedOnly"
+								   hasDescription="true">
+							<listener event="onChange"
+									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
+									  method="onWasteUsedOnlyChange"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="8" width="5">
+						<component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
+								   reference="wasteUsedQuantity">
+							<option type="alignment" value="right"/>
+							<listener event="onInputChange" method="recalculateUsedQuantity"
+									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="6" row="8">
+						<component type="select" name="wasteUnit" reference="wasteUnit" field="wasteUnit"
+								   hasLabel="false">
+							<listener event="onSelectedEntityChange" method="recalculateUsedQuantity"
+									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="9" width="5" height="2">
+						<component type="textarea" name="additionalInformation" field="additionalInformation"
+								   hasDescription="true"/>
 					</layoutElement>
 				</component>
 	

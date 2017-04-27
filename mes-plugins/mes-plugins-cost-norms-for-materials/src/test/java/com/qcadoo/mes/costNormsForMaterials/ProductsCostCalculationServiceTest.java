@@ -38,8 +38,6 @@ import static org.mockito.Mockito.verify;
 import java.math.BigDecimal;
 import java.util.Map;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -54,6 +52,8 @@ import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -61,6 +61,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.testing.model.NumberServiceMock;
+
+import junit.framework.Assert;
 
 public class ProductsCostCalculationServiceTest {
 
@@ -89,8 +91,10 @@ public class ProductsCostCalculationServiceTest {
         ReflectionTestUtils.setField(productsCostCalculationService, "orderMaterialCostsDataProvider",
                 orderMaterialCostsDataProvider);
 
-        stubBelongsToField(costCalculation, "order", mockEntity());
+        stubStringField(order, OrderFields.STATE, OrderState.PENDING.getStringValue());
+        stubBelongsToField(costCalculation, "order", order);
         stubBelongsToField(costCalculation, "technology", mockEntity());
+
     }
 
     private void stubOrderMaterialCostsSearchResults(final Map<Long, Entity> materialCostsByProductId) {
