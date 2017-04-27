@@ -46,6 +46,14 @@
         <decimal name="totalPrice" >
             <validatesRange from="0" />
         </decimal>
+
+        <decimal name="deliveredQuantity" >
+            <validatesRange from="0" exclusively="false" />
+        </decimal>
+        <decimal name="additionalDeliveredQuantity" >
+            <validatesRange from="0" exclusively="false" />
+        </decimal>
+
         <string name="description">
             <validatesLength max="2048" />
         </string>

@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,27 +32,18 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -71,6 +51,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -82,6 +67,8 @@ public class DeliveryDetailsListeners {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_PRODUCT = "product";
+
+    public static final String OFFER = "offer";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -272,6 +259,9 @@ public class DeliveryDetailsListeners {
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            deliveredProductMuliPosition.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
+        }
         return deliveredProductMuliPosition;
     }
 
@@ -332,8 +322,12 @@ public class DeliveryDetailsListeners {
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
                     numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            Entity offer = orderedProduct.getBelongsToField(OFFER);
+            deliveredProduct.setField(OFFER, offer);
+        }
 
-        deliveredProduct.getDataDefinition().save(deliveredProduct);
+        deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
 
         return deliveredProduct;
     }

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.qcadoo.plugin.api.PluginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,9 @@ import java.math.RoundingMode;
 
 @Service
 public class OrderedProductHooks {
+
+    public static final String OPERATION = "operation";
+    public static final String OFFER = "offer";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -66,6 +70,14 @@ public class OrderedProductHooks {
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE)));
+
+        if(PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OPERATION, orderedProduct.getBelongsToField(OPERATION)));
+        }
+
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, orderedProduct.getBelongsToField(OFFER)));
+        }
 
         if (orderedProduct.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProduct.getId()));

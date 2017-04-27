@@ -1,5 +1,15 @@
 package com.qcadoo.mes.deliveries;
 
+import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,27 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchRestrictions;
-
 @Service
 public class ReservationService {
+
+    public static final String OFFER = "offer";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -158,6 +151,9 @@ public class ReservationService {
         } else {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
         }
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            findOrderedProduct.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
         Entity orderedProductForProduct = findOrderedProduct.uniqueResult();
 
         return orderedProductForProduct;
@@ -174,6 +170,9 @@ public class ReservationService {
             findDeliveredProducts.add(SearchRestrictions.isNull(DeliveredProductFields.ADDITIONAL_CODE));
         } else {
             findDeliveredProducts.add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
+        }
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            findDeliveredProducts.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
         }
         List<Entity> deliveredProducts = findDeliveredProducts.list().getEntities();
 
