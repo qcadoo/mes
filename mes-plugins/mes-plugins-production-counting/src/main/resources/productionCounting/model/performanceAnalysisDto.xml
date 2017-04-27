@@ -40,10 +40,22 @@
         <integer name="laborTimeSum"/>
 
         <integer name="timeDeviation"/>
-        <decimal name="performance">
+        <decimal name="doneQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
+        </decimal>
+        <integer name="productionLineQuantity"/>
+        <integer name="assortmentQuantity"/>
+        <decimal name="performance">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="2"/>
+        </decimal>
+        <decimal name="dailyPerformance">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="2"/>
         </decimal>
 
         <integer name="shift_id"/>

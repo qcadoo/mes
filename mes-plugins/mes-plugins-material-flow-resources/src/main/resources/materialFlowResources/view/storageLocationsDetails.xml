@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="storageLocationsForm" reference="form">
                 <component type="gridLayout" name="storageLocationsGridLayout"
-                           hasBorders="false" columns="3" rows="5">
+                           hasBorders="false" columns="3" rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" reference="number"
                                    field="number">
@@ -77,10 +77,18 @@
                                       method="updateFields"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="1" row="5">
                         <component type="input" name="maximumNumberOfPallets"
                                    reference="maximumNumberOfPallets" field="maximumNumberOfPallets">
                             <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+
+
+                    <layoutElement column="1" row="6">
+                        <component type="checkbox" name="highStorageLocation" field="highStorageLocation"
+                                   reference="highStorageLocation" hasDescription="true">
                         </component>
                     </layoutElement>
                 </component>

@@ -79,4 +79,8 @@ public final class ResourceFields {
 
     public static final String WASTE = "waste";
 
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
+    public static final String DELIVERY = "delivery";
+
 }

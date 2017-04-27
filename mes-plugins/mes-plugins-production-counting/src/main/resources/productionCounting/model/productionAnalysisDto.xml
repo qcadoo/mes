@@ -74,6 +74,8 @@
 
         <integer name="order_id"/>
         <string name="orderNumber"/>
+
+        <string name="obtainedMasterOrderNumber"/>
     </fields>
 
 </model>

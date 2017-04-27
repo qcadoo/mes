@@ -30,6 +30,8 @@ import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
@@ -37,7 +39,19 @@ public class TrackingOperationProductInComponentDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    public static final String L_SET_TAB = "setTab";
+    private static final String L_SET_TAB = "setTab";
+
+    private static final String L_WASTE_USED = "wasteUsed";
+
+    private static final String L_WASTE_USED_ONLY = "wasteUsedOnly";
+
+    private static final String L_WASTE_USED_QUANTITY = "wasteUsedQuantity";
+
+    private static final String L_WASTE_UNIT = "wasteUnit";
+
+    private static final String L_USED_QUANTITY = "usedQuantity";
+
+    private static final String L_GIVEN_QUANTITY = "givenQuantity";
 
     @Autowired
     private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
@@ -52,7 +66,34 @@ public class TrackingOperationProductInComponentDetailsHooks {
         Entity trackingOperationProductInComponent = trackingOperationProductInComponentForm
                 .getPersistedEntityWithIncludedFormValues();
 
+        toggleEnabledForWastes(view);
         hideOrShowSetTab(view, trackingOperationProductInComponent);
+    }
+
+    private void toggleEnabledForWastes(final ViewDefinitionState view) {
+        CheckBoxComponent wasteUsed = (CheckBoxComponent) view.getComponentByReference(L_WASTE_USED);
+        CheckBoxComponent wasteUsedOnly = (CheckBoxComponent) view.getComponentByReference(L_WASTE_USED_ONLY);
+        FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
+        FieldComponent wasteUnit = (FieldComponent) view.getComponentByReference(L_WASTE_UNIT);
+        if (wasteUsed.isChecked()) {
+            wasteUsedOnly.setEnabled(true);
+            wasteUsedQuantity.setEnabled(true);
+            wasteUnit.setEnabled(true);
+        } else {
+            wasteUsedOnly.setEnabled(false);
+            wasteUsedQuantity.setEnabled(false);
+            wasteUnit.setEnabled(false);
+        }
+
+        FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
+        FieldComponent givenQuantity = (FieldComponent) view.getComponentByReference(L_GIVEN_QUANTITY);
+        if (wasteUsedOnly.isChecked()) {
+            usedQuantity.setEnabled(false);
+            givenQuantity.setEnabled(false);
+        } else {
+            usedQuantity.setEnabled(true);
+            givenQuantity.setEnabled(true);
+        }
     }
 
     private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductInComponent) {

@@ -18,4 +18,6 @@ public final class StorageLocationHelperFields {
 
     public static final String PREFIX = "prefix";
 
+    public static final String HIGH_STORAGE_LOCATION = "highStorageLocation";
+
 }

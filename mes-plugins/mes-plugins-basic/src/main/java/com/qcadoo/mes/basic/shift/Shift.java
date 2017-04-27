@@ -268,7 +268,9 @@ public class Shift {
 
     public Optional<TimeRange> findWorkTimeAt(final int dayOfWeek) {
         for (WorkingHours workingHours : workingHoursPerDay.get(dayOfWeek)) {
-            return Optional.of(workingHours.getTimeRanges().iterator().next());
+            if (!workingHours.getTimeRanges().isEmpty()) {
+                return Optional.of(workingHours.getTimeRanges().iterator().next());
+            }
         }
         return Optional.absent();
     }

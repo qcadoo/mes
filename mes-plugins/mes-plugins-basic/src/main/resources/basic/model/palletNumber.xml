@@ -36,6 +36,8 @@
                             message="basic.palletNumber.number.error.shouldContainOnlyNumbers"/>
         </string>
 
+        <datetime name="issueDateTime" copyable="false" />
+
         <manyToMany name="palletNumberHelpers" model="palletNumberHelper" joinField="palletNumbers"
                     cascade="nullify" plugin="basic"/>
     </fields>
@@ -46,6 +48,8 @@
 
         <onCopy class="com.qcadoo.mes.basic.hooks.PalletNumberHooks"
                 method="onCopy"/>
+
+        <onSave class="com.qcadoo.mes.basic.hooks.PalletNumberHooks" method="onSave"/>
     </hooks>
 
 </model>

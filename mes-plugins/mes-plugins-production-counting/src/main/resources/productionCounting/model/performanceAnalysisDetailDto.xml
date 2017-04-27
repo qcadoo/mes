@@ -66,6 +66,9 @@
 
         <integer name="order_id"/>
         <string name="orderNumber"/>
+
+        <integer name="generator_id"/>
+        <string name="generatorName"/>
     </fields>
 
     <masterModel plugin="productionCounting" model="productionTracking"/>

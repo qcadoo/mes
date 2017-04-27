@@ -114,8 +114,8 @@
             <option type="column" name="type" fields="type" link="true"/>
             <option type="column" name="time" fields="time" width="100"/>
             <option type="column" name="state" fields="state" width="100"/>
-            <option type="column" name="locationFromName" fields="locationFromName"/>
-            <option type="column" name="locationToName" fields="locationToName"/>
+            <option type="column" name="locationFromNumber" fields="locationFromNumber" width="70"/>
+            <option type="column" name="locationToNumber" fields="locationToNumber" width="70"/>
             <option type="column" name="description" fields="description"/>
             <option type="column" name="companyName" fields="companyName"/>
             <option type="column" name="userName" fields="userName" width="150"/>
@@ -123,9 +123,9 @@
             <option type="order" column="time" direction="desc" width="200"/>
 
             <option type="searchable"
-                    value="number,name,type,time,state,locationFromName,locationToName,description,companyName,userName"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName"/>
             <option type="orderable"
-                    value="number,name,type,time,state,locationFromName,locationToName,description,companyName,userName"/>
+                    value="number,name,type,time,state,locationFromNumber,locationToNumber,description,companyName,userName"/>
 
             <option type="correspondingView" value="materialFlowResources/documentDetails"/>
             <option type="correspondingComponent" value="form"/>

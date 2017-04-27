@@ -33,8 +33,10 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
+import com.qcadoo.mes.productionLines.factoryStructure.FactoryStructureGenerationService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -45,6 +47,9 @@ public class ProductionLineDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private FactoryStructureGenerationService factoryStructureGenerationService;
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (args.length < 1) {
@@ -98,4 +103,13 @@ public class ProductionLineDetailsListeners {
                     });
         }
     }
+
+    public void generateFactoryStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity productionLine = form.getEntity();
+        EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForProductionLine(productionLine);
+        productionLine.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
+        form.setEntity(productionLine);
+    }
+
 }
