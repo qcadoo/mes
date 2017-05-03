@@ -54,6 +54,8 @@ public class DeliveredProductHooks {
 
     public static final String OPERATION = "operation";
 
+    public static final String EXPIRATION_DATE = "expirationDate";
+
     @Autowired
     private DeliveriesService deliveriesService;
 
@@ -125,8 +127,8 @@ public class DeliveredProductHooks {
         }
         Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
         maybeOrderedProduct.ifPresent(orderedProduct -> {
-            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, BigDecimalUtils.convertNullToZero(deliveredProduct
-                    .getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)));
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, BigDecimalUtils
+                    .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)));
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY, BigDecimalUtils
                     .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY)));
             orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
@@ -147,6 +149,17 @@ public class DeliveredProductHooks {
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = addSearchRestrictions(deliveredProductDD.find(), deliveredProduct);
+
+        if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
+            searchCriteriaBuilder.add(
+                    SearchRestrictions.belongsTo(PALLET_NUMBER, deliveredProduct.getBelongsToField(PALLET_NUMBER)))
+                    .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, deliveredProduct.getBelongsToField(ADDITIONAL_CODE)));
+            if (deliveredProduct.getField(EXPIRATION_DATE) != null) {
+                searchCriteriaBuilder.add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
+            } else {
+                searchCriteriaBuilder.add(SearchRestrictions.isNull(EXPIRATION_DATE));
+            }
+        }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));

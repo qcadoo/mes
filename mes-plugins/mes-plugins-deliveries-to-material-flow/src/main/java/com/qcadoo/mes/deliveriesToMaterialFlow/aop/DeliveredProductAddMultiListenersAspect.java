@@ -23,28 +23,22 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.aop;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveriesToMaterialFlow.aop.helper.DeliveredProductValidationHelper;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveriesToMaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Configurable;
 
 @Aspect
 @Configurable
 @RunIfEnabled(DeliveriesToMaterialFlowConstants.PLUGIN_IDENTIFIER)
 public class DeliveredProductAddMultiListenersAspect {
-
-    @Autowired
-    private DeliveredProductValidationHelper deliveredProductValidaionHelper;
 
     @Pointcut("execution(private com.qcadoo.model.api.Entity com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners.createDeliveredProduct(..))"
             + "&& args(position, deliveredProductDD)")

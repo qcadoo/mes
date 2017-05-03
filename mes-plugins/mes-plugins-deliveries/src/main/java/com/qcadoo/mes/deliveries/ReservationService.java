@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 public class ReservationService {
 
     public static final String OFFER = "offer";
+    
+    public static final String OPERATION = "operation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -153,6 +155,9 @@ public class ReservationService {
         }
         if(PluginUtils.isEnabled("supplyNegotiations")) {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            findOrderedProduct.add(SearchRestrictions.belongsTo(OPERATION, deliveredProduct.getBelongsToField(OPERATION)));
         }
         Entity orderedProductForProduct = findOrderedProduct.uniqueResult();
 
