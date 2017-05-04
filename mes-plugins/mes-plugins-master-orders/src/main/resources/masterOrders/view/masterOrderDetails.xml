@@ -421,7 +421,7 @@
                         <option type="column" name="productUnit" fields="product"
                                 expression="#product['unit']"/>
 
-                        <option type="column" name="assortmentName" fields="assortmentName"/>
+                        <option type="column" name="assortmentName" fields="assortmentName" expression="#product.get('assortment')?.get('name')"/>
 
                         <option type="order" column="number" direction="asc"/>
 
