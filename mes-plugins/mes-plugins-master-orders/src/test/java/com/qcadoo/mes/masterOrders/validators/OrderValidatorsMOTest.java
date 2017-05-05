@@ -192,18 +192,6 @@ public class OrderValidatorsMOTest {
     }
 
     @Test
-    public final void shouldReturnTrueIfMasterOrderTypeIsUndefined() {
-        // given
-        stubMasterOrderType(MasterOrderType.UNDEFINED.getStringValue());
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-    }
-
-    @Test
     public final void shouldReturnFalseIfNoneOfMasterOrderProductMatches() {
         // given
         stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
