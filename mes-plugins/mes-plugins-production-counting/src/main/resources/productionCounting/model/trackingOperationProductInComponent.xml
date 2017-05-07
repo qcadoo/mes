@@ -57,6 +57,19 @@
 
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
               default="01component" />
+
+        <boolean name="wasteUsed"/>
+        <boolean name="wasteUsedOnly"/>
+        <decimal name="wasteUsedQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+            <validatesWith
+                    class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductInComponentValidators"
+                    method="validateWasteUsedQuantity"/>
+        </decimal>
+        <dictionary name="wasteUnit" dictionary="units"/>
+        <string name="additionalInformation"/>
     </fields>
 
     <hooks>
@@ -67,7 +80,9 @@
                 class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
                 method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
-                       method="validatesWith"/>                
+                       method="validatesWith"/>
+        <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductInComponentValidators"
+                       method="validateIfOnlyWasteUsed"/>
     </hooks>
 
 </model>

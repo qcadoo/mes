@@ -108,7 +108,7 @@
 	</appender>
 
 	<logger name="com.qcadoo.mes">
-		<level value="debug" />
+		<level value="info" />
 	</logger>
 	<logger name="org.springframework">
 		<level value="info" />
@@ -149,7 +149,7 @@
 	</logger>
 
 	<logger name="com.qcadoo.security">
-		<level value="info" />
+		<level value="warn" />
 		<appender-ref ref="security-log" />
 	</logger>
 
@@ -174,7 +174,7 @@
 	</logger>
 
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="info" />
+		<level value="warn" />
 		<appender-ref ref="sql-log" />
 	</logger>
 

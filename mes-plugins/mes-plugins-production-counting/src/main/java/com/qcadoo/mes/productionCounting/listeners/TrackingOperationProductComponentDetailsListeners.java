@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.listeners;
 import java.math.BigDecimal;
 import java.util.Set;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,7 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -67,6 +69,18 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     private static final String L_NUMBER = "number";
 
+    private static final String L_WASTE_USED = "wasteUsed";
+
+    private static final String L_WASTE_USED_ONLY = "wasteUsedOnly";
+
+    private static final String L_WASTE_USED_QUANTITY = "wasteUsedQuantity";
+
+    private static final String L_WASTE_UNIT = "wasteUnit";
+
+    private static final String L_USED_QUANTITY = "usedQuantity";
+
+    private static final String L_GIVEN_QUANTITY = "givenQuantity";
+
     @Autowired
     private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
 
@@ -74,13 +88,15 @@ public class TrackingOperationProductComponentDetailsListeners {
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Entity componentEntity = form.getPersistedEntityWithIncludedFormValues();
-        Entity productEntity = componentEntity.getBelongsToField(L_PRODUCT);
+        Entity productEntity = getFormEntity(view).getBelongsToField(L_PRODUCT);
 
         fillUnits(view, productEntity);
         fillFieldFromProduct(view, productEntity);
+    }
+
+    private Entity getFormEntity(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        return form.getPersistedEntityWithIncludedFormValues();
     }
 
     private void fillUnits(final ViewDefinitionState view, final Entity productEntity) {

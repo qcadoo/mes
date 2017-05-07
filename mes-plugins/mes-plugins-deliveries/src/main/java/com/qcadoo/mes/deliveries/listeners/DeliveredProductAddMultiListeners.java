@@ -38,6 +38,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -53,13 +54,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class DeliveredProductAddMultiListeners {
+
+    public static final String OFFER = "offer";
 
     @Autowired
     DataDefinitionService dataDefinitionService;
@@ -141,17 +141,17 @@ public class DeliveredProductAddMultiListeners {
     }
 
     private boolean validate(Entity deliveredProductMulti) {
-        if(!deliveryHasLocationSet(deliveredProductMulti)){
+        if (!deliveryHasLocationSet(deliveredProductMulti)) {
             return false;
         }
         DataDefinition dataDefinition = deliveredProductMulti.getDataDefinition();
         boolean isValid = true;
         Arrays.asList(DeliveredProductMultiFields.PALLET_NUMBER, DeliveredProductMultiFields.PALLET_TYPE,
                 DeliveredProductMultiFields.STORAGE_LOCATION).stream().forEach(f -> {
-                    if (deliveredProductMulti.getField(f) == null) {
-                        deliveredProductMulti.addError(dataDefinition.getField(f), "qcadooView.validate.field.error.missing");
-                    }
-                });
+            if (deliveredProductMulti.getField(f) == null) {
+                deliveredProductMulti.addError(dataDefinition.getField(f), "qcadooView.validate.field.error.missing");
+            }
+        });
         isValid = deliveredProductMulti.isValid();
 
         DataDefinition positionDataDefinition = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
@@ -161,7 +161,8 @@ public class DeliveredProductAddMultiListeners {
         Multimap<Long, Date> positionsMap = ArrayListMultimap.create();
         DeliveredMultiProductContainer multiProductContainer = new DeliveredMultiProductContainer();
         for (Entity position : deliveredProductMultiPositions) {
-            checkExpirationDate(deliveredProductMulti, position, DeliveredProductMultiPositionFields.EXPIRATION_DATE, positionDataDefinition);
+            checkExpirationDate(deliveredProductMulti, position, DeliveredProductMultiPositionFields.EXPIRATION_DATE,
+                    positionDataDefinition);
             checkMissing(position, DeliveredProductMultiPositionFields.PRODUCT, positionDataDefinition);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.QUANTITY, positionDataDefinition);
             checkMissingOrZero(position, DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, positionDataDefinition);
@@ -170,8 +171,8 @@ public class DeliveredProductAddMultiListeners {
                 Entity product = position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
                 Entity additionalCode = position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
-                if (multiProductContainer
-                        .checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode), expirationDate))) {
+                if (multiProductContainer.checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode),
+                        expirationDate))) {
                     position.addError(positionDataDefinition.getField(DeliveredProductMultiPositionFields.PRODUCT),
                             "deliveries.deliveredProductMulti.error.productExists");
                 } else {
@@ -188,7 +189,7 @@ public class DeliveredProductAddMultiListeners {
     private boolean deliveryHasLocationSet(Entity deliveredProductMulti) {
         Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        if(location == null){
+        if (location == null) {
             deliveredProductMulti.addGlobalError("deliveries.deliveredProductMultiPosition.error.locationRequired");
             return false;
         }
@@ -216,10 +217,11 @@ public class DeliveredProductAddMultiListeners {
         }
     }
 
-    private void checkExpirationDate(Entity deliveredProductMulti, Entity position, String fieldname, DataDefinition positionDataDefinition) {
+    private void checkExpirationDate(Entity deliveredProductMulti, Entity position, String fieldname,
+            DataDefinition positionDataDefinition) {
         Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        if(location != null){
+        if (location != null) {
             Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
             boolean requireExpirationDate = location.getBooleanField("requireExpirationDate");
             if (requireExpirationDate && expirationDate == null) {
@@ -244,6 +246,11 @@ public class DeliveredProductAddMultiListeners {
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE));
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            if (Objects.nonNull(position.getId())) {
+                deliveredProduct.setField(OFFER, position.getDataDefinition().get(position.getId()).getBelongsToField(OFFER));
+            }
+        }
         return deliveredProduct;
     }
 
@@ -268,8 +275,8 @@ public class DeliveredProductAddMultiListeners {
                 recalculateQuantities(delivery, formEntity);
 
                 FieldComponent quantityComponent = formComponent.findFieldComponentByName("quantity");
-                quantityComponent.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(formEntity.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
+                quantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                        formEntity.getField(DeliveredProductMultiPositionFields.QUANTITY), 0));
                 quantityComponent.requestComponentUpdateState();
                 FieldComponent additionalQuantityComponent = formComponent.findFieldComponentByName("additionalQuantity");
                 additionalQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(
@@ -358,8 +365,8 @@ public class DeliveredProductAddMultiListeners {
 
     private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {

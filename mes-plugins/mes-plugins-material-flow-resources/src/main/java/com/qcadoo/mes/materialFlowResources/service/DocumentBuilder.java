@@ -23,23 +23,28 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -78,18 +83,21 @@ public class DocumentBuilder {
     public DocumentBuilder receipt(final Entity locationTo) {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
         document.setField(DocumentFields.TYPE, DocumentType.RECEIPT.getStringValue());
+
         return this;
     }
 
     public DocumentBuilder internalOutbound(Entity locationFrom) {
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.INTERNAL_OUTBOUND.getStringValue());
+
         return this;
     }
 
     public DocumentBuilder internalInbound(Entity locationTo) {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
         document.setField(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue());
+
         return this;
     }
 
@@ -97,18 +105,20 @@ public class DocumentBuilder {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());
+
         return this;
     }
 
     public DocumentBuilder release(Entity locationFrom) {
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
+
         return this;
     }
 
     /**
-     * Add position to document, use this method for outbound and transfer
-     * documents where additional attributes should not been set.
+     * Add position to document, use this method for outbound and transfer documents where additional attributes should not been
+     * set.
      *
      * @param product
      * @param quantity
@@ -119,8 +129,7 @@ public class DocumentBuilder {
     }
 
     /**
-     * Add position to document, use this method for outbound and transfer
-     * documents for locations with manual algorithm
+     * Add position to document, use this method for outbound and transfer documents for locations with manual algorithm
      *
      * @param product
      * @param quantity
@@ -132,8 +141,7 @@ public class DocumentBuilder {
     }
 
     /**
-     * Add position to document, use this method for inbound documents where
-     * additional attributes are required sometimes.
+     * Add position to document, use this method for inbound documents where additional attributes are required sometimes.
      *
      * @param product
      * @param quantity
@@ -154,7 +162,9 @@ public class DocumentBuilder {
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
+
         positions.add(position);
+
         return this;
     }
 
@@ -166,7 +176,9 @@ public class DocumentBuilder {
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource);
+
         positions.add(position);
+
         return this;
     }
 
@@ -179,13 +191,14 @@ public class DocumentBuilder {
 
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode, isWaste);
+
         positions.add(position);
+
         return this;
     }
 
     /**
-     * Creates position with given field values (with the same base and given
-     * unit)
+     * Creates position with given field values (with the same base and given unit)
      *
      * @param product
      * @param quantity
@@ -198,8 +211,9 @@ public class DocumentBuilder {
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final String batch,
             final Date productionDate, final Date expirationDate, final Entity resource) {
-        DataDefinition positionDD = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION);
+        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
+
         Entity position = positionDD.create();
 
         position.setField(PositionFields.PRODUCT, product);
@@ -211,12 +225,12 @@ public class DocumentBuilder {
         position.setField(PositionFields.PRODUCTION_DATE, productionDate);
         position.setField(PositionFields.EXPIRATION_DATE, expirationDate);
         position.setField(PositionFields.RESOURCE, resource);
+
         return position;
     }
 
     /**
-     * Creates position with given field values (with different base unit and
-     * given unit)
+     * Creates position with given field values (with different base unit and given unit)
      *
      * @param product
      * @param quantity
@@ -233,9 +247,11 @@ public class DocumentBuilder {
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
             final Date productionDate, final Date expirationDate, final Entity resource) {
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
+
         position.setField(PositionFields.CONVERSION, conversion);
         position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.GIVEN_UNIT, givenUnit);
+
         return position;
     }
 
@@ -245,11 +261,13 @@ public class DocumentBuilder {
             final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste) {
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
                 expirationDate, resource);
+
         position.setField(PositionFields.STORAGE_LOCATION, storageLocation);
         position.setField(PositionFields.PALLET_NUMBER, palletNumber);
         position.setField(PositionFields.TYPE_OF_PALLET, typeOfPallet);
         position.setField(PositionFields.ADDITIONAL_CODE, additionalCode);
         position.setField(PositionFields.WASTE, isWaste);
+
         return position;
     }
 
@@ -261,24 +279,30 @@ public class DocumentBuilder {
      */
     public DocumentBuilder addPosition(final Entity position) {
         Preconditions.checkArgument(position != null, "Position argument is required.");
+
         positions.add(position);
+
         return this;
     }
 
     public DocumentBuilder setAccepted() {
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+
         return this;
     }
 
     /**
      * Use this method to set document fields added by any extending plugins.
      *
-     * @param field field name
-     * @param value field value
+     * @param field
+     *            field name
+     * @param value
+     *            field value
      * @return this builder
      */
     public DocumentBuilder setField(String field, Object value) {
         document.setField(field, value);
+
         return this;
     }
 
@@ -295,20 +319,24 @@ public class DocumentBuilder {
      * @return Created document entity.
      */
     public Entity build() {
-        DataDefinition documentDD = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         document.setField(DocumentFields.POSITIONS, positions);
 
         if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
             createResources();
         }
+
         Entity savedDocument = documentDD.save(document);
 
-        if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue()
-                .equals(savedDocument.getStringField(DocumentFields.STATE)) && buildConnectedPZDocument(savedDocument)) {
+        if (savedDocument.isValid()
+                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))
+                && buildConnectedPZDocument(savedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService, parameterService);
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                    parameterService);
+
             receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
         }
 
@@ -320,27 +348,30 @@ public class DocumentBuilder {
     }
 
     public Entity buildWithEntityRuntimeException() {
-        DataDefinition documentDD = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         document.setField(DocumentFields.POSITIONS, positions);
 
         if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
             createResources();
         }
+
         Entity savedDocument = documentDD.save(document);
 
-        if (savedDocument.isValid() && DocumentState.ACCEPTED.getStringValue()
-                .equals(savedDocument.getStringField(DocumentFields.STATE)) && buildConnectedPZDocument(savedDocument)) {
+        if (savedDocument.isValid()
+                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))
+                && buildConnectedPZDocument(savedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService, parameterService);
+                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                    parameterService);
             receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
         }
 
         if (!savedDocument.isValid()) {
             throw new EntityRuntimeException(savedDocument);
         }
-        
+
         return savedDocument;
     }
 
@@ -354,6 +385,7 @@ public class DocumentBuilder {
 
     private void createResources() {
         DocumentType documentType = DocumentType.of(document);
+
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             resourceManagementService.createResourcesForReceiptDocuments(document);
 
@@ -369,13 +401,17 @@ public class DocumentBuilder {
     }
 
     public Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {
-        DataDefinition documentDD = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+
         Entity newDocument = documentDD.create();
+
         newDocument.setField(DocumentFields.TIME, new Date());
         newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
         newDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
         newDocument.setField(DocumentFields.POSITIONS, Lists.newArrayList());
+
         return newDocument;
     }
+
 }

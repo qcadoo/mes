@@ -2,6 +2,7 @@ package com.qcadoo.mes.deliveries.report.deliveryByPalletType;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.DataDefinitionService;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,10 +27,10 @@ class DeliveryByPalletTypeXlsDP {
         Long to = (Long) _filters.get("to");
         Map<String, Object> params = Maps.newHashMap();
         params.put("fromDate", new Date(from));
-        params.put("toDate", new Date(to));
+        params.put("toDate", new DateTime(to).plusDays(1).toDate());
         String query = buildQuery();
-        List<DeliveryByPalletTypeEntry> entries = jdbcTemplate.query(query, params,
-                new BeanPropertyRowMapper(DeliveryByPalletTypeEntry.class));
+        List<DeliveryByPalletTypeEntry> entries = jdbcTemplate.query(query, params, new BeanPropertyRowMapper(
+                DeliveryByPalletTypeEntry.class));
         Map<DeliveryByPalletTypeKey, DeliveryByPalletTypeValue> deliveryByPallet = Maps.newLinkedHashMap();
 
         for (DeliveryByPalletTypeEntry entry : entries) {

@@ -68,6 +68,7 @@
                 method="calculateDeliveredProductPricePerUnit"/>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onDelete"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                        method="validatesWith"/>
     </hooks>

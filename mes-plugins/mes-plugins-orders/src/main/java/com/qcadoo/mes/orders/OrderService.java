@@ -122,4 +122,21 @@ public interface OrderService {
      */
     boolean isPktEnabled();
 
+
+    /**
+     * Build order description, based on masterOrder poNumber and direction,and technology description
+     *
+     * @param masterOrder
+     *          master order entity
+     *
+     * @param technology
+     *          technology entity
+     *
+     * @param fillOrderDescriptionBasedOnTechnology
+     *          boolean parameter value
+     *
+     * @return String
+     */
+    String buildOrderDescription(Entity masterOrder,Entity technology,boolean fillOrderDescriptionBasedOnTechnology);
+
 }

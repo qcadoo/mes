@@ -656,6 +656,7 @@
 
 
             </component>
+            <component type="input" name="oldTechnologyId" reference="oldTechnologyId" defaultVisible="false"/>
         </windowTab>
 
         <windowTab name="detailsTab">

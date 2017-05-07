@@ -43,6 +43,8 @@ import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -111,16 +113,28 @@ public class GenerateProductionBalanceWithCosts implements Observer {
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
 
+    @Autowired
+    private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
+
     @Override
     public void update(final Observable observable, final Object object) {
         if (PluginUtils.isEnabled(ProductionCountingWithCostsConstants.PLUGIN_IDENTIFIER)) {
             Entity productionBalance = (Entity) object;
 
+            Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
+            productionBalance.setField(ProductionBalanceFields.ORDER, updateCostsInOrder(order));
             doTheCostsPart(productionBalance);
             fillFieldsAndGrids(productionBalance);
 
             generateBalanceWithCostsReport(productionBalance);
         }
+    }
+
+    private Entity updateCostsInOrder(Entity order) {
+
+        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
+        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+        return order.getDataDefinition().save(order);
     }
 
     void generateBalanceWithCostsReport(final Entity productionBalance) {
@@ -151,6 +165,7 @@ public class GenerateProductionBalanceWithCosts implements Observer {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
+        productionBalance.setField(ProductionBalanceFields.ORDER, order);
         BigDecimal quantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
         productionBalance.setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
