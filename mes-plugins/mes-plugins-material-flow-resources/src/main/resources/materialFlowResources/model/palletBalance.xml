@@ -36,6 +36,8 @@
         <boolean name="includeWeekends" default="false"/>
         <boolean name="generated" default="false"/>
         <string name="fileName"/>
+        <string name="generatedBy"/>
+        <date name="generatedDate"/>
     </fields>
 
     <hooks>

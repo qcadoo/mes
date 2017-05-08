@@ -18,6 +18,8 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -35,6 +37,9 @@ public class PalletBalanceDetailsListeners {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private UserService userService;
 
     public void printPalletBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
@@ -79,6 +84,8 @@ public class PalletBalanceDetailsListeners {
 
     private void fillReportValues(final Entity report) {
         report.setField(PalletBalanceFields.GENERATED, true);
+        report.setField(PalletBalanceFields.GENERATED_BY, userService.getCurrentUserEntity().getStringField(UserFields.USER_NAME));
+        report.setField(PalletBalanceFields.GENERATED_DATE, new Date());
         report.setField(PalletBalanceFields.DATE_TO, new Date());
         report.getDataDefinition().save(report);
     }

@@ -15,6 +15,8 @@ public class PalletBalanceHooks {
     public void onCopy(final DataDefinition palletBalanceDD, final Entity palletBalance) {
 
         palletBalance.setField(PalletBalanceFields.GENERATED, false);
+        palletBalance.setField(PalletBalanceFields.GENERATED_BY, null);
+        palletBalance.setField(PalletBalanceFields.GENERATED_DATE, null);
         palletBalance.setField(PalletBalanceFields.DATE_TO, new Date());
         palletBalance.setField(PalletBalanceFields.FILE_NAME, StringUtils.EMPTY);
     }
