@@ -40,5 +40,6 @@
 
     <hooks>
         <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.PalletBalanceHooks" method="onCopy"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PalletBalanceValidators" method="validate"/>
     </hooks>
 </model>
