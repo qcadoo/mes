@@ -81,6 +81,10 @@
 
         <hasMany name="deliveredProductMultis" joinField="delivery" model="deliveredProductMulti"
                  cascade="delete" />
+
+
+        <hasMany name="attachments" model="deliveryAttachment" joinField="delivery" cascade="delete"/>
+
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveryHooks"

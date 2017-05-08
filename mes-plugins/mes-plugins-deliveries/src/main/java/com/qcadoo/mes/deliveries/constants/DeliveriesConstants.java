@@ -57,4 +57,6 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_DELIVERED_PRODUCT_MULTI_POSITION = "deliveredProductMultiPosition";
 
+    public static final String MODEL_DELIVERY_ATTACHMENT = "deliveryAttachment";
+
 }
