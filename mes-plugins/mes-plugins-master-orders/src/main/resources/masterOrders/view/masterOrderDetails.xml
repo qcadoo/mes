@@ -290,9 +290,10 @@
                         <option type="column" name="name" fields="name" link="true"
                                 width="200"/>
                         <option type="column" name="ean" fields="ean"/>
+                        <option type="column" name="assortment" fields="assortment" expression="#assortment['name']"/>
 
-                        <option type="searchable" value="name,ean"/>
-                        <option type="orderable" value="name,ean"/>
+                        <option type="searchable" value="name,ean,assortment"/>
+                        <option type="orderable" value="name,ean,assortment"/>
 
                         <option type="expression"
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
