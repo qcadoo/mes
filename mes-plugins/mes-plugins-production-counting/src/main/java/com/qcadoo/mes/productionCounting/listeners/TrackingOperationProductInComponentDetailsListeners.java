@@ -23,19 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
+
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
-import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -90,23 +89,21 @@ public class TrackingOperationProductInComponentDetailsListeners {
 
     public void onWasteUsedOnlyChange(final ViewDefinitionState view, final ComponentState wasteUsedOnly, final String[] args) {
         if (((CheckBoxComponent) wasteUsedOnly).isChecked()) {
-            FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
-            FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
-            Object usedQuantityValue = usedQuantity.getFieldValue();
+            Entity entity = getFormEntity(view);
+            Entity savedEntity = entity.getDataDefinition().get(entity.getId());
 
-            if (usedQuantityValue != null) {
-                Either<Exception, Optional<BigDecimal>> parsedDecimal = BigDecimalUtils
-                        .tryParseAndIgnoreSeparator(usedQuantityValue.toString(), LocaleContextHolder.getLocale());
+            BigDecimal savedUsedQuantity = savedEntity.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+            BigDecimal savedWasteUsed = convertNullToZero(
+                    savedEntity.getDecimalField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY));
 
-                boolean usedQuantityIsOKAndNotZero = parsedDecimal.isRight() && parsedDecimal.getRight().isPresent()
-                        && !BigDecimalUtils.valueEquals(parsedDecimal.getRight().get(), BigDecimal.ZERO);
-
-                if (usedQuantityIsOKAndNotZero) {
-                    wasteUsedQuantity.setFieldValue(usedQuantityValue);
-                    usedQuantity.setFieldValue(BigDecimal.ZERO);
-                    trackingOperationProductComponentDetailsListeners.calculateQuantityToGiven(view, usedQuantity,
-                            ArrayUtils.EMPTY_STRING_ARRAY);
-                }
+            if (savedUsedQuantity != null && savedUsedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
+                FieldComponent wasteUsedQuantity = (FieldComponent) view.getComponentByReference(L_WASTE_USED_QUANTITY);
+                BigDecimal newValue = savedUsedQuantity.add(savedWasteUsed, numberService.getMathContext());
+                wasteUsedQuantity.setFieldValue(numberService.format(newValue));
+                usedQuantity.setFieldValue(numberService.format(BigDecimal.ZERO));
+                trackingOperationProductComponentDetailsListeners.calculateQuantityToGiven(view, usedQuantity,
+                        ArrayUtils.EMPTY_STRING_ARRAY);
             }
         }
     }
@@ -121,13 +118,16 @@ public class TrackingOperationProductInComponentDetailsListeners {
 
         if (!wasteUsedOnly && sameUnits) {
             BigDecimal wasteUsed = entity.getDecimalField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY);
-
-            if (wasteUsed != null && !BigDecimalUtils.valueEquals(wasteUsed, BigDecimal.ZERO)) {
-                BigDecimal savedUsedQuantity = entity.getDataDefinition().get(entity.getId())
+            if (wasteUsed != null && wasteUsed.compareTo(BigDecimal.ZERO) > 0) {
+                Entity savedEntity = entity.getDataDefinition().get(entity.getId());
+                BigDecimal savedUsedQuantity = savedEntity
                         .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+                BigDecimal savedWasteUsed = convertNullToZero(
+                        savedEntity.getDecimalField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY));
 
                 if (savedUsedQuantity != null) {
-                    BigDecimal newValue = savedUsedQuantity.subtract(wasteUsed, numberService.getMathContext());
+                    MathContext mc = numberService.getMathContext();
+                    BigDecimal newValue = savedUsedQuantity.add(savedWasteUsed, mc).subtract(wasteUsed, mc);
 
                     if (newValue.compareTo(BigDecimal.ZERO) < 0) {
                         newValue = BigDecimal.ZERO;

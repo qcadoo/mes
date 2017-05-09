@@ -41,15 +41,15 @@
             <option type="column" name="name" fields="name" link="true"/>
             <option type="column" name="dateFrom" fields="dateFrom" link="true"/>
             <option type="column" name="dateTo" fields="dateTo" link="true"/>
-            <option type="column" name="updateUser" fields="updateUser"/>
-            <option type="column" name="updateDate" fields="updateDate"/>
+            <option type="column" name="generatedBy" fields="generatedBy"/>
+            <option type="column" name="generated" fields="generated"/>
 
             <option type="order" column="number" direction="desc" />
 
             <option type="searchable"
-                    value="number,name,dateFrom,dateTo,updateUser,updateDate" />
+                    value="number,name,dateFrom,dateTo,generatedBy,generated" />
             <option type="orderable"
-                    value="number,name,dateFrom,dateTo,updateUser,updateDate" />
+                    value="number,name,dateFrom,dateTo,generatedBy,generated" />
 
             <option type="correspondingView" value="materialFlowResources/palletBalanceDetails" />
             <option type="correspondingComponent" value="form" />

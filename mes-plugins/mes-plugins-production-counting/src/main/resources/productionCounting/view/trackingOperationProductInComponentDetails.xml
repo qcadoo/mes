@@ -106,7 +106,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="8" width="5">
 						<component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
-								   reference="wasteUsedQuantity">
+								   reference="wasteUsedQuantity" hasDescription="true">
 							<option type="alignment" value="right"/>
 							<listener event="onInputChange" method="recalculateUsedQuantity"
 									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
