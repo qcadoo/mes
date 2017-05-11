@@ -24,24 +24,18 @@
     ***************************************************************************
 
 -->
-<model name="palletBalance" auditable="true"
+<model name="deliveryAttachment"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
-        <string name="number" unique="true" required="true"/>
-        <string name="name"/>
-        <date name="dateFrom" required="true"/>
-        <date name="dateTo" required="true"/>
-        <boolean name="includeWeekends" default="false"/>
-        <boolean name="generated" default="false"/>
-        <string name="fileName"/>
-        <string name="generatedBy"/>
-        <date name="generatedDate"/>
+        <belongsTo name="delivery" model="delivery" required="true"/>
+        <file name="attachment" required="true"/>
+        <string name="name" required="true"/>
+        <decimal name="size" required="true">
+        </decimal>
+        <string name="ext" required="true"/>
     </fields>
-
     <hooks>
-        <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.PalletBalanceHooks" method="onCopy"/>
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PalletBalanceValidators" method="validate"/>
+
     </hooks>
 </model>

@@ -58,8 +58,6 @@ public class MasterOrderProductHooks {
         countCumulativeOrderQuantity(masterOrderProduct);
         fillRegisteredQuantity(masterOrderProduct);
         calculateLeftToRelease(masterOrderProduct);
-        fillProductAssortment(masterOrderProduct);
-
     }
 
     private void calculateLeftToRelease(Entity masterOrderProduct) {
@@ -107,20 +105,5 @@ public class MasterOrderProductHooks {
             return false;
         }
         return true;
-    }
-
-    private void fillProductAssortment(Entity masterOrderProduct) {
-        if (masterOrderProduct.getId() == null) {
-            return;
-        }
-        Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
-        if(product != null) {
-            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
-            if (assortment != null) {
-                String assortmentName = assortment.getStringField("name");
-                masterOrderProduct.setField("assortmentName", assortmentName);
-            }
-        }
-
     }
 }

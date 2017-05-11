@@ -73,8 +73,6 @@
 
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
 
-        <string name="assortmentName"/>
-
     </fields>
 
     <hooks>

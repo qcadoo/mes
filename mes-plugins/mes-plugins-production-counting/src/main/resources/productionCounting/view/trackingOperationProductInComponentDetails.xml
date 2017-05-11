@@ -33,7 +33,10 @@
 
         <ribbon>
             <group template="navigation"/>
-            <group template="formSaveAction"/>
+			<group name="actions">
+				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
+				<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;" />
+			</group>
         </ribbon>
 
 		<windowTab name="mainTab">
@@ -106,7 +109,7 @@
 					</layoutElement>
 					<layoutElement column="1" row="8" width="5">
 						<component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
-								   reference="wasteUsedQuantity">
+								   reference="wasteUsedQuantity" hasDescription="true">
 							<option type="alignment" value="right"/>
 							<listener event="onInputChange" method="recalculateUsedQuantity"
 									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>

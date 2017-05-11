@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,14 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletBalanceFields;
+import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceReportHelper;
 import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceXlsService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -35,6 +39,12 @@ public class PalletBalanceDetailsListeners {
 
     @Autowired
     private ReportService reportService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PalletBalanceReportHelper palletBalanceReportHelper;
 
     public void printPalletBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
@@ -54,6 +64,12 @@ public class PalletBalanceDetailsListeners {
                 return;
             } else if (StringUtils.hasText(report.getStringField(PalletBalanceFields.FILE_NAME))) {
                 state.addMessage("materialFlowResource.palletBalance.report.error.documentsWasGenerated",
+                        ComponentState.MessageType.FAILURE);
+                return;
+            }
+            List<String> typesOfPallet = palletBalanceReportHelper.getTypesOfPallet();
+            if (typesOfPallet.isEmpty()) {
+                state.addMessage("materialFlowResource.palletBalance.report.error.emptyTypesOfPallet",
                         ComponentState.MessageType.FAILURE);
                 return;
             }
@@ -79,6 +95,8 @@ public class PalletBalanceDetailsListeners {
 
     private void fillReportValues(final Entity report) {
         report.setField(PalletBalanceFields.GENERATED, true);
+        report.setField(PalletBalanceFields.GENERATED_BY, userService.getCurrentUserEntity().getStringField(UserFields.USER_NAME));
+        report.setField(PalletBalanceFields.GENERATED_DATE, new Date());
         report.setField(PalletBalanceFields.DATE_TO, new Date());
         report.getDataDefinition().save(report);
     }

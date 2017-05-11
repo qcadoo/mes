@@ -58,8 +58,8 @@
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
               default="01component" />
 
-        <boolean name="wasteUsed"/>
-        <boolean name="wasteUsedOnly"/>
+        <boolean name="wasteUsed" default="false"/>
+        <boolean name="wasteUsedOnly" default="false" />
         <decimal name="wasteUsedQuantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
