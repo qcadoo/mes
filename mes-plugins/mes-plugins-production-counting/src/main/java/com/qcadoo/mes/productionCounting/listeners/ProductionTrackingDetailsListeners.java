@@ -62,6 +62,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -95,6 +96,22 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private TranslationService translationService;
+
+    public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("trackingOperationProductInComponents");
+
+        if (!grid.getSelectedEntitiesIds().isEmpty()) {
+            String url = "/productionCounting/anomalyProductionTrackingDetails.html";
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            Long productionTrackingId = productionTrackingForm.getEntityId();
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.productionTrackingId", productionTrackingId);
+            parameters.put("form.selectedTOPICs",
+                    grid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+            parameters.put("form.performAndAccept", Boolean.FALSE);
+            view.openModal(url,parameters);
+        }
+    }
 
     public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
