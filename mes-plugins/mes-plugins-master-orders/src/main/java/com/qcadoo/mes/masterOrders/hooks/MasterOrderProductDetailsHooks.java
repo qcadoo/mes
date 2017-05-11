@@ -26,6 +26,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -62,6 +63,11 @@ public class MasterOrderProductDetailsHooks {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
+        if (PluginUtils.isEnabled("goodFood")) {
+            FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+            technology.setRequired(true);
+            technology.requestComponentUpdateState();
+        }
         masterOrderDetailsHooks.fillDefaultTechnology(view);
     }
 

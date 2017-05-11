@@ -156,6 +156,7 @@ public class MasterOrderDetailsHooks {
     public void fillDefaultTechnology(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference("product");
         FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
+        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
 
         Entity product = productField.getEntity();
 
@@ -171,6 +172,9 @@ public class MasterOrderDetailsHooks {
 
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         defaultTechnology.requestComponentUpdateState();
+
+        technology.setFieldValue(defaultTechnologyEntity.getId());
+        technology.requestComponentUpdateState();
     }
 
 }
