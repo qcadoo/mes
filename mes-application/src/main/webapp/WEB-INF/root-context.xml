@@ -51,7 +51,6 @@
             properties-ref="defaultConfiguration"/>
 
     <util:properties id="defaultConfiguration">
-        <prop key="samplesDatasetLocale">default</prop>
         <prop key="showContextualHelpPaths">false</prop>
     </util:properties>
 
