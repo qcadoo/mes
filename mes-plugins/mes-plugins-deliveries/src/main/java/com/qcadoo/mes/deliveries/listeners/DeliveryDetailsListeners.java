@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -39,6 +40,7 @@ import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -51,14 +53,22 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
 @Component
 public class DeliveryDetailsListeners {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
+
 
     private static final Integer REPORT_WIDTH_A4 = 515;
 
@@ -108,6 +118,10 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+
+    @Autowired
+    private FileService fileService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -605,6 +619,45 @@ public class DeliveryDetailsListeners {
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
+    }
+
+
+    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(DeliveryFields.ATTACHMENTS);
+
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            state.addMessage("deliveries.deliveryDetails.window.ribbon.atachments.nonSelectedAtachment",
+                    ComponentState.MessageType.INFO);
+
+            return;
+        }
+
+        DataDefinition deliveryAttachmentDD = getDeliveryAttachmentDD();
+
+        List<File> attachements = Lists.newArrayList();
+
+        for (Long deliveryAttachmentId : grid.getSelectedEntitiesIds()) {
+            Entity deliveryAttachment = deliveryAttachmentDD.get(deliveryAttachmentId);
+
+            File attachment = new File(deliveryAttachment.getStringField(DeliveryAttachmentFields.ATTACHMENT));
+
+            attachements.add(attachment);
+        }
+
+        File zipFile = null;
+
+        try {
+            zipFile = fileService.compressToZipFile(attachements, false);
+        } catch (IOException e) {
+            LOG.error("Unable to compress documents to zip file.", e);
+            return;
+        }
+
+        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    private DataDefinition getDeliveryAttachmentDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY_ATTACHMENT);
     }
 
 }

@@ -1,0 +1,538 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo Framework
+ * Version: 1.4
+ *
+ * This file is part of Qcadoo.
+ *
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+#gridContainer {
+    background: #fafafa;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    width: 100%;
+    height: 100%;
+    position:absolute;
+}
+
+#gridContainer .ui-th-column, #gridContainer .ui-search-toolbar  {
+    background: transparent url('/qcadooView/public/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 11px;
+    color: #e8e8e8;
+    font-weight: normal;
+}
+
+#gridContainer .ui-state-highlight {
+    background: #ffdb67;
+    border-color: #dba700;
+}
+#gridContainer .ui-state-highlight .ui-state-hover {
+    background: #F8C426;
+}
+
+input.eac-square {
+    margin-bottom: 3px;
+    display:table-cell;
+    border: 1px solid #aaaaaa;
+    background: #ffffff url(/qcadooView/public/css/core/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
+    color: #222222;
+}
+
+.ui-jqdialog {
+    width: 50em;
+}
+
+input[type="text"] {
+    padding: .1em;
+    margin-bottom: 3px;
+    display:table-cell;
+    border: 1px solid #aaaaaa;
+    background: #ffffff url(/qcadooView/public/css/core/images/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
+    color: #222222;
+}
+
+button .customelement {
+    display:table-cell;
+    width: 5em;
+}
+
+#t_grid input {
+    border: 0;
+    float: left;
+    margin: 5px;
+}
+
+#t_grid label {
+    float: left;
+    margin: 5px 5px 5px 10px;
+}
+
+#t_grid {
+    background: #f2f2f2;
+    line-height: 28px;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+    border-bottom: solid #9b9b9b 1px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 0;
+    height: 30px;
+    vertical-align: middle;
+    overflow: hidden;
+    height: 70px;
+    background: url('/qcadooView/public/css/core/menu/images/q_row3_bg.png') repeat-x top left;
+    border-top-color: #000;
+    display: table-cell;
+}
+.t_grid__container{
+    display: table-cell;
+    vertical-align: middle;
+}
+#t_grid #cancel_icon{
+    height: 24px !important;
+    width: 24px !important;
+    margin-left: 5px;
+}
+#t_grid #cancel_button{
+    display: inline-block;
+}
+#t_grid #cancel_button a{
+    background: none;
+}
+div.headerActionButton a span div {
+    display: inline-block;
+    height: 23px;
+    line-height: 23px;
+    vertical-align: middle;
+    padding: 0px 5px 0px 5px;
+    color: #464646;
+    cursor: pointer;
+}
+div.headerActionButton a {
+    display: block;
+    text-decoration: none;
+    color: #b7b7b7;
+    font-size: 11px;
+    height: 23px;
+    width: auto;
+    background-image: url('/qcadooView/public/css/core/menu/images/lt_twoB_l.png');
+    background-repeat: no-repeat;
+    background-position: left;
+    cursor: default;
+}
+
+#add_new_icon, #cancel_icon {
+    background-repeat: no-repeat;
+    background-position: left;
+    width: 17px;
+    margin-left: 3px;
+    padding-right: 0;
+}
+
+#add_new_icon {
+    background-image: url('/qcadooView/public/img/core/icons/newIcon16.png');
+}
+
+#cancel_icon {
+    background-image: url('/qcadooView/public/img/core/icons/cancelIcon24.png');
+}
+
+div.gridTitle {
+    padding-left: 10px;
+    color: #555555;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 28px;
+    float: left;
+    padding-right: 8px;
+}
+div.headerActionButton a span div.hasIcon {
+    padding-left: 0px;
+}
+
+.ui-corner-top {
+    -moz-border-radius-topleft: 0px;
+    -webkit-border-top-left-radius: 0px;
+    border-top-left-radius: 0px;
+    -moz-border-radius-topright: 0px;
+    -webkit-border-top-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+#editmodgrid {
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-weight: normal;
+    font-size: 11px;
+    background: #ebebeb;
+    padding: 0;
+    border-color: black;
+}
+
+#edithdgrid {
+    background: #ebebeb;
+    color: #959595;
+    height: 25px;
+    line-height: 25px;
+    font-weight: normal;
+    font-size: 15px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    border: 0;
+    padding-left: 20px;
+}
+.ui-jqdialog-content .DataTD {
+    padding-right: 5px;
+}
+
+#editcntgrid {
+    background: #FAFAFA;
+    border-top: 1px solid #aaaaaa;
+    padding: 5px;
+}
+
+hr.ui-widget-content {
+    border: 0;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+    padding: .5em .3em;
+    border: 1px solid #aaaaaa;
+}
+
+.ui-jqgrid-view input[readonly], .EditTable input[readonly]{
+    color: #959595 !important; 
+    background-color: #f5f5f5 !important; 
+    border: solid #cccccc 1px;
+    border-bottom: solid #e8e8e8 1px;
+}
+
+.error-grid {
+    border-color: red;
+    background-color: rgba(255, 0, 0, 0.33);
+}
+
+.ui-jqgrid-labels {
+    height: 30px;
+}
+.ui-jqgrid .ui-jqgrid-htable th {
+    height: 22px;
+    background: #555555;
+}
+.ui-jqgrid tr.ui-search-toolbar td > input {
+    margin-left: 5px;
+}
+.ui-state-default a {
+    color: #e8e8e8;
+}
+
+#ui-datepicker-div {
+    font-size: 12px;
+}
+
+.FormData {
+    height: 30px;
+}
+
+.EditTable td select {
+    margin-top: 2px;
+}
+
+.FormError {
+    display: none !important;
+}
+
+.qcadooRowClass { background-color: #DDDDDC; background-image: none; }
+
+.disabled-button {
+    opacity: 0.5;
+    filter: alpha(opacity=50);
+}
+
+.disableButton{
+    pointer-events:none;
+}
+
+.editable input, .ui-jqgrid-btable td > input{
+    width: calc(100% - 20px);
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border-spacing: 0;
+    height: 24px;
+    vertical-align: middle;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background: #ffffff;
+    padding-left: 6px;
+    padding-top: 3px;
+    color: #464646;
+    font-family: "Lucida Grande", Arial;
+    border: solid #a1a1a1 1px;
+    border-bottom: solid #d7d7d7 1px;
+    border-right: 0;
+    float: left;
+}
+
+.ui-jqgrid-btable input {
+    width: calc(100% - 4px);
+}
+
+.editable select,
+.ui-jqgrid-btable td > select{
+    width: 100%;
+    height: 24px;
+    color: #464646;
+    font-family: "Lucida Grande", Arial;
+    border: solid #a1a1a1 1px;
+    border-bottom: solid #d7d7d7 1px;    
+    background: #ffffff;
+}
+.editable__searchBtn{
+    height: 24px;
+    width: 20px;
+    float: left;
+    display: inline-block;
+    background:#ffffff url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -21px 1px;
+    vertical-align: middle;
+    border: solid #a1a1a1 1px;
+    border-left: 0;
+    border-bottom: solid #d7d7d7 1px;
+}
+
+.editable__searchBtn:hover{
+    background-position: -61px 1px;
+}
+
+.editable__searchBtn[disabled=disabled] {
+    background: #f5f5f5 url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -21px 1px;
+    border: solid #cccccc 1px;
+    border-bottom: solid #e8e8e8 1px;
+    border-left: 0;
+}
+
+.ui-jqdialog-content .EditTable .FormElement .eac-square{
+    width: calc(100% - 25px);
+    float: left;
+}
+.DataTD{
+    position: relative;
+}
+
+.DataTD input, .DataTD select{
+    width: 100%;
+    height: 24px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#TblGrid_grid td {
+    vertical-align: middle !important;
+    height: 41px;
+}
+
+.EditTable input, .EditTable select {
+    display:table-cell;
+    border: 1px solid #aaaaaa;
+    color: #222222;
+    padding: 0 0 0 6px;
+    width: calc(100% - 4px);
+}
+
+input[type=customNumber] {
+    padding: 0 6px 0 0;    
+    text-align: right;
+}
+
+input.eac-square {    
+    width: calc(100% - 25px);
+}
+
+input.hasDatepicker {    
+    width: calc(100% - 25px) !important;
+}
+
+#TblGrid_grid input, #TblGrid_grid button, #TblGrid_grid select {
+    float: left;
+}
+
+button.ui-datepicker-trigger {
+    height: 24px;
+    width: 20px;
+    float: left;
+    display: inline-block;
+    background:#ffffff url(/qcadooView/public/css/crud/images/form/input_icon_2.png) no-repeat -1px -20px;
+    vertical-align: middle;
+    border: solid #a1a1a1 1px;
+    border-left: 0;
+    border-bottom: solid #d7d7d7 1px;
+}
+
+button.ui-datepicker-trigger:hover{
+    background-position: -61px -20px;
+}
+
+#Act_Buttons {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-image: url('/qcadooView/public/css/core/menu/images/q_row3_bg.png');
+    background-position: top;
+    background-repeat: repeat-x;
+    width: 100%;
+    padding-left: 20px;
+}
+
+#edithdgrid {
+    height: 45px;
+}
+
+#Act_Buttons .ui-icon-closethick, #Act_Buttons .ui-icon-close, #Act_Buttons .ui-icon-disk {
+    display: none !important;
+}
+
+
+#Act_Buttons #sData, #Act_Buttons #cData {
+    background-repeat: no-repeat;
+    height: 30px;
+    padding-left: 40px;
+    background-position: 10px;
+    width: 50px;    
+    vertical-align: sub;
+}
+
+#Act_Buttons #cData {
+    background-image: url('/qcadooView/public/img/core/icons/cancelIcon24.png');    
+}
+
+#Act_Buttons #sData {
+    background-image: url('/qcadooView/public/img/core/icons/saveIcon24.png');
+}
+
+#Act_Buttons label {
+    vertical-align: middle;
+    margin: 5px 0 0 5px;
+    display: inline-block;
+}
+
+.ui-jqgrid tr.jqgrow td {
+    padding: 1px 2px 1px 6px;
+}
+
+.ui-jqgrid tr.jqgrow td .number-cell {
+    padding: 1px 6px 1px 2px;
+    float: right;
+}
+
+.ui-jqgrid .ui-icon-asc, .ui-jqgrid .ui-icon-desc {
+    width: 16px;
+    height: 16px;
+    display: none;
+    background: transparent
+        url('/qcadooView/public/css/crud/images/grid/sortArrows.png')
+        no-repeat 0 -16px;
+    vertical-align: top;
+    margin-left: 5px;
+
+}
+
+.ui-jqgrid .ui-icon-asc {
+    display: inline-block;
+    background-position: 0 0;
+}
+
+.ui-jqgrid .ui-icon-desc {
+    display: inline-block;
+    background-position: 0 -16px;
+}
+
+.ui-jqgrid-sortable {
+    height: 100% !important;
+    padding-top: 7px;
+}
+
+.autocomplete-suggestions {
+    color: black;    
+    line-height: 20px;    
+    background: #e1e1e1;
+    text-align: left; 
+    cursor: default; 
+    box-shadow: -1px 1px 3px rgba(0,0,0,.1);
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;       
+    line-height: 23px; 
+    white-space: nowrap; 
+    text-overflow: ellipsis; 
+    font-size: 11px; 
+    color: #333; 
+    position: absolute; 
+    display: none; 
+    z-index: 9999; 
+    max-height: 254px; 
+    overflow: hidden; 
+    overflow-y: auto; 
+    box-sizing: border-box;
+}
+
+.autocomplete-suggestion, .autocomplete-no-result { 
+    border: solid #959595 1px;
+    border-bottom: solid #959595 2px;
+    border-top: none;
+    position: relative; 
+    padding: 0 .6em; 
+    line-height: 23px; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    font-size: 11px; 
+    color: #333; 
+}
+
+.autocomplete-suggestion b, .autocomplete-no-result b { 
+    font-weight: normal; 
+    color: #1f8dd6; 
+}
+
+.autocomplete-suggestion.selected { 
+    background: #FFDB67;
+    cursor: pointer;
+}
+
+#t_grid {
+    background: #f2f2f2;
+    line-height: 28px;
+    border-bottom: solid #9b9b9b 1px;
+    font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+    font-size: 12px;
+    padding: 0;
+    height: 30px;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+.gridTitle span {
+    color: #9b9b9b;
+    font-size: 12px;
+    font-weight: normal;    
+}
