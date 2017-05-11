@@ -71,7 +71,22 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="1" row="2">
+                        <component type="gridLayout" name="orderValuesDescriptionGridLayout" columns="1" rows="1">
+                            <layoutElement column="1" row="1">
+                                <component type="checkbox" name="fillOrderDescriptionBasedOnTechnologyDescription"
+                                           field="#{form}.fillOrderDescriptionBasedOnTechnologyDescription"
+                                           reference="fillOrderDescriptionBasedOnTechnologyDescription" hasDescription="true">
+                                    <option type="labelWidth" value="40"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+
+
+
+                    <layoutElement column="1" row="3">
                         <component type="borderLayout" name="orderValuesLockBorderLayout">
                             <component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
                                 <layoutElement column="1" row="1">

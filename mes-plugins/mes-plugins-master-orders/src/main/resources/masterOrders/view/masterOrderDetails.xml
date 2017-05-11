@@ -273,51 +273,57 @@
 
         <windowTab name="productsTab">
 
-                    <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
-                               source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
-                        <option type="column" name="productNumber" fields="product"
-                                link="true" expression="#product['number']"/>
-                        <option type="column" name="productName" fields="product"
-                                link="true" expression="#product['name']"/>
-                        <option type="column" name="technologyNumber" fields="technology"
-                                expression="#technology['number']"/>
-                        <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus"/>
-                        <option type="column" name="comments" fields="comments"/>
-                        <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
-                        <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
-                        <option type="column" name="leftToRelease" fields="leftToRelease"/>
-                        <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity"/>
-                        <option type="column" name="productUnit" fields="product"
-                                expression="#product['unit']"/>
+            <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
+                       source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
+                <option type="column" name="productNumber" fields="product"
+                        link="true" expression="#product['number']" width="100"/>
+                <option type="column" name="productName" fields="product"
+                        link="true" expression="#product['name']" width="120"/>
+                <option type="column" name="technologyNumber" fields="technology"
+                        expression="#technology['number']" width="100"/>
+                <option type="column" name="masterOrderPositionStatus"
+                        fields="masterOrderPositionStatus" width="100"/>
+                <option type="column" name="comments"
+                        fields="comments" width="100"/>
+                <option type="column" name="masterOrderQuantity"
+                        fields="masterOrderQuantity" width="60"/>
+                <option type="column" name="cumulatedOrderQuantity"
+                        fields="cumulatedOrderQuantity" width="60"/>
+                <option type="column" name="leftToRelease"
+                        fields="leftToRelease" width="60"/>
+                <option type="column" name="producedOrderQuantity"
+                        fields="producedOrderQuantity" width="60"/>
+                <option type="column" name="productUnit" fields="product"
+                        expression="#product['unit']" width="60"/>
+                <option type="column" name="assortmentName"
+                        expression="#product.get('assortment')?.get('name')" width="120"/>
 
-                        <option type="column" name="assortmentName" fields="assortmentName"/>
+                <option type="order" column="number" direction="asc"/>
 
-                        <option type="order" column="number" direction="asc"/>
+                <option type="searchable"
+                        value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
+                <option type="orderable"
+                        value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
 
-                        <option type="searchable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
-                        <option type="orderable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
+                <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
 
-                        <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="fixedHeight" value="true"/>
 
-                        <option type="deletable" value="true"/>
-                        <option type="creatable" value="true"/>
-                        <option type="multiselect" value="true"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="fixedHeight" value="true"/>
+                <option type="footerRow" value="true"/>
+                <option type="columnsToSummary"
+                        value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease"/>
 
-                        <option type="footerRow" value="true"/>
-                        <option type="columnsToSummary"
-                                value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease"/>
+                <listener event="onSelectedEntityChange"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="onProductsChange"/>
 
-                        <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
-                                  method="onProductsChange"/>
-
-                    </component>
+            </component>
 
         </windowTab>
 

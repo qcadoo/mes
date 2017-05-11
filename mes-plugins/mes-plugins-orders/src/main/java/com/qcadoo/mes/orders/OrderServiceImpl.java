@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -50,15 +40,19 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private static final String L_EMPTY_NUMBER = "";
 
-    private static final Set<String> L_ORDER_STARTED_STATES = Collections
-            .unmodifiableSet(Sets.newHashSet(OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
-                    OrderState.INTERRUPTED.getStringValue()));
+    private static final Set<String> L_ORDER_STARTED_STATES = Collections.unmodifiableSet(Sets.newHashSet(
+            OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
+            OrderState.INTERRUPTED.getStringValue()));
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -237,6 +231,57 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean isPktEnabled() {
         return parameterService.getParameter().getBooleanField(ParameterFieldsO.ENABLE_PKT);
+    }
+
+    @Override
+    public String buildOrderDescription(Entity masterOrder, Entity technology, boolean fillOrderDescriptionBasedOnTechnology) {
+        StringBuilder builder = new StringBuilder();
+        if (masterOrder != null) {
+            String poNumber = "";
+            String direction = "";
+            if (masterOrder.getStringField("poNumber") != null) {
+                poNumber = masterOrder.getStringField("poNumber");
+            }
+            if (masterOrder.getStringField("direction") != null) {
+                direction = masterOrder.getStringField("direction");
+            }
+
+            if (!poNumber.isEmpty()) {
+                builder.append("PO");
+                builder.append(poNumber);
+                if (direction.isEmpty()) {
+                    builder.append("\n");
+                }
+            }
+
+            if (!direction.isEmpty()) {
+                builder.append("-");
+                builder.append(direction);
+                builder.append("\n");
+            }
+
+            if (technology == null && masterOrder.getBelongsToField("technology") != null) {
+                if (fillOrderDescriptionBasedOnTechnology) {
+                    String technologyDescription = masterOrder.getBelongsToField("technology").getStringField(
+                            TechnologyFields.DESCRIPTION);
+                    if (technologyDescription != null) {
+                        builder.append(technologyDescription);
+                    }
+                }
+            }
+
+        }
+        if (technology != null) {
+            if (fillOrderDescriptionBasedOnTechnology) {
+                String technologyDescription = technology.getStringField(TechnologyFields.DESCRIPTION);
+                if (technologyDescription != null) {
+                    builder.append(technologyDescription);
+                }
+            }
+        }
+
+        return builder.toString();
+
     }
 
 }

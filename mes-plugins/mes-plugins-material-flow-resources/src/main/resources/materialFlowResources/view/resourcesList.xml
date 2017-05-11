@@ -39,7 +39,7 @@
         <component type="grid" name="resourceGrid" reference="grid">
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="locationNumber" fields="location"
-                    expression="#location['number']" link="true" width="100"/>
+                    expression="#location['number']" link="true" width="90"/>
             <option type="column" name="productNumber" fields="product"
                     expression="#product['number']" link="true" width="100"/>
             <option type="column" name="productName" fields="product"
@@ -49,7 +49,7 @@
                     expression="#product['unit']" width="50"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
             <option type="column" name="givenUnit" fields="givenUnit" width="50"/>
-            <option type="column" name="conversion" fields="conversion"/>
+            <option type="column" name="conversion" fields="conversion" width="80"/>
             <option type="column" name="reservedQuantity" fields="reservedQuantity"/>
             <option type="column" name="availableQuantity" fields="availableQuantity"/>
             <option type="column" name="price" fields="price" width="60" authorizationRole="ROLE_RESOURCE_PRICE" />
@@ -68,12 +68,14 @@
             <option type="column" name="isCorrected" fields="isCorrected" width="50"/>
             <option type="column" name="waste" fields="waste" width="50"/>
 
+            <option type="column" name="deliveryNumber" fields="deliveryNumber" width="100"/>
+
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>

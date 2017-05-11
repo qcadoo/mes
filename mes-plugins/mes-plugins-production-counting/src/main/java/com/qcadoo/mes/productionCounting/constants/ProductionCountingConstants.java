@@ -58,6 +58,8 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_STAFF_WORK_TIME = "staffWorkTime";
 
+    public static final String MODEL_ANOMALY = "anomaly";
+
     // VIEW
     public static final String VIEW_PRODUCTION_TRACKINGS_LIST = "productionTrackingsList";
 

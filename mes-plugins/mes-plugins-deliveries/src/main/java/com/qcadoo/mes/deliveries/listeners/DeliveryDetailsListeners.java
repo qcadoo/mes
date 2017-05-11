@@ -23,47 +23,29 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -72,8 +54,21 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+
 @Component
 public class DeliveryDetailsListeners {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
+
 
     private static final Integer REPORT_WIDTH_A4 = 515;
 
@@ -82,6 +77,8 @@ public class DeliveryDetailsListeners {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_PRODUCT = "product";
+
+    public static final String OFFER = "offer";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -121,6 +118,10 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+
+    @Autowired
+    private FileService fileService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -272,6 +273,9 @@ public class DeliveryDetailsListeners {
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            deliveredProductMuliPosition.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
+        }
         return deliveredProductMuliPosition;
     }
 
@@ -332,8 +336,12 @@ public class DeliveryDetailsListeners {
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
                     numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
+        if(PluginUtils.isEnabled("supplyNegotiations")) {
+            Entity offer = orderedProduct.getBelongsToField(OFFER);
+            deliveredProduct.setField(OFFER, offer);
+        }
 
-        deliveredProduct.getDataDefinition().save(deliveredProduct);
+        deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
 
         return deliveredProduct;
     }
@@ -611,6 +619,45 @@ public class DeliveryDetailsListeners {
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
+    }
+
+
+    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(DeliveryFields.ATTACHMENTS);
+
+        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+            state.addMessage("deliveries.deliveryDetails.window.ribbon.atachments.nonSelectedAtachment",
+                    ComponentState.MessageType.INFO);
+
+            return;
+        }
+
+        DataDefinition deliveryAttachmentDD = getDeliveryAttachmentDD();
+
+        List<File> attachements = Lists.newArrayList();
+
+        for (Long deliveryAttachmentId : grid.getSelectedEntitiesIds()) {
+            Entity deliveryAttachment = deliveryAttachmentDD.get(deliveryAttachmentId);
+
+            File attachment = new File(deliveryAttachment.getStringField(DeliveryAttachmentFields.ATTACHMENT));
+
+            attachements.add(attachment);
+        }
+
+        File zipFile = null;
+
+        try {
+            zipFile = fileService.compressToZipFile(attachements, false);
+        } catch (IOException e) {
+            LOG.error("Unable to compress documents to zip file.", e);
+            return;
+        }
+
+        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    private DataDefinition getDeliveryAttachmentDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY_ATTACHMENT);
     }
 
 }

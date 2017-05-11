@@ -110,7 +110,7 @@ public class PalletBalanceReportHelper {
         query.append("  join materialflowresources_document d on p.document_id = d.id ");
         query.append("  join basic_palletnumber pn on pn.id = p.palletnumber_id ");
         query.append("where d.type in ('03internalOutbound','04release', '05transfer') and sl.highstoragelocation = true ");
-        query.append("      and (date_trunc('day',pn.issuedatetime) != date_trunc('day',d.time) OR pn.issuedatetime is null) ");
+        query.append("      and (pn.issuedatetime != d.time OR pn.issuedatetime is null) ");
         query.append("      and date_trunc('day', d.time) >= :dateFrom ");
         query.append("group by date_trunc('day',d.time);");
 

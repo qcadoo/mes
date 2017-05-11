@@ -5,6 +5,10 @@ public final class PalletBalanceFields {
     private PalletBalanceFields() {
     }
 
+    public static final String GENERATED_DATE = "generatedDate";
+
+    public static final String GENERATED_BY = "generatedBy";
+
     public static final String INCLUDE_WEEKENDS = "includeWeekends";
 
     public static final String NUMBER = "number";

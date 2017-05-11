@@ -37,9 +37,9 @@
         <datetime name="time"/>
         <enum name="state" values="01draft,02accepted" default="01draft" required="true"/>
         <integer name="locationFrom_id"/>
-        <string name="locationFromName"/>
+        <string name="locationFromNumber"/>
         <integer name="locationTo_id"/>
-        <string name="locationToName"/>
+        <string name="locationToNumber"/>
         <integer name="company_id"/>
         <string name="companyName"/>
         <integer name="user_id"/>
