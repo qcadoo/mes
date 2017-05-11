@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletBalanceFields;
+import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceReportHelper;
 import com.qcadoo.mes.materialFlowResources.palletBalance.PalletBalanceXlsService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,6 +43,9 @@ public class PalletBalanceDetailsListeners {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private PalletBalanceReportHelper palletBalanceReportHelper;
+
     public void printPalletBalance(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(viewDefinitionState, state, new String[] { args[0],
                 MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_PALLET_BALANCE });
@@ -59,6 +64,12 @@ public class PalletBalanceDetailsListeners {
                 return;
             } else if (StringUtils.hasText(report.getStringField(PalletBalanceFields.FILE_NAME))) {
                 state.addMessage("materialFlowResource.palletBalance.report.error.documentsWasGenerated",
+                        ComponentState.MessageType.FAILURE);
+                return;
+            }
+            List<String> typesOfPallet = palletBalanceReportHelper.getTypesOfPallet();
+            if (typesOfPallet.isEmpty()) {
+                state.addMessage("materialFlowResource.palletBalance.report.error.emptyTypesOfPallet",
                         ComponentState.MessageType.FAILURE);
                 return;
             }
