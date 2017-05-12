@@ -41,7 +41,7 @@
         <belongsTo name="product" model="product" plugin="basic"
                    required="true"/>
 
-        <decimal name="usedQuantity" persistent="false">
+        <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>

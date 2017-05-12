@@ -105,7 +105,7 @@ public class AnomalyProductionTrackingDetailsListeners {
                 ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_ANOMALY));
         anomaly.setField(AnomalyFields.PRODUCTION_TRACKING, productionTracking);
         anomaly.setField(AnomalyFields.PRODUCT, product);
-        anomaly.setField(AnomalyFields.USED_QUANTITY, entity.getDecimalField("entity"));
+        anomaly.setField(AnomalyFields.USED_QUANTITY, entity.getDecimalField("usedQuantity"));
         anomaly.setField(AnomalyFields.STATE, "01draft");
         anomaly.setField(AnomalyFields.ISSUED, false);
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
