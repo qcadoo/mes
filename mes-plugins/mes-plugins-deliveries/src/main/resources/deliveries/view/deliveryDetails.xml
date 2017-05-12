@@ -240,6 +240,22 @@
                 <bigButton name="showProduct" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(showProduct);"/>
             </group>
+
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAtachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+
         </ribbon>
 
         <windowTab name="mainTab">
@@ -562,6 +578,9 @@
                 <listener event="validateColumnsWidthForDelivery"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="validateColumnsWidthForDelivery"/>
+
+                <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
             </component>
         </windowTab>
 
@@ -795,6 +814,39 @@
             </component>
         </windowTab>
 
+
+        <windowTab name="atachments">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
+
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="deliveries/multiUpload.jsp"/>
+                    </component>
+                    <component type="input" name="deliveryIdForMultiUpload"
+                               reference="deliveryIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="deliveryMultiUploadLocale"
+                               reference="deliveryMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="attachments"
+                               reference="attachments" source="#{form}.attachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+
     </component>
 
     <hooks>
@@ -827,6 +879,9 @@
 
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="processRoles"/>
+
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+                      method="setDeliveryIdForMultiUploadField"/>
     </hooks>
 
 </view>

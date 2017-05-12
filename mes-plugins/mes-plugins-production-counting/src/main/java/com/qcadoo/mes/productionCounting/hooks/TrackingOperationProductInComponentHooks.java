@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
@@ -37,6 +30,11 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 public class TrackingOperationProductInComponentHooks extends AbstractPlannedQuantitiesCounter {
@@ -53,7 +51,7 @@ public class TrackingOperationProductInComponentHooks extends AbstractPlannedQua
         fillPlannedQuantity(trackingOperationProductInComponent);
     }
 
-    private void fillPlannedQuantity(final Entity trackingOperationProductInComponent) {
+    public void fillPlannedQuantity(final Entity trackingOperationProductInComponent) {
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY,
                 getPlannedQuantity(trackingOperationProductInComponent));
     }

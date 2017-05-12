@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -347,5 +348,23 @@ public class DeliveryDetailsHooks {
         productNumberFilter = productNumberFilter.substring(1, productNumberFilter.length() - 1);
 
         return productNumberFilter.split(",");
+    }
+
+
+    public void setDeliveryIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent deliveryIdForMultiUpload = (FieldComponent) view.getComponentByReference("deliveryIdForMultiUpload");
+        FieldComponent deliveryMultiUploadLocale = (FieldComponent) view
+                .getComponentByReference("deliveryMultiUploadLocale");
+
+        if (deliveryForm.getEntityId() != null) {
+            deliveryIdForMultiUpload.setFieldValue(deliveryForm.getEntityId());
+            deliveryIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            deliveryIdForMultiUpload.setFieldValue("");
+            deliveryIdForMultiUpload.requestComponentUpdateState();
+        }
+        deliveryMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        deliveryMultiUploadLocale.requestComponentUpdateState();
     }
 }
