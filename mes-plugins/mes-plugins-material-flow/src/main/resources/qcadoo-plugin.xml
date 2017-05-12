@@ -67,6 +67,7 @@
 		<localization:translation path="locales" />
 	
 		<model:model model="location" resource="model/location.xml" />
+		<model:model model="userLocation" resource="model/userLocation.xml"/>
 		<model:model model="materialsInLocation" resource="model/materialsInLocation.xml" />
 		<model:model model="materialsInLocationComponent" resource="model/materialsInLocationComponent.xml" />
 		<model:model model="stockCorrection" resource="model/stockCorrection.xml" />
@@ -86,6 +87,10 @@
 		<model:model-field model="operation" plugin="technologies">
 			<model:hasMany name="transformations" joinField="operation" 
 				model="transformations" plugin="materialFlow" cascade="delete"/>
+		</model:model-field>
+
+		<model:model-field plugin="qcadooSecurity" model="user">
+			<model:hasMany name="userLocations" joinField="user" model="userLocation" plugin="materialFlow" cascade="delete"/>
 		</model:model-field>
 
 		<security:role identifier="ROLE_MATERIAL_FLOW"/>
@@ -116,8 +121,15 @@
 		<view:view resource="view/transfersList.xml" />
 		<view:view resource="view/transformationsDetails.xml" />
 		<view:view resource="view/transformationsList.xml" />
-	
+
 		<view:resource uri="public/**/*" />
+
+		<view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
+						class="com.qcadoo.mes.materialFlow.hooks.UserDetailsHooksMF" method="setupUserLocationsSection" />
+		<view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
+						class="com.qcadoo.mes.materialFlow.hooks.UserDetailsHooksMF" method="setupRibbonForAdmin" />
+		<view:view-hook plugin="qcadooUsers" view="profile" type="beforeRender"
+						class="com.qcadoo.mes.materialFlow.hooks.ProfileHooksMF" method="setupUserLocationsSection" />
 	</modules>
 	
 	<features>
