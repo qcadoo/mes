@@ -192,7 +192,7 @@ public class ProductionTrackingDetailsListeners {
                             .stream()
                             .filter(ip -> productIds.contains(ip.getBelongsToField(
                                     TrackingOperationProductInComponentFields.PRODUCT).getId()))
-                            .map(ip -> ip.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
+                            .map(ip -> ip.getId())
                             .map(String::valueOf).collect(Collectors.joining(",")));
             parameters.put("form.performAndAccept", Boolean.TRUE);
             view.openModal(url, parameters);
