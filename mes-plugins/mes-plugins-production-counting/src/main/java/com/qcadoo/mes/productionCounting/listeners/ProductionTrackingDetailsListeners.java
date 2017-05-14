@@ -181,22 +181,19 @@ public class ProductionTrackingDetailsListeners {
 
             List<Long> productIds = productionTrackingDocumentsHelper.findProductsWithInsufficientQuantity(productionTracking,
                     groupedRecordInProducts, recordOutProducts);
-
-            String url = "/productionCounting/anomalyProductionTrackingDetails.html";
-            Long productionTrackingId = productionTrackingForm.getEntityId();
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put("form.productionTrackingId", productionTrackingId);
-            parameters.put(
-                    "form.selectedTOPICs",
-                    recordInProducts
-                            .stream()
-                            .filter(ip -> productIds.contains(ip.getBelongsToField(
-                                    TrackingOperationProductInComponentFields.PRODUCT).getId()))
-                            .map(ip -> ip.getId())
-                            .map(String::valueOf).collect(Collectors.joining(",")));
-            parameters.put("form.performAndAccept", Boolean.TRUE);
-            view.openModal(url, parameters);
-
+            if(productIds.isEmpty()){
+                stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
+            } else {
+                String url = "/productionCounting/anomalyProductionTrackingDetails.html";
+                Long productionTrackingId = productionTrackingForm.getEntityId();
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.productionTrackingId", productionTrackingId);
+                parameters.put("form.selectedTOPICs", recordInProducts.stream().filter(ip -> productIds
+                        .contains(ip.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()))
+                        .map(ip -> ip.getId()).map(String::valueOf).collect(Collectors.joining(",")));
+                parameters.put("form.performAndAccept", Boolean.TRUE);
+                view.openModal(url, parameters);
+            }
         } else {
             stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
         }
@@ -229,9 +226,9 @@ public class ProductionTrackingDetailsListeners {
                                         productionTracking.getStringField(ProductionTrackingFields.NUMBER),
                                         productionTracking.getId(), username));
                                 logService.add(LogService.Builder
-                                        .info("productionTracking",
-                                                translationService.translate("productionCounting.productionTracking.delete",
-                                                        LocaleContextHolder.getLocale()))
+                                        .info("productionTracking", translationService
+                                                        .translate("productionCounting.productionTracking.delete",
+                                                                LocaleContextHolder.getLocale()))
                                         .withItem1("ID: " + productionTracking.getId().toString())
                                         .withItem2(
                                                 "Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
