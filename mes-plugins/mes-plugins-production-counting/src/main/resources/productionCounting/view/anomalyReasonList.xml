@@ -39,12 +39,13 @@
         <component type="grid" name="anomalyReasonList"
                    reference="grid">
 
-            <option type="column" name="name" fields="name" link="true"/>
+            <option type="column" name="name" fields="name" link="true" width="600"/>
+            <option type="column" name="defaultReason" fields="defaultReason" link="true" width="100"/>
 
             <option type="order" column="name"/>
 
-            <option type="searchable" value="name"/>
-            <option type="orderable" value="name"/>
+            <option type="searchable" value="name,defaultReason"/>
+            <option type="orderable" value="name,defaultReason"/>
 
             <option type="correspondingView" value="productionCounting/anomalyReasonDetails"/>
             <option type="correspondingComponent" value="form"/>

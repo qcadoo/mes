@@ -8,6 +8,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AnomalyProductionTrackingDetailsHooks {
@@ -49,32 +51,46 @@ public class AnomalyProductionTrackingDetailsHooks {
 
     private void fillADL(final ViewDefinitionState view) throws JSONException {
         String selectedTOPICs = view.getJsonContext().getString("window.mainTab.form.selectedTOPICs");
-        List<Long> ids = Lists.newArrayList(
-                Longs.stringConverter().convertAll(Splitter.on(',').trimResults().omitEmptyStrings().splitToList(selectedTOPICs)));
+        boolean performAndAcceptFlag = view.getJsonContext().getBoolean("window.mainTab.form.performAndAccept");
+        Entity defaultReason = findDefaultReason();
+        List<Long> ids = Lists.newArrayList(Longs.stringConverter().convertAll(
+                Splitter.on(',').trimResults().omitEmptyStrings().splitToList(selectedTOPICs)));
         List<Entity> entries = Lists.newArrayList();
         ids.forEach(id -> {
-            createADLEntry(entries, id);
+            createADLEntry(entries, id, performAndAcceptFlag, defaultReason);
         });
         updateADLState(view, entries);
     }
 
-    private void createADLEntry(final List<Entity> entries, final Long id) {
+    private Entity findDefaultReason() {
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "anomalyReason").find()
+                .add(SearchRestrictions.eq("defaultReason", true)).setMaxResults(1).uniqueResult();
+    }
+
+    private void createADLEntry(final List<Entity> entries, final Long id, final boolean fillDefaultReason,
+            final Entity defalutReason) {
         Entity entry = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 "anomalyProductionTrackingEntryHelper").create();
-        Entity trackingOperationProductInComponent = dataDefinitionService.get(
-                ProductionCountingConstants.PLUGIN_IDENTIFIER,
+        Entity trackingOperationProductInComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).get(id);
         trackingOperationProductInComponentHooks.fillPlannedQuantity(trackingOperationProductInComponent);
         entry.setField("trackingOperationProductInComponent", trackingOperationProductInComponent);
-        Entity product = trackingOperationProductInComponent
-                .getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+        Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
         entry.setField("productNumber", product.getStringField(ProductFields.NUMBER));
         entry.setField("productName", product.getStringField(ProductFields.NAME));
-        entry.setField("plannedQuantity", trackingOperationProductInComponent
-                .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
-        entry.setField("usedQuantity", trackingOperationProductInComponent
-                .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
+        entry.setField("plannedQuantity",
+                trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
+        entry.setField("usedQuantity",
+                trackingOperationProductInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
         entry.setField("productUnit", product.getStringField(ProductFields.UNIT));
+        if (fillDefaultReason && Objects.nonNull(defalutReason)) {
+            List<Entity> anomalyReasons = Lists.newArrayList();
+            Entity reason = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, "anomalyReasonContainer")
+                    .create();
+            reason.setField("anomalyReason", defalutReason);
+            anomalyReasons.add(reason);
+            entry.setField("anomalyReasons", anomalyReasons);
+        }
         entries.add(entry);
     }
 
@@ -100,7 +116,6 @@ public class AnomalyProductionTrackingDetailsHooks {
             perform.requestUpdate(true);
             performAndAccept.requestUpdate(true);
         } catch (JSONException e) {
-
 
         }
     }

@@ -32,9 +32,13 @@
         <string name="name" unique="true" required="true">
             <validatesLength max="255"/>
         </string>
+        <boolean name="defaultReason" default="false" copyable="false"/>
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.productionCounting.validators.AnomalyReasonValidators"
+                method="validatesWith"/>
     </hooks>
 
 </model>
