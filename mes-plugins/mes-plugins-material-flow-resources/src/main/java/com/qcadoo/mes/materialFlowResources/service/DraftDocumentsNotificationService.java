@@ -29,11 +29,17 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
 @Service
 public class DraftDocumentsNotificationService {
 
-    @Autowired
-    private SecurityService securityService;
+    static final String ROLE_DOCUMENTS_NOTIFICATION = "ROLE_DOCUMENTS_NOTIFICATION";
+
+    private final SecurityService securityService;
+
+    private final DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    public DraftDocumentsNotificationService(SecurityService securityService, DataDefinitionService dataDefinitionService) {
+        this.securityService = securityService;
+        this.dataDefinitionService = dataDefinitionService;
+    }
 
     private DataDefinition userDataDefinition() {
         return dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER);
@@ -46,24 +52,26 @@ public class DraftDocumentsNotificationService {
 
     public boolean shouldNotifyCurrentUser() {
         Long currentUserId = securityService.getCurrentUserId();
-        if (currentUserId != null && securityService.hasCurrentUserRole("ROLE_DOCUMENTS_NOTIFICATION")) {
-
-            EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);
-            SearchConjunction conjunction = SearchRestrictions.conjunction();
-            conjunction.add(eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()));
-
-            SearchCriteriaBuilder criteriaBuilder = documentDataDefinition().find();
-            if (!userLocations.isEmpty()) {
-                criteriaBuilder.createAlias(DocumentFields.LOCATION_FROM, "locFrom", JoinType.LEFT);
-                criteriaBuilder.createAlias(DocumentFields.LOCATION_TO, "locTo", JoinType.LEFT);
-
-                Set<Long> locationIds = userLocations.stream().map(ul -> ul.getBelongsToField(UserLocationFields.LOCATION))
-                        .map(Entity::getId).collect(Collectors.toSet());
-                conjunction.add(or(in("locFrom.id", locationIds), in("locTo.id", locationIds)));
-            }
-            criteriaBuilder.add(conjunction);
-            return criteriaBuilder.list().getTotalNumberOfEntities() > 0;
-        }
-        return false;
+        return currentUserId != null && securityService.hasCurrentUserRole(ROLE_DOCUMENTS_NOTIFICATION)
+                && countDraftDocumentsForUser(currentUserId) > 0;
     }
+
+    int countDraftDocumentsForUser(Long currentUserId) {
+        EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);
+        SearchConjunction conjunction = SearchRestrictions.conjunction();
+        conjunction.add(eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()));
+
+        SearchCriteriaBuilder criteriaBuilder = documentDataDefinition().find();
+        if (!userLocations.isEmpty()) {
+            criteriaBuilder.createAlias(DocumentFields.LOCATION_FROM, "locFrom", JoinType.LEFT);
+            criteriaBuilder.createAlias(DocumentFields.LOCATION_TO, "locTo", JoinType.LEFT);
+
+            Set<Long> locationIds = userLocations.stream().map(ul -> ul.getBelongsToField(UserLocationFields.LOCATION))
+                    .map(Entity::getId).collect(Collectors.toSet());
+            conjunction.add(or(in("locFrom.id", locationIds), in("locTo.id", locationIds)));
+        }
+        criteriaBuilder.add(conjunction);
+        return criteriaBuilder.list().getTotalNumberOfEntities();
+    }
+
 }
