@@ -34,6 +34,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class SubassemblyDetailsListenersPL {
@@ -47,6 +48,8 @@ public class SubassemblyDetailsListenersPL {
         EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForSubassembly(subassembly);
         subassembly.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
         form.setEntity(subassembly);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        window.setActiveTab("factoryStructureTab");
 
     }
 }

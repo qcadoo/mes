@@ -116,7 +116,15 @@
         <model:model model="finalProductAnalysisEntry" resource="model/finalProductAnalysisEntry.xml"/>
         <model:model model="beforeAdditionalActionsAnalysisEntry" resource="model/beforeAdditionalActionsAnalysisEntry.xml"/>
 
+        <model:model model="anomalyReason" resource="model/anomalyReason.xml"/>
+        <model:model model="anomaly" resource="model/anomaly.xml"/>
+        <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
+        <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
+        <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
+
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
+
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking" />
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
@@ -160,6 +168,9 @@
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="autoRecalculateOrder"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowAnomalyCreationOnAcceptanceRecord"/>
         </model:model-field>
         <model:model-field model="staff" plugin="basic">
             <model:hasMany name="productionTrackings" model="productionTracking"
@@ -256,6 +267,10 @@
                            joinField="productionCountingQuantity" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field plugin="productionCounting" model="anomalyReason">
+            <model:manyToMany name="anomalies" plugin="productionCounting" model="anomaly" joinField="anomalyReasons"/>
+        </model:model-field>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
@@ -338,6 +353,9 @@
                         view="productionTrackingsForProductGroupedList"
                         defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
+        <menu:menu-item name="anomalyReasonList" category="ordersTracking"
+                        view="anomalyReasonList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
@@ -360,6 +378,10 @@
         <view:view resource="view/beforeAdditionalActionsAnalysisGenerator.xml"/>
 
         <view:view resource="view/productionAnalysisList.xml"/>
+
+        <view:view resource="view/anomalyReasonList.xml"/>
+        <view:view resource="view/anomalyReasonDetails.xml"/>
+        <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

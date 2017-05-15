@@ -41,10 +41,9 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>1.6.19-DEV</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>1.7.2-DEV</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
-        <qcadoo.saas.version>1.5-SNAPSHOT</qcadoo.saas.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
         <profile.name>default</profile.name>
     </properties>
@@ -228,37 +227,6 @@
             <properties>
                 <profile.name>${profile}</profile.name>
             </properties>
-        </profile>
-        <profile>
-            <id>saas</id>
-            <activation>
-                <property>
-                    <name>spring.profiles.active</name>
-                    <value>saas</value>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.qcadoo.saas</groupId>
-                    <artifactId>qcadoo-saas-model</artifactId>
-                    <version>${qcadoo.saas.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.saas</groupId>
-                    <artifactId>qcadoo-saas-tenant</artifactId>
-                    <version>${qcadoo.saas.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.saas</groupId>
-                    <artifactId>qcadoo-saas-plugin</artifactId>
-                    <version>${qcadoo.saas.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.qcadoo.saas</groupId>
-                    <artifactId>qcadoo-saas-shop</artifactId>
-                    <version>${qcadoo.saas.version}</version>
-                </dependency>
-            </dependencies>
         </profile>
     </profiles>
 

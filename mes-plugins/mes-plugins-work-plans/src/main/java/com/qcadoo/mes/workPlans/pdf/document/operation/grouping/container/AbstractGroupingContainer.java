@@ -78,11 +78,6 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
     }
 
     @Override
-    public boolean hasManyOrders() {
-        return orders.size() > 1;
-    }
-
-    @Override
     public Map<OrderColumn, ColumnAlignment> getOrderColumnToAlignment() {
         return orderColumnToAlignment;
     }

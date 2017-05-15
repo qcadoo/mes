@@ -54,6 +54,7 @@
         <decimal name="amountOfProductProduced"/>
         <decimal name="wastesQuantity"/>
         <decimal name="remainingAmountOfProductToProduce"/>
+        <string name="company"/>
     </fields>
     <hooks>
     </hooks>

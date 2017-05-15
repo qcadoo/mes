@@ -45,6 +45,8 @@ public final class FactoryStructureElementFields {
 
     public static final String ENTITY_ID = "entityId";
 
+    public static final String PRODUCTION_LINE = "productionLine";
+
     private FactoryStructureElementFields() {
     }
 }

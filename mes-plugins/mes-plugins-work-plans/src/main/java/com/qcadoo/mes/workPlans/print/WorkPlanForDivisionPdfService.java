@@ -82,10 +82,9 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
 
         GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
 
-        List<Entity> orders = orders(workPlan);
-        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
-                .getProductComponentQuantities(orders);
-        for (Entity order : orders) {
+        for (Entity order : orders(workPlan)) {
+            OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
+                    .getProductComponentQuantities(order);
             removeAlreadyExistsMergesForOrder(order);
             for (Entity operationComponent : operationComponents(technology(order))) {
                 Entity updatedComponent = workPlanPdfService.updateOperationProductComponents(order, operationComponent);

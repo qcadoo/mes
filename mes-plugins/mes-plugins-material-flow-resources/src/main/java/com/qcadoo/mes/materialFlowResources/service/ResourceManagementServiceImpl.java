@@ -23,33 +23,13 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -60,6 +40,17 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -76,6 +67,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private PalletNumberDisposalService palletNumberDisposalService;
 
     @Autowired
     private ResourceStockService resourceStockService;
@@ -161,6 +155,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity resource = resourceDD.create();
         Entity user = document.getBelongsToField(DocumentFields.USER);
+        Entity delivery = document.getBelongsToField(ResourceFields.DELIVERY);
         resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
@@ -177,6 +172,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
+        if (delivery != null) {
+                resource.setField(ResourceFields.DELIVERY_NUMBER, delivery.getStringField("number"));
+        }
 
         if (StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
             resource.setField(ResourceFields.GIVEN_UNIT, product.getField(ProductFields.UNIT));
@@ -492,6 +490,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
             newPosition.setField(PositionFields.GIVEN_QUANTITY, position.getDecimalField(PositionFields.GIVEN_QUANTITY));
             newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
+            newPosition.setField(PositionFields.WASTE, resource.getBooleanField(ResourceFields.WASTE));
             newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
             newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
             newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
@@ -509,7 +508,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
+                    Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
                     resource.getDataDefinition().delete(resource.getId());
+                    palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
@@ -686,7 +687,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
+                    Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
                     resource.getDataDefinition().delete(resource.getId());
+                    palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);

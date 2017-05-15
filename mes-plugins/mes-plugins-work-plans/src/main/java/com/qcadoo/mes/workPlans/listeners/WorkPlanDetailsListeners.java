@@ -241,7 +241,7 @@ public class WorkPlanDetailsListeners {
             List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
                     .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
             for (Entity toc : tocs) {
-                barcodeOperationComponentService.createBarcodeOperationComponent(toc);
+                barcodeOperationComponentService.createBarcodeOperationComponent(order, toc);
             }
         }
     }

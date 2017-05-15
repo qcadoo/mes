@@ -62,16 +62,6 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 @Service
 public class PPSReportXlsHelper {
 
-    private static final String L_DEFAULT_UNIT_1 = "szt";
-
-    private static final String L_DEFAULT_UNIT_2 = "szt.";
-
-    private static final String L_DEFAULT_UNIT_3 = "szt..";
-
-    private static final String L_EMPTY_VALUE = "";
-
-    private static final Integer L_SCALE = 2;
-
     private static final Integer ONE = 1;
 
     @Autowired
@@ -81,13 +71,7 @@ public class PPSReportXlsHelper {
     private UserService userService;
 
     @Autowired
-    private NumberService numberService;
-
-    @Autowired
     private ChangeoverNormsService changeoverNormsService;
-
-    @Autowired
-    private ChangeoverNormsSearchService changeoverNormsSearchService;
 
     @Autowired
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
@@ -145,12 +129,6 @@ public class PPSReportXlsHelper {
         Shift shift = new Shift(shiftEntity);
         DateRange range = shift.findWorkTimeAt(day.toDate()).get();
         return new DateTime(range.getTo());
-    }
-
-    private DateTime getShiftStartDate(DateTime day, Entity shiftEntity) {
-        Shift shift = new Shift(shiftEntity);
-        DateRange range = shift.findWorkTimeAt(day.toDate()).get();
-        return new DateTime(range.getFrom());
     }
 
     public List<Entity> getShifts() {
@@ -222,46 +200,6 @@ public class PPSReportXlsHelper {
         }
     }
 
-    // TODO add in GF double pallets
-    public String getConversionsForUnit(final Entity productionPerShift, final String unit) {
-        Entity product = getProduct(productionPerShift);
-
-        Entity conversionItem = product.getHasManyField(ProductFields.CONVERSION_ITEMS).find()
-                .add(eq(UnitConversionItemFields.UNIT_TO, unit)).setMaxResults(1).uniqueResult();
-
-        if (!isSztUnit(productionPerShift)) {
-            return L_EMPTY_VALUE;
-        }
-        if (conversionItem == null) {
-            return L_EMPTY_VALUE;
-        }
-
-        Entity order = getOrder(productionPerShift);
-
-        BigDecimal orderQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-
-        BigDecimal quantityFrom = conversionItem.getDecimalField(UnitConversionItemFields.QUANTITY_FROM);
-        BigDecimal quantityTo = conversionItem.getDecimalField(UnitConversionItemFields.QUANTITY_TO);
-
-        BigDecimal ratio = orderQuantity.multiply(quantityTo);
-
-        ratio = ratio.divide(quantityFrom, L_SCALE, BigDecimal.ROUND_HALF_UP);
-
-        return numberService.formatWithMinimumFractionDigits(ratio, 0);
-    }
-
-    public Boolean isSztUnit(final Entity productionPerShift) {
-        String unit = getProduct(productionPerShift).getStringField(ProductFields.UNIT);
-
-        List<String> units = Arrays.asList(L_DEFAULT_UNIT_1, L_DEFAULT_UNIT_2, L_DEFAULT_UNIT_3);
-
-        if (units.contains(unit)) {
-            return true;
-        }
-
-        return false;
-    }
-
     public String getDocumentAuthor(final String login) {
         return userService.extractFullName(userService.find(login));
     }
@@ -289,14 +227,4 @@ public class PPSReportXlsHelper {
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
     }
 
-    public String getPalletNamesForOrder(final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        String sql = "select product.name as name from #technologies_operationProductInComponent opic \n"
-                + "left join opic.product as product \n" + "left join opic.operationComponent toc \n"
-                + "left join toc.technology tech \n" + "where tech.id = :techId and product.isPallet = true";
-        List<Entity> list = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                .find(sql).setParameter("techId", technology.getId()).list().getEntities();
-        return list.stream().map(e -> e.getStringField("name")).collect(Collectors.joining(", "));
-    }
 }

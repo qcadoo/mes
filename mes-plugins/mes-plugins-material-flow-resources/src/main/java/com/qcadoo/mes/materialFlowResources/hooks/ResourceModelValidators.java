@@ -24,22 +24,52 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class ResourceModelValidators {
-    
+
+    @Autowired
+    private PositionValidators positionValidators;
+
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
-        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource) && checkPallet(resourceDD, resource);
+        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource)
+                && checkPallet(resourceDD, resource) && checkProductionAndExpirationDate(resourceDD, resource)
+                && validateRequiredAttributes(resourceDD, resource);
     }
-    
+
+    private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
+        Date productionDate = resource.getDateField(ResourceFields.PRODUCTION_DATE);
+        Date expirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
+        boolean isValid = expirationDate == null || productionDate == null || productionDate.before(expirationDate);
+        if (!isValid) {
+            resource.addError(resourceDD.getField(ResourceFields.EXPIRATION_DATE),
+                    "materialFlowResources.resource.validate.error.expirationBeforeProduction");
+        }
+        return isValid;
+    }
+
+    private boolean validateRequiredAttributes(final DataDefinition resourceDD, final Entity resource) {
+        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
+        return positionValidators.validatePositionAttributes(resourceDD, resource,
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+    }
+
     public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
         Entity location = resource.getBelongsToField(LOCATION);
 
@@ -71,12 +101,15 @@ public class ResourceModelValidators {
         // }
         return true;
     }
-    
+
     @Autowired
     private PalletValidatorService palletValidatorService;
 
     private boolean checkPallet(DataDefinition resourceDD, Entity resource) {
-        return palletValidatorService.validatePalletForResource(resource);
+        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
+            return palletValidatorService.validatePalletForResource(resource);
+        }
+        return true;
     }
 
 }

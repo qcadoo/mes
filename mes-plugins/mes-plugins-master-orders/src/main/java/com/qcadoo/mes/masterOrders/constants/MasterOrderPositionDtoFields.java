@@ -29,11 +29,11 @@ public final class MasterOrderPositionDtoFields {
 
     }
 
-    public static final String NAME = "name";
-
-    public static final String MASTER_ORDER_NAME = "masterOrderName";
+    public static final String MASTER_ORDER_DEFINITION_NUMBER = "masterOrderDefinitionNumber";
 
     public static final String NUMBER = "number";
+
+    public static final String NAME = "name";
 
     public static final String DEADLINE = "deadline";
 

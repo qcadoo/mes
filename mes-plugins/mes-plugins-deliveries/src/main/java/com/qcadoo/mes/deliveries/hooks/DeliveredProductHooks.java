@@ -23,20 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import com.google.common.base.Strings;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
@@ -44,18 +31,30 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import java.util.HashMap;
-import java.util.Map;
+import com.qcadoo.plugin.api.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.*;
 
 @Service
 public class DeliveredProductHooks {
+
+    public static final String OFFER = "offer";
+
+    public static final String OPERATION = "operation";
+
+    public static final String EXPIRATION_DATE = "expirationDate";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -78,6 +77,63 @@ public class DeliveredProductHooks {
 
     public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
+        updateDeliveredQuantityInOrderedProduct(deliveredProduct);
+    }
+
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity deliveredProduct) {
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
+                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
+                .find()
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OPERATION, deliveredProduct.getBelongsToField(OPERATION)));
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
+        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
+        maybeOrderedProduct.ifPresent(orderedProduct -> {
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, BigDecimal.ZERO);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY, BigDecimal.ZERO);
+            orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
+        });
+        return true;
+    }
+
+    private void updateDeliveredQuantityInOrderedProduct(final Entity deliveredProduct) {
+        SearchCriteriaBuilder searchCriteriaBuilder = dataDefinitionService
+                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT)
+                .find()
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OPERATION, deliveredProduct.getBelongsToField(OPERATION)));
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
+        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
+        maybeOrderedProduct.ifPresent(orderedProduct -> {
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, BigDecimalUtils
+                    .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY)));
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY, BigDecimalUtils
+                    .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY)));
+            orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
+        });
+
     }
 
     public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -87,11 +143,27 @@ public class DeliveredProductHooks {
     public boolean validatesWith(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
-                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct) && validatePallet(deliveredProductDD, deliveredProduct);
+                && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct)
+                && validatePallet(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         SearchCriteriaBuilder searchCriteriaBuilder = addSearchRestrictions(deliveredProductDD.find(), deliveredProduct);
+
+        if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
+            searchCriteriaBuilder.add(
+                    SearchRestrictions.belongsTo(PALLET_NUMBER, deliveredProduct.getBelongsToField(PALLET_NUMBER)))
+                    .add(SearchRestrictions.belongsTo(ADDITIONAL_CODE, deliveredProduct.getBelongsToField(ADDITIONAL_CODE)));
+            if (deliveredProduct.getField(EXPIRATION_DATE) != null) {
+                searchCriteriaBuilder.add(SearchRestrictions.eq(EXPIRATION_DATE, deliveredProduct.getField(EXPIRATION_DATE)));
+            } else {
+                searchCriteriaBuilder.add(SearchRestrictions.isNull(EXPIRATION_DATE));
+            }
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
 
         if (deliveredProduct.getId() != null) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", deliveredProduct.getId()));
@@ -110,8 +182,8 @@ public class DeliveredProductHooks {
     }
 
     private SearchCriteriaBuilder addSearchRestrictions(SearchCriteriaBuilder scb, Entity deliveredProduct) {
-        return scb.add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY)))
-                .add(SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)));
+        return scb.add(SearchRestrictions.belongsTo(DELIVERY, deliveredProduct.getBelongsToField(DELIVERY))).add(
+                SearchRestrictions.belongsTo(PRODUCT, deliveredProduct.getBelongsToField(PRODUCT)));
     }
 
     public boolean checkIfDeliveredQuantityIsLessThanDamagedQuantity(final DataDefinition deliveredProductDD,
@@ -137,8 +209,8 @@ public class DeliveredProductHooks {
             return true;
         }
         Optional<Entity> orderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct);
-        BigDecimal orderedQuantity = orderedProduct.isPresent()
-                ? orderedProduct.get().getDecimalField(OrderedProductFields.ORDERED_QUANTITY) : BigDecimal.ZERO;
+        BigDecimal orderedQuantity = orderedProduct.isPresent() ? orderedProduct.get().getDecimalField(
+                OrderedProductFields.ORDERED_QUANTITY) : BigDecimal.ZERO;
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
         if (deliveredQuantity != null && deliveredQuantity.compareTo(orderedQuantity) > 0) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DELIVERED_QUANTITY),
@@ -151,14 +223,18 @@ public class DeliveredProductHooks {
     private Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct) {
         DataDefinition orderedProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_ORDERED_PRODUCT);
-        Entity orderedProduct = orderedProductDD.find()
+        SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD
+                .find()
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
                         deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
                         deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)))
-                .setMaxResults(1).uniqueResult();
+                        deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OFFER, deliveredProduct.getBelongsToField(OFFER)));
+        }
+        Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
         return Optional.ofNullable(orderedProduct);
 
     }
@@ -169,22 +245,24 @@ public class DeliveredProductHooks {
 
     @Autowired
     private PalletValidatorService palletValidatorService;
-    
+
     private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
     }
-    
-//    private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-//        return (!existsOtherDeliveredProductForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherDeliveredProductForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-//                && !existsOtherDeliveredProductForOtherPalletType(deliveredProductDD, deliveredProduct)
-//                
-////                && (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-////                && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
-//                
-//                && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) || !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-//                && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
-//    }
-//    
- 
+
+    // private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+    // return (!existsOtherDeliveredProductForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
+    // !existsOtherDeliveredProductForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+    // && !existsOtherDeliveredProductForOtherPalletType(deliveredProductDD, deliveredProduct)
+    //
+    // // && (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
+    // !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+    // // && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
+    //
+    // && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
+    // !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
+    // && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
+    // }
+    //
 
 }

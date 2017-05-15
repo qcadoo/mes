@@ -29,6 +29,6 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.deliveries.states.aop.DeliveryStateChangeAspect" />
 		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateValidationAspect" />
-		
+		<aspect name="com.qcadoo.mes.deliveries.states.aop.listeners.DeliveryStateAspect" />
 	</aspects>
 </aspectj>

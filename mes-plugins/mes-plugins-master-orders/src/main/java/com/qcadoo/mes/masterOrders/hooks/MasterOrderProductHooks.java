@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -57,7 +58,6 @@ public class MasterOrderProductHooks {
         countCumulativeOrderQuantity(masterOrderProduct);
         fillRegisteredQuantity(masterOrderProduct);
         calculateLeftToRelease(masterOrderProduct);
-
     }
 
     private void calculateLeftToRelease(Entity masterOrderProduct) {

@@ -29,6 +29,8 @@ public final class ResourceFields {
 
     }
 
+    public static final String VALIDATE_PALLET = "validatePallet";
+
     public static final String RESERVED_QUANTITY = "reservedQuantity";
 
     public static final String AVAILABLE_QUANTITY = "availableQuantity";
@@ -76,5 +78,9 @@ public final class ResourceFields {
     public static final String NUMBER = "number";
 
     public static final String WASTE = "waste";
+
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
+    public static final String DELIVERY = "delivery";
 
 }

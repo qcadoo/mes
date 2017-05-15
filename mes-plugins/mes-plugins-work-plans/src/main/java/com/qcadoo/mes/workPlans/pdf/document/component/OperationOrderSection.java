@@ -84,14 +84,14 @@ public class OperationOrderSection {
 
     public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent,
             Document document, Locale locale) throws DocumentException {
-        operationOrderHeader.print(order, groupingContainer, operationComponent, document, locale);
+        operationOrderHeader.print(order, operationComponent, document, locale);
 
         if (isCommentEnabled()) {
             operationComment.print(operationComponent, document, locale);
         }
 
         if (isBarcodeEnabled()) {
-            operationBarcode.print(pdfWriter, operationComponent, document);
+            operationBarcode.print(pdfWriter, order, operationComponent, document);
         }
 
         if (isOutputProductTableEnabled()) {

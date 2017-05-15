@@ -42,8 +42,6 @@ public interface GroupingContainer {
 
     List<Entity> getOrders();
 
-    boolean hasManyOrders();
-
     Map<OrderColumn, ColumnAlignment> getOrderColumnToAlignment();
 
     Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationComponentIdProductInColumnToAlignment();

@@ -37,6 +37,10 @@ public final class OrderedProductFields {
 
     public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
 
+    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
+
+    public static final String ADDITIONAL_DELIVERED_QUANTITY = "additionalDeliveredQuantity";
+
     public static final String CONVERSION = "conversion";
 
     public static final String SUCCESSION = "succession";

@@ -209,6 +209,10 @@
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
 
+        <security:role identifier="ROLE_ZMBAK"/>
+
+        <security:role identifier="ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

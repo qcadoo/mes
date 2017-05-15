@@ -290,9 +290,10 @@
                         <option type="column" name="name" fields="name" link="true"
                                 width="200"/>
                         <option type="column" name="ean" fields="ean"/>
+                        <option type="column" name="assortment" fields="assortment" expression="#assortment['name']"/>
 
-                        <option type="searchable" value="name,ean"/>
-                        <option type="orderable" value="name,ean"/>
+                        <option type="searchable" value="name,ean,assortment"/>
+                        <option type="orderable" value="name,ean,assortment"/>
 
                         <option type="expression"
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -407,26 +408,34 @@
                     <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
                                source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
                         <option type="column" name="productNumber" fields="product"
-                                link="true" expression="#product['number']"/>
+                                link="true" expression="#product['number']" width="100"/>
                         <option type="column" name="productName" fields="product"
-                                link="true" expression="#product['name']"/>
+                                link="true" expression="#product['name']" width="120"/>
                         <option type="column" name="technologyNumber" fields="technology"
-                                expression="#technology['number']"/>
-                        <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus"/>
-                        <option type="column" name="comments" fields="comments"/>
-                        <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity"/>
-                        <option type="column" name="cumulatedOrderQuantity" fields="cumulatedOrderQuantity"/>
-                        <option type="column" name="leftToRelease" fields="leftToRelease"/>
-                        <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity"/>
+                                expression="#technology['number']" width="100"/>
+                        <option type="column" name="masterOrderPositionStatus"
+                                fields="masterOrderPositionStatus" width="100"/>
+                        <option type="column" name="comments"
+                                fields="comments" width="100"/>
+                        <option type="column" name="masterOrderQuantity"
+                                fields="masterOrderQuantity" width="60"/>
+                        <option type="column" name="cumulatedOrderQuantity"
+                                fields="cumulatedOrderQuantity" width="60"/>
+                        <option type="column" name="leftToRelease"
+                                fields="leftToRelease" width="60"/>
+                        <option type="column" name="producedOrderQuantity"
+                                fields="producedOrderQuantity" width="60"/>
                         <option type="column" name="productUnit" fields="product"
-                                expression="#product['unit']"/>
+                                expression="#product['unit']" width="60"/>
+                        <option type="column" name="assortmentName"
+                                expression="#product.get('assortment')?.get('name')" width="120"/>
 
                         <option type="order" column="number" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments"/>
+                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
                         <option type="orderable"
-                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments"/>
+                                value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
 
                         <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

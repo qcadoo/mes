@@ -23,25 +23,27 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basicProductionCounting.ProductionTrackingUpdateService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DetailedProductionCountingListHooks {
@@ -55,6 +57,23 @@ public class DetailedProductionCountingListHooks {
 
     @Autowired
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
+
+    @Autowired
+    private ProductionTrackingUpdateService productionTrackingUpdateService;
+
+    public void preformActionOnBack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference("order");
+        if (PluginUtils.isEnabled("productionCounting")
+                && view.getJsonContext().has("window.mainTab.basicProductionCounting.productionTrackingId")) {
+            try {
+                Long productionTrackingId = view.getJsonContext().getLong(
+                        "window.mainTab.basicProductionCounting.productionTrackingId");
+                productionTrackingUpdateService.updateProductionTracking(productionTrackingId);
+            } catch (JSONException e) {
+                // TODO add logger
+            }
+        }
+    }
 
     public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
@@ -85,8 +104,8 @@ public class DetailedProductionCountingListHooks {
             } else {
                 ids.add(productionCountingQuantity.getId());
                 if (deleteSuccessful) {
-                    EntityOpResult result = productionCountingQuantity.getDataDefinition()
-                            .delete(productionCountingQuantity.getId());
+                    EntityOpResult result = productionCountingQuantity.getDataDefinition().delete(
+                            productionCountingQuantity.getId());
                     if (!result.isSuccessfull()) {
                         deleteSuccessful = false;
                         errors.addAll(result.getMessagesHolder().getGlobalErrors());

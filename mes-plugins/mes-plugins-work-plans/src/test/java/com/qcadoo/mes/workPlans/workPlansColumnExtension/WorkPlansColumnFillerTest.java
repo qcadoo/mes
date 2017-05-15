@@ -148,8 +148,6 @@ public class WorkPlansColumnFillerTest {
     @Test
     public void shouldReturnCorrectColumnValuesForProducts() {
         // given
-        List<Entity> orders = asList(order);
-
         EntityTree operComps = mockEntityTree(asList(operationComponent));
         EntityTree operComps2 = mockEntityTree(asList(operationComponent));
         given(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(operComps, operComps2);
@@ -171,10 +169,10 @@ public class WorkPlansColumnFillerTest {
         given(operationProductComponentDD.getName()).willReturn(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
         OperationProductComponentWithQuantityContainer quantities = new OperationProductComponentWithQuantityContainer();
         quantities.put(operationProductComponent, new BigDecimal(11));
-        given(productQuantitiesService.getProductComponentQuantities(orders)).willReturn(quantities);
+        given(productQuantitiesService.getProductComponentQuantities(order)).willReturn(quantities);
 
         // when
-        Map<Entity, Map<String, String>> columnValues = workPlansColumnFiller.getValues(orders);
+        Map<Entity, Map<String, String>> columnValues = workPlansColumnFiller.getValues(asList(order));
 
         // then
         assertEquals(1, columnValues.size());

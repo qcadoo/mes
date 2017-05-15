@@ -34,6 +34,14 @@
         <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
         <boolean name="notShowPrices" default="false"/>
         <boolean name="presentTotalAmountAndRest" default="false"/>
+        <integer  name="palletToShift">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7" />
+        </integer >
+        <integer  name="palletWithFreePlace">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7" />
+        </integer >
 
     </fields>
     <hooks>

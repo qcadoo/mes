@@ -33,6 +33,8 @@ public final class MaterialFlowResourcesConstants {
 
     // MODEL
 
+    public static final String MODEL_PALLET_BALANCE = "palletBalance";
+
     public static final String MODEL_RESOURCE_STOCK = "resourceStock";
 
     public static final String MODEL_RESOURCE = "resource";
@@ -58,5 +60,7 @@ public final class MaterialFlowResourcesConstants {
     public static final String MODEL_DOCUMENT_POSITION_PARAMETERS_ITEM = "documentPositionParametersItem";
 
     public static final String MODEL_RESERVATION = "reservation";
+
+    public static final String MODEL_PALLET_STORAGE_STATE_DTO = "palletStorageStateDto";
 
 }

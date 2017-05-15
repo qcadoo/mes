@@ -94,7 +94,7 @@
 		                    <option type="multiselect" value="true"/>
 		                    <criteriaModifier
 		                        class="com.qcadoo.mes.assignmentToShift.criteriaModifiers.StaffCriteriaModifier"
-		                        method="filterByCrew"/>
+		                        method="filterByCrewAndUnassigned"/>
 		                </component>
 		                <component type="grid" name="workers" reference="workers"
 		                           source="#{form}.workers" defaultEnabled="false">

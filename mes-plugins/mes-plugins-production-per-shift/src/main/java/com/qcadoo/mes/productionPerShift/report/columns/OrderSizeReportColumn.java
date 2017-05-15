@@ -12,10 +12,6 @@ import com.qcadoo.model.api.NumberService;
 @Component("orderSizeReportColumn")
 public class OrderSizeReportColumn extends AbstractReportColumn {
 
-    private static final String L_CARTON_UNIT = "karton";
-
-    private static final String L_ERR = "ERR";
-
     private PPSReportXlsHelper ppsReportXlsHelper;
 
     private NumberService numberService;
@@ -35,13 +31,8 @@ public class OrderSizeReportColumn extends AbstractReportColumn {
 
     @Override
     public String getValue(Entity productionPerShift) {
-        if (ppsReportXlsHelper.isSztUnit(productionPerShift)) {
-            return numberService.formatWithMinimumFractionDigits(
-                    ppsReportXlsHelper.getOrder(productionPerShift).getDecimalField(OrderFields.PLANNED_QUANTITY), 0);
-        } else {
-            return L_ERR;
-        }
-
+        return numberService.formatWithMinimumFractionDigits(
+                ppsReportXlsHelper.getOrder(productionPerShift).getDecimalField(OrderFields.PLANNED_QUANTITY), 0);
     }
 
     @Override

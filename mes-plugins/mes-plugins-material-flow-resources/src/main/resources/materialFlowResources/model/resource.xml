@@ -40,6 +40,7 @@
             <validatesScale max="5"/>
         </decimal>
         <decimal name="price" default="0"/>
+
         <decimal name="value" persistent="false"/>
         <string name="batch"/>
         <datetime name="time" required="true"/>
@@ -80,6 +81,10 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+
+        <boolean name="validatePallet" default="true" persistent="false"/>
+
+        <string name="deliveryNumber"/>
 
     </fields>
     <hooks>        
