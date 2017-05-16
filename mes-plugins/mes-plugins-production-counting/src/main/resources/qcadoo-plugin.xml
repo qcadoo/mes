@@ -356,6 +356,10 @@
         <menu:menu-item name="anomalyReasonList" category="ordersTracking"
                         view="anomalyReasonList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
+        <menu:menu-item name="trackingOperationProductInComponentAdditionalInformationReport" category="ordersTracking"
+                        view="trackingOperationProductInComponentAdditionalInformationReport"
+                        defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
@@ -382,6 +386,8 @@
         <view:view resource="view/anomalyReasonList.xml"/>
         <view:view resource="view/anomalyReasonDetails.xml"/>
         <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
+
+        <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
