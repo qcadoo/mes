@@ -60,6 +60,7 @@ public class DraftDocumentsNotificationService {
         EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);
         SearchConjunction conjunction = SearchRestrictions.conjunction();
         conjunction.add(eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()));
+        conjunction.add(eq(DocumentFields.ACTIVE, Boolean.TRUE));
 
         SearchCriteriaBuilder criteriaBuilder = documentDataDefinition().find();
         if (!userLocations.isEmpty()) {
