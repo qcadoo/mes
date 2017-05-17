@@ -14,7 +14,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class UserLocationHooks {
 
     public boolean validatesWith(final DataDefinition userLocationDD, final Entity userLocation) {
-        return userLocation.getId() != null || !checkIfUserLocationAlreadyExists(userLocationDD, userLocation);
+        return userLocation.getId() != null || (!isLocationNull(userLocationDD, userLocation)
+                && !checkIfUserLocationAlreadyExists(userLocationDD, userLocation));
     }
 
     private boolean checkIfUserLocationAlreadyExists(final DataDefinition userLocationDD, final Entity userLocation) {
@@ -29,6 +30,15 @@ public class UserLocationHooks {
                     "qcadooView.validate.field.error.invalidUniqueType");
         }
         return exists;
+    }
+
+    private boolean isLocationNull(final DataDefinition userLocationDD, final Entity userLocation) {
+        boolean result = userLocation.getBelongsToField(UserLocationFields.LOCATION) == null;
+        if (result) {
+            userLocation.addError(userLocationDD.getField(UserLocationFields.LOCATION),
+                    "qcadooView.validate.field.error.missing");
+        }
+        return result;
     }
 
 }
