@@ -26,7 +26,8 @@
 -->
 <view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="deliveredProductAddMulti" modelName="deliveredProductMulti" modelPlugin="deliveries">
+      name="deliveredProductAddMulti" modelName="deliveredProductMulti" modelPlugin="deliveries"
+      windowWidth="940">
 
     <component type="window" name="window" reference="window">
 
@@ -40,7 +41,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-										#{form}.performEvent('createDeliveriedProducts', []);
+										#{form}.performEvent('createDeliveredProducts', []);
 								}
 							});
 						]]>
@@ -49,15 +50,14 @@
             </group>
         </ribbon>
 
-
         <windowTab name="mainTab">
             <component type="form" name="product" reference="form">
 
-                <component type="gridLayout" name="gridLayout" columns="3"
+                <component type="gridLayout" name="gridLayout" columns="4"
                            rows="2" hasBorders="false">
                     <layoutElement column="1" row="1">
-                        <component type="lookup" name="palletNumber" reference="palletNumber"
-                                   field="#{form}.palletNumber">
+                        <component type="lookup" name="palletNumber" field="#{form}.palletNumber"
+                                   reference="palletNumber">
 
                             <option type="searchable" value="number"/>
                             <option type="orderable" value="number"/>
@@ -72,8 +72,8 @@
                                    reference="palletType"/>
                     </layoutElement>
                     <layoutElement column="3" row="1">
-                        <component type="lookup" name="storageLocation" reference="storageLocation"
-                                   field="#{form}.storageLocation">
+                        <component type="lookup" name="storageLocation" field="#{form}.storageLocation"
+                                   reference="storageLocation">
 
                             <option type="column" name="location" fields="location"
                                     expression="#location['name']"/>
@@ -84,12 +84,18 @@
                             <option type="expression"
                                     value="#number"/>
                             <option type="fieldCode" value="number"/>
+
+                            <option type="labelWidth" value="40"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductMultiCriteriaModifiers"
                                     method="restrictStorageLocation"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2" width="3">
+                    <layoutElement column="4" row="1">
+                        <component type="input" name="batch" field="#{form}.batch" reference="batch"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="4">
                         <component type="awesomeDynamicList" name="deliveredProductMultiPositions"
                                    source="#{form}.deliveredProductMultiPositions"
                                    reference="deliveredProductMultiPositions">
@@ -113,6 +119,7 @@
 
                                             <option type="expression" value="#number + ' - ' + #name"/>
                                             <option type="fieldCode" value="number"/>
+
                                             <listener event="onSelectedEntityChange" method="productChanged"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"/>
                                         </component>
@@ -127,8 +134,10 @@
                                             <option type="expression"
                                                     value="#code"/>
                                             <option type="fieldCode" value="code"/>
+
                                             <listener event="onSelectedEntityChange" method="additionalCodeChanged"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"/>
+
                                             <criteriaModifier
                                                     class="com.qcadoo.mes.deliveries.criteriaModifiers.OrderedProductCriteriaModifiers"
                                                     method="restrictAdditionalCodesForProduct"/>
@@ -138,12 +147,12 @@
                                         <component type="calendar" name="expirationDate" field="expirationDate"
                                                    reference="expirationDate"/>
                                     </layoutElement>
-
                                     <layoutElement column="2" row="2" width="2">
                                         <component type="input" name="quantity"
                                                    reference="quantity" field="quantity">
                                             <option type="alignment" value="right"/>
                                             <option type="labelWidth" value="45"/>
+
                                             <listener event="onInputChange"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
                                                       method="quantityChanged"/>
@@ -160,6 +169,7 @@
                                                    reference="additionalQuantity" field="additionalQuantity">
                                             <option type="alignment" value="right"/>
                                             <option type="labelWidth" value="45"/>
+
                                             <listener event="onInputChange"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
                                                       method="additionalQuantityChanged"/>
@@ -176,6 +186,7 @@
                                                    reference="conversion" field="conversion">
                                             <option type="alignment" value="right"/>
                                             <option type="labelWidth" value="45"/>
+
                                             <listener event="onInputChange"
                                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
                                                       method="quantityChanged"/>
@@ -189,19 +200,19 @@
                                     </layoutElement>
                                 </component>
                             </components>
+
                             <listener event="onAddRow" method="onAddRow"
                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"/>
                         </component>
                     </layoutElement>
 
-
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="' '"/>
 
-                <listener event="createDeliveriedProducts"
+                <listener event="createDeliveredProducts"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"
-                          method="createDeliveriedProducts"/>
+                          method="createDeliveredProducts"/>
             </component>
         </windowTab>
 
@@ -213,4 +224,5 @@
                 class="com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks"
                 method="beforeRender"/>
     </hooks>
+
 </view>

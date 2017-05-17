@@ -29,8 +29,6 @@ public final class DeliveredProductFieldsDTMF {
 
     }
 
-    public static final String BATCH = "batch";
-
     public static final String EXPIRATION_DATE = "expirationDate";
 
     public static final String PRODUCTION_DATE = "productionDate";

@@ -51,6 +51,8 @@ public final class DeliveredProductFields {
 
     public static final String ADDITIONAL_CODE = "additionalCode";
 
+    public static final String BATCH = "batch";
+
     public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
 
     public static final String CONVERSION = "conversion";
