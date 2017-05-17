@@ -68,7 +68,8 @@
             </layoutElement>
             <layoutElement column="1" row="6">
                 <component type="checkbox" name="allowAnomalyCreationOnAcceptanceRecord"
-                           reference="allowAnomalyCreationOnAcceptanceRecord" field="#{form}.allowAnomalyCreationOnAcceptanceRecord">
+                           reference="allowAnomalyCreationOnAcceptanceRecord" field="#{form}.allowAnomalyCreationOnAcceptanceRecord"
+                           hasDescription = "true">
                     <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
