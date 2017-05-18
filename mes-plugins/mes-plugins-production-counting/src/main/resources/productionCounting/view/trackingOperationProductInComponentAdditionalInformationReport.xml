@@ -34,7 +34,7 @@
 
         <ribbon>
             <group name="actions" hasLabel="false">
-                <bigButton name="generateXlsx" icon="xlsIcon24.png" state="disabled">
+                <bigButton name="generateXlsx" icon="xlsIcon24.png" state="disabled" action="#{window}.fireEvent(generateReport);">
                     <script>
                         <![CDATA[
                         jQuery(document).ready(function () {
@@ -78,6 +78,8 @@
             </layoutElement>
         </component>
 
+        <listener event="generateReport" class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentAdditionalInformationReportListeners"
+                  method="generateReport"/>
     </component>
 
 </view>
