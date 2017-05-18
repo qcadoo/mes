@@ -38,6 +38,7 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -108,6 +109,9 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
 
+    @Autowired
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("trackingOperationProductInComponents");
 
@@ -174,6 +178,7 @@ public class ProductionTrackingDetailsListeners {
 
             List<Entity> recordInProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            recordInProducts = recordInProducts.stream().filter(rp -> !setTechnologyInComponentsService.isSet(rp)).collect(Collectors.toList());
             Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
                     recordInProducts, technology);
 
