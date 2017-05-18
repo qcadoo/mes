@@ -156,7 +156,8 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        if (parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
+        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
+        if (maybeForm.isPresent() && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
             Entity productionTracking = productionTrackingForm.getEntity();
             productionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
