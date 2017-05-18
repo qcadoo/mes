@@ -29,7 +29,6 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -53,7 +52,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -398,6 +396,7 @@ public class DeliveryDetailsListeners {
             relatedDelivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             relatedDelivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
             relatedDelivery.setField(DeliveryFields.LOCATION, delivery.getBelongsToField(DeliveryFields.LOCATION));
+            relatedDelivery.setField(DeliveryFields.CURRENCY, delivery.getBelongsToField(DeliveryFields.CURRENCY));
 
             relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
         }
