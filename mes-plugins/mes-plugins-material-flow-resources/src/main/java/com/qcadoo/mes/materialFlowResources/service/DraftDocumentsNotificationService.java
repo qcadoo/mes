@@ -2,6 +2,7 @@ package com.qcadoo.mes.materialFlowResources.service;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.model.api.search.SearchRestrictions.in;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
 import static com.qcadoo.model.api.search.SearchRestrictions.or;
 
 import java.util.Set;
@@ -61,6 +62,7 @@ public class DraftDocumentsNotificationService {
         SearchConjunction conjunction = SearchRestrictions.conjunction();
         conjunction.add(eq(DocumentFields.STATE, DocumentState.DRAFT.getStringValue()));
         conjunction.add(eq(DocumentFields.ACTIVE, Boolean.TRUE));
+        conjunction.add(isNull("order.id"));
 
         SearchCriteriaBuilder criteriaBuilder = documentDataDefinition().find();
         if (!userLocations.isEmpty()) {
