@@ -35,7 +35,6 @@
 		<belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
 		<dictionary name="palletType" dictionary="typeOfPallet"/>
 		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
-		<string name="batch"/>
 	</fields>
 
 	<hooks>

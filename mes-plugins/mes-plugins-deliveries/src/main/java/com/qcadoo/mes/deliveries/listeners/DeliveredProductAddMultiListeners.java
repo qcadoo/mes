@@ -171,8 +171,6 @@ public class DeliveredProductAddMultiListeners {
                 deliveredProductMulti.getField(DeliveredProductMultiFields.PALLET_TYPE));
         deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION,
                 deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.STORAGE_LOCATION));
-        deliveredProduct.setField(DeliveredProductFields.BATCH,
-                deliveredProductMulti.getStringField(DeliveredProductMultiFields.BATCH));
     }
 
     private boolean validate(Entity deliveredProductMulti) {
@@ -299,6 +297,8 @@ public class DeliveredProductAddMultiListeners {
                 position.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION));
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE,
                 position.getBooleanField(DeliveredProductMultiPositionFields.IS_WASTE));
+        deliveredProduct.setField(DeliveredProductFields.BATCH,
+                position.getStringField(DeliveredProductMultiPositionFields.BATCH));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_UNIT,
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
