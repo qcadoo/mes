@@ -332,11 +332,6 @@
             <artifactId>mes-pack-open-source</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-samples</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>

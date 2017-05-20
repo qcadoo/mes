@@ -26,7 +26,6 @@ package com.qcadoo.mes.technologies.tree;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -105,11 +104,26 @@ public class ProductStructureTreeService {
         return null;
     }
 
+    private Entity findOperationForProductWithinChildren(final Entity product, final Entity toc) {
+        List<Entity> operations = toc.getHasManyField(TechnologyOperationComponentFields.CHILDREN);
+        for (Entity operation : operations) {
+
+            Entity isResult = operation.getHasManyField(L_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                    .add(SearchRestrictions.belongsTo(L_PRODUCT, product)).setMaxResults(1).uniqueResult();
+            if (isResult != null) {
+                return operation;
+            }
+        }
+        return null;
+    }
+
     private Entity findTechnologyForProduct(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
         List<Entity> technologiesForProduct = technologyDD
                 .find()
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP))
                 .add(SearchRestrictions.and(
                         SearchRestrictions.belongsTo(L_PRODUCT, product),
                         SearchRestrictions.or(SearchRestrictions.eq("state", "02accepted"),
@@ -155,10 +169,9 @@ public class ProductStructureTreeService {
         for (Entity productInComp : productInComponents) {
             Entity child = treeNodeDD.create();
             Entity product = productInComp.getBelongsToField(L_PRODUCT);
-            Entity subOperation = findOperationForProductAndTechnology(product, technology);
+            Entity subOperation = findOperationForProductWithinChildren(product, operation);
             BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
             Entity subTechnology = findTechnologyForProduct(product);
-
 
             if (subTechnology != null) {
                 if (!usedTechnologies.contains(subTechnology.getId())) {
@@ -166,7 +179,8 @@ public class ProductStructureTreeService {
                         Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
                         BigDecimal quantityForTechnology = findQuantityOfProductInOperation(product, operationForTechnology);
                         Entity technologyGroup = subTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-                        BigDecimal standardPerformanceTechnology = subTechnology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+                        BigDecimal standardPerformanceTechnology = subTechnology
+                                .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
 
                         child.setField(L_TECHNOLOGY, subTechnology);
                         child.setField(L_OPERATION, operationForTechnology);
@@ -174,8 +188,8 @@ public class ProductStructureTreeService {
                         child.setField(L_QUANTITY, quantityForTechnology);
                         child.setField(L_DIVISION,
                                 operationForTechnology.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
-                        child.setField(L_TECHNOLOGY_GROUP,technologyGroup);
-                        child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY,standardPerformanceTechnology);
+                        child.setField(L_TECHNOLOGY_GROUP, technologyGroup);
+                        child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
                         addChild(tree, child, parent, L_COMPONENT);
                         usedTechnologies.add(subTechnology.getId());
                         generateTreeForSubproducts(operationForTechnology, subTechnology, tree, child, view, usedTechnologies);
@@ -208,12 +222,13 @@ public class ProductStructureTreeService {
                 }
             } else {
                 Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-                BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+                BigDecimal standardPerformanceTechnology = technology
+                        .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
                 child.setField(L_TECHNOLOGY, technology);
                 child.setField(L_PRODUCT, product);
                 child.setField(L_QUANTITY, quantity);
-                child.setField(L_TECHNOLOGY_GROUP,technologyGroup);
-                child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY,standardPerformanceTechnology);
+                child.setField(L_TECHNOLOGY_GROUP, technologyGroup);
+                child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
 
                 if (subOperation != null) {
                     child.setField(L_OPERATION, subOperation);
@@ -224,8 +239,8 @@ public class ProductStructureTreeService {
                 } else {
                     child.setField(L_OPERATION, operation);
                     child.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
-                    child.setField(L_TECHNOLOGY_GROUP,technologyGroup);
-                    child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY,standardPerformanceTechnology);
+                    child.setField(L_TECHNOLOGY_GROUP, technologyGroup);
+                    child.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
 
                     addChild(tree, child, parent, L_MATERIAL);
                 }
@@ -248,8 +263,8 @@ public class ProductStructureTreeService {
         root.setField(L_OPERATION, operation);
         root.setField(L_QUANTITY, quantity);
         root.setField(L_DIVISION, operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
-        root.setField(L_TECHNOLOGY_GROUP,technologyGroup);
-        root.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY,standardPerformanceTechnology);
+        root.setField(L_TECHNOLOGY_GROUP, technologyGroup);
+        root.setField(L_STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
 
         List<Entity> productStructureList = new ArrayList<>();
         addChild(productStructureList, root, null, L_FINAL_PRODUCT);

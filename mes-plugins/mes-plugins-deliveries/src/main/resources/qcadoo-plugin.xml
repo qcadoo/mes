@@ -99,6 +99,8 @@
 
         <model:model model="deliveryByPalletTypeReport" resource="model/deliveryByPalletTypeReport.xml"/>
 
+        <model:model model="deliveryAttachment" resource="model/deliveryAttachment.xml"/>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="deliveryStateChange" plugin="deliveries"
                              model="deliveryStateChange"/>
@@ -267,6 +269,10 @@
                         method="disableBufferWhenCompanyIsOwner"/>
 
         <custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService"/>
+
+
+        <view:resource uri="public/**/*"/>
+
     </modules>
 
     <features>

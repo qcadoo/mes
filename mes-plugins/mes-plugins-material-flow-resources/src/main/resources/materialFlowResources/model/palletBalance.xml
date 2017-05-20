@@ -36,9 +36,12 @@
         <boolean name="includeWeekends" default="false"/>
         <boolean name="generated" default="false"/>
         <string name="fileName"/>
+        <string name="generatedBy"/>
+        <date name="generatedDate"/>
     </fields>
 
     <hooks>
         <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.PalletBalanceHooks" method="onCopy"/>
+        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.PalletBalanceValidators" method="validate"/>
     </hooks>
 </model>

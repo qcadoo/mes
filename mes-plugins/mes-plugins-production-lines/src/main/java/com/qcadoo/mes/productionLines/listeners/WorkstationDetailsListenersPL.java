@@ -35,6 +35,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class WorkstationDetailsListenersPL {
@@ -48,6 +49,8 @@ public class WorkstationDetailsListenersPL {
         EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForWorkstation(workstation);
         workstation.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
         form.setEntity(workstation);
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        window.setActiveTab("factoryStructureTab");
 
     }
 

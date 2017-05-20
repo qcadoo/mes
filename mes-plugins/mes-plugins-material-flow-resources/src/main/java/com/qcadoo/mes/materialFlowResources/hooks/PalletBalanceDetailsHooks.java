@@ -31,6 +31,10 @@ public class PalletBalanceDetailsHooks {
 
         Date dateTo = palletBalance.getDateField(PalletBalanceFields.DATE_TO);
         if (dateTo == null) {
+            Date dateFrom = palletBalance.getDateField(PalletBalanceFields.DATE_FROM);
+            if (dateFrom == null) {
+                palletBalance.setField(PalletBalanceFields.DATE_FROM, new Date());
+            }
             palletBalance.setField(PalletBalanceFields.DATE_TO, new Date());
             form.setEntity(palletBalance);
         }

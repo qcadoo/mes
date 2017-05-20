@@ -43,6 +43,8 @@ public final class DeliveredProductMultiPositionFields {
 
     public static final String EXPIRATION_DATE = "expirationDate";
 
+    public static final String BATCH = "batch";
+
     public static final String UNIT = "unit";
 
     public static final String ADDITIONAL_UNIT = "additionalUnit";

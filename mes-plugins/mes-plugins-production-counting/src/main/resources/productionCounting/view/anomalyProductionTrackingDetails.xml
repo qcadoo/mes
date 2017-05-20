@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="anomalyProductionTrackingDetails"
+      modelName="anomalyProductionTrackingHelper"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="actions">
+                <bigButton name="perform" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    #{form}.performEvent('perform', []);
+								}
+							});
+
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="performAndAccept" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+								    #{form}.performEvent('performAndAccept', []);
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="backWithoutConfirm" icon="cancelIcon24.png" state="enabled"
+                           action="#{window}.performBackWithoutConfirm"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form"
+                       reference="form">
+                <component type="gridLayout" name="mainGridLayout"
+                           columns="30" rows="1">
+                    <layoutElement column="1" row="1" width="29">
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false" />
+                        <component type="awesomeDynamicList" name="anomalyProductionTrackingEntries"
+                                   source="#{form}.anomalyProductionTrackingEntries" reference="anomalyProductionTrackingEntries">
+
+                            <option type="hasButtons" value="false"/>
+
+                            <header>
+                                <component type="gridLayout" name="headerGridLayout"
+                                           columns="16" rows="1" fixedRowHeight="false">
+
+                                    <layoutElement column="1" row="1" width="3">
+                                        <component type="label" name="productNumberLabel">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="4" row="1" width="4">
+                                        <component type="label" name="productNameLabel"/>
+                                    </layoutElement>
+
+                                    <layoutElement column="8" row="1" width="2">
+                                        <component type="label" name="plannedQuantityLabel">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="10" row="1" width="2">
+                                        <component type="label" name="usedQuantityLabel">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="12" row="1" width="1">
+                                        <component type="label" name="productUnit"/>
+                                    </layoutElement>
+                                    <layoutElement column="13" row="1" width="4">
+                                        <component type="label" name="anomalyReasonLabel"/>
+                                    </layoutElement>
+                                </component>
+                            </header>
+                            <components>
+                                <component type="gridLayout" name="headerGridLayout"
+                                           columns="16" rows="1" fixedRowHeight="false">
+                                    <layoutElement column="1" row="1" width="3">
+                                        <component type="lookup" name="trackingOperationProductInComponent" reference="trackingOperationProductInComponent"
+                                                   field="trackingOperationProductInComponent" hasLabel="false" defaultVisible="false">
+
+                                            <option type="searchable" value="givenUnit"/>
+                                            <option type="orderable" value="givenUnit"/>
+
+                                            <option type="expression"
+                                                    value="#givenUnit"/>
+                                            <option type="fieldCode" value="givenUnit"/>
+                                        </component>
+                                        <component type="input" name="productNumber" field="productNumber"
+                                                   reference="productNumber" hasLabel="false" defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="4" row="1" width="4">
+                                        <component type="input" name="productName" field="productName"
+                                                   reference="productName" hasLabel="false" defaultEnabled="never">
+                                            <option type="alignment" value="left"/>
+                                        </component>
+                                    </layoutElement>
+
+                                    <layoutElement column="8" row="1" width="2">
+                                        <component type="input" name="plannedQuantity" field="plannedQuantity"
+                                                   reference="plannedQuantity" hasLabel="false" defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="10" row="1" width="2">
+                                        <component type="input" name="usedQuantity" field="usedQuantity"
+                                                   reference="usedQuantity" hasLabel="false" defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="12" row="1" width="1">
+                                        <component type="input" name="productUnit" field="productUnit"
+                                                   reference="productUnit" hasLabel="false" defaultEnabled="never">
+                                            <option type="alignment" value="left"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="13" row="1" width="4">
+                                        <component type="awesomeDynamicList" name="anomalyReasons"
+                                                   source="anomalyReasons"
+                                                   reference="anomalyReasons">
+                                            <option type="hasBorder" value="false"/>
+                                            <option type="hasButtons" value="true"/>
+
+                                            <components>
+                                                <component type="gridLayout"
+                                                           name="anomalyReasonsGridLayout" columns="1"
+                                                           rows="1">
+                                                    <layoutElement column="1" row="1">
+                                                        <component type="lookup" name="anomalyReason" reference="anomalyReason"
+                                                                   field="anomalyReason" hasLabel="false">
+
+                                                            <option type="searchable" value="name"/>
+                                                            <option type="orderable" value="name"/>
+
+                                                            <option type="expression"
+                                                                    value="#name"/>
+                                                            <option type="fieldCode" value="name"/>
+                                                        </component>
+                                                    </layoutElement>
+                                                </component>
+                                            </components>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </components>
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+
+                <listener event="perform"
+                          class="com.qcadoo.mes.productionCounting.listeners.AnomalyProductionTrackingDetailsListeners"
+                          method="perform"/>
+
+                <listener event="performAndAccept"
+                          class="com.qcadoo.mes.productionCounting.listeners.AnomalyProductionTrackingDetailsListeners"
+                          method="performAndAccept"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productionCounting.hooks.AnomalyProductionTrackingDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

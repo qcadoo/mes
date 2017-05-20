@@ -78,9 +78,7 @@
                            plugin="materialFlowResources" joinField="delivery" cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field model="deliveredProduct" plugin="deliveries">
-            <model:string name="batch"/>
-        </model:model-field>
+
 
         <model:model-field model="deliveredProduct" plugin="deliveries">
             <model:date name="productionDate"/>

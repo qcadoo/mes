@@ -39,7 +39,7 @@
 		</decimal>
 		<boolean name="isWaste"/>
 		<date name="expirationDate"/>
-		
+		<string name="batch"/>
 		<string name="unit"/>
 		<string name="additionalUnit" />
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>

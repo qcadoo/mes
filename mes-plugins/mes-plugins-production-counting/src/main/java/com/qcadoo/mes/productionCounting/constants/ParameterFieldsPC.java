@@ -54,6 +54,7 @@ public final class ParameterFieldsPC {
     public static final String ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER = "allowMultipleRegisteringTimeForWorker";
     
     public static final String CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS = "consumptionOfRawMaterialsBasedOnStandards";
-    
+
+    public static final String ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD = "allowAnomalyCreationOnAcceptanceRecord";
 
 }

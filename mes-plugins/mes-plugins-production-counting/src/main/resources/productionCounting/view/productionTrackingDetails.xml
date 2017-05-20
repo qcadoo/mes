@@ -108,6 +108,22 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="anomalies" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
+                <bigButton name="addToAnomaliesList" icon="newIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('addToAnomaliesList', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -172,6 +188,13 @@
 								if(productionCountingQuantitiesBtn) {
 								    productionCountingQuantitiesBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.productionCountingQuantities.label)}");
                                 }
+
+                                var addToAnomaliesListBtn = #{window}.getRibbonItemOrNull("anomalies.addToAnomaliesList");
+								if(addToAnomaliesListBtn) {
+								    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                }
+
+
 
 								for (var elementKey in itemNames) {
 									var ribbonItem = #{window}.getRibbonItem(itemNames[elementKey]);
@@ -483,9 +506,6 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
-                <!--                <listener event="changeTrackingState"
-                                          class="com.qcadoo.mes.productionCounting.states.client.ProductionTrackingStateChangeViewClient"
-                                          method="changeState"/>-->
                 <listener event="changeTrackingState"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="changeTrackingState"/>
@@ -506,6 +526,10 @@
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="goToProductionCountingQuantities"/>
 
+                <listener event="addToAnomaliesList"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="addToAnomaliesList"/>
+
             </component>
         </windowTab>
 
@@ -517,6 +541,7 @@
                                reference="trackingOperationProductOutComponents"
                                source="#{form}.trackingOperationProductOutComponents"
                                defaultEnabled="false">
+
                         <option type="column" name="number" fields="product"
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
@@ -564,6 +589,26 @@
                                reference="trackingOperationProductInComponents"
                                source="#{form}.trackingOperationProductInComponents"
                                defaultEnabled="false">
+                        <script>
+                            <![CDATA[
+							    var addToAnomaliesListBtn = #{window}.getRibbonItemOrNull("anomalies.addToAnomaliesList");
+                                    if (addToAnomaliesListBtn ) {
+                                        var listener = {
+                                            onChange: function(selectedEntitiesArray) {
+                                             var state = #{state}.getValue().content.value;
+								                if (state != "01draft") {
+								                    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+								                } else if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                                    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                } else {
+                                                    addToAnomaliesListBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                }
+                                            }
+                                        }
+                                    this.addOnChangeListener(listener);
+                                    }
+							]]>
+                        </script>
                         <option type="column" name="number" fields="product"
                                 expression="#product['number']" link="true" width="100"/>
                         <option type="column" name="name" fields="product"
@@ -589,7 +634,7 @@
                         <option type="deletable" value="false"/>
 
                         <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="false"/>
+                        <option type="multiselect" value="true"/>
                         <!--<option type="fixedHeight" value="true"/>-->
                     </component>
                 </layoutElement>
