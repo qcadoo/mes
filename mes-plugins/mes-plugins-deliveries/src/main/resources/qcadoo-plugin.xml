@@ -235,6 +235,7 @@
         <view:view resource="view/supplyParameters.xml"/>
         <view:view resource="view/parameterOrderColumnDetails.xml"/>
         <view:view resource="view/deliveryByPalletTypeReportDetails.xml"/>
+        <view:view resource="view/changeStorageLocationHelper.xml"/>
 
         <view:view-tab resource="view/tabExtensions/companyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/companyDetailsBuffer.xml"/>
