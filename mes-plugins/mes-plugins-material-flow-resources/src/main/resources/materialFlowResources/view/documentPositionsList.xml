@@ -55,7 +55,7 @@
 
             <option type="column" name="documentDate" fields="documentDate"/>
 
-            <option type="column" name="documentType" fields="documentType"/>
+            <option type="column" name="documentType" fields="documentType" width="80"/>
 
             <option type="column" name="documentNumber" fields="documentNumber" width="50"/>
 
@@ -63,8 +63,6 @@
                     width="50"/>
 
             <option type="column" name="company" fields="companyName"/>
-
-            <option type="column" name="address" fields="documentAddress"/>
 
             <option type="column" name="batch" fields="batch" width="50"/>
 
@@ -76,7 +74,11 @@
 
             <option type="column" name="waste" fields="waste" width="30"/>
 
-            <option type="column" name="state" fields="state"/>
+            <option type="column" name="state" fields="state" width="70"/>
+
+            <option type="column" name="palletType" fields="palletType" width="50"/>
+
+            <option type="column" name="palletNumber" fields="palletNumber" width="70"/>
 
             <option type="order" column="documentDate" direction="desc"/>
 
