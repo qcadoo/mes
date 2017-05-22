@@ -76,6 +76,8 @@
 
         <boolean name="deliveryActive"/>
 
+        <integer name="location_id"/>
+
     </fields>
     <masterModel plugin="deliveries" model="orderedProduct"/>
 </model>

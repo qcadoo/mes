@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.criteriaModifiers;
+package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
 import java.util.Objects;
 import java.util.Set;
@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.materialFlow.constants.UserFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.UserLocationFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -40,14 +39,12 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class DeliveryCriteriaModifiers {
+public class WarehouseStocksCriteriaModifier {
 
     public static final String LOCATION_ID = "location_id";
-
-    @Autowired
-    private DeliveriesService deliveriesService;
 
     @Autowired
     private SecurityService securityService;
@@ -55,12 +52,7 @@ public class DeliveryCriteriaModifiers {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void showActiveSupplyItems(final SearchCriteriaBuilder scb) {
-        restrictToUserLocations(scb);
-        scb.add(SearchRestrictions.eq("deliveryActive", true));
-    }
-
-    private void restrictToUserLocations(SearchCriteriaBuilder scb) {
+    public void restrictToUserLocations(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         Long currentUserId = securityService.getCurrentUserId();
         if (Objects.nonNull(currentUserId)) {
             EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);

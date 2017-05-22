@@ -96,6 +96,9 @@
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
                     value="quantity"/>
+
+            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentPositionsCriteriaModifier"
+                              method="restrictToUserLocations"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
