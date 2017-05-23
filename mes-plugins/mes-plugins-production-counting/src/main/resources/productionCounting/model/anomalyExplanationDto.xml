@@ -24,22 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="anomaly" auditable="true"
+<model name="anomalyExplanationDto" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number" unique="true">
-            <validatesLength max="255"/>
-        </string>
 
-        <belongsTo name="productionTracking" model="productionTracking"
-                   required="true"/>
+        <belongsTo name="anomaly" model="anomaly" plugin="productionCounting" persistent="false"/>
 
-        <belongsTo name="masterProduct" model="product" plugin="basic"/>
+        <integer name="anomalyId"/>
 
-        <belongsTo name="product" model="product" plugin="basic"
-                   required="true"/>
+        <string name="productName"/>
+
+        <string name="productNumber"/>
+
+        <string name="productUnit"/>
 
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
@@ -47,20 +47,18 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <manyToMany name="anomalyReasons"  model="anomalyReason" joinField="anomalies" cascade="nullify"/>
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
 
-        <enum name="state" values="01draft,02explained,03completed"
-              default="01draft" required="true"/>
+        <string name="createUser"/>
 
-        <boolean name="issued" default="false"/>
-
-        <hasMany name="anomalyExplanations" model="anomalyExplanation" joinField="anomaly" cascade="delete"/>
-
-        <hasMany name="anomalyExplanationDtos" model="anomalyExplanationDto" joinField="anomaly" copyable="false" persistent="false"/>
+        <datetime name="createDate"/>
 
     </fields>
 
-    <hooks>
-    </hooks>
+    <hooks/>
+
+    <masterModel plugin="productionCounting" model="anomalyExplanation"/>
 
 </model>

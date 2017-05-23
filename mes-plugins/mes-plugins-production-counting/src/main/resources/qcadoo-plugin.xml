@@ -122,6 +122,8 @@
         <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
         <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
         <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
+        <model:model model="anomalyExplanation" resource="model/anomalyExplanation.xml"/>
+        <model:model model="anomalyExplanationDto" resource="model/anomalyExplanationDto.xml"/>
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 

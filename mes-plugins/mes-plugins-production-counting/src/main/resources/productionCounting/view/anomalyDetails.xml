@@ -124,6 +124,38 @@
 
 
                 </component>
+                <component type="gridLayout" name="listGridLayout" columns="1" rows="1">
+                    <layoutElement row="1" column="1">
+                        <component type="grid" name="anomalyExplanations" model="anomalyExplanationDto" useDto="true"
+                                   reference="anomalyExplanations" source="#{form}.anomalyExplanationDtos">
+
+                            <!--TODO add link = true and corresponding view -->
+                            <option type="column" name="productNumber" fields="productNumber" width="100"/>
+                            <option type="column" name="productName" fields="productName" width="100"/>
+                            <option type="column" name="usedQuantity" fields="usedQuantity" width="100"/>
+                            <option type="column" name="productUnit" fields="productUnit" width="100"/>
+                            <option type="column" name="description" fields="description" width="100"/>
+                            <option type="column" name="createUser" fields="createUser" width="100"/>
+                            <option type="column" name="createDate" fields="createDate" width="100"/>
+
+                            <option type="productNumber" column="succession" direction="asc"/>
+
+                            <option type="order" column="productNumber" direction="asc"/>
+
+                            <option type="searchable"
+                                value="productNumber,productName"/>
+                            <option type="orderable"
+                                value="productNumber,productName"/>
+
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+                            <option type="fixedHeight" value="true"/>
+
+                        </component>
+                    </layoutElement>
+                </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + ', ' + '@productionCounting.anomalyDto.state.value.' + #state"/>
             </component>
