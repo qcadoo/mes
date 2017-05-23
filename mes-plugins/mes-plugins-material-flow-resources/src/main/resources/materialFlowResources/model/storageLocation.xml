@@ -50,10 +50,14 @@
 
         <boolean name="highStorageLocation" default="false"/>
 
+        <hasMany name="history" model="storageLocationHistory" cascade="delete" copyable="false" joinField="storageLocation"/>
+
     </fields>
     <hooks>
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.validators.StorageLocationModelValidators"
                 method="validate"/>
+        <onSave class="com.qcadoo.mes.materialFlowResources.hooks.StorageLocationHooks"
+                method="onSave"/>
     </hooks>
 </model>
