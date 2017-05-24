@@ -23,18 +23,20 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class DocumentModelHooks {
@@ -72,6 +74,52 @@ public class DocumentModelHooks {
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
             documentValidators.validateAvailableQuantities(document);
         }
+        if (document.getBooleanField(DocumentFields.IN_BUFFER) && checkIfLocationsChange(document)) {
+            cleanPositionsResource(document);
+        }
+    }
+
+    private void cleanPositionsResource(final Entity document) {
+        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        positions.forEach(pos -> {
+            pos.setField(PositionFields.RESOURCE, null);
+            pos.getDataDefinition().save(pos);
+        });
+    }
+
+    private boolean checkIfLocationsChange(final Entity document) {
+        if (document.getId() == null) {
+            return false;
+        }
+        Entity documentDB = document.getDataDefinition().get(document.getId());
+        String documentType = document.getStringField(DocumentFields.TYPE);
+
+        if (DocumentType.RECEIPT.getStringValue().equals(documentType)
+                || DocumentType.INTERNAL_INBOUND.getStringValue().equals(documentType)) {
+            return checkWarehouse(document, documentDB, false, true);
+        } else if (DocumentType.TRANSFER.getStringValue().equals(documentType)) {
+            return checkWarehouse(document, documentDB, true, true);
+        } else if (DocumentType.RELEASE.getStringValue().equals(documentType)
+                || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
+            return checkWarehouse(document, documentDB, true, false);
+        }
+        return false;
+    }
+
+    private boolean checkWarehouse(final Entity document, final Entity documentDB, boolean from, boolean to) {
+        boolean changed = false;
+        if (from) {
+            if (!documentDB.getBelongsToField(DocumentFields.LOCATION_FROM).getId()
+                    .equals(document.getBelongsToField(DocumentFields.LOCATION_FROM).getId())) {
+                changed = true;
+            }
+        } else if (to) {
+            if (!documentDB.getBelongsToField(DocumentFields.LOCATION_TO).getId()
+                    .equals(document.getBelongsToField(DocumentFields.LOCATION_TO).getId())) {
+                changed = true;
+            }
+        }
+        return changed;
     }
 
     private String getTranslatedType(Entity document) {

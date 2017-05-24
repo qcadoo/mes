@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
@@ -52,6 +43,14 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class DocumentDetailsHooks {
@@ -116,7 +115,7 @@ public class DocumentDetailsHooks {
             showCompanyAndAddress(view, false);
         }
 
-        if (!positions.isEmpty()) {
+        if (!positions.isEmpty() && !document.getBooleanField(DocumentFields.IN_BUFFER)) {
             showWarehouse(view, false, false);
         }
     }

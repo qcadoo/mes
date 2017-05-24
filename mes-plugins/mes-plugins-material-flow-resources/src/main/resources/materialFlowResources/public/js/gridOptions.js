@@ -1279,6 +1279,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             toolbar: [true, "top"],
             rownumbers: false,
             altRows: true,
+            multiselect: true,
             altclass: 'qcadooRowClass',
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
@@ -1626,7 +1627,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
                 $('#rows-num').text('(' + rows.length + ')');
             },
-            onSelectRow: function (id) {
+            onSelectRow: function (rowid, status) {
+
+            },
+            beforeSelectRow: function (rowid, e) {
+                var $grid = $(this),
+                i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
+                cm = $grid.jqGrid('getGridParam', 'colModel');
+                return (cm[i].name === 'cb');
             },
             ajaxRowOptions: {
                 contentType: "application/json"
