@@ -28,7 +28,6 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -121,7 +120,6 @@ public class OrderValidatorsMOTest {
         stubOrderTechnologyPrototype(technologyPrototype);
         stubOrderTechnology(mockEntity());
 
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -151,9 +149,6 @@ public class OrderValidatorsMOTest {
         EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
     }
 
-    private void stubMasterOrderType(final String typeStringValue) {
-        EntityTestUtils.stubStringField(masterOrder, MasterOrderFields.MASTER_ORDER_TYPE, typeStringValue);
-    }
 
     private void stubMasterOrderProducts(final Collection<Entity> elements) {
         EntityList entityList = EntityListMock.create(elements);
@@ -194,7 +189,6 @@ public class OrderValidatorsMOTest {
     @Test
     public final void shouldReturnFalseIfNoneOfMasterOrderProductMatches() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -210,7 +204,6 @@ public class OrderValidatorsMOTest {
     @Test
     public final void shouldReturnTrueIfSomeMasterOrderProductMatches() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -226,7 +219,6 @@ public class OrderValidatorsMOTest {
     @Test
     public final void shouldReturnTrueIfSomeMasterOrderProductMatches2() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         stubOrderTechnologyPrototype(null);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
