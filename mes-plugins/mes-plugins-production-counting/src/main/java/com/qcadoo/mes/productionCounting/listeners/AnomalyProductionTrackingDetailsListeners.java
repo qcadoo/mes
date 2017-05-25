@@ -1,11 +1,14 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
@@ -15,6 +18,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +41,9 @@ public class AnomalyProductionTrackingDetailsListeners {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
     public void perform(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         try {
             perform(view);
@@ -49,11 +56,39 @@ public class AnomalyProductionTrackingDetailsListeners {
     }
 
     public void performAndAccept(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
+        try {
+            boolean performed = perform(view);
+            tryAcceptProductionTracking(view, performed);
+        } catch (EntityRuntimeException ex) {
+            ex.getGlobalErrors().forEach(view::addMessage);
+        } catch (Exception ex) {
+            LOGGER.warn("Error when perform create anomalies", ex);
+            view.addMessage(new ErrorMessage("qcadooView.errorPage.error.internalError.explanation", false));
+        }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void perform(ViewDefinitionState view) {
+    private void tryAcceptProductionTracking(ViewDefinitionState view, boolean performed) throws JSONException {
+        if (performed) {
+            Long productionRecordId = view.getJsonContext().getLong("window.mainTab.form.productionTrackingId");
+            Entity productionRecord = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionRecordId);
+            stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord,
+                    ProductionTrackingStateStringValues.ACCEPTED);
+
+            if (productionRecord.isValid()) {
+                view.addMessage("productionCounting.anomalyProductionTrackingDetails.productionTrackingAccepted",
+                        ComponentState.MessageType.SUCCESS);
+            } else {
+                view.addMessage("productionCounting.anomalyProductionTrackingDetails.productionTrackingNotAccepted",
+                        ComponentState.MessageType.FAILURE);
+                productionRecord.getGlobalErrors().forEach(view::addMessage);
+            }
+        }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private boolean perform(ViewDefinitionState view) {
         boolean valid = validate(view);
         if (valid) {
             createAnomalies(view);
@@ -62,8 +97,10 @@ public class AnomalyProductionTrackingDetailsListeners {
                     ComponentState.MessageType.SUCCESS);
             CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
             generated.setChecked(true);
+            return true;
         } else {
             view.addMessage(new ErrorMessage("productionCounting.anomalyReasonDetails.reasonIsRequired", false));
+            return false;
         }
     }
 
@@ -105,7 +142,7 @@ public class AnomalyProductionTrackingDetailsListeners {
                 ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_ANOMALY));
         anomaly.setField(AnomalyFields.PRODUCTION_TRACKING, productionTracking);
         anomaly.setField(AnomalyFields.PRODUCT, product);
-        anomaly.setField(AnomalyFields.USED_QUANTITY, entity.getDecimalField("entity"));
+        anomaly.setField(AnomalyFields.USED_QUANTITY, entity.getDecimalField("usedQuantity"));
         anomaly.setField(AnomalyFields.STATE, "01draft");
         anomaly.setField(AnomalyFields.ISSUED, false);
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);

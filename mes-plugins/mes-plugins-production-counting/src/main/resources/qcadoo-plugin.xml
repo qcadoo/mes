@@ -118,6 +118,7 @@
 
         <model:model model="anomalyReason" resource="model/anomalyReason.xml"/>
         <model:model model="anomaly" resource="model/anomaly.xml"/>
+        <model:model model="anomalyDto" resource="model/anomalyDto.xml"/>
         <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
         <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
         <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
@@ -168,6 +169,9 @@
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="autoRecalculateOrder"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowAnomalyCreationOnAcceptanceRecord"/>
         </model:model-field>
         <model:model-field model="staff" plugin="basic">
             <model:hasMany name="productionTrackings" model="productionTracking"
@@ -352,6 +356,12 @@
 
         <menu:menu-item name="anomalyReasonList" category="ordersTracking"
                         view="anomalyReasonList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+        <menu:menu-item name="anomalyList" category="ordersTracking"
+                        view="anomalyList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
+        <menu:menu-item name="trackingOperationProductInComponentAdditionalInformationReport" category="ordersTracking"
+                        view="trackingOperationProductInComponentAdditionalInformationReport"
+                        defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
         <view:view resource="view/productionTrackingsList.xml"/>
         <view:view resource="view/productionTrackingDetails.xml"/>
@@ -379,6 +389,10 @@
         <view:view resource="view/anomalyReasonList.xml"/>
         <view:view resource="view/anomalyReasonDetails.xml"/>
         <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
+        <view:view resource="view/anomalyList.xml"/>
+        <view:view resource="view/anomalyDetails.xml"/>
+
+        <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

@@ -29,18 +29,14 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
 	plugin="deliveries" view="deliveredProductDetails">
 
-	<windowTab name="batchTab" reference="batchTab">
+	<windowTab name="datesTab" reference="datesTab">
 		<component type="gridLayout" name="sellsTabGridLayout"
-			columns="3" rows="3">
+			columns="3" rows="2">
 			<layoutElement column="1" row="1" width="2">
-				<component type="input" name="batch" field="#{form}.batch" reference="batch"/>
-			</layoutElement>
-
-			<layoutElement column="1" row="2" width="2">
 				<component type="calendar" name="productionDate" field="#{form}.productionDate" reference="productionDate"/>
 			</layoutElement>
 			
-			<layoutElement column="1" row="3" width="2">
+			<layoutElement column="1" row="2" width="2">
 				<component type="calendar" name="expirationDate" field="#{form}.expirationDate" reference="expirationDate"/>
 			</layoutElement>
 			

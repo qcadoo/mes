@@ -23,23 +23,49 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.basic.listeners.WorkstationDetailsListeners;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryAttachmentFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -54,21 +80,10 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.*;
-
 @Component
 public class DeliveryDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
-
 
     private static final Integer REPORT_WIDTH_A4 = 515;
 
@@ -119,7 +134,6 @@ public class DeliveryDetailsListeners {
     @Autowired
     private UnitConversionService unitConversionService;
 
-
     @Autowired
     private FileService fileService;
 
@@ -166,6 +180,17 @@ public class DeliveryDetailsListeners {
         Long deliveryId = form.getEntityId();
         reservationService.recalculateReservationsForDelivery(deliveryId);
         view.addMessage("deliveries.delivery.recalculateReservations", MessageType.SUCCESS);
+    }
+
+    public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("deliveredProducts");
+        List<Entity> selectedProducts = grid.getSelectedEntities();
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity delivery = form.getPersistedEntityWithIncludedFormValues();
+        String url = "../page/deliveries/changeStorageLocationHelper.html?context={\"form.deliveredProductIds\":\""
+                + selectedProducts.stream().map(product -> product.getId().toString()).collect(Collectors.joining(",")) + "\","
+                + "\"form.delivery\":\"" + delivery.getId() + "\"}";
+        view.openModal(url);
     }
 
     public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -273,7 +298,7 @@ public class DeliveryDetailsListeners {
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
-        if(PluginUtils.isEnabled("supplyNegotiations")) {
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
             deliveredProductMuliPosition.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
         }
         return deliveredProductMuliPosition;
@@ -336,7 +361,7 @@ public class DeliveryDetailsListeners {
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
                     numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
-        if(PluginUtils.isEnabled("supplyNegotiations")) {
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
             Entity offer = orderedProduct.getBelongsToField(OFFER);
             deliveredProduct.setField(OFFER, offer);
         }
@@ -398,6 +423,7 @@ public class DeliveryDetailsListeners {
             relatedDelivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             relatedDelivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
             relatedDelivery.setField(DeliveryFields.LOCATION, delivery.getBelongsToField(DeliveryFields.LOCATION));
+            relatedDelivery.setField(DeliveryFields.CURRENCY, delivery.getBelongsToField(DeliveryFields.CURRENCY));
 
             relatedDelivery = relatedDelivery.getDataDefinition().save(relatedDelivery);
         }
@@ -603,6 +629,10 @@ public class DeliveryDetailsListeners {
         deliveriesService.disableShowProductButton(view);
     }
 
+    public void updateChangeStorageLocationButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        deliveryDetailsHooks.updateChangeStorageLocationButton(view);
+    }
+
     public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long deliveryId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
         Entity delivery = deliveriesService.getDelivery(deliveryId);
@@ -620,7 +650,6 @@ public class DeliveryDetailsListeners {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
     }
-
 
     public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(DeliveryFields.ATTACHMENTS);

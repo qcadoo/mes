@@ -29,7 +29,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
-
 @Service
 public class DeliveredProductCriteriaModifiers {
 
@@ -46,6 +45,10 @@ public class DeliveredProductCriteriaModifiers {
             searchCriteriaBuilder.add(SearchRestrictions.eq(LOCATION + ".id", locationId)).add(
                     SearchRestrictions.or(SearchRestrictions.isNull(PRODUCT + ".id"),
                             SearchRestrictions.eq(PRODUCT + ".id", productId)));
+        } else if (filterValueHolder.has(LOCATION)) {
+            Long locationId = filterValueHolder.getLong(LOCATION);
+
+            searchCriteriaBuilder.add(SearchRestrictions.eq(LOCATION + ".id", locationId));
         }
     }
 }

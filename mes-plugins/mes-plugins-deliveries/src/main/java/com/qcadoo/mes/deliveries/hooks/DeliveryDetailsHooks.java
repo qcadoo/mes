@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -41,18 +51,15 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import java.util.ArrayList;
-import java.util.Iterator;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -319,13 +326,41 @@ public class DeliveryDetailsHooks {
     }
 
     public void onBeforeRender(final ViewDefinitionState view) {
+
         orderGridByProductNumber(view);
+
+        updateChangeStorageLocationButton(view);
+    }
+
+    public void updateChangeStorageLocationButton(final ViewDefinitionState view) {
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup group = ribbon.getGroupByName("deliveryPositions");
+        RibbonActionItem changeStorageLocations = group.getItemByName("changeStorageLocations");
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
+        List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
+        boolean enabled = !selectedProducts.isEmpty();
+        if (enabled) {
+            String baseStorageLocation = Optional.ofNullable(selectedProducts.get(0).getStringField("storageLocationNumber"))
+                    .orElse(StringUtils.EMPTY);
+            for (Entity deliveredProduct : selectedProducts) {
+                String storageLocation = Optional.ofNullable(deliveredProduct.getStringField("storageLocationNumber")).orElse(
+                        StringUtils.EMPTY);
+                if (!baseStorageLocation.equals(storageLocation)) {
+                    enabled = false;
+                }
+            }
+        }
+        changeStorageLocations.setEnabled(enabled);
+        changeStorageLocations.requestUpdate(true);
     }
 
     private void orderGridByProductNumber(ViewDefinitionState view) {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("orderedProducts");
         String productNumberFilter = gridComponent.getFilters().get("productNumber");
-        if (!Strings.isNullOrEmpty(productNumberFilter) && productNumberFilter.startsWith("[") && productNumberFilter.endsWith("]")) {
+        if (!Strings.isNullOrEmpty(productNumberFilter) && productNumberFilter.startsWith("[")
+                && productNumberFilter.endsWith("]")) {
             List<Entity> orderedProductsEntities = gridComponent.getEntities();
             List<Entity> sortedEntities = new ArrayList<>();
             for (String f : getSortedItemsFromFilter(productNumberFilter)) {
@@ -350,12 +385,10 @@ public class DeliveryDetailsHooks {
         return productNumberFilter.split(",");
     }
 
-
     public void setDeliveryIdForMultiUploadField(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent deliveryIdForMultiUpload = (FieldComponent) view.getComponentByReference("deliveryIdForMultiUpload");
-        FieldComponent deliveryMultiUploadLocale = (FieldComponent) view
-                .getComponentByReference("deliveryMultiUploadLocale");
+        FieldComponent deliveryMultiUploadLocale = (FieldComponent) view.getComponentByReference("deliveryMultiUploadLocale");
 
         if (deliveryForm.getEntityId() != null) {
             deliveryIdForMultiUpload.setFieldValue(deliveryForm.getEntityId());

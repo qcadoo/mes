@@ -24,14 +24,16 @@
     ***************************************************************************
 
 -->
-<model name="deliveredProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="deliveredProductDto" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
 
         <integer name="succession"/>
 
-        <belongsTo name="delivery" model="delivery" persistent="false" />
+        <belongsTo name="delivery" model="delivery" persistent="false"/>
 
         <integer name="deliveryId"/>
 
@@ -52,12 +54,14 @@
         <decimal name="pricePerUnit"/>
 
         <decimal name="totalPrice"/>
-        
+
         <string name="additionalCode"/>
 
         <string name="storageLocationNumber"/>
 
         <string name="palletNumber"/>
+
+        <string name="batch"/>
 
         <string name="offerNumber"/>
 
@@ -66,7 +70,7 @@
         <string name="operationNumber"/>
 
         <boolean name="isWaste"/>
-
     </fields>
+
     <masterModel plugin="deliveries" model="deliveredProduct"/>
 </model>

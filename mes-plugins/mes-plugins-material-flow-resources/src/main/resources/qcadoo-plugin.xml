@@ -86,6 +86,7 @@
         <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
 
         <model:model model="storageLocation" resource="model/storageLocation.xml"/>
+        <model:model model="storageLocationHistory" resource="model/storageLocationHistory.xml"/>
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>

@@ -307,6 +307,9 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
 
+                <criteriaModifier class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveriesCriteriaModifier"
+                                  method="restrictToUserLocations"/>
+
                 <option type="hasPredefinedFilters" value="true"/>
 
                 <predefinedFilters>

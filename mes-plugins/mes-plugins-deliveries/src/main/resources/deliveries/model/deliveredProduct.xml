@@ -48,6 +48,7 @@
         <dictionary name="palletType" dictionary="typeOfPallet"/>
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
+        <string name="batch"/>
 
         <decimal name="additionalQuantity">
             <validatesRange from="0"/>
@@ -56,13 +57,17 @@
             <validatesRange from="0"/>
         </decimal>
         <boolean name="isWaste" default="false"/>
-		
+
         <dictionary name="additionalUnit" dictionary="units"/>
 
         <priority name="succession" scope="delivery"/>
         <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
                  model="deliveredProductReservation" plugin="deliveries" copyable="true"/>
+
+        <string name="deliveredProductIds" persistent="false"/>
+
     </fields>
+
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                 method="calculateDeliveredProductPricePerUnit"/>

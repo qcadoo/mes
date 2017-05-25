@@ -180,6 +180,8 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.PalletStorageStateCriteriaModifier"
+                              method="restrictToUserLocations"/>
             <listener event="showDetails"
                       class="com.qcadoo.mes.materialFlowResources.listeners.PalletStorageStateListListeners"
                       method="showDetails"/>

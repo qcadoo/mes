@@ -23,36 +23,25 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.LogService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductDtoFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
+import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -68,7 +57,17 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -104,6 +103,15 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+
+    @Autowired
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("trackingOperationProductInComponents");
 
@@ -116,7 +124,7 @@ public class ProductionTrackingDetailsListeners {
             parameters.put("form.selectedTOPICs",
                     grid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
             parameters.put("form.performAndAccept", Boolean.FALSE);
-            view.openModal(url,parameters);
+            view.openModal(url, parameters);
         }
     }
 
@@ -152,7 +160,49 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
+        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
+        if (maybeForm.isPresent() && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            Entity productionTracking = productionTrackingForm.getEntity();
+            productionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+            List<Entity> recordOutProducts = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+            Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
+                    recordOutProducts, technology);
+
+            productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
+            productionTrackingDocumentsHelper.fillProductsOutFromSet(groupedRecordOutProducts);
+
+            List<Entity> recordInProducts = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            recordInProducts = recordInProducts.stream().filter(rp -> !setTechnologyInComponentsService.isSet(rp)).collect(Collectors.toList());
+            Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
+                    recordInProducts, technology);
+
+            productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
+            productionTrackingDocumentsHelper.fillProductsInFromSet(groupedRecordInProducts);
+
+            List<Long> productIds = productionTrackingDocumentsHelper.findProductsWithInsufficientQuantity(productionTracking,
+                    groupedRecordInProducts, recordOutProducts);
+            if(productIds.isEmpty()){
+                stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
+            } else {
+                String url = "/productionCounting/anomalyProductionTrackingDetails.html";
+                Long productionTrackingId = productionTrackingForm.getEntityId();
+                Map<String, Object> parameters = Maps.newHashMap();
+                parameters.put("form.productionTrackingId", productionTrackingId);
+                parameters.put("form.selectedTOPICs", recordInProducts.stream().filter(ip -> productIds
+                        .contains(ip.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()))
+                        .map(ip -> ip.getId()).map(String::valueOf).collect(Collectors.joining(",")));
+                parameters.put("form.performAndAccept", Boolean.TRUE);
+                view.openModal(url, parameters);
+            }
+        } else {
+            stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
+        }
     }
 
     public void logPerformDelete(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -161,9 +211,10 @@ public class ProductionTrackingDetailsListeners {
         String username = securityService.getCurrentUserName();
         LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
                 productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
-        logService.add(LogService.Builder.info("productionTracking",
-                translationService.translate("productionCounting.productionTracking.delete", LocaleContextHolder.getLocale()))
-                .withItem1("ID: " + productionTracking.getId().toString())
+        logService.add(LogService.Builder
+                .info("productionTracking",
+                        translationService.translate("productionCounting.productionTracking.delete",
+                                LocaleContextHolder.getLocale())).withItem1("ID: " + productionTracking.getId().toString())
                 .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
                 .withItem3("User: " + username));
     }
@@ -172,15 +223,23 @@ public class ProductionTrackingDetailsListeners {
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         String username = securityService.getCurrentUserName();
         if (maybeGridComponent.isPresent()) {
-            maybeGridComponent.get().getSelectedEntities().forEach(productionTracking -> {
-                LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
-                        productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
-                logService.add(LogService.Builder.info("productionTracking",
-                        translationService.translate("productionCounting.productionTracking.delete", LocaleContextHolder.getLocale()))
-                        .withItem1("ID: " + productionTracking.getId().toString())
-                        .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
-                        .withItem3("User: " + username));
-            });
+            maybeGridComponent
+                    .get()
+                    .getSelectedEntities()
+                    .forEach(
+                            productionTracking -> {
+                                LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
+                                        productionTracking.getStringField(ProductionTrackingFields.NUMBER),
+                                        productionTracking.getId(), username));
+                                logService.add(LogService.Builder
+                                        .info("productionTracking", translationService
+                                                        .translate("productionCounting.productionTracking.delete",
+                                                                LocaleContextHolder.getLocale()))
+                                        .withItem1("ID: " + productionTracking.getId().toString())
+                                        .withItem2(
+                                                "Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
+                                        .withItem3("User: " + username));
+                            });
         }
     }
 
@@ -258,7 +317,8 @@ public class ProductionTrackingDetailsListeners {
     private void clearWasteUsedDetails(EntityList trackingOperationProductInComponents) {
         for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED, Boolean.FALSE);
-            trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED_ONLY, Boolean.FALSE);
+            trackingOperationProductInComponent
+                    .setField(TrackingOperationProductInComponentFields.WASTE_USED_ONLY, Boolean.FALSE);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY, null);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_UNIT, null);
         }
