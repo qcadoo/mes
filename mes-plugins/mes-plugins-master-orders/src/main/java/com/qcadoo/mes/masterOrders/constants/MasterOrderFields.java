@@ -41,8 +41,6 @@ public final class MasterOrderFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
-
     public static final String DEADLINE = "deadline";
 
     public static final String START_DATE = "startDate";
@@ -55,31 +53,17 @@ public final class MasterOrderFields {
 
     public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
 
-    public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
-
     public static final String MASTER_ORDER_TYPE = "masterOrderType";
 
     public static final String MASTER_ORDER_STATE = "masterOrderState";
 
     public static final String COMPANY = "company";
 
-    public static final String PRODUCT = "product";
-
-    public static final String TECHNOLOGY = "technology";
-
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String ORDERS = "orders";
 
     public static final String MASTER_ORDER_PRODUCTS = "masterOrderProducts";
-
-    public static final String PRODUCED_ORDER_QUQNTITY = "producedOrderQuantity";
-
-    public static final String LEFT_TO_RELASE = "leftToRelease";
-
-    public static final String COOMENTS = "comments";
-
-    public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
     public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
 

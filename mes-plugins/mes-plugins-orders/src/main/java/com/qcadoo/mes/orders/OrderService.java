@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Locale;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.Locale;
 
 public interface OrderService {
 

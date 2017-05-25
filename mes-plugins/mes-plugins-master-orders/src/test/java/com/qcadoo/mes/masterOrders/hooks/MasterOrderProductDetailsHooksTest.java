@@ -24,7 +24,6 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -120,13 +119,10 @@ public class MasterOrderProductDetailsHooksTest {
     @Test
     public final void shouldShowMessageError() {
         // given
-        String masterOrderType = "03manyProducts";
         BigDecimal cumulatedOrderQuantity = BigDecimal.ONE;
         BigDecimal masterOrderQuantity = BigDecimal.TEN;
 
         given(masterOrderProduct.isValid()).willReturn(true);
-
-        given(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
 
         given(masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY)).willReturn(
                 cumulatedOrderQuantity);
@@ -143,13 +139,11 @@ public class MasterOrderProductDetailsHooksTest {
     @Test
     public final void shouldDonotShowMessageError() {
         // given
-        String masterOrderType = "03manyProducts";
         BigDecimal cumulatedOrderQuantity = BigDecimal.TEN;
         BigDecimal masterOrderQuantity = BigDecimal.ONE;
 
         given(masterOrderProduct.isValid()).willReturn(true);
 
-        given(masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_TYPE)).willReturn(masterOrderType);
 
         given(masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY)).willReturn(
                 cumulatedOrderQuantity);

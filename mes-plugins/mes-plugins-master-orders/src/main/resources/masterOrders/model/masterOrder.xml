@@ -42,7 +42,6 @@
         </string>
         <string name="externalNumber" unique="true"/>
         <string name="externalProductionOrderID" unique="true"/>
-        <string name="defaultTechnology" persistent="false"/>
 
         <datetime name="deadline">
             <validatesWith
@@ -55,33 +54,6 @@
 
         <boolean name="addMasterPrefixToNumber"/>
 
-        <decimal name="masterOrderQuantity">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="cumulatedOrderQuantity" persistent="false">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="producedOrderQuantity">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="leftToRelease">
-            <validatesRange from="0"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
-
-        <enum name="masterOrderType" values="01undefined,02oneProduct,03manyProducts"
-              default="01undefined" required="true">
-            <validatesWith
-                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-                    method="checkIfCanChangeType"/>
-        </enum>
         <dictionary name="masterOrderState" dictionary="masterOrderState"/>
 
         <belongsTo name="company" plugin="basic" model="company">
@@ -99,16 +71,6 @@
 
         <belongsTo name="address" plugin="basic" model="address"/>
 
-        <belongsTo name="product" plugin="basic" model="product">
-            <validatesWith
-                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-                    method="checkIfCanChangeProduct"/>
-        </belongsTo>
-        <belongsTo name="technology" plugin="technologies" model="technology">
-            <validatesWith
-                    class="com.qcadoo.mes.masterOrders.validators.MasterOrderValidators"
-                    method="checkIfCanChangeTechnology"/>
-        </belongsTo>
 
         <boolean name="externalSynchronized" default="true"/>
 
@@ -118,9 +80,7 @@
         <hasMany name="masterOrderProducts" joinField="masterOrder"
                  model="masterOrderProduct" cascade="delete"/>
 
-        <text name="comments"/>
 
-        <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
     </fields>
 
     <hooks>

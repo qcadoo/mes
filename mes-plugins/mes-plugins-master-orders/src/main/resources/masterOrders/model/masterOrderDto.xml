@@ -36,7 +36,6 @@
         <datetime name="deadline"/>
         <string name="company"/>
         <string name="companyPayer"/>
-        <string name="status"/>
         <string name="masterOrderState"/>
         <integer name="orderedPositionQuantity"/>
         <integer name="commissionedPositionQuantity"/>
