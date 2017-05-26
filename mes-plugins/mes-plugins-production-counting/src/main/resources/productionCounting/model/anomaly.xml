@@ -36,6 +36,8 @@
         <belongsTo name="productionTracking" model="productionTracking"
                    required="true"/>
 
+        <belongsTo name="location" model="location" plugin="materialFlow"/>
+
         <belongsTo name="masterProduct" model="product" plugin="basic"/>
 
         <belongsTo name="product" model="product" plugin="basic"
