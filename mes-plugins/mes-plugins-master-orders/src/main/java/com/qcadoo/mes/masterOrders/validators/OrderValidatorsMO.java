@@ -112,7 +112,7 @@ public class OrderValidatorsMO {
 
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
-        if (masterOrder == null) {
+        if (masterOrder == null || masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
             return true;
         }
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
