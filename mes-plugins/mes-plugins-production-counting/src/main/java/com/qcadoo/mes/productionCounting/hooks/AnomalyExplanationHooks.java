@@ -22,35 +22,35 @@ public class AnomalyExplanationHooks {
     private UnitConversionService unitConversionService;
 
     public boolean validateAnomalyExplanation(final DataDefinition anomalyExplanationDD, final Entity entity) {
+        boolean validationResult = true;
         boolean useWaste = entity.getBooleanField(AnomalyExplanationFields.USE_WASTE);
         Entity selectedProduct = entity.getBelongsToField(AnomalyExplanationFields.PRODUCT);
-        if (!useWaste) {
-            if (selectedProduct == null && isBlank(entity.getStringField(AnomalyExplanationFields.DESCRIPTION))) {
-                String key = "productionCounting.anomalyExplanation.error.eitherRequired";
-                entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.PRODUCT), key);
-                entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.DESCRIPTION), key);
-                return false;
-            }
+        String givenUnit = entity.getStringField(AnomalyExplanationFields.GIVEN_UNIT);
+        if (!useWaste && selectedProduct == null && isBlank(entity.getStringField(AnomalyExplanationFields.DESCRIPTION))) {
+            String key = "productionCounting.anomalyExplanation.error.eitherRequired";
+            entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.PRODUCT), key);
+            entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.DESCRIPTION), key);
+            validationResult = false;
         }
+
 
         if (useWaste || selectedProduct != null) {
             String key = "productionCounting.anomalyExplanation.error.required";
             if (entity.getDecimalField(AnomalyExplanationFields.USED_QUANTITY) == null) {
                 entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.USED_QUANTITY), key);
-                return false;
+                validationResult = false;
             }
             if (entity.getDecimalField(AnomalyExplanationFields.GIVEN_QUANTITY) == null) {
                 entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.GIVEN_QUANTITY), key);
-                return false;
+                validationResult = false;
             }
-            if(isBlank(entity.getStringField(AnomalyExplanationFields.GIVEN_UNIT))){
+            if (isBlank(givenUnit)) {
                 entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.GIVEN_QUANTITY),
                         "productionCounting.anomalyExplanation.error.unit.required");
-                return false;
+                validationResult = false;
             }
         }
 
-        String givenUnit = entity.getStringField(AnomalyExplanationFields.GIVEN_UNIT);
         if (selectedProduct != null) {
             String selectedProductUnit = selectedProduct.getStringField(ProductFields.UNIT);
             if (!StringUtils.equals(givenUnit, selectedProductUnit)) {
@@ -60,12 +60,18 @@ public class AnomalyExplanationHooks {
                 if (!unitConversions.isDefinedFor(givenUnit)) {
                     String key = "productionCounting.anomalyExplanation.error.noConversionFound";
                     entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.GIVEN_QUANTITY), key);
-                    return false;
+                    validationResult = false;
                 }
+            }
+
+            if (entity.getBelongsToField(AnomalyExplanationFields.LOCATION) == null) {
+                entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.LOCATION),
+                        "productionCounting.anomalyExplanation.error.required");
+                validationResult = false;
             }
         }
 
-        return true;
+        return validationResult;
     }
 
 }

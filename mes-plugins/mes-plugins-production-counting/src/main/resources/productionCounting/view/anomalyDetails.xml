@@ -131,18 +131,19 @@
 
                             <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
                             <option type="column" name="productName" fields="productName" link="true" width="100"/>
-                            <option type="column" name="usedQuantity" fields="usedQuantity" width="100"/>
-                            <option type="column" name="productUnit" fields="productUnit" width="100"/>
-                            <option type="column" name="description" fields="description" width="100"/>
+                            <option type="column" name="usedQuantity" fields="usedQuantity" width="50"/>
+                            <option type="column" name="productUnit" fields="productUnit" width="50"/>
+                            <option type="column" name="locationNumber" fields="locationNumber" width="100"/>
+                            <option type="column" name="description" fields="description" width="200"/>
                             <option type="column" name="createUser" fields="createUser" link="true" width="100"/>
                             <option type="column" name="createDate" fields="createDate" width="100"/>
 
                             <option type="order" column="createDate" direction="asc"/>
 
                             <option type="searchable"
-                                value="productNumber,productName,usedQuantity,productUnit,description,createUser,createDate"/>
+                                value="productNumber,productName,usedQuantity,productUnit,locationNumber,description,createUser,createDate"/>
                             <option type="orderable"
-                                value="productNumber,productName,usedQuantity,productUnit,description,createUser,createDate"/>
+                                value="productNumber,productName,usedQuantity,productUnit,locationNumber,description,createUser,createDate"/>
 
                             <option type="correspondingView" value="productionCounting/anomalyExplanationDetails"/>
                             <option type="correspondingComponent" value="form"/>

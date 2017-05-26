@@ -43,6 +43,8 @@ public class AnomalyExplanationDetailsListeners {
             anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_QUANTITY, null);
             anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_UNIT, null);
             view.getComponentByReference("usedQuantity").setEnabled(false);
+
+            anomalyExplanation.setField(AnomalyExplanationFields.LOCATION, null);
         }
         anomalyExplanation.setField(AnomalyExplanationFields.USED_QUANTITY, null);
         form.setEntity(anomalyExplanation);

@@ -34,6 +34,8 @@
 
         <belongsTo name="product" model="product" plugin="basic"/>
 
+        <belongsTo name="location" model="location" plugin="materialFlow"/>
+
         <boolean name="useWaste" default="false" required="true"/>
 
         <decimal name="usedQuantity">

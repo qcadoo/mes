@@ -16,4 +16,6 @@ final public class AnomalyExplanationFields {
 
     public static final String DESCRIPTION = "description";
 
+    public static final String LOCATION = "location";
+
 }

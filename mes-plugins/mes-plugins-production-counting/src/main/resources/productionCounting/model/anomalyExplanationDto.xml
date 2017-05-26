@@ -55,6 +55,8 @@
 
         <datetime name="createDate"/>
 
+        <string name="locationNumber"/>
+
     </fields>
 
     <hooks/>

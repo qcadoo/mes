@@ -36,6 +36,7 @@ public class AnomalyExplanationDetailsHooks {
 
         boolean useWaste = ((CheckBoxComponent) view.getComponentByReference("useWaste")).isChecked();
         view.getComponentByReference("product").setEnabled(!useWaste);
+        view.getComponentByReference("location").setEnabled(!useWaste);
 
         ComponentState givenUnitComponent = view.getComponentByReference("givenUnit");
 
@@ -89,6 +90,9 @@ public class AnomalyExplanationDetailsHooks {
             } else {
                 entity.setField(AnomalyExplanationFields.GIVEN_QUANTITY, anomalyUsedQuantity);
             }
+
+            // TODO uncomment me when @kasi finishes his changes
+//            entity.setField(AnomalyExplanationFields.LOCATION, anomaly.getBelongsToField(AnomalyFields.LOCATION));
         }
 
         Entity selectedProduct = entity.getBelongsToField(AnomalyExplanationFields.PRODUCT);
@@ -96,7 +100,7 @@ public class AnomalyExplanationDetailsHooks {
         ComponentState usedQuantity = view.getComponentByReference("usedQuantity");
         if (selectedProduct != null) {
             productUnit.setFieldValue(selectedProduct.getStringField(ProductFields.UNIT));
-            usedQuantity.setEnabled(true); // TODO move accessibility code to setupComponentsAccessibility method
+            usedQuantity.setEnabled(true);
         } else {
             productUnit.setFieldValue(null);
             usedQuantity.setEnabled(false);
