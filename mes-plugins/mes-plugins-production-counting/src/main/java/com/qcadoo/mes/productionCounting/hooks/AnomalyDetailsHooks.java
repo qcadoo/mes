@@ -1,30 +1,23 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.stream.Collectors;
 
 @Service
 public class AnomalyDetailsHooks {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnomalyDetailsHooks.class);
-
     private static final String L_FORM = "form";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         fillFields(view);
@@ -57,6 +50,10 @@ public class AnomalyDetailsHooks {
         unitField.setFieldValue(anomaly.getBelongsToField("product").getStringField(ProductFields.UNIT));
         reasonsField.setFieldValue(anomaly.getHasManyField("anomalyReasons").stream().map(a -> a.getStringField("name"))
                 .collect(Collectors.joining(", ")));
+
+        if (anomaly.getStringField(AnomalyFields.STATE).equals("03completed")) {
+            view.getComponentByReference("anomalyExplanations").setEnabled(false);
+        }
 
         productionTrackingNumberField.requestComponentUpdateState();
         orderNumberField.requestComponentUpdateState();

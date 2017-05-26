@@ -393,6 +393,7 @@
         <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
         <view:view resource="view/anomalyList.xml"/>
         <view:view resource="view/anomalyDetails.xml"/>
+        <view:view resource="view/anomalyExplanationDetails.xml"/>
 
         <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
 

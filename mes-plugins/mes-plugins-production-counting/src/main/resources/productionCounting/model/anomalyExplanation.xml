@@ -32,9 +32,9 @@
 
         <belongsTo name="anomaly" model="anomaly" plugin="productionCounting" required="true"/>
 
-        <belongsTo name="product" model="product" plugin="basic" required="true"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
 
-        <boolean name="useWaste" default="false"/>
+        <boolean name="useWaste" default="false" required="true"/>
 
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
@@ -55,6 +55,9 @@
 
     </fields>
 
-    <hooks/>
+    <hooks>
+        <validatesWith method="validateAnomalyExplanation"
+                       class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
+    </hooks>
 
 </model>
