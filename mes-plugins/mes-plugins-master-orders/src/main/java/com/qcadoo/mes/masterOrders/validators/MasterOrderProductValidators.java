@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -50,15 +51,33 @@ public class MasterOrderProductValidators {
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
-    public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        return checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderDD, masterOrder);
+    public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
+        boolean isValid = true;
+
+        isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct) && isValid;
+        isValid = checkIfOrdersAssignedToMasterOrder(masterOrderProduct) && isValid;
+
+        return isValid;
+
+    }
+
+    private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+        if (!masterOrder.getHasManyField(MasterOrderFields.ORDERS).isEmpty()
+                && masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
+            masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.alreadyExistsOrdersAssignedToMasterOrder", false);
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
+        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD
+                .find()
                 .add(belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(belongsTo(MasterOrderProductFields.PRODUCT, masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)));
+                .add(belongsTo(MasterOrderProductFields.PRODUCT,
+                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)));
         // It decreases unnecessary mapping overhead
         searchCriteriaBuilder.setProjection(alias(id(), "id"));
 
