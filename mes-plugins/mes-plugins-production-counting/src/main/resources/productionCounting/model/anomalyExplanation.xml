@@ -58,6 +58,8 @@
     </fields>
 
     <hooks>
+        <onSave method="onSave" class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
+        <onDelete method="onDelete" class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
         <validatesWith method="validateAnomalyExplanation"
                        class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
     </hooks>

@@ -2,6 +2,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
+import java.util.function.BooleanSupplier;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
+import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -20,6 +23,34 @@ public class AnomalyExplanationHooks {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    public void onSave(final DataDefinition anomalyExplanationDD, final Entity entity) {
+        Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
+        String anomalyState = anomaly.getStringField(AnomalyFields.STATE);
+        if (anomalyState.equals(AnomalyFields.State.COMPLETED)) {
+            throw new IllegalStateException("Completed anomaly can't be updated");
+        }
+        if (entity.getId() == null && anomalyState.equals(AnomalyFields.State.DRAFT)) {
+            anomaly.setField(AnomalyFields.STATE, AnomalyFields.State.EXPLAINED);
+            anomaly.getDataDefinition().save(anomaly);
+        }
+    }
+
+    public boolean onDelete(final DataDefinition anomalyExplanationDD, final Entity entity) {
+        Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
+        String anomalyState = anomaly.getStringField(AnomalyFields.STATE);
+        if (anomalyState.equals(AnomalyFields.State.COMPLETED)) {
+            throw new IllegalStateException("Completed anomaly can't be updated");
+        }
+        BooleanSupplier noMoreExplanationsForAnomaly = () -> anomalyExplanationDD
+                .count(SearchRestrictions.and(SearchRestrictions.belongsTo(AnomalyExplanationFields.ANOMALY, anomaly),
+                        SearchRestrictions.idNe(entity.getId()))) == 0;
+        if (anomalyState.equals(AnomalyFields.State.EXPLAINED) && noMoreExplanationsForAnomaly.getAsBoolean()) {
+            anomaly.setField(AnomalyFields.STATE, AnomalyFields.State.DRAFT);
+            anomaly.getDataDefinition().save(anomaly);
+        }
+        return true;
+    }
 
     public boolean validateAnomalyExplanation(final DataDefinition anomalyExplanationDD, final Entity entity) {
         boolean validationResult = true;

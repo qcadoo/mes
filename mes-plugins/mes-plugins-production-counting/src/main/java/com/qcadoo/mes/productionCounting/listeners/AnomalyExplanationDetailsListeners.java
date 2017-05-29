@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
+import static com.google.common.collect.Iterables.toArray;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -15,7 +16,10 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
@@ -24,12 +28,24 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class AnomalyExplanationDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent anomalyExplanationsGrid = (GridComponent) view.getComponentByReference("anomalyExplanations");
+        DataDefinition dataDefinition = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_ANOMALY_EXPLANATION);
+        dataDefinition.delete(toArray(anomalyExplanationsGrid.getSelectedEntitiesIds(), Long.class));
+        FormComponent documentForm = (FormComponent) view.getComponentByReference("form");
+        documentForm.performEvent(view, "reset");
+    }
 
     public void onUseWasteChange(final ViewDefinitionState view, final ComponentState useWaste, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");

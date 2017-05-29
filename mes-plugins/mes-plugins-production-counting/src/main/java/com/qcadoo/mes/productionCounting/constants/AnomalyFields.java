@@ -47,5 +47,14 @@ public final class AnomalyFields {
 
     public static final String ISSUED = "issued";
 
+    public static final class State {
+
+        public static final String DRAFT = "01draft";
+
+        public static final String EXPLAINED = "02explained";
+
+        public static final String COMPLETED = "03completed";
+
+    }
 
 }
