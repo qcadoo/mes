@@ -124,6 +124,40 @@
 
 
                 </component>
+                <component type="gridLayout" name="listGridLayout" columns="1" rows="1">
+                    <layoutElement row="1" column="1">
+                        <component type="grid" name="anomalyExplanations" model="anomalyExplanationDto" useDto="true"
+                                   reference="anomalyExplanations" source="#{form}.anomalyExplanationDtos">
+
+                            <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
+                            <option type="column" name="productName" fields="productName" link="true" width="100"/>
+                            <option type="column" name="usedQuantity" fields="usedQuantity" width="50"/>
+                            <option type="column" name="productUnit" fields="productUnit" width="50"/>
+                            <option type="column" name="locationNumber" fields="locationNumber" width="100"/>
+                            <option type="column" name="description" fields="description" width="200"/>
+                            <option type="column" name="createUser" fields="createUser" link="true" width="100"/>
+                            <option type="column" name="createDate" fields="createDate" width="100"/>
+
+                            <option type="order" column="createDate" direction="asc"/>
+
+                            <option type="searchable"
+                                value="productNumber,productName,usedQuantity,productUnit,locationNumber,description,createUser,createDate"/>
+                            <option type="orderable"
+                                value="productNumber,productName,usedQuantity,productUnit,locationNumber,description,createUser,createDate"/>
+
+                            <option type="correspondingView" value="productionCounting/anomalyExplanationDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+                            <option type="fixedHeight" value="true"/>
+
+                        </component>
+                    </layoutElement>
+                </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + ', ' + '@productionCounting.anomalyDto.state.value.' + #state"/>
             </component>

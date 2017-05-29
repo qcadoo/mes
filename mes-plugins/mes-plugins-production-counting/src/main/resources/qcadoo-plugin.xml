@@ -122,6 +122,8 @@
         <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
         <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
         <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
+        <model:model model="anomalyExplanation" resource="model/anomalyExplanation.xml"/>
+        <model:model model="anomalyExplanationDto" resource="model/anomalyExplanationDto.xml"/>
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
@@ -272,6 +274,11 @@
             <model:manyToMany name="anomalies" plugin="productionCounting" model="anomaly" joinField="anomalyReasons"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="anomalyExplanations" plugin="productionCounting" model="anomalyExplanation"
+                           joinField="location" cascade="delete"/>
+        </model:model-field>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
@@ -391,6 +398,7 @@
         <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
         <view:view resource="view/anomalyList.xml"/>
         <view:view resource="view/anomalyDetails.xml"/>
+        <view:view resource="view/anomalyExplanationDetails.xml"/>
 
         <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
 

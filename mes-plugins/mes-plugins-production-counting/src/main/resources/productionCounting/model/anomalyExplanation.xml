@@ -24,24 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="anomaly" auditable="true"
+<model name="anomalyExplanation" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number" unique="true">
-            <validatesLength max="255"/>
-        </string>
 
-        <belongsTo name="productionTracking" model="productionTracking"
-                   required="true"/>
+        <belongsTo name="anomaly" model="anomaly" plugin="productionCounting" required="true"/>
+
+        <belongsTo name="product" model="product" plugin="basic"/>
 
         <belongsTo name="location" model="location" plugin="materialFlow"/>
 
-        <belongsTo name="masterProduct" model="product" plugin="basic"/>
-
-        <belongsTo name="product" model="product" plugin="basic"
-                   required="true"/>
+        <boolean name="useWaste" default="false" required="true"/>
 
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
@@ -49,20 +44,22 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <manyToMany name="anomalyReasons"  model="anomalyReason" joinField="anomalies" cascade="nullify"/>
+        <decimal name="givenQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="givenUnit" dictionary="units"/>
 
-        <enum name="state" values="01draft,02explained,03completed"
-              default="01draft" required="true"/>
-
-        <boolean name="issued" default="false"/>
-
-        <hasMany name="anomalyExplanations" model="anomalyExplanation" joinField="anomaly" cascade="delete"/>
-
-        <hasMany name="anomalyExplanationDtos" model="anomalyExplanationDto" joinField="anomaly" copyable="false" persistent="false"/>
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
 
     </fields>
 
     <hooks>
+        <validatesWith method="validateAnomalyExplanation"
+                       class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
     </hooks>
 
 </model>
