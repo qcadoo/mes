@@ -91,8 +91,7 @@ public class AnomalyExplanationDetailsHooks {
                 entity.setField(AnomalyExplanationFields.GIVEN_QUANTITY, anomalyUsedQuantity);
             }
 
-            // TODO uncomment me when @kasi finishes his changes
-//            entity.setField(AnomalyExplanationFields.LOCATION, anomaly.getBelongsToField(AnomalyFields.LOCATION));
+            entity.setField(AnomalyExplanationFields.LOCATION, anomaly.getBelongsToField(AnomalyFields.LOCATION));
         }
 
         Entity selectedProduct = entity.getBelongsToField(AnomalyExplanationFields.PRODUCT);

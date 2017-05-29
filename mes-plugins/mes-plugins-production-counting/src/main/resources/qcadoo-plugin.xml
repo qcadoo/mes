@@ -274,6 +274,11 @@
             <model:manyToMany name="anomalies" plugin="productionCounting" model="anomaly" joinField="anomalyReasons"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="anomalyExplanations" plugin="productionCounting" model="anomalyExplanation"
+                           joinField="location" cascade="delete"/>
+        </model:model-field>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
