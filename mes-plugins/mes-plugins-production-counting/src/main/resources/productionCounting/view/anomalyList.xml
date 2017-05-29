@@ -54,7 +54,7 @@
             <option type="column" name="state" fields="state" width="50"/>
             <option type="column" name="issued" fields="issued" width="50"/>
 
-            <option type="order" column="name"/>
+            <option type="order" column="number" direction="desc"/>
 
             <option type="searchable" value="number,productionTrackingNumber,orderNumber,productionLineNumber,divisionNumber,createDate,productNumber,productName,productUnit,usedQuantity,reasons,state,issued"/>
             <option type="orderable" value="number,productionTrackingNumber,orderNumber,productionLineNumber,divisionNumber,createDate,productNumber,productName,productUnit,usedQuantity,reasons,state,issued"/>
