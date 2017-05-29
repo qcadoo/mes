@@ -23,6 +23,22 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.ADDITIONAL_CODE;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -31,20 +47,14 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.*;
 
 @Service
 public class DeliveredProductHooks {
@@ -364,7 +374,11 @@ public class DeliveredProductHooks {
     private PalletValidatorService palletValidatorService;
 
     private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        if ((deliveredProduct.getField(DeliveredProductFields.VALIDATE_PALLET) == null)
+                || deliveredProduct.getBooleanField(DeliveredProductFields.VALIDATE_PALLET)) {
+            return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        }
+        return true;
     }
 
     // private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {

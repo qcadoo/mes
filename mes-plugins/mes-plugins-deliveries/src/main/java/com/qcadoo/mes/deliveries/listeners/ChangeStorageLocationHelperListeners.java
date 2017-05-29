@@ -1,9 +1,14 @@
 package com.qcadoo.mes.deliveries.listeners;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -29,11 +34,13 @@ public class ChangeStorageLocationHelperListeners {
         DataDefinition deliveredProductDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
         Entity storageLocation = entity.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+        List<String> changedProducts = Lists.newArrayList();
         boolean success = true;
         for (String id : splitIds) {
             Long deliveredProductId = Long.parseLong(id);
             Entity deliveredProduct = deliveredProductDD.get(deliveredProductId);
             deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
+            deliveredProduct.setField(DeliveredProductFields.VALIDATE_PALLET, false);
             Entity saved = deliveredProductDD.save(deliveredProduct);
             if (!saved.isValid()) {
                 saved.getErrors().forEach((key, message) -> view.addMessage(message));
@@ -41,9 +48,11 @@ public class ChangeStorageLocationHelperListeners {
                 success = false;
                 break;
             }
+            changedProducts.add(saved.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
         }
         if (success) {
-            view.addMessage("deliveries.changeStorageLocationHelper.success", ComponentState.MessageType.SUCCESS);
+            view.addMessage("deliveries.changeStorageLocationHelper.success", ComponentState.MessageType.SUCCESS, changedProducts
+                    .stream().collect(Collectors.joining(", ")));
         } else {
             view.addMessage("deliveries.changeStorageLocationHelper.error", ComponentState.MessageType.FAILURE);
         }

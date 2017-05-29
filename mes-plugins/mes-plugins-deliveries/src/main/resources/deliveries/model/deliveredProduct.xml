@@ -65,6 +65,7 @@
                  model="deliveredProductReservation" plugin="deliveries" copyable="true"/>
 
         <string name="deliveredProductIds" persistent="false"/>
+        <boolean name="validatePallet" default="true" persistent="false"/>
 
     </fields>
 

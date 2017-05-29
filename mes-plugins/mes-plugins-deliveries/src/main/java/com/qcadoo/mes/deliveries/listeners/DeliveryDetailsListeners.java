@@ -43,6 +43,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
@@ -185,10 +186,25 @@ public class DeliveryDetailsListeners {
     public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("deliveredProducts");
         List<Entity> selectedProducts = grid.getSelectedEntities();
+        Set<Long> selectedProductsIds = grid.getSelectedEntitiesIds();
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity delivery = form.getPersistedEntityWithIncludedFormValues();
+        List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+        for (Entity selectedProduct : selectedProducts) {
+            String palletNumber = selectedProduct.getStringField(DeliveredProductFields.PALLET_NUMBER);
+            if (palletNumber != null) {
+                List<Long> notSelectedMatchingProducts = deliveredProducts
+                        .stream()
+                        .filter(deliveredProduct -> deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) != null
+                                && deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER)
+                                        .getStringField(PalletNumberFields.NUMBER).equals(palletNumber))
+                        .map(deliveredProduct -> deliveredProduct.getId())
+                        .filter(deliveredProduct -> !selectedProductsIds.contains(deliveredProduct)).collect(Collectors.toList());
+                selectedProductsIds.addAll(notSelectedMatchingProducts);
+            }
+        }
         String url = "../page/deliveries/changeStorageLocationHelper.html?context={\"form.deliveredProductIds\":\""
-                + selectedProducts.stream().map(product -> product.getId().toString()).collect(Collectors.joining(",")) + "\","
+                + selectedProductsIds.stream().map(product -> product.toString()).collect(Collectors.joining(",")) + "\","
                 + "\"form.delivery\":\"" + delivery.getId() + "\"}";
         view.openModal(url);
     }
