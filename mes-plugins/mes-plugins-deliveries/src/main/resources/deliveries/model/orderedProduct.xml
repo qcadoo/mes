@@ -47,10 +47,10 @@
             <validatesRange from="0" />
         </decimal>
 
-        <decimal name="deliveredQuantity" >
+        <decimal name="deliveredQuantity" copyable="false">
             <validatesRange from="0" exclusively="false" />
         </decimal>
-        <decimal name="additionalDeliveredQuantity" >
+        <decimal name="additionalDeliveredQuantity" copyable="false">
             <validatesRange from="0" exclusively="false" />
         </decimal>
 
