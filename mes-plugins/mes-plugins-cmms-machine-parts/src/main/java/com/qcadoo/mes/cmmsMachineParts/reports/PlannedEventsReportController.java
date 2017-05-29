@@ -1,5 +1,8 @@
 package com.qcadoo.mes.cmmsMachineParts.reports;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -8,17 +11,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
-@Controller public class PlannedEventsReportController {
+@Controller
+public class PlannedEventsReportController {
 
     @RequestMapping(value = "/cmmsMachineParts/plannedEvents.xlsx", method = RequestMethod.GET)
-    public ModelAndView generatePlannedEventsReport(
-            @RequestParam("filters") final String filters) {
+    public ModelAndView generatePlannedEventsReport(@RequestParam("context") final String context) {
         HashMap<String, String> filtersMap = new HashMap<String, String>();
         try {
-            JSONObject jObject = new JSONObject(filters);
+            JSONObject jObject = new JSONObject(context);
             Iterator<?> keys = jObject.keys();
             while (keys.hasNext()) {
                 String key = (String) keys.next();

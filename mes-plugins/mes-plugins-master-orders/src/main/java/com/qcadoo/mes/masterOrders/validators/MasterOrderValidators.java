@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.like;
-import static com.qcadoo.model.api.search.SearchRestrictions.ne;
-import static com.qcadoo.model.api.search.SearchRestrictions.not;
-
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -47,6 +32,16 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriterion;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class MasterOrderValidators {
@@ -58,7 +53,6 @@ public class MasterOrderValidators {
         boolean isValid = true;
 
         isValid = checkIfDatesAreOk(masterOrderDD, masterOrder) && isValid;
-        isValid = checkIfProductIsSelected(masterOrderDD, masterOrder) && isValid;
         isValid = checkIfCanChangeMasterOrderPrefixField(masterOrder) && isValid;
 
         return isValid;
@@ -74,20 +68,6 @@ public class MasterOrderValidators {
             return false;
         }
 
-        return true;
-    }
-
-    private boolean checkIfProductIsSelected(final DataDefinition dataDefinition, final Entity masterOrder) {
-        if (isNotOfOneProductType(masterOrder)) {
-            return true;
-        }
-
-        if (masterOrder.getBelongsToField(MasterOrderFields.PRODUCT) == null) {
-            masterOrder.addError(dataDefinition.getField(MasterOrderFields.PRODUCT),
-                    "masterOrders.masterOrder.product.haveToBeSelected");
-
-            return false;
-        }
         return true;
     }
 
@@ -198,53 +178,6 @@ public class MasterOrderValidators {
 
         addUnsupportedOrdersError(masterOrder, MasterOrderFields.NUMBER,
                 "masterOrders.order.number.alreadyExistsOrderWithWrongNumber", unsupportedOrderNumbers);
-
-        return false;
-    }
-
-    public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
-        return isNewlyCreated(masterOrder) || isNotOfOneProductType(masterOrder)
-                || areSame((Entity) fieldOldValue, (Entity) fieldNewValue)
-                || checkIfEachOrderSupportsNewTechnology(masterOrder, (Entity) fieldNewValue);
-    }
-
-    private boolean checkIfEachOrderSupportsNewTechnology(final Entity masterOrder, final Entity technology) {
-        if (technology == null) {
-            // since absence of technology in master order means 'wildcard technology'.
-            return true;
-        }
-
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
-                not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, technology)));
-
-        if (unsupportedOrderNumbers.isEmpty()) {
-            return true;
-        }
-
-        addUnsupportedOrdersError(masterOrder, MasterOrderFields.TECHNOLOGY,
-                "masterOrders.masterOrder.technology.wrongTechnology", unsupportedOrderNumbers);
-
-        return false;
-    }
-
-    public boolean checkIfCanChangeProduct(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
-        return isNewlyCreated(masterOrder) || isNotOfOneProductType(masterOrder)
-                || areSame((Entity) fieldOldValue, (Entity) fieldNewValue)
-                || checkIfEachOrderSupportsNewProduct(masterOrder, (Entity) fieldNewValue);
-    }
-
-    private boolean checkIfEachOrderSupportsNewProduct(final Entity masterOrder, final Entity product) {
-        Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
-                not(belongsTo(OrderFields.PRODUCT, product)));
-
-        if (unsupportedOrderNumbers.isEmpty()) {
-            return true;
-        }
-
-        addUnsupportedOrdersError(masterOrder, MasterOrderFields.PRODUCT, "masterOrders.masterOrder.product.wrongProduct",
-                unsupportedOrderNumbers);
 
         return false;
     }

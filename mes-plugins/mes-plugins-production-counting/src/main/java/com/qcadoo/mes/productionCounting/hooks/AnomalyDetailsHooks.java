@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ public class AnomalyDetailsHooks {
         FieldComponent productNumberField = (FieldComponent) view.getComponentByReference("productNumber");
         FieldComponent reasonsField = (FieldComponent) view.getComponentByReference("reasons");
         FieldComponent unitField = (FieldComponent) view.getComponentByReference("unit");
+        FieldComponent locationField = (FieldComponent) view.getComponentByReference("location");
 
         Entity productionTracking = anomaly.getBelongsToField("productionTracking");
 
@@ -50,6 +52,10 @@ public class AnomalyDetailsHooks {
         unitField.setFieldValue(anomaly.getBelongsToField("product").getStringField(ProductFields.UNIT));
         reasonsField.setFieldValue(anomaly.getHasManyField("anomalyReasons").stream().map(a -> a.getStringField("name"))
                 .collect(Collectors.joining(", ")));
+        if (Objects.nonNull(anomaly.getBelongsToField(AnomalyFields.LOCATION))) {
+            locationField.setFieldValue(anomaly.getBelongsToField(AnomalyFields.LOCATION).getStringField("number"));
+            locationField.requestComponentUpdateState();
+        }
 
         if (anomaly.getStringField(AnomalyFields.STATE).equals("03completed")) {
             view.getComponentByReference("anomalyExplanations").setEnabled(false);

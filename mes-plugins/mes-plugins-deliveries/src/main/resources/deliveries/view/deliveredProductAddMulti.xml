@@ -44,6 +44,16 @@
 										#{form}.performEvent('createDeliveredProducts', []);
 								}
 							});
+
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+								}
+							});
 						]]>
                     </script>
                 </bigButton>
@@ -205,6 +215,9 @@
                             <listener event="onAddRow" method="onAddRow"
                                       class="com.qcadoo.mes.deliveries.listeners.DeliveredProductAddMultiListeners"/>
                         </component>
+
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false" />
                     </layoutElement>
 
                 </component>

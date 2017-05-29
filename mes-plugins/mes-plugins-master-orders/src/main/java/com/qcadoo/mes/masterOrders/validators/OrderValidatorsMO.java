@@ -23,6 +23,22 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Locale;
+
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
@@ -30,25 +46,6 @@ import static com.qcadoo.mes.orders.constants.OrderFields.*;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
 import static com.qcadoo.model.api.search.SearchRestrictions.*;
-
-import java.util.Date;
-import java.util.Locale;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 
 @Service
 public class OrderValidatorsMO {
@@ -115,25 +112,10 @@ public class OrderValidatorsMO {
 
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
-
-        if (masterOrder == null) {
+        if (masterOrder == null || masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
             return true;
         }
-
-        MasterOrderType masterOrderType = MasterOrderType.of(masterOrder);
-
-        if (masterOrderType != MasterOrderType.UNDEFINED && !orderHasPatternTechnology(orderDD, order)) {
-            return false;
-        }
-
-        if (masterOrderType == MasterOrderType.ONE_PRODUCT) {
-            return checkIfOrderMatchesMasterOrderSingleProductAndTechnology(order, masterOrder);
-        }
-        if (masterOrderType == MasterOrderType.MANY_PRODUCTS) {
-            return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
-        }
-
-        return true;
+        return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
     }
 
     /* Precondition - order is not null */
@@ -143,40 +125,6 @@ public class OrderValidatorsMO {
             return false;
         }
         return true;
-    }
-
-    private boolean checkIfOrderMatchesMasterOrderSingleProductAndTechnology(final Entity order, final Entity masterOrder) {
-        boolean orderMatchesCriteria = checkIfOrderMatchesMasterOrderSingleProduct(order, masterOrder);
-        orderMatchesCriteria = checkIfOrderMatchesMasterOrderSingleTechnology(order, masterOrder) && orderMatchesCriteria;
-        return orderMatchesCriteria;
-    }
-
-    private boolean checkIfOrderMatchesMasterOrderSingleProduct(final Entity order, final Entity masterOrder) {
-        Entity masterOrderProduct = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        if (masterOrderProduct == null) {
-            return true;
-        }
-        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
-        if (ObjectUtils.equals(orderProduct.getId(), masterOrderProduct.getId())) {
-            return true;
-        }
-        addMatchValidationError(order, OrderFields.PRODUCT, createInfoAboutEntity(masterOrderProduct, OrderFields.PRODUCT));
-        return false;
-    }
-
-    private boolean checkIfOrderMatchesMasterOrderSingleTechnology(final Entity order, final Entity masterOrder) {
-        Entity masterOrderTechnology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-        if (masterOrderTechnology == null) {
-            return true;
-        }
-        Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
-        if (orderTechnologyPrototype != null
-                && ObjectUtils.equals(masterOrderTechnology.getId(), orderTechnologyPrototype.getId())) {
-            return true;
-        }
-
-        addMatchValidationError(order, OrderFields.TECHNOLOGY_PROTOTYPE, createInfoAboutEntity(masterOrderTechnology, TECHNOLOGY));
-        return false;
     }
 
     private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order, final Entity masterOrder) {

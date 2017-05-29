@@ -1,6 +1,10 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
@@ -12,6 +16,7 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -29,11 +34,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class AnomalyProductionTrackingDetailsListeners {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnomalyProductionTrackingDetailsListeners.class);
+
+    public static final String COMPONENTS_LOCATION = "componentsLocation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -157,10 +165,34 @@ public class AnomalyProductionTrackingDetailsListeners {
             reasons.add(ac.getBelongsToField("anomalyReason"));
         });
         anomaly.setField(AnomalyFields.ANAOMALY_REASONS, reasons);
+
+        anomaly.setField(AnomalyFields.LOCATION, findLocation(productionTracking, product));
+
         anomaly = anomaly.getDataDefinition().save(anomaly);
         if (!anomaly.isValid()) {
             throw new EntityRuntimeException(anomaly);
         }
+    }
+
+    private Entity findLocation(final Entity productionTracking, final Entity product) {
+
+        Optional<Entity> maybe = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER,
+                        productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.USED.getStringValue()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue())).list().getEntities().stream()
+                .findFirst();
+
+        if (maybe.isPresent()) {
+            return maybe.get().getBelongsToField(COMPONENTS_LOCATION);
+        }
+        return null;
     }
 
     private boolean validate(final ViewDefinitionState view) {
