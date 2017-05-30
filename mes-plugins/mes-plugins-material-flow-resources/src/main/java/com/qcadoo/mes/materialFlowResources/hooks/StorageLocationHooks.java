@@ -46,6 +46,25 @@ public class StorageLocationHooks {
         history.setField(StorageLocationHistoryFields.PRODUCT_TO, newProduct);
         historyDD.save(history);
 
+        DataDefinition productHistoryDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_PRODUCT_STORAGE_LOCATION_HISTORY);
+        if (oldProduct == null || (newProduct != null && !oldProduct.getId().equals(newProduct.getId()))) {
+            Entity productToHistory = productHistoryDD.create();
+            productToHistory.setField(StorageLocationHistoryFields.STORAGE_LOCATION_TO, storageLocation);
+            productToHistory.setField(StorageLocationHistoryFields.PRODUCT, newProduct);
+            productToHistory.setField(StorageLocationHistoryFields.LOCATION,
+                    storageLocation.getBelongsToField(StorageLocationFields.LOCATION));
+            productHistoryDD.save(productToHistory);
+        }
+        if (newProduct == null || (oldProduct != null && !oldProduct.getId().equals(newProduct.getId()))) {
+            Entity productFromHistory = productHistoryDD.create();
+            productFromHistory.setField(StorageLocationHistoryFields.STORAGE_LOCATION_FROM, storageLocation);
+            productFromHistory.setField(StorageLocationHistoryFields.PRODUCT, oldProduct);
+            productFromHistory.setField(StorageLocationHistoryFields.LOCATION,
+                    storageLocation.getBelongsToField(StorageLocationFields.LOCATION));
+            productHistoryDD.save(productFromHistory);
+        }
+
     }
 
 }
