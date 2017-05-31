@@ -61,7 +61,7 @@
                             <option type="searchable"
                                     value="createDate,createUser,location,storageLocationFrom,storageLocationTo" />
                             <option type="orderable"
-                                    value="createDate,createUser,location,locationFrom,locationTo" />
+                                    value="createDate,createUser,location,storageLocationFrom,storageLocationTo" />
 
                             <option type="fullscreen" value="true" />
                             <option type="multiselect" value="true" />
