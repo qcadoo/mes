@@ -61,6 +61,8 @@
 
         <string name="palletNumber"/>
 
+        <string name="palletType"/>
+
         <string name="batch"/>
 
         <string name="offerNumber"/>

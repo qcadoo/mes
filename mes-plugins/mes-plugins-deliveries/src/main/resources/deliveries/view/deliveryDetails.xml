@@ -736,6 +736,8 @@
                                 width="80"/>
                         <option type="column" name="palletNumber" fields="palletNumber"
                                 width="80"/>
+                        <option type="column" name="palletType" fields="palletType"
+                                width="45"/>
                         <option type="column" name="isWaste" fields="isWaste"
                                 width="45"/>
                         <option type="column" name="batch" fields="batch"
@@ -744,9 +746,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,productUnit,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,productUnit,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
