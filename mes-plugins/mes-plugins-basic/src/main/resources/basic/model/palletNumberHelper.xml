@@ -32,9 +32,7 @@
         <integer name="quantity" required="true">
             <validatesRange from="0"/>
         </integer>
-        <string name="numbers" persistent="false">
-            <validatesLength max="2048"/>
-        </string>
+
         <boolean name="temporary" required="true" default="false"/>
 
         <manyToMany name="palletNumbers" model="palletNumber" joinField="palletNumberHelpers"
@@ -48,8 +46,6 @@
         <onCopy class="com.qcadoo.mes.basic.hooks.PalletNumberHelperHooks"
                   method="onCopy"/>
 
-        <validatesWith class="com.qcadoo.mes.basic.validators.PalletNumberHelperValidators"
-                       method="checkQuantity"/>
     </hooks>
 
 </model>
