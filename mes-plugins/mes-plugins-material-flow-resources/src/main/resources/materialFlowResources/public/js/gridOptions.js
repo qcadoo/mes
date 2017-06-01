@@ -187,6 +187,9 @@ myApp.directive('ngJqGrid', function ($window) {
                                             errorTextFormat: function (response) {
                                                 return translateAndShowMessages(response);
                                             },
+                                            afterComplete : function(response, postdata, formid) {
+                                                refreshForm();
+                                            },
                                             beforeShowForm: function (form) {
                                                 var dlgDiv = $("#editmodgrid");
                                                 var dlgWidth = 800;
@@ -217,6 +220,9 @@ myApp.directive('ngJqGrid', function ($window) {
                                                     onclickSubmit: function (params, postdata) {
                                                         params.url = '../../rest/rest/documentPositions.html';
                                                     },
+                                                    afterComplete : function(response, postdata, formid) {
+                                                        refreshForm();
+                                                    },
                                                     errorTextFormat: function (response) {
                                                         return translateAndShowMessages(response);
                                                     },
@@ -239,6 +245,9 @@ myApp.directive('ngJqGrid', function ($window) {
                                                             },
                                                             onclickSubmit: function (params, postdata) {
                                                                 params.url = '../../rest/rest/documentPositions/' + encodeURIComponent(postdata) + ".html";
+                                                            },
+                                                            afterComplete : function(response, postdata, formid) {
+                                                                 refreshForm();
                                                             },
                                                             errorTextFormat: function (response) {
                                                                 return translateMessages(JSON.parse(response.responseText).message);
@@ -326,6 +335,13 @@ function saveAllRows() {
 
 function viewRefresh() {
     angular.element($("#GridController")).scope().cancelEditing();
+}
+
+function refreshForm() {
+    var mainViewComponent = mainController.getComponentByReferenceName("form") || mainController.getComponentByReferenceName("grid");
+    if (mainViewComponent) {
+        mainViewComponent.performRefresh();
+    }
 }
 
 function documentIdChanged(id) {
@@ -1205,7 +1221,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function aftersavefunc() {
-            $("#grid").trigger("reloadGrid");
+          //  $("#grid").trigger("reloadGrid");
+            refreshForm();
         }
 
         function prepareViewOnStartEdit() {
@@ -1279,6 +1296,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             toolbar: [true, "top"],
             rownumbers: false,
             altRows: true,
+            multiselect: true,
             altclass: 'qcadooRowClass',
             errorTextFormat: function (response) {
                 return translateMessages(JSON.parse(response.responseText).message);
@@ -1331,7 +1349,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             lastSel = id;
                         },
                         afterRestore: function () {
+                            cancelEditing();
                             prepareViewOnEndEdit();
+                            $("#grid").trigger("reloadGrid");
+                            viewRefresh();
                         }
                     }
                 },
@@ -1626,7 +1647,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
                 $('#rows-num').text('(' + rows.length + ')');
             },
-            onSelectRow: function (id) {
+            onSelectRow: function (rowid, status) {
+
+            },
+          beforeSelectRow: function (rowid, e) {
+          var $grid = $(this)
+                if(e.target.className === 'ui-icon ui-icon-cancel'){
+                    return false;
+                }
+                var $grid = $(this),
+                i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
+                cm = $grid.jqGrid('getGridParam', 'colModel');
+                if(cm[i].name === 'act'){
+                    $grid.jqGrid('resetSelection');
+                    return true;
+                }
+                return (cm[i].name === 'cb');
             },
             ajaxRowOptions: {
                 contentType: "application/json"
