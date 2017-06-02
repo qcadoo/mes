@@ -39,13 +39,13 @@
         <boolean name="useWaste" default="false" required="true"/>
 
         <decimal name="usedQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
 
         <decimal name="givenQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
