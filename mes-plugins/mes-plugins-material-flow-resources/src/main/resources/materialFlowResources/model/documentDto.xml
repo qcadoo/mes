@@ -42,6 +42,7 @@
         <string name="locationToNumber"/>
         <integer name="company_id"/>
         <string name="companyName"/>
+        <string name="documentAddress"/>
         <integer name="user_id"/>
         <string name="userName"/>
         <string name="description"/>

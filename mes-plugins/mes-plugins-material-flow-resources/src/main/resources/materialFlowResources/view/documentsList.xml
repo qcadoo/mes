@@ -115,6 +115,7 @@
             <option type="column" name="locationToNumber" fields="locationToNumber" width="70"/>
             <option type="column" name="description" fields="description"/>
             <option type="column" name="companyName" fields="companyName"/>
+            <option type="column" name="address" fields="documentAddress"/>
             <option type="column" name="userName" fields="userName" width="150"/>
 
             <option type="order" column="time" direction="desc" width="200"/>

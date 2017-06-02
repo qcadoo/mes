@@ -46,6 +46,7 @@
         <string name="documentNumber"/>
         <string name="documentName"/>
         <string name="companyName"/>
+        <string name="documentAddress"/>
         <string name="batch"/>
         <string name="storageLocation"/>
         <boolean name="waste"/>

@@ -64,6 +64,8 @@
 
             <option type="column" name="company" fields="companyName"/>
 
+            <option type="column" name="address" fields="documentAddress"/>
+
             <option type="column" name="batch" fields="batch" width="50"/>
 
             <option type="column" name="expirationDate" fields="expirationDate" width="60"/>
