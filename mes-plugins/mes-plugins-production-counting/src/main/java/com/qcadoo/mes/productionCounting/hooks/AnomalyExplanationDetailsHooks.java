@@ -58,12 +58,11 @@ public class AnomalyExplanationDetailsHooks {
     }
 
     private void initializeFormValues(ViewDefinitionState view, Entity entity) {
-        Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
-        Entity anomalyProduct = anomaly.getBelongsToField(AnomalyFields.PRODUCT);
-        String anomalyProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
-        String additionalAnomalyProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
 
         if (entity.getId() == null) {
+
+            Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
+            Entity anomalyProduct = anomaly.getBelongsToField(AnomalyFields.PRODUCT);
 
             entity.setField(AnomalyExplanationFields.PRODUCT, anomalyProduct);
 
@@ -77,6 +76,9 @@ public class AnomalyExplanationDetailsHooks {
 
             BigDecimal anomalyUsedQuantity = anomaly.getDecimalField(AnomalyFields.USED_QUANTITY);
             entity.setField(AnomalyExplanationFields.USED_QUANTITY, anomalyUsedQuantity);
+
+            String anomalyProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
+            String additionalAnomalyProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
 
             if (isNotBlank(additionalAnomalyProductUnit)) {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(anomalyProductUnit,
@@ -101,7 +103,11 @@ public class AnomalyExplanationDetailsHooks {
             productUnit.setFieldValue(selectedProduct.getStringField(ProductFields.UNIT));
             usedQuantity.setEnabled(true);
         } else {
-            productUnit.setFieldValue(null);
+            if (((CheckBoxComponent) view.getComponentByReference("useWaste")).isChecked()) {
+                productUnit.setFieldValue(entity.getStringField(AnomalyExplanationFields.GIVEN_UNIT));
+            } else {
+                productUnit.setFieldValue(null);
+            }
             usedQuantity.setEnabled(false);
         }
     }

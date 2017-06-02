@@ -95,7 +95,7 @@
                     </layoutElement>
                     <layoutElement column="5" row="5">
                         <component type="select" name="givenUnit" field="givenUnit" reference="givenUnit" hasLabel="false">
-                            <listener event="onSelectedEntityChange" method="calculateQuantity"
+                            <listener event="onSelectedEntityChange" method="givenUnitChange"
                                       class="com.qcadoo.mes.productionCounting.listeners.AnomalyExplanationDetailsListeners"/>
                         </component>
                     </layoutElement>

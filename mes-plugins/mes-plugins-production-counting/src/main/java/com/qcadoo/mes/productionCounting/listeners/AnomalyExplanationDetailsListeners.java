@@ -26,6 +26,7 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -53,9 +54,6 @@ public class AnomalyExplanationDetailsListeners {
         if (anomalyExplanation.getBooleanField(AnomalyExplanationFields.USE_WASTE)) {
             anomalyExplanation.setField(AnomalyExplanationFields.PRODUCT, null);
 
-            ComponentState productUnit = view.getComponentByReference("productUnit");
-            productUnit.setFieldValue(null);
-
             anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_QUANTITY, null);
             anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_UNIT, null);
             view.getComponentByReference("usedQuantity").setEnabled(false);
@@ -63,6 +61,7 @@ public class AnomalyExplanationDetailsListeners {
             anomalyExplanation.setField(AnomalyExplanationFields.LOCATION, null);
         }
         anomalyExplanation.setField(AnomalyExplanationFields.USED_QUANTITY, null);
+        view.getComponentByReference("productUnit").setFieldValue(null);
         form.setEntity(anomalyExplanation);
     }
 
@@ -105,6 +104,14 @@ public class AnomalyExplanationDetailsListeners {
                     anomalyExplanation.getDecimalField(AnomalyExplanationFields.GIVEN_QUANTITY));
         }
         form.setEntity(anomalyExplanation);
+    }
+
+    public void givenUnitChange(final ViewDefinitionState view, final ComponentState cs, final String[] args) {
+        if (((CheckBoxComponent) view.getComponentByReference("useWaste")).isChecked()) {
+            view.getComponentByReference("productUnit").setFieldValue(cs.getFieldValue());
+        } else {
+            calculateQuantity(view, cs, args);
+        }
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState cs, final String[] args) {
