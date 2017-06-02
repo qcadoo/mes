@@ -65,13 +65,14 @@ public class AnomalyExplanationDetailsListeners {
         form.setEntity(anomalyExplanation);
     }
 
-    public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void selectedProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
         Entity selectedProduct = anomalyExplanation.getBelongsToField(AnomalyExplanationFields.PRODUCT);
 
         ComponentState productUnit = view.getComponentByReference("productUnit");
         ComponentState usedQuantity = view.getComponentByReference("usedQuantity");
+        ComponentState givenUnitComponent = view.getComponentByReference("givenUnit");
         if (selectedProduct != null) {
             String selectedProductUnit = selectedProduct.getStringField(ProductFields.UNIT);
             productUnit.setFieldValue(selectedProductUnit);
@@ -79,19 +80,18 @@ public class AnomalyExplanationDetailsListeners {
 
             String selectedProductAdditionalUnit = selectedProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
             if (isNotBlank(selectedProductAdditionalUnit)) {
-                anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_UNIT, selectedProductAdditionalUnit);
+                givenUnitComponent.setFieldValue(selectedProductAdditionalUnit);
             } else {
-                anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_UNIT, selectedProductUnit);
+                givenUnitComponent.setFieldValue(selectedProductUnit);
             }
 
         } else {
             productUnit.setFieldValue(null);
-            anomalyExplanation.setField(AnomalyExplanationFields.USED_QUANTITY, null);
-            anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_QUANTITY, null);
-            anomalyExplanation.setField(AnomalyExplanationFields.GIVEN_UNIT, null);
+            view.getComponentByReference("usedQuantity").setFieldValue(null);
+            view.getComponentByReference("givenQuantity").setFieldValue(null);
+            givenUnitComponent.setFieldValue(null);
             usedQuantity.setEnabled(false);
         }
-        form.setEntity(anomalyExplanation);
         usedQuantity.performEvent(view, "onInputChange", ArrayUtils.EMPTY_STRING_ARRAY);
     }
 

@@ -48,7 +48,7 @@
                             <option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
-                            <listener event="onSelectedEntityChange" method="fillUnitFields"
+                            <listener event="onSelectedEntityChange" method="selectedProductChange"
                                       class="com.qcadoo.mes.productionCounting.listeners.AnomalyExplanationDetailsListeners"/>
 
                         </component>

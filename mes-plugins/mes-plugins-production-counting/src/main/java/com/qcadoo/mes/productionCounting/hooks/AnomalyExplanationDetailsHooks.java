@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
+import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
 import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -19,12 +21,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class AnomalyExplanationDetailsHooks {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -35,13 +41,14 @@ public class AnomalyExplanationDetailsHooks {
         }
 
         boolean useWaste = ((CheckBoxComponent) view.getComponentByReference("useWaste")).isChecked();
-        view.getComponentByReference("product").setEnabled(!useWaste);
+        LookupComponent productLookup = ((LookupComponent) view.getComponentByReference("product"));
+        productLookup.setEnabled(!useWaste);
         view.getComponentByReference("location").setEnabled(!useWaste);
 
         ComponentState givenUnitComponent = view.getComponentByReference("givenUnit");
 
-        String givenUnit = entity.getStringField(AnomalyExplanationFields.GIVEN_UNIT);
-        Entity selectedProduct = entity.getBelongsToField(AnomalyExplanationFields.PRODUCT);
+        String givenUnit = (String) givenUnitComponent.getFieldValue();
+        Entity selectedProduct = productLookup.getEntity();
 
         boolean shouldAdditionalUnitBeEnabled = true;
         if (selectedProduct != null) {
@@ -53,33 +60,36 @@ public class AnomalyExplanationDetailsHooks {
             }
         }
         givenUnitComponent.setEnabled(shouldAdditionalUnitBeEnabled);
-
-        form.setEntity(entity);
     }
 
     private void initializeFormValues(ViewDefinitionState view, Entity entity) {
 
+        LookupComponent productLookup = ((LookupComponent) view.getComponentByReference("product"));
         if (entity.getId() == null) {
 
             Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
             Entity anomalyProduct = anomaly.getBelongsToField(AnomalyFields.PRODUCT);
 
-            entity.setField(AnomalyExplanationFields.PRODUCT, anomalyProduct);
+            productLookup.setFieldValue(anomalyProduct.getId());
 
             String selectedProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
             String additionalSelectedProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
+            ComponentState givenUnitComponent = view.getComponentByReference("givenUnit");
             if (isNotBlank(additionalSelectedProductUnit)) {
-                entity.setField(AnomalyExplanationFields.GIVEN_UNIT, additionalSelectedProductUnit);
+                givenUnitComponent.setFieldValue(additionalSelectedProductUnit);
             } else {
-                entity.setField(AnomalyExplanationFields.GIVEN_UNIT, selectedProductUnit);
+                givenUnitComponent.setFieldValue(selectedProductUnit);
             }
 
             BigDecimal anomalyUsedQuantity = anomaly.getDecimalField(AnomalyFields.USED_QUANTITY);
-            entity.setField(AnomalyExplanationFields.USED_QUANTITY, anomalyUsedQuantity);
+
+            view.getComponentByReference("usedQuantity")
+                    .setFieldValue(numberService.formatWithMinimumFractionDigits(anomalyUsedQuantity, 0));
 
             String anomalyProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
             String additionalAnomalyProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
 
+            ComponentState givenQuantityComponent = view.getComponentByReference("givenQuantity");
             if (isNotBlank(additionalAnomalyProductUnit)) {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(anomalyProductUnit,
                         searchCriteriaBuilder -> searchCriteriaBuilder
@@ -87,16 +97,18 @@ public class AnomalyExplanationDetailsHooks {
                 if (unitConversions.isDefinedFor(additionalAnomalyProductUnit)) {
                     BigDecimal convertedQuantityNewValue = unitConversions.convertTo(anomalyUsedQuantity,
                             additionalAnomalyProductUnit);
-                    entity.setField(AnomalyExplanationFields.GIVEN_QUANTITY, convertedQuantityNewValue);
+                    givenQuantityComponent
+                            .setFieldValue(numberService.formatWithMinimumFractionDigits(convertedQuantityNewValue, 0));
                 }
             } else {
-                entity.setField(AnomalyExplanationFields.GIVEN_QUANTITY, anomalyUsedQuantity);
+                givenQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(anomalyUsedQuantity, 0));
             }
 
-            entity.setField(AnomalyExplanationFields.LOCATION, anomaly.getBelongsToField(AnomalyFields.LOCATION));
+            Entity anomalyLocation = anomaly.getBelongsToField(AnomalyFields.LOCATION);
+            view.getComponentByReference("location").setFieldValue(ofNullable(anomalyLocation).map(Entity::getId).orElse(null));
         }
 
-        Entity selectedProduct = entity.getBelongsToField(AnomalyExplanationFields.PRODUCT);
+        Entity selectedProduct = productLookup.getEntity();
         ComponentState productUnit = view.getComponentByReference("productUnit");
         ComponentState usedQuantity = view.getComponentByReference("usedQuantity");
         if (selectedProduct != null) {
