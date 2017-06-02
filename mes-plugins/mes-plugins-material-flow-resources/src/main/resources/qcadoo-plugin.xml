@@ -86,6 +86,8 @@
         <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
 
         <model:model model="storageLocation" resource="model/storageLocation.xml"/>
+        <model:model model="storageLocationHistory" resource="model/storageLocationHistory.xml"/>
+        <model:model model="productStorageLocationHistory" resource="model/productStorageLocationHistory.xml"/>
         <model:model model="storageLocationDto" resource="model/storageLocationDto.xml"/>
         <model:model model="storageLocationHelper" resource="model/storageLocationHelper.xml"/>
         <model:model model="palletStorageStateDto" resource="model/palletStorageStateDto.xml"/>
@@ -161,6 +163,11 @@
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="resources" model="resource"
                            plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="storageLocationHistory" model="productStorageLocationHistory"
+                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -291,6 +298,10 @@
                             class="com.qcadoo.mes.materialFlowResources.listeners.ProductsListListenersMFR"
                             method="showCostNormsGenerator"/>
 
+        <view:view-listener plugin="basic" view="productDetails" component="form" event="showStorageLocationHistory"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductDetailsListenersMFR"
+                            method="showStorageLocationHistory"/>
+
         <view:view-hook plugin="materialFlow" view="transformationsDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR"
@@ -300,6 +311,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.materialFlowResources.hooks.LocationDetailsHooksMFR"
                         method="setEnabledForBatchCheckbox"/>
+
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.ProductDetailsHooksMFR"
+                        method="setEnabledForStorageLocationHistory"/>
 
         <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
@@ -325,10 +341,14 @@
         <view:view resource="view/palletBalanceDetails.xml"/>
         <view:view resource="view/palletBalancesList.xml"/>
 
+        <view:view resource="view/productStorageLocationHistoryDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 
         <view:resource uri="public/**/*"/>
 

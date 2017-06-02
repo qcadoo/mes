@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.util;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-
-import java.util.Collection;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,23 +31,20 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.utils.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
 
 @Service
 public class MasterOrderProductsDataService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    public Entity createProductEntryFor(final Entity masterOrder) {
-        Entity product = masterOrder.getBelongsToField(MasterOrderFields.PRODUCT);
-        Entity technology = masterOrder.getBelongsToField(MasterOrderFields.TECHNOLOGY);
-
-        Entity masterOrderProduct = getMasterOrderProductDD().create();
-
-        masterOrderProduct.setField(MasterOrderProductFields.PRODUCT, product);
-        masterOrderProduct.setField(MasterOrderProductFields.TECHNOLOGY, technology);
-        return masterOrderProduct;
-    }
 
     public EntityOpResult deleteExistingMasterOrderProducts(final Entity masterOrder) {
         if (masterOrder == null || masterOrder.getId() == null) {

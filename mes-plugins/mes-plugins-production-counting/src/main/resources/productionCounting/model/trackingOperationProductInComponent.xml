@@ -81,8 +81,6 @@
                 method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
                        method="validatesWith"/>
-        <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductInComponentValidators"
-                       method="validateIfOnlyWasteUsed"/>
     </hooks>
 
 </model>

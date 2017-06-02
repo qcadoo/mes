@@ -36,6 +36,8 @@
         <belongsTo name="productionTracking" model="productionTracking"
                    required="true"/>
 
+        <belongsTo name="location" model="location" plugin="materialFlow"/>
+
         <belongsTo name="masterProduct" model="product" plugin="basic"/>
 
         <belongsTo name="product" model="product" plugin="basic"
@@ -53,6 +55,10 @@
               default="01draft" required="true"/>
 
         <boolean name="issued" default="false"/>
+
+        <hasMany name="anomalyExplanations" model="anomalyExplanation" joinField="anomaly" cascade="delete"/>
+
+        <hasMany name="anomalyExplanationDtos" model="anomalyExplanationDto" joinField="anomaly" copyable="false" persistent="false"/>
 
     </fields>
 

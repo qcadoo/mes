@@ -30,6 +30,7 @@
        activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
     <fields>
         <string name="locationNumber"/>
+        <integer name="location_id"/>
         <string name="storageLocationNumber"/>
         <string name="productNumber"/>
         <string name="productName"/>

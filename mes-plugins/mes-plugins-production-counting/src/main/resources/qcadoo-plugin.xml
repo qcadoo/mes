@@ -118,9 +118,12 @@
 
         <model:model model="anomalyReason" resource="model/anomalyReason.xml"/>
         <model:model model="anomaly" resource="model/anomaly.xml"/>
+        <model:model model="anomalyDto" resource="model/anomalyDto.xml"/>
         <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
         <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
         <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
+        <model:model model="anomalyExplanation" resource="model/anomalyExplanation.xml"/>
+        <model:model model="anomalyExplanationDto" resource="model/anomalyExplanationDto.xml"/>
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
@@ -271,6 +274,11 @@
             <model:manyToMany name="anomalies" plugin="productionCounting" model="anomaly" joinField="anomalyReasons"/>
         </model:model-field>
 
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="anomalyExplanations" plugin="productionCounting" model="anomalyExplanation"
+                           joinField="location" cascade="delete"/>
+        </model:model-field>
+
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
                     class="com.qcadoo.mes.productionCounting.hooks.ParameterHooksPC"
@@ -355,6 +363,8 @@
 
         <menu:menu-item name="anomalyReasonList" category="ordersTracking"
                         view="anomalyReasonList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+        <menu:menu-item name="anomalyList" category="ordersTracking"
+                        view="anomalyList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
 
         <menu:menu-item name="trackingOperationProductInComponentAdditionalInformationReport" category="ordersTracking"
                         view="trackingOperationProductInComponentAdditionalInformationReport"
@@ -386,6 +396,9 @@
         <view:view resource="view/anomalyReasonList.xml"/>
         <view:view resource="view/anomalyReasonDetails.xml"/>
         <view:view resource="view/anomalyProductionTrackingDetails.xml"/>
+        <view:view resource="view/anomalyList.xml"/>
+        <view:view resource="view/anomalyDetails.xml"/>
+        <view:view resource="view/anomalyExplanationDetails.xml"/>
 
         <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
 

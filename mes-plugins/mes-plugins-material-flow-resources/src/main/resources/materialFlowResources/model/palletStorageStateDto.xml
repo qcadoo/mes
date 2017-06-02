@@ -34,6 +34,7 @@
         <string name="typeOfPallet"/>
         <string name="storageLocationNumber"/>
         <string name="locationNumber"/>
+        <integer name="location_id"/>
         <decimal name="totalQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>

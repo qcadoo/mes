@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="anomalyExplanation" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+
+        <belongsTo name="anomaly" model="anomaly" plugin="productionCounting" required="true"/>
+
+        <belongsTo name="product" model="product" plugin="basic"/>
+
+        <belongsTo name="location" model="location" plugin="materialFlow"/>
+
+        <boolean name="useWaste" default="false" required="true"/>
+
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="givenQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="givenUnit" dictionary="units"/>
+
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
+
+    </fields>
+
+    <hooks>
+        <onSave method="onSave" class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
+        <onDelete method="onDelete" class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
+        <validatesWith method="validateAnomalyExplanation"
+                       class="com.qcadoo.mes.productionCounting.hooks.AnomalyExplanationHooks"/>
+    </hooks>
+
+</model>

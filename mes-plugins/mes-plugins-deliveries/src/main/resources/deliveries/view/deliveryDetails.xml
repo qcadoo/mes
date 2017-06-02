@@ -239,6 +239,10 @@
                 <bigButton name="recalculateReservations"
                            icon="generateIcon24.png"
                            action="#{form}.fireEvent(recalculateReservations);"/>
+                <bigButton name="changeStorageLocations"
+                           icon="copyIcon24.png"
+                           action="#{form}.fireEvent(changeStorageLocations);"
+                           message="changeStorageLocations" enabled="false"/>
             </group>
 
             <group name="relatedDelivery">
@@ -572,6 +576,9 @@
                 <listener event="assignStorageLocations"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="assignStorageLocations"/>
+                <listener event="changeStorageLocations"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                          method="changeStorageLocations"/>
                 <listener event="recalculateReservations"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="recalculateReservations"/>
@@ -729,6 +736,8 @@
                                 width="80"/>
                         <option type="column" name="palletNumber" fields="palletNumber"
                                 width="80"/>
+                        <option type="column" name="palletType" fields="palletType"
+                                width="45"/>
                         <option type="column" name="isWaste" fields="isWaste"
                                 width="45"/>
                         <option type="column" name="batch" fields="batch"
@@ -737,9 +746,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,productUnit,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,productUnit,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
@@ -752,6 +761,9 @@
                         <option type="fixedHeight" value="true"/>
 
                         <listener event="select" method="disableShowProductButton"
+                                  class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
+
+                        <listener event="select" method="updateChangeStorageLocationButton"
                                   class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
                     </component>
                 </layoutElement>

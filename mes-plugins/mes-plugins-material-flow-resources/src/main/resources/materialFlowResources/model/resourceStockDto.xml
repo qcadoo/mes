@@ -34,6 +34,7 @@
         <decimal name="availableQuantity"/>
         <string name="locationNumber"/>
         <string name="locationName"/>
+        <integer name="location_id"/>
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="productUnit"/>

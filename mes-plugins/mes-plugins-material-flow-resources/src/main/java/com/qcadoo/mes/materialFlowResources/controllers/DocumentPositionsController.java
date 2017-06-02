@@ -1,28 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.google.common.io.BaseEncoding;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
@@ -31,6 +8,21 @@ import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.ResourceDTO;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 @Controller
 @RequestMapping("/rest/documentPositions")
@@ -70,11 +62,9 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "{id}", method = RequestMethod.DELETE)
-    public void delete(@PathVariable Long id) {
-        Long documentId = documentPositionRepository.findDocumentByPosition(id);
-        documentPositionRepository.delete(id);
-        documentPositionRepository.updateDocumentPositionsNumbers(documentId);
+    @RequestMapping(value = "{ids}", method = RequestMethod.DELETE)
+    public void delete(@PathVariable String ids) {
+        documentPositionRepository.deletePositions(ids);
     }
 
     @ResponseBody

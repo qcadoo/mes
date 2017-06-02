@@ -86,6 +86,9 @@
                     value="quantity,quantityInAdditionalUnit,value,reservedQuantity,availableQuantity"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourcesCriteriaModifier"
+                              method="restrictToUserLocations"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

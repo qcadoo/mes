@@ -50,7 +50,6 @@
         <string name="assortmentName"/>
 
         <integer name="masterOrderId"/>
-        <string name="masterOrderType"/>
         <integer name="productId"/>
         <integer name="masterOrderProductId"/>
     </fields>

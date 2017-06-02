@@ -23,17 +23,21 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
-import static com.qcadoo.testing.model.EntityTestUtils.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
-
-import java.util.Collection;
-import java.util.List;
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.*;
+import com.qcadoo.testing.model.EntityListMock;
+import com.qcadoo.testing.model.EntityTestUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,22 +52,16 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.*;
-import com.qcadoo.testing.model.EntityListMock;
-import com.qcadoo.testing.model.EntityTestUtils;
+import java.util.Collection;
+import java.util.List;
+
+import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
+import static com.qcadoo.testing.model.EntityTestUtils.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -122,7 +120,6 @@ public class OrderValidatorsMOTest {
         stubOrderTechnologyPrototype(technologyPrototype);
         stubOrderTechnology(mockEntity());
 
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -152,21 +149,10 @@ public class OrderValidatorsMOTest {
         EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
     }
 
-    private void stubMasterOrderType(final String typeStringValue) {
-        EntityTestUtils.stubStringField(masterOrder, MasterOrderFields.MASTER_ORDER_TYPE, typeStringValue);
-    }
 
     private void stubMasterOrderProducts(final Collection<Entity> elements) {
         EntityList entityList = EntityListMock.create(elements);
         EntityTestUtils.stubHasManyField(masterOrder, MasterOrderFields.MASTER_ORDER_PRODUCTS, entityList);
-    }
-
-    private void stubMasterOrderProduct(final Entity product) {
-        EntityTestUtils.stubBelongsToField(masterOrder, MasterOrderFields.PRODUCT, product);
-    }
-
-    private void stubMasterOrderTechnology(final Entity technology) {
-        EntityTestUtils.stubBelongsToField(masterOrder, MasterOrderFields.TECHNOLOGY, technology);
     }
 
     private SearchCriteriaBuilder mockCriteriaBuilder(final List<Entity> results) {
@@ -201,21 +187,8 @@ public class OrderValidatorsMOTest {
     }
 
     @Test
-    public final void shouldReturnTrueIfMasterOrderTypeIsUndefined() {
-        // given
-        stubMasterOrderType(MasterOrderType.UNDEFINED.getStringValue());
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-    }
-
-    @Test
     public final void shouldReturnFalseIfNoneOfMasterOrderProductMatches() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -231,7 +204,6 @@ public class OrderValidatorsMOTest {
     @Test
     public final void shouldReturnTrueIfSomeMasterOrderProductMatches() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
         given(masterDD.find()).willReturn(scb);
@@ -247,7 +219,6 @@ public class OrderValidatorsMOTest {
     @Test
     public final void shouldReturnTrueIfSomeMasterOrderProductMatches2() {
         // given
-        stubMasterOrderType(MasterOrderType.MANY_PRODUCTS.getStringValue());
         stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
         stubOrderTechnologyPrototype(null);
         SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
@@ -259,114 +230,6 @@ public class OrderValidatorsMOTest {
         // then
         Assert.assertTrue(isValid);
         Mockito.verify(scb).add(technologyIsNullRestriction);
-    }
-
-    @Test
-    public final void shouldReturnFalseIfProductDoesNotMatch() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(productMO);
-        stubOrderProduct(product);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertFalse(isValid);
-    }
-
-    @Test
-    public final void shouldReturnTrueIfProductMatches() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(product);
-        stubOrderProduct(product);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-    }
-
-    @Test
-    public final void shouldReturnFalseIfProductAndTechnologyDoNotMatch() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(productMO);
-        stubMasterOrderTechnology(technologyMO);
-        stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertFalse(isValid);
-    }
-
-    @Test
-    public final void shouldReturnTrueIfProductAndTechnologyMatch() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(product);
-        stubMasterOrderTechnology(technologyPrototype);
-        stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-    }
-
-    @Test
-    public final void shouldReturnFalseIfTechnologyMatchButProductDoNot() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(productMO);
-        stubMasterOrderTechnology(technologyPrototype);
-        stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertFalse(isValid);
-    }
-
-    @Test
-    public final void shouldReturnTrueIfMasterOrderDoesNotHaveAnyTechnologySpecifiedButOrderDoes() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(product);
-        stubMasterOrderTechnology(null);
-        stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-    }
-
-    @Test
-    public final void shouldReturnFalseIfTechnologyDoesNotMatch() {
-        // given
-        stubMasterOrderType(MasterOrderType.ONE_PRODUCT.getStringValue());
-        stubMasterOrderProduct(product);
-        stubMasterOrderTechnology(technologyMO);
-        stubOrderProduct(product);
-        stubOrderTechnologyPrototype(technologyPrototype);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertFalse(isValid);
     }
 
     @Test

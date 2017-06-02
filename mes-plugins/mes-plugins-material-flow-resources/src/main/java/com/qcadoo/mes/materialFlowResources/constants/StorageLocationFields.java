@@ -6,6 +6,12 @@ public final class StorageLocationFields {
 
     }
 
+    public static final String PRODUCT_FROM_HISTORY = "productFromHistory";
+
+    public static final String PRODUCT_TO_HISTORY = "productToHistory";
+
+    public static final String HISTORY = "history";
+
     public static final String ACTIVE = "active";
 
     public static final String NUMBER = "number";
@@ -19,6 +25,5 @@ public final class StorageLocationFields {
     public static final String MAXIMUM_NUMBER_OF_PALLETS = "maximumNumberOfPallets";
 
     public static final String HIGH_STORAGE_LOCATION = "highStorageLocation";
-
 
 }

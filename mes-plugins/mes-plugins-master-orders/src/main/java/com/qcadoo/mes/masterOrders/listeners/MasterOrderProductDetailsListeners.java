@@ -44,7 +44,7 @@ public class MasterOrderProductDetailsListeners {
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        masterOrderDetailsListeners.fillDefaultTechnology(view, state, args);
+        masterOrderProductDetailsHooks.fillDefaultTechnology(view);
     }
 
 }

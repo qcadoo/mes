@@ -58,6 +58,8 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+            <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationsStateCriteriaModifier"
+                              method="restrictToUserLocations"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

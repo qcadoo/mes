@@ -37,7 +37,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -132,8 +131,8 @@ public class TechnologyService {
 
         SearchCriteriaBuilder searchCriteria = getOrderDataDefinition().find();
         searchCriteria.add(SearchRestrictions.belongsTo("technology", technology));
-        searchCriteria.add(
-                SearchRestrictions.in("state", Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
+        searchCriteria.add(SearchRestrictions.in("state",
+                Lists.newArrayList("01pending", "02accepted", "03inProgress", "06interrupted")));
         searchCriteria.setMaxResults(1);
 
         return searchCriteria.uniqueResult() != null;
@@ -163,15 +162,14 @@ public class TechnologyService {
             return;
         }
 
-        Entity technologyOperationComponent = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .get(tree.getSelectedEntityId());
+        Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(tree.getSelectedEntityId());
 
         GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
         GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
 
-        if (!TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+        if (!TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
             inProductsGrid.setEditable(true);
             outProductsGrid.setEditable(true);
 
@@ -185,8 +183,8 @@ public class TechnologyService {
         Entity rootOperation = operations.getRoot();
 
         if (rootOperation != null) {
-            outProductsGrid.setEntities(
-                    rootOperation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
+            outProductsGrid.setEntities(rootOperation
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
         }
 
         List<Entity> operationProductInComponents = Lists.newArrayList();
@@ -197,9 +195,8 @@ public class TechnologyService {
         for (Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
 
-            Entity operationProductInComponent = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                    .create();
+            Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
 
             operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, rootOperation);
             operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
@@ -330,21 +327,20 @@ public class TechnologyService {
     public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree,
             final List<Entity> technologyOperationComponents) {
         for (Entity technologyOperationComponent : entityTree) {
-            if (TechnologyOperationComponentType.OPERATION.getStringValue()
-                    .equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(
+                    technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 technologyOperationComponents.add(technologyOperationComponent);
             } else {
                 addOperationsFromSubtechnologiesToList(
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS),
-                        technologyOperationComponents);
+                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents);
             }
         }
     }
 
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
             final Entity operationProductComponent) {
-        
+
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
         Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
@@ -368,7 +364,21 @@ public class TechnologyService {
 
             return false;
         }
+        String oppositeFieldName;
+        String errorMessage;
+        if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
+            oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
+            errorMessage = "technologyOperationComponent.validate.error.outProductAlreadyExistInTechnologyOperation";
+        } else {
+            oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
+            errorMessage = "technologyOperationComponent.validate.error.inProductAlreadyExistInTechnologyOperation";
+        }
+        List<Entity> oppositeProducts = operationComponent.getHasManyField(oppositeFieldName);
+        if (oppositeProducts != null && listContainsProduct(oppositeProducts, product, operationProductComponent)) {
+            operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT), errorMessage);
 
+            return false;
+        }
         return true;
     }
 
@@ -399,8 +409,8 @@ public class TechnologyService {
      */
     // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(Entity technologyOperationComponent) {
-        if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+        if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
             technologyOperationComponent = technologyOperationComponent
                     .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
@@ -435,8 +445,8 @@ public class TechnologyService {
             }
         }
 
-        throw new IllegalStateException(
-                "OperationComponent doesn't have any products nor intermediates, id = " + technologyOperationComponent.getId());
+        throw new IllegalStateException("OperationComponent doesn't have any products nor intermediates, id = "
+                + technologyOperationComponent.getId());
     }
 
     /**

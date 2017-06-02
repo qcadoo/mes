@@ -23,27 +23,21 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 @Service
 public class DocumentValidators {
@@ -117,8 +111,8 @@ public class DocumentValidators {
         }
         Entity documentFromDB = documentDD.get(document.getId());
 
-        if (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
-                || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO)) {
+        if (!document.getBooleanField(DocumentFields.IN_BUFFER) && (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
+                || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO))) {
             document.addGlobalError("materialFlow.document.validate.global.error.warehouseChanged");
             return false;
         }
