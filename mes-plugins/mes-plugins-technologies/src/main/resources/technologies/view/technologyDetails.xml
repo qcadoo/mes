@@ -73,52 +73,6 @@
             <component type="form" name="technology" reference="form">
                 <script>
                     <![CDATA[
-						var save = #{window}.getRibbonItem("actions.save"),
-							saveBack = #{window}.getRibbonItem("actions.saveBack"),
-							saveNew = #{window}.getRibbonItem("actions.saveNew"),
-							accept = #{window}.getRibbonItem("status.acceptTechnology"),
-							cancel = #{window}.getRibbonItem("status.cancelTechnology"),
-							check = #{window}.getRibbonItem("status.checkTechnology");
-
-						QCDTrack.track(
-								save,
-								"onClick",
-								 QCDTrack.eventResolver.formStateDependent( "addTechnology" , "modifyTechnology")
-						);
-
-						QCDTrack.track(
-								saveBack,
-								"onClick",
-								 QCDTrack.eventResolver.formStateDependent( "addTechnology" , "modifyTechnology")
-						);
-
-						QCDTrack.track(
-								saveNew,
-								"onClick",
-								 QCDTrack.eventResolver.formStateDependent( "addTechnology" , "modifyTechnology")
-						);
-
-						QCDTrack.track(
-								accept,
-								"onClick",
-								"acceptTechnology"
-						);
-
-						QCDTrack.track(
-								cancel,
-								"onClick",
-								"cancelTechnology"
-						);
-
-						QCDTrack.track(
-								check,
-								"onClick",
-								"checkTechnology"
-						);
-					]]>
-                </script>
-                <script>
-                    <![CDATA[
 						this.changeState = function(eventPerformer, ribbonItemName) {
 							var ribbonItem = #{window}.getRibbonItem("status." + ribbonItemName);
 							var newState = ribbonItem.forState;

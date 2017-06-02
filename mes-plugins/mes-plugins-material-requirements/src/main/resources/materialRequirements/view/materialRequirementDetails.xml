@@ -59,13 +59,7 @@
 					
 					var containsAtLeastOneOrder = false;
 					var entityExists = false;
-					
-					QCDTrack.track(
-							generateButton,
-							"onClick",
-							 "generateMaterialRequirements" 
-					);
-					
+
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (!value || !value.content) {

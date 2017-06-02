@@ -76,12 +76,6 @@
 					var entityExists = false;
 					var groupByDivision = false;
 					
-					QCDTrack.track(
-							generateButton,
-							"onClick",
-							 "generateWorkPlan" 
-					);
-					
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 							if (!value || !value.content) {

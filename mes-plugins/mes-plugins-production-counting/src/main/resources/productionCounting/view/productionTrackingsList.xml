@@ -70,24 +70,6 @@
                    reference="grid">
             <script>
                 <![CDATA[
-					var acceptRecord = #{window}.getRibbonItem("status.acceptTracking"),
-						cancelRecord = #{window}.getRibbonItem("status.cancelTracking");
-
-					QCDTrack.track(
-						acceptRecord,
-						"onClick",
-						"acceptProductionRecord"
-					);
-
-                    QCDTrack.track(
-						cancelRecord,
-						"onClick",
-					    "cancelProductionRecord"
-					);
-				]]>
-            </script>
-            <script>
-                <![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var copyButton = #{window}.getRibbonItem("actions.copy");
 					var acceptTracking = #{window}.getRibbonItem("status.acceptTracking");
