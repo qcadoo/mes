@@ -295,12 +295,9 @@
             <version>2.3.6</version>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>postgresql-9.4.1212</version>
-            <classifier>jdbc4</classifier>
-            <scope>system</scope>
-            <systemPath>${basedir}/driver/postgresql-9.4.1212.jar</systemPath>
+            <version>9.4.1212</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
