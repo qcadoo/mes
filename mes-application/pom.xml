@@ -333,50 +333,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <scanTargets>
-                        <scanTarget>driver/</scanTarget>
-                    </scanTargets>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>QCADOO_CONF</name>
-                            <value>${basedir}/conf/${profile.name}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_LOG</name>
-                            <value>${basedir}/target/logs</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_PLUGINS_TMP_PATH</name>
-                            <value>${basedir}/target/tmp</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_PLUGINS_PATH</name>
-                            <value>${basedir}/target/lib</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_WEBAPP_PATH</name>
-                            <value>${basedir}/src/main/webapp</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_RESTART_CMD</name>
-                            <value>${basedir}/restart.sh</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <webAppConfig>
-                        <contextPath>/</contextPath>
-                        <baseResource implementation="org.mortbay.resource.ResourceCollection">
-                            <resourcesAsCSV>
-                                ${basedir}/src/main/webapp;
-                            </resourcesAsCSV>
-                        </baseResource>
-                    </webAppConfig>
-                </configuration>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>${maven.antrun.plugin.version}</version>

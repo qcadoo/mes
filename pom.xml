@@ -45,7 +45,7 @@
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
-        <profile.name>default</profile.name>
+        <profile.name>tomcat</profile.name>
     </properties>
 
     <dependencies>
