@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -32,13 +40,6 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 public class PositionDataProvider {
 
@@ -157,5 +158,43 @@ public class PositionDataProvider {
                 wholeAmount);
         rest = rest.setScale(5, RoundingMode.HALF_UP);
         return amount.stripTrailingZeros().toPlainString() + "\n" + rest.stripTrailingZeros().toPlainString();
+    }
+
+    public static String amount(Entity position) {
+
+        BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
+        amount = amount.setScale(0, RoundingMode.DOWN);
+        return amount.stripTrailingZeros().toPlainString();
+    }
+
+    public static String rest(Entity position) {
+
+        BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
+        amount = amount.setScale(0, RoundingMode.DOWN);
+        BigDecimal wholeAmount = amount.multiply(BigDecimalUtils.convertNullToZero(position
+                .getDecimalField(PositionFields.CONVERSION)));
+        BigDecimal rest = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(
+                wholeAmount);
+        rest = rest.setScale(5, RoundingMode.HALF_UP);
+        return rest.stripTrailingZeros().toPlainString();
+    }
+
+    public static String storageLocation(Entity position) {
+        Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
+        return storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY;
+    }
+
+    public static String productNumberAndAdditionalCode(Entity position) {
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+
+        Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
+        String productNumber = product.getStringField(ProductFields.NUMBER);
+
+        return additionalCode == null ? productNumber : productNumber + "\n"
+                + additionalCode.getStringField(AdditionalCodeFields.CODE);
+    }
+
+    public static String productName(Entity position) {
+        return position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NAME);
     }
 }

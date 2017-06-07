@@ -23,8 +23,21 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -33,13 +46,9 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import com.qcadoo.report.api.pdf.PdfHelper;
 
 @Service
 public class DocumentPdfHelper {
@@ -97,6 +106,9 @@ public class DocumentPdfHelper {
     private static final String L_TOTAL_VALUE = "materialFlowResources.report.tableHeader.totalValue";
 
     private static final String L_TOTAL = "materialFlowResources.report.tableHeader.total";
+
+    @Autowired
+    private PdfHelper pdfHelper;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -208,7 +220,7 @@ public class DocumentPdfHelper {
     }
 
     /**
-     * Returns document desription with label
+     * Returns document description with label
      *
      * @param documentEntity
      * @param locale
@@ -272,6 +284,80 @@ public class DocumentPdfHelper {
             headerValues.put(a, b.getAlignment());
         });
         return headerValues;
+    }
+
+    public void addHeaderTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
+
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+
+        boolean notShowPrices = documentPositionParameters.getBooleanField("notShowPrices");
+
+        PdfPTable table = pdfHelper.createPanelTable(3);
+
+        List<HeaderPair> headerValues = getDocumentHeaderTableContent(documentEntity, locale);
+        for (HeaderPair pair : headerValues) {
+            if (pair.getValue() != null && !pair.getValue().isEmpty()) {
+                pdfHelper.addTableCellAsOneColumnTable(table, pair.getLabel(), pair.getValue());
+            } else {
+                pdfHelper.addTableCellAsOneColumnTable(table, StringUtils.EMPTY, StringUtils.EMPTY);
+            }
+        }
+        HeaderPair description = getDescription(documentEntity, locale);
+
+        Phrase label = new Phrase(description.getValue().isEmpty() ? StringUtils.EMPTY : description.getLabel(),
+                FontUtils.getDejavuBold8Dark());
+        PdfPCell descriptionLabelCell = new PdfPCell(label);
+        descriptionLabelCell.setColspan(2);
+        descriptionLabelCell.setBorder(PdfPCell.NO_BORDER);
+        descriptionLabelCell.setPaddingLeft(7);
+        table.addCell(descriptionLabelCell);
+
+        if (!notShowPrices) {
+            Phrase totalValueLabel = new Phrase(getTotalValueLabel(locale), FontUtils.getDejavuBold8Dark());
+            PdfPCell totalValueLabelCell = new PdfPCell(totalValueLabel);
+            totalValueLabelCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueLabelCell.setPaddingLeft(7);
+            table.addCell(totalValueLabelCell);
+            table.completeRow();
+
+        } else {
+            Phrase totalValueLabel = new Phrase("", FontUtils.getDejavuBold8Dark());
+            PdfPCell totalValueLabelCell = new PdfPCell(totalValueLabel);
+            totalValueLabelCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueLabelCell.setPaddingLeft(7);
+            table.addCell(totalValueLabelCell);
+            table.completeRow();
+        }
+        Phrase value = new Phrase(description.getValue(), FontUtils.getDejavuRegular9Dark());
+        PdfPCell descriptionValueCell = new PdfPCell(value);
+        descriptionValueCell.setColspan(2);
+        descriptionValueCell.setBorder(PdfPCell.NO_BORDER);
+        descriptionValueCell.setPaddingLeft(7);
+        descriptionValueCell.setPaddingBottom(15);
+        table.addCell(descriptionValueCell);
+
+        if (!notShowPrices) {
+            Phrase totalValue = new Phrase(PositionDataProvider.totalValue(documentEntity), FontUtils.getDejavuRegular9Dark());
+            PdfPCell totalValueCell = new PdfPCell(totalValue);
+            totalValueCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueCell.setPaddingLeft(7);
+            totalValueCell.setPaddingBottom(15);
+            table.addCell(totalValueCell);
+        } else {
+            Phrase totalValue = new Phrase("", FontUtils.getDejavuRegular9Dark());
+            PdfPCell totalValueCell = new PdfPCell(totalValue);
+            totalValueCell.setBorder(PdfPCell.NO_BORDER);
+            totalValueCell.setPaddingLeft(7);
+            totalValueCell.setPaddingBottom(15);
+            table.addCell(totalValueCell);
+        }
+        table.completeRow();
+
+        table.setSpacingAfter(20);
+
+        document.add(table);
+
     }
 
     public int[] headerWidths(Map<String, HeaderAlignmentWithWidth> header) {
