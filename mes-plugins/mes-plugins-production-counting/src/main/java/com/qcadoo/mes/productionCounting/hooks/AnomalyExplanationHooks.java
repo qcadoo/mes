@@ -9,20 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
 import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 
 @Service
 public class AnomalyExplanationHooks {
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private ProductUnitsConversionService productUnitsConversionService;
 
     public void onSave(final DataDefinition anomalyExplanationDD, final Entity entity) {
         Entity anomaly = entity.getBelongsToField(AnomalyExplanationFields.ANOMALY);
@@ -85,10 +83,9 @@ public class AnomalyExplanationHooks {
         if (selectedProduct != null) {
             String selectedProductUnit = selectedProduct.getStringField(ProductFields.UNIT);
             if (!StringUtils.equals(givenUnit, selectedProductUnit)) {
-                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(selectedProductUnit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, selectedProduct)));
-                if (!unitConversions.isDefinedFor(givenUnit)) {
+                BooleanSupplier conversionPossible = () -> productUnitsConversionService.forProduct(selectedProduct)
+                        .from(selectedProductUnit).to(givenUnit).ratio().isPresent();
+                if (isBlank(givenUnit) || !conversionPossible.getAsBoolean()) {
                     String key = "productionCounting.anomalyExplanation.error.noConversionFound";
                     entity.addError(anomalyExplanationDD.getField(AnomalyExplanationFields.GIVEN_QUANTITY), key);
                     validationResult = false;
