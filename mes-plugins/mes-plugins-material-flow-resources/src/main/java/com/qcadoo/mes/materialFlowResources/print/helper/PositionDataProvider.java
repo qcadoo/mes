@@ -162,21 +162,28 @@ public class PositionDataProvider {
 
     public static String amount(Entity position) {
 
+        return amountDecimal(position).stripTrailingZeros().toPlainString();
+    }
+
+    public static BigDecimal amountDecimal(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
-        amount = amount.setScale(0, RoundingMode.DOWN);
-        return amount.stripTrailingZeros().toPlainString();
+        return amount.setScale(0, RoundingMode.DOWN);
     }
 
     public static String rest(Entity position) {
 
+        return restDecimal(position).stripTrailingZeros().toPlainString();
+    }
+
+    public static BigDecimal restDecimal(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
         amount = amount.setScale(0, RoundingMode.DOWN);
         BigDecimal wholeAmount = amount.multiply(BigDecimalUtils.convertNullToZero(position
                 .getDecimalField(PositionFields.CONVERSION)));
         BigDecimal rest = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(
                 wholeAmount);
-        rest = rest.setScale(5, RoundingMode.HALF_UP);
-        return rest.stripTrailingZeros().toPlainString();
+        return rest.setScale(5, RoundingMode.HALF_UP);
+
     }
 
     public static String storageLocation(Entity position) {
