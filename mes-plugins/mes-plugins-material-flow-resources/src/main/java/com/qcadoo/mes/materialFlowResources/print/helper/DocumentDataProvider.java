@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AddressFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
@@ -72,7 +73,12 @@ public final class DocumentDataProvider {
             if (!result.isEmpty()) {
                 result = result + "\n";
             }
-            result = result + address.getStringField(AddressFields.NUMBER) + "\n" + address.getStringField(AddressFields.NAME);
+            if (!Strings.isNullOrEmpty(address.getStringField(AddressFields.NUMBER))) {
+                result = result + address.getStringField(AddressFields.NUMBER);
+            }
+            if (!Strings.isNullOrEmpty(address.getStringField(AddressFields.NAME))) {
+                result = result + "\n" + address.getStringField(AddressFields.NAME);
+            }
         }
         return result;
     }
