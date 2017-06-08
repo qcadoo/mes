@@ -75,7 +75,7 @@ public class DocumentPdfHelper {
 
     private static final String L_DESCRIPTION = "materialFlowResources.document.description.label";
 
-    private static final String L_COMPANY = "materialFlowResources.document.company.label";
+    private static final String L_COMPANY = "materialFlowResources.document.companyAndAddress.label";
 
     private static final String L_STATE_VALUE = "materialFlowResources.document.state.value.";
 
