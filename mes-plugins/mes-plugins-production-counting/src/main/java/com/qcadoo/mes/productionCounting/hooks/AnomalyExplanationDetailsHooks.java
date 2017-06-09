@@ -83,12 +83,11 @@ public class AnomalyExplanationDetailsHooks {
             view.getComponentByReference("usedQuantity")
                     .setFieldValue(numberService.formatWithMinimumFractionDigits(anomalyUsedQuantity, 0));
 
-            String anomalyProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
             String additionalAnomalyProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
 
             ComponentState givenQuantityComponent = view.getComponentByReference("givenQuantity");
             if (isNotBlank(additionalAnomalyProductUnit)) {
-                productUnitsConversionService.forProduct(anomalyProduct).from(anomalyProductUnit).to(additionalAnomalyProductUnit)
+                productUnitsConversionService.forProduct(anomalyProduct).fromPrimaryUnit().to(additionalAnomalyProductUnit)
                         .convertValue(anomalyUsedQuantity).ifPresent(convertedValue -> {
                             givenQuantityComponent
                                     .setFieldValue(numberService.formatWithMinimumFractionDigits(convertedValue, 0));
