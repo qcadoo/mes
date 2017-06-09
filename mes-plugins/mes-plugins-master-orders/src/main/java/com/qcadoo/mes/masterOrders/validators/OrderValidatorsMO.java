@@ -27,9 +27,12 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -38,6 +41,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
@@ -52,6 +56,9 @@ public class OrderValidatorsMO {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public boolean checkOrderNumber(final DataDefinition orderDD, final Entity order) {
         Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
@@ -111,8 +118,17 @@ public class OrderValidatorsMO {
     }
 
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
-        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
-        if (masterOrder == null || masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
+        Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        if (Objects.isNull(mo)) {
+            return true;
+        }
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
+        query.append("(select count(mproduct)  FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions ");
+        query.append("FROM #masterOrders_masterOrder masterOrder ");
+        query.append("WHERE masterOrder.id = :oid");
+        Entity masterOrder = orderDD.find(query.toString()).setLong("oid", mo.getId()).setMaxResults(1).uniqueResult();
+        if (Objects.isNull(masterOrder) || masterOrder.getLongField("positions") == 0l) {
             return true;
         }
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
@@ -139,9 +155,10 @@ public class OrderValidatorsMO {
         Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        SearchCriteriaBuilder masterCriteria = masterOrder.getDataDefinition().find();
+        SearchCriteriaBuilder masterCriteria = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER).find();
         masterCriteria.setProjection(alias(id(), "id"));
-        masterCriteria.add(idEq(masterOrder.getId()));
+        masterCriteria.add(idEq(masterOrder.getLongField("masterOrderId")));
 
         SearchCriteriaBuilder masterProductsCriteria = masterCriteria.createCriteria(MasterOrderFields.MASTER_ORDER_PRODUCTS,
                 "masterProducts", JoinType.INNER);

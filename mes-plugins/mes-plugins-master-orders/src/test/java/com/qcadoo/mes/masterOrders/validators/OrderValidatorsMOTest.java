@@ -43,7 +43,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -184,52 +183,6 @@ public class OrderValidatorsMOTest {
 
         given(scb.list()).willReturn(result);
         return scb;
-    }
-
-    @Test
-    public final void shouldReturnFalseIfNoneOfMasterOrderProductMatches() {
-        // given
-        stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
-        SearchCriteriaBuilder scb = mockCriteriaBuilder(EMPTY_ENTITY_LIST);
-        given(masterDD.find()).willReturn(scb);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertFalse(isValid);
-        Mockito.verify(scb).add(technologyIsEmptyOrMatchTechPrototypeRestriction);
-    }
-
-    @Test
-    public final void shouldReturnTrueIfSomeMasterOrderProductMatches() {
-        // given
-        stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
-        SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
-        given(masterDD.find()).willReturn(scb);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-        Mockito.verify(scb).add(technologyIsEmptyOrMatchTechPrototypeRestriction);
-    }
-
-    @Test
-    public final void shouldReturnTrueIfSomeMasterOrderProductMatches2() {
-        // given
-        stubMasterOrderProducts(NOT_EMPTY_ENTITY_LIST);
-        stubOrderTechnologyPrototype(null);
-        SearchCriteriaBuilder scb = mockCriteriaBuilder(NOT_EMPTY_ENTITY_LIST);
-        given(masterDD.find()).willReturn(scb);
-
-        // when
-        boolean isValid = orderValidatorsMO.checkProductAndTechnology(orderDD, order);
-
-        // then
-        Assert.assertTrue(isValid);
-        Mockito.verify(scb).add(technologyIsNullRestriction);
     }
 
     @Test
