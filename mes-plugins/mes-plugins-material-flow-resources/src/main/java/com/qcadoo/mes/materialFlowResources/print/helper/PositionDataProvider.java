@@ -165,9 +165,25 @@ public class PositionDataProvider {
         return amountDecimal(position).stripTrailingZeros().toPlainString();
     }
 
+    public static String amountNonZero(Entity position) {
+        BigDecimal amount = amountDecimal(position);
+        if (amount.compareTo(BigDecimal.ZERO) == 0) {
+            return StringUtils.EMPTY;
+        }
+        return amount.stripTrailingZeros().toPlainString();
+    }
+
     public static BigDecimal amountDecimal(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
         return amount.setScale(0, RoundingMode.DOWN);
+    }
+
+    public static String restNonZero(Entity position) {
+        BigDecimal rest = restDecimal(position);
+        if (rest.compareTo(BigDecimal.ZERO) == 0) {
+            return StringUtils.EMPTY;
+        }
+        return rest.stripTrailingZeros().toPlainString();
     }
 
     public static String rest(Entity position) {
