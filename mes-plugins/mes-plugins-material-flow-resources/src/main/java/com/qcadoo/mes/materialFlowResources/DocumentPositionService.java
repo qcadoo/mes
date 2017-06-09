@@ -89,7 +89,7 @@ public class DocumentPositionService {
 
         String query = String.format("INSERT INTO materialflowresources_position (%s, type, state) "
 
-                + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
+                        + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
                 keys, values);
         Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
 
@@ -445,5 +445,15 @@ public class DocumentPositionService {
         // }
         // return addMethodOfDisposalCondition;
         return true;
+    }
+
+    public void deletePositions(final String ids) {
+        List<String> items = Arrays.asList(ids.split("\\s*,\\s*"));
+        Long documentId = findDocumentByPosition(Long.valueOf(items.stream().findFirst().get()));
+
+        items.forEach(id -> {
+            delete(Long.valueOf(id));
+        });
+        updateDocumentPositionsNumbers(documentId);
     }
 }

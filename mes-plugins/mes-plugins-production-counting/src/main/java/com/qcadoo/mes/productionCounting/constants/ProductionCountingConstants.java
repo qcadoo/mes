@@ -60,6 +60,8 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_ANOMALY = "anomaly";
 
+    public static final String MODEL_ANOMALY_EXPLANATION = "anomalyExplanation";
+
     // VIEW
     public static final String VIEW_PRODUCTION_TRACKINGS_LIST = "productionTrackingsList";
 

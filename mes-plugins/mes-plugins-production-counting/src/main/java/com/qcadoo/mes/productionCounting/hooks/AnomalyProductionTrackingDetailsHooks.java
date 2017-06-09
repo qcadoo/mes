@@ -4,6 +4,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -37,6 +38,9 @@ public class AnomalyProductionTrackingDetailsHooks {
 
     @Autowired
     private TrackingOperationProductInComponentHooks trackingOperationProductInComponentHooks;
+
+    @Autowired
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         updateRibbon(view);
@@ -73,6 +77,9 @@ public class AnomalyProductionTrackingDetailsHooks {
                 "anomalyProductionTrackingEntryHelper").create();
         Entity trackingOperationProductInComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).get(id);
+        if(setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
+            return;
+        }
         trackingOperationProductInComponentHooks.fillPlannedQuantity(trackingOperationProductInComponent);
         entry.setField("trackingOperationProductInComponent", trackingOperationProductInComponent);
         Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);

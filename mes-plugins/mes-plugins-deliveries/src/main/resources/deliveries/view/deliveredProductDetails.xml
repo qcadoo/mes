@@ -251,7 +251,7 @@
         </windowTab>
         <windowTab name="storageLocationTab">
             <component type="gridLayout" name="storageLocationGridLayout" columns="2"
-                       rows="3">
+                       rows="4">
                 <layoutElement column="1" row="1">
                     <component type="lookup" name="palletNumber" reference="palletNumber"
                                field="#{form}.palletNumber">
@@ -285,6 +285,9 @@
                                 class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveredProductCriteriaModifiers"
                                 method="restrictStorageLocation"/>
                     </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="input" name="batch" field="#{form}.batch" reference="batch"/>
                 </layoutElement>
             </component>
         </windowTab>

@@ -29,6 +29,8 @@ public final class DocumentFields {
 
     }
 
+    public static final String ACTIVE = "active";
+
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";

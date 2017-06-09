@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -84,7 +85,8 @@ public class EventsListListeners {
         maintenanceEventContextService.onSelectedEventChange(viewDefinitionState);
     }
 
-    public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+    public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[])
+            throws UnsupportedEncodingException {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
         String filterQ;
@@ -127,12 +129,13 @@ public class EventsListListeners {
         StringBuilder redirectUrl = new StringBuilder();
         redirectUrl.append("/cmmsMachineParts/maintenanceEvents.xlsx");
         redirectUrl.append("?");
-        redirectUrl.append("filters=");
+        redirectUrl.append("context=");
         redirectUrl.append(filtersInJson);
         view.redirectTo(redirectUrl.toString(), true, false);
     }
 
-    public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+    public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[])
+            throws UnsupportedEncodingException {
 
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
         Map<String, String> filter = grid.getFilters();
@@ -176,7 +179,7 @@ public class EventsListListeners {
         StringBuilder redirectUrl = new StringBuilder();
         redirectUrl.append("/cmmsMachineParts/plannedEvents.xlsx");
         redirectUrl.append("?");
-        redirectUrl.append("filters=");
+        redirectUrl.append("context=");
         redirectUrl.append(filtersInJson);
         view.redirectTo(redirectUrl.toString(), true, false);
     }

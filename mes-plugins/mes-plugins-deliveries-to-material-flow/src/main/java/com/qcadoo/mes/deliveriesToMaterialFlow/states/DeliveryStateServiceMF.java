@@ -156,7 +156,7 @@ public class DeliveryStateServiceMF {
     }
 
     private String batch(Entity deliveredProduct) {
-        return deliveredProduct.getStringField(DeliveredProductFieldsDTMF.BATCH);
+        return deliveredProduct.getStringField(DeliveredProductFields.BATCH);
     }
 
     private Date expirationDate(Entity deliveredProduct) {

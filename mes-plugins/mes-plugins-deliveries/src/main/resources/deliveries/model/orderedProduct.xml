@@ -47,10 +47,10 @@
             <validatesRange from="0" />
         </decimal>
 
-        <decimal name="deliveredQuantity" >
+        <decimal name="deliveredQuantity" copyable="false">
             <validatesRange from="0" exclusively="false" />
         </decimal>
-        <decimal name="additionalDeliveredQuantity" >
+        <decimal name="additionalDeliveredQuantity" copyable="false">
             <validatesRange from="0" exclusively="false" />
         </decimal>
 
@@ -60,8 +60,9 @@
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <hasMany name="reservations" joinField="orderedProduct" cascade="delete"
                  model="orderedProductReservation" plugin="deliveries" copyable="true" />
-        
+
         <priority name="succession" scope="delivery" />
+
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" method="onSave"/>

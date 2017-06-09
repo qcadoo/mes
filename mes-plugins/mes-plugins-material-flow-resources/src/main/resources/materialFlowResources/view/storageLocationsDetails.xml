@@ -98,6 +98,28 @@
             </component>
         </windowTab>
 
+        <windowTab name="history" reference="historyTab">
+            <component type="grid" name="historyGrid" reference="historyGrid" source="#{form}.history">
+
+                <option type="column" name="createDate" fields="createDate"/>
+                <option type="column" name="createUser" fields="createUser"/>
+
+                <option type="column" name="productFrom" fields="productFrom"
+                        expression="#productFrom['number']" />
+                <option type="column" name="productTo" fields="productTo"
+                        expression="#productTo['number']" />
+
+                <option type="order" column="createDate" direction="desc" />
+
+                <option type="searchable"
+                        value="createDate,createUser,productFrom,productTo" />
+                <option type="orderable"
+                        value="createDate,createUser,productFrom,productTo" />
+
+                <option type="fullscreen" value="true" />
+                <option type="multiselect" value="true" />
+            </component>
+        </windowTab>
 
     </component>
 

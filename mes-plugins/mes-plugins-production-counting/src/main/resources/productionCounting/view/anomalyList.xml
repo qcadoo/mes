@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="anomalyList"
+      modelName="anomalyDto"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate" includeItems="actions.refresh"/>
+
+        </ribbon>
+
+        <component type="grid" name="anomalyList"
+                   reference="grid">
+
+            <option type="column" name="number" fields="number" link="true" width="100"/>
+            <option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true" width="100"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true" width="100"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber" width="70"/>
+            <option type="column" name="divisionNumber" fields="divisionNumber" width="70"/>
+            <option type="column" name="createDate" fields="createDate" width="100"/>
+            <option type="column" name="productNumber" fields="productNumber" width="100"/>
+            <option type="column" name="productName" fields="productName" width="100"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity" width="70"/>
+            <option type="column" name="productUnit" fields="productUnit" width="50"/>
+            <option type="column" name="reasons" fields="reasons" width="150"/>
+            <option type="column" name="state" fields="state" width="50"/>
+            <option type="column" name="issued" fields="issued" width="50"/>
+
+            <option type="order" column="number" direction="desc"/>
+
+            <option type="searchable" value="number,productionTrackingNumber,orderNumber,productionLineNumber,divisionNumber,createDate,productNumber,productName,productUnit,usedQuantity,reasons,state,issued"/>
+            <option type="orderable" value="number,productionTrackingNumber,orderNumber,productionLineNumber,divisionNumber,createDate,productNumber,productName,productUnit,usedQuantity,reasons,state,issued"/>
+
+            <option type="correspondingView" value="productionCounting/anomalyDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+    </hooks>
+</view>

@@ -25,16 +25,19 @@
 
 -->
 <model name="deliveredProductMulti" auditable="true"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="delivery" model="delivery"/>
 		<hasMany name="deliveredProductMultiPositions" model="deliveredProductMultiPosition"
-			joinField="deliveredProductMulti" cascade="delete"/>
-		<belongsTo name="palletNumber" model="palletNumber" plugin="basic" />
-        <dictionary name="palletType" dictionary="typeOfPallet" />
-        <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"  />
+				 joinField="deliveredProductMulti" cascade="delete"/>
+		<belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>
+		<dictionary name="palletType" dictionary="typeOfPallet"/>
+		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
 	</fields>
+
 	<hooks>
 	</hooks>
+
 </model>

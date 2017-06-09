@@ -252,25 +252,6 @@
 					var acceptOrder = #{window}.getRibbonItemOrNull("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItemOrNull("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItemOrNull("status.interruptOrder");
-					if (save)
-					QCDTrack.track(
-							save,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
-					);
-
-					if (saveBack)
-					QCDTrack.track(
-							saveBack,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
-					);
-					if (saveNew)
-					QCDTrack.track(
-							saveNew,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addOrder" , "modifyOrder") 
-					);
 					
 					this.addOnChangeListener({
 						onSetValue: function(value) {

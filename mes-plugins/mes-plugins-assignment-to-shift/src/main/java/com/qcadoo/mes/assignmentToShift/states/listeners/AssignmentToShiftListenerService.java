@@ -37,50 +37,57 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class AssignmentToShiftListenerService {
 
-    public List<Entity> addAcceptedStaffsListToAssignment(final Entity assignment) {
-        List<Entity> staffs = Lists.newArrayList(assignment.getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS));
+    public List<Entity> addAcceptedStaffsListToAssignment(final Entity assignmentToShift) {
+        List<Entity> staffAssignmentToShifts = Lists.newArrayList(getSimpleStaffAssignmentToShifts(assignmentToShift));
 
-        List<Entity> acceptedStaffs = setFlagPlannedToStaffAssignmentToShift(staffs,
+        List<Entity> acceptedStaffAssignmentToShifts = setStaffAssignmentToShiftState(staffAssignmentToShifts,
                 StaffAssignmentToShiftState.ACCEPTED.getStringValue());
 
-        staffs.addAll(acceptedStaffs);
+        staffAssignmentToShifts.addAll(acceptedStaffAssignmentToShifts);
 
-        return staffs;
+        return staffAssignmentToShifts;
     }
 
-    public List<Entity> addCorrectedStaffsListToAssignment(final Entity assignment) {
-        List<Entity> simpleAndAcceptedStaffs = Lists.newArrayList(assignment
-                .getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS)
-                .find()
-                .add(SearchRestrictions.ne(StaffAssignmentToShiftFields.STATE,
-                        StaffAssignmentToShiftState.CORRECTED.getStringValue())).list().getEntities());
+    public List<Entity> addCorrectedStaffsListToAssignment(final Entity assignmentToShift) {
+        List<Entity> staffAssignmentToShifts = Lists.newArrayList(getNotCorrectedStaffAssignmentToShifts(assignmentToShift));
+        List<Entity> simpleStaffAssignmentToShifts = Lists.newArrayList(getSimpleStaffAssignmentToShifts(assignmentToShift));
 
-        List<Entity> staffsForCorrected = Lists.newArrayList(assignment
+        List<Entity> correctedStaffAssignmentToShifts = setStaffAssignmentToShiftState(simpleStaffAssignmentToShifts,
+                StaffAssignmentToShiftState.CORRECTED.getStringValue());
+
+        staffAssignmentToShifts.addAll(correctedStaffAssignmentToShifts);
+
+        return staffAssignmentToShifts;
+    }
+
+    private List<Entity> getSimpleStaffAssignmentToShifts(final Entity assignmentToShift) {
+        return assignmentToShift
                 .getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS)
                 .find()
                 .add(SearchRestrictions.eq(StaffAssignmentToShiftFields.STATE,
-                        StaffAssignmentToShiftState.SIMPLE.getStringValue())).list().getEntities());
-
-        List<Entity> correctedStaffs = setFlagPlannedToStaffAssignmentToShift(staffsForCorrected,
-                StaffAssignmentToShiftState.CORRECTED.getStringValue());
-
-        simpleAndAcceptedStaffs.addAll(correctedStaffs);
-
-        return simpleAndAcceptedStaffs;
+                        StaffAssignmentToShiftState.SIMPLE.getStringValue())).list().getEntities();
     }
 
-    private List<Entity> setFlagPlannedToStaffAssignmentToShift(final List<Entity> staffs, final String state) {
-        List<Entity> staffWithSetFlags = Lists.newArrayList();
+    private List<Entity> getNotCorrectedStaffAssignmentToShifts(final Entity assignmentToShift) {
+        return assignmentToShift
+                .getHasManyField(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS)
+                .find()
+                .add(SearchRestrictions.ne(StaffAssignmentToShiftFields.STATE,
+                        StaffAssignmentToShiftState.CORRECTED.getStringValue())).list().getEntities();
+    }
 
-        for (Entity staff : staffs) {
-            Entity acceptedStaff = staff.getDataDefinition().copy(staff.getId()).get(0);
+    private List<Entity> setStaffAssignmentToShiftState(final List<Entity> staffAssignmentToShifts, final String state) {
+        List<Entity> acceptedStaffAssignmentToShifts = Lists.newArrayList();
 
-            acceptedStaff.setField(StaffAssignmentToShiftFields.STATE, state);
+        for (Entity staffAssignmentToShift : staffAssignmentToShifts) {
+            Entity acceptedStaffAssignmentToShift = staffAssignmentToShift.getDataDefinition().copy(staffAssignmentToShift.getId()).get(0);
 
-            staffWithSetFlags.add(acceptedStaff);
+            acceptedStaffAssignmentToShift.setField(StaffAssignmentToShiftFields.STATE, state);
+
+            acceptedStaffAssignmentToShifts.add(acceptedStaffAssignmentToShift);
         }
 
-        return staffWithSetFlags;
+        return acceptedStaffAssignmentToShifts;
     }
 
 }

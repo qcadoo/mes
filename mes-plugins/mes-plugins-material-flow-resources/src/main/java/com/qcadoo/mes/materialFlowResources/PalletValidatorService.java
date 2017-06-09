@@ -44,6 +44,9 @@ public class PalletValidatorService {
     }
 
     private boolean validatePallet(String palletNumber, String palletType, String storageLocation, Entity entity, Entity location) {
+        if (entity.getField("validatePallet") != null && !entity.getBooleanField("validatePallet")) {
+            return true;
+        }
         return !existsOtherResourceForPalletNumber(palletNumber, palletType, storageLocation, entity, location)
                 && !existsOtherPositionForPalletNumber(palletNumber, palletType, storageLocation, entity, location)
                 && !existsOtherDeliveredProductForPalletNumber(palletNumber, palletType, storageLocation, entity, location);

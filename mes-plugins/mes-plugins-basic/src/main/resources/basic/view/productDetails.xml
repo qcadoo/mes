@@ -78,26 +78,6 @@
 								del.enable();
 							}
 						});
-
-						QCDTrack.track(
-							save,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
-						);
-						
-						QCDTrack.track(
-							saveBack,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
-						);
-						
-						QCDTrack.track(
-							saveNew,
-							"onClick",
-							 QCDTrack.eventResolver.formStateDependent( "addProduct" , "modifyProduct") 
-						);
-
-						
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"

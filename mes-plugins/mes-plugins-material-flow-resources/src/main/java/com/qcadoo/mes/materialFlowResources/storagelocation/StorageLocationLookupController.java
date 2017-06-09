@@ -16,7 +16,7 @@ public class StorageLocationLookupController extends BasicLookupController<Stora
 
     @Override
     protected String getQueryForRecords(final Long context) {
-        String query = "SELECT %s FROM ( SELECT sl.id, sl.number as number, p.name as product, loc.name as location\n" + 
+        String query = "SELECT %s FROM ( SELECT sl.id, sl.number as number, p.number as product, loc.name as location\n" +
                 "FROM materialflowresources_storagelocation sl LEFT JOIN basic_product p on p.id = sl.product_id\n"+
                 "JOIN materialflow_location loc on loc.id = sl.location_id " +
                 "WHERE loc.id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document where id = :document)"+ 

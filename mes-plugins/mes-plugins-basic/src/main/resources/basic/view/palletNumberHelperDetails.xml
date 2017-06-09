@@ -62,7 +62,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" height="6">
-					<component type="textarea" name="numbers" field="numbers"
+					<component type="textarea" name="numbers"
 							   reference="numbers" defaultEnabled="never"/>
 				</layoutElement>
 			</component>

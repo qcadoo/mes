@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.PRODUCT;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.not;
-
-import java.util.Collection;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
@@ -48,6 +33,17 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class MasterOrderProductValidators {
@@ -55,15 +51,33 @@ public class MasterOrderProductValidators {
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
-    public boolean onValidate(final DataDefinition masterOrderDD, final Entity masterOrder) {
-        return checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderDD, masterOrder);
+    public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
+        boolean isValid = true;
+
+        isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct) && isValid;
+        isValid = checkIfOrdersAssignedToMasterOrder(masterOrderProduct) && isValid;
+
+        return isValid;
+
+    }
+
+    private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+        if (!masterOrder.getHasManyField(MasterOrderFields.ORDERS).isEmpty()
+                && masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
+            masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.alreadyExistsOrdersAssignedToMasterOrder", false);
+            return false;
+        }
+        return true;
     }
 
     private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
             final Entity masterOrderProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
+        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD
+                .find()
                 .add(belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(belongsTo(PRODUCT, masterOrderProduct.getBelongsToField(PRODUCT)));
+                .add(belongsTo(MasterOrderProductFields.PRODUCT,
+                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)));
         // It decreases unnecessary mapping overhead
         searchCriteriaBuilder.setProjection(alias(id(), "id"));
 
@@ -75,7 +89,7 @@ public class MasterOrderProductValidators {
             return true;
         }
 
-        masterOrderProduct.addError(masterOrderProductDD.getField(PRODUCT),
+        masterOrderProduct.addError(masterOrderProductDD.getField(MasterOrderProductFields.PRODUCT),
                 "masterOrders.masterOrderProduct.alreadyExistsForProductAndMasterOrder");
         return false;
     }
@@ -95,7 +109,7 @@ public class MasterOrderProductValidators {
             return true;
         }
 
-        Entity product = masterOrderProduct.getBelongsToField(MasterOrderFields.PRODUCT);
+        Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
         Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, newTechnology))));
         if (unsupportedOrderNumbers.isEmpty()) {

@@ -74,12 +74,6 @@
                 <script>
                     <![CDATA[
 							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-					
-							QCDTrack.track(
-									generatedRibbonItem,
-									"onClick",
-									 "generateCostCalculation" 
-							);
 	
 							jQuery(document).ready(function() {
 								var json = JSON.parse(context);
