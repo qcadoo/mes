@@ -119,17 +119,16 @@ public class OrderValidatorsMO {
 
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        if(Objects.isNull(mo)){
+        if (Objects.isNull(mo)) {
             return true;
         }
         StringBuilder query = new StringBuilder();
-        query.append("SELECT _order.id as orderId, masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
+        query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
         query.append("(select count(mproduct)  FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions ");
-        query.append("FROM #orders_order _order ");
-        query.append("LEFT JOIN _order.masterOrder as masterOrder ");
+        query.append("FROM #masterOrders_masterOrder masterOrder ");
         query.append("WHERE masterOrder.id = :oid");
         Entity masterOrder = orderDD.find(query.toString()).setLong("oid", mo.getId()).setMaxResults(1).uniqueResult();
-        if (masterOrder.getLongField("positions") == 0l) {
+        if (Objects.isNull(masterOrder) || masterOrder.getLongField("positions") == 0l) {
             return true;
         }
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
@@ -156,7 +155,8 @@ public class OrderValidatorsMO {
         Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        SearchCriteriaBuilder masterCriteria = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER).find();
+        SearchCriteriaBuilder masterCriteria = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER).find();
         masterCriteria.setProjection(alias(id(), "id"));
         masterCriteria.add(idEq(masterOrder.getLongField("masterOrderId")));
 
