@@ -23,52 +23,12 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubBooleanField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubHasManyField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubIntegerField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-
-import java.util.List;
-import java.util.Set;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Matchers;
-import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.testing.model.EntityListMock;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.junit.Before;
+import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class NonWorkingShiftsNotifierTest extends PpsDetailsViewAwareTest {
 
@@ -89,7 +49,7 @@ public class NonWorkingShiftsNotifierTest extends PpsDetailsViewAwareTest {
 
         stubViewComponent(FORM_REF, form);
     }
-
+/*
     private void stubProgressForDayFindResults(final Iterable<Entity> progresses) {
         given(progressForDayDataProvider.findForOperation(any(Entity.class), any(ProgressType.class))).willAnswer(
                 new Answer<List<Entity>>() {
@@ -224,6 +184,6 @@ public class NonWorkingShiftsNotifierTest extends PpsDetailsViewAwareTest {
         verify(form, never()).addMessage(eq("productionPerShift.progressForDay.shiftDoesNotWork"),
                 any(ComponentState.MessageType.class), Matchers.<String> anyVararg());
         verifyNoMoreInteractions(form);
-    }
+    }*/
 
 }

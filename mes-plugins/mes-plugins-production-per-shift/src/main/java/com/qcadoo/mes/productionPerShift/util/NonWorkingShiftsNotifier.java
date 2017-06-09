@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
-import static com.qcadoo.view.api.ComponentState.MessageType;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -52,6 +39,18 @@ import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+
+import static com.qcadoo.view.api.ComponentState.MessageType;
 
 @Service
 public class NonWorkingShiftsNotifier {
@@ -76,9 +75,9 @@ public class NonWorkingShiftsNotifier {
     private ProgressForDayDataProvider progressForDayDataProvider;
 
     public void checkAndNotify(final ViewDefinitionState view, final DateTime orderStartDateTime,
-            final Entity technologyOperation, final ProgressType progressType) {
+            final Entity pps, final ProgressType progressType) {
         for (FormComponent form : view.<FormComponent> tryFindComponentByReference("form").asSet()) {
-            List<ShiftAndDate> shiftsAndDates = getShiftAndDates(technologyOperation, progressType);
+            List<ShiftAndDate> shiftsAndDates = getShiftAndDates(pps, progressType);
             for (ShiftAndDate shiftAndDate : filterShiftsNotStartingOrderAtZeroDay(orderStartDateTime, shiftsAndDates)) {
                 notifyAboutShiftNotStartingOrderAtZeroDay(form, shiftAndDate, orderStartDateTime);
             }
@@ -104,8 +103,8 @@ public class NonWorkingShiftsNotifier {
         return Iterables.filter(shiftsAndDates, Predicates.not(IS_WORKING_AT_WEEKDAY));
     }
 
-    private List<ShiftAndDate> getShiftAndDates(final Entity technologyOperation, final ProgressType progressType) {
-        List<Entity> allProgresses = progressForDayDataProvider.findForOperation(technologyOperation, progressType);
+    private List<ShiftAndDate> getShiftAndDates(final Entity pps, final ProgressType progressType) {
+        List<Entity> allProgresses = progressForDayDataProvider.findForPps(pps, progressType);
         return FluentIterable.from(allProgresses).transformAndConcat(new Function<Entity, Iterable<ShiftAndDate>>() {
 
             @Override

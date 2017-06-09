@@ -57,7 +57,7 @@ public abstract class PpsBaseAlgorithmService {
         if (progressForDaysContainer.getOrder() != null) {
             order = progressForDaysContainer.getOrder();
         }
-        Entity operationComponent = progressForDaysContainer.getOperationComponent();
+
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         if (orderStartDate == null) {
             progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.order.startDateRequired",
@@ -84,7 +84,7 @@ public abstract class PpsBaseAlgorithmService {
         if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
             plannedQuantity = basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order);
         }
-        calculateRegisteredQuantity(progressForDaysContainer, order, operationComponent, plannedQuantity);
+        calculateRegisteredQuantity(progressForDaysContainer, order, productionPerShift, plannedQuantity);
 
         BigDecimal alreadyPlannedQuantity = BigDecimal.ZERO;
         List<Entity> progressForDays = Lists.newLinkedList();
@@ -227,14 +227,13 @@ public abstract class PpsBaseAlgorithmService {
     }
 
     private BigDecimal calculateRegisteredQuantity(final ProgressForDaysContainer progressForDaysContainer, final Entity order,
-            final Entity operationComponent, BigDecimal plannedQuantity) {
+            final Entity pps, BigDecimal plannedQuantity) {
         BigDecimal alreadyRegisteredQuantity = progressForDaysContainer.getAlreadyRegisteredQuantity();
-        if (operationComponent != null) {
-            dailyProgressesWithTrackingRecords = dailyProgressService.getDailyProgressesWithTrackingRecords(order,
-                    operationComponent);
-            for (Entity trackingRecord : dailyProgressesWithTrackingRecords.values()) {
-                alreadyRegisteredQuantity = alreadyRegisteredQuantity.add(trackingRecord
-                        .getDecimalField(DailyProgressFields.QUANTITY));
+        if (pps != null) {
+            dailyProgressesWithTrackingRecords = dailyProgressService.getDailyProgressesWithTrackingRecords(pps);
+
+            for (Map.Entry<DailyProgressKey, Entity> entry : dailyProgressesWithTrackingRecords.entrySet()) {
+                alreadyRegisteredQuantity = alreadyRegisteredQuantity.add(entry.getKey().getQuantity());
             }
             progressForDaysContainer.setAlreadyRegisteredQuantity(alreadyRegisteredQuantity);
         } else {

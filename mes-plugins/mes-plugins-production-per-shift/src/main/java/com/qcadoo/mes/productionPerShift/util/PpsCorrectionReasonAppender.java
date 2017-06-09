@@ -23,18 +23,16 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ReasonTypeOfCorrectionPlanFields;
 import com.qcadoo.mes.productionPerShift.domain.PpsCorrectionReason;
-import com.qcadoo.mes.productionPerShift.domain.ProductionPerShiftId;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PpsCorrectionReasonAppender {
@@ -46,19 +44,19 @@ public class PpsCorrectionReasonAppender {
         this.dataDefinitionService = dataDefinitionService;
     }
 
-    public Either<String, Entity> append(final ProductionPerShiftId ppsId, final PpsCorrectionReason reason) {
-        if (ppsId == null) {
-            return Either.left("Missing pps id!");
+    public Either<String, Entity> append(final Entity pps, final PpsCorrectionReason reason) {
+        if (pps == null) {
+            return Either.left("Missing pps!");
         }
         if (reason == null || StringUtils.isBlank(reason.get())) {
             return Either.left("Missing or blank reason type value!");
         }
-        return trySave(createCorrectionReason(ppsId, reason));
+        return trySave(createCorrectionReason(pps, reason));
     }
 
-    private Entity createCorrectionReason(final ProductionPerShiftId ppsId, final PpsCorrectionReason reason) {
+    private Entity createCorrectionReason(final Entity pps, final PpsCorrectionReason reason) {
         Entity correctionReason = getPpsCorrectionReasonDD().create();
-        correctionReason.setField(ReasonTypeOfCorrectionPlanFields.PRODUCTION_PER_SHIFT, ppsId.get());
+        correctionReason.setField(ReasonTypeOfCorrectionPlanFields.PRODUCTION_PER_SHIFT, pps.getId());
         correctionReason.setField(ReasonTypeOfCorrectionPlanFields.REASON_TYPE_OF_CORRECTION_PLAN, reason.get());
         return correctionReason;
     }
