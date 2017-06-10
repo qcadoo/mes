@@ -27,7 +27,7 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
     @Override
     protected ShiftEfficiencyCalculationHolder calculateShiftEfficiency(ProgressForDaysContainer progressForDaysContainer,
             Entity productionPerShift, Shift shift, Entity order, DateTimeRange range, BigDecimal shiftEfficiency,
-            int progressForDayQuantity) {
+            int progressForDayQuantity, boolean allowIncompleteUnits) {
         ShiftEfficiencyCalculationHolder calculationHolder = new ShiftEfficiencyCalculationHolder();
         int workersOnLine = workersOnLineService.getWorkersOnLine(order.getBelongsToField(OrderFields.PRODUCTION_LINE),
                 shift.getEntity(), range.getFrom());
@@ -38,7 +38,7 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
         }
         BigDecimal scaledNorm = getStandardPerformanceNorm(progressForDaysContainer, order);
         Long minuets = range.durationInMins();
-        BigDecimal efficiencyForRange = calculateEfficiencyForRange(scaledNorm, workersOnLine, minuets);
+        BigDecimal efficiencyForRange = calculateEfficiencyForRange(scaledNorm, workersOnLine, minuets, allowIncompleteUnits);
         shiftEfficiency = shiftEfficiency.add(efficiencyForRange, numberService.getMathContext());
         calculationHolder.setShiftEfficiency(shiftEfficiency);
         if (shiftEfficiency.compareTo(progressForDaysContainer.getPlannedQuantity()) > 0) {
@@ -56,11 +56,15 @@ public class PpsTechNormAndWorkersAlgorithmService extends PpsBaseAlgorithmServi
         calculationHolder.addEfficiencyTime(time);
     }
 
-    protected BigDecimal calculateEfficiencyForRange(BigDecimal scaledNorm, int workersOnLine, long minuets) {
+    protected BigDecimal calculateEfficiencyForRange(BigDecimal scaledNorm, int workersOnLine, long minuets, boolean allowIncompleteUnits) {
         BigDecimal value = BigDecimal.ZERO;
         value = scaledNorm.multiply(new BigDecimal(workersOnLine), numberService.getMathContext());
         value = value.multiply(new BigDecimal(minuets), numberService.getMathContext());
-        return value.setScale(0, RoundingMode.HALF_UP);
+        if(allowIncompleteUnits) {
+            return value;
+        } else {
+            return value.setScale(0, RoundingMode.HALF_UP);
+        }
     }
 
     protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
