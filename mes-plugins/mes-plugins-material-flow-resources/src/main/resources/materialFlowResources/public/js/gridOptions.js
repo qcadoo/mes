@@ -1645,7 +1645,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                     }
                 }
-                $('#rows-num').text('(' + rows.length + ')');
+                $('#rows-num').text('(' + grid.getGridParam('records') + ')');
             },
             onSelectRow: function (rowid, status) {
 
