@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.ADDITIONAL_CODE;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -47,14 +31,20 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.*;
 
 @Service
 public class DeliveredProductHooks {
@@ -335,10 +325,28 @@ public class DeliveredProductHooks {
         if (isBiggerDeliveredQuantityAllowed()) {
             return true;
         }
+
+        BigDecimal deliveredQuantity = BigDecimalUtils.convertNullToZero(deliveredProduct
+                .getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+
+        SearchCriteriaBuilder searchCriteriaBuilder = getCriteriaForOrderedProduct(deliveredProduct);
+
+        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
+
+        if (maybeOrderedProduct.isPresent()) {
+            List<Entity> dProducts = getCriteriaForDeliveredProductByGroup(deliveredProduct).list().getEntities();
+            if (!dProducts.isEmpty()) {
+                BigDecimal deliveredQuantityRest = dProducts.stream()
+                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
+
+            }
+        }
+
         Optional<Entity> orderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct);
         BigDecimal orderedQuantity = orderedProduct.isPresent() ? orderedProduct.get().getDecimalField(
                 OrderedProductFields.ORDERED_QUANTITY) : BigDecimal.ZERO;
-        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
         if (deliveredQuantity != null && deliveredQuantity.compareTo(orderedQuantity) > 0) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DELIVERED_QUANTITY),
                     "deliveries.deliveredProduct.error.deliveredQuantity.biggerThanOrderedQuantity");
