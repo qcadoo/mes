@@ -92,8 +92,6 @@ public class DeliveredProductAddMultiListeners {
                 return;
             }
 
-            Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
-
             List<Entity> deliveredProductMultiPositions = deliveredProductMulti
                     .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
 
@@ -103,7 +101,7 @@ public class DeliveredProductAddMultiListeners {
                 return;
             }
 
-            trySaveDeliveredProducts(deliveredProductMulti, delivery, deliveredProductMultiPositions);
+            trySaveDeliveredProducts(deliveredProductMulti, deliveredProductMultiPositions);
             deliveredProductMultiForm.setEntity(deliveredProductMulti);
 
             if (deliveredProductMulti.isValid()) {
@@ -120,8 +118,8 @@ public class DeliveredProductAddMultiListeners {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void trySaveDeliveredProducts(final Entity deliveredProductMulti, final Entity delivery,
-            final List<Entity> deliveredProductMultiPositions) {
+    public void trySaveDeliveredProducts(final Entity deliveredProductMulti, final List<Entity> deliveredProductMultiPositions) {
+        Entity delivery = deliveredProductMulti.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         List<Entity> deliveredProducts = Lists.newArrayList(delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS));
 
         for (Entity position : deliveredProductMultiPositions) {
