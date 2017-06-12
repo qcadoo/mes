@@ -31,6 +31,7 @@
     <fields>
         <string name="number"/>
         <string name="name"/>
+        <string name="description"/>
         <datetime name="dateFrom"/>
         <datetime name="dateTo"/>
         <datetime name="startDate"/>

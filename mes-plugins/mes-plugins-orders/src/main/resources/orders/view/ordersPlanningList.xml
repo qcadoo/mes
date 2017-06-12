@@ -223,6 +223,7 @@
             </script>
             <option type="column" name="number" fields="number" link="true" width="60"/>
             <option type="column" name="name" fields="name" link="true" width="80"/>
+            <option type="column" name="description" fields="description" link="true" width="80"/>
             <option type="column" name="state" fields="state" width="35"/>
             <option type="column" name="dateFrom" fields="startDate" width="60"/>
             <option type="column" name="dateTo" fields="finishDate" width="60"/>
