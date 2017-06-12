@@ -34,12 +34,60 @@
 
         <ribbon>
             <template name="standardGridTemplate" includeItems="actions.refresh"/>
-
+            <group name="anomalyComplete">
+                <bigButton name="completeWithoutIssue" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('completeWithoutIssue', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="anomalyList"
                    reference="grid">
 
+            <script>
+                <![CDATA[
+                        this.addOnChangeListener({
+							onChange: function(selectedEntitiesArray) {
+							    var completeWithoutIssue = #{window}.getRibbonItem("anomalyComplete.completeWithoutIssue");
+                                if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                    completeWithoutIssue.disable();
+                                } else {
+                                    var noDifferentStates = true;
+
+                                    if(selectedEntitiesArray.length > 1) {
+                                        for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+                                            if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+                                                noDifferentStates = false;
+                                                break;
+                                            }
+                                        }
+                                    }
+
+                                    if (noDifferentStates) {
+                                        var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+                                        if (selectedEntityStatus == "01draft" || selectedEntityStatus == "02explained") {
+                                            completeWithoutIssue.enable();
+                                        } else {
+                                            completeWithoutIssue.disable();
+                                        }
+                                    } else {
+                                        completeWithoutIssue.disable();
+                                    }
+                                }
+                            }
+                        });
+                    ]]>
+            </script>
             <option type="column" name="number" fields="number" link="true" width="100"/>
             <option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true" width="100"/>
             <option type="column" name="orderNumber" fields="orderNumber" link="true" width="100"/>
@@ -64,6 +112,10 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="completeWithoutIssue"
+                      class="com.qcadoo.mes.productionCounting.listeners.AnomalyListListeners"
+                      method="completeWithoutIssue"/>
 
         </component>
 

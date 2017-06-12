@@ -33,11 +33,41 @@
 
         <ribbon>
             <template name="standardFormTemplate" includeItems="navigation.back, actions.refresh"/>
+            <group name="anomalyComplete">
+                <bigButton name="completeWithoutIssue" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('completeWithoutIssue', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="form"
                        reference="form">
+                <script>
+                    <![CDATA[
+                        this.addOnChangeListener({
+							onSetValue: function() {
+							    var completeWithoutIssue = #{window}.getRibbonItem("anomalyComplete.completeWithoutIssue");
+							    var state = #{state}.getValue().content.value;
+							    if (state == "01draft" || state == "02explained") {
+							        completeWithoutIssue.enable();
+							    } else {
+							        completeWithoutIssue.disable();
+							    }
+                            }
+                        });
+                    ]]>
+                </script>
                 <component type="gridLayout" name="mainGridLayout"
                            columns="3" rows="4" hasBorders="false">
                     <layoutElement column="1" row="1">
@@ -56,6 +86,11 @@
                     <layoutElement column="1" row="3">
                         <component type="input" name="createUser" field="createUser"
                                    reference="createUser" defaultEnabled="never">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultEnabled="never">
                         </component>
                     </layoutElement>
 
@@ -172,6 +207,10 @@
                 </component>
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + ', ' + '@productionCounting.anomalyDto.state.value.' + #state"/>
+
+                <listener event="completeWithoutIssue"
+                          class="com.qcadoo.mes.productionCounting.listeners.AnomalyDetailsListeners"
+                          method="completeWithoutIssue"/>
             </component>
         </windowTab>
 
