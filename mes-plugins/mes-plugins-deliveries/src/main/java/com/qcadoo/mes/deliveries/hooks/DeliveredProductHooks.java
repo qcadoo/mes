@@ -23,6 +23,23 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.ADDITIONAL_CODE;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -31,20 +48,15 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
-import com.qcadoo.model.api.*;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.*;
 
 @Service
 public class DeliveredProductHooks {
@@ -261,7 +273,8 @@ public class DeliveredProductHooks {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct)
-                && validatePallet(deliveredProductDD, deliveredProduct);
+                && validatePallet(deliveredProductDD, deliveredProduct)
+                && notTooManyPalletsInStorageLocation(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -385,6 +398,41 @@ public class DeliveredProductHooks {
         if ((deliveredProduct.getField(DeliveredProductFields.VALIDATE_PALLET) == null)
                 || deliveredProduct.getBooleanField(DeliveredProductFields.VALIDATE_PALLET)) {
             return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        }
+        return true;
+    }
+
+    private boolean notTooManyPalletsInStorageLocation(DataDefinition deliveredProductDD, Entity deliveredProduct) {
+        Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+        final BigDecimal maxNumberOfPallets;
+        if (storageLocation != null && (maxNumberOfPallets = storageLocation
+                .getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS)) != null) {
+
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+            if (palletNumber != null) {
+
+                String query =
+                        "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount " + "FROM ("
+                        + "       SELECT" + "         resource.palletnumber_id," + "         resource.storagelocation_id"
+                        + "       FROM materialflowresources_resource resource" + "       UNION ALL" + "       SELECT"
+                        + "         deliveredproduct.palletnumber_id," + "         deliveredproduct.storagelocation_id"
+                        + "       FROM deliveries_delivery delivery"
+                        + "         JOIN deliveries_deliveredproduct deliveredproduct ON deliveredproduct.delivery_id = delivery.id"
+                        + "       WHERE delivery.state = '01draft'" + "     ) palletsInStorageLocation "
+                        + "WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND"
+                        + "      palletsInStorageLocation.palletnumber_id <> :palletNumberId";
+
+                Long palletsCount = jdbcTemplate.queryForObject(query, new MapSqlParameterSource()
+                        .addValue("storageLocationId", storageLocation.getId()).addValue("palletNumberId", palletNumber.getId()),
+                        Long.class);
+
+                boolean valid = maxNumberOfPallets.compareTo(BigDecimal.valueOf(palletsCount)) > 0;
+                if (!valid) {
+                    deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.STORAGE_LOCATION),
+                            "deliveries.deliveredProduct.error.storageLocationPalletLimitExceeded");
+                }
+                return valid;
+            }
         }
         return true;
     }

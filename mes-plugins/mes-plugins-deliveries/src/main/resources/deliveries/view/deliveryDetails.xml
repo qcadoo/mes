@@ -719,7 +719,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="4">
-                    <component type="grid" name="deliveredProducts" model="orderedProductDto" useDto="true"
+                    <component type="grid" name="deliveredProducts" useDto="true"
                                reference="deliveredProducts" source="#{form}.deliveredProductDtos"
                                defaultEnabled="false">
 
