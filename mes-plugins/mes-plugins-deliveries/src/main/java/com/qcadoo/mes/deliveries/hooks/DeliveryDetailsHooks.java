@@ -340,7 +340,15 @@ public class DeliveryDetailsHooks {
         RibbonActionItem changeStorageLocations = group.getItemByName("changeStorageLocations");
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
         List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
-        boolean enabled = !selectedProducts.isEmpty();
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long deliveryId = deliveryForm.getEntityId();
+
+        Entity delivery = deliveriesService.getDelivery(deliveryId);
+
+        String state = delivery.getStringField(DeliveryFields.STATE);
+        boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
+                || DeliveryState.DECLINED.getStringValue().equals(state);
+        boolean enabled = !selectedProducts.isEmpty() && !isFinished;
         if (enabled) {
             String baseStorageLocation = Optional.ofNullable(selectedProducts.get(0).getStringField("storageLocationNumber"))
                     .orElse(StringUtils.EMPTY);
