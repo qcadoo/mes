@@ -1,13 +1,11 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.model.api.DictionaryService;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,11 +13,15 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.model.api.DictionaryService;
 
 @Service
 public class DataProvider {
@@ -33,73 +35,83 @@ public class DataProvider {
     private static final int MAX_RESULTS = 20;
 
     private String prepareProductsQuery() {
-        return "SELECT product.id as id, product.number as code, product.number as number, product.name as name "
-                + "FROM basic_product product WHERE product.active = true and product.number ilike :query ;";
+        return "SELECT product.id AS id, product.number AS code, product.number AS number, product.name AS name "
+                + "FROM basic_product product WHERE product.active = true AND product.number ilike :query ;";
     }
 
     private String prepareProductsQueryWithLimit(int limit) {
-        return "SELECT product.id as id, product.number as code, product.number as number, product.name as name "
-                + "FROM basic_product product WHERE product.active = true and product.number ilike :query LIMIT " + limit + ";";
+        return "SELECT product.id AS id, product.number AS code, product.number AS number, product.name AS name "
+                + "FROM basic_product product WHERE product.active = true AND product.number ilike :query LIMIT " + limit + ";";
     }
 
-    private String prepareAdditionalCodeQuery(String productnumber) {
-        String productNumberCondition = Strings.isNullOrEmpty(productnumber) ? "" : "and product.number = '" + productnumber + "'";
+    private String prepareAdditionalCodeQuery(final String productnumber) {
+        String productNumberCondition = Strings.isNullOrEmpty(productnumber) ? ""
+                : "AND product.number = '" + productnumber + "'";
 
-        return "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+        return "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
                 + "FROM basic_additionalcode additionalcode "
                 + "JOIN basic_product product ON (additionalcode.product_id = product.id " + productNumberCondition + ")"
                 + "WHERE additionalcode.code ilike :query;";
     }
 
     private String prepareAdditionalCodeQueryWithLimit(int limit) {
-        return "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+        return "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
                 + "FROM basic_additionalcode additionalcode "
-                + "JOIN basic_product product ON (additionalcode.product_id = product.id and (product.number = :productnumber OR COALESCE(:productnumber,'')='' ))"
+                + "JOIN basic_product product ON (additionalcode.product_id = product.id AND (product.number = :productnumber OR COALESCE(:productnumber,'')='' ))"
                 + "WHERE additionalcode.code ilike :query LIMIT " + limit + ";";
     }
 
     private String preparePalletNumbersQuery() {
-        return "SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
-                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true and palletnumber.number ilike :query;";
+        return "SELECT palletnumber.id AS id, palletnumber.number AS code, palletnumber.number AS number "
+                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true AND palletnumber.number ilike :query;";
     }
 
     private String preparePalletNumbersQueryWithLimit(int limit) {
-        return "SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
-                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true and palletnumber.number ilike :query LIMIT "
+        return "SELECT palletnumber.id AS id, palletnumber.number AS code, palletnumber.number AS number "
+                + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true AND palletnumber.number ilike :query LIMIT "
                 + limit + ";";
     }
 
-    private int countQueryResults(String preparedQuery, String query, Map<String, Object> paramMap) {
-        String countQuery = "SELECT count(*) as cnt FROM (" + preparedQuery.replace(";", "") + ") sq;";
+    private int countQueryResults(final String preparedQuery, final String query, final Map<String, Object> paramMap) {
+        String countQuery = "SELECT count(*) AS cnt FROM (" + preparedQuery.replace(";", "") + ") sq;";
+
         paramMap.put("query", "%" + query + "%");
+
         return jdbcTemplate.queryForObject(countQuery, paramMap, Integer.class);
     }
 
-    public DataResponse getProductsResponseByQuery(String query) {
-        return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query), new HashMap<String, Object>());
+    public DataResponse getProductsResponseByQuery(final String query) {
+        return getDataResponse(query, prepareProductsQuery(), getProductsByQuery(query), Maps.newHashMap());
     }
 
-    public DataResponse getAdditionalCodesResponseByQuery(String query, String productnumber) {
+    public DataResponse getAdditionalCodesResponseByQuery(final String query, final String productnumber) {
         return getDataResponse(query, prepareAdditionalCodeQuery(productnumber), getAdditionalCodesByQuery(query, productnumber),
-                new HashMap<String, Object>());
+                Maps.newHashMap());
     }
 
-    public DataResponse getPalletNumbersResponseByQuery(String query) {
-        return getDataResponse(query, preparePalletNumbersQuery(), getPalletNumbersByQuery(query), new HashMap<String, Object>());
+    public DataResponse getPalletNumbersResponseByQuery(final String query) {
+        return getDataResponse(query, preparePalletNumbersQuery(), getPalletNumbersByQuery(query), Maps.newHashMap());
     }
 
-    public DataResponse getDataResponse(String query, String preparedQuery, List<AbstractDTO> entities,
-            Map<String, Object> paramMap) {
+    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<AbstractDTO> entities,
+            final Map<String, Object> paramMap) {
+        return getDataResponse(query, preparedQuery, entities, paramMap, true);
+    }
+
+    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<AbstractDTO> entities,
+            Map<String, Object> paramMap, boolean shouldCheckMaxResults) {
         int numberOfResults = countQueryResults(preparedQuery, query, paramMap);
-        if (numberOfResults > MAX_RESULTS) {
+
+        if (shouldCheckMaxResults && (numberOfResults > MAX_RESULTS)) {
             return new DataResponse(Lists.newArrayList(), numberOfResults);
         }
+
         return new DataResponse(entities, numberOfResults);
     }
 
-    public List<ProductDTO> getAllProducts(String sidx, String sord) {
+    public List<ProductDTO> getAllProducts(final String sidx, final String sord) {
         // TODO sort
-        String _query = "SELECT product.id, product.number as code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
+        String _query = "SELECT product.id, product.number AS code, product.number, product.name, product.ean, product.globaltypeofmaterial, product.category "
                 + "FROM basic_product product WHERE product.active = true;";
 
         List<ProductDTO> products = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP),
@@ -108,11 +120,13 @@ public class DataProvider {
         return products;
     }
 
-    public List<AbstractDTO> getProductsByQuery(String query) {
+    public List<AbstractDTO> getProductsByQuery(final String query) {
         String _query = prepareProductsQueryWithLimit(MAX_RESULTS);
 
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("query", "%" + query + "%");
+
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AbstractDTO> products = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(ProductDTO.class));
@@ -120,9 +134,9 @@ public class DataProvider {
         return products;
     }
 
-    public List<AdditionalCodeDTO> getAllAdditionalCodes(String sidx, String sord) {
+    public List<AdditionalCodeDTO> getAllAdditionalCodes(final String sidx, final String sord) {
         // TODO sort
-        String _query = "SELECT additionalcode.id as id, additionalcode.code as code, product.number as productnumber "
+        String _query = "SELECT additionalcode.id AS id, additionalcode.code AS code, product.number AS productnumber "
                 + "FROM basic_additionalcode additionalcode "
                 + "JOIN basic_product product ON (additionalcode.product_id = product.id);";
 
@@ -132,12 +146,14 @@ public class DataProvider {
         return codes;
     }
 
-    public List<AbstractDTO> getAdditionalCodesByQuery(String query, String productnumber) {
+    public List<AbstractDTO> getAdditionalCodesByQuery(final String query, final String productnumber) {
         String _query = prepareAdditionalCodeQueryWithLimit(MAX_RESULTS);
 
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("query", "%" + query + "%");
         parameters.put("productnumber", productnumber);
+
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AbstractDTO> codes = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AdditionalCodeDTO.class));
@@ -145,8 +161,8 @@ public class DataProvider {
         return codes;
     }
 
-    public List<PalletNumberDTO> getAllPalletNumbers(String sidx, String sord) {
-        String _query = "SELECT palletnumber.id as id, palletnumber.number as code, palletnumber.number as number "
+    public List<PalletNumberDTO> getAllPalletNumbers(final String sidx, final String sord) {
+        String _query = "SELECT palletnumber.id AS id, palletnumber.number AS code, palletnumber.number AS number "
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true;";
 
         List<PalletNumberDTO> pallets = jdbcTemplate.query(_query, new MapSqlParameterSource(Collections.EMPTY_MAP),
@@ -155,11 +171,13 @@ public class DataProvider {
         return pallets;
     }
 
-    public List<AbstractDTO> getPalletNumbersByQuery(String query) {
+    public List<AbstractDTO> getPalletNumbersByQuery(final String query) {
         String _query = preparePalletNumbersQueryWithLimit(MAX_RESULTS);
 
-        Map<String, Object> parameters = new HashMap<>();
+        Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("query", "%" + query + "%");
+
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
         List<AbstractDTO> pallets = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(PalletNumberDTO.class));
@@ -169,7 +187,8 @@ public class DataProvider {
 
     public List<Map<String, String>> getUnits() {
         return dictionaryService.getKeys("units").stream().map(unit -> {
-            Map<String, String> type = new HashMap<>();
+            Map<String, String> type = Maps.newHashMap();
+
             type.put("value", unit);
             type.put("key", unit);
 
@@ -179,11 +198,13 @@ public class DataProvider {
 
     public List<Map<String, String>> getTypeOfPallets() {
         return dictionaryService.getKeys("typeOfPallet").stream().map(unit -> {
-            Map<String, String> type = new HashMap<>();
+            Map<String, String> type = Maps.newHashMap();
+
             type.put("value", unit);
             type.put("key", unit);
 
             return type;
         }).collect(Collectors.toList());
     }
+
 }
