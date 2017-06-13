@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.print;
 
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.*;
@@ -156,7 +157,18 @@ public class DispositionOrderPdf extends ReportPdfView {
         List<Entity> positions = PositionDataProvider.getPositions(documentEntity);
         PositionsHolder positionsHolder = new PositionsHolder(numberService);
         fillPositions(positionsHolder, positions);
-        for (Position position : positionsHolder.getPositions()) {
+        List<Position> _positions = positionsHolder.getPositions();
+        if (acceptanceOfDocumentBeforePrinting) {
+            Collections.sort(_positions, new Comparator<Position>() {
+
+                @Override
+                public int compare(Position p1, Position p2) {
+                    return ComparisonChain.start().compare(p1.getTargetPallet(), p2.getTargetPallet())
+                            .compare(p1.getStorageLocation(), p2.getStorageLocation()).result();
+                }
+            });
+        }
+        for (Position position : _positions) {
             positionsTable.addCell(createCell(position.getIndex(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
@@ -179,15 +191,12 @@ public class DispositionOrderPdf extends ReportPdfView {
     private void fillPositions(PositionsHolder positionsHolder, List<Entity> positions) {
         for (Entity position : positions) {
             PositionBuilder builder = new PositionBuilder();
-            builder.setIndex(PositionDataProvider.index(position))
-                    .setStorageLocation(getDataForStorageLocation(position))
+            builder.setIndex(PositionDataProvider.index(position)).setStorageLocation(getDataForStorageLocation(position))
                     .setPalletNumber(PositionDataProvider.palletNumber(position))
-            .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
-            .setAdditionalCode(PositionDataProvider.additionalCode(position))
-            .setProductName(getDataForProduct(position))
-            .setQuantity(position.getDecimalField(PositionFields.QUANTITY))
-            .setUnit(PositionDataProvider.unit(position))
-            .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId());
+                    .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
+                    .setAdditionalCode(PositionDataProvider.additionalCode(position)).setProductName(getDataForProduct(position))
+                    .setQuantity(position.getDecimalField(PositionFields.QUANTITY)).setUnit(PositionDataProvider.unit(position))
+                    .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId());
             if (acceptanceOfDocumentBeforePrinting) {
                 builder.setTargetPallet(getDataForTargetPallet(position));
             }
