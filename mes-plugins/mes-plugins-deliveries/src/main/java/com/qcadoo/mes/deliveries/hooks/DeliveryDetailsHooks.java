@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -51,15 +41,17 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -342,21 +334,23 @@ public class DeliveryDetailsHooks {
         List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
+        boolean enabled = false;
+        if (Objects.nonNull(deliveryId)) {
+            Entity delivery = deliveriesService.getDelivery(deliveryId);
 
-        Entity delivery = deliveriesService.getDelivery(deliveryId);
-
-        String state = delivery.getStringField(DeliveryFields.STATE);
-        boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
-                || DeliveryState.DECLINED.getStringValue().equals(state);
-        boolean enabled = !selectedProducts.isEmpty() && !isFinished;
-        if (enabled) {
-            String baseStorageLocation = Optional.ofNullable(selectedProducts.get(0).getStringField("storageLocationNumber"))
-                    .orElse(StringUtils.EMPTY);
-            for (Entity deliveredProduct : selectedProducts) {
-                String storageLocation = Optional.ofNullable(deliveredProduct.getStringField("storageLocationNumber")).orElse(
-                        StringUtils.EMPTY);
-                if (!baseStorageLocation.equals(storageLocation)) {
-                    enabled = false;
+            String state = delivery.getStringField(DeliveryFields.STATE);
+            boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
+                    || DeliveryState.DECLINED.getStringValue().equals(state);
+            enabled = !selectedProducts.isEmpty() && !isFinished;
+            if (enabled) {
+                String baseStorageLocation = Optional.ofNullable(selectedProducts.get(0).getStringField("storageLocationNumber"))
+                        .orElse(StringUtils.EMPTY);
+                for (Entity deliveredProduct : selectedProducts) {
+                    String storageLocation = Optional.ofNullable(deliveredProduct.getStringField("storageLocationNumber"))
+                            .orElse(StringUtils.EMPTY);
+                    if (!baseStorageLocation.equals(storageLocation)) {
+                        enabled = false;
+                    }
                 }
             }
         }
