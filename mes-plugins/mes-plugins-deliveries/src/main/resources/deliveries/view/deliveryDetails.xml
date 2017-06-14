@@ -733,6 +733,12 @@
                                 width="80"/>
                         <option type="column" name="productUnit" fields="productUnit"
                                 width="30"/>
+                        <option type="column" name="additionalQuantity" fields="additionalQuantity"
+                                width="80"/>
+                        <option type="column" name="additionalUnit" fields="additionalUnit"
+                                width="30"/>
+                        <option type="column" name="conversion" fields="conversion"
+                                width="30"/>
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
                                 width="80"/>
                         <option type="column" name="totalPrice" fields="totalPrice"
@@ -753,9 +759,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalQuantity,additionalUnit,conversion,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,additionalQuantity,additionalUnit,conversion,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>
