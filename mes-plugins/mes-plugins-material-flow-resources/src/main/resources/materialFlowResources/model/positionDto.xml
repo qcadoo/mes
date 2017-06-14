@@ -55,6 +55,7 @@
         <boolean name="waste"/>
         <string name="palletType"/>
         <string name="palletNumber"/>
+        <integer name="documentId"/>
     </fields>
     <masterModel plugin="materialFlowResources" model="position"/>
 </model>
