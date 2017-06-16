@@ -140,6 +140,10 @@
             <listener event="createResourcesForDocuments"
                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
                       method="createResourcesForDocuments"/>
+
+            <rowStyleResolver
+                    class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"
+                    method="fillRowStyles"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
