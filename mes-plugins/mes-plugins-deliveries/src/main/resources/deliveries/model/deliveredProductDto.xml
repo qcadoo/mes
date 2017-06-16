@@ -49,6 +49,8 @@
 
         <decimal name="additionalQuantity"/>
 
+        <string name="additionalUnit"/>
+
         <decimal name="conversion"/>
 
         <decimal name="pricePerUnit"/>
@@ -72,6 +74,7 @@
         <string name="operationNumber"/>
 
         <boolean name="isWaste"/>
+
     </fields>
 
     <masterModel plugin="deliveries" model="deliveredProduct"/>
