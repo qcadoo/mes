@@ -28,8 +28,6 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -50,7 +48,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -60,7 +57,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -93,15 +89,6 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private StateExecutorService stateExecutorService;
-
-    @Autowired
-    private SecurityService securityService;
-
-    @Autowired
-    private LogService logService;
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private ParameterService parameterService;
@@ -202,44 +189,6 @@ public class ProductionTrackingDetailsListeners {
             }
         } else {
             stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
-        }
-    }
-
-    public void logPerformDelete(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity productionTracking = productionTrackingForm.getEntity();
-        String username = securityService.getCurrentUserName();
-        LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
-                productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
-        logService.add(LogService.Builder
-                .info("productionTracking",
-                        translationService.translate("productionCounting.productionTracking.delete",
-                                LocaleContextHolder.getLocale())).withItem1("ID: " + productionTracking.getId().toString())
-                .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
-                .withItem3("User: " + username));
-    }
-
-    public void logPerformDeleteList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
-        String username = securityService.getCurrentUserName();
-        if (maybeGridComponent.isPresent()) {
-            maybeGridComponent
-                    .get()
-                    .getSelectedEntities()
-                    .forEach(
-                            productionTracking -> {
-                                LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
-                                        productionTracking.getStringField(ProductionTrackingFields.NUMBER),
-                                        productionTracking.getId(), username));
-                                logService.add(LogService.Builder
-                                        .info("productionTracking", translationService
-                                                        .translate("productionCounting.productionTracking.delete",
-                                                                LocaleContextHolder.getLocale()))
-                                        .withItem1("ID: " + productionTracking.getId().toString())
-                                        .withItem2(
-                                                "Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
-                                        .withItem3("User: " + username));
-                            });
         }
     }
 

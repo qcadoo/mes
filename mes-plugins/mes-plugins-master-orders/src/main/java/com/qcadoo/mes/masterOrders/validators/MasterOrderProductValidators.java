@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -63,8 +62,16 @@ public class MasterOrderProductValidators {
 
     private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        if (!masterOrder.getHasManyField(MasterOrderFields.ORDERS).isEmpty()
-                && masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
+        query.append("(select count(mproduct) FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions, ");
+        query.append("(select count(morder) FROM #orders_order morder WHERE morder.masterOrder.id = masterOrder.id) as orders  ");
+        query.append("FROM #masterOrders_masterOrder masterOrder ");
+        query.append("WHERE masterOrder.id = :oid");
+        Entity mo = masterOrder.getDataDefinition().find(query.toString()).setLong("oid", masterOrder.getId()).setMaxResults(1)
+                .uniqueResult();
+
+        if (mo.getLongField("orders") != 0l && mo.getLongField("positions") == 0l) {
             masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.alreadyExistsOrdersAssignedToMasterOrder", false);
             return false;
         }

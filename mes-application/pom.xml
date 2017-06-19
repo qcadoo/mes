@@ -295,12 +295,9 @@
             <version>2.3.6</version>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>postgresql-9.4.1212</version>
-            <classifier>jdbc4</classifier>
-            <scope>system</scope>
-            <systemPath>${basedir}/driver/postgresql-9.4.1212.jar</systemPath>
+            <version>${postgres.version}</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
@@ -335,57 +332,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>maven-jetty-plugin</artifactId>
-                <version>${jetty.version}</version>
-                <configuration>
-                    <scanTargets>
-                        <scanTarget>driver/</scanTarget>
-                    </scanTargets>
-                    <systemProperties>
-                        <systemProperty>
-                            <name>QCADOO_CONF</name>
-                            <value>${basedir}/conf/${profile.name}</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_LOG</name>
-                            <value>${basedir}/target/logs</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_PLUGINS_TMP_PATH</name>
-                            <value>${basedir}/target/tmp</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_PLUGINS_PATH</name>
-                            <value>${basedir}/target/lib</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_WEBAPP_PATH</name>
-                            <value>${basedir}/src/main/webapp</value>
-                        </systemProperty>
-                        <systemProperty>
-                            <name>QCADOO_RESTART_CMD</name>
-                            <value>${basedir}/restart.sh</value>
-                        </systemProperty>
-                    </systemProperties>
-                    <webAppConfig>
-                        <contextPath>/</contextPath>
-                        <baseResource implementation="org.mortbay.resource.ResourceCollection">
-                            <resourcesAsCSV>
-                                ${basedir}/src/main/webapp;
-                                ${basedir}/../../qcadoo/qcadoo-view/src/main/resources;
-                                ${basedir}/../../qcadoo/qcadoo-report/src/main/resources;
-                                ${basedir}/../../qcadoo/qcadoo-plugins-plugin-management/src/main/resources;
-                                ${basedir}/../../qcadoo/qcadoo-plugins-export/src/main/resources;
-                                ${basedir}/../mes-plugins/mes-plugins-basic/src/main/resources;
-                                ${basedir}/../mes-plugins/mes-plugins-technologies/src/main/resources;
-                                ${basedir}/../mes-plugins/mes-plugins-stoppage/src/main/resources;
-                            </resourcesAsCSV>
-                        </baseResource>
-                    </webAppConfig>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -426,8 +372,8 @@
                         <artifactId>qcadoo-maven-plugin</artifactId>
                         <version>${qcadoo.maven.plugin.version}</version>
                         <configuration>
-                            <jdbcDriver>${basedir}/driver/postgresql-9.4.1212.jar</jdbcDriver>
-                            <aspectJWeaver>${basedir}/driver/aspectjweaver-${aspectj.version}.jar</aspectJWeaver>
+                            <jdbcDriver>${basedir}/target/tomcat-archiver/${project.artifactId}/webapps/ROOT/WEB-INF/lib/postgresql-${postgres.version}.jar</jdbcDriver>
+                            <aspectJWeaver>${basedir}/target/tomcat-archiver/${project.artifactId}/webapps/ROOT/WEB-INF/lib/aspectjweaver-${aspectj.version}.jar</aspectJWeaver>
                             <configuration>${basedir}/conf/${profile.name}/</configuration>
                             <rootFilesDirectory>${basedir}/root/</rootFilesDirectory>
                         </configuration>

@@ -9,14 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
 import com.qcadoo.mes.productionCounting.constants.AnomalyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -27,10 +24,10 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class AnomalyExplanationDetailsHooks {
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private NumberService numberService;
 
     @Autowired
-    private NumberService numberService;
+    private ProductUnitsConversionService productUnitsConversionService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -86,20 +83,15 @@ public class AnomalyExplanationDetailsHooks {
             view.getComponentByReference("usedQuantity")
                     .setFieldValue(numberService.formatWithMinimumFractionDigits(anomalyUsedQuantity, 0));
 
-            String anomalyProductUnit = anomalyProduct.getStringField(ProductFields.UNIT);
             String additionalAnomalyProductUnit = anomalyProduct.getStringField(ProductFields.ADDITIONAL_UNIT);
 
             ComponentState givenQuantityComponent = view.getComponentByReference("givenQuantity");
             if (isNotBlank(additionalAnomalyProductUnit)) {
-                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(anomalyProductUnit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, anomalyProduct)));
-                if (unitConversions.isDefinedFor(additionalAnomalyProductUnit)) {
-                    BigDecimal convertedQuantityNewValue = unitConversions.convertTo(anomalyUsedQuantity,
-                            additionalAnomalyProductUnit);
-                    givenQuantityComponent
-                            .setFieldValue(numberService.formatWithMinimumFractionDigits(convertedQuantityNewValue, 0));
-                }
+                productUnitsConversionService.forProduct(anomalyProduct).fromPrimaryUnit().to(additionalAnomalyProductUnit)
+                        .convertValue(anomalyUsedQuantity).ifPresent(convertedValue -> {
+                            givenQuantityComponent
+                                    .setFieldValue(numberService.formatWithMinimumFractionDigits(convertedValue, 0));
+                        });
             } else {
                 givenQuantityComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(anomalyUsedQuantity, 0));
             }

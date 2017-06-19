@@ -41,11 +41,11 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>1.7.3</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>1.7.4</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
-        <profile.name>default</profile.name>
+        <profile.name>tomcat</profile.name>
     </properties>
 
     <dependencies>

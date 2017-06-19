@@ -33,6 +33,7 @@ import com.qcadoo.mes.productionPerShift.constants.ProgressType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class PPSHelper {
@@ -50,6 +51,12 @@ public class PPSHelper {
         }
 
         return (Long) projectionResults.getField("ppsId");
+    }
+
+    public Entity findPpsForOrder(final Entity order) {
+        return dataDefinitionService
+                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
+                .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1).uniqueResult();
     }
 
     public Long createPpsForOrderAndReturnId(final Long orderId) {

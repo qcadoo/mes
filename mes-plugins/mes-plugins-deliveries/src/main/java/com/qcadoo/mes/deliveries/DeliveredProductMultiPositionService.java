@@ -8,6 +8,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,22 +37,34 @@ public class DeliveredProductMultiPositionService {
         return BigDecimalUtils.convertNullToZero(orderedProductFromDB.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
     }
 
-    public BigDecimal countAlreadyAssignedQuantityForProduct(final Entity product, final Entity additionalCode,
+    public BigDecimal countAlreadyAssignedQuantityForProduct(final Entity product, final Entity additionalCode, final Entity offer,
             List<Entity> deliveredProducts) {
         BigDecimal alreadyAssignedQuantity = deliveredProducts
                 .stream()
                 .filter(p -> product.getId().equals(p.getBelongsToField(DeliveredProductFields.PRODUCT).getId())
-                        && additionalCodesTheSame(additionalCode, p)).map(p -> {
+                        && additionalCodesTheSame(additionalCode, p) && offerTheSame(offer, p)).map(p -> {
                     BigDecimal deliveredQuantity = p.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
                     return deliveredQuantity == null ? BigDecimal.ZERO : deliveredQuantity;
                 }).reduce(BigDecimal.ZERO, BigDecimal::add);
         return alreadyAssignedQuantity;
     }
 
-    public BigDecimal countAlreadyAssignedQuantity(final Entity orderedProduct, final Entity additionalCode,
-            List<Entity> deliveredProducts) {
+    private boolean offerTheSame(final Entity offer, final Entity deliveredProduct) {
+        if (!PluginUtils.isEnabled("supplyNegotiations")) {
+            return true;
+        }
+        Entity deliveredProductOffer = deliveredProduct.getBelongsToField("offer");
+        return isOfferTheSame(offer, deliveredProductOffer);
+    }
+
+    private boolean isOfferTheSame(final Entity offer, final Entity deliveredProductOffer) {
+        return isBothCodeNull(offer, deliveredProductOffer)
+                || isBothCodeEqual(offer, deliveredProductOffer);
+    }
+
+    public BigDecimal countAlreadyAssignedQuantity(final Entity orderedProduct, final Entity additionalCode, final Entity offer, List<Entity> deliveredProducts) {
         Entity product = orderedProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        return countAlreadyAssignedQuantityForProduct(product, additionalCode, deliveredProducts);
+        return countAlreadyAssignedQuantityForProduct(product, additionalCode, offer, deliveredProducts);
     }
 
     private boolean additionalCodesTheSame(Entity additionalCode, Entity deliveredProduct) {
@@ -71,5 +84,13 @@ public class DeliveredProductMultiPositionService {
 
     private boolean isBothCodeNull(Entity additionalCode, Entity deliveredProductAdditionalCode) {
         return additionalCode == null && deliveredProductAdditionalCode == null;
+    }
+
+    private boolean isBothOfferEqual(Entity offer, Entity deliveredProductOffer) {
+        return offer != null &&  deliveredProductOffer != null && offer.getId().equals(deliveredProductOffer.getId());
+    }
+
+    private boolean isOfferNull(Entity offer, Entity deliveredProductOffer) {
+        return offer == null && deliveredProductOffer == null;
     }
 }

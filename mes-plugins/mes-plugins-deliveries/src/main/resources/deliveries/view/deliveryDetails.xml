@@ -176,14 +176,6 @@
 										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept.confirm)}")) {
 											#{form}.performEvent('changeState', ['02prepared']);
 										};
-									} else if (this.state == "prepare") {
-										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder.confirm)}")) {
-											#{form}.performEvent('changeState', ['03duringCorrection']);
-										};
-									} else if (this.state == "correct") {
-										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-											#{form}.performEvent('changeState', ['05approved']);
-										};
 									} else if (this.state == "receive") {
 										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery.confirm)}")) {
 											#{form}.performEvent('changeState', ['06received']);
@@ -217,6 +209,20 @@
 									if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
 										#{form}.performEvent('changeState', ['05approved']);
 									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="correctOrder" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+                                    if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder.confirm)}")) {
+                                        #{form}.performEvent('changeState', ['03duringCorrection']);
+                                    };
 								}
 							});
 						]]>
@@ -290,6 +296,7 @@
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
 						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
+                        var correctDeliveryBtn = #{window}.getRibbonItem("status.correctOrder");
 						var copyProductsWithoutQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithoutQuantityAndPrice");
 						var copyProductsWithQuantityAndPriceBtn = #{window}.getRibbonItem("copyOrderedProductsToDelivered.copyProductsWithQuantityAndPrice");
 						
@@ -315,6 +322,7 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
+									correctDeliveryBtn.disable();
 									generateOrderBtn.disable();
 									generateDeliveryBtn.disable();
 									return;
@@ -342,23 +350,21 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									//copyProductsWithoutQuantityAndPriceBtn.enable();
-									//copyProductsWithQuantityAndPriceBtn.enable();
+									correctDeliveryBtn.disable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "02prepared") {
 									deleteBtn.disable();
-									acceptBtn.enable();
+									acceptBtn.disable();
 									acceptBtn.state = "prepare";
-									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-									acceptBtn.setIcon('startIcon16.png');
+									acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+									acceptBtn.setIcon('acceptIcon16.png');
 									declineDeliveryBtn.enable();
 									declineDeliveryBtn.state = "decline";
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									//copyProductsWithoutQuantityAndPriceBtn.enable();
-									//copyProductsWithQuantityAndPriceBtn.enable();
+									correctDeliveryBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "03duringCorrection") {
@@ -372,8 +378,7 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.enable();
-									//copyProductsWithoutQuantityAndPriceBtn.enable();
-									//copyProductsWithQuantityAndPriceBtn.enable();
+									correctDeliveryBtn.disable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "05approved") {
@@ -387,8 +392,7 @@
 									declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 									declineDeliveryBtn.setIcon('deleteIcon16.png');
 									approveDeliveryBtn.disable();
-									//copyProductsWithoutQuantityAndPriceBtn.enable();
-									//copyProductsWithQuantityAndPriceBtn.enable();
+									correctDeliveryBtn.enable();
 									createRelatedDeliveryBtn.disable();
 									showRelatedDeliveriesBtn.disable();
 								} else if (state == "06received") {
@@ -400,6 +404,7 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
+									correctDeliveryBtn.disable();
 									copyProductsWithoutQuantityAndPriceBtn.disable();
 									copyProductsWithQuantityAndPriceBtn.disable();
 									createRelatedDeliveryBtn.enable();
@@ -413,6 +418,7 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
+									correctDeliveryBtn.disable();
 									copyProductsWithoutQuantityAndPriceBtn.disable();
 									copyProductsWithQuantityAndPriceBtn.disable();
 									createRelatedDeliveryBtn.disable();
@@ -427,6 +433,7 @@
 									acceptBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									declineDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									approveDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
+									correctDeliveryBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									copyProductsWithoutQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									copyProductsWithQuantityAndPriceBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
 									generateOrderBtn.disable("#{translate(deliveries.delivery.ribbon.message.deliveryIsExternal)}");
@@ -712,7 +719,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="4">
-                    <component type="grid" name="deliveredProducts" model="orderedProductDto" useDto="true"
+                    <component type="grid" name="deliveredProducts" useDto="true"
                                reference="deliveredProducts" source="#{form}.deliveredProductDtos"
                                defaultEnabled="false">
 
@@ -725,6 +732,12 @@
                         <option type="column" name="damagedQuantity" fields="damagedQuantity"
                                 width="80"/>
                         <option type="column" name="productUnit" fields="productUnit"
+                                width="30"/>
+                        <option type="column" name="additionalQuantity" fields="additionalQuantity"
+                                width="80"/>
+                        <option type="column" name="additionalUnit" fields="additionalUnit"
+                                width="30"/>
+                        <option type="column" name="conversion" fields="conversion"
                                 width="30"/>
                         <option type="column" name="pricePerUnit" fields="pricePerUnit"
                                 width="80"/>
@@ -746,9 +759,9 @@
                         <option type="order" column="succession" direction="asc"/>
 
                         <option type="searchable"
-                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="productNumber,productName,productUnit,deliveredQuantity,palletType,damagedQuantity,additionalQuantity,additionalUnit,conversion,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
                         <option type="orderable"
-                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
+                                value="succession,productNumber,productName,productUnit,palletType,deliveredQuantity,additionalQuantity,additionalUnit,conversion,damagedQuantity,additionalCode,storageLocationNumber,palletNumber,isWaste,batch"/>
 
                         <option type="correspondingView" value="deliveries/deliveredProductDetails"/>
                         <option type="correspondingComponent" value="form"/>

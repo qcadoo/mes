@@ -25,8 +25,8 @@ package com.qcadoo.mes.productionPerShift.util;
 
 import com.google.common.base.Optional;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProductionPerShiftDataProvider;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -45,10 +45,8 @@ public class ProgressQuantitiesDeviationNotifier {
     @Autowired
     private ProductionPerShiftDataProvider productionPerShiftDataProvider;
 
-    public void compareAndNotify(final ViewDefinitionState view, final Entity order, final Entity technologyOperationComponent,
-            boolean shouldBeCorrected) {
-        Optional<BigDecimal> maybeQuantitiesDifference = calculateQuantitiesDifference(order, technologyOperationComponent,
-                shouldBeCorrected);
+    public void compareAndNotify(final ViewDefinitionState view, final Entity pps, boolean shouldBeCorrected) {
+        Optional<BigDecimal> maybeQuantitiesDifference = calculateQuantitiesDifference(pps, shouldBeCorrected);
         for (BigDecimal quantitiesDifference : maybeQuantitiesDifference.asSet()) {
             int compareResult = quantitiesDifference.compareTo(BigDecimal.ZERO);
             if (compareResult > 0) {
@@ -61,15 +59,11 @@ public class ProgressQuantitiesDeviationNotifier {
         }
     }
 
-    private Optional<BigDecimal> calculateQuantitiesDifference(final Entity order, final Entity technologyOperationComponent,
-            boolean shouldBeCorrected) {
-        if (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
-            return Optional.absent();
-        }
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+    private Optional<BigDecimal> calculateQuantitiesDifference(final Entity pps, boolean shouldBeCorrected) {
 
-        BigDecimal sumOfDailyPlannedQuantities = productionPerShiftDataProvider.countSumOfQuantities(technology.getId(),
-                ProductionPerShiftDataProvider.ONLY_ROOT_OPERATIONS_CRITERIA, shouldBeCorrected);
+        Entity order = pps.getBelongsToField(ProductionPerShiftFields.ORDER);
+
+        BigDecimal sumOfDailyPlannedQuantities = productionPerShiftDataProvider.countSumOfQuantities(pps, shouldBeCorrected);
         BigDecimal planedQuantityFromOrder = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
         return Optional.of(planedQuantityFromOrder.subtract(sumOfDailyPlannedQuantities, numberService.getMathContext()));
     }

@@ -14,16 +14,13 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.productionCounting.constants.AnomalyExplanationFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -35,7 +32,7 @@ import com.qcadoo.view.api.components.GridComponent;
 public class AnomalyExplanationDetailsListeners {
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private ProductUnitsConversionService productUnitsConversionService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -115,7 +112,7 @@ public class AnomalyExplanationDetailsListeners {
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState cs, final String[] args) {
-        new CalculationHelper(view, unitConversionService).genericCalculateMethod(
+        new CalculationHelper(view, productUnitsConversionService).genericCalculateMethod(
                 h -> h.anomalyExplanation.getStringField(AnomalyExplanationFields.GIVEN_UNIT),
                 AnomalyExplanationFields.GIVEN_QUANTITY,
                 h -> view.getComponentByReference("productUnit").getFieldValue().toString(),
@@ -123,7 +120,7 @@ public class AnomalyExplanationDetailsListeners {
     }
 
     public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState cs, final String[] args) {
-        new CalculationHelper(view, unitConversionService).genericCalculateMethod(
+        new CalculationHelper(view, productUnitsConversionService).genericCalculateMethod(
                 h -> view.getComponentByReference("productUnit").getFieldValue().toString(),
                 AnomalyExplanationFields.USED_QUANTITY,
                 h -> h.anomalyExplanation.getStringField(AnomalyExplanationFields.GIVEN_UNIT),
@@ -132,22 +129,22 @@ public class AnomalyExplanationDetailsListeners {
 
     private static class CalculationHelper {
 
-        final ViewDefinitionState view;
+        private final ViewDefinitionState view;
 
-        final FormComponent form;
+        private final FormComponent form;
 
-        final Entity anomalyExplanation;
+        private final Entity anomalyExplanation;
 
-        final Entity selectedProduct;
+        private final Entity selectedProduct;
 
-        final UnitConversionService unitConversionService;
+        private final ProductUnitsConversionService productUnitsConversionService;
 
-        private CalculationHelper(final ViewDefinitionState view, UnitConversionService unitConversionService) {
+        private CalculationHelper(final ViewDefinitionState view, ProductUnitsConversionService productUnitsConversionService) {
             this.view = view;
-            this.unitConversionService = unitConversionService;
             form = (FormComponent) view.getComponentByReference("form");
             anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
             selectedProduct = anomalyExplanation.getBelongsToField(AnomalyExplanationFields.PRODUCT);
+            this.productUnitsConversionService = productUnitsConversionService;
         }
 
         private void genericCalculateMethod(Function<CalculationHelper, String> thisUnitExtractor, String thisQuantityFieldName,
@@ -168,14 +165,14 @@ public class AnomalyExplanationDetailsListeners {
             if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
                 BigDecimal otherQuantityNewValue = null;
                 BigDecimal thisQuantity = maybeQuantity.getRight().get();
-                if (isBlank(thisUnit) || otherUnit.equals(thisUnit)) {
+                if (isBlank(thisUnit) || isBlank(otherUnit)) {
                     otherQuantityNewValue = thisQuantity;
                 } else {
-                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(thisUnit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder
-                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, selectedProduct)));
-                    if (unitConversions.isDefinedFor(otherUnit)) {
-                        otherQuantityNewValue = unitConversions.convertTo(thisQuantity, otherUnit);
+                    java.util.Optional<BigDecimal> convertedValue = productUnitsConversionService.forProduct(selectedProduct)
+                            .from(thisUnit).to(otherUnit).convertValue(thisQuantity);
+
+                    if (convertedValue.isPresent()) {
+                        otherQuantityNewValue = convertedValue.get();
                     } else {
                         String messageKey = "productionCounting.anomalyExplanation.error.noConversionFound";
                         anomalyExplanation.addError(

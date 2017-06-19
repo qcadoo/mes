@@ -27,6 +27,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
@@ -38,6 +39,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -84,66 +86,70 @@ public class OrderDetailsHooksPPS {
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if(technology == null){
+        if (order.getId() == null) {
             return;
         }
+        Entity pps = productionPerShiftDataProvider
+                .getProductionPerShiftDD()
+                .find()
+                .add(SearchRestrictions.belongsTo("order", OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+                        order.getId())).setMaxResults(1).uniqueResult();
 
-        Long technologyId = technology.getId();
-        boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-        Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(technologyId,
-                shouldBeCorrected);
-        DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
-                ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-        Optional<OrderDates> maybeOrderDates = null;
-        try {
-            maybeOrderDates = OrderDates.of(order);
-        }catch(IllegalArgumentException e){
-            return;
-        }
-        DataDefinition orderDD = order.getDataDefinition();
-        Entity dbOrder = orderDD.get(order.getId());
-        boolean areDatesCorrect = true;
-        if (maybeOrderDates.isPresent()) {
-            OrderDates orderDates = maybeOrderDates.get();
-            Date orderStart = removeTime(orderDates.getStart().effectiveWithFallback().toDate());
-            Date orderEnd = orderDates.getEnd().effectiveWithFallback().toDate();
-            Date ppsFinishDate = null;
-            for (Long id : progressForDayIds) {
-                Entity progressForDay = progressForDayDD.get(id);
-                Date progressDate = progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY);
-                if (progressDate == null) {
-                    progressDate = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+        if (pps != null) {
+            boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
+            Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(pps, shouldBeCorrected);
+            DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
+                    ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
+            Optional<OrderDates> maybeOrderDates = null;
+            try {
+                maybeOrderDates = OrderDates.of(order);
+            } catch (IllegalArgumentException e) {
+                return;
+            }
+            DataDefinition orderDD = order.getDataDefinition();
+            Entity dbOrder = orderDD.get(order.getId());
+            boolean areDatesCorrect = true;
+            if (maybeOrderDates.isPresent()) {
+                OrderDates orderDates = maybeOrderDates.get();
+                Date orderStart = removeTime(orderDates.getStart().effectiveWithFallback().toDate());
+                Date orderEnd = orderDates.getEnd().effectiveWithFallback().toDate();
+                Date ppsFinishDate = null;
+                for (Long id : progressForDayIds) {
+                    Entity progressForDay = progressForDayDD.get(id);
+                    Date progressDate = progressForDay.getDateField(ProgressForDayFields.ACTUAL_DATE_OF_DAY);
+                    if (progressDate == null) {
+                        progressDate = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+                    }
+                    EntityList dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
+                    for (Entity dailyProgress : dailyProgresses) {
+
+                        Date shiftFinishDate = ppsTimeHelper.findFinishDate(dailyProgress, progressDate, dbOrder);
+
+                        if (shiftFinishDate == null) {
+                            view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
+                            return;
+                        }
+
+                        if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
+                            ppsFinishDate = shiftFinishDate;
+                        }
+
+                        if (shiftFinishDate.before(orderStart)) {
+                            areDatesCorrect = false;
+                        }
+                    }
                 }
-                EntityList dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
-                for (Entity dailyProgress : dailyProgresses) {
-
-                    Date shiftFinishDate = ppsTimeHelper.findFinishDate(dailyProgress, progressDate, dbOrder);
-
-                    if(shiftFinishDate == null) {
-                        view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
-                        return;
-                    }
-
-                    if (ppsFinishDate == null || ppsFinishDate.before(shiftFinishDate)) {
-                        ppsFinishDate = shiftFinishDate;
-                    }
-
-                    if (shiftFinishDate.before(orderStart)) {
-                        areDatesCorrect = false;
+                if (ppsFinishDate != null) {
+                    if (ppsFinishDate.after(orderEnd)) {
+                        view.addMessage("productionPerShift.info.endDateTooLate", MessageType.INFO, false);
+                    } else if (ppsFinishDate.before(orderEnd)) {
+                        view.addMessage("productionPerShift.info.endDateTooEarly", MessageType.INFO, false);
                     }
                 }
             }
-            if (ppsFinishDate != null) {
-                if (ppsFinishDate.after(orderEnd)) {
-                    view.addMessage("productionPerShift.info.endDateTooLate", MessageType.INFO, false);
-                } else if (ppsFinishDate.before(orderEnd)) {
-                    view.addMessage("productionPerShift.info.endDateTooEarly", MessageType.INFO, false);
-                }
+            if (!areDatesCorrect) {
+                view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
             }
-        }
-        if (!areDatesCorrect) {
-            view.addMessage("productionPerShift.info.invalidStartDate", MessageType.INFO, false);
         }
     }
 

@@ -132,14 +132,6 @@
 										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.accept.confirm)}")) {
 											#{grid}.performEvent('changeState', ['02prepared']);
 										};
-									} else if (this.state == "prepare") {
-										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder.confirm)}")) {
-											#{grid}.performEvent('changeState', ['03duringCorrection']);
-										};
-									} else if (this.state == "correct") {
-										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.approveDelivery.confirm)}")) {
-											#{grid}.performEvent('changeState', ['05approved']);
-										};
 									} else if (this.state == "receive") {
 										if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery.confirm)}")) {
 											#{grid}.performEvent('changeState', ['06received']);
@@ -178,6 +170,20 @@
 						]]>
                     </script>
                 </smallButton>
+                <smallButton name="correctOrder" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+                                    if (window.confirm("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder.confirm)}")) {
+                                        #{grid}.performEvent('changeState', ['03duringCorrection']);
+                                    };
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
             </group>
         </ribbon>
 
@@ -193,7 +199,8 @@
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
 						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
 						var approveDeliveryBtn = #{window}.getRibbonItem("status.approveDelivery");
-						
+						var correctDeliveryBtn = #{window}.getRibbonItem("status.correctOrder");
+
 						var listener = {
 							onChange: function(selectedEntitiesArray) {
 								if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
@@ -202,6 +209,7 @@
 									acceptBtn.disable();
 									declineDeliveryBtn.disable();
 									approveDeliveryBtn.disable();
+									correctDeliveryBtn.disable();
 								} else {
 									var noDifferentStates = true;
 	 								if(selectedEntitiesArray.length > 1)
@@ -229,17 +237,19 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+											correctDeliveryBtn.disable();
 										} else if (state == "02prepared") {
 											deleteBtn.disable();
-											acceptBtn.enable();
+											acceptBtn.disable();
 											acceptBtn.state = "prepare";
-											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.correctOrder)}");
-											acceptBtn.setIcon('startIcon16.png');
+											acceptBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.receiveDelivery)}");
+											acceptBtn.setIcon('acceptIcon16.png');
 											declineDeliveryBtn.enable();
 											declineDeliveryBtn.state = "decline";
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+											correctDeliveryBtn.enable();
 										} else if (state == "03duringCorrection") {
 											deleteBtn.disable();
 											acceptBtn.disable();
@@ -251,6 +261,7 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.enable();
+											correctDeliveryBtn.disable();
 										} else if (state == "05approved"){
 											deleteBtn.disable();
 											acceptBtn.enable();
@@ -262,22 +273,26 @@
 											declineDeliveryBtn.setLabel("#{translate(deliveries.deliveryDetails.window.ribbon.status.declineDelivery)}");
 											declineDeliveryBtn.setIcon('deleteIcon16.png');
 											approveDeliveryBtn.disable();
+											correctDeliveryBtn.enable();
 										} else if (state == "06received"){
 											deleteBtn.disable();
 											acceptBtn.disable();
 											declineDeliveryBtn.disable();
 											approveDeliveryBtn.disable();
+											correctDeliveryBtn.disable();
 										} else {
 											deleteBtn.enable();
 											acceptBtn.disable();
 											declineDeliveryBtn.disable();
 											approveDeliveryBtn.disable();
+											correctDeliveryBtn.disable();
 										}
 									} else {
 										deleteBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										acceptBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										declineDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 										approveDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
+										correctDeliveryBtn.disable("#{translate(deliveries.deliveriesList.ribbon.message.deliveriesWithDifferentStatesSelected)}");
 									}
 									copyBtn.enable();
 								}

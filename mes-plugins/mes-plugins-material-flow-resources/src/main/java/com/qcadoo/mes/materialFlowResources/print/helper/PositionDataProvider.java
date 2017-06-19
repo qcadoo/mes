@@ -180,7 +180,8 @@ public class PositionDataProvider {
 
     public static String restNonZero(Entity position) {
         BigDecimal rest = restDecimal(position);
-        if (rest.compareTo(BigDecimal.ZERO) == 0) {
+        BigDecimal amount = amountDecimal(position);
+        if (rest.compareTo(BigDecimal.ZERO) == 0 || amount.compareTo(BigDecimal.ZERO) == 0) {
             return StringUtils.EMPTY;
         }
         return rest.stripTrailingZeros().toPlainString();

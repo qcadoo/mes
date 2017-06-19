@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 @Service
-public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService{
+public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService {
 
     @Autowired
     private NumberService numberService;
@@ -23,11 +23,11 @@ public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService{
     @Override
     protected ShiftEfficiencyCalculationHolder calculateShiftEfficiency(ProgressForDaysContainer progressForDaysContainer,
             Entity productionPerShift, Shift shift, Entity order, DateTimeRange range, BigDecimal shiftEfficiency,
-            int progressForDayQuantity) {
+            int progressForDayQuantity, boolean allowIncompleteUnits) {
         ShiftEfficiencyCalculationHolder calculationHolder = new ShiftEfficiencyCalculationHolder();
         BigDecimal scaledNorm = getStandardPerformanceNorm(progressForDaysContainer, order);
         Long minuets = range.durationInMins();
-        BigDecimal efficiencyForRange = calculateEfficiencyForRange(scaledNorm, minuets);
+        BigDecimal efficiencyForRange = calculateEfficiencyForRange(scaledNorm, minuets, allowIncompleteUnits);
         shiftEfficiency = shiftEfficiency.add(efficiencyForRange, numberService.getMathContext());
         calculationHolder.setShiftEfficiency(shiftEfficiency);
         if (shiftEfficiency.compareTo(progressForDaysContainer.getPlannedQuantity()) > 0) {
@@ -38,21 +38,28 @@ public class PpsTechNormAlgorithmService extends PpsBaseAlgorithmService{
         return calculationHolder;
     }
 
-    protected void calculateEfficiencyTime(ShiftEfficiencyCalculationHolder calculationHolder, BigDecimal shiftEfficiency, BigDecimal scaledNorm) {
-        int time = shiftEfficiency.divide(scaledNorm, numberService.getMathContext()).setScale(0, RoundingMode.HALF_UP).intValue();
+    protected void calculateEfficiencyTime(ShiftEfficiencyCalculationHolder calculationHolder, BigDecimal shiftEfficiency,
+            BigDecimal scaledNorm) {
+        int time = shiftEfficiency.divide(scaledNorm, numberService.getMathContext()).setScale(0, RoundingMode.HALF_UP)
+                .intValue();
         calculationHolder.addEfficiencyTime(time);
     }
 
-    protected BigDecimal calculateEfficiencyForRange(BigDecimal scaledNorm, long minuets) {
+    protected BigDecimal calculateEfficiencyForRange(BigDecimal scaledNorm, long minuets, boolean allowIncompleteUnits) {
         BigDecimal value = BigDecimal.ZERO;
         value = scaledNorm.multiply(new BigDecimal(minuets), numberService.getMathContext());
-        return value.setScale(0, RoundingMode.HALF_UP);
+        if (allowIncompleteUnits) {
+            return value;
+        } else {
+            return value.setScale(0, RoundingMode.HALF_UP);
+        }
     }
 
     protected BigDecimal getStandardPerformanceNorm(ProgressForDaysContainer progressForDaysContainer, Entity order) {
         BigDecimal norm = order.getBelongsToField(OrderFields.TECHNOLOGY).getDecimalField("standardPerformanceTechnology");
         if (norm == null) {
-            progressForDaysContainer.addError(new ErrorMessage("productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
+            progressForDaysContainer.addError(new ErrorMessage(
+                    "productionPerShift.automaticAlgorithm.technology.standardPerformanceTechnologyRequired", false));
             throw new IllegalStateException("No standard performance norm in technology");
         }
         return norm;

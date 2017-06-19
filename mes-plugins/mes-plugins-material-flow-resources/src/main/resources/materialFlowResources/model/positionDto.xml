@@ -36,6 +36,9 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <decimal name="quantity"/>
+        <decimal name="givenQuantity"/>
+        <string name="givenUnit"/>
+        <decimal name="conversion"/>
         <string name="productUnit"/>
         <decimal name="price"/>
         <datetime name="documentDate"/>

@@ -31,16 +31,13 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.mes.productionPerShift.dates.ProgressDatesService;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsExecutorService;
 import com.qcadoo.mes.productionPerShift.services.AutomaticPpsParametersService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -113,22 +110,14 @@ public class OrderHooksPPS {
 
             if (productionPerShift != null && automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
                 boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-                List<Entity> operationComponents = order.getBelongsToField(OrderFields.TECHNOLOGY)
-                        .getHasManyField(TechnologyFields.OPERATION_COMPONENTS).stream()
-                        .filter(toc -> !toc.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS).isEmpty())
-                        .collect(Collectors.toList());
-                if (operationComponents.isEmpty() && order.getBooleanField("generatePPS")) {
-                    fillWithRootOperation(operationComponents, orderFromDB);
-                }
-                for (Entity toc : operationComponents) {
-
+                boolean generate = canGenerate(order, orderFromDB, productionPerShift);
+                if (!productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() || generate) {
                     BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
                     if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
                         plannedQuantity = basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order);
                     }
                     ProgressForDaysContainer progressForDaysContainer = new ProgressForDaysContainer();
                     progressForDaysContainer.setShouldBeCorrected(shouldBeCorrected);
-                    progressForDaysContainer.setOperationComponent(toc);
                     progressForDaysContainer.setOrder(order);
                     try {
                         automaticPpsExecutorService.generateProgressForDays(progressForDaysContainer, productionPerShift);
@@ -140,8 +129,8 @@ public class OrderHooksPPS {
                     }
                     List<Entity> progressForDays = progressForDaysContainer.getProgressForDays();
                     if (progressForDaysContainer.isCalculationError()) {
-                        productionPerShift.getGlobalErrors().forEach(
-                                error -> order.addGlobalError(error.getMessage(), false, error.getVars()));
+                        productionPerShift.getGlobalErrors()
+                                .forEach(error -> order.addGlobalError(error.getMessage(), false, error.getVars()));
                         return;
                     }
 
@@ -156,29 +145,33 @@ public class OrderHooksPPS {
                             order.setField(OrderFields.DATE_TO, finishDate);
                         }
                     }
+                    productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "01planned");
 
                     if (shouldBeCorrected) {
-                        progressForDays.addAll(toc.getHasManyField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS)
-                                .stream()
-                                .filter(progressForDay -> !progressForDay.getBooleanField(ProgressForDayFields.CORRECTED))
-                                .collect(Collectors.toList()));
-                    }
-                    toc.setField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS, progressForDays);
-                    toc.getDataDefinition().save(toc);
-                }
+                        productionPerShift.setField(ProductionPerShiftFields.PLANNED_PROGRESS_TYPE, "02corrected");
 
+                        progressForDays
+                                .addAll(productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).stream()
+                                        .filter(progressForDay -> !progressForDay.getBooleanField(ProgressForDayFields.CORRECTED))
+                                        .collect(Collectors.toList()));
+                    }
+
+                    productionPerShift.setField(ProductionPerShiftFields.PROGRES_FOR_DAYS, progressForDays);
+                    productionPerShift.getDataDefinition().save(productionPerShift);
+                }
             }
+
         }
         updateOrderData(order);
     }
 
-    private void fillWithRootOperation(List<Entity> operationComponents, Entity orderFromDB) {
-        if (OrderState.PENDING == OrderState.of(orderFromDB)) {
-            Entity technology = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY);
-            EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-            Entity toc = tree.getRoot();
-            operationComponents.add(toc);
+    private boolean canGenerate(Entity order, Entity orderFromDB, Entity productionPerShift) {
+        boolean generate = false;
+        if (productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() && order
+                .getBooleanField("generatePPS") && OrderState.PENDING == OrderState.of(orderFromDB)) {
+            generate = true;
         }
+        return generate;
     }
 
     /**

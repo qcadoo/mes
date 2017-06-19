@@ -35,7 +35,6 @@ import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
-import com.qcadoo.mes.productionPerShift.constants.TechnologyOperationComponentFieldsPPS;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -95,39 +94,59 @@ public class ProgressPerShiftViewSaver {
     private ProgressForDayDataProvider progressForDayDataProvider;
 
     public boolean save(final ViewDefinitionState view) {
-        Optional<Entity> maybeToc = getEntityFromLookup(view, OPERATION_LOOKUP_REF);
-
         try {
 
-            if (maybeToc.isPresent()) {
-                return saveProgressesAndForm(view, maybeToc.get());
-            } else {
-                return saveForm(view);
-            }
+            return saveProgressesAndForm(view);
+           // return saveForm(view);
+
         } catch (IllegalStateException e){
             getFormComponent(view).addMessage("qcadooView.validate.global.optimisticLock", ComponentState.MessageType.FAILURE);
             return false;
         }
-    }
+    }/*
+            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
+                    .getComponentByReference(PROGRESS_ADL_REF);
+            List<Entity> progressForDays = progressForDaysADL.getEntities();
+            ProgressType progressType = extractProgressType(view);
+            Entity pps = form.getEntity();
+            Long ppsId = pps.getId();
+            boolean corrected = progressType == ProgressType.CORRECTED;
+
+            progressForDays.stream().forEach(pfd -> {
+                pfd.setField(ProgressForDayFields.PRODUCTION_PER_SHIFT, ppsId);
+                pfd.setField(ProgressForDayFields.CORRECTED, corrected);
+                pfd.getDataDefinition().save(pfd);
+
+            });
+            List<Entity> pfds = Lists.newArrayList();
+            pfds.addAll(progressForDayDataProvider.findForPps(pps, true));
+            pfds.addAll(progressForDayDataProvider.findForPps(pps, false));
+            pps = pps.getDataDefinition().save(pps);
+            form.setEntity(pps);
+            form.addMessage("qcadooView.message.saveMessage", ComponentState.MessageType.SUCCESS);
+*/
+
 
     @Transactional
-    private boolean saveProgressesAndForm(final ViewDefinitionState view, final Entity technologyOperationComponent) {
+    private boolean saveProgressesAndForm(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity pps = form.getEntity();
+        Long ppsId = pps.getId();
         List<Entity> progressForDays = progressForDaysADL.getEntities();
         ProgressType progressType = extractProgressType(view);
         boolean hasCorrections = progressType == ProgressType.CORRECTED;
-        List<Entity> savedProgresses = validateAndSaveProgresses(progressForDays, technologyOperationComponent.getId(),
-                hasCorrections);
+        List<Entity> savedProgresses = validateAndSaveProgresses(progressForDays, pps, hasCorrections);
         if (Iterables.all(savedProgresses, IS_VALID)) {
-            return tryUpdateTechnologyOperation(view, technologyOperationComponent, hasCorrections, savedProgresses);
+            return tryUpdatePPS(view, pps, hasCorrections, savedProgresses);
         } else {
             progressForDaysADL.setFieldValue(savedProgresses);
             showValidationErrors(view,
                     FluentIterable.from(savedProgresses).transformAndConcat(new Function<Entity, Iterable<ErrorMessage>>() {
 
-                        @Override
-                        public Iterable<ErrorMessage> apply(final Entity input) {
+                        @Override public Iterable<ErrorMessage> apply(final Entity input) {
                             return input.getGlobalErrors();
                         }
                     }));
@@ -136,42 +155,45 @@ public class ProgressPerShiftViewSaver {
         }
     }
 
-    private boolean tryUpdateTechnologyOperation(final ViewDefinitionState view, final Entity technologyOperationComponent,
+   private boolean tryUpdatePPS(final ViewDefinitionState view, final Entity pps,
             final boolean hasCorrections, final List<Entity> savedProgresses) {
-        Either<List<ErrorMessage>, Entity> tocSetupResults = setupTechnologyOperation(technologyOperationComponent,
-                savedProgresses, hasCorrections);
-        if (tocSetupResults.isRight()) {
-            return saveForm(view);
+        Either<List<ErrorMessage>, Entity> ppsSetupResults = setupPPS(pps, savedProgresses,
+                hasCorrections);
+       FormComponent form = getFormComponent(view);
+       Entity ppsEntity = form.getPersistedEntityWithIncludedFormValues();
+       trySaveCorrectionCauses(view, ppsEntity);
+        if ( trySaveCorrectionCauses(view, ppsEntity) && ppsSetupResults.isRight()) {
+            return true;
         } else {
-            showValidationErrors(view, tocSetupResults.getLeft());
+            showValidationErrors(view, ppsSetupResults.getLeft());
             rollbackCurrentTransaction();
             return false;
         }
     }
 
+    private Either<List<ErrorMessage>, Entity> setupPPS(final Entity pps, final List<Entity> savedProgresses,
+            final boolean hasCorrections) {
+        List<Entity> otherTypeProgresses = findProgressesMatching(pps, !hasCorrections);
+        List<Entity> progresses = Lists.newLinkedList(Iterables.concat(otherTypeProgresses, savedProgresses));
+        pps.setField(ProductionPerShiftFields.PROGRES_FOR_DAYS, progresses);
+
+        if (saved(pps).isValid()) {
+            return Either.right(pps);
+        }
+        return Either.left(pps.getGlobalErrors());
+    }
     private void rollbackCurrentTransaction() {
         TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
     }
 
-    private Either<List<ErrorMessage>, Entity> setupTechnologyOperation(final Entity toc, final List<Entity> savedProgresses,
-            final boolean hasCorrections) {
-        List<Entity> otherTypeProgresses = findProgressesMatching(toc, !hasCorrections);
-        List<Entity> tocProgresses = Lists.newLinkedList(Iterables.concat(otherTypeProgresses, savedProgresses));
-        toc.setField(TechnologyOperationComponentFieldsPPS.PROGRESS_FOR_DAYS, tocProgresses);
-        toc.setField(TechnologyOperationComponentFieldsPPS.HAS_CORRECTIONS, hasCorrections);
-        if (saved(toc).isValid()) {
-            return Either.right(toc);
-        }
-        return Either.left(toc.getGlobalErrors());
-    }
 
-    private List<Entity> findProgressesMatching(final Entity technologyOperationComponent, final boolean hasCorrections) {
-        return progressForDayDataProvider.findForOperation(technologyOperationComponent, hasCorrections);
+    private List<Entity> findProgressesMatching(final Entity pps, final boolean hasCorrections) {
+        return progressForDayDataProvider.findForPps(pps, hasCorrections);
     }
 
     private ProgressType extractProgressType(final ViewDefinitionState view) {
-        String progressTypeStringValue = ObjectUtils.toString(view.getComponentByReference(PROGRESS_TYPE_COMBO_REF)
-                .getFieldValue());
+        String progressTypeStringValue = ObjectUtils.toString(
+                view.getComponentByReference(PROGRESS_TYPE_COMBO_REF).getFieldValue());
         return ProgressType.parseString(progressTypeStringValue);
     }
 
@@ -241,9 +263,9 @@ public class ProgressPerShiftViewSaver {
         return (FormComponent) view.getComponentByReference(FORM_COMPONENT_REF);
     }
 
-    private List<Entity> validateAndSaveProgresses(final List<Entity> progressForDays, final Long technologyOperationId,
+    private List<Entity> validateAndSaveProgresses(final List<Entity> progressForDays, final Entity pps,
             final boolean hasCorrections) {
-        List<Entity> progressWithValidatedDailyProgresses = validateDailyProgresses(progressForDays, technologyOperationId,
+        List<Entity> progressWithValidatedDailyProgresses = validateDailyProgresses(progressForDays, pps,
                 hasCorrections);
         if (Iterables.all(progressWithValidatedDailyProgresses, IS_VALID)) {
             return FluentIterable.from(progressWithValidatedDailyProgresses).transform(SAVE).toList();
@@ -251,18 +273,18 @@ public class ProgressPerShiftViewSaver {
         return progressWithValidatedDailyProgresses;
     }
 
-    private List<Entity> validateDailyProgresses(final List<Entity> progressForDays, final Long technologyOperationId,
+ private List<Entity> validateDailyProgresses(final List<Entity> progressForDays, final Entity pps,
             final boolean hasCorrections) {
         return FluentIterable.from(progressForDays).transform(new Function<Entity, Entity>() {
 
             @Override
             public Entity apply(final Entity progressForDay) {
-                return validateDailyProgressesFor(progressForDay, technologyOperationId, hasCorrections);
+                return validateDailyProgressesFor(progressForDay, pps, hasCorrections);
             }
         }).toList();
     }
 
-    private Entity validateDailyProgressesFor(final Entity progressForDay, final Long technologyOperationId,
+    private Entity validateDailyProgressesFor(final Entity progressForDay, final Entity pps,
             final boolean hasCorrections) {
         Either<? extends List<Entity>, Void> validationResults = validateDailyProgressesFor(progressForDay);
         if (validationResults.isLeft()) {
@@ -271,7 +293,7 @@ public class ProgressPerShiftViewSaver {
             return progressForDay;
         } else {
             progressForDay.setField(ProgressForDayFields.CORRECTED, hasCorrections);
-            progressForDay.setField(ProgressForDayFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationId);
+            progressForDay.setField(ProgressForDayFields.PRODUCTION_PER_SHIFT, pps.getId());
             return progressForDay;
         }
     }

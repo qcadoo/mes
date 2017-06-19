@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -271,7 +273,8 @@ public class DeliveredProductHooks {
         return checkIfDeliveredProductAlreadyExists(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanDamagedQuantity(deliveredProductDD, deliveredProduct)
                 && checkIfDeliveredQuantityIsLessThanOrderedQuantity(deliveredProductDD, deliveredProduct)
-                && validatePallet(deliveredProductDD, deliveredProduct);
+                && validatePallet(deliveredProductDD, deliveredProduct)
+                && notTooManyPalletsInStorageLocation(deliveredProductDD, deliveredProduct);
     }
 
     public boolean checkIfDeliveredProductAlreadyExists(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -335,10 +338,28 @@ public class DeliveredProductHooks {
         if (isBiggerDeliveredQuantityAllowed()) {
             return true;
         }
+
+        BigDecimal deliveredQuantity = BigDecimalUtils.convertNullToZero(deliveredProduct
+                .getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+
+        SearchCriteriaBuilder searchCriteriaBuilder = getCriteriaForOrderedProduct(deliveredProduct);
+
+        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
+
+        if (maybeOrderedProduct.isPresent()) {
+            List<Entity> dProducts = getCriteriaForDeliveredProductByGroup(deliveredProduct).list().getEntities();
+            if (!dProducts.isEmpty()) {
+                BigDecimal deliveredQuantityRest = dProducts.stream()
+                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
+
+            }
+        }
+
         Optional<Entity> orderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct);
         BigDecimal orderedQuantity = orderedProduct.isPresent() ? orderedProduct.get().getDecimalField(
                 OrderedProductFields.ORDERED_QUANTITY) : BigDecimal.ZERO;
-        BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
         if (deliveredQuantity != null && deliveredQuantity.compareTo(orderedQuantity) > 0) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DELIVERED_QUANTITY),
                     "deliveries.deliveredProduct.error.deliveredQuantity.biggerThanOrderedQuantity");
@@ -377,6 +398,41 @@ public class DeliveredProductHooks {
         if ((deliveredProduct.getField(DeliveredProductFields.VALIDATE_PALLET) == null)
                 || deliveredProduct.getBooleanField(DeliveredProductFields.VALIDATE_PALLET)) {
             return palletValidatorService.validatePalletForDeliveredProduct(deliveredProduct);
+        }
+        return true;
+    }
+
+    private boolean notTooManyPalletsInStorageLocation(DataDefinition deliveredProductDD, Entity deliveredProduct) {
+        Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
+        final BigDecimal maxNumberOfPallets;
+        if (storageLocation != null && (maxNumberOfPallets = storageLocation
+                .getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS)) != null) {
+
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+            if (palletNumber != null) {
+
+                String query =
+                        "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount " + "FROM ("
+                        + "       SELECT" + "         resource.palletnumber_id," + "         resource.storagelocation_id"
+                        + "       FROM materialflowresources_resource resource" + "       UNION ALL" + "       SELECT"
+                        + "         deliveredproduct.palletnumber_id," + "         deliveredproduct.storagelocation_id"
+                        + "       FROM deliveries_delivery delivery"
+                        + "         JOIN deliveries_deliveredproduct deliveredproduct ON deliveredproduct.delivery_id = delivery.id"
+                        + "       WHERE delivery.state = '01draft'" + "     ) palletsInStorageLocation "
+                        + "WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND"
+                        + "      palletsInStorageLocation.palletnumber_id <> :palletNumberId";
+
+                Long palletsCount = jdbcTemplate.queryForObject(query, new MapSqlParameterSource()
+                        .addValue("storageLocationId", storageLocation.getId()).addValue("palletNumberId", palletNumber.getId()),
+                        Long.class);
+
+                boolean valid = maxNumberOfPallets.compareTo(BigDecimal.valueOf(palletsCount)) > 0;
+                if (!valid) {
+                    deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.STORAGE_LOCATION),
+                            "deliveries.deliveredProduct.error.storageLocationPalletLimitExceeded");
+                }
+                return valid;
+            }
         }
         return true;
     }

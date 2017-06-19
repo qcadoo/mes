@@ -25,25 +25,27 @@
 
 -->
 <model name="productionPerShift" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="order" model="order" plugin="orders" />
-		<hasMany name="plannedProgressCorrectionTypes" model="reasonTypeOfCorrectionPlan"
-			plugin="productionPerShift" joinField="productionPerShift" cascade="delete" />
-		<text name="plannedProgressCorrectionComment" />
-		<!-- Not persistent fields below -->
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="order" model="order" plugin="orders"/>
+        <hasMany name="progressForDays" joinField="productionPerShift"
+                 model="progressForDay" cascade="delete" copyable="true"/>
+        <hasMany name="plannedProgressCorrectionTypes" model="reasonTypeOfCorrectionPlan"
+                 plugin="productionPerShift" joinField="productionPerShift" cascade="delete"/>
+        <text name="plannedProgressCorrectionComment"/>
+        <!-- Not persistent fields below -->
 
-		<enum name="plannedProgressType" values="01planned,02corrected"
-			default="01planned" required="true" persistent="false" />
-		<belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
-			plugin="technologies" persistent="false" />
-		<belongsTo name="technology" model="technology" plugin="technologies"
-			persistent="false" />
+        <enum name="plannedProgressType" values="01planned,02corrected"
+              default="01planned" persistent="false" required="true"/>
+
+        <belongsTo name="technology" model="technology" plugin="technologies"
+                   persistent="false"/>
+
         <datetime name="orderFinishDate"/>
-	</fields>
-	<hooks>
-		<onSave class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftHooks"
-		        method="onSave" />
-	</hooks>
+    </fields>
+    <hooks>
+        <onSave class="com.qcadoo.mes.productionPerShift.hooks.ProductionPerShiftHooks"
+                method="onSave"/>
+    </hooks>
 </model>

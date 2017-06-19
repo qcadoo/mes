@@ -23,31 +23,15 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
@@ -55,10 +39,29 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingHooks {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingHooks.class);
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -84,6 +87,15 @@ public class ProductionTrackingHooks {
     @Autowired
     private ProductionTrackingService productionTrackingService;
 
+    @Autowired
+    private SecurityService securityService;
+
+    @Autowired
+    private LogService logService;
+
+    @Autowired
+    private TranslationService translationService;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         setInitialState(productionTracking);
     }
@@ -105,6 +117,19 @@ public class ProductionTrackingHooks {
 
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         productionTrackingService.unCorrect(productionTracking);
+        logPerformDelete(productionTracking);
+    }
+
+    private void logPerformDelete(final Entity productionTracking) {
+        String username = securityService.getCurrentUserName();
+        LOGGER.info(String.format("Delete production tracking. Number : %S id : %d. User : %S",
+                productionTracking.getStringField(ProductionTrackingFields.NUMBER), productionTracking.getId(), username));
+        logService.add(LogService.Builder
+                .info("productionTracking",
+                        translationService.translate("productionCounting.productionTracking.delete",
+                                LocaleContextHolder.getLocale())).withItem1("ID: " + productionTracking.getId().toString())
+                .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
+                .withItem3("User: " + username));
     }
 
     private boolean willOrderAcceptOneMore(final DataDefinition productionTrackingDD, final Entity productionTracking,

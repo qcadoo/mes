@@ -23,13 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -48,6 +42,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -198,7 +198,7 @@ public class OrderDetailsHooksMO {
             String orderDescription = orderService.buildOrderDescription(masterOrder, masterOrderTechnology,
                     fillOrderDescriptionBasedOnTechnology);
 
-            if (((String) descriptionField.getFieldValue()).isEmpty()) {
+            if ((Strings.nullToEmpty((String) descriptionField.getFieldValue())).isEmpty()) {
                 descriptionField.setFieldValue("");
                 descriptionField.requestComponentUpdateState();
                 descriptionField.setFieldValue(orderDescription);
