@@ -1650,19 +1650,22 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             onSelectRow: function (rowid, status) {
 
             },
-          beforeSelectRow: function (rowid, e) {
-          var $grid = $(this)
-                if(e.target.className === 'ui-icon ui-icon-cancel'){
-                    return false;
+            beforeSelectRow: function (rowid, e) {
+                var $td = $(e.target).closest("tr.jqgrow>td");
+                if ($td.length > 0) {
+                    var $grid = $(this);
+                    var i = $.jgrid.getCellIndex($td);
+                    var cm = $grid.jqGrid('getGridParam', 'colModel');
+                    if (cm[i].name === 'act') {
+                        if (e.target.className === 'ui-icon ui-icon-cancel') {
+                            return false;
+                        }
+                        $grid.jqGrid('resetSelection');
+                        return true;
+                    }
+                    return (cm[i].name === 'cb');
                 }
-                var $grid = $(this),
-                i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
-                cm = $grid.jqGrid('getGridParam', 'colModel');
-                if(cm[i].name === 'act'){
-                    $grid.jqGrid('resetSelection');
-                    return true;
-                }
-                return (cm[i].name === 'cb');
+                return false;
             },
             ajaxRowOptions: {
                 contentType: "application/json"
