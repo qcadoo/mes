@@ -77,7 +77,6 @@ public class DeliveryStateServiceMF {
                 stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             }
         } catch (Exception ex) {
-            stateChangeContext.addValidationError("productFlowThruDivision.deliveries.warehouseIssue.issuesCreated.error");
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
 
         }
