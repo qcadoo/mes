@@ -71,15 +71,19 @@ public class DeliveryStateServiceMF {
 
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
-
-        createDocuments(delivery);
-        if (!delivery.isValid()) {
+        try {
+            createDocuments(stateChangeContext, delivery);
+            if (!delivery.isValid()) {
+                stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            }
+        } catch (Exception ex) {
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void createDocuments(final Entity delivery) {
+    private void createDocuments(final StateChangeContext stateChangeContext, final Entity delivery) {
 
         Entity location = location(delivery);
         if (location == null) {
@@ -96,8 +100,8 @@ public class DeliveryStateServiceMF {
         for (Entity deliveredProduct : deliveredProducts) {
 
             BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-            Optional<BigDecimal> damagedQuantity = Optional
-                    .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
+            Optional<BigDecimal> damagedQuantity = Optional.fromNullable(deliveredProduct
+                    .getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
             BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
@@ -119,7 +123,16 @@ public class DeliveryStateServiceMF {
             for (ErrorMessage error : createdDocument.getGlobalErrors()) {
                 delivery.addGlobalError(error.getMessage(), error.getAutoClose());
             }
+        } else {
+            tryCreateIssuesForDeliveriesReservations(stateChangeContext);
         }
+
+    }
+
+    // BEWARE! do not remove this empty method - it is used to avoid transactional mixup in
+    // com.qcadoo.mes.productFlowThruDivision.deliveries.states.aop.listeners.DeliveryStateListenerPFTDAspect
+    // Remove only if deliveries will be rewritten to support new states.
+    public void tryCreateIssuesForDeliveriesReservations(final StateChangeContext context) {
 
     }
 
@@ -134,8 +147,8 @@ public class DeliveryStateServiceMF {
 
     private BigDecimal price(Entity deliveredProduct, Entity currency) {
         BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-        Optional<BigDecimal> pricePerUnit = Optional
-                .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
+        Optional<BigDecimal> pricePerUnit = Optional.fromNullable(deliveredProduct
+                .getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
         if (!pricePerUnit.isPresent()) {
             return null;
         }
