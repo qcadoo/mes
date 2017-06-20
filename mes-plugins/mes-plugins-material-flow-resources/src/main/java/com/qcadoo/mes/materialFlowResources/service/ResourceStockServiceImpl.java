@@ -43,8 +43,10 @@ public class ResourceStockServiceImpl implements ResourceStockService {
         Optional<Entity> maybeStock = getResourceStockForProductAndLocation(product, location);
         if (maybeStock.isPresent()) {
             resourceStock = maybeStock.get();
-            BigDecimal oldQuantity = resourceStock.getDecimalField(ResourceStockFields.QUANTITY);
-            BigDecimal oldAvailableQuantity = resourceStock.getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
+            BigDecimal oldQuantity = Optional.ofNullable(resourceStock.getDecimalField(ResourceStockFields.QUANTITY)).orElse(
+                    BigDecimal.ZERO);
+            BigDecimal oldAvailableQuantity = Optional.ofNullable(
+                    resourceStock.getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY)).orElse(BigDecimal.ZERO);
             resourceStock.setField(ResourceStockFields.QUANTITY, oldQuantity.add(quantity));
             resourceStock.setField(ResourceStockFields.AVAILABLE_QUANTITY, oldAvailableQuantity.add(quantity));
         } else {
