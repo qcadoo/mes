@@ -127,8 +127,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter()
-                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -157,8 +157,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
-                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
+                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -417,8 +417,8 @@ public class DocumentDetailsListeners {
             boolean result = true;
 
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue())
-                        && position.getField(PositionFields.RESOURCE) != null)
+                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
+                        .getField(PositionFields.RESOURCE) != null)
                         || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
                 if (!resultForPosition) {
                     result = false;
@@ -449,8 +449,8 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
-                    .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
+            Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
+                    (String) givenQuantityField.getFieldValue(), view.getLocale());
 
             if (maybeQuantity.isRight()) {
                 if (maybeQuantity.getRight().isPresent()) {
@@ -461,8 +461,8 @@ public class DocumentDetailsListeners {
                         position.setField(PositionFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder
-                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                        UnitConversionItemFieldsB.PRODUCT, product)));
 
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
@@ -494,9 +494,13 @@ public class DocumentDetailsListeners {
     public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
-        document = resourceReservationsService.fillResourcesInDocument(document);
-        form.setEntity(document);
-        view.performEvent(view, "reset");
+        try {
+            document = resourceReservationsService.fillResourcesInDocument(view, document);
+            form.setEntity(document);
+            view.performEvent(view, "reset");
+        } catch (IllegalStateException e) {
+            view.addMessage("materialFlow.document.fillResources.global.error.documentNotValid", MessageType.FAILURE, false);
+        }
     }
 
 }
