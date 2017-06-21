@@ -9,18 +9,11 @@ public class DocumentPositionResourcesHelper {
     @Autowired
     private WarehouseMethodOfDisposalService warehouseMethodOfDisposalService;
 
-    public String getResourceQuery(final Long document, boolean query, boolean addMethodOfDisposal, boolean useAdditionalCode) {
+    public String getResourceQuery(final Long document, boolean query, boolean useAdditionalCode) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("select number, batch, availablequantity from materialflowresources_resource");
         appendWhereClause(queryBuilder, query, useAdditionalCode);
-        if (addMethodOfDisposal) {
-            // queryBuilder.append(" AND ");
-            // queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(document));
-            // appendWhereClause(queryBuilder, query, useAdditionalCode);
-            // queryBuilder.append(")");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(document));
-        }
-
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(document));
         return queryBuilder.toString();
     }
 

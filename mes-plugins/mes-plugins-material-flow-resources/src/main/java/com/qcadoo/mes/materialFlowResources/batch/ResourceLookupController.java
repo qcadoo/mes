@@ -61,24 +61,20 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if ("wasteString".equals(sidx)) {
             sidx = "waste";
         }
-        String query = getQuery(context, useAdditionalCode,
-                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode),
-                !properFilter);
+        String query = getQuery(context, useAdditionalCode, !properFilter);
 
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
             parameters = geParameters(context, record, false, additionalCode);
-            query = getQuery(context, false,
-                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false), !properFilter);
+            query = getQuery(context, false, !properFilter);
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
         setTranslatedWasteFlag(response);
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal,
-            boolean wasteFilterIsWrong) {
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean wasteFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append(
                 "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
@@ -96,20 +92,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if (useAdditionalCode) {
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
-        if (addMethodOfDisposal) {
-            // queryBuilder.append(" AND ");
-            // queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
-            // queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
-            // queryBuilder
-            // .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from
-            // materialflowresources_document WHERE id = :context)");
-            // queryBuilder.append(" AND conversion = :conversion");
-            // if (useAdditionalCode) {
-            // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
-            // }
-            // queryBuilder.append(" )");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
-        }
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }

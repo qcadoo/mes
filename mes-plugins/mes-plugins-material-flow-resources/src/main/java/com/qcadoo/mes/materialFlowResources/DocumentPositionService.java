@@ -414,14 +414,12 @@ public class DocumentPositionService {
             filter.put("add_code", additionalCode);
         }
 
-        String query = positionResourcesHelper.getResourceQuery(document, false,
-                addMethodOfDisposalCondition(document, filter, false, useAdditionalCode), useAdditionalCode);
+        String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode);
 
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
 
         if (batches.isEmpty() && useAdditionalCode) {
-            query = positionResourcesHelper.getResourceQuery(document, false,
-                    addMethodOfDisposalCondition(document, filter, false, false), false);
+            query = positionResourcesHelper.getResourceQuery(document, false, false);
 
             batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         }
@@ -451,8 +449,7 @@ public class DocumentPositionService {
                 paramMap.put("add_code", additionalCode);
             }
 
-            String query = positionResourcesHelper.getResourceQuery(document, true,
-                    addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
+            String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
         }
@@ -486,8 +483,7 @@ public class DocumentPositionService {
             paramMap.put("add_code", additionalCode);
         }
 
-        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true,
-                addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
+        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
         return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap, shouldCheckMaxResults);
     }
@@ -510,20 +506,6 @@ public class DocumentPositionService {
         } else {
             return batches.get(0);
         }
-    }
-
-    public boolean addMethodOfDisposalCondition(final Long document, final Map<String, Object> paramMap, boolean useQuery,
-            boolean useAdditionalCode) {
-        // boolean addMethodOfDisposalCondition = false;
-        //
-        // String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
-        // Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
-        // if(date != null){
-        // addMethodOfDisposalCondition = true;
-        // }
-        // return addMethodOfDisposalCondition;
-
-        return true;
     }
 
     public void deletePositions(final String ids) {
