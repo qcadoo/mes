@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -19,6 +20,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class ResourceReservationsService {
@@ -59,7 +61,8 @@ public class ResourceReservationsService {
         }
     }
 
-    public Entity fillResourcesInDocument(final Entity document) {
+    @Transactional
+    public Entity fillResourcesInDocument(final ViewDefinitionState view, final Entity document) {
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
@@ -80,7 +83,13 @@ public class ResourceReservationsService {
             }
         }
         document.setField(DocumentFields.POSITIONS, generatedPositions);
-        return document.getDataDefinition().save(document);
+        Entity saved = document.getDataDefinition().save(document);
+        if (saved.isValid()) {
+            return saved;
+        } else {
+            saved.getGlobalErrors().forEach(view::addMessage);
+        }
+        throw new IllegalStateException("Unable to fill resources in document.");
     }
 
     private List<Entity> matchResourcesToPosition(final Entity position, final Entity warehouse,
