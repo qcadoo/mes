@@ -129,7 +129,7 @@ public class DispositionOrderPdf extends ReportPdfView {
         List<HeaderPair> headerValues = getDocumentHeaderTableContent(documentEntity, locale);
         for (HeaderPair pair : headerValues) {
             if (pair.getValue() != null && !pair.getValue().isEmpty()) {
-                pdfHelper.addTableCellAsOneColumnTable(table, pair.getLabel(), pair.getValue());
+                pdfHelper.addTableCellAsOneColumnTable(table, pair.getLabel(), pair.getValue(), pair.isBoldAndBigger());
             } else {
                 pdfHelper.addTableCellAsOneColumnTable(table, StringUtils.EMPTY, StringUtils.EMPTY);
             }
@@ -140,10 +140,10 @@ public class DispositionOrderPdf extends ReportPdfView {
     }
 
     private void addPositionsTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
-        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(20, 50, 50, 50, 50, 100, 40, 30));
+        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(20, 50, 50, 50, 50, 100, 40, 35));
         int numOfColumns = 8;
         if (acceptanceOfDocumentBeforePrinting) {
-            headerWidthsList.add(50);
+            headerWidthsList.add(45);
             numOfColumns++;
         }
         int[] headerWidths = headerWidthsList.stream().mapToInt(i -> i).toArray();
@@ -168,8 +168,9 @@ public class DispositionOrderPdf extends ReportPdfView {
                 }
             });
         }
+        Integer index = 1;
         for (Position position : _positions) {
-            positionsTable.addCell(createCell(position.getIndex(), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(index.toString(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getTypeOfPallet(), Element.ALIGN_LEFT));
@@ -181,6 +182,7 @@ public class DispositionOrderPdf extends ReportPdfView {
             if (acceptanceOfDocumentBeforePrinting) {
                 positionsTable.addCell(createCell(position.getTargetPallet(), Element.ALIGN_LEFT));
             }
+            index++;
         }
 
         positionsTable.setSpacingAfter(20);
@@ -206,8 +208,9 @@ public class DispositionOrderPdf extends ReportPdfView {
 
     private PdfPCell createCell(String content, int alignment) {
         PdfPCell cell = new PdfPCell();
+        cell.setFixedHeight(30f);
         float border = 0.2f;
-        cell.setPhrase(new Phrase(content, FontUtils.getDejavuRegular7Dark()));
+        cell.setPhrase(new Phrase(content, FontUtils.getDejavuRegular9Dark()));
         cell.setHorizontalAlignment(alignment);
         cell.setBorderWidth(border);
         cell.disableBorderSide(PdfPCell.RIGHT);
@@ -277,12 +280,13 @@ public class DispositionOrderPdf extends ReportPdfView {
         List<HeaderPair> headerValues = Lists.newLinkedList();
 
         headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_FROM, locale), DocumentDataProvider
-                .locationFrom(documentEntity)));
+                .locationFrom(documentEntity), false));
         headerValues.add(new HeaderPair(translationService.translate(L_STATE, locale), translationService.translate(L_STATE_VALUE
-                + DocumentDataProvider.state(documentEntity), locale)));
-        headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity)));
+                + DocumentDataProvider.state(documentEntity), locale), false));
+        headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity),
+                false));
         headerValues.add(new HeaderPair(translationService.translate(L_DESCRIPTION, locale), DocumentDataProvider
-                .description(documentEntity)));
+                .description(documentEntity), true));
 
         return headerValues;
     }
