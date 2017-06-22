@@ -29,6 +29,9 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -84,6 +87,8 @@ public class DocumentDetailsListeners {
     private static final String L_BATCH = "batch";
 
     public static final String L_POSITIONS = "positions";
+
+    private static final Logger logger = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -180,6 +185,8 @@ public class DocumentDetailsListeners {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
+        logger.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
 
         String documentState = document.getStringField(DocumentFields.STATE);
 
@@ -195,7 +202,8 @@ public class DocumentDetailsListeners {
             documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(documentToCreateResourcesFor);
-
+            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
             return;
         }
 
@@ -205,7 +213,8 @@ public class DocumentDetailsListeners {
             documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(documentToCreateResourcesFor);
-
+            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
             return;
         }
         boolean emptyPositions = false;
@@ -251,6 +260,9 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(documentToCreateResourcesFor);
+
+        logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -499,7 +511,13 @@ public class DocumentDetailsListeners {
             form.setEntity(document);
             view.performEvent(view, "reset");
         } catch (IllegalStateException e) {
+            logger.warn("Fill resources: " + e.getMessage());
+            logger.warn(document.toString());
             view.addMessage("materialFlow.document.fillResources.global.error.documentNotValid", MessageType.FAILURE, false);
+        } catch (LockAcquisitionException e) {
+            logger.warn("Fill resources: " + e.getMessage());
+            logger.warn(document.toString());
+            view.addMessage("materialFlow.document.fillResources.global.error.concurrentModify", MessageType.FAILURE, false);
         }
     }
 
