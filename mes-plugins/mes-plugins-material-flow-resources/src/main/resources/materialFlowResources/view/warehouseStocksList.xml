@@ -49,9 +49,9 @@
             <option type="order" column="locationName" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity"/>
 
             <!-- column orderedQuantity from deliveriesToMaterialFlow -->
             <option type="columnsToSummary"

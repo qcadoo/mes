@@ -80,10 +80,7 @@
                 </smallButton>
                 <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;"
                              accesskey="x"/>
-            </group>
-
-            <group name="actions">
-                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"
+                <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;"
                            accesskey="r"/>
             </group>
 
