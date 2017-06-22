@@ -536,3 +536,16 @@ button.ui-datepicker-trigger:hover{
     font-size: 12px;
     font-weight: normal;    
 }
+
+th.ui-th-column div{
+    height:auto!important;
+}
+
+.ui-jqgrid .ui-jqgrid-htable th div {
+    white-space:normal !important;
+    height:auto!important;
+    padding-top: 1px;
+    padding-right: 1.7px;
+    padding-bottom: 1px;
+    padding-left: 1.7px;
+}

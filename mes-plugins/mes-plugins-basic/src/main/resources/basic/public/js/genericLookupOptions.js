@@ -24,7 +24,7 @@ myApp.directive('ngJqGrid', function ($window) {
                             '<div id="cancel_icon"></div>' +
                             '<div class="hasIcon">' + cancelHeader + '</div></div>';
 
-                    var gridTitle = '<div class="gridTitle">' + positionsHeader + '</div>';
+                    var gridTitle = '<div class="gridTitle">' + positionsHeader + ' <span id="rows-num">(0)</span></div>';
                     $('#t_grid').append(gridTitle);
                     $('#t_grid').append(cancelButton);
 
@@ -98,6 +98,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 colModel: [],
                 pager: "#jqGridPager",
                 gridComplete: function () {
+                    $('#rows-num').text('(' + jQuery('#grid').getGridParam('records') + ')');
                 },
                 onSelectRow: function (id) {
                     var row = jQuery('#grid').jqGrid('getRowData', id);
