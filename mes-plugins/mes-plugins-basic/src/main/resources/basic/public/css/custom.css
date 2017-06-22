@@ -548,4 +548,5 @@ th.ui-th-column div{
     padding-right: 1.7px;
     padding-bottom: 1px;
     padding-left: 1.7px;
+    text-overflow: ellipsis;
 }
