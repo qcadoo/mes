@@ -4,9 +4,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.exception.LockAcquisitionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
@@ -20,6 +24,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
@@ -36,6 +42,11 @@ public class ResourceReservationsService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private UserService userService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ResourceReservationsService.class);
 
     public void updateResourceQuantites(Map<String, Object> params, BigDecimal quantityToAdd) {
         if (params.get("resource_id") != null) {
@@ -61,9 +72,15 @@ public class ResourceReservationsService {
         }
     }
 
-    @Transactional
-    public Entity fillResourcesInDocument(final ViewDefinitionState view, final Entity document) {
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Entity fillResourcesInDocument(final ViewDefinitionState view, final Entity document) throws LockAcquisitionException {
+        logger.info("FILL RESOURCES STARTED IN DOCUMENT: id = " + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
+        logger.info("USER STARTED IN DOCUMENT: id = " + document.getId() + ": "
+                + userService.getCurrentUserEntity().getStringField(UserFields.USER_NAME));
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+        logger.info("INITIAL POSITIONS IN DOCUMENT: id = " + document.getId() + ": size = " + positions.size());
+        logger.info(positions.toString());
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
@@ -83,12 +100,19 @@ public class ResourceReservationsService {
             }
         }
         document.setField(DocumentFields.POSITIONS, generatedPositions);
+        logger.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ": size = " + generatedPositions.size());
+        logger.info(generatedPositions.toString());
         Entity saved = document.getDataDefinition().save(document);
         if (saved.isValid()) {
+            logger.info("FILL RESOURCES ENDED SUCCESSFULLY FOR DOCUMENT: id = " + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
             return saved;
         } else {
             saved.getGlobalErrors().forEach(view::addMessage);
         }
+
+        logger.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "
+                + document.getStringField(DocumentFields.NUMBER));
         throw new IllegalStateException("Unable to fill resources in document.");
     }
 
@@ -105,6 +129,9 @@ public class ResourceReservationsService {
                 position, warehouseAlgorithm);
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
+            logger.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
+                    + position.toString());
+            logger.info("RESOURCE USED: " + resource.toString());
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
             Entity newPosition = positionDD.create();
