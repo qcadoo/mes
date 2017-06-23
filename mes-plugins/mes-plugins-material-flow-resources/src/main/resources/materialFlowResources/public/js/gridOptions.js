@@ -1259,8 +1259,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.cancelEditing = cancelEditing;
 
         $scope.resize = function () {
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true);
+            var gridHeight =
+                $('tr.jqgrow').slice(0, 20).map(function () {
+                    return $(this).outerHeight()
+                }).get().reduce(function (a, b) {
+                    return a + b
+                }, 0);
+
+            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true).setGridHeight(gridHeight);
         };
+
         $("#window\\.positionsGridTab").resize($scope.resize);
 
         var gridEditOptions = {
@@ -1646,6 +1654,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                 }
                 $('#rows-num').text('(' + grid.getGridParam('records') + ')');
+                grid.resize();
+                // force grid layout to adapt it's height accordingly to jqGrid
+                $('.flow-grid-layout-item').height($('ng-jq-grid>div').outerHeight()).trigger('resize');
             },
             onSelectRow: function (rowid, status) {
 
@@ -1667,6 +1678,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
                 return false;
             },
+            beforeRequest: function () {
+                $.cookie("jqgrid_conf", JSON.stringify({
+                    rowNum: $(this).getGridParam("rowNum")
+                }));
+            },
             ajaxRowOptions: {
                 contentType: "application/json"
             },
@@ -1677,10 +1693,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             beforeSubmit: function (postdata, formid) {
                 return [false, 'ble'];
-            },
+            }
         };
 
         function prepareGridConfig(config) {
+            var c = $.cookie("jqgrid_conf");
+            if (c){
+                $.extend(config, JSON.parse(c));
+            }
+
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
                         columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
