@@ -148,9 +148,7 @@ public class DeliveryDetailsHooks {
 
         deliveryForm.setFormEnabled(enabledForm);
         orderedProducts.setEnabled(enabledOrderedGrid);
-        orderedProducts.setEditable(enabledOrderedGrid);
         deliveredProducts.setEnabled(enabledDeliveredGrid);
-        deliveredProducts.setEditable(enabledDeliveredGrid);
     }
 
     public void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
