@@ -52,6 +52,7 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -85,6 +86,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private ReservationsService reservationsService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
 
     public ResourceManagementServiceImpl() {
 
@@ -253,8 +257,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
-        BigDecimal quantityInAdditionalUnit = numberService.setScale(quantity.multiply(resource
-                .getDecimalField(ResourceFields.CONVERSION)));
+        BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(quantity,
+                resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
@@ -262,6 +266,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         resourceStockService.addResourceStock(newResource);
         return resourceDD.save(newResource);
+    }
+
+    private BigDecimal calculateAdditionalQuantity(BigDecimal quantity, BigDecimal conversion, String unit) {
+        boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
+        if (isInteger) {
+            return numberService.setScale(quantity.multiply(conversion), 0);
+        }
+        return numberService.setScale(quantity.multiply(conversion));
     }
 
     private Entity findStorageLocationForProduct(final Entity warehouse, final Entity product) {
@@ -527,7 +539,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
-                    BigDecimal quantityInAdditionalUnit = newResourceQuantity.multiply(resourceConversion);
+                    BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(newResourceQuantity, resourceConversion,
+                            resource.getStringField(ResourceFields.GIVEN_UNIT));
                     resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
@@ -556,7 +569,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
                 }
                 BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
-                BigDecimal quantityInAdditionalUnit = resourceQuantity.multiply(resourceConversion);
+                BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(resourceQuantity, resourceConversion,
+                        resource.getStringField(ResourceFields.GIVEN_UNIT));
 
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
@@ -706,7 +720,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
-                    BigDecimal quantityInAdditionalUnit = newResourceQuantity.multiply(resourceConversion);
+
+                    BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(newResourceQuantity, resourceConversion,
+                            resource.getStringField(ResourceFields.GIVEN_UNIT));
+
                     resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
@@ -824,6 +841,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
             } else {
                 scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+
             }
 
             resources.addAll(scb
@@ -875,6 +893,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
                             SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
                     .addOrder(SearchOrders.desc(TIME)).list().getEntities());
+
         }
 
         if (resources.isEmpty()) {
