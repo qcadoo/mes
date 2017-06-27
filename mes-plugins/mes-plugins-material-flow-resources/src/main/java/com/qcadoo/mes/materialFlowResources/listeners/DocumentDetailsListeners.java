@@ -229,6 +229,7 @@ public class DocumentDetailsListeners {
             documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
         }
 
+        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         if (!documentToCreateResourcesFor.isValid()) {
             Entity recentlySavedDocument = documentDD.get(document.getId());
 
@@ -240,8 +241,6 @@ public class DocumentDetailsListeners {
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
-
-        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
 
         updatePositions(documentToCreateResourcesFor);
 
