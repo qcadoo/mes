@@ -51,6 +51,11 @@ public class ResourceDTO implements AbstractDTO {
     @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
     private Boolean waste;
 
+    @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
+    private Boolean lastResource;
+
+    private String resourceString;
+
     private String wasteString;
 
     public Long getId() {
@@ -219,5 +224,21 @@ public class ResourceDTO implements AbstractDTO {
 
     public void setAvailableQuantity(BigDecimal availableQuantity) {
         this.availableQuantity = availableQuantity;
+    }
+
+    public Boolean getLastResource() {
+        return lastResource;
+    }
+
+    public void setLastResource(Boolean lastResource) {
+        this.lastResource = lastResource;
+    }
+
+    public String getResourceString() {
+        return resourceString;
+    }
+
+    public void setResourceString(String resourceString) {
+        this.resourceString = resourceString;
     }
 }

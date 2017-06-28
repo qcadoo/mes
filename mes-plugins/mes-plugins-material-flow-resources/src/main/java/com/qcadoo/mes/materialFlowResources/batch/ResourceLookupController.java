@@ -76,15 +76,18 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
 
     protected String getQuery(final Long context, boolean useAdditionalCode, boolean wasteFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(
-                "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
+        queryBuilder
+                .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
+        queryBuilder.append("r1.resourcesCount < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
+        queryBuilder
+                .append("LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n");
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
         queryBuilder.append("LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id ");
         queryBuilder.append("LEFT JOIN basic_product bp on bp.number = :product ");
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.product_id = bp.id ");
-        queryBuilder.append(
-                " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder
+                .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion AND r.availablequantity > 0 ");
         if (wasteFilterIsWrong) {
             queryBuilder.append(" AND waste IS NULL ");
@@ -140,8 +143,8 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     }
 
     private boolean prepareWasteFilter(ResourceDTO record) {
-        String yes = translationService
-                .translate("documentGrid.gridColumn.wasteString.value.yes", LocaleContextHolder.getLocale()).toLowerCase();
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale()).toLowerCase();
         String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
                 .toLowerCase();
         String filter = record.getWasteString();
