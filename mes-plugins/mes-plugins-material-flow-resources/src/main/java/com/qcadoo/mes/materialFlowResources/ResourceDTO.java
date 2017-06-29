@@ -54,7 +54,7 @@ public class ResourceDTO implements AbstractDTO {
     @JsonFormat(shape = JsonFormat.Shape.BOOLEAN)
     private Boolean lastResource;
 
-    private String resourceString;
+    private String lastResourceString;
 
     private String wasteString;
 
@@ -234,11 +234,11 @@ public class ResourceDTO implements AbstractDTO {
         this.lastResource = lastResource;
     }
 
-    public String getResourceString() {
-        return resourceString;
+    public String getLastResourceString() {
+        return lastResourceString;
     }
 
-    public void setResourceString(String resourceString) {
-        this.resourceString = resourceString;
+    public void setLastResourceString(String lastResourceString) {
+        this.lastResourceString = lastResourceString;
     }
 }
