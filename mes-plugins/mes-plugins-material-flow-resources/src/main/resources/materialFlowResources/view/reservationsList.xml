@@ -74,6 +74,10 @@
             <option type="prioritizable" value="false"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <option type="columnsToSummary"
+                    value="quantity"/>
+
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ReservationsCriteriaModifier"
                               method="restrictToUserLocations"/>
         </component>
