@@ -77,7 +77,7 @@ public class MaterialFlowResourcesOnStartupService extends Module {
         items.add(new Object[] { 17, "palletNumber", true });
         items.add(new Object[] { 18, "typeOfPallet", true });
         items.add(new Object[] { 19, "waste", true });
-        items.add(new Object[] { 20, "lastResource", false });
+        items.add(new Object[] { 20, "lastResource", true });
 
         for (Object[] item : items) {
             Entity itemEntity = positionParametersItemDD.find().add(SearchRestrictions.eq("name", item[1])).uniqueResult();
