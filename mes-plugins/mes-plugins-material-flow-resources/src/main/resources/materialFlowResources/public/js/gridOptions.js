@@ -591,11 +591,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('price', resource['price'], rowId);
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
                 updateFieldValue('waste', resource['waste'], rowId);
+                updateFieldValue('lastResource', resource['lastResource'], rowId);
             });
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste'];
+            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
@@ -834,6 +835,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('givenquantity', '', getRowIdFromElement(t));
                         updateFieldValue('conversion', '', getRowIdFromElement(t));
                         updateFieldValue('waste', '0', getRowIdFromElement(t));
+                        updateFieldValue('lastResource', '0', getRowIdFromElement(t));
 
                         clearSelect('givenunit', getRowIdFromElement(t));
                     }
@@ -1628,11 +1630,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 	editable: true,
                 	edittype: 'checkbox',
                 	formatter: 'checkbox',
+                	width: 60,
                 	editoptions: {
                 		value: '1:0'
                 	},
                 	formoptions: {
                 		rowpos: 10,
+                		colpos: 1
+                	},
+                	searchoptions: {
+                		sopt: ['eq', 'ne'],
+                		value:': ;1:'+translateMessages('documentGrid.yes')+';0:'+translateMessages('documentGrid.no')
+        			},
+        			stype: 'select'
+                },
+                {
+                	name: 'lastResource',
+                	index: 'lastResource',
+                	editable: true,
+                	edittype: 'checkbox',
+                	formatter: 'checkbox',
+                	width: 70,
+                	editoptions: {
+                		value: '1:0'
+                	},
+                	formoptions: {
+                		rowpos: 11,
                 		colpos: 1
                 	},
                 	searchoptions: {
@@ -1709,6 +1732,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return true;
                 }
                 if (!outDocument && (columnIndex === 'resource')) {
+                    return true;
+                }
+                if (columnIndex === 'lastResource') {
                     return true;
                 }
                 return false;

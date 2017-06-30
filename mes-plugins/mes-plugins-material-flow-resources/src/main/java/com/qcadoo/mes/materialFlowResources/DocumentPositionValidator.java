@@ -3,8 +3,6 @@ package com.qcadoo.mes.materialFlowResources;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -336,14 +334,14 @@ public class DocumentPositionValidator {
 
                 if (position.getResource().equals(resourceDTO.getNumber())) {
                     find = true;
-                    
+
                     break;
                 }
             }
 
             if (!find) {
                 position.setResource(null);
-                
+
                 return Lists.newArrayList("documentGrid.error.position.resource.invalid");
             }
         }
@@ -458,6 +456,7 @@ public class DocumentPositionValidator {
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
         params.put("batch", vo.getBatch().trim());
         params.put("waste", vo.isWaste());
+        params.put("lastResource", vo.getLastResource());
 
         return params;
     }
