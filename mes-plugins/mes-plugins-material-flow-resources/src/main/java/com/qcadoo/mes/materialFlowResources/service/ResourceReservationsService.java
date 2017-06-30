@@ -24,6 +24,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -73,7 +74,7 @@ public class ResourceReservationsService {
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Entity fillResourcesInDocument(final ViewDefinitionState view, final Entity document) throws LockAcquisitionException {
+    public void fillResourcesInDocument(final ViewDefinitionState view, final Entity document) throws LockAcquisitionException {
         logger.info("FILL RESOURCES STARTED IN DOCUMENT: id = " + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
         logger.info("USER STARTED IN DOCUMENT: id = " + document.getId() + ": "
@@ -84,31 +85,31 @@ public class ResourceReservationsService {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
-        List<Entity> generatedPositions = Lists.newArrayList();
+        List<ErrorMessage> errors = Lists.newArrayList();
+        boolean valid = true;
 
         for (Entity position : positions) {
             if (position.getBelongsToField(PositionFields.RESOURCE) == null) {
                 List<Entity> newPositions = matchResourcesToPosition(position, warehouse, warehouseAlgorithm);
-                if (newPositions.isEmpty()) {
-                    generatedPositions.add(position);
-                } else {
+                if (!newPositions.isEmpty()) {
                     position.getDataDefinition().delete(position.getId());
-                    generatedPositions.addAll(newPositions);
+                    logger.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ", FOR POSITION: id = " + position.getId() + ", size = " + newPositions.size());
+                    logger.info(newPositions.toString());
+                    for(Entity newPosition : newPositions){
+                        newPosition.setField(PositionFields.DOCUMENT, document);
+                        Entity saved = newPosition.getDataDefinition().save(newPosition);
+                        valid = valid && saved.isValid();
+                        errors.addAll(saved.getGlobalErrors());
+                    }
                 }
-            } else {
-                generatedPositions.add(position);
             }
         }
-        document.setField(DocumentFields.POSITIONS, generatedPositions);
-        logger.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ": size = " + generatedPositions.size());
-        logger.info(generatedPositions.toString());
-        Entity saved = document.getDataDefinition().save(document);
-        if (saved.isValid()) {
+        if (valid) {
             logger.info("FILL RESOURCES ENDED SUCCESSFULLY FOR DOCUMENT: id = " + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
-            return saved;
+            return;
         } else {
-            saved.getGlobalErrors().forEach(view::addMessage);
+            errors.forEach(view::addMessage);
         }
 
         logger.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "

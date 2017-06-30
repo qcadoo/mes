@@ -506,7 +506,8 @@ public class DocumentDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         try {
-            document = resourceReservationsService.fillResourcesInDocument(view, document);
+            resourceReservationsService.fillResourcesInDocument(view, document);
+            document = form.getPersistedEntityWithIncludedFormValues();
             form.setEntity(document);
             view.performEvent(view, "reset");
         } catch (IllegalStateException e) {
