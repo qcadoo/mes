@@ -591,7 +591,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('price', resource['price'], rowId);
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
                 updateFieldValue('waste', resource['waste'], rowId);
-                updateFieldValue('lastResource', resource['lastResource'], rowId);
+                if ($scope.config.outDocument) {
+                    updateFieldValue('lastResource', resource['lastResource'], rowId);
+                }
             });
         }
 
