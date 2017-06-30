@@ -52,12 +52,14 @@ public class DocumentPositionService {
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, final DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
-                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource \n"
+                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
+                + "r1.resourcesCount < 2 AS lastResource "
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
+                + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
         Map<String, Object> parameters = Maps.newHashMap();
