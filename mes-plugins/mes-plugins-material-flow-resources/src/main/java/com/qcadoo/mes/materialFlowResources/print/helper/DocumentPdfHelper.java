@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
@@ -49,6 +41,13 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class DocumentPdfHelper {
@@ -206,16 +205,17 @@ public class DocumentPdfHelper {
         List<HeaderPair> headerValues = Lists.newLinkedList();
         headerValues.add(new HeaderPair(translationService.translate(L_NUMBER, locale) + "\n"
                 + translationService.translate(L_NAME, locale), DocumentDataProvider.number(documentEntity) + "\n"
-                + DocumentDataProvider.name(documentEntity)));
+                + DocumentDataProvider.name(documentEntity), false));
         headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_FROM, locale), DocumentDataProvider
-                .locationFrom(documentEntity)));
+                .locationFrom(documentEntity), false));
         headerValues.add(new HeaderPair(translationService.translate(L_COMPANY, locale), DocumentDataProvider
-                .company(documentEntity)));
-        headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity)));
+                .company(documentEntity), false));
+        headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity),
+                false));
         headerValues.add(new HeaderPair(translationService.translate(L_LOCATION_TO, locale), DocumentDataProvider
-                .locationTo(documentEntity)));
+                .locationTo(documentEntity), false));
         headerValues.add(new HeaderPair(translationService.translate(L_STATE, locale), translationService.translate(L_STATE_VALUE
-                + DocumentDataProvider.state(documentEntity), locale)));
+                + DocumentDataProvider.state(documentEntity), locale), false));
         return headerValues;
     }
 
@@ -228,7 +228,7 @@ public class DocumentPdfHelper {
      */
     public HeaderPair getDescription(final Entity documentEntity, final Locale locale) {
         return new HeaderPair(translationService.translate(L_DESCRIPTION, locale),
-                DocumentDataProvider.description(documentEntity));
+                DocumentDataProvider.description(documentEntity), false);
     }
 
     /**
@@ -370,9 +370,12 @@ public class DocumentPdfHelper {
 
         private String value;
 
-        public HeaderPair(String label, String value) {
+        private boolean boldAndBigger;
+
+        public HeaderPair(String label, String value, boolean boldAndBigger) {
             this.setLabel(label);
             this.setValue(value);
+            this.setBoldAndBigger(boldAndBigger);
         }
 
         public String getValue() {
@@ -391,5 +394,12 @@ public class DocumentPdfHelper {
             this.label = label;
         }
 
+        public boolean isBoldAndBigger() {
+            return boldAndBigger;
+        }
+
+        public void setBoldAndBigger(boolean boldAndBigger) {
+            this.boldAndBigger = boldAndBigger;
+        }
     }
 }

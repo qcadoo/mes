@@ -31,6 +31,7 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
@@ -96,7 +97,11 @@ public class MasterOrderDetailsHooks {
         } else {
             createOrder.setEnabled(false);
         }
-        createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
+        if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
+            createOrder.setEnabled(true);
+        } else {
+            createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
+        }
         createOrder.requestUpdate(true);
         window.requestRibbonRender();
     }

@@ -30,7 +30,11 @@
 }
 
 #gridContainer .ui-th-column, #gridContainer .ui-search-toolbar  {
-    background: transparent url('/qcadooView/public/css/crud/images/grid/gradientygrid/gradient_header.png') repeat-x 0 0;
+    background: #808080;
+    background: -moz-linear-gradient(top, #808080 0%, #777777 27%, #6d6d6d 47%, #6a6a6a 54%, #616161 64%, #545454 85%, #545454 100%);
+    background: -webkit-linear-gradient(top, #808080 0%,#777777 27%,#6d6d6d 47%,#6a6a6a 54%,#616161 64%,#545454 85%,#545454 100%);
+    background: linear-gradient(to bottom, #808080 0%,#777777 27%,#6d6d6d 47%,#6a6a6a 54%,#616161 64%,#545454 85%,#545454 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#808080', endColorstr='#545454',GradientType=0 );
     font-family: "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
     font-size: 11px;
     color: #e8e8e8;
@@ -535,4 +539,18 @@ button.ui-datepicker-trigger:hover{
     color: #9b9b9b;
     font-size: 12px;
     font-weight: normal;    
+}
+
+th.ui-th-column div{
+    height:auto!important;
+}
+
+.ui-jqgrid .ui-jqgrid-htable th div {
+    white-space:normal !important;
+    height:auto!important;
+    padding-top: 1px;
+    padding-right: 1.7px;
+    padding-bottom: 1px;
+    padding-left: 1.7px;
+    text-overflow: ellipsis;
 }

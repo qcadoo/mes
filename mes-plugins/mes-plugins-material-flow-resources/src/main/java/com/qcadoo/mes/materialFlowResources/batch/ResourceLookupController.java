@@ -61,55 +61,50 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if ("wasteString".equals(sidx)) {
             sidx = "waste";
         }
-        String query = getQuery(context, useAdditionalCode,
-                documentPositionService.addMethodOfDisposalCondition(context, parameters, false, useAdditionalCode),
-                !properFilter);
+        boolean properFilterLastResource = prepareLastResourceFilter(record);
+        if ("lastResourceString".equals(sidx)) {
+            sidx = "lastResource";
+        }
+        String query = getQuery(context, useAdditionalCode, !properFilter, !properFilterLastResource);
 
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
             parameters = geParameters(context, record, false, additionalCode);
-            query = getQuery(context, false,
-                    documentPositionService.addMethodOfDisposalCondition(context, parameters, false, false), !properFilter);
+            query = getQuery(context, false, !properFilter, !properFilterLastResource);
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
         setTranslatedWasteFlag(response);
+        setTranslatedLastResourceFlag(response);
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, boolean addMethodOfDisposal,
-            boolean wasteFilterIsWrong) {
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean wasteFilterIsWrong,
+            boolean lastResourceFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(
-                "select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit ");
+        queryBuilder
+                .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
+        queryBuilder.append("r1.resourcesCount < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
+        queryBuilder
+                .append("LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n");
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
         queryBuilder.append("LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id ");
         queryBuilder.append("LEFT JOIN basic_product bp on bp.number = :product ");
-        queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = palletnumber_id WHERE r.product_id = bp.id ");
-        queryBuilder.append(
-                " AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
+        queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = r.palletnumber_id WHERE r.product_id = bp.id ");
+        queryBuilder
+                .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
         queryBuilder.append(" AND r.conversion = :conversion AND r.availablequantity > 0 ");
         if (wasteFilterIsWrong) {
             queryBuilder.append(" AND waste IS NULL ");
         }
+        if (lastResourceFilterIsWrong) {
+            queryBuilder.append(" AND lastresource IS NULL ");
+        }
         if (useAdditionalCode) {
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
-        if (addMethodOfDisposal) {
-            // queryBuilder.append(" AND ");
-            // queryBuilder.append(warehouseMethodOfDisposalService.getSqlConditionForResourceLookup(context));
-            // queryBuilder.append(" WHERE product_id = (SELECT id FROM basic_product WHERE number = :product)");
-            // queryBuilder
-            // .append(" and location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from
-            // materialflowresources_document WHERE id = :context)");
-            // queryBuilder.append(" AND conversion = :conversion");
-            // if (useAdditionalCode) {
-            // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
-            // }
-            // queryBuilder.append(" )");
-            queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
-        }
+        queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }
@@ -136,7 +131,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     protected List<String> getGridFields() {
         return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
                 "reservedQuantity", "availableQuantity", "expirationDate", "storageLocation", "batch", "palletNumber",
-                "additionalCode", "wasteString" });
+                "additionalCode", "wasteString", "lastResourceString" });
     }
 
     @Override
@@ -156,9 +151,16 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         responce.getRows().forEach(resDTO -> resDTO.setWasteString(resDTO.isWaste() ? yes : no));
     }
 
+    private void setTranslatedLastResourceFlag(GridResponse<ResourceDTO> response) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale());
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale());
+        response.getRows().forEach(resDTO -> resDTO.setLastResourceString(resDTO.getLastResource() ? yes : no));
+    }
+
     private boolean prepareWasteFilter(ResourceDTO record) {
-        String yes = translationService
-                .translate("documentGrid.gridColumn.wasteString.value.yes", LocaleContextHolder.getLocale()).toLowerCase();
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale()).toLowerCase();
         String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
                 .toLowerCase();
         String filter = record.getWasteString();
@@ -177,4 +179,27 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         }
         return true;
     }
+
+    private boolean prepareLastResourceFilter(ResourceDTO record) {
+        String yes = translationService.translate("documentGrid.gridColumn.wasteString.value.yes",
+                LocaleContextHolder.getLocale()).toLowerCase();
+        String no = translationService.translate("documentGrid.gridColumn.wasteString.value.no", LocaleContextHolder.getLocale())
+                .toLowerCase();
+        String filter = record.getLastResourceString();
+        record.setLastResourceString(null);
+        if (filter != null) {
+            filter = filter.toLowerCase();
+        }
+        if (yes.equals(filter)) {
+            record.setLastResource(true);
+        } else if (no.equals(filter)) {
+            record.setLastResource(false);
+        } else if (!StringUtils.isEmpty(filter)) {
+            return false;
+        } else {
+            record.setLastResource(null);
+        }
+        return true;
+    }
+
 }

@@ -62,6 +62,9 @@ public class DocumentPositionDTO {
     @JsonDeserialize(using = BooleanDeserializer.class)
     private Boolean waste;
 
+    @JsonDeserialize(using = BooleanDeserializer.class)
+    private Boolean lastResource;
+
     public Long getId() {
         return id;
     }
@@ -319,4 +322,11 @@ public class DocumentPositionDTO {
                 + '}';
     }
 
+    public Boolean getLastResource() {
+        return lastResource;
+    }
+
+    public void setLastResource(Boolean lastResource) {
+        this.lastResource = lastResource;
+    }
 }

@@ -30,6 +30,7 @@ import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
@@ -98,13 +99,19 @@ public class MasterOrderDetailsListeners {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.masterOrder", masterOrderId);
 
-            GridComponent masterOrderProductsGrid = (GridComponent) view
-                    .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        if (PluginUtils.isEnabled("goodFood")) {
+            Entity entity = masterOrderProductsGrid.getEntities().get(0);
+            Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
+            parameters.put("form.masterOrderProduct", product.getId());
+            parameters.put("form.masterOrderProductComponent", entity.getId());
+        } else {
             Entity entity = masterOrderProductsGrid.getSelectedEntities().get(0);
             Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
             parameters.put("form.masterOrderProduct", product.getId());
             parameters.put("form.masterOrderProductComponent", entity.getId());
-
+        }
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 

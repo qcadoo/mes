@@ -62,14 +62,14 @@ public class WarehouseMethodOfDisposalService {
         WarehouseAlgorithm algorithm = WarehouseAlgorithm.parseString(alg);
         switch (algorithm) {
             case FEFO:
-                return " order by expirationdate asc ";
+                return " order by expirationdate asc, availablequantity ";
             case FIFO:
                 return " order by time asc ";
             case LEFO:
-                return " order by expirationdate desc ";
+                return " order by expirationdate desc, availablequantity ";
             case LIFO:
                 return " order by time desc ";
         }
-        return " order by expirationdate asc ";
+        return " order by expirationdate asc, availablequantity ";
     }
 }

@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
@@ -34,19 +46,6 @@ import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValu
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.RECEIVED;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 
 public class DeliveryDetailsHooksTest {
 
@@ -152,9 +151,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
@@ -171,9 +168,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
@@ -190,9 +185,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
@@ -209,9 +202,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
@@ -228,9 +219,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
     @Test
@@ -247,9 +236,7 @@ public class DeliveryDetailsHooksTest {
         // then
         verify(form).setFormEnabled(enabledForm);
         verify(orderedProducts).setEnabled(enabledOrderedGrid);
-        verify(orderedProducts).setEditable(enabledOrderedGrid);
         verify(deliveredProducts).setEnabled(enabledDeliveredGrid);
-        verify(deliveredProducts).setEditable(enabledDeliveredGrid);
     }
 
 }

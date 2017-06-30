@@ -63,7 +63,11 @@
 
             <option type="column" name="documentType" fields="documentType" width="80"/>
 
-            <option type="column" name="documentNumber" fields="documentNumber" width="50"/>
+            <option type="column" name="documentNumber" fields="documentNumber" width="50" link="true"
+                    correspondingView="materialFlowResources/documentDetails" correspondingField="documentId"/>
+
+            <option type="column" name="documentId" fields="documentId"
+                    hidden="true"/>
 
             <option type="column" name="documentName" fields="documentName"
                     width="50"/>
@@ -103,7 +107,7 @@
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
-                    value="quantity"/>
+                    value="quantity,givenQuantity"/>
 
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentPositionsCriteriaModifier"
                               method="restrictToUserLocations"/>

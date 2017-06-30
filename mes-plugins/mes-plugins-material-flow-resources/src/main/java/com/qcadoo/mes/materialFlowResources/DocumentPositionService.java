@@ -52,12 +52,14 @@ public class DocumentPositionService {
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, final DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
-                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource \n"
+                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
+                + "r1.resourcesCount < 2 AS lastResource "
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
+                + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
         Map<String, Object> parameters = Maps.newHashMap();
@@ -100,10 +102,11 @@ public class DocumentPositionService {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String.format("INSERT INTO materialflowresources_position (%s, type, state) "
+        String query = String
+                .format("INSERT INTO materialflowresources_position (%s, type, state) "
 
-                + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
-                keys, values);
+                        + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
+                        keys, values);
 
         Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
 
@@ -121,9 +124,10 @@ public class DocumentPositionService {
             return key + "=:" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String.format("UPDATE materialflowresources_position "
-                + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
-                + "WHERE id = :id ", set);
+        String query = String
+                .format("UPDATE materialflowresources_position "
+                        + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
+                        + "WHERE id = :id ", set);
 
         reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);
@@ -233,7 +237,8 @@ public class DocumentPositionService {
 
     public void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id AS document, product.number AS product, product.unit, additionalcode.code AS additionalcode, palletnumber.number AS palletnumber, "
-                + "location.number AS storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
+                + "location.number AS storagelocationnumber\n"
+                + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
@@ -414,14 +419,12 @@ public class DocumentPositionService {
             filter.put("add_code", additionalCode);
         }
 
-        String query = positionResourcesHelper.getResourceQuery(document, false,
-                addMethodOfDisposalCondition(document, filter, false, useAdditionalCode), useAdditionalCode);
+        String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode);
 
         List<ResourceDTO> batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
 
         if (batches.isEmpty() && useAdditionalCode) {
-            query = positionResourcesHelper.getResourceQuery(document, false,
-                    addMethodOfDisposalCondition(document, filter, false, false), false);
+            query = positionResourcesHelper.getResourceQuery(document, false, false);
 
             batches = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ResourceDTO.class));
         }
@@ -451,8 +454,7 @@ public class DocumentPositionService {
                 paramMap.put("add_code", additionalCode);
             }
 
-            String query = positionResourcesHelper.getResourceQuery(document, true,
-                    addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
+            String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
             return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(ResourceDTO.class));
         }
@@ -486,18 +488,19 @@ public class DocumentPositionService {
             paramMap.put("add_code", additionalCode);
         }
 
-        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true,
-                addMethodOfDisposalCondition(document, paramMap, false, useAdditionalCode), useAdditionalCode);
+        String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
         return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap, shouldCheckMaxResults);
     }
 
     public ResourceDTO getResourceByNumber(final String resource) {
-        String query = "SELECT r.*, sl.number AS storageLocation, pn.number AS palletNumber, ac.code AS additionalCode \n"
+        String query = "SELECT r.*, sl.number AS storageLocation, pn.number AS palletNumber, ac.code AS additionalCode, \n"
+                + "r1.resourcesCount < 2 AS lastResource "
                 + "FROM materialflowresources_resource r \n"
+                + "LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n"
                 + "LEFT JOIN materialflowresources_storagelocation sl ON sl.id = storageLocation_id \n"
                 + "LEFT JOIN basic_additionalcode ac ON ac.id = additionalcode_id \n"
-                + "LEFT JOIN basic_palletnumber pn ON pn.id = palletnumber_id WHERE r.number = :resource";
+                + "LEFT JOIN basic_palletnumber pn ON pn.id = r.palletnumber_id WHERE r.number = :resource";
 
         Map<String, Object> filter = Maps.newHashMap();
 
@@ -510,20 +513,6 @@ public class DocumentPositionService {
         } else {
             return batches.get(0);
         }
-    }
-
-    public boolean addMethodOfDisposalCondition(final Long document, final Map<String, Object> paramMap, boolean useQuery,
-            boolean useAdditionalCode) {
-        // boolean addMethodOfDisposalCondition = false;
-        //
-        // String query = positionResourcesHelper.getMethodOfDisposalQuery(document, useQuery, useAdditionalCode);
-        // Date date = jdbcTemplate.queryForObject(query,paramMap,Date.class);
-        // if(date != null){
-        // addMethodOfDisposalCondition = true;
-        // }
-        // return addMethodOfDisposalCondition;
-
-        return true;
     }
 
     public void deletePositions(final String ids) {

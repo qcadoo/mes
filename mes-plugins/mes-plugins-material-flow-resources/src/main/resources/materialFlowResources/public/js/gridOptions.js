@@ -591,11 +591,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('price', resource['price'], rowId);
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
                 updateFieldValue('waste', resource['waste'], rowId);
+                if ($scope.config.outDocument) {
+                    updateFieldValue('lastResource', resource['lastResource'], rowId);
+                }
             });
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste'];
+            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
@@ -834,6 +837,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('givenquantity', '', getRowIdFromElement(t));
                         updateFieldValue('conversion', '', getRowIdFromElement(t));
                         updateFieldValue('waste', '0', getRowIdFromElement(t));
+                        updateFieldValue('lastResource', '0', getRowIdFromElement(t));
 
                         clearSelect('givenunit', getRowIdFromElement(t));
                     }
@@ -1259,8 +1263,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.cancelEditing = cancelEditing;
 
         $scope.resize = function () {
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true);
+            var gridHeight =
+                $('tr.jqgrow').slice(0, 20).map(function () {
+                    return $(this).outerHeight()
+                }).get().reduce(function (a, b) {
+                    return a + b
+                }, 0);
+
+            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true).setGridHeight(gridHeight);
         };
+
         $("#window\\.positionsGridTab").resize($scope.resize);
 
         var gridEditOptions = {
@@ -1620,11 +1632,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 	editable: true,
                 	edittype: 'checkbox',
                 	formatter: 'checkbox',
+                	width: 60,
                 	editoptions: {
                 		value: '1:0'
                 	},
                 	formoptions: {
                 		rowpos: 10,
+                		colpos: 1
+                	},
+                	searchoptions: {
+                		sopt: ['eq', 'ne'],
+                		value:': ;1:'+translateMessages('documentGrid.yes')+';0:'+translateMessages('documentGrid.no')
+        			},
+        			stype: 'select'
+                },
+                {
+                	name: 'lastResource',
+                	index: 'lastResource',
+                	editable: true,
+                	edittype: 'checkbox',
+                	formatter: 'checkbox',
+                	width: 70,
+                	editoptions: {
+                		value: '1:0'
+                	},
+                	formoptions: {
+                		rowpos: 11,
                 		colpos: 1
                 	},
                 	searchoptions: {
@@ -1646,23 +1679,34 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                 }
                 $('#rows-num').text('(' + grid.getGridParam('records') + ')');
+                grid.resize();
+                // force grid layout to adapt it's height accordingly to jqGrid
+                $('.flow-grid-layout-item').height($('ng-jq-grid>div').outerHeight()).trigger('resize');
             },
             onSelectRow: function (rowid, status) {
 
             },
-          beforeSelectRow: function (rowid, e) {
-          var $grid = $(this)
-                if(e.target.className === 'ui-icon ui-icon-cancel'){
-                    return false;
+            beforeSelectRow: function (rowid, e) {
+                var $td = $(e.target).closest("tr.jqgrow>td");
+                if ($td.length > 0) {
+                    var $grid = $(this);
+                    var i = $.jgrid.getCellIndex($td);
+                    var cm = $grid.jqGrid('getGridParam', 'colModel');
+                    if (cm[i].name === 'act') {
+                        if (e.target.className === 'ui-icon ui-icon-cancel') {
+                            return false;
+                        }
+                        $grid.jqGrid('resetSelection');
+                        return true;
+                    }
+                    return (cm[i].name === 'cb');
                 }
-                var $grid = $(this),
-                i = $.jgrid.getCellIndex($(e.target).closest('td')[0]),
-                cm = $grid.jqGrid('getGridParam', 'colModel');
-                if(cm[i].name === 'act'){
-                    $grid.jqGrid('resetSelection');
-                    return true;
-                }
-                return (cm[i].name === 'cb');
+                return false;
+            },
+            beforeRequest: function () {
+                $.cookie("jqgrid_conf", JSON.stringify({
+                    rowNum: $(this).getGridParam("rowNum")
+                }));
             },
             ajaxRowOptions: {
                 contentType: "application/json"
@@ -1674,10 +1718,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             beforeSubmit: function (postdata, formid) {
                 return [false, 'ble'];
-            },
+            }
         };
 
         function prepareGridConfig(config) {
+            var c = $.cookie("jqgrid_conf");
+            if (c){
+                $.extend(config, JSON.parse(c));
+            }
+
             var readOnlyInType = function (outDocument, columnIndex, responseDate) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
                         columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
@@ -1685,6 +1734,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     return true;
                 }
                 if (!outDocument && (columnIndex === 'resource')) {
+                    return true;
+                }
+                if (columnIndex === 'lastResource') {
                     return true;
                 }
                 return false;
