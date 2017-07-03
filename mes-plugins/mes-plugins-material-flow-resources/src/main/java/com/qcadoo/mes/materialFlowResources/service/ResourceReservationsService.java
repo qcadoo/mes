@@ -159,8 +159,6 @@ public class ResourceReservationsService {
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
 
-                // updateResourceQuantites(newPosition, resourceAvailableQuantity);
-
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
 
                 BigDecimal givenResourceQuantity = resourceManagementService.convertToGivenUnit(resourceAvailableQuantity,
@@ -174,8 +172,6 @@ public class ResourceReservationsService {
                     return newPositions;
                 }
             } else {
-
-                // updateResourceQuantites(newPosition, quantity);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
