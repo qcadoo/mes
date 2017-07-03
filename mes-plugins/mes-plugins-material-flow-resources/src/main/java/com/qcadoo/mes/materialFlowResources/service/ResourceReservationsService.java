@@ -130,9 +130,13 @@ public class ResourceReservationsService {
                 position, warehouseAlgorithm);
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
+            if(resource.getBooleanField(ResourceFields.WASTE)){
+                break;
+            }
             logger.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
                     + position.toString());
             logger.info("RESOURCE USED: " + resource.toString());
+
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
             Entity newPosition = positionDD.create();
@@ -150,7 +154,7 @@ public class ResourceReservationsService {
             newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-            newPosition.setField(PositionFields.WASTE, resource.getField(PositionFields.WASTE));
+            newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
