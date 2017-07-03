@@ -411,19 +411,27 @@ public class DeliveredProductHooks {
             Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
             if (palletNumber != null) {
 
-                String query =
-                        "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount " + "FROM ("
-                        + "       SELECT" + "         resource.palletnumber_id," + "         resource.storagelocation_id"
-                        + "       FROM materialflowresources_resource resource" + "       UNION ALL" + "       SELECT"
-                        + "         deliveredproduct.palletnumber_id," + "         deliveredproduct.storagelocation_id"
-                        + "       FROM deliveries_delivery delivery"
-                        + "         JOIN deliveries_deliveredproduct deliveredproduct ON deliveredproduct.delivery_id = delivery.id"
-                        + "       WHERE delivery.state = '01draft'" + "     ) palletsInStorageLocation "
-                        + "WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND"
-                        + "      palletsInStorageLocation.palletnumber_id <> :palletNumberId";
+                String query = "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount     "
+                        + "   FROM (SELECT                                                                          "
+                        + "           resource.palletnumber_id,                                                     "
+                        + "           resource.storagelocation_id                                                   "
+                        + "         FROM materialflowresources_resource resource                                    "
+                        + "         UNION ALL SELECT                                                                "
+                        + "                     deliveredproduct.palletnumber_id,                                   "
+                        + "                     deliveredproduct.storagelocation_id                                 "
+                        + "                   FROM deliveries_delivery delivery                                     "
+                        + "                     JOIN deliveries_deliveredproduct deliveredproduct                   "
+                        + "                       ON deliveredproduct.delivery_id = delivery.id                     "
+                        + "                   WHERE                                                                 "
+                        + "                     delivery.state = '01draft' AND                                      "
+                        + "                     deliveredproduct.id <> :deliveredProductId                          "
+                        + "        ) palletsInStorageLocation                                                       "
+                        + "   WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND            "
+                        + "         palletsInStorageLocation.palletnumber_id <> :palletNumberId";
 
+                Long deliveredProductId = Optional.ofNullable(deliveredProduct.getId()).orElse(-1L);
                 Long palletsCount = jdbcTemplate.queryForObject(query, new MapSqlParameterSource()
-                        .addValue("storageLocationId", storageLocation.getId()).addValue("palletNumberId", palletNumber.getId()),
+                        .addValue("storageLocationId", storageLocation.getId()).addValue("palletNumberId", palletNumber.getId()).addValue("deliveredProductId", deliveredProductId),
                         Long.class);
 
                 boolean valid = maxNumberOfPallets.compareTo(BigDecimal.valueOf(palletsCount)) > 0;
