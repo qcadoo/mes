@@ -131,7 +131,7 @@ public class ResourceReservationsService {
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
             if(resource.getBooleanField(ResourceFields.WASTE)){
-                break;
+                continue;
             }
             logger.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
                     + position.toString());
