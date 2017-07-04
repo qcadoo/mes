@@ -53,7 +53,7 @@ public class DocumentPositionService {
             int perPage, final DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
-                + "r1.resourcesCount < 2 AS lastResource "
+                + "coalesce(r1.resourcesCount,0) < 2 AS lastResource "
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
@@ -495,7 +495,7 @@ public class DocumentPositionService {
 
     public ResourceDTO getResourceByNumber(final String resource) {
         String query = "SELECT r.*, sl.number AS storageLocation, pn.number AS palletNumber, ac.code AS additionalCode, \n"
-                + "r1.resourcesCount < 2 AS lastResource "
+                + "coalesce(r1.resourcesCount,0) < 2 AS lastResource "
                 + "FROM materialflowresources_resource r \n"
                 + "LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n"
                 + "LEFT JOIN materialflowresources_storagelocation sl ON sl.id = storageLocation_id \n"

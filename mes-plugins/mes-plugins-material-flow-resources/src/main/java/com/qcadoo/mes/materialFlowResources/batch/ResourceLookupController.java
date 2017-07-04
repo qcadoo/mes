@@ -84,7 +84,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
                 .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
-        queryBuilder.append("r1.resourcesCount < 2 AS lastResource ");
+        queryBuilder.append("coalesce(r1.resourcesCount,0) < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
         queryBuilder
                 .append("LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = r.palletnumber_id \n");
