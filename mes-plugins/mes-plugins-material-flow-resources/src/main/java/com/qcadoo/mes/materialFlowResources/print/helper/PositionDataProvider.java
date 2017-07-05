@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -40,6 +32,13 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class PositionDataProvider {
 
@@ -139,10 +138,20 @@ public class PositionDataProvider {
 
     }
 
+    public static BigDecimal quantityDecimalVal(Entity position) {
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+        return quantity != null ? quantity.stripTrailingZeros() : BigDecimal.ZERO;
+
+    }
+
     public static String quantityAdd(Entity position) {
         BigDecimal quantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         return quantity != null ? quantity.stripTrailingZeros().toPlainString() : BigDecimal.ZERO.toPlainString();
+    }
 
+    public static BigDecimal quantityAddDecimalVal(Entity position) {
+        BigDecimal quantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+        return quantity != null ? quantity.stripTrailingZeros() : BigDecimal.ZERO;
     }
 
     public static String unitAdd(Entity position) {
@@ -173,6 +182,11 @@ public class PositionDataProvider {
         return amount.stripTrailingZeros().toPlainString();
     }
 
+    public static BigDecimal amountNonZeroDecimalVal(Entity position) {
+        BigDecimal amount = amountDecimal(position);
+        return amount != null ? amount.stripTrailingZeros() : BigDecimal.ZERO;
+    }
+
     public static BigDecimal amountDecimal(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
         return amount.setScale(0, RoundingMode.DOWN);
@@ -180,11 +194,15 @@ public class PositionDataProvider {
 
     public static String restNonZero(Entity position) {
         BigDecimal rest = restDecimal(position);
-        BigDecimal amount = amountDecimal(position);
-        if (rest.compareTo(BigDecimal.ZERO) == 0 || amount.compareTo(BigDecimal.ZERO) == 0) {
+        if (rest.compareTo(BigDecimal.ZERO) == 0) {
             return StringUtils.EMPTY;
         }
         return rest.stripTrailingZeros().toPlainString();
+    }
+
+    public static BigDecimal restNonZeroDecimalVal(Entity position) {
+        BigDecimal rest = restDecimal(position);
+        return rest != null ? rest.stripTrailingZeros() : BigDecimal.ZERO;
     }
 
     public static String rest(Entity position) {
