@@ -43,6 +43,7 @@
             <option type="column" name="resourceNumber" fields="resourceNumber" link="true"/>
             <option type="column" name="productNumber" fields="productNumber" link="true" width="110"/>
             <option type="column" name="productName" fields="productName" link="true" width="130"/>
+            <option type="column" name="locationNumber" fields="locationNumber" width="80"/>
             <option type="column" name="quantityCorrected" fields="quantityCorrected" width="60"/>
             <option type="column" name="priceCorrected" fields="priceCorrected" width="60"/>
             <option type="column" name="batchCorrected" fields="batchCorrected" width="60"/>
@@ -56,9 +57,9 @@
             <option type="order" column="correctionNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber"/>
             <option type="orderable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails"/>
             <option type="correspondingComponent" value="form"/>

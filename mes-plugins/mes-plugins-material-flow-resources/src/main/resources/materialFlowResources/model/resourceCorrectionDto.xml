@@ -35,6 +35,7 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="resourceNumber"/>
+        <string name="locationNumber"/>
         <integer name="location_id"/>
 
         <boolean name="quantityCorrected"/>
