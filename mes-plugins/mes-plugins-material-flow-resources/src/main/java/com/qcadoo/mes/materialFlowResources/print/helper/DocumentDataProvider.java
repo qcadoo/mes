@@ -91,4 +91,9 @@ public final class DocumentDataProvider {
                 : StringUtils.EMPTY;
     }
 
+    public static String pzLocation(final Entity documentEntity) {
+        Entity location = documentEntity.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION);
+        return location != null ? location.getStringField(LocationFields.NUMBER) + " - "
+                + location.getStringField(LocationFields.NAME) : StringUtils.EMPTY;
+    }
 }
