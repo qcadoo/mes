@@ -71,10 +71,7 @@ public class PositionModelHooks {
             position.setField(PositionFields.STATE, state.getStringValue());
         }
 
-        // if (positionValidators.validateAvailableQuantity(positionDD, position)) {
         reservationsService.updateReservationFromDocumentPosition(position);
-        // }
-
     }
 
     public void onCopy(final DataDefinition positionDD, final Entity position) {
