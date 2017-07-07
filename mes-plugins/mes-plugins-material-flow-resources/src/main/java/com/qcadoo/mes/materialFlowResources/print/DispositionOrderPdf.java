@@ -149,8 +149,8 @@ public class DispositionOrderPdf extends ReportPdfView {
                             cb.setFontAndSize(FontUtils.getDejavu(), 7);
 
                             cb.setTextMatrix(document.left(), textBase + 20);
-                            cb.showText((translationService.translate(L_LOCATION_FROM, locale) + ": " + DocumentDataProvider
-                                    .locationFrom(documentEntity)));
+                            cb.showText((translationService.translate(L_PZ, locale) +": "+ DocumentDataProvider
+                                    .pzLocation(documentEntity)));
                             cb.endText();
                             cb.stroke();
                             cb.restoreState();
