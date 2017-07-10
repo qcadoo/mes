@@ -213,6 +213,8 @@ public class ProductionPerShiftListeners {
     public void savePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         boolean saveWasSuccessful = progressPerShiftViewSaver.save(view);
         if (saveWasSuccessful) {
+            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            form.addMessage("qcadooView.message.saveMessage", ComponentState.MessageType.SUCCESS);
             detailsHooks.setProductAndFillProgressForDays(view);
             showNotifications(view);
         }
