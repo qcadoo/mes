@@ -101,16 +101,16 @@ public class OrderHooksPPS {
             return;
         }
         Entity orderFromDB = orderDD.get(order.getId());
+        Entity productionPerShift = dataDefinitionService
+                .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
+                .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
+                .uniqueResult();
+        boolean generate = canGenerate(order, orderFromDB, productionPerShift);
 
-        if (isOrderFieldsChanged(order, orderFromDB)) {
-            Entity productionPerShift = dataDefinitionService
-                    .get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER, ProductionPerShiftConstants.MODEL_PRODUCTION_PER_SHIFT)
-                    .find().add(SearchRestrictions.belongsTo(ProductionPerShiftFields.ORDER, order)).setMaxResults(1)
-                    .uniqueResult();
+        if (isOrderFieldsChanged(order, orderFromDB) || generate) {
 
             if (productionPerShift != null && automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
                 boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
-                boolean generate = canGenerate(order, orderFromDB, productionPerShift);
                 if (!productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() || generate) {
                     BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
                     if (order.getBooleanField(OrderFields.FINAL_PRODUCTION_TRACKING)) {
@@ -167,8 +167,7 @@ public class OrderHooksPPS {
 
     private boolean canGenerate(Entity order, Entity orderFromDB, Entity productionPerShift) {
         boolean generate = false;
-        if (productionPerShift.getHasManyField(ProductionPerShiftFields.PROGRES_FOR_DAYS).isEmpty() && order
-                .getBooleanField("generatePPS") && OrderState.PENDING == OrderState.of(orderFromDB)) {
+        if (order.getBooleanField("generatePPS")) {
             generate = true;
         }
         return generate;
