@@ -480,7 +480,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             }
 
-            reservationsService.deleteReservationFromDocumentPosition(position);
             if(generatedPositions.size() > 1) {
                 position.getDataDefinition().delete(position.getId());
                 for (Entity newPosition : generatedPositions) {
@@ -520,6 +519,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
         if(!valid){
             errors.forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+        }
+        if(valid && enoughResources){
+            deleteReservations(document);
         }
     }
 
