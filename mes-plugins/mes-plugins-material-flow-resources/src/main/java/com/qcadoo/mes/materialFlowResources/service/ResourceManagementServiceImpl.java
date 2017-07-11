@@ -480,8 +480,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             }
 
+            reservationsService.deleteReservationFromDocumentPosition(position);
             if(generatedPositions.size() > 1) {
-                reservationsService.deleteReservationFromDocumentPosition(position);
                 position.getDataDefinition().delete(position.getId());
                 for (Entity newPosition : generatedPositions) {
                     newPosition.setField(PositionFields.DOCUMENT, document);
