@@ -425,7 +425,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Override
     @Transactional
-    public void updateResourcesForReleaseDocuments(Entity document) {
+    public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm;
 

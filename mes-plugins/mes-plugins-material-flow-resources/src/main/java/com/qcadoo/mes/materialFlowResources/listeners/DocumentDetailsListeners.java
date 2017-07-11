@@ -180,7 +180,6 @@ public class DocumentDetailsListeners {
     @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        long start = System.currentTimeMillis();
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -257,9 +256,6 @@ public class DocumentDetailsListeners {
 
         documentForm.setEntity(documentToCreateResourcesFor);
 
-        long end = System.currentTimeMillis();
-        long difference = end - start;
-        LoggerFactory.getLogger("PERFORMANCE").warn("Call all took " + difference + " ms ");
         logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
     }
