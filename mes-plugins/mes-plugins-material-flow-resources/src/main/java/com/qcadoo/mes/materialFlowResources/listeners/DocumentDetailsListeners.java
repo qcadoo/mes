@@ -177,8 +177,10 @@ public class DocumentDetailsListeners {
         }
     }
 
+    @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
+        long start = System.currentTimeMillis();
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -207,21 +209,16 @@ public class DocumentDetailsListeners {
             return;
         }
 
-        if (!validateResourceAttribute(document)) {
-            documentForm.addMessage("materialFlow.error.position.batch.required", MessageType.FAILURE);
-
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-
-            documentForm.setEntity(documentToCreateResourcesFor);
-            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
-                    + document.getStringField(DocumentFields.NUMBER));
-            return;
-        }
-        boolean emptyPositions = false;
+        boolean emptyPositions;
 
         if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             emptyPositions = false;
             createResources(documentToCreateResourcesFor);
+            if (documentToCreateResourcesFor.isValid()
+                    && (DocumentType.INTERNAL_OUTBOUND.equals(DocumentType.of(documentToCreateResourcesFor))
+                            || DocumentType.RELEASE.equals(DocumentType.of(documentToCreateResourcesFor)))) {
+                documentToCreateResourcesFor = document.getDataDefinition().get(document.getId());
+            }
         } else {
             emptyPositions = true;
             documentToCreateResourcesFor.setNotValid();
@@ -260,6 +257,9 @@ public class DocumentDetailsListeners {
 
         documentForm.setEntity(documentToCreateResourcesFor);
 
+        long end = System.currentTimeMillis();
+        long difference = end - start;
+        LoggerFactory.getLogger("PERFORMANCE").warn("Call all took " + difference + " ms ");
         logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
     }
@@ -416,33 +416,6 @@ public class DocumentDetailsListeners {
         }
 
         return false;
-    }
-
-    private boolean validateResourceAttribute(Entity document) {
-        DocumentType type = DocumentType.of(document);
-
-        if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)) {
-            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-
-            boolean result = true;
-
-            for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                        .getField(PositionFields.RESOURCE) != null)
-                        || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
-                if (!resultForPosition) {
-                    result = false;
-
-                    position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
-                            "materialFlow.error.position.batch.required");
-                }
-            }
-
-            return result;
-        }
-
-        return true;
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {

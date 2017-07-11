@@ -37,10 +37,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -81,6 +78,7 @@ public class DocumentsListListeners {
         }
     }
 
+    @Transactional
     public Set<Long> createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -100,13 +98,6 @@ public class DocumentsListListeners {
             Entity documentToCreateResourcesFor = documentDD.save(document);
 
             if (!documentToCreateResourcesFor.isValid()) {
-                documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-                invalidEntities.add(documentId);
-                continue;
-            }
-
-            if (!validateResourceAttribute(document)) {
-                gridComponent.addMessage("materialFlow.error.position.batch.required", ComponentState.MessageType.FAILURE);
                 documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
                 invalidEntities.add(documentId);
                 continue;
@@ -140,25 +131,6 @@ public class DocumentsListListeners {
         }
 
         return invalidEntities;
-    }
-
-    private boolean validateResourceAttribute(Entity document) {
-        DocumentType type = DocumentType.of(document);
-        if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)) {
-            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-            boolean result = true;
-            for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) || position.getField(PositionFields.RESOURCE) != null;
-                if (!resultForPosition) {
-                    result = false;
-                    position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
-                            "materialFlow.error.position.batch.required");
-                }
-            }
-            return result;
-        }
-        return true;
     }
 
     private void updatePositions(Entity document) {
