@@ -23,19 +23,20 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class ResourceCorrectionServiceImpl implements ResourceCorrectionService {
@@ -48,6 +49,12 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     @Autowired
     private ResourceStockService resourceStockService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public boolean createCorrectionForResource(final Entity resource) {
@@ -94,7 +101,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
-            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource));
+            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource, oldResource.getStringField(ResourceFields.GIVEN_UNIT)));
             resource.setField(ResourceFields.AVAILABLE_QUANTITY,
                     newQuantity.subtract(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY)));
             Entity savedResource = resource.getDataDefinition().save(resource);
@@ -177,11 +184,18 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
     }
 
-    private BigDecimal calculateQuantityInAdditionalUnit(Entity resource) {
+    private BigDecimal calculateQuantityInAdditionalUnit(Entity resource, String unit) {
         BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
         BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
-        return quantity.multiply(conversion);
+
+        boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
+        BigDecimal value = quantity.multiply(conversion, numberService.getMathContext());
+        if (isInteger) {
+            return numberService.setScale(value, 0);
+        } else {
+            return value;
+        }
     }
 
     private boolean isPriceChanged(BigDecimal oldPrice, BigDecimal newPrice) {
