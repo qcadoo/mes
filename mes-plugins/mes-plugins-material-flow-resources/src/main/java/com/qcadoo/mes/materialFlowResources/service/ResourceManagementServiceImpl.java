@@ -493,6 +493,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     }
                 } else {
                     Entity newPosition = generatedPositions.get(0);
+                    position.setField(PositionFields.DOCUMENT, document);
                     position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
                     position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
                     position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
