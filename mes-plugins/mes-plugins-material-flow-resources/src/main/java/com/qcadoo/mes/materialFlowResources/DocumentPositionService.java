@@ -103,9 +103,9 @@ public class DocumentPositionService {
         }).collect(Collectors.joining(", "));
 
         String query = String
-                .format("INSERT INTO materialflowresources_position (%s, type, state) "
+                .format("INSERT INTO materialflowresources_position (%s) "
 
-                        + "VALUES (%s, (SELECT type FROM materialflowresources_document WHERE id=:document_id), (SELECT state FROM materialflowresources_document WHERE id=:document_id)) RETURNING id",
+                        + "VALUES (%s) RETURNING id",
                         keys, values);
 
         Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
@@ -126,7 +126,7 @@ public class DocumentPositionService {
 
         String query = String
                 .format("UPDATE materialflowresources_position "
-                        + "SET %s, type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
+                        + "SET %s "
                         + "WHERE id = :id ", set);
 
         reservationsService.updateReservationFromDocumentPosition(params);
