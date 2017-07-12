@@ -55,10 +55,6 @@ public final class PositionFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
-    public static final String TYPE = "type";
-
-    public static final String STATE = "state";
-
     public static final String NUMBER = "number";
 
     public static final String GIVEN_QUANTITY = "givenQuantity";

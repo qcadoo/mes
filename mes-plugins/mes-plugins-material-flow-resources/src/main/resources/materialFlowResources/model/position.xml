@@ -57,10 +57,6 @@
 
         <belongsTo name="storageLocation" model="storageLocation"/>
 
-        <enum name="type" values="01receipt,02internalInbound,03internalOutbound,04release,05transfer"/>
-        <enum name="state" values="01draft,02accepted" default="01draft"/>
-
-
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <decimal name="conversion" default="0"/>
         <belongsTo name="palletNumber" model="palletNumber" plugin="basic"/>

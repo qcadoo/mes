@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
@@ -60,15 +59,6 @@ public class PositionModelHooks {
             position.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
             position.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
             position.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
-        }
-
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        if (document != null) {
-            DocumentType type = DocumentType.of(document);
-            DocumentState state = DocumentState.of(document);
-
-            position.setField(PositionFields.TYPE, type.getStringValue());
-            position.setField(PositionFields.STATE, state.getStringValue());
         }
 
         reservationsService.updateReservationFromDocumentPosition(position);

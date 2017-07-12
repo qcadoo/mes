@@ -26,7 +26,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
@@ -41,7 +40,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -238,8 +236,6 @@ public class DocumentDetailsListeners {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
         }
 
-        updatePositions(documentToCreateResourcesFor);
-
         Entity recentlySavedDocument = documentDD.get(document.getId());
 
         if (!emptyPositions && documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
@@ -267,24 +263,9 @@ public class DocumentDetailsListeners {
     }
 
     private boolean buildConnectedPZDocument(final Entity document) {
-        if (document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
-                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null) {
-            return true;
-        }
+        return document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
+                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null;
 
-        return false;
-    }
-
-    private void updatePositions(Entity document) {
-        String query = "UPDATE materialflowresources_position "
-                + "SET type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
-                + "WHERE document_id = :document_id ";
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("document_id", document.getId());
-
-        jdbcTemplate.update(query, params);
     }
 
     @Transactional

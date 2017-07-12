@@ -714,14 +714,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     }
 
-    private void updateReservations(Entity document) {
-
-        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-        for (Entity position : positions) {
-            reservationsService.updateReservationFromDocumentPosition(position);
-        }
-    }
-
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
         String warehouseName = warehouseFrom.getStringField(LocationFields.NAME);
 
