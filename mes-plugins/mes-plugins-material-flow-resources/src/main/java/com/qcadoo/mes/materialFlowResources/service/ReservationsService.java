@@ -195,7 +195,7 @@ public class ReservationsService {
                 }
             } else if (oldResourceId == null && newResourceId != null) {
                 resourceReservationsService.updateResourceQuantites(params, newQuantity);
-            } else if (oldResourceId != null && newResourceId == null) {
+            } else if (oldResourceId != null) {
                 Map<String, Object> paramsForOld = Maps.newHashMap(params);
                 paramsForOld.put("resource_id", oldResourceId);
                 resourceReservationsService.updateResourceQuantites(paramsForOld, oldPositionQuantity.negate());
