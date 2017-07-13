@@ -492,40 +492,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     addPositionErrors(document, saved);
                 }
             }
-
-            if(generatedPositions.size() > 1) {
-                reservationsService.deleteReservationFromDocumentPosition(position);
-                position.getDataDefinition().delete(position.getId());
-                for (Entity newPosition : generatedPositions) {
-                    newPosition.setField(PositionFields.DOCUMENT, document);
-                    Entity saved = newPosition.getDataDefinition().save(newPosition);
-                    valid = valid && saved.isValid();
-                    errors.addAll(saved.getGlobalErrors());
-                    if(!saved.getErrors().isEmpty()){
-                        errors.add(new ErrorMessage("materialFlow.document.fillResources.global.error.positionNotValid", false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER)));
-                    }
-                }
-            } else {
-                Entity newPosition = generatedPositions.get(0);
-                position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
-                position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
-                position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
-                position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
-                position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
-                position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
-                position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
-                position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
-                position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
-                position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
-                position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
-                position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
-                Entity saved = position.getDataDefinition().save(position);
-                valid = valid && saved.isValid();
-                errors.addAll(saved.getGlobalErrors());
-                if(!saved.getErrors().isEmpty()){
-                    errors.add(new ErrorMessage("materialFlow.document.fillResources.global.error.positionNotValid", false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER)));
-                }
-            }
         }
 
         if (!enoughResources) {
