@@ -43,6 +43,7 @@ import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -105,12 +106,29 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Override
     @Transactional
+    public void createResources(final Entity document) {
+        DocumentType documentType = DocumentType.of(document);
+        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
+            createResourcesForReceiptDocuments(document);
+        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
+            updateResourcesForReleaseDocuments(document);
+        } else if (DocumentType.TRANSFER.equals(documentType)) {
+            moveResourcesForTransferDocument(document);
+        } else {
+            throw new IllegalStateException("Unsupported document type");
+        }
+    }
+
+    @Override
+    @Transactional
     public void createResourcesForReceiptDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
         Object date = document.getField(DocumentFields.TIME);
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             createResource(document, warehouse, position, date);
+            position.setField(PositionFields.DOCUMENT, document);
+            position.getDataDefinition().save(position);
         }
     }
 
@@ -163,7 +181,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.ATRRIBUTE_VALUES, newAttributes);
     }
 
-    public Entity createResource(final Entity document, final Entity warehouse, final Entity position, final Object date) {
+    private Entity createResource(final Entity document, final Entity warehouse, final Entity position, final Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -210,13 +228,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     }
 
-    public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
+    private Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
             Object date) {
-        return createResource(position, warehouse, resource, quantity, date, false);
-    }
-
-    public Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
-            Object date, final boolean assignNewStorageLocation) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -243,18 +256,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.BATCH, resource.getField(PositionFields.BATCH));
         newResource.setField(ResourceFields.EXPIRATION_DATE, resource.getField(PositionFields.EXPIRATION_DATE));
         newResource.setField(ResourceFields.PRODUCTION_DATE, resource.getField(PositionFields.PRODUCTION_DATE));
-        if (!assignNewStorageLocation) {
-            newResource.setField(ResourceFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-
-            newResource.setField(ResourceFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-            newResource.setField(ResourceFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-        } else {
-            newResource.setField(ResourceFields.STORAGE_LOCATION,
-                    findStorageLocationForProduct(warehouse, resource.getBelongsToField(ResourceFields.PRODUCT)));
-
-            newResource.setField(ResourceFields.PALLET_NUMBER, null);
-            newResource.setField(ResourceFields.TYPE_OF_PALLET, null);
-        }
+        newResource.setField(ResourceFields.STORAGE_LOCATION,
+                findStorageLocationForProduct(warehouse, resource.getBelongsToField(ResourceFields.PRODUCT)));
+        newResource.setField(ResourceFields.PALLET_NUMBER, null);
+        newResource.setField(ResourceFields.TYPE_OF_PALLET, null);
         newResource.setField(ResourceFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
@@ -288,10 +293,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         } else {
             return storageLocations.get(0);
         }
-    }
-
-    public Entity createResource(final Entity warehouse, final Entity resource, final BigDecimal quantity, Object date) {
-        return createResource(null, warehouse, resource, quantity, date);
     }
 
     private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product, final Entity warehouse) {
@@ -430,9 +431,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         WarehouseAlgorithm warehouseAlgorithm;
 
         boolean enoughResources = true;
-        boolean valid = true;
-        List<ErrorMessage> errors = Lists.newArrayList();
-
         StringBuilder errorMessage = new StringBuilder();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
@@ -485,33 +483,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     for (Entity newPosition : generatedPositions) {
                         newPosition.setField(PositionFields.DOCUMENT, document);
                         Entity saved = newPosition.getDataDefinition().save(newPosition);
-                        valid = valid && saved.isValid();
-                        errors.addAll(saved.getGlobalErrors());
-                        if (!saved.getErrors().isEmpty()) {
-                            errors.add(new ErrorMessage("materialFlow.document.fillResources.global.error.positionNotValid", false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER)));
-                        }
+                        addPositionErrors(document, saved);
                     }
                 } else {
-                    Entity newPosition = generatedPositions.get(0);
+                    copyPositionValues(position, generatedPositions.get(0));
                     position.setField(PositionFields.DOCUMENT, document);
-                    position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
-                    position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
-                    position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
-                    position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
-                    position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
-                    position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
-                    position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
-                    position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
-                    position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
-                    position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
-                    position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
-                    position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
                     Entity saved = position.getDataDefinition().save(position);
-                    valid = valid && saved.isValid();
-                    errors.addAll(saved.getGlobalErrors());
-                    if (!saved.getErrors().isEmpty()) {
-                        errors.add(new ErrorMessage("materialFlow.document.fillResources.global.error.positionNotValid", false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER)));
-                    }
+                    addPositionErrors(document, saved);
                 }
             }
 
@@ -553,16 +531,30 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!enoughResources) {
             addDocumentError(document, warehouse, errorMessage);
         }
-        if(!valid){
-            errors.forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+    }
+
+    private void addPositionErrors(Entity document, Entity saved) {
+        saved.getGlobalErrors().forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+        if (!saved.getErrors().isEmpty()) {
+            document.addGlobalError("materialFlow.document.fillResources.global.error.positionNotValid",
+                    false,
+                    saved.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
         }
     }
 
-    private void deleteReservations(Entity document) {
-        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-        for (Entity position : positions) {
-            reservationsService.deleteReservationFromDocumentPosition(position);
-        }
+    private void copyPositionValues(Entity position, Entity newPosition) {
+        position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
+        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
+        position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
+        position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
+        position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
+        position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
+        position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
+        position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
+        position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
+        position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
+        position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
+        position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
     }
 
     private List<Entity> updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
@@ -712,23 +704,27 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         StringBuilder errorMessage = new StringBuilder();
 
-        Multimap<Long, BigDecimal> quantitiesForWarehouse = getQuantitiesInWarehouse(warehouseFrom,
-                getProductsAndPositionsFromDocument(document));
+        Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            BigDecimal quantityInWarehouse;
-
-            if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
-                quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product, position);
-            } else {
-                quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
-            }
-
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
             enoughResources = enoughResources && position.isValid();
 
             if (!position.isValid()) {
+                if(quantitiesForWarehouse.isEmpty()){
+                    quantitiesForWarehouse = getQuantitiesInWarehouse(warehouseFrom,
+                            getProductsAndPositionsFromDocument(document));
+                }
+
+                BigDecimal quantityInWarehouse;
+
+                if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
+                    quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product, position);
+                } else {
+                    quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
+                }
+
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
                 errorMessage.append(product.getStringField(ProductFields.NAME));
@@ -737,15 +733,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(" ");
                 errorMessage.append(product.getStringField(ProductFields.UNIT));
                 errorMessage.append(", ");
+            } else {
+                reservationsService.deleteReservationFromDocumentPosition(position);
+                position.setField(PositionFields.DOCUMENT, document);
+                position.getDataDefinition().save(position);
             }
         }
 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
-        } else {
-            deleteReservations(document);
         }
-
     }
 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
@@ -793,7 +790,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     resource.getDataDefinition().save(resource);
                 }
 
-                Entity newResource = createResource(position, warehouseTo, resource, resourceAvailableQuantity, date, true);
+                Entity newResource = createResource(position, warehouseTo, resource, resourceAvailableQuantity, date);
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
                     if (newResource.isValid()) {
@@ -816,7 +813,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 resource.getDataDefinition().save(resource);
 
-                Entity newResource = createResource(position, warehouseTo, resource, quantity, date, true);
+                Entity newResource = createResource(position, warehouseTo, resource, quantity, date);
 
                 if (newResource.isValid()) {
                     return;

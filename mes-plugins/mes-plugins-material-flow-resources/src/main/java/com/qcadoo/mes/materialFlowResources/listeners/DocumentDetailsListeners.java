@@ -188,70 +188,48 @@ public class DocumentDetailsListeners {
         logger.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
-        String documentState = document.getStringField(DocumentFields.STATE);
-
-        if (!DocumentState.DRAFT.getStringValue().equals(documentState)) {
+        if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
             return;
         }
 
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
 
-        Entity documentToCreateResourcesFor = documentDD.save(document);
+        document = documentDD.save(document);
 
-        if (!documentToCreateResourcesFor.isValid()) {
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        if (!document.isValid()) {
+            document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
-            documentForm.setEntity(documentToCreateResourcesFor);
+            documentForm.setEntity(document);
             logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
             return;
         }
 
-        boolean emptyPositions;
-
-        if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            emptyPositions = false;
-            createResources(documentToCreateResourcesFor);
-            if (documentToCreateResourcesFor.isValid()
-                    && (DocumentType.INTERNAL_OUTBOUND.equals(DocumentType.of(documentToCreateResourcesFor))
-                            || DocumentType.RELEASE.equals(DocumentType.of(documentToCreateResourcesFor)))) {
-                documentToCreateResourcesFor = document.getDataDefinition().get(document.getId());
-            }
+        if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            resourceManagementService.createResources(document);
         } else {
-            emptyPositions = true;
-            documentToCreateResourcesFor.setNotValid();
+            document.setNotValid();
 
             documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
         }
 
-        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
-        if (!documentToCreateResourcesFor.isValid()) {
-            Entity recentlySavedDocument = documentDD.get(document.getId());
+        if (!document.isValid()) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-
-            documentDD.save(recentlySavedDocument);
-
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
-        }
 
-        Entity recentlySavedDocument = documentDD.get(document.getId());
-
-        if (!emptyPositions && documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
                     dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
                     parameterService);
-
-            boolean created = tryBuildPz(documentToCreateResourcesFor, receiptDocumentForReleaseHelper);
-
-            if (created) {
-                view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
+            if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
+                tryBuildPz(document, receiptDocumentForReleaseHelper, view);
             }
         }
 
-        documentForm.setEntity(documentToCreateResourcesFor);
+
+        documentForm.setEntity(document);
 
         long end = System.currentTimeMillis();
         long difference = end - start;
@@ -261,33 +239,11 @@ public class DocumentDetailsListeners {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private boolean tryBuildPz(Entity documentToCreateResourcesFor,
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
-        return receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
-    }
-
-    private boolean buildConnectedPZDocument(final Entity document) {
-        return document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
-                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null;
-
-    }
-
-    @Transactional
-    public void createResources(Entity documentToCreateResourcesFor) {
-        DocumentType documentType = DocumentType.of(documentToCreateResourcesFor);
-
-        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            resourceManagementService.createResourcesForReceiptDocuments(documentToCreateResourcesFor);
-        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
-            resourceManagementService.updateResourcesForReleaseDocuments(documentToCreateResourcesFor);
-        } else if (DocumentType.TRANSFER.equals(documentType)) {
-            resourceManagementService.moveResourcesForTransferDocument(documentToCreateResourcesFor);
-        } else {
-            throw new IllegalStateException("Unsupported document type");
-        }
-
-        if (!documentToCreateResourcesFor.isValid()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+    private void tryBuildPz(Entity documentToCreateResourcesFor,
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, ViewDefinitionState view) {
+        boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+        if (created) {
+            view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
         }
     }
 

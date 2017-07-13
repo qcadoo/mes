@@ -34,7 +34,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
@@ -82,49 +81,37 @@ public class DocumentsListListeners {
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
-        Set<Long> selectedEntitiesIds = gridComponent.getSelectedEntitiesIds();
         Set<Long> invalidEntities = new HashSet<>();
 
-        for (Long documentId : selectedEntitiesIds) {
+        for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
             Entity document = documentDD.get(documentId);
-            String documentState = document.getStringField(DocumentFields.STATE);
-            if (!DocumentState.DRAFT.getStringValue().equals(documentState)) {
+            if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
                 continue;
             }
 
             document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
-            Entity documentToCreateResourcesFor = documentDD.save(document);
+            document = documentDD.save(document);
 
-            if (!documentToCreateResourcesFor.isValid()) {
-                documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            if (!document.isValid()) {
                 invalidEntities.add(documentId);
                 continue;
             }
 
-            if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-                createResources(documentToCreateResourcesFor);
+            if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+                resourceManagementService.createResources(document);
             } else {
-                documentToCreateResourcesFor.setNotValid();
+                document.setNotValid();
                 gridComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", ComponentState.MessageType.FAILURE);
-                invalidEntities.add(documentId);
             }
 
-            if (!documentToCreateResourcesFor.isValid()) {
-                Entity recentlySavedDocument = documentDD.get(document.getId());
-                recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-                documentDD.save(recentlySavedDocument);
-                documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            if (!document.isValid()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-                documentToCreateResourcesFor.getGlobalErrors().forEach(error -> {
-                    gridComponent.addMessage(error);
-                });
-                documentToCreateResourcesFor.getErrors().values().forEach(error -> {
-                    gridComponent.addMessage(error);
-                });
+                document.getGlobalErrors().forEach(gridComponent::addMessage);
+                document.getErrors().values().forEach(gridComponent::addMessage);
 
                 invalidEntities.add(documentId);
             }
-            documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         }
 
         return invalidEntities;

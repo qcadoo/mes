@@ -1,5 +1,10 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -12,10 +17,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.context.i18n.LocaleContextHolder;
-
-import java.util.List;
-import java.util.Optional;
 
 public class ReceiptDocumentForReleaseHelper {
 
@@ -65,6 +66,12 @@ public class ReceiptDocumentForReleaseHelper {
             return false;
         }
         return true;
+
+    }
+
+    public boolean buildConnectedPZDocument(final Entity document) {
+        return document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
+                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null;
 
     }
 
