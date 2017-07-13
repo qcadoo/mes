@@ -47,22 +47,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.AttributeFields;
-import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWarehouseType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -93,11 +88,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         if (isTypeWarehouse(type)) {
             BigDecimal resourcesQuantity = getResourcesQuantityForLocationAndProduct(location, product);
 
-            if (resourcesQuantity == null) {
-                return false;
-            } else {
-                return (resourcesQuantity.compareTo(quantity) >= 0);
-            }
+            return resourcesQuantity != null && (resourcesQuantity.compareTo(quantity) >= 0);
         } else {
             return true;
         }
@@ -405,53 +396,5 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Override
     public boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo) {
         return (isLocationIsWarehouse(locationFrom) || isLocationIsWarehouse(locationTo));
-    }
-
-    @Override
-    public List<Entity> getAttributesForPosition(Entity position, Entity warehouse) {
-        List<Entity> attributes = Lists.newArrayList();
-        List<Entity> attributesForWarehouse = getAttributesForWarehouse(warehouse);
-        if (attributesForWarehouse != null) {
-            for (Entity attributeForWarehouse : attributesForWarehouse) {
-                Entity existingValue = getExistingAttributeValueForPosition(position, attributeForWarehouse);
-                if (existingValue != null) {
-                    attributes.add(existingValue);
-                } else {
-                    attributes.add(createAttributeValue(position, attributeForWarehouse));
-                }
-            }
-        }
-        return attributes;
-    }
-
-    private Entity createAttributeValue(Entity position, Entity attribute) {
-        Entity newAttribute = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE).create();
-        newAttribute.setField(AttributeValueFields.ATTRIBUTE, attribute);
-        newAttribute.setField(AttributeValueFields.POSITION, position);
-        newAttribute.setField(AttributeValueFields.VALUE, attribute.getField(AttributeFields.DEFAULT_VALUE));
-
-        return newAttribute;
-    }
-
-    private Entity getExistingAttributeValueForPosition(final Entity position, final Entity attribute) {
-        if (position != null && position.getId() != null) {
-            return dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE)
-                    .find().createAlias(AttributeValueFields.POSITION, "position", JoinType.INNER)
-                    .add(SearchRestrictions.belongsTo(AttributeValueFields.ATTRIBUTE, attribute))
-                    .add(SearchRestrictions.eq("position.id", position.getId())).setMaxResults(1).uniqueResult();
-        }
-        return null;
-
-    }
-
-    private List<Entity> getAttributesForWarehouse(final Entity warehouse) {
-        if (warehouse != null) {
-            return dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_ATTRIBUTE).find()
-                    .add(SearchRestrictions.belongsTo(AttributeFields.LOCATION, warehouse)).list().getEntities();
-        }
-        return null;
     }
 }

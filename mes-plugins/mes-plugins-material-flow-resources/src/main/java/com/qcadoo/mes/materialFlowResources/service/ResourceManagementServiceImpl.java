@@ -41,7 +41,6 @@ import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.AttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
@@ -132,55 +131,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private void setResourceAttributesFromPosition(final Entity resource, final Entity position) {
-        List<Entity> attributes = position.getHasManyField(PositionFields.ATRRIBUTE_VALUES);
-
-        for (Entity attribute : attributes) {
-            attribute.setField(AttributeValueFields.RESOURCE, resource);
-        }
-
-        resource.setField(ResourceFields.ATRRIBUTE_VALUES, attributes);
-    }
-
-    private void setPositionAttributesFromResource(final Entity position, final Entity resource) {
-        List<Entity> attributes = resource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
-
-        List<Entity> newAttributes = Lists.newArrayList();
-
-        DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
-
-        for (Entity attribute : attributes) {
-            List<Entity> newAttribute = attributeDD.copy(attribute.getId());
-
-            newAttribute.get(0).setField(AttributeValueFields.POSITION, position);
-            newAttribute.get(0).setField(AttributeValueFields.RESOURCE, null);
-
-            newAttributes.addAll(newAttribute);
-        }
-
-        position.setField(PositionFields.ATRRIBUTE_VALUES, newAttributes);
-    }
-
-    private void setResourceAttributesFromResource(final Entity resource, final Entity baseResource) {
-        List<Entity> attributes = baseResource.getHasManyField(ResourceFields.ATRRIBUTE_VALUES);
-
-        List<Entity> newAttributes = Lists.newArrayList();
-
-        DataDefinition attributeDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_ATTRIBUTE_VALUE);
-
-        for (Entity attribute : attributes) {
-            List<Entity> newAttribute = attributeDD.copy(attribute.getId());
-
-            newAttribute.get(0).setField(AttributeValueFields.RESOURCE, resource);
-
-            newAttributes.addAll(newAttribute);
-        }
-
-        resource.setField(ResourceFields.ATRRIBUTE_VALUES, newAttributes);
-    }
-
     private Entity createResource(final Entity document, final Entity warehouse, final Entity position, final Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
@@ -218,8 +168,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, position.getField(PositionFields.GIVEN_QUANTITY));
             resource.setField(ResourceFields.CONVERSION, position.getField(PositionFields.CONVERSION));
         }
-
-        setResourceAttributesFromPosition(resource, position);
 
         resourceStockService.addResourceStock(resource);
         resource = resourceDD.save(resource);
@@ -268,8 +216,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
-
-        setResourceAttributesFromResource(newResource, resource);
 
         resourceStockService.addResourceStock(newResource);
         return resourceDD.save(newResource);
@@ -555,8 +501,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-
-            setPositionAttributesFromResource(newPosition, resource);
 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());

@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -255,44 +254,6 @@ public class DocumentDetailsListeners {
         FieldComponent locationToField = (FieldComponent) view.getComponentByReference(DocumentFields.LOCATION_TO);
         locationToField.setFieldValue(null);
         locationToField.requestComponentUpdateState();
-    }
-
-    public void updateAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        clearAttributes(view);
-        createNewAttributes(view);
-    }
-
-    private void clearAttributes(final ViewDefinitionState view) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_POSITIONS);
-
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
-                    .findFieldComponentByName("additionalAttributes");
-
-            attributeADL.setFieldValue(Lists.newArrayList());
-            attributeADL.requestComponentUpdateState();
-        }
-    }
-
-    private void createNewAttributes(final ViewDefinitionState view) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_POSITIONS);
-
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Entity document = documentForm.getEntity();
-
-        Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
-
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            Entity position = positionForm.getEntity();
-
-            if (position.getId() != null) {
-                position.setField(PositionFields.ATRRIBUTE_VALUES,
-                        materialFlowResourcesService.getAttributesForPosition(position, warehouse));
-
-                positionForm.setEntity(position);
-            }
-        }
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {

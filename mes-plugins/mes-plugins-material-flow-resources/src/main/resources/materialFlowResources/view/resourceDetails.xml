@@ -216,21 +216,6 @@
                 <option type="multiselect" value="true"/>
             </component>
         </windowTab>
-        <windowTab name="attributesTab" reference="attributesTab">
-            <component type="grid" name="attributeValuesGrid"
-                       reference="attributesGrid" source="#{form}.attributeValues">
-                <option type="column" name="name" fields="attribute" expression="#attribute['name']"/>
-                <option type="column" name="value" fields="value"/>
-
-                <option type="order" column="name" direction="asc"/>
-
-                <option type="searchable" value="name,value"/>
-                <option type="orderable" value="name,value"/>
-
-                <option type="fullscreen" value="true"/>
-                <option type="multiselect" value="true"/>
-            </component>
-        </windowTab>
     </component>
 
 
