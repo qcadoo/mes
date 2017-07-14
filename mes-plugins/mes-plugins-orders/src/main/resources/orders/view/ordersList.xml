@@ -257,7 +257,7 @@
             <option type="orderable"
                     value="name,number,state,deadline,technologyNumber,productNumber,productName,plannedQuantity,unit,companyName,plannedQuantityForAdditionalUnit,unitForAdditionalUnit,orderCategory"/>
             <option type="footerRow" value="true"/>
-            <option type="columnsToSummary" value="plannedQuantity"/>
+            <option type="columnsToSummary" value="plannedQuantity,plannedQuantityForAdditionalUnit"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
