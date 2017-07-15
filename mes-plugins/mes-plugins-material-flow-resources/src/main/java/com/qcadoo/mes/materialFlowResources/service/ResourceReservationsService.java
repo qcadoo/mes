@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -27,6 +28,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
@@ -92,14 +94,39 @@ public class ResourceReservationsService {
             if (position.getBelongsToField(PositionFields.RESOURCE) == null) {
                 List<Entity> newPositions = matchResourcesToPosition(position, warehouse, warehouseAlgorithm);
                 if (!newPositions.isEmpty()) {
-                    position.getDataDefinition().delete(position.getId());
                     logger.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ", FOR POSITION: id = " + position.getId() + ", size = " + newPositions.size());
                     logger.info(newPositions.toString());
-                    for(Entity newPosition : newPositions){
-                        newPosition.setField(PositionFields.DOCUMENT, document);
-                        Entity saved = newPosition.getDataDefinition().save(newPosition);
+                    if(newPositions.size() > 1) {
+                        position.getDataDefinition().delete(position.getId());
+                        for (Entity newPosition : newPositions) {
+                            newPosition.setField(PositionFields.DOCUMENT, document);
+                            Entity saved = newPosition.getDataDefinition().save(newPosition);
+                            valid = valid && saved.isValid();
+                            errors.addAll(saved.getGlobalErrors());
+                            if(!saved.getErrors().isEmpty()){
+                                view.addMessage("materialFlow.document.fillResources.global.error.positionNotValid", ComponentState.MessageType.FAILURE, false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                            }
+                        }
+                    } else {
+                        Entity newPosition = newPositions.get(0);
+                        position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
+                        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
+                        position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
+                        position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
+                        position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
+                        position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
+                        position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
+                        position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
+                        position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
+                        position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
+                        position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
+                        position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
+                        Entity saved = position.getDataDefinition().save(position);
                         valid = valid && saved.isValid();
                         errors.addAll(saved.getGlobalErrors());
+                        if(!saved.getErrors().isEmpty()){
+                            view.addMessage("materialFlow.document.fillResources.global.error.positionNotValid", ComponentState.MessageType.FAILURE, false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                        }
                     }
                 }
             }
@@ -130,9 +157,13 @@ public class ResourceReservationsService {
                 position, warehouseAlgorithm);
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         for (Entity resource : resources) {
+            if(resource.getBooleanField(ResourceFields.WASTE)){
+                continue;
+            }
             logger.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
                     + position.toString());
             logger.info("RESOURCE USED: " + resource.toString());
+
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
             Entity newPosition = positionDD.create();
@@ -150,12 +181,10 @@ public class ResourceReservationsService {
             newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-            newPosition.setField(PositionFields.WASTE, resource.getField(PositionFields.WASTE));
+            newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
-
-                // updateResourceQuantites(newPosition, resourceAvailableQuantity);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
 
@@ -170,8 +199,6 @@ public class ResourceReservationsService {
                     return newPositions;
                 }
             } else {
-
-                // updateResourceQuantites(newPosition, quantity);
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 

@@ -1,7 +1,6 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,26 +34,29 @@ public class ChangeStorageLocationHelperListeners {
                 DeliveriesConstants.MODEL_DELIVERED_PRODUCT);
         Entity storageLocation = entity.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
         List<String> changedProducts = Lists.newArrayList();
-        boolean success = true;
+        List<String> failedProducts = Lists.newArrayList();
         for (String id : splitIds) {
             Long deliveredProductId = Long.parseLong(id);
             Entity deliveredProduct = deliveredProductDD.get(deliveredProductId);
             deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation);
             deliveredProduct.setField(DeliveredProductFields.VALIDATE_PALLET, false);
             Entity saved = deliveredProductDD.save(deliveredProduct);
-            if (!saved.isValid()) {
+            String productNumber = saved.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+            if (saved.isValid()) {
+                changedProducts.add(productNumber);
+            } else {
+                failedProducts.add(productNumber);
                 saved.getErrors().forEach((key, message) -> view.addMessage(message));
-                saved.getGlobalErrors().forEach(message -> view.addMessage(message));
-                success = false;
-                break;
+                saved.getGlobalErrors().forEach(view::addMessage);
             }
-            changedProducts.add(saved.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
         }
-        if (success) {
-            view.addMessage("deliveries.changeStorageLocationHelper.success", ComponentState.MessageType.SUCCESS, changedProducts
-                    .stream().collect(Collectors.joining(", ")));
-        } else {
-            view.addMessage("deliveries.changeStorageLocationHelper.error", ComponentState.MessageType.FAILURE);
+        if (!changedProducts.isEmpty()) {
+            view.addMessage("deliveries.changeStorageLocationHelper.success", ComponentState.MessageType.SUCCESS, false,
+                    String.join(", ", changedProducts));
+        }
+        if (!failedProducts.isEmpty()) {
+            view.addMessage("deliveries.changeStorageLocationHelper.error", ComponentState.MessageType.FAILURE, false,
+                    String.join(", ", failedProducts));
         }
     }
 

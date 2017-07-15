@@ -26,23 +26,41 @@ package com.qcadoo.mes.materialFlowResources.print;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Chunk;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
-import com.qcadoo.mes.materialFlowResources.print.helper.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.print.helper.DocumentDataProvider;
+import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
+import com.qcadoo.mes.materialFlowResources.print.helper.Position;
+import com.qcadoo.mes.materialFlowResources.print.helper.PositionBuilder;
+import com.qcadoo.mes.materialFlowResources.print.helper.PositionDataProvider;
+import com.qcadoo.mes.materialFlowResources.print.helper.PositionsHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
@@ -52,8 +70,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component(value = "dispositionOrderPdf")
 public class DispositionOrderPdf extends ReportPdfView {
@@ -71,6 +95,8 @@ public class DispositionOrderPdf extends ReportPdfView {
     private static final String L_DESCRIPTION = "materialFlowResources.document.description.label";
 
     private static final String L_HEADER = "materialFlowResources.dispositionOrder.header";
+
+    private static final String L_PZ = "materialFlowResources.dispositionOrder.locationPZ";
 
     @Autowired
     private TranslationService translationService;
@@ -104,6 +130,39 @@ public class DispositionOrderPdf extends ReportPdfView {
         for (String rawId : ids) {
             Long id = Long.valueOf(rawId);
             Entity documentEntity = documentPdfHelper.getDocumentEntity(id);
+            if (ids.length == 1) {
+                class DispositionOrderHeader extends PdfPageEventHelper {
+
+                    @Override
+                    public void onEndPage(PdfWriter writer, Document document) {
+                        try {
+                            PdfContentByte cb = writer.getDirectContent();
+                            cb.saveState();
+                            String text = DocumentDataProvider.name(documentEntity) + "\n"
+                                    + DocumentDataProvider.number(documentEntity);
+
+                            float textBase = document.top();
+
+                            cb.setColorFill(ColorUtils.getLightColor());
+                            cb.setColorStroke(ColorUtils.getLightColor());
+                            cb.beginText();
+                            cb.setFontAndSize(FontUtils.getDejavu(), 7);
+
+                            cb.setTextMatrix(document.left(), textBase + 20);
+                            cb.showText((translationService.translate(L_PZ, locale) +": "+ DocumentDataProvider
+                                    .pzLocation(documentEntity)));
+                            cb.endText();
+                            cb.stroke();
+                            cb.restoreState();
+                        } catch (Exception ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+                    }
+
+                }
+                writer.setPageEvent(new DispositionOrderHeader());
+            }
             documents.add(documentEntity);
             String documentHeader = getDocumentHeader(documentEntity, locale);
             pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
@@ -286,8 +345,10 @@ public class DispositionOrderPdf extends ReportPdfView {
         headerValues.add(new HeaderPair(translationService.translate(L_TIME, locale), DocumentDataProvider.time(documentEntity),
                 false));
         headerValues.add(new HeaderPair(translationService.translate(L_DESCRIPTION, locale), DocumentDataProvider
-                .description(documentEntity), true));
-
+                .description(documentEntity), false));
+        headerValues.add(new HeaderPair(translationService.translate(L_PZ, locale), DocumentDataProvider
+                .pzLocation(documentEntity), true));
+        headerValues.add(new HeaderPair(StringUtils.EMPTY, StringUtils.EMPTY, true));
         return headerValues;
     }
 

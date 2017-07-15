@@ -1263,14 +1263,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         $scope.cancelEditing = cancelEditing;
 
         $scope.resize = function () {
-            var gridHeight =
-                $('tr.jqgrow').slice(0, 20).map(function () {
-                    return $(this).outerHeight()
-                }).get().reduce(function (a, b) {
-                    return a + b
-                }, 0);
-
-            jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true).setGridHeight(gridHeight);
+            var $grid = jQuery('#grid').setGridWidth($("#window\\.positionsGridTab").width() - 23, true);
+            if($grid.is(':visible')){
+                var $flowGridLayout = $('div.flow-grid-layout-item');
+                var containerHeight = $flowGridLayout.innerHeight();
+                var gridHeight = $('.ui-jqgrid-bdiv', $flowGridLayout).outerHeight();
+                var totalGridHeight = $('#gbox_grid', $flowGridLayout).outerHeight();
+                var newGridHeightToFillWholeSpace = containerHeight - totalGridHeight + gridHeight;
+                $grid.setGridHeight(newGridHeightToFillWholeSpace);
+            }
         };
 
         $("#window\\.positionsGridTab").resize($scope.resize);
@@ -1679,9 +1680,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
                 }
                 $('#rows-num').text('(' + grid.getGridParam('records') + ')');
-                grid.resize();
-                // force grid layout to adapt it's height accordingly to jqGrid
-                $('.flow-grid-layout-item').height($('ng-jq-grid>div').outerHeight()).trigger('resize');
             },
             onSelectRow: function (rowid, status) {
 

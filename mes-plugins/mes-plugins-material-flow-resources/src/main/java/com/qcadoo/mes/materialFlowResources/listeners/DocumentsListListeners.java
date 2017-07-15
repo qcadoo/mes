@@ -21,9 +21,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -135,8 +133,7 @@ public class DocumentsListListeners {
 
                 invalidEntities.add(documentId);
             }
-            documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
-            updatePositions(documentToCreateResourcesFor);
+            documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
         }
 
         return invalidEntities;
@@ -159,16 +156,6 @@ public class DocumentsListListeners {
             return result;
         }
         return true;
-    }
-
-    private void updatePositions(Entity document) {
-        String query = "UPDATE materialflowresources_position "
-                + "SET type = (SELECT type FROM materialflowresources_document WHERE id=:document_id), state = (SELECT state FROM materialflowresources_document WHERE id=:document_id) "
-                + "WHERE document_id = :document_id ";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("document_id", document.getId());
-        jdbcTemplate.update(query, params);
     }
 
     @Transactional
