@@ -35,7 +35,7 @@ public interface ResourceManagementService {
 
     void createResourcesForReceiptDocuments(final Entity document);
 
-    void updateResourcesForReleaseDocuments(Entity document);
+    void updateResourcesForReleaseDocuments(final Entity document);
 
     void moveResourcesForTransferDocument(Entity document);
 

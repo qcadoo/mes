@@ -72,7 +72,6 @@ public class ReceiptDocumentForReleaseHelper {
     public boolean buildConnectedPZDocument(final Entity document) {
         return document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
                 && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null;
-
     }
 
     private void fillPositions(Entity location, Entity document, DocumentBuilder pzBuilder) {
