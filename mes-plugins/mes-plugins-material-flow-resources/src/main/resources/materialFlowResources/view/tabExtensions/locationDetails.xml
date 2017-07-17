@@ -64,40 +64,6 @@
 					</component>
 				</component>
 			</layoutElement>
-			<layoutElement column="3" row="1">
-				<component type="borderLayout" name="additionalAttributeBorderLayout"
-					reference="additionalAttributeBorderLayout">
-					<option type="label" value="additionalAttributeLayoutLabel" />
-					<component type="awesomeDynamicList" name="additionalAttributes"
-						source="#{form}.attributes" reference="additionalAttributes">
-						<option type="hasButtons" value="true" />
-						<option type="hasBorder" value="true" />
-						<header>
-							<component type="gridLayout" name="mainGridLayout"
-								columns="5" rows="1">
-								<layoutElement column="1" row="1" width="3">
-									<component type="label" name="attributeName" />
-								</layoutElement>
-								<layoutElement column="4" row="1" width="2">
-									<component type="label" name="required" />
-								</layoutElement>
-							</component>
-						</header>
-						<components>
-							<component type="gridLayout" name="attributesGridLayout"
-								columns="5" rows="1">
-								<layoutElement column="1" row="1" width="3">
-									<component type="input" name="attributeName"
-										field="name" hasLabel="false" reference="attributeName"/>
-								</layoutElement>
-								<layoutElement column="4" row="1" width="2">
-									<component type="checkbox" name="defaultValue" field="defaultValue" hasLabel="false"/>
-								</layoutElement>
-							</component>
-						</components>
-					</component>
-				</component>
-			</layoutElement>
 		</component>
 	</windowTab>
 </windowTabExtension>

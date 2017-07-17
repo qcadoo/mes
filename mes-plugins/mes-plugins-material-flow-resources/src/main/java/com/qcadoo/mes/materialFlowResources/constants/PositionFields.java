@@ -49,8 +49,6 @@ public final class PositionFields {
 
     public static final String RESOURCE = "resource";
 
-    public static final String ATRRIBUTE_VALUES = "attributeValues";
-
     public static final String STORAGE_LOCATION = "storageLocation";
 
     public static final String EXTERNAL_NUMBER = "externalNumber";

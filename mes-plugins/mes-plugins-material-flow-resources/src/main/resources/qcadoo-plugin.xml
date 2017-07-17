@@ -79,8 +79,6 @@
         <model:model model="warehouseStockListDto" resource="model/warehouseStockListDto.xml"/>
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
         <model:model model="resourceCorrectionDto" resource="model/resourceCorrectionDto.xml"/>
-        <model:model model="attribute" resource="model/attribute.xml"/>
-        <model:model model="attributeValue" resource="model/attributeValue.xml"/>
 
         <model:model model="costNormsGenerator" resource="model/costNormsGenerator.xml"/>
         <model:model model="costNormsLocation" resource="model/costNormsLocation.xml"/>
@@ -178,11 +176,6 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceStocks" model="resourceStock"
                            plugin="materialFlowResources" joinField="location" cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlow" model="location">
-            <model:hasMany name="attributes" model="attribute"
-                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
 
         <!-- update cost norms for product -->

@@ -31,6 +31,8 @@ import com.qcadoo.model.api.Entity;
 
 public interface ResourceManagementService {
 
+    void createResources(final Entity document);
+
     void createResourcesForReceiptDocuments(final Entity document);
 
     void updateResourcesForReleaseDocuments(final Entity document);
