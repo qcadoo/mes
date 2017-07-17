@@ -28,6 +28,7 @@ import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUAN
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -425,7 +426,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
                 if (generatedPositions.size() > 1) {
-                    position.getDataDefinition().delete(position.getId());
+                    if(Objects.nonNull(position.getId())) {
+                        position.getDataDefinition().delete(position.getId());
+                    }
                     for (Entity newPosition : generatedPositions) {
                         newPosition.setField(PositionFields.DOCUMENT, document);
                         Entity saved = newPosition.getDataDefinition().save(newPosition);
