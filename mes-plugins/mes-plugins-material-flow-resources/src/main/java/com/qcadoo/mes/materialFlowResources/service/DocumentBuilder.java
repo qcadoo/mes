@@ -338,7 +338,10 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> p.getDataDefinition().save(p));
+                positions.forEach(p -> {
+                    p.setField(PositionFields.DOCUMENT, savedDocument);
+                    p.getDataDefinition().save(p);
+                });
             }
         } else {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -366,7 +369,10 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> p.getDataDefinition().save(p));
+                positions.forEach(p -> {
+                    p.setField(PositionFields.DOCUMENT, savedDocument);
+                    p.getDataDefinition().save(p);
+                });
             }
         } else {
             throw new EntityRuntimeException(savedDocument);
