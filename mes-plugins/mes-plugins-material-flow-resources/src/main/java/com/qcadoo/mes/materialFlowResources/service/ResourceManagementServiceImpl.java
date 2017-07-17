@@ -127,7 +127,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             createResource(document, warehouse, position, date);
-            position.setField(PositionFields.DOCUMENT, document);
             position.getDataDefinition().save(position);
         }
     }
@@ -436,7 +435,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     }
                 } else {
                     copyPositionValues(position, generatedPositions.get(0));
-                    position.setField(PositionFields.DOCUMENT, document);
                     Entity saved = position.getDataDefinition().save(position);
                     addPositionErrors(document, saved);
                 }
@@ -648,7 +646,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
-                position.setField(PositionFields.DOCUMENT, document);
                 position.getDataDefinition().save(position);
             }
         }

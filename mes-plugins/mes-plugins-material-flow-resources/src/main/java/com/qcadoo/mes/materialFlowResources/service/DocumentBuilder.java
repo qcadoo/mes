@@ -324,6 +324,8 @@ public class DocumentBuilder {
 
         Entity savedDocument = documentDD.save(document);
 
+        positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
+
         savedDocument.setField(DocumentFields.POSITIONS, positions);
 
         if (savedDocument.isValid()) {
@@ -338,10 +340,7 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> {
-                    p.setField(PositionFields.DOCUMENT, savedDocument);
-                    p.getDataDefinition().save(p);
-                });
+                positions.forEach(p -> p.getDataDefinition().save(p));
             }
         } else {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -356,6 +355,8 @@ public class DocumentBuilder {
 
         Entity savedDocument = documentDD.save(document);
 
+        positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
+
         savedDocument.setField(DocumentFields.POSITIONS, positions);
 
         if (savedDocument.isValid()) {
@@ -369,10 +370,7 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> {
-                    p.setField(PositionFields.DOCUMENT, savedDocument);
-                    p.getDataDefinition().save(p);
-                });
+                positions.forEach(p -> p.getDataDefinition().save(p));
             }
         } else {
             throw new EntityRuntimeException(savedDocument);
