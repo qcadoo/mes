@@ -326,22 +326,21 @@ public class DocumentBuilder {
 
         savedDocument.setField(DocumentFields.POSITIONS, positions);
 
-        if (savedDocument.isValid() && DocumentState.of(savedDocument) == DocumentState.ACCEPTED) {
-            resourceManagementService.createResources(savedDocument);
-        }
+        if (savedDocument.isValid()) {
+            if(DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
+                resourceManagementService.createResources(savedDocument);
 
-        if (savedDocument.isValid()
-                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                    parameterService);
+                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                        parameterService);
 
-            if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
-                receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                }
+            } else {
+                positions.forEach(p -> p.getDataDefinition().save(p));
             }
-        }
-
-        if (!savedDocument.isValid()) {
+        } else {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
@@ -356,21 +355,20 @@ public class DocumentBuilder {
 
         savedDocument.setField(DocumentFields.POSITIONS, positions);
 
-        if (savedDocument.isValid() && DocumentState.of(savedDocument) == DocumentState.ACCEPTED) {
-            resourceManagementService.createResources(savedDocument);
-        }
+        if (savedDocument.isValid()) {
+            if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
+                resourceManagementService.createResources(savedDocument);
 
-        if (savedDocument.isValid()
-                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                    parameterService);
-            if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)){
-                receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                        parameterService);
+                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                }
+            } else {
+                positions.forEach(p -> p.getDataDefinition().save(p));
             }
-        }
-
-        if (!savedDocument.isValid()) {
+        } else {
             throw new EntityRuntimeException(savedDocument);
         }
 
