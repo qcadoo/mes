@@ -41,6 +41,7 @@
         <decimal name="conversion"/>
         <string name="productUnit"/>
         <decimal name="price"/>
+        <decimal name="value"/>
         <datetime name="documentDate"/>
         <datetime name="expirationDate"/>
         <datetime name="productionDate"/>
@@ -56,6 +57,7 @@
         <string name="palletType"/>
         <string name="palletNumber"/>
         <integer name="documentId"/>
+        <integer name="orderId"/>
     </fields>
     <masterModel plugin="materialFlowResources" model="position"/>
 </model>

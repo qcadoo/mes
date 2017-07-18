@@ -37,7 +37,7 @@
 		<windowTab name="mainTab" reference="mainTab">
 			<component type="form" name="form" reference="form">
 				<component type="gridLayout" name="costNormsForProductsGridLayout"
-					hasBorders="false" columns="3" rows="5">
+					hasBorders="false" columns="3" rows="11">
 					<layoutElement column="1" row="1">
 						<component type="lookup" name="product" field="product"
 							reference="product" defaultEnabled="false">
@@ -110,21 +110,6 @@
 							</component>
 						</component>
 					</layoutElement>
-					<layoutElement column="2" row="3">
-						<component type="gridLayout" name="costForOrderGridLayout"
-							columns="4" rows="1">
-							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="costForOrder" reference="costForOrder"
-									field="costForOrder">
-									<option type="alignment" value="right" />
-								</component>
-							</layoutElement>
-							<layoutElement column="4" row="1">
-								<component type="input" name="costForOrderCurrency"
-									reference="costForOrderCurrency" hasLabel="false" defaultEnabled="never" />
-							</layoutElement>
-						</component>
-					</layoutElement>
 					<layoutElement column="2" row="4" height="2">
 						<component type="borderLayout" name="offerPriceBorderLayout">
 							<option type="label" value="offerPriceTab" />
@@ -155,6 +140,43 @@
 							</component>
 						</component>
 					</layoutElement>
+
+					<layoutElement column="1" row="6">
+						<component type="gridLayout" name="costForOrderGridLayout"
+								   columns="4" rows="1">
+							<layoutElement column="1" row="1" width="3">
+								<component type="input" name="costForOrder" reference="costForOrder"
+										   field="costForOrder">
+									<option type="alignment" value="right" />
+								</component>
+							</layoutElement>
+							<layoutElement column="4" row="1">
+								<component type="input" name="costForOrderCurrency"
+										   reference="costForOrderCurrency" hasLabel="false" defaultEnabled="never" />
+							</layoutElement>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="7" height="5" width="2">
+						<component type="grid" name="positions" reference="positions" model="positionDto" plugin="materialFlowResources">
+
+							<option type="column" name="documentNumber" fields="documentNumber" width="100"/>
+							<option type="column" name="quantity" fields="quantity" width="60"/>
+							<option type="column" name="productUnit" fields="productUnit" width="60"/>
+							<option type="column" name="price" fields="price" width="100"/>
+							<option type="column" name="value" fields="value" width="100"/>
+
+							<option type="order" column="documentNumber" direction="asc"/>
+
+							<option type="searchable"
+									value="documentNumber,quantity,productUnit,price,value"/>
+							<option type="orderable"
+									value="documentNumber,quantity,productUnit,price,value"/>
+
+							<criteriaModifier
+									class="com.qcadoo.mes.costNormsForMaterials.listeners.CostNormsForMaterialsInOrderDetailsListeners"
+									method="showPositionsForProduct"/>
+						</component>
+					</layoutElement>
 				</component>
 				<option type="header" value="true" />
 				<option type="expression" value="" />
@@ -168,5 +190,9 @@
 		<beforeRender
 			class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyInstOperProductInCompDetailsHooks"
 			method="fillCurrencyFields" />
+
+		<beforeRender
+				class="com.qcadoo.mes.costNormsForMaterials.hooks.TechnologyInstOperProductInCompDetailsHooks"
+				method="setCriteriaModifiersParameters" />
 	</hooks>
 </view>
