@@ -103,7 +103,23 @@ public class MasterOrderDetailsHooks {
             createOrder.setMessage("masterOrders.order.ribbon.message.selectOneProduct");
         }
         createOrder.requestUpdate(true);
+        toggleGenerateButton(view);
         window.requestRibbonRender();
+    }
+
+    private void toggleGenerateButton(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
+        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("generateOrders");
+        createOrder.setMessage("qcadooView.ribbon.orders.generateOrders.message");
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
+            createOrder.setEnabled(false);
+        } else {
+            createOrder.setEnabled(true);
+        }
+        createOrder.requestUpdate(true);
     }
 
     private void setOrderLookupCriteriaModifier(final ViewDefinitionState view) {

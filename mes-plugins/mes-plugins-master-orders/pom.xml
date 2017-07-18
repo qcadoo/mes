@@ -22,6 +22,11 @@
 			<artifactId>mes-plugins-orders</artifactId>
 			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-line-changeover-norms-for-orders</artifactId>
+			<version>1.5-SNAPSHOT-DEV</version>
+		</dependency>
 	</dependencies>
 
 	<build>
