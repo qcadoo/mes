@@ -127,7 +127,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             createResource(document, warehouse, position, date);
-            position.getDataDefinition().save(position);
+            position = position.getDataDefinition().save(position);
+            if(!position.isValid()) {
+                document.setNotValid();
+                position.getGlobalErrors()
+                        .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                position.getErrors().values()
+                        .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+            }
         }
     }
 
@@ -447,11 +454,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private void addPositionErrors(Entity document, Entity saved) {
-        saved.getGlobalErrors().forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
-        if (!saved.getErrors().isEmpty()) {
-            document.addGlobalError("materialFlow.document.fillResources.global.error.positionNotValid",
-                    false,
-                    saved.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+        if(!saved.isValid()) {
+            document.setNotValid();
+            saved.getGlobalErrors().forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+            if (!saved.getErrors().isEmpty()) {
+                document.addGlobalError("materialFlow.document.fillResources.global.error.positionNotValid",
+                        false,
+                        saved.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            }
         }
     }
 
@@ -646,7 +656,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 errorMessage.append(", ");
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
-                position.getDataDefinition().save(position);
+                position = position.getDataDefinition().save(position);
+                if(!position.isValid()) {
+                    document.setNotValid();
+                    position.getGlobalErrors()
+                            .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                    position.getErrors().values()
+                            .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                }
             }
         }
 

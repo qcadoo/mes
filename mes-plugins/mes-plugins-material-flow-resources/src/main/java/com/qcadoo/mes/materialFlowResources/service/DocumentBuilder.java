@@ -340,9 +340,20 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> p.getDataDefinition().save(p));
+                positions.forEach(p -> {
+                    p = p.getDataDefinition().save(p);
+                    if (!p.isValid()) {
+                        savedDocument.setNotValid();
+                        p.getGlobalErrors()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getErrors().values()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                    }
+                });
             }
-        } else {
+        }
+
+        if (!savedDocument.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
 
@@ -370,9 +381,20 @@ public class DocumentBuilder {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
             } else {
-                positions.forEach(p -> p.getDataDefinition().save(p));
+                positions.forEach(p -> {
+                    p = p.getDataDefinition().save(p);
+                    if (!p.isValid()) {
+                        savedDocument.setNotValid();
+                        p.getGlobalErrors()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getErrors().values()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                    }
+                });
             }
-        } else {
+        }
+
+        if (!savedDocument.isValid()) {
             throw new EntityRuntimeException(savedDocument);
         }
 
