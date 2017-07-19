@@ -57,7 +57,7 @@ class DeliveryByPalletTypeXlsDP {
         query.append("  (SELECT dp.palletnumber_id, count(dp.palletnumber_id) > 0 AS anyWaste FROM deliveries_deliveredproduct dp ");
         query.append("  JOIN deliveries_delivery delivery ON delivery.id = dp.delivery_id ");
         query.append("  LEFT JOIN deliveries_deliverystatechange deliverystatechange ON deliverystatechange.delivery_id = dp.delivery_id AND deliverystatechange.status = '03successful' AND deliverystatechange.targetstate = '06received' ");
-        query.append("  WHERE delivery.state = '06received' AND deliverystatechange.dateandtime >= '2017-07-01' AND deliverystatechange.dateandtime <= '2017-07-11' AND dp.iswaste = true ");
+        query.append("  WHERE delivery.state = '06received' AND deliverystatechange.dateandtime >= :fromDate AND deliverystatechange.dateandtime <= :toDate AND dp.iswaste = true ");
         query.append("  GROUP BY dp.palletnumber_id ) AS otherdp ");
         query.append("ON otherdp.palletnumber_id = deliveredproduct.palletnumber_id ");
         query.append("LEFT JOIN deliveries_deliverystatechange deliverystatechange ON deliverystatechange.delivery_id = delivery.id AND deliverystatechange.status = '03successful' AND deliverystatechange.targetstate = '06received' ");
