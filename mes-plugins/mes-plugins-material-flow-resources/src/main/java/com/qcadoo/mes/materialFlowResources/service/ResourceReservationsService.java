@@ -187,12 +187,7 @@ public class ResourceReservationsService {
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
-
-                BigDecimal givenResourceQuantity = resourceManagementService.convertToGivenUnit(resourceAvailableQuantity,
-                        position);
-
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
+                setPositionQuantityAndGivenQuantity(position, resourceAvailableQuantity, newPosition);
 
                 newPositions.add(newPosition);
 
@@ -201,16 +196,31 @@ public class ResourceReservationsService {
                 }
             } else {
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
-
-                BigDecimal givenQuantity = resourceManagementService.convertToGivenUnit(quantity, position);
-
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+                setPositionQuantityAndGivenQuantity(position, quantity, newPosition);
                 newPositions.add(newPosition);
 
                 return newPositions;
             }
         }
-        return Lists.newArrayList();
+        createPositionWithoutResourceForMissingQuantity(position, positionDD, newPositions, quantity);
+        return newPositions;
+    }
+
+    private void setPositionQuantityAndGivenQuantity(Entity position, BigDecimal quantity, Entity newPosition) {
+        newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+
+        BigDecimal givenQuantity = resourceManagementService.convertToGivenUnit(quantity, position);
+
+        newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+    }
+
+    private void createPositionWithoutResourceForMissingQuantity(Entity position, DataDefinition positionDD, List<Entity> newPositions, BigDecimal quantity) {
+        Entity newPosition = positionDD.create();
+
+        newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+        newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
+        newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
+        setPositionQuantityAndGivenQuantity(position, quantity, newPosition);
+        newPositions.add(newPosition);
     }
 }
