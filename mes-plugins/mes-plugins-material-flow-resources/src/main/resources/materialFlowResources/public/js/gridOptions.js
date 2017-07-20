@@ -592,7 +592,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 updateFieldValue('typeOfPallet', resource['typeOfPallet'], rowId);
                 updateFieldValue('waste', resource['waste'], rowId);
                 if ($scope.config.outDocument) {
-                    updateFieldValue('lastResource', resource['lastResource'], rowId);
+                    var positionQuantity = getFieldValue('quantity', rowId);
+                    var resourceQuantity = resource['quantity'];
+                    if (positionQuantity >= resourceQuantity) {
+                        updateFieldValue('lastResource', resource['lastResource'], rowId);
+                    }
                 }
             });
         }
