@@ -68,8 +68,9 @@
             </layoutElement>
             <layoutElement column="1" row="6">
                 <component type="checkbox" name="allowAnomalyCreationOnAcceptanceRecord"
-                           reference="allowAnomalyCreationOnAcceptanceRecord" field="#{form}.allowAnomalyCreationOnAcceptanceRecord"
-                           hasDescription = "true">
+                           reference="allowAnomalyCreationOnAcceptanceRecord"
+                           field="#{form}.allowAnomalyCreationOnAcceptanceRecord"
+                           hasDescription="true">
                     <option type="labelWidth" value="60"/>
                 </component>
             </layoutElement>
@@ -112,17 +113,24 @@
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="5">
+            <layoutElement column="3" row="4">
                 <component type="checkbox" name="allowMultipleRegisteringTimeForWorker"
                            reference="allowMultipleRegisteringTimeForWorker"
                            field="#{form}.allowMultipleRegisteringTimeForWorker">
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="6">
+            <layoutElement column="3" row="5">
                 <component type="checkbox" name="consumptionOfRawMaterialsBasedOnStandards"
                            reference="consumptionOfRawMaterialsBasedOnStandards"
                            field="#{form}.consumptionOfRawMaterialsBasedOnStandards">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="3" row="6">
+                <component type="checkbox" name="acceptRecordsFromTerminal"
+                           reference="acceptRecordsFromTerminal"
+                           field="#{form}.acceptRecordsFromTerminal" hasDescription="true">
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
