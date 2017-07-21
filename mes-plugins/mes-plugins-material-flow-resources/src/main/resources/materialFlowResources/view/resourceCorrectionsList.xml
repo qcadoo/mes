@@ -48,8 +48,15 @@
             <option type="column" name="priceCorrected" fields="priceCorrected" width="60"/>
             <option type="column" name="batchCorrected" fields="batchCorrected" width="60"/>
             <option type="column" name="expirationDateCorrected" fields="expirationDateCorrected" width="60"/>
+
             <option type="column" name="storageLocationCorrected" fields="storageLocationCorrected" width="60"/>
+            <option type="column" name="oldStorageLocationNumber" fields="oldStorageLocationNumber" width="80"/>
+            <option type="column" name="newStorageLocationNumber" fields="newStorageLocationNumber" width="80"/>
+
             <option type="column" name="palletNumberCorrected" fields="palletNumberCorrected" width="60"/>
+            <option type="column" name="oldPalletNumber" fields="oldPalletNumber" width="80"/>
+            <option type="column" name="newPalletNumber" fields="newPalletNumber" width="80"/>
+
             <option type="column" name="typeOfPalletCorrected" fields="typeOfPalletCorrected" width="60"/>
 
             <option type="column" name="deliveryNumber" fields="deliveryNumber" width="60"/>
@@ -57,9 +64,9 @@
             <option type="order" column="correctionNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber,newPalletNumber,oldPalletNumber,newStorageLocationNumber,oldStorageLocationNumber"/>
             <option type="orderable"
-                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber"/>
+                    value="correctionNumber,createDate,resourceNumber,productNumber,productName,quantityCorrected,priceCorrected,batchCorrected,expirationDateCorrected,storageLocationCorrected,palletNumberCorrected,typeOfPalletCorrected,deliveryNumber,locationNumber,newPalletNumber,oldPalletNumber,newStorageLocationNumber,oldStorageLocationNumber"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceCorrectionDetails"/>
             <option type="correspondingComponent" value="form"/>
