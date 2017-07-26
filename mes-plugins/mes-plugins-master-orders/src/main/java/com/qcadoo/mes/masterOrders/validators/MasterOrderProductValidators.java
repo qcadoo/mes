@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.not;
+
+import java.util.Collection;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -31,18 +44,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Collection;
-
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class MasterOrderProductValidators {
@@ -57,88 +60,108 @@ public class MasterOrderProductValidators {
         isValid = checkIfOrdersAssignedToMasterOrder(masterOrderProduct) && isValid;
 
         return isValid;
-
-    }
-
-    private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
-        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
-        query.append("(select count(mproduct) FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions, ");
-        query.append("(select count(morder) FROM #orders_order morder WHERE morder.masterOrder.id = masterOrder.id) as orders  ");
-        query.append("FROM #masterOrders_masterOrder masterOrder ");
-        query.append("WHERE masterOrder.id = :oid");
-        Entity mo = masterOrder.getDataDefinition().find(query.toString()).setLong("oid", masterOrder.getId()).setMaxResults(1)
-                .uniqueResult();
-
-        if (mo.getLongField("orders") != 0l && mo.getLongField("positions") == 0l) {
-            masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.alreadyExistsOrdersAssignedToMasterOrder", false);
-            return false;
-        }
-        return true;
     }
 
     private boolean checkIfEntityAlreadyExistsForProductAndMasterOrder(final DataDefinition masterOrderProductDD,
-            final Entity masterOrderProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD
-                .find()
-                .add(belongsTo(MASTER_ORDER, masterOrderProduct.getBelongsToField(MASTER_ORDER)))
-                .add(belongsTo(MasterOrderProductFields.PRODUCT,
+                                                                       final Entity masterOrderProduct) {
+        SearchCriteriaBuilder searchCriteriaBuilder = masterOrderProductDD.find()
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER,
+                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)))
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT,
                         masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)));
-        // It decreases unnecessary mapping overhead
-        searchCriteriaBuilder.setProjection(alias(id(), "id"));
 
-        Long masterOrderId = masterOrderProduct.getId();
-        if (masterOrderId != null) {
-            searchCriteriaBuilder.add(SearchRestrictions.ne("id", masterOrderId));
+        // It decreases unnecessary mapping overhead
+        searchCriteriaBuilder.setProjection(SearchProjections.alias(SearchProjections.id(), "id"));
+
+        Long masterOrderProductId = masterOrderProduct.getId();
+
+        if (masterOrderProductId != null) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", masterOrderProductId));
         }
+
         if (searchCriteriaBuilder.setMaxResults(1).uniqueResult() == null) {
             return true;
         }
 
         masterOrderProduct.addError(masterOrderProductDD.getField(MasterOrderProductFields.PRODUCT),
                 "masterOrders.masterOrderProduct.alreadyExistsForProductAndMasterOrder");
+
         return false;
     }
 
-    public boolean checkIfCanChangeTechnology(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+
+        StringBuilder query = new StringBuilder();
+
+        query.append("SELECT masterOrder.id AS masterOrderId, masterOrder.number AS masterOrderNumber, ");
+        query.append(
+                "(SELECT count(mproduct) FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) AS positions, ");
+        query.append("(SELECT count(morder) FROM #orders_order morder WHERE morder.masterOrder.id = masterOrder.id) AS orders  ");
+        query.append("FROM #masterOrders_masterOrder masterOrder ");
+        query.append("WHERE masterOrder.id = :oid");
+
+        Entity masterOrderFromDB = masterOrder.getDataDefinition().find(query.toString()).setLong("oid", masterOrder.getId())
+                .setMaxResults(1).uniqueResult();
+
+        if (masterOrderFromDB.getLongField("orders") != 0l && masterOrderFromDB.getLongField("positions") == 0l) {
+            masterOrderProduct.addGlobalError("masterOrders.masterOrderProduct.alreadyExistsOrdersAssignedToMasterOrder", false);
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkIfCanChangeTechnology(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
             final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }
+
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+
         if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
             return true;
         }
+
         Entity oldTechnology = (Entity) fieldOldValue;
         Entity newTechnology = (Entity) fieldNewValue;
+
         if (isNullOrDoesNotChange(oldTechnology, newTechnology)) {
             return true;
         }
 
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+
         Collection<String> unsupportedOrderNumbers = masterOrderOrdersDataProvider.findBelongingOrderNumbers(masterOrder,
                 and(belongsTo(OrderFields.PRODUCT, product), not(belongsTo(OrderFields.TECHNOLOGY_PROTOTYPE, newTechnology))));
+
         if (unsupportedOrderNumbers.isEmpty()) {
             return true;
         }
 
         masterOrderProduct.addError(fieldDefinition, "masterOrders.masterOrder.technology.wrongTechnology",
                 StringUtils.join(unsupportedOrderNumbers, ", "));
+
         return false;
     }
 
-    public boolean checkIfCanChangeProduct(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition,
+    public boolean checkIfCanChangeProduct(final DataDefinition masterOrderProductDD, final FieldDefinition fieldDefinition,
             final Entity masterOrderProduct, final Object fieldOldValue, final Object fieldNewValue) {
         if (masterOrderProduct.getId() == null) {
             return true;
         }
+
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+
         if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
             return true;
         }
+
         Entity oldProductValue = (Entity) fieldOldValue;
         Entity newProductValue = (Entity) fieldNewValue;
+
         if (wasOrIsNullOrDoesNotChange(oldProductValue, newProductValue)) {
             return true;
         }
@@ -151,6 +174,7 @@ public class MasterOrderProductValidators {
 
         masterOrderProduct.addError(fieldDefinition, "masterOrders.masterOrder.product.wrongProduct",
                 StringUtils.join(unsupportedOrderNumbers, ", "));
+
         return false;
     }
 
