@@ -518,6 +518,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
                     Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
                     resource.getDataDefinition().delete(resource.getId());
+                    newPosition.setField(PositionFields.RESOURCE, null);
                     palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
