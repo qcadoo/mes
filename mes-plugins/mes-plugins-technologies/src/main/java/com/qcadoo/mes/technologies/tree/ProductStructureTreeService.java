@@ -23,22 +23,27 @@
  */
 package com.qcadoo.mes.technologies.tree;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class ProductStructureTreeService {
@@ -177,7 +182,6 @@ public class ProductStructureTreeService {
                 if (!usedTechnologies.contains(subTechnology.getId())) {
                     if (subOperation == null) {
                         Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
-                        BigDecimal quantityForTechnology = findQuantityOfProductInOperation(product, operationForTechnology);
                         Entity technologyGroup = subTechnology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
                         BigDecimal standardPerformanceTechnology = subTechnology
                                 .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
@@ -185,7 +189,7 @@ public class ProductStructureTreeService {
                         child.setField(L_TECHNOLOGY, subTechnology);
                         child.setField(L_OPERATION, operationForTechnology);
                         child.setField(L_PRODUCT, product);
-                        child.setField(L_QUANTITY, quantityForTechnology);
+                        child.setField(L_QUANTITY, quantity);
                         child.setField(L_DIVISION,
                                 operationForTechnology.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
                         child.setField(L_TECHNOLOGY_GROUP, technologyGroup);
