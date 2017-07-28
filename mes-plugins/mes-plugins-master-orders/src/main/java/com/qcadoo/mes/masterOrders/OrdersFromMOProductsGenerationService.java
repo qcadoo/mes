@@ -17,6 +17,7 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
@@ -224,6 +225,13 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
 
+        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        String orderDescription = orderService.buildOrderDescription(masterOrder, technology,
+                fillOrderDescriptionBasedOnTechnology);
+        order.setField(OrderFields.DESCRIPTION, orderDescription);
         return order;
     }
 
