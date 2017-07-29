@@ -46,6 +46,10 @@
         <boolean name="palletNumberCorrected"/>
         <boolean name="typeOfPalletCorrected"/>
         <string name="deliveryNumber"/>
+        <string name="newPalletNumber"/>
+        <string name="oldPalletNumber"/>
+        <string name="newStorageLocationNumber"/>
+        <string name="oldStorageLocationNumber"/>
 
     </fields>
     <masterModel plugin="materialFlowResources" model="resourceCorrection"/>

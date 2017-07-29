@@ -33,6 +33,8 @@ public final class ParameterFieldsPC {
 
     public static final String REGISTER_PRODUCTION_TIME = "registerProductionTime";
 
+    public static final String ACCEPT_RECORDS_FROM_TERMINAL = "acceptRecordsFromTerminal";
+
     public static final String REGISTER_PIECEWORK = "registerPiecework";
 
     public static final String REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
@@ -52,7 +54,7 @@ public final class ParameterFieldsPC {
     public static final String VALIDATE_PRODUCTION_RECORD_TIMES = "validateProductionRecordTimes";
 
     public static final String ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER = "allowMultipleRegisteringTimeForWorker";
-    
+
     public static final String CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS = "consumptionOfRawMaterialsBasedOnStandards";
 
     public static final String ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD = "allowAnomalyCreationOnAcceptanceRecord";

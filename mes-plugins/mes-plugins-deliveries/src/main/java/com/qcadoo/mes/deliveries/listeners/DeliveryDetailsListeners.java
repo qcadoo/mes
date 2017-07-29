@@ -498,6 +498,8 @@ public class DeliveryDetailsListeners {
 
         newOrderedProduct.setField(OrderedProductFields.RESERVATIONS,
                 copyReservations(orderedProduct, newOrderedProduct, deliveredProduct));
+
+        newOrderedProduct.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
         return newOrderedProduct;
     }
 

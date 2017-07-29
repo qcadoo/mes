@@ -53,7 +53,7 @@ public class DocumentPositionService {
             int perPage, final DocumentPositionDTO position) {
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
-                + "coalesce(r1.resourcesCount,0) < 2 AS lastResource "
+                + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource "
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
@@ -102,11 +102,9 @@ public class DocumentPositionService {
             return ":" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String
-                .format("INSERT INTO materialflowresources_position (%s) "
+        String query = String.format("INSERT INTO materialflowresources_position (%s) "
 
-                        + "VALUES (%s) RETURNING id",
-                        keys, values);
+        + "VALUES (%s) RETURNING id", keys, values);
 
         Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
 
@@ -124,10 +122,7 @@ public class DocumentPositionService {
             return key + "=:" + key;
         }).collect(Collectors.joining(", "));
 
-        String query = String
-                .format("UPDATE materialflowresources_position "
-                        + "SET %s "
-                        + "WHERE id = :id ", set);
+        String query = String.format("UPDATE materialflowresources_position " + "SET %s " + "WHERE id = :id ", set);
 
         reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);

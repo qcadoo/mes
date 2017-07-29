@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -23,17 +22,25 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
 
--->
-<model name="attribute"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-    	<string name="name" required="true"/>
-        <belongsTo name="location" model="location" plugin="materialFlow"/>
-        <hasMany name="values" joinField="attribute" model="attributeValue" cascade="delete"/>
-        <boolean name="defaultValue" default="false"/>
-    </fields>
-    <hooks>
-    	
-    </hooks>
-</model>
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<html>
+<head>
+	
+	<link rel="stylesheet" href="css/login.css?ver=2016_03_19_15_07" type="text/css" />
+	<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/custom.css?ver=2016_03_19_15_07" type="text/css" />
+	
+</head>
+<body>
+	<div class="errorMessageHeader">
+		${translation["security.message.accessDenied.header"] }
+	</div>
+	<div class="errorMessageContent">
+		${translation["security.message.accessDenied.info"] }
+	</div>
+
+</body>
+</html>

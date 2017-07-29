@@ -23,16 +23,15 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MasterOrderPositionsListHooks {
@@ -51,9 +50,18 @@ public class MasterOrderPositionsListHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup ordersRibbonGroup = window.getRibbon().getGroupByName(L_ORDERS);
         RibbonActionItem createOrderRibbonActionItem = ordersRibbonGroup.getItemByName(L_CREATE_ORDER);
+        RibbonActionItem generateOrders = ordersRibbonGroup.getItemByName("generateOrders");
+        generateOrders.setMessage("qcadooView.ribbon.orders.generateOrders.message");
 
         List<Entity> selectedEntities = masterOrderPositionComponent.getSelectedEntities();
 
+        if (selectedEntities.isEmpty()) {
+            generateOrders.setEnabled(false);
+        } else {
+            generateOrders.setEnabled(true);
+        }
+
+        generateOrders.requestUpdate(true);
         boolean isEnabled = (selectedEntities.size() == 1);
         createOrderRibbonActionItem.setEnabled(isEnabled);
 

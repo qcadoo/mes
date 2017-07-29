@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -175,6 +174,7 @@ public class DocumentDetailsListeners {
         }
     }
 
+    @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -186,108 +186,59 @@ public class DocumentDetailsListeners {
         logger.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
-        String documentState = document.getStringField(DocumentFields.STATE);
-
-        if (!DocumentState.DRAFT.getStringValue().equals(documentState)) {
+        if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
             return;
         }
 
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
 
-        Entity documentToCreateResourcesFor = documentDD.save(document);
+        document = documentDD.save(document);
 
-        if (!documentToCreateResourcesFor.isValid()) {
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+        if (!document.isValid()) {
+            document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
-            documentForm.setEntity(documentToCreateResourcesFor);
+            documentForm.setEntity(document);
             logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
             return;
         }
 
-        if (!validateResourceAttribute(document)) {
-            documentForm.addMessage("materialFlow.error.position.batch.required", MessageType.FAILURE);
-
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-
-            documentForm.setEntity(documentToCreateResourcesFor);
-            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
-                    + document.getStringField(DocumentFields.NUMBER));
-            return;
-        }
-        boolean emptyPositions = false;
-
-        if (!documentToCreateResourcesFor.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            emptyPositions = false;
-            createResources(documentToCreateResourcesFor);
+        if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
+            resourceManagementService.createResources(document);
         } else {
-            emptyPositions = true;
-            documentToCreateResourcesFor.setNotValid();
+            document.setNotValid();
 
             documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
         }
 
-        documentToCreateResourcesFor = documentToCreateResourcesFor.getDataDefinition().save(documentToCreateResourcesFor);
-        if (!documentToCreateResourcesFor.isValid()) {
-            Entity recentlySavedDocument = documentDD.get(document.getId());
+        if (!document.isValid()) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            recentlySavedDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
-
-            documentDD.save(recentlySavedDocument);
-
-            documentToCreateResourcesFor.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+            document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
-        }
 
-        Entity recentlySavedDocument = documentDD.get(document.getId());
-
-        if (!emptyPositions && documentToCreateResourcesFor.isValid() && buildConnectedPZDocument(recentlySavedDocument)) {
             ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
                     dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
                     parameterService);
-
-            boolean created = tryBuildPz(documentToCreateResourcesFor, receiptDocumentForReleaseHelper);
-
-            if (created) {
-                view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
+            if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
+                tryBuildPz(document, receiptDocumentForReleaseHelper, view);
             }
         }
 
-        documentForm.setEntity(documentToCreateResourcesFor);
+
+        documentForm.setEntity(document);
 
         logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private boolean tryBuildPz(Entity documentToCreateResourcesFor,
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
-        return receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
-    }
-
-    private boolean buildConnectedPZDocument(final Entity document) {
-        return document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
-                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null;
-
-    }
-
-    @Transactional
-    public void createResources(Entity documentToCreateResourcesFor) {
-        DocumentType documentType = DocumentType.of(documentToCreateResourcesFor);
-
-        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            resourceManagementService.createResourcesForReceiptDocuments(documentToCreateResourcesFor);
-        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
-            resourceManagementService.updateResourcesForReleaseDocuments(documentToCreateResourcesFor);
-        } else if (DocumentType.TRANSFER.equals(documentType)) {
-            resourceManagementService.moveResourcesForTransferDocument(documentToCreateResourcesFor);
-        } else {
-            throw new IllegalStateException("Unsupported document type");
-        }
-
-        if (!documentToCreateResourcesFor.isValid()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+    private void tryBuildPz(Entity documentToCreateResourcesFor,
+            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, ViewDefinitionState view) {
+        boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
+        if (created) {
+            view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
         }
     }
 
@@ -299,44 +250,6 @@ public class DocumentDetailsListeners {
         FieldComponent locationToField = (FieldComponent) view.getComponentByReference(DocumentFields.LOCATION_TO);
         locationToField.setFieldValue(null);
         locationToField.requestComponentUpdateState();
-    }
-
-    public void updateAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        clearAttributes(view);
-        createNewAttributes(view);
-    }
-
-    private void clearAttributes(final ViewDefinitionState view) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_POSITIONS);
-
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            AwesomeDynamicListComponent attributeADL = (AwesomeDynamicListComponent) positionForm
-                    .findFieldComponentByName("additionalAttributes");
-
-            attributeADL.setFieldValue(Lists.newArrayList());
-            attributeADL.requestComponentUpdateState();
-        }
-    }
-
-    private void createNewAttributes(final ViewDefinitionState view) {
-        AwesomeDynamicListComponent positionsADL = (AwesomeDynamicListComponent) view.getComponentByReference(L_POSITIONS);
-
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Entity document = documentForm.getEntity();
-
-        Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
-
-        for (FormComponent positionForm : positionsADL.getFormComponents()) {
-            Entity position = positionForm.getEntity();
-
-            if (position.getId() != null) {
-                position.setField(PositionFields.ATRRIBUTE_VALUES,
-                        materialFlowResourcesService.getAttributesForPosition(position, warehouse));
-
-                positionForm.setEntity(position);
-            }
-        }
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -397,33 +310,6 @@ public class DocumentDetailsListeners {
         }
 
         return false;
-    }
-
-    private boolean validateResourceAttribute(Entity document) {
-        DocumentType type = DocumentType.of(document);
-
-        if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)) {
-            Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            String algorithm = warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM);
-
-            boolean result = true;
-
-            for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                boolean resultForPosition = (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && position
-                        .getField(PositionFields.RESOURCE) != null)
-                        || !algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue());
-                if (!resultForPosition) {
-                    result = false;
-
-                    position.addError(position.getDataDefinition().getField(PositionFields.RESOURCE),
-                            "materialFlow.error.position.batch.required");
-                }
-            }
-
-            return result;
-        }
-
-        return true;
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {

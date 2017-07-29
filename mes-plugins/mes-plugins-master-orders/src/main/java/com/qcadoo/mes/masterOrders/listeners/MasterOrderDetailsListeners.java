@@ -24,6 +24,7 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
@@ -33,12 +34,16 @@ import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -58,6 +63,9 @@ public class MasterOrderDetailsListeners {
 
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
+
+    @Autowired
+    private OrdersFromMOProductsGenerationService ordersGenerationService;
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
@@ -84,6 +92,14 @@ public class MasterOrderDetailsListeners {
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         masterOrderForm.performEvent(view, "refresh");
+    }
+
+    public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent masterOrderProductsGrid = (GridComponent) view
+                .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+        List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
+        ordersGenerationService.generateOrders(masterOrderProducts, true).showMessage(view);
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {

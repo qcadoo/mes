@@ -45,17 +45,9 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_DOCUMENT = "document";
 
-    public static final String MODEL_DOCUMENT_DTO = "documentDto";
-
     public static final String MODEL_POSITION = "position";
 
     public static final String MODEL_RESOURCE_CORRECTION = "resourceCorrection";
-
-    public static final String MODEL_GLOBAL_ATTRIBUTE = "globalAttribute";
-
-    public static final String MODEL_ATTRIBUTE = "attribute";
-
-    public static final String MODEL_ATTRIBUTE_VALUE = "attributeValue";
 
     public static final String MODEL_STORAGE_LOCATION = "storageLocation";
 

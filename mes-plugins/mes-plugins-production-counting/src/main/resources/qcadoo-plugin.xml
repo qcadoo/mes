@@ -127,8 +127,11 @@
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
-        <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking" />
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="acceptRecordsFromTerminal"/>
+        </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
@@ -465,8 +468,8 @@
                             class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
                             method="fillPCParameters"/>
 
-<!--        <custom:custom
-                class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule"/>-->
+        <!--        <custom:custom
+                        class="com.qcadoo.mes.productionCounting.states.module.ProductionTrackingStateServiceRegisterModule"/>-->
     </modules>
 
     <features>

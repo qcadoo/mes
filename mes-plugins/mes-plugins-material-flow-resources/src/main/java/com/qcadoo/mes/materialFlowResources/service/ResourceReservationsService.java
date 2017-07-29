@@ -25,7 +25,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
@@ -87,7 +86,6 @@ public class ResourceReservationsService {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouse
                 .getStringField(LocationFieldsMFR.ALGORITHM));
-        List<ErrorMessage> errors = Lists.newArrayList();
         boolean valid = true;
 
         for (Entity position : positions) {
@@ -102,31 +100,13 @@ public class ResourceReservationsService {
                             newPosition.setField(PositionFields.DOCUMENT, document);
                             Entity saved = newPosition.getDataDefinition().save(newPosition);
                             valid = valid && saved.isValid();
-                            errors.addAll(saved.getGlobalErrors());
-                            if(!saved.getErrors().isEmpty()){
-                                view.addMessage("materialFlow.document.fillResources.global.error.positionNotValid", ComponentState.MessageType.FAILURE, false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
-                            }
+                            addPositionErrors(view, saved);
                         }
                     } else {
-                        Entity newPosition = newPositions.get(0);
-                        position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
-                        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
-                        position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
-                        position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
-                        position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
-                        position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
-                        position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
-                        position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
-                        position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
-                        position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
-                        position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
-                        position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
+                        copyPositionValues(position, newPositions.get(0));
                         Entity saved = position.getDataDefinition().save(position);
                         valid = valid && saved.isValid();
-                        errors.addAll(saved.getGlobalErrors());
-                        if(!saved.getErrors().isEmpty()){
-                            view.addMessage("materialFlow.document.fillResources.global.error.positionNotValid", ComponentState.MessageType.FAILURE, false, position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
-                        }
+                        addPositionErrors(view, saved);
                     }
                 }
             }
@@ -135,13 +115,35 @@ public class ResourceReservationsService {
             logger.info("FILL RESOURCES ENDED SUCCESSFULLY FOR DOCUMENT: id = " + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
             return;
-        } else {
-            errors.forEach(view::addMessage);
         }
 
         logger.warn("FILL RESOURCES ENDED WITH ERRORS FOR DOCUMENT: id = " + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
         throw new IllegalStateException("Unable to fill resources in document.");
+    }
+
+    private void addPositionErrors(ViewDefinitionState view, Entity saved) {
+        saved.getGlobalErrors().forEach(view::addMessage);
+        if (!saved.getErrors().isEmpty()) {
+            view.addMessage("materialFlow.document.fillResources.global.error.positionNotValid",
+                    ComponentState.MessageType.FAILURE, false,
+                    saved.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+        }
+    }
+
+    private void copyPositionValues(Entity position, Entity newPosition) {
+        position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
+        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
+        position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
+        position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
+        position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
+        position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
+        position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
+        position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
+        position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
+        position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
+        position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
+        position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
     }
 
     private List<Entity> matchResourcesToPosition(final Entity position, final Entity warehouse,
@@ -169,7 +171,6 @@ public class ResourceReservationsService {
             Entity newPosition = positionDD.create();
 
             newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-            newPosition.setField(PositionFields.GIVEN_QUANTITY, position.getDecimalField(PositionFields.GIVEN_QUANTITY));
             newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
             newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
             newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
@@ -186,12 +187,7 @@ public class ResourceReservationsService {
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
-
-                BigDecimal givenResourceQuantity = resourceManagementService.convertToGivenUnit(resourceAvailableQuantity,
-                        position);
-
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
+                setPositionQuantityAndGivenQuantity(position, resourceAvailableQuantity, newPosition);
 
                 newPositions.add(newPosition);
 
@@ -200,16 +196,31 @@ public class ResourceReservationsService {
                 }
             } else {
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
-
-                BigDecimal givenQuantity = resourceManagementService.convertToGivenUnit(quantity, position);
-
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+                setPositionQuantityAndGivenQuantity(position, quantity, newPosition);
                 newPositions.add(newPosition);
 
                 return newPositions;
             }
         }
-        return Lists.newArrayList();
+        createPositionWithoutResourceForMissingQuantity(position, positionDD, newPositions, quantity);
+        return newPositions;
+    }
+
+    private void setPositionQuantityAndGivenQuantity(Entity position, BigDecimal quantity, Entity newPosition) {
+        newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+
+        BigDecimal givenQuantity = resourceManagementService.convertToGivenUnit(quantity, position);
+
+        newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+    }
+
+    private void createPositionWithoutResourceForMissingQuantity(Entity position, DataDefinition positionDD, List<Entity> newPositions, BigDecimal quantity) {
+        Entity newPosition = positionDD.create();
+
+        newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+        newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
+        newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
+        setPositionQuantityAndGivenQuantity(position, quantity, newPosition);
+        newPositions.add(newPosition);
     }
 }

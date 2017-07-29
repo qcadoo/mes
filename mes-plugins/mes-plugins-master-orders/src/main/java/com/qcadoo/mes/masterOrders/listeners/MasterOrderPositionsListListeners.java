@@ -23,18 +23,19 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MasterOrderPositionsListListeners {
@@ -42,6 +43,9 @@ public class MasterOrderPositionsListListeners {
     private static final String L_GRID = "grid";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    @Autowired
+    private OrdersFromMOProductsGenerationService ordersGenerationService;
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
@@ -86,6 +90,12 @@ public class MasterOrderPositionsListListeners {
 
         String url = "../page/orders/orderDetails.html";
         view.redirectTo(url, false, true, parameters);
+    }
+
+    public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
+        List<Entity> selectedEntity = masterOrderPositionComponent.getSelectedEntities();
+        ordersGenerationService.generateOrders(selectedEntity, true).showMessage(view);
     }
 
 }

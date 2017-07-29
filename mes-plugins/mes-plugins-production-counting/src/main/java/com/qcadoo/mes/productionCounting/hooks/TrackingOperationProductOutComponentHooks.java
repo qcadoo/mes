@@ -23,28 +23,34 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQuantitiesCounter {
@@ -66,6 +72,9 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
 
     @Autowired
     private ProductionCountingService productionCountingService;
+
+    @Autowired
+    private ProductUnitsConversionService productUnitsConversionService;
 
     public TrackingOperationProductOutComponentHooks() {
         super(ProductionCountingQuantityRole.PRODUCED);
@@ -121,7 +130,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
             if ((usedQuantity != null) || (wastesQuantity != null)) {
                 BigDecimal plannedQuantity = getPlannedQuantity(trackingOperationProductOutComponent);
 
-                BigDecimal quantity = BigDecimalUtils.convertNullToZero(usedQuantity).add(BigDecimalUtils.convertNullToZero(wastesQuantity), numberService.getMathContext());
+                BigDecimal quantity = BigDecimalUtils.convertNullToZero(usedQuantity).add(
+                        BigDecimalUtils.convertNullToZero(wastesQuantity), numberService.getMathContext());
 
                 BigDecimal ratio = quantity.divide(plannedQuantity, numberService.getMathContext());
 
@@ -153,9 +163,9 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
                 .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY);
         BigDecimal usedQuantity = plannedQuantity.multiply(ratio, numberService.getMathContext());
 
-        BigDecimal givenQuantity = calculateGivenQuantity(trackingOperationProductInComponent, usedQuantity);
+        Optional<BigDecimal> givenQuantity = calculateGivenQuantity(trackingOperationProductInComponent, usedQuantity);
 
-        if (givenQuantity == null) {
+        if (!givenQuantity.isPresent()) {
             trackingOperationProductInComponent.addError(
                     trackingOperationProductInComponent.getDataDefinition().getField(
                             TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
@@ -165,14 +175,14 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
                 numberService.setScale(usedQuantity));
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
-                numberService.setScale(givenQuantity));
+                numberService.setScale(givenQuantity.orElse(usedQuantity)));
 
         trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(
                 trackingOperationProductInComponent);
     }
 
-    private BigDecimal calculateGivenQuantity(final Entity trackingOperationProductInComponent, final BigDecimal usedQuantity) {
-        BigDecimal givenQuantity = null;
+    private Optional<BigDecimal> calculateGivenQuantity(final Entity trackingOperationProductInComponent,
+            final BigDecimal usedQuantity) {
 
         Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
@@ -182,22 +192,18 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         String unit = product.getStringField(ProductFields.UNIT);
 
         if (givenUnit == null) {
-            givenUnit = unit;
-        }
-
-        if (givenUnit.equals(unit)) {
-            givenQuantity = usedQuantity;
-        } else {
-            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                            UnitConversionItemFieldsB.PRODUCT, product)));
-
-            if (unitConversions.isDefinedFor(givenUnit)) {
-                givenQuantity = unitConversions.convertTo(usedQuantity, givenUnit);
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (!StringUtils.isEmpty(additionalUnit)) {
+                givenUnit = additionalUnit;
+            } else {
+                givenUnit = unit;
             }
         }
+        if (givenUnit.equals(unit)) {
+            return Optional.of(usedQuantity);
+        }
+        return productUnitsConversionService.forProduct(product).fromPrimaryUnit().to(givenUnit).convertValue(usedQuantity);
 
-        return givenQuantity;
     }
 
     private void fillSetTrackingOperationProductsInComponents(Entity trackingOperationProductOutComponent) {

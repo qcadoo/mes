@@ -29,14 +29,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class TechnologyInstOperProductInCompDetailsHooks {
+
+    private static final String PRODUCT_NUMBER = "productNumber";
+
+    private static final String ORDER_ID = "orderId";
 
     @Autowired
     private ProductDetailsHooksCNFP costNormsForProductService;
@@ -57,5 +65,18 @@ public class TechnologyInstOperProductInCompDetailsHooks {
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         costNormsForProductService.fillCurrencyFields(viewDefinitionState, CURRENCY_FIELDS_ORDER);
+    }
+
+    public void setCriteriaModifiersParameters(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity technologyInstOperProductInComp = form.getEntity();
+        Entity product = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT);
+        Entity order = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.ORDER);
+
+        GridComponent positions = (GridComponent) view.getComponentByReference("positions");
+        FilterValueHolder filterValueHolder = positions.getFilterValue();
+        filterValueHolder.put(PRODUCT_NUMBER, product.getStringField(ProductFields.NUMBER));
+        filterValueHolder.put(ORDER_ID, order.getId().intValue());
+        positions.setFilterValue(filterValueHolder);
     }
 }

@@ -47,6 +47,19 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="generateOrders" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                        if(window.canClose()) {
+                                             #{grid}.performEvent('generateOrders', []);
+                                        }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -113,6 +126,9 @@
             <listener event="createOrder"
                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
                       method="createOrder"/>
+            <listener event="generateOrders"
+                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
+                      method="generateOrders"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

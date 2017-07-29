@@ -322,22 +322,35 @@ public class DocumentBuilder {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        document.setField(DocumentFields.POSITIONS, positions);
-
-        if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
-            createResources();
-        }
-
         Entity savedDocument = documentDD.save(document);
 
-        if (savedDocument.isValid()
-                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))
-                && buildConnectedPZDocument(savedDocument)) {
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                    parameterService);
+        positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
 
-            receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+        savedDocument.setField(DocumentFields.POSITIONS, positions);
+
+        if (savedDocument.isValid()) {
+            if(DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
+                resourceManagementService.createResources(savedDocument);
+
+                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                        parameterService);
+
+                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                }
+            } else {
+                positions.forEach(p -> {
+                    p = p.getDataDefinition().save(p);
+                    if (!p.isValid()) {
+                        savedDocument.setNotValid();
+                        p.getGlobalErrors()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getErrors().values()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                    }
+                });
+            }
         }
 
         if (!savedDocument.isValid()) {
@@ -351,21 +364,34 @@ public class DocumentBuilder {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        document.setField(DocumentFields.POSITIONS, positions);
-
-        if (document.isValid() && DocumentState.of(document) == DocumentState.ACCEPTED) {
-            createResources();
-        }
-
         Entity savedDocument = documentDD.save(document);
 
-        if (savedDocument.isValid()
-                && DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))
-                && buildConnectedPZDocument(savedDocument)) {
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                    parameterService);
-            receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+        positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
+
+        savedDocument.setField(DocumentFields.POSITIONS, positions);
+
+        if (savedDocument.isValid()) {
+            if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
+                resourceManagementService.createResources(savedDocument);
+
+                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
+                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
+                        parameterService);
+                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                }
+            } else {
+                positions.forEach(p -> {
+                    p = p.getDataDefinition().save(p);
+                    if (!p.isValid()) {
+                        savedDocument.setNotValid();
+                        p.getGlobalErrors()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getErrors().values()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                    }
+                });
+            }
         }
 
         if (!savedDocument.isValid()) {
@@ -373,31 +399,6 @@ public class DocumentBuilder {
         }
 
         return savedDocument;
-    }
-
-    private boolean buildConnectedPZDocument(final Entity document) {
-        if (document.getBooleanField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT)
-                && document.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION) != null) {
-            return true;
-        }
-        return false;
-    }
-
-    private void createResources() {
-        DocumentType documentType = DocumentType.of(document);
-
-        if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            resourceManagementService.createResourcesForReceiptDocuments(document);
-
-        } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
-            resourceManagementService.updateResourcesForReleaseDocuments(document);
-
-        } else if (DocumentType.TRANSFER.equals(documentType)) {
-            resourceManagementService.moveResourcesForTransferDocument(document);
-
-        } else {
-            throw new IllegalStateException("Unsupported document type");
-        }
     }
 
     public Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {

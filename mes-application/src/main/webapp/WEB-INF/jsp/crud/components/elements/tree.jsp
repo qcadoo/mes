@@ -1,9 +1,8 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<%--
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -23,17 +22,14 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     ***************************************************************************
 
--->
-<model name="attributeValue"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-        <belongsTo name="attribute" model="attribute" />
-        <boolean name="value" />
-        <belongsTo name="position" model="position" />
-        <belongsTo name="resource" model="resource"/>
-    </fields>
-    <hooks>
-    	
-    </hooks>
-</model>
+--%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://tiles.apache.org/tags-tiles" prefix="tiles" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<tiles:useAttribute name="component" />
+
