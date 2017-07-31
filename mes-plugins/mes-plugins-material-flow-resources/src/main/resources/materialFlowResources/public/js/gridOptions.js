@@ -1275,6 +1275,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var totalGridHeight = $('#gbox_grid', $flowGridLayout).outerHeight();
                 var newGridHeightToFillWholeSpace = containerHeight - totalGridHeight + gridHeight;
                 $grid.setGridHeight(newGridHeightToFillWholeSpace);
+                config.height = newGridHeightToFillWholeSpace;
             }
         };
 
