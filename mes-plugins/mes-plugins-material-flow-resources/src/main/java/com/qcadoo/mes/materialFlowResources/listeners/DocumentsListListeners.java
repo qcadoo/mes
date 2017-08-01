@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -35,6 +34,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -55,10 +55,10 @@ public class DocumentsListListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private ResourceManagementService resourceManagementService;
 
     @Autowired
-    private ResourceManagementService resourceManagementService;
+    private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
@@ -111,6 +111,10 @@ public class DocumentsListListeners {
                 document.getErrors().values().forEach(gridComponent::addMessage);
 
                 invalidEntities.add(documentId);
+            } else {
+                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
+                    receiptDocumentForReleaseHelper.tryBuildPz(document, view);
+                }
             }
         }
         return invalidEntities;

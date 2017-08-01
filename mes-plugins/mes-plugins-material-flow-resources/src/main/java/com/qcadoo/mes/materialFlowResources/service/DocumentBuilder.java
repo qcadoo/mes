@@ -26,13 +26,12 @@ package com.qcadoo.mes.materialFlowResources.service;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -44,7 +43,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.security.api.UserService;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 public class DocumentBuilder {
 
@@ -52,28 +50,18 @@ public class DocumentBuilder {
 
     private final ResourceManagementService resourceManagementService;
 
-    private final UserService userService;
-
-    private final NumberGeneratorService numberGeneratorService;
-
-    private final TranslationService translationService;
-
-    private final ParameterService parameterService;
+    private final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     private final Entity document;
 
     private final List<Entity> positions = Lists.newArrayList();
 
     DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
-            final UserService userService, NumberGeneratorService numberGeneratorService,
-            final TranslationService translationService, final ParameterService parameterService) {
+            final UserService userService, final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
         this.dataDefinitionService = dataDefinitionService;
         this.resourceManagementService = resourceManagementService;
-        this.userService = userService;
-        this.numberGeneratorService = numberGeneratorService;
-        this.translationService = translationService;
-        this.parameterService = parameterService;
-        this.document = createDocument(userService, numberGeneratorService);
+        this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
+        this.document = createDocument(userService);
     }
 
     public Entity getDocument() {
@@ -313,54 +301,7 @@ public class DocumentBuilder {
         return DocumentType.parseString(document.getStringField(DocumentFields.TYPE));
     }
 
-    /**
-     * Save document in database and creates resources if document is accepted.
-     *
-     * @return Created document entity.
-     */
-    public Entity build() {
-        DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-
-        Entity savedDocument = documentDD.save(document);
-
-        positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
-
-        savedDocument.setField(DocumentFields.POSITIONS, positions);
-
-        if (savedDocument.isValid()) {
-            if(DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
-                resourceManagementService.createResources(savedDocument);
-
-                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                        parameterService);
-
-                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
-                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
-                }
-            } else {
-                positions.forEach(p -> {
-                    p = p.getDataDefinition().save(p);
-                    if (!p.isValid()) {
-                        savedDocument.setNotValid();
-                        p.getGlobalErrors()
-                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
-                        p.getErrors().values()
-                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
-                    }
-                });
-            }
-        }
-
-        if (!savedDocument.isValid()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
-
-        return savedDocument;
-    }
-
-    public Entity buildWithEntityRuntimeException() {
+    private Entity buildWithInvalidStrategy(Consumer<BuildContext> strategy) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -374,9 +315,6 @@ public class DocumentBuilder {
             if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
                 resourceManagementService.createResources(savedDocument);
 
-                ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                        dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                        parameterService);
                 if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
                     receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
                 }
@@ -395,13 +333,38 @@ public class DocumentBuilder {
         }
 
         if (!savedDocument.isValid()) {
-            throw new EntityRuntimeException(savedDocument);
+            strategy.accept(new BuildContext(savedDocument));
         }
 
         return savedDocument;
+
     }
 
-    public Entity createDocument(UserService userService, NumberGeneratorService numberGeneratorService) {
+    /**
+     * Save document in database and creates resources if document is accepted.
+     *
+     * @return Created document entity.
+     */
+    public Entity build() {
+        return buildWithInvalidStrategy((buildContext) -> TransactionAspectSupport.currentTransactionStatus().setRollbackOnly());
+    }
+
+    public Entity buildWithEntityRuntimeException() {
+        return buildWithInvalidStrategy((buildContext) -> {
+            throw new EntityRuntimeException(buildContext.savedDocument);
+        });
+    }
+
+    private static class BuildContext {
+
+        private final Entity savedDocument;
+
+        private BuildContext(Entity savedDocument) {
+            this.savedDocument = savedDocument;
+        }
+    }
+
+    public Entity createDocument(UserService userService) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
