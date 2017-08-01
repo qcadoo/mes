@@ -241,6 +241,11 @@
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field model="order" plugin="orders">
+            <model:belongsTo name="productionBalance"
+                             plugin="productionCounting" model="productionBalance"/>
+        </model:model-field>
+
         <model:model-field model="technology" plugin="technologies">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"/>
         </model:model-field>

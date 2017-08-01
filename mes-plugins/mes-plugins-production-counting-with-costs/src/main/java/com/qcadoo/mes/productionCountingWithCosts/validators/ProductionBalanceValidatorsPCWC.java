@@ -91,8 +91,9 @@ public class ProductionBalanceValidatorsPCWC {
 
     public boolean checkIfAverageCostsAreDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        if (productionCountingService.isCalculateOperationCostModeHourly(productionBalance
-                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE))
+        if (order != null
+                && productionCountingService.isCalculateOperationCostModeHourly(productionBalance
+                        .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE))
                 && productionCountingService.isTypeOfProductionRecordingCumulated(order
                         .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             Object averageMachineHourlyCost = productionBalance.getField(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
