@@ -136,11 +136,13 @@ public class ProductionBalanceDetailsListeners {
 
     private void checkOrderDoneQuantity(final ComponentState componentState, final Entity productionBalance) {
         final Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        final BigDecimal doneQuantityFromOrder = order.getDecimalField(OrderFields.DONE_QUANTITY);
+        if (order != null) {
+            final BigDecimal doneQuantityFromOrder = order.getDecimalField(OrderFields.DONE_QUANTITY);
 
-        if (doneQuantityFromOrder == null || BigDecimal.ZERO.compareTo(doneQuantityFromOrder) == 0) {
-            componentState.addMessage("productionCounting.productionBalance.report.info.orderWithoutDoneQuantity",
-                    MessageType.INFO);
+            if (doneQuantityFromOrder == null || BigDecimal.ZERO.compareTo(doneQuantityFromOrder) == 0) {
+                componentState.addMessage("productionCounting.productionBalance.report.info.orderWithoutDoneQuantity",
+                        MessageType.INFO);
+            }
         }
     }
 
@@ -259,6 +261,10 @@ public class ProductionBalanceDetailsListeners {
 
     public void disableCheckboxes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         productionBalanceService.disableCheckboxes(view);
+    }
+
+    public void changeTabsVisible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        productionBalanceService.changeTabsVisible(view);
     }
 
 }

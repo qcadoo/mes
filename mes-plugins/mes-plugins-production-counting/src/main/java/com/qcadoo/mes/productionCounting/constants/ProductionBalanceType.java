@@ -23,29 +23,27 @@
  */
 package com.qcadoo.mes.productionCounting.constants;
 
-public enum CalculateOperationCostsMode {
-    HOURLY("01hourly"), PIECEWORK("02piecework"), MIXED("03mixed");
+public enum ProductionBalanceType {
+    ONE_ORDER("01oneOrder"), MANY_ORDERS("02manyOrders");
 
-    private String calculateOperationCostsMode;
+    private final String type;
 
-    private CalculateOperationCostsMode(final String calculateOperationCostsMode) {
-        this.calculateOperationCostsMode = calculateOperationCostsMode;
+    private ProductionBalanceType(final String type) {
+        this.type = type;
     }
 
     public String getStringValue() {
-        return calculateOperationCostsMode;
+        return type;
     }
 
-    public static CalculateOperationCostsMode parseString(final String string) {
-        if ("01hourly".equals(string)) {
-            return HOURLY;
-        } else if ("02piecework".equals(string)) {
-            return PIECEWORK;
-        } else if ("03mixed".equals(string)) {
-            return MIXED;
+    public static ProductionBalanceType parseString(final String string) {
+        if ("01oneOrder".equals(string)) {
+            return ONE_ORDER;
+        } else if ("02manyOrders".equals(string)) {
+            return MANY_ORDERS;
         }
 
-        throw new IllegalStateException("Unsupported calculateOperationCostMode: " + string);
+        throw new IllegalStateException("Unsupported ProductionBalanceType: " + string);
     }
 
 }

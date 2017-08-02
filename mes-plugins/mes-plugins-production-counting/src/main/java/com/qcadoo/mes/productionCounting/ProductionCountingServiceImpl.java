@@ -23,10 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-import static com.qcadoo.model.api.search.SearchRestrictions.or;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -52,9 +49,7 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingComparator;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -63,7 +58,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -175,7 +169,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
         scb.createCriteria(ProductionTrackingFields.ORDER, "ord_alias", JoinType.INNER).add(idEq(order.getId()));
         scb.add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED));
-        
+
         return scb.list().getEntities();
     }
 
@@ -210,12 +204,16 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
+    public boolean isCalculateOperationCostModeMixed(final String calculateOperationCostMode) {
+        return CalculateOperationCostsMode.MIXED.getStringValue().equals(calculateOperationCostMode);
+    }
+
+    @Override
     public boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
 
-        if ((order == null)
-                || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
 

@@ -29,6 +29,8 @@ public final class ProductionBalanceFields {
 
     }
 
+    public static final String TYPE = "type";
+
     public static final String GENERATED = "generated";
 
     public static final String ORDER = "order";
@@ -74,5 +76,7 @@ public final class ProductionBalanceFields {
     public static final String OPERATION_TIME_COMPONENTS = "operationTimeComponents";
 
     public static final String OPERATION_PIECEWORK_COMPONENTS = "operationPieceworkComponents";
+
+    public static final String SOURCE_OF_OPERATION_COSTS_PB = "sourceOfOperationCostsPB";
 
 }

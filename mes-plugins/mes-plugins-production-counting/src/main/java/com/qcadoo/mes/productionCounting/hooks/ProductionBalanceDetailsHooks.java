@@ -63,8 +63,8 @@ public class ProductionBalanceDetailsHooks {
 
     private static final List<String> L_FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.ORDER,
             ProductionBalanceFields.NAME, ProductionBalanceFields.DESCRIPTION, ProductionBalanceFields.PRINT_OPERATION_NORMS,
-            ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE, ProductionBalanceFields.INCLUDE_TPZ,
-            ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
+            ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE, ProductionBalanceFields.TYPE,
+            ProductionBalanceFields.INCLUDE_TPZ, ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
     private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
 
@@ -85,6 +85,8 @@ public class ProductionBalanceDetailsHooks {
 
     public void changeFieldsAndGridsVisibility(final ViewDefinitionState view) {
         FormComponent productionBalanceForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        productionBalanceService.changeTabsVisible(view);
 
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionBalanceFields.ORDER);
@@ -131,13 +133,13 @@ public class ProductionBalanceDetailsHooks {
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
                 timeGridLayoutComponent.setVisible(true);
 
-                if (productionCountingService
-                        .isTypeOfProductionRecordingForEach(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                if (productionCountingService.isTypeOfProductionRecordingForEach(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineTimeBorderLayoutComponent.setVisible(true);
                     laborTimeBorderLayoutComponent.setVisible(true);
                     operationsTimeGridComponent.setVisible(true);
-                } else if (productionCountingService
-                        .isTypeOfProductionRecordingCumulated(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineTimeBorderLayoutComponent.setVisible(true);
                     laborTimeBorderLayoutComponent.setVisible(true);
                     operationsTimeGridComponent.setVisible(false);
@@ -155,6 +157,7 @@ public class ProductionBalanceDetailsHooks {
                 operationsPieceworkGridComponent.setVisible(true);
             }
         }
+
     }
 
     public void disableCheckboxes(final ViewDefinitionState view) {

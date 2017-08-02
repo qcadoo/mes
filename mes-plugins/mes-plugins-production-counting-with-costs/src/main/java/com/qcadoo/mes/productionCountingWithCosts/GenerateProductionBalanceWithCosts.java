@@ -122,11 +122,13 @@ public class GenerateProductionBalanceWithCosts implements Observer {
             Entity productionBalance = (Entity) object;
 
             Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-            productionBalance.setField(ProductionBalanceFields.ORDER, updateCostsInOrder(order));
-            doTheCostsPart(productionBalance);
-            fillFieldsAndGrids(productionBalance);
+            if (order != null) {
+                productionBalance.setField(ProductionBalanceFields.ORDER, updateCostsInOrder(order));
+                doTheCostsPart(productionBalance);
+                fillFieldsAndGrids(productionBalance);
 
-            generateBalanceWithCostsReport(productionBalance);
+                generateBalanceWithCostsReport(productionBalance);
+            }
         }
     }
 
@@ -162,31 +164,33 @@ public class GenerateProductionBalanceWithCosts implements Observer {
 
     public void doTheCostsPart(final Entity productionBalance) {
         Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        if (order != null) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
-        productionBalance.setField(ProductionBalanceFields.ORDER, order);
-        BigDecimal quantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+            productionBalance.setField(ProductionBalanceFields.ORDER, order);
+            BigDecimal quantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-        productionBalance.setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
-        productionBalance.setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
-        productionBalance.setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
+            productionBalance.setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
+            productionBalance.setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
+            productionBalance.setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
 
-        // FIXME MAKU beware of side effects - order of below computations matter!
-        costCalculationService.calculateOperationsAndProductsCosts(productionBalance);
-        final BigDecimal productionCosts = costCalculationService.calculateProductionCost(productionBalance);
-        final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
-        costCalculationService.calculateTotalCosts(productionBalance, productionCosts, doneQuantity);
+            // FIXME MAKU beware of side effects - order of below computations matter!
+            costCalculationService.calculateOperationsAndProductsCosts(productionBalance);
+            final BigDecimal productionCosts = costCalculationService.calculateProductionCost(productionBalance);
+            final BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
+            costCalculationService.calculateTotalCosts(productionBalance, productionCosts, doneQuantity);
 
-        BigDecimal perUnit = BigDecimal.ZERO;
-        if (!BigDecimalUtils.valueEquals(BigDecimal.ZERO, doneQuantity)) {
-            BigDecimal totalTechnicalProductionCosts = productionBalance
-                    .getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS);
-            perUnit = totalTechnicalProductionCosts.divide(doneQuantity, numberService.getMathContext());
+            BigDecimal perUnit = BigDecimal.ZERO;
+            if (!BigDecimalUtils.valueEquals(BigDecimal.ZERO, doneQuantity)) {
+                BigDecimal totalTechnicalProductionCosts = productionBalance
+                        .getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS);
+                perUnit = totalTechnicalProductionCosts.divide(doneQuantity, numberService.getMathContext());
+            }
+
+            productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+                    numberService.setScale(perUnit));
         }
-
-        productionBalance.setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
-                numberService.setScale(perUnit));
     }
 
     public void fillFieldsAndGrids(final Entity productionBalance) {

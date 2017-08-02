@@ -27,6 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -37,7 +39,9 @@ public class ProductionBalanceValidators {
     private ProductionCountingService productionCountingService;
 
     public boolean validatesWith(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        return validateOrder(productionBalanceDD, productionBalance);
+        return ProductionBalanceType.MANY_ORDERS.getStringValue().equals(
+                productionBalance.getStringField(ProductionBalanceFields.TYPE))
+                || validateOrder(productionBalanceDD, productionBalance);
     }
 
     private boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance) {

@@ -167,13 +167,13 @@ public class ProductionBalanceDetailsHooksPCWC {
                     && order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
                 workCostsGridLayoutComponent.setVisible(true);
 
-                if (productionCountingService
-                        .isTypeOfProductionRecordingForEach(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                if (productionCountingService.isTypeOfProductionRecordingForEach(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineCostsBorderLayoutComponent.setVisible(true);
                     laborCostsBorderLayoutComponent.setVisible(true);
                     operationsCostsGridComponent.setVisible(true);
-                } else if (productionCountingService
-                        .isTypeOfProductionRecordingCumulated(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+                } else if (productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
                     machineCostsBorderLayoutComponent.setVisible(true);
                     laborCostsBorderLayoutComponent.setVisible(true);
                     operationsCostsGridComponent.setVisible(false);
@@ -230,9 +230,10 @@ public class ProductionBalanceDetailsHooksPCWC {
 
         Entity order = orderService.getOrder(orderId);
 
-        if ((order != null) && productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
-                && productionCountingService
-                        .isTypeOfProductionRecordingCumulated(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+        if ((order != null)
+                && productionCountingService.isCalculateOperationCostModeHourly(calculateOperationCostMode)
+                && productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             assumptionsBorderLayout.setVisible(true);
 
             averageMachineHourlyCostsField.setRequired(true);
@@ -248,14 +249,15 @@ public class ProductionBalanceDetailsHooksPCWC {
     public void fillCurrencyAndUnitFields(final ViewDefinitionState view) {
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
-        List<String> currencyFieldNames = Lists.newArrayList("averageMachineHourlyCostCurrency", "averageLaborHourlyCostCurrency",
-                "additionalOverheadCurrency", "plannedComponentsCostsCurrency", "componentsCostsCurrency",
-                "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency", "machineCostsCurrency",
-                "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency", "laborCostsBalanceCurrency",
-                "plannedCyclesCostsCurrency", "cyclesCostsCurrency", "cyclesCostsBalanceCurrency",
+        List<String> currencyFieldNames = Lists.newArrayList("averageMachineHourlyCostCurrency",
+                "averageLaborHourlyCostCurrency", "additionalOverheadCurrency", "plannedComponentsCostsCurrency",
+                "componentsCostsCurrency", "componentsCostsBalanceCurrency", "plannedMachineCostsCurrency",
+                "machineCostsCurrency", "machineCostsBalanceCurrency", "plannedLaborCostsCurrency", "laborCostsCurrency",
+                "laborCostsBalanceCurrency", "plannedCyclesCostsCurrency", "cyclesCostsCurrency", "cyclesCostsBalanceCurrency",
                 "registeredTotalTechnicalProductionCostsCurrency", "totalTechnicalProductionCostsCurrency",
-                "balanceTechnicalProductionCostsCurrency", "productionCostMarginValueCurrency", "materialCostMarginValueCurrency",
-                "additionalOverheadValueCurrency", "totalOverheadCurrency", "totalCostsCurrency");
+                "balanceTechnicalProductionCostsCurrency", "productionCostMarginValueCurrency",
+                "materialCostMarginValueCurrency", "additionalOverheadValueCurrency", "totalOverheadCurrency",
+                "totalCostsCurrency");
 
         for (String currencyFieldName : currencyFieldNames) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(currencyFieldName);
@@ -263,13 +265,13 @@ public class ProductionBalanceDetailsHooksPCWC {
             fieldComponent.requestComponentUpdateState();
         }
 
-        FieldComponent productionCostMarginProc = (FieldComponent) view.getComponentByReference("productionCostMarginProc");
-        productionCostMarginProc.setFieldValue("%");
-        productionCostMarginProc.requestComponentUpdateState();
-
-        FieldComponent materialCostMarginProc = (FieldComponent) view.getComponentByReference("materialCostMarginProc");
-        materialCostMarginProc.setFieldValue("%");
-        materialCostMarginProc.requestComponentUpdateState();
+        List<String> procFields = Lists.newArrayList("productionCostMarginProc", "materialCostMarginProc",
+                "registrationPriceOverheadProc", "profitProc");
+        for (String field : procFields) {
+            FieldComponent materialCostMarginProc = (FieldComponent) view.getComponentByReference(field);
+            materialCostMarginProc.setFieldValue("%");
+            materialCostMarginProc.requestComponentUpdateState();
+        }
 
         Set<String> unitFieldNames = Sets.newHashSet("registeredTotalTechnicalProductionCostPerUnitUnit",
                 "totalTechnicalProductionCostPerUnitUnit", "balanceTechnicalProductionCostPerUnitUnit", "totalCostPerUnitUnit");
@@ -309,10 +311,9 @@ public class ProductionBalanceDetailsHooksPCWC {
         FieldComponent calculateMaterialCostsMode = (FieldComponent) view
                 .getComponentByReference(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE);
 
-        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue()
-                .equals(sourceOfMaterialCosts.getFieldValue())
-                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue()
-                        .equals(calculateMaterialCostsMode.getFieldValue())) {
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
+                sourceOfMaterialCosts.getFieldValue())
+                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
             sourceOfMaterialCosts.addMessage("productionCountingWithCosts.messages.optionUnavailable", MessageType.FAILURE);
         }
     }
@@ -339,9 +340,15 @@ public class ProductionBalanceDetailsHooksPCWC {
             FieldComponent calculateOperationsCostsMode = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
             if (parameter.getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB) != null) {
-                calculateOperationsCostsMode
-                        .setFieldValue(parameter.getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB));
+                calculateOperationsCostsMode.setFieldValue(parameter
+                        .getField(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB));
                 calculateOperationsCostsMode.requestComponentUpdateState();
+            }
+            FieldComponent sourceOfOperationCostsPB = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB);
+            if (parameter.getField(ParameterFieldsPCWC.SOURCE_OF_OPERATION_COSTS_PB) != null) {
+                sourceOfOperationCostsPB.setFieldValue(parameter.getField(ParameterFieldsPCWC.SOURCE_OF_OPERATION_COSTS_PB));
+                sourceOfOperationCostsPB.requestComponentUpdateState();
             }
             FieldComponent calculateMaterialCostsMode = (FieldComponent) view
                     .getComponentByReference("calculateMaterialCostsMode");
@@ -362,8 +369,8 @@ public class ProductionBalanceDetailsHooksPCWC {
 
             FieldComponent printCostNormsOfMaterials = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS);
-            printCostNormsOfMaterials
-                    .setFieldValue(parameter.getBooleanField(ParameterFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS_PB));
+            printCostNormsOfMaterials.setFieldValue(parameter
+                    .getBooleanField(ParameterFieldsPCWC.PRINT_COST_NORMS_OF_MATERIALS_PB));
             printCostNormsOfMaterials.requestComponentUpdateState();
 
             FieldComponent sourceOfMaterialCosts = (FieldComponent) view
@@ -376,33 +383,45 @@ public class ProductionBalanceDetailsHooksPCWC {
 
             FieldComponent averageMachineHourlyCost = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
-            averageMachineHourlyCost.setFieldValue(numberService.format(BigDecimalUtils
-                    .convertNullToZero(parameter.getDecimalField(ParameterFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST_PB))));
+            averageMachineHourlyCost.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST_PB))));
             averageMachineHourlyCost.requestComponentUpdateState();
 
             FieldComponent averageLaborHourlyCost = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST);
-            averageLaborHourlyCost.setFieldValue(numberService.format(BigDecimalUtils
-                    .convertNullToZero(parameter.getDecimalField(ParameterFieldsPCWC.AVERAGE_LABOR_HOURLY_COST_PB))));
+            averageLaborHourlyCost.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.AVERAGE_LABOR_HOURLY_COST_PB))));
             averageLaborHourlyCost.requestComponentUpdateState();
 
             FieldComponent productionCostMargin = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN);
-            productionCostMargin.setFieldValue(numberService.format(
-                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPCWC.PRODUCTION_COST_MARGIN_PB))));
+            productionCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.PRODUCTION_COST_MARGIN_PB))));
             productionCostMargin.requestComponentUpdateState();
 
             FieldComponent materialCostMargin = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN);
-            materialCostMargin.setFieldValue(numberService.format(
-                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPCWC.MATERIAL_COST_MARGIN_PB))));
+            materialCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.MATERIAL_COST_MARGIN_PB))));
             materialCostMargin.requestComponentUpdateState();
 
             FieldComponent additionalOverhead = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD);
-            additionalOverhead.setFieldValue(numberService.format(
-                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPCWC.ADDITIONAL_OVERHEAD_PB))));
+            additionalOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.ADDITIONAL_OVERHEAD_PB))));
             additionalOverhead.requestComponentUpdateState();
+
+            FieldComponent registrationPriceOverhead = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFieldsPCWC.REGISTRATION_PRICE_OVERHEAD);
+            registrationPriceOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.REGISTRATION_PRICE_OVERHEAD_PB))));
+            registrationPriceOverhead.requestComponentUpdateState();
+
+            FieldComponent profit = (FieldComponent) view.getComponentByReference(ProductionBalanceFieldsPCWC.PROFIT);
+            profit.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
+                    .getDecimalField(ParameterFieldsPCWC.PROFIT_PB))));
+            profit.requestComponentUpdateState();
+
             isSetFieldsFromParameter.setFieldValue(true);
             isSetFieldsFromParameter.requestComponentUpdateState();
         }

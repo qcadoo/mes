@@ -186,6 +186,15 @@ public interface ProductionCountingService {
     boolean isCalculateOperationCostModePiecework(final String calculateOperationCostMode);
 
     /**
+     * Is calculate operation cost mode mixed
+     *
+     * @param calculateOperationCostMode
+     *            calculate operation cost mode
+     * @return boolean
+     */
+    boolean isCalculateOperationCostModeMixed(final String calculateOperationCostMode);
+
+    /**
      * Validates order
      *
      * @param productionTrackingReportOrBalanceDD
@@ -194,8 +203,7 @@ public interface ProductionCountingService {
      *            production tracking report or production balance
      * @return boolean
      */
-    boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
-            final Entity productionTrackingReportOrBalance);
+    boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD, final Entity productionTrackingReportOrBalance);
 
     /**
      * Sets components state

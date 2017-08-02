@@ -38,11 +38,16 @@ public class OrderCriteriaModifiersPC {
 
     public void showAcceptedAndInterrupted(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.in(OrderFields.STATE,
-                Lists.newArrayList(OrderState.IN_PROGRESS.getStringValue(),
-                        OrderState.INTERRUPTED.getStringValue())))
-                .add(SearchRestrictions.in(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING, Lists.newArrayList(
-                        TypeOfProductionRecording.CUMULATED.getStringValue(),
-                        TypeOfProductionRecording.FOR_EACH.getStringValue())));
+                Lists.newArrayList(OrderState.IN_PROGRESS.getStringValue(), OrderState.INTERRUPTED.getStringValue()))).add(
+                SearchRestrictions.in(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
+                        Lists.newArrayList(TypeOfProductionRecording.CUMULATED.getStringValue(),
+                                TypeOfProductionRecording.FOR_EACH.getStringValue())));
 
+    }
+
+    public void showOrdersForProductionBalance(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.IN_PROGRESS.getStringValue(),
+                OrderState.COMPLETED.getStringValue(), OrderState.INTERRUPTED.getStringValue(),
+                OrderState.ABANDONED.getStringValue())));
     }
 }
