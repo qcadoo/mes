@@ -44,8 +44,10 @@ import com.qcadoo.mes.productionCounting.ProductionCountingGenerateProductionBal
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.xls.ProductionBalanceXlsService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
@@ -91,6 +93,9 @@ public class ProductionBalanceDetailsListeners {
     @Autowired
     private GenerateProductionBalanceWithCosts generateProductionBalanceWithCosts;
 
+    @Autowired
+    private ProductionBalanceXlsService productionBalanceXlsService;
+
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", new String[0]);
@@ -119,9 +124,14 @@ public class ProductionBalanceDetailsListeners {
             checkOrderDoneQuantity(state, productionBalance);
 
             try {
-                generateProductionBalanceDocuments(productionBalance, state.getLocale());
+                if (ProductionBalanceType.ONE_ORDER.getStringValue().equals(
+                        productionBalance.getStringField(ProductionBalanceFields.TYPE))) {
+                    generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
-                generateProductionBalanceWithCosts.generateProductionBalanceWithCosts(productionBalance);
+                    generateProductionBalanceWithCosts.generateProductionBalanceWithCosts(productionBalance);
+                } else {
+                    generateProductionBalanceDocumentXls(productionBalance, state.getLocale());
+                }
                 state.performEvent(view, "reset", new String[0]);
 
                 state.addMessage(
@@ -166,6 +176,21 @@ public class ProductionBalanceDetailsListeners {
             throw new IllegalStateException("Problem with saving productionBalance report", e);
         } catch (DocumentException e) {
             throw new IllegalStateException("Problem with generating productionBalance report", e);
+        }
+    }
+
+    private void generateProductionBalanceDocumentXls(final Entity productionBalance, final Locale locale) throws IOException,
+            DocumentException {
+        String localePrefix = "productionCounting.productionBalance.report.fileName";
+
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE,
+                localePrefix);
+
+        try {
+            productionBalanceXlsService.generateDocument(productionBalanceWithFileName, locale);
+
+        } catch (IOException e) {
+            throw new IllegalStateException("Problem with saving productionBalance report", e);
         }
     }
 

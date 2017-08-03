@@ -79,6 +79,45 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="exportXls">
+                <bigButton name="xls" icon="xlsIcon24.png"
+                           action="#{form}.fireEvent(printProductionBalance,xls,0);" state="disabled">
+                    <script>
+                        <![CDATA[
+					var xlsItem = #{window}.getRibbonItem("exportXls.xls");
+					var entityExists = false;
+					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (value.content.entityId) {
+								entityExists = true;
+							} else {
+								entityExists = false;
+							}
+							updateRibbon();
+						}
+					});
+
+					function updateRibbon() {
+						if (entityExists) {
+							var isGeneratedCheckboxValue = #{generated}.getValue();
+							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+								xlsItem.enable();
+							} else {
+								xlsItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+							}
+						} else {
+							xlsItem.disable("#{translate(recordNotCreated)}");
+						}
+					}
+				]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
