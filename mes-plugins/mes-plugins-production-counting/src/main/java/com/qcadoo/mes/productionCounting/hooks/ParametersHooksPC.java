@@ -75,4 +75,27 @@ public class ParametersHooksPC {
         checkIfRegisterProductionTimeIsSet(view);
     }
 
+    public void toggleAllowChangesToUsedQuantityOnTerminalState(final ViewDefinitionState view) {
+        CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
+                .getComponentByReference("consumptionOfRawMaterialsBasedOnStandards");
+
+        CheckBoxComponent allowChangesToUsedQuantityOnTerminal = (CheckBoxComponent) view
+                .getComponentByReference("allowChangesToUsedQuantityOnTerminal");
+
+        allowChangesToUsedQuantityOnTerminal.setEnabled(consumptionOfRawMaterialsBasedOnStandards.isChecked());
+    }
+
+    public void toggleAllowChangesToUsedQuantityOnTerminalValue(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
+                .getComponentByReference("consumptionOfRawMaterialsBasedOnStandards");
+
+        CheckBoxComponent allowChangesToUsedQuantityOnTerminal = (CheckBoxComponent) view
+                .getComponentByReference("allowChangesToUsedQuantityOnTerminal");
+
+        if (!consumptionOfRawMaterialsBasedOnStandards.isChecked()) {
+            allowChangesToUsedQuantityOnTerminal.setChecked(false);
+        }
+    }
+
 }
