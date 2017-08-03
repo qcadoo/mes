@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.hooks;
+package com.qcadoo.mes.productionCounting.hooks;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
-import com.qcadoo.mes.productionCountingWithCosts.constants.ParameterFieldsPCWC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -74,12 +74,12 @@ public class ParameterPBDetailsViewHooks {
 
     public void disableCheckboxes(final ViewDefinitionState viewDefinitionState) {
         FieldComponent calculateOperationCostsMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ParameterFieldsPCWC.CALCULATE_OPERATION_COST_MODE_PB);
+                .getComponentByReference(ParameterFieldsPC.CALCULATE_OPERATION_COST_MODE_PB);
 
         FieldComponent includeTPZ = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ParameterFieldsPCWC.INCLUDE_TPZ_PB);
+                .getComponentByReference(ParameterFieldsPC.INCLUDE_TPZ_PB);
         FieldComponent includeAdditionalTime = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ParameterFieldsPCWC.INCLUDE_ADDITIONAL_TIME_PB);
+                .getComponentByReference(ParameterFieldsPC.INCLUDE_ADDITIONAL_TIME_PB);
 
         if (CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostsMode.getFieldValue())) {
             includeTPZ.setFieldValue(false);

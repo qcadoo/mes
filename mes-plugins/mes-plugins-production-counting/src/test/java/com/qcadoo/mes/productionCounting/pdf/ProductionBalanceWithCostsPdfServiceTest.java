@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.pdf;
+package com.qcadoo.mes.productionCounting.pdf;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -52,7 +52,6 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
-import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
@@ -137,12 +136,12 @@ public class ProductionBalanceWithCostsPdfServiceTest {
         operationCostComponents = mockEntityList(empty);
         operationPieceworkComponents = mockEntityList(empty);
 
-        given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS))
+        given(productionBalance.getHasManyField(ProductionBalanceFields.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS))
                 .willReturn(technologyOperationProductInComponents);
 
-        given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS)).willReturn(
+        given(productionBalance.getHasManyField(ProductionBalanceFields.OPERATION_COST_COMPONENTS)).willReturn(
                 operationCostComponents);
-        given(productionBalance.getHasManyField(ProductionBalanceFieldsPCWC.OPERATION_PIECEWORK_COST_COMPONENTS)).willReturn(
+        given(productionBalance.getHasManyField(ProductionBalanceFields.OPERATION_PIECEWORK_COST_COMPONENTS)).willReturn(
                 operationPieceworkComponents);
     }
 

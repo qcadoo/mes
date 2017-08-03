@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -35,7 +36,10 @@ public class ParameterHooksPC {
 
     public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
         setParameterWithDefaultProductionCountingValues(parameter);
+        parameter.setField(ParameterFieldsPC.PRICE_BASED_ON, PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
     }
+
+
 
     private void setParameterWithDefaultProductionCountingValues(final Entity parameter) {
         if (parameter.getStringField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
@@ -77,8 +81,12 @@ public class ParameterHooksPC {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
-
-        return true;
+        String priceBasedOn = parameter.getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+        if (priceBasedOn != null && priceBasedOn.compareTo("") != 0) {
+            return true;
+        }
+        parameter.addError(parameterDD.getField(ParameterFieldsPC.PRICE_BASED_ON), "basic.parameter.priceBasedOn.required");
+        return false;
     }
 
 }

@@ -21,14 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.materials;
+package com.qcadoo.mes.productionCounting;
 
 import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -42,18 +42,18 @@ public final class RegisteredMaterialCostHelperImpl implements RegisteredMateria
     @Override
     public void countRegisteredMaterialMarginValue(final Entity productionBalance) {
         final BigDecimal materialCostMargin = BigDecimalUtils.convertNullToZero(productionBalance
-                .getDecimalField(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN));
+                .getDecimalField(ProductionBalanceFields.MATERIAL_COST_MARGIN));
         final BigDecimal registeredMaterialCost = getRegisteredMaterialCost(productionBalance);
         final BigDecimal materialCostMarginFactor = BigDecimalUtils.toPercent(materialCostMargin, numberService.getMathContext());
         final BigDecimal registeredMaterialMarginValue = registeredMaterialCost.multiply(materialCostMarginFactor,
                 numberService.getMathContext());
 
-        productionBalance.setField(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN_VALUE,
+        productionBalance.setField(ProductionBalanceFields.MATERIAL_COST_MARGIN_VALUE,
                 numberService.setScale(registeredMaterialMarginValue));
     }
 
     private BigDecimal getRegisteredMaterialCost(final Entity productionBalance) {
-        return BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
+        return BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(ProductionBalanceFields.COMPONENTS_COSTS));
     }
 
 }

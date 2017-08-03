@@ -47,6 +47,35 @@ public class ProductionBalanceHooks {
     @Autowired
     private ProductionCountingService productionCountingService;
 
+    private static final List<String> L_PRODUCTION_BALANCE_COST_FIELDS = Arrays.asList(
+            ProductionBalanceFields.PLANNED_COMPONENTS_COSTS, ProductionBalanceFields.COMPONENTS_COSTS,
+            ProductionBalanceFields.COMPONENTS_COSTS_BALANCE, ProductionBalanceFields.PLANNED_MACHINE_COSTS,
+            ProductionBalanceFields.MACHINE_COSTS, ProductionBalanceFields.MACHINE_COSTS_BALANCE,
+            ProductionBalanceFields.PLANNED_LABOR_COSTS, ProductionBalanceFields.LABOR_COSTS,
+            ProductionBalanceFields.LABOR_COSTS_BALANCE, ProductionBalanceFields.PLANNED_CYCLES_COSTS,
+            ProductionBalanceFields.CYCLES_COSTS, ProductionBalanceFields.CYCLES_COSTS_BALANCE,
+            ProductionBalanceFields.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS,
+            ProductionBalanceFields.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+            ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
+            ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+            ProductionBalanceFields.BALANCE_TECHNICAL_PRODUCTION_COSTS,
+            ProductionBalanceFields.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+            ProductionBalanceFields.PRODUCTION_COST_MARGIN_VALUE, ProductionBalanceFields.MATERIAL_COST_MARGIN_VALUE,
+            ProductionBalanceFields.ADDITIONAL_OVERHEAD_VALUE, ProductionBalanceFields.TOTAL_OVERHEAD,
+            ProductionBalanceFields.TOTAL_COSTS, ProductionBalanceFields.TOTAL_COST_PER_UNIT);
+
+    private void clearGeneratedCosts(final Entity productionBalance) {
+        for (String fieldName : L_PRODUCTION_BALANCE_COST_FIELDS) {
+            if (ProductionBalanceFields.PRODUCTION_COST_MARGIN_VALUE.equals(fieldName)
+                    || ProductionBalanceFields.MATERIAL_COST_MARGIN_VALUE.equals(fieldName)
+                    || ProductionBalanceFields.ADDITIONAL_OVERHEAD_VALUE.equals(fieldName)) {
+                productionBalance.setField(fieldName, BigDecimal.ZERO);
+            } else {
+                productionBalance.setField(fieldName, null);
+            }
+        }
+    }
+
     public void onSave(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         updateTrackingsNumber(productionBalance);
     }
@@ -54,6 +83,8 @@ public class ProductionBalanceHooks {
     public void onCopy(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         clearGeneratedOnCopy(productionBalance);
         clearGeneratedTimes(productionBalance);
+        clearGeneratedCosts(productionBalance);
+
     }
 
     private void updateTrackingsNumber(final Entity productionBalance) {

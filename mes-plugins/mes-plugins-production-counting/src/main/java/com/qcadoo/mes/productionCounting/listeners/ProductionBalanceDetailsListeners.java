@@ -38,6 +38,7 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.GenerateProductionBalanceWithCosts;
 import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingGenerateProductionBalance;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -87,6 +88,9 @@ public class ProductionBalanceDetailsListeners {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private GenerateProductionBalanceWithCosts generateProductionBalanceWithCosts;
+
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", new String[0]);
@@ -117,6 +121,7 @@ public class ProductionBalanceDetailsListeners {
             try {
                 generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
+                generateProductionBalanceWithCosts.generateProductionBalanceWithCosts(productionBalance);
                 state.performEvent(view, "reset", new String[0]);
 
                 state.addMessage(

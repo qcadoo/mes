@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.pdf;
+package com.qcadoo.mes.productionCounting.pdf;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -49,11 +49,10 @@ import com.qcadoo.mes.costCalculation.print.CostCalculationPdfService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.TechnologyOperationProductInCompFields;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductInOutComparator;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingOperationComparator;
-import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
-import com.qcadoo.mes.productionCountingWithCosts.constants.TechnologyOperationProductInCompFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
@@ -175,20 +174,20 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
         addCurrencyNumericWithLabel(costsPanel,
                 "productionCounting.productionBalance.report.panel.productionCosts.machinePlanned",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.PLANNED_MACHINE_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.PLANNED_MACHINE_COSTS), locale);
         addCurrencyNumericWithLabel(costsPanel,
                 "productionCounting.productionBalance.report.panel.productionCosts.machineRegistered",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.MACHINE_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.MACHINE_COSTS), locale);
         addCurrencyNumericWithLabel(costsPanel,
                 "productionCounting.productionBalance.report.panel.productionCosts.machineBalance",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.MACHINE_COSTS_BALANCE), locale);
+                productionBalance.getField(ProductionBalanceFields.MACHINE_COSTS_BALANCE), locale);
         addCurrencyNumericWithLabel(costsPanel, "productionCounting.productionBalance.report.panel.productionCosts.laborPlanned",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.PLANNED_LABOR_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.PLANNED_LABOR_COSTS), locale);
         addCurrencyNumericWithLabel(costsPanel,
                 "productionCounting.productionBalance.report.panel.productionCosts.laborRegistered",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.LABOR_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.LABOR_COSTS), locale);
         addCurrencyNumericWithLabel(costsPanel, "productionCounting.productionBalance.report.panel.productionCosts.laborBalance",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.LABOR_COSTS_BALANCE), locale);
+                productionBalance.getField(ProductionBalanceFields.LABOR_COSTS_BALANCE), locale);
 
         costsPanel.setSpacingBefore(10);
         document.add(costsPanel);
@@ -244,7 +243,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                                 locale), HeaderAlignment.RIGHT);
 
         List<Entity> technologyOperationProductInComponents = productionBalance
-                .getHasManyField(ProductionBalanceFieldsPCWC.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS);
+                .getHasManyField(ProductionBalanceFields.TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS);
 
         if (!technologyOperationProductInComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
@@ -284,15 +283,15 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
             productsTable.addCell(new Phrase(translationService.translate("productionCounting.productionBalance.report.total",
                     locale), FontUtils.getDejavuRegular7Dark()));
             String plannedComponentsCosts = numberService.format(productionBalance
-                    .getDecimalField(ProductionBalanceFieldsPCWC.PLANNED_COMPONENTS_COSTS));
+                    .getDecimalField(ProductionBalanceFields.PLANNED_COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((plannedComponentsCosts == null) ? L_NULL_OBJECT
                     : (plannedComponentsCosts + currency), FontUtils.getDejavuRegular7Dark()));
             String componentsCosts = numberService.format(productionBalance
-                    .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS));
+                    .getDecimalField(ProductionBalanceFields.COMPONENTS_COSTS));
             productsTable.addCell(new Phrase((componentsCosts == null) ? L_NULL_OBJECT : (componentsCosts + currency), FontUtils
                     .getDejavuRegular7Dark()));
             String componentsCostsBalance = numberService.format(productionBalance
-                    .getDecimalField(ProductionBalanceFieldsPCWC.COMPONENTS_COSTS_BALANCE));
+                    .getDecimalField(ProductionBalanceFields.COMPONENTS_COSTS_BALANCE));
             productsTable.addCell(new Phrase((componentsCostsBalance == null) ? L_NULL_OBJECT
                     : (componentsCostsBalance + currency), FontUtils.getDejavuRegular7Dark()));
             productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -339,8 +338,8 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         boolean isPiecework = "cycles".equals(type);
 
         List<Entity> operationComponents = productionBalance
-                .getHasManyField(isPiecework ? ProductionBalanceFieldsPCWC.OPERATION_PIECEWORK_COST_COMPONENTS
-                        : ProductionBalanceFieldsPCWC.OPERATION_COST_COMPONENTS);
+                .getHasManyField(isPiecework ? ProductionBalanceFields.OPERATION_PIECEWORK_COST_COMPONENTS
+                        : ProductionBalanceFields.OPERATION_COST_COMPONENTS);
 
         if (!operationComponents.isEmpty()) {
             document.add(Chunk.NEWLINE);
@@ -411,7 +410,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         content.setTableEvent(null);
 
         String sourceOfMaterialCostsField = productionBalance
-                .getStringField(ProductionBalanceFieldsPCWC.SOURCE_OF_MATERIAL_COSTS);
+                .getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
         String sourceOfMaterialCosts = translationService.translate(
                 "productionCounting.productionBalance.sourceOfMaterialCosts.value." + sourceOfMaterialCostsField, locale);
         pdfHelper.addTableCellAsTable(content,
@@ -419,7 +418,7 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 sourceOfMaterialCosts, FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         String calculateMaterialCostsModeField = productionBalance
-                .getStringField(ProductionBalanceFieldsPCWC.CALCULATE_MATERIAL_COSTS_MODE);
+                .getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
         String calculateMaterialCostsMode = translationService.translate(
                 "productionCounting.productionBalance.calculateMaterialCostsMode.value." + calculateMaterialCostsModeField,
                 locale);
@@ -443,14 +442,14 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         content.setTableEvent(null);
 
         BigDecimal averageMachineHourlyCost = productionBalance
-                .getDecimalField(ProductionBalanceFieldsPCWC.AVERAGE_MACHINE_HOURLY_COST);
+                .getDecimalField(ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST);
         String averageMachineHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageMachineHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageMachineHourlyCostLabel, numberService.format(averageMachineHourlyCost),
                 FontUtils.getDejavuBold9Dark(), FontUtils.getDejavuRegular7Dark(), 2);
 
         BigDecimal averageLaborHourlyCost = productionBalance
-                .getDecimalField(ProductionBalanceFieldsPCWC.AVERAGE_LABOR_HOURLY_COST);
+                .getDecimalField(ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST);
         String averageLaborHourlyCostLabel = translationService.translate(
                 "productionCounting.productionBalance.averageLaborHourlyCost.label", locale);
         pdfHelper.addTableCellAsTable(content, averageLaborHourlyCostLabel, numberService.format(averageLaborHourlyCost),
@@ -497,11 +496,11 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.registeredTotalTechnicalProductionCostsLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COSTS), locale);
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.registeredTotalTechnicalProductionCostPerUnitLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT),
+                productionBalance.getField(ProductionBalanceFields.REGISTERED_TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT),
                 locale);
     }
 
@@ -511,11 +510,11 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 + ":", FontUtils.getDejavuBold10Dark()));
         addCurrencyNumericWithLabel(content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.totalTechnicalProductionCostsLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COSTS), locale);
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.totalTechnicalProductionCostPerUnitLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT), locale);
+                productionBalance.getField(ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT), locale);
 
     }
 
@@ -525,11 +524,11 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 + ":", FontUtils.getDejavuBold10Dark()));
         addCurrencyNumericWithLabel(content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.balanceTechnicalProductionCostsLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.BALANCE_TECHNICAL_PRODUCTION_COSTS), locale);
         addCurrencyNumericWithLabel(
                 content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.balanceTechnicalProductionCostPerUnitLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT), locale);
+                productionBalance.getField(ProductionBalanceFields.BALANCE_TECHNICAL_PRODUCTION_COST_PER_UNIT), locale);
 
     }
 
@@ -541,13 +540,13 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
                 FontUtils.getDejavuBold10Dark()));
 
         addCurrencyNumericWithLabel(content, "productionCounting.productionBalance.productionCostMarginValue.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN_VALUE), locale);
+                productionBalance.getField(ProductionBalanceFields.PRODUCTION_COST_MARGIN_VALUE), locale);
         addCurrencyNumericWithLabel(content, "productionCounting.productionBalance.materialCostMarginValue.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.MATERIAL_COST_MARGIN_VALUE), locale);
+                productionBalance.getField(ProductionBalanceFields.MATERIAL_COST_MARGIN_VALUE), locale);
         addCurrencyNumericWithLabel(content, "productionCounting.productionBalance.additionalOverheadValue.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.ADDITIONAL_OVERHEAD_VALUE), locale);
+                productionBalance.getField(ProductionBalanceFields.ADDITIONAL_OVERHEAD_VALUE), locale);
         addCurrencyNumericWithLabel(content, "productionCounting.productionBalance.totalOverhead.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_OVERHEAD), locale,
+                productionBalance.getField(ProductionBalanceFields.TOTAL_OVERHEAD), locale,
                 FontUtils.getDejavuRegular7Dark(), FontUtils.getDejavuBold9Dark());
 
         content.addCell(new Phrase(translationService.translate(
@@ -556,10 +555,10 @@ public class ProductionBalanceWithCostsPdfService extends PdfDocumentService {
 
         addCurrencyNumericWithLabel(content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.totalCostsLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_COSTS), locale);
+                productionBalance.getField(ProductionBalanceFields.TOTAL_COSTS), locale);
         addCurrencyNumericWithLabel(content,
                 "productionCounting.productionBalanceDetails.window.costsSummaryTab.totalCostPerUnitLabel.label",
-                productionBalance.getField(ProductionBalanceFieldsPCWC.TOTAL_COST_PER_UNIT), locale);
+                productionBalance.getField(ProductionBalanceFields.TOTAL_COST_PER_UNIT), locale);
 
         return content;
     }

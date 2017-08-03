@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts;
+package com.qcadoo.mes.productionCounting;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -43,10 +43,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
-import com.qcadoo.mes.productionCountingWithCosts.pdf.ProductionBalanceWithCostsPdfService;
+import com.qcadoo.mes.productionCounting.pdf.ProductionBalanceWithCostsPdfService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -113,7 +111,7 @@ public class GenerateProductionBalanceWithCostsTest {
         BigDecimal quantity = BigDecimal.TEN;
         BigDecimal doneQuantity = BigDecimal.TEN;
 
-        given(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
+        given(productionBalance.getDecimalField(ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COSTS)).willReturn(
                 BigDecimal.valueOf(100));
         given(order.getDecimalField(OrderFields.PLANNED_QUANTITY)).willReturn(quantity);
         given(order.getDecimalField(OrderFields.DONE_QUANTITY)).willReturn(doneQuantity);
@@ -123,10 +121,10 @@ public class GenerateProductionBalanceWithCostsTest {
         generateProductionBalanceWithCosts.doTheCostsPart(productionBalance);
 
         // then
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.QUANTITY, quantity);
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TECHNOLOGY, technology);
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.PRODUCTION_LINE, productionLine);
-        verify(productionBalance).setField(ProductionBalanceFieldsPCWC.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
+        verify(productionBalance).setField(ProductionBalanceFields.QUANTITY, quantity);
+        verify(productionBalance).setField(ProductionBalanceFields.TECHNOLOGY, technology);
+        verify(productionBalance).setField(ProductionBalanceFields.PRODUCTION_LINE, productionLine);
+        verify(productionBalance).setField(ProductionBalanceFields.TOTAL_TECHNICAL_PRODUCTION_COST_PER_UNIT,
                 BigDecimal.TEN.setScale(5, RoundingMode.HALF_EVEN));
     }
 
@@ -147,7 +145,7 @@ public class GenerateProductionBalanceWithCostsTest {
 
         // then
         verify(productionBalanceWithCostsPdfService).generateDocument(productionBalanceWithFileName, locale, localePrefix);
-        verify(productionBalanceWithFileName).setField(ProductionBalanceFieldsPCWC.GENERATED_WITH_COSTS, Boolean.TRUE);
+        verify(productionBalanceWithFileName).setField(ProductionBalanceFields.GENERATED_WITH_COSTS, Boolean.TRUE);
         verify(productionBalanceDD).save(productionBalanceWithFileName);
     }
 

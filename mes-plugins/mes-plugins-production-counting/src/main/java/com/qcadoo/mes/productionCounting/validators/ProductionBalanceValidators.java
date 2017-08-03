@@ -26,7 +26,10 @@ package com.qcadoo.mes.productionCounting.validators;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.model.api.DataDefinition;
@@ -39,13 +42,88 @@ public class ProductionBalanceValidators {
     private ProductionCountingService productionCountingService;
 
     public boolean validatesWith(final DataDefinition productionBalanceDD, final Entity productionBalance) {
-        return ProductionBalanceType.MANY_ORDERS.getStringValue().equals(
-                productionBalance.getStringField(ProductionBalanceFields.TYPE))
+        boolean isValid = true;
+
+        isValid = isValid && checkIfOptionsAreNotNull(productionBalanceDD, productionBalance);
+        isValid = isValid && checkIfOptionsAreAvailable(productionBalanceDD, productionBalance);
+        isValid = isValid && checkIfAverageCostsAreDefined(productionBalanceDD, productionBalance);
+
+        return isValid
+                && ProductionBalanceType.MANY_ORDERS.getStringValue().equals(
+                        productionBalance.getStringField(ProductionBalanceFields.TYPE))
                 || validateOrder(productionBalanceDD, productionBalance);
     }
 
     private boolean validateOrder(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         return productionCountingService.validateOrder(productionBalanceDD, productionBalance);
+    }
+
+    public boolean checkIfOptionsAreNotNull(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        String sourceOfMaterialCost = productionBalance.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
+        String calculateMaterialCostsMode = productionBalance
+                .getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
+
+        if (sourceOfMaterialCost == null) {
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS),
+                    "productionCounting.productionBalance.error.sourceOfMaterialCostsIsNotSelected");
+        }
+
+        if (calculateMaterialCostsMode == null) {
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE),
+                    "productionCounting.productionBalance.error.calculateMaterialCostsModeIsNotSelected");
+        }
+
+        if ((sourceOfMaterialCost == null) || (calculateMaterialCostsMode == null)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkIfOptionsAreAvailable(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        String sourceOfMaterialCost = productionBalance.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
+        String calculateMaterialCostsMode = productionBalance
+                .getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
+
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(sourceOfMaterialCost)
+                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode)) {
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE),
+                    "productionCounting.productionBalance.messages.optionUnavailable");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean checkIfAverageCostsAreDefined(final DataDefinition productionBalanceDD, final Entity productionBalance) {
+        Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
+        if (order != null
+                && productionCountingService.isCalculateOperationCostModeHourly(productionBalance
+                        .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE))
+                && productionCountingService.isTypeOfProductionRecordingCumulated(order
+                        .getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+            Object averageMachineHourlyCost = productionBalance.getField(ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST);
+            Object averageLaborHourlyCost = productionBalance.getField(ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST);
+
+            if ((averageLaborHourlyCost == null) && (averageMachineHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST),
+                        "productionCounting.productionBalance.messages.averageLaborHourlyCostIsRequired");
+                productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST),
+                        "productionCounting.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+            } else if ((averageMachineHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST),
+                        "productionCounting.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+            } else if ((averageLaborHourlyCost == null)) {
+                productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST),
+                        "productionCounting.productionBalance.messages.averageMachineHourlyCostIsRequired");
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

@@ -89,6 +89,185 @@
 
         <hasMany name="operationPieceworkComponents" joinField="productionBalance"
                  model="operationPieceworkComponent" cascade="delete"/>
+        <boolean name="printCostNormsOfMaterials"
+                 default="true"/>
+
+        <enum name="sourceOfMaterialCosts"
+              values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
+              required="true" default="01currentGlobalDefinitionsInProduct"/>
+
+        <enum name="calculateMaterialCostsMode"
+              values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+              required="true" default="01nominal"/>
+
+        <decimal name="averageMachineHourlyCost">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="averageLaborHourlyCost">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="productionCostMargin" default="0">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="materialCostMargin" default="0">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="additionalOverhead" default="0">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="plannedComponentsCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="componentsCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="componentsCostsBalance">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <hasMany name="technologyOperationProductInComponents"
+                 joinField="productionBalance" model="technologyOperationProductInComp" cascade="delete"/>
+
+        <decimal name="plannedMachineCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="machineCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="machineCostsBalance">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="plannedLaborCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="laborCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="laborCostsBalance">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <hasMany name="operationCostComponents"
+                 joinField="productionBalance" model="operationCostComponent"
+                 cascade="delete"/>
+
+        <decimal name="plannedCyclesCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="cyclesCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="cyclesCostsBalance">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <hasMany name="operationPieceworkCostComponents"
+                 joinField="productionBalance" model="operationPieceworkCostComponent" cascade="delete"/>
+
+        <decimal name="registeredTotalTechnicalProductionCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="registeredTotalTechnicalProductionCostPerUnit">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="totalTechnicalProductionCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="totalTechnicalProductionCostPerUnit">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="balanceTechnicalProductionCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="balanceTechnicalProductionCostPerUnit">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="productionCostMarginValue"
+                 default="0">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="materialCostMarginValue" default="0">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="additionalOverheadValue" default="0">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="totalOverhead">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="totalCosts">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="totalCostPerUnit">
+            <validatesUnscaledValue max="14"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="quantity">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <belongsTo name="technology" model="technology"
+                   plugin="technologies"/>
+
+        <belongsTo name="productionLine" model="productionLine"
+                   plugin="productionLines"/>
+
+        <boolean name="generatedWithCosts"/>
+
+        <belongsTo name="productionBalance" model="productionBalance"
+                   plugin="productionCounting"/>
+
+        <tree name="calculationOperationComponents"
+              joinField="productionBalance" model="calculationOperationComponent"
+              plugin="costNormsForOperation" cascade="delete"/>
+
+        <boolean name="isSetFieldsFromParameter"
+                 persistent="false"/>
     </fields>
 
     <hooks>

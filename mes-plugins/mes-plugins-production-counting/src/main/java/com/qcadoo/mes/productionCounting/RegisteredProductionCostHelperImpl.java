@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCountingWithCosts.operations;
+package com.qcadoo.mes.productionCounting;
 
 import java.math.BigDecimal;
 
@@ -30,7 +30,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCountingWithCosts.constants.ProductionBalanceFieldsPCWC;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -44,14 +43,14 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
     @Override
     public void countRegisteredProductionMarginValue(final Entity productionBalance) {
         final BigDecimal productionCostMargin = BigDecimalUtils.convertNullToZero(productionBalance
-                .getDecimalField(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN));
+                .getDecimalField(ProductionBalanceFields.PRODUCTION_COST_MARGIN));
         final BigDecimal registeredProductionCost = getRegisteredProductionCost(productionBalance);
         final BigDecimal productionCostMarginFactor = BigDecimalUtils.toPercent(productionCostMargin,
                 numberService.getMathContext());
         final BigDecimal registeredProductionMarginValue = registeredProductionCost.multiply(productionCostMarginFactor,
                 numberService.getMathContext());
 
-        productionBalance.setField(ProductionBalanceFieldsPCWC.PRODUCTION_COST_MARGIN_VALUE,
+        productionBalance.setField(ProductionBalanceFields.PRODUCTION_COST_MARGIN_VALUE,
                 numberService.setScale(registeredProductionMarginValue));
     }
 
@@ -69,12 +68,12 @@ public final class RegisteredProductionCostHelperImpl implements RegisteredProdu
     }
 
     private BigDecimal getRegisteredPieceworkCosts(final Entity productionBalance) {
-        return BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.CYCLES_COSTS));
+        return BigDecimalUtils.convertNullToZero(productionBalance.getDecimalField(ProductionBalanceFields.CYCLES_COSTS));
     }
 
     private BigDecimal getRegisteredHourlyCosts(final Entity productionBalance) {
-        final BigDecimal registeredMachineCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.MACHINE_COSTS);
-        final BigDecimal registeredLaborCosts = productionBalance.getDecimalField(ProductionBalanceFieldsPCWC.LABOR_COSTS);
+        final BigDecimal registeredMachineCosts = productionBalance.getDecimalField(ProductionBalanceFields.MACHINE_COSTS);
+        final BigDecimal registeredLaborCosts = productionBalance.getDecimalField(ProductionBalanceFields.LABOR_COSTS);
         return BigDecimalUtils.convertNullToZero(registeredMachineCosts).add(
                 BigDecimalUtils.convertNullToZero(registeredLaborCosts), numberService.getMathContext());
     }
