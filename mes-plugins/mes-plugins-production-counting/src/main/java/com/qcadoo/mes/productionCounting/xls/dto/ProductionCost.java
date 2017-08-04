@@ -1,4 +1,4 @@
-package com.qcadoo.mes.productionCounting.xls;
+package com.qcadoo.mes.productionCounting.xls.dto;
 
 public class ProductionCost {
 

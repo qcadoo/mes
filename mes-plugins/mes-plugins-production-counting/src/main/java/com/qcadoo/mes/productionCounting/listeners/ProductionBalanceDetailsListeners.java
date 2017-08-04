@@ -129,8 +129,12 @@ public class ProductionBalanceDetailsListeners {
                     generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
                     generateProductionBalanceWithCosts.generateProductionBalanceWithCosts(productionBalance);
-                } else {
+                } else if (!productionBalance.getHasManyField(ProductionBalanceFields.ORDERS).isEmpty()) {
                     generateProductionBalanceDocumentXls(productionBalance, state.getLocale());
+                } else {
+                    state.addMessage("productionCounting.productionBalance.report.error.noOrders", MessageType.FAILURE);
+
+                    return;
                 }
                 state.performEvent(view, "reset", new String[0]);
 
