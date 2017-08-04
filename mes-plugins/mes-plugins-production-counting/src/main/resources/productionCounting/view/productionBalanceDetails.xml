@@ -42,81 +42,11 @@
             </group>
             <group name="exportWithCosts">
                 <bigButton name="pdfWithCosts" icon="pdfIcon24.png"
-                           action="#{form}.fireEvent(printProductionBalance,pdf,1);" state="disabled">
-                    <script>
-                        <![CDATA[
-					var pdfWithCostsRibbonItem = #{window}.getRibbonItem("exportWithCosts.pdfWithCosts");
-					var entityExists = false;
-					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
-							}
-							if (value.content.entityId) {
-								entityExists = true;
-							} else {
-								entityExists = false;
-							}
-							updateRibbon();
-						}
-					});
-
-					function updateRibbon() {
-						if (entityExists) {
-							var isGeneratedCheckboxValue = #{generated}.getValue();
-							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								pdfWithCostsRibbonItem.enable();
-							} else {
-								pdfWithCostsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							}
-						} else {
-							pdfWithCostsRibbonItem.disable("#{translate(recordNotCreated)}");
-						}
-					}
-				]]>
-                    </script>
-                </bigButton>
+                           action="#{form}.fireEvent(printProductionBalance,pdf,1);" state="disabled"/>
             </group>
             <group name="exportXls">
                 <bigButton name="xls" icon="xlsIcon24.png"
-                           action="#{form}.fireEvent(printProductionBalance,xls,0);" state="disabled">
-                    <script>
-                        <![CDATA[
-					var xlsItem = #{window}.getRibbonItem("exportXls.xls");
-					var entityExists = false;
-					var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
-							}
-							if (value.content.entityId) {
-								entityExists = true;
-							} else {
-								entityExists = false;
-							}
-							updateRibbon();
-						}
-					});
-
-					function updateRibbon() {
-						if (entityExists) {
-							var isGeneratedCheckboxValue = #{generated}.getValue();
-							if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-								xlsItem.enable();
-							} else {
-								xlsItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							}
-						} else {
-							xlsItem.disable("#{translate(recordNotCreated)}");
-						}
-					}
-				]]>
-                    </script>
-                </bigButton>
+                           action="#{form}.fireEvent(printProductionBalance,xls,0);" state="disabled"/>
             </group>
         </ribbon>
 
@@ -134,7 +64,8 @@
 						var entityExists = false;
 						var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 						var deletedRibbonItem =  #{window}.getRibbonItem("actions.delete");
-						
+						var pdfWithCostsRibbonItem = #{window}.getRibbonItem("exportWithCosts.pdfWithCosts");
+						var xlsItem = #{window}.getRibbonItem("exportXls.xls");
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								if (!value || !value.content) {
@@ -152,8 +83,16 @@
 						function updateRibbon() {
 							if (entityExists) {
 								var isGeneratedCheckboxValue = #{generated}.getValue();
+								var type = #{type}.getValue();
+								console.log(type);
 								if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-									pdfRibbonItem.enable();
+								    if (type.content.value == '01oneOrder') {
+									    pdfRibbonItem.enable();
+									    pdfWithCostsRibbonItem.enable();
+									}
+									else {
+									    xlsItem.enable();
+									}
 									save.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveBack.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
 									saveNew.disable("#{translate(productionCounting.productionBalance.report.error.documentsWasGenerated)}");
@@ -162,6 +101,8 @@
 									deletedRibbonItem.enable();
 								} else {
 									pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									xlsItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
+									pdfWithCostsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
 									save.enable();
 									saveBack.enable();
 									saveNew.enable();
@@ -172,6 +113,8 @@
 							} else {
 								copyRibbonItem.disable("#{translate(recordNotCreated)}");
 								pdfRibbonItem.disable("#{translate(recordNotCreated)}");
+								pdfWithCostsRibbonItem.disable("#{translate(recordNotCreated)}");
+								xlsItem.disable("#{translate(recordNotCreated)}");
 								save.enable();
 								saveBack.enable();
 								saveNew.enable();

@@ -1,5 +1,6 @@
 package com.qcadoo.mes.productionCounting.xls;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -10,9 +11,12 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
@@ -29,9 +33,22 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     @Autowired
     private ProductionBalanceRepository productionBalanceRepository;
 
+    private static final List<String> PRODUCTION_QUANTITIES_HEADERS = Lists.newArrayList("orderNumber", "productNumber",
+            "productName", "plannedQuantity", "producedQuantity", "wastesQuantity", "producedWastes", "deviation", "productUnit");
+
     @Override
     protected void addHeader(HSSFSheet sheet, Locale locale, Entity entity) {
 
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        HSSFRow headerRow = sheet.createRow(0);
+        int columnIndex = 0;
+        for (String key : PRODUCTION_QUANTITIES_HEADERS) {
+            createHeaderCell(stylesContainer, headerRow,
+                    translationService.translate("productionCounting.productionBalance.report.xls.header." + key, locale),
+                    columnIndex, HSSFCellStyle.ALIGN_LEFT);
+            columnIndex++;
+        }
     }
 
     @Override
@@ -62,6 +79,24 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private void createProducedQuantitiesSheet(HSSFSheet sheet, List<Long> ordersIds, StylesContainer stylesContainer) {
         List<ProducedQuantities> producedQuantities = productionBalanceRepository.getProducedQuantities(ordersIds);
+        int rowIndex = 1;
+        for (ProducedQuantities producedQuantity : producedQuantities) {
+            HSSFRow row = sheet.createRow(rowIndex);
+            createRegularCell(stylesContainer, row, 0, producedQuantity.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, producedQuantity.getProductNumber());
+            createRegularCell(stylesContainer, row, 2, producedQuantity.getProductName());
+            createNumericCell(stylesContainer, row, 3, producedQuantity.getPlannedQuantity());
+            createNumericCell(stylesContainer, row, 4, producedQuantity.getProducedQuantity());
+            createNumericCell(stylesContainer, row, 5, producedQuantity.getWastesQuantity());
+            createNumericCell(stylesContainer, row, 6, producedQuantity.getProducedWastes());
+            createNumericCell(stylesContainer, row, 7, producedQuantity.getDeviation());
+            createRegularCell(stylesContainer, row, 8, producedQuantity.getProductUnit());
+            rowIndex++;
+        }
+
+        for (int i = 0; i < PRODUCTION_QUANTITIES_HEADERS.size(); i++) {
+            sheet.autoSizeColumn(i, false);
+        }
     }
 
     private void createProductionCostsSheet(HSSFSheet sheet) {
@@ -82,10 +117,10 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         return cell;
     }
 
-    private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, int value) {
+    private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
-        cell.setCellValue(value);
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HSSFCellStyle.ALIGN_LEFT));
+        cell.setCellValue(value.stripTrailingZeros().toPlainString());
+        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HSSFCellStyle.ALIGN_RIGHT));
         return cell;
     }
 
@@ -108,6 +143,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
             headerStyle = workbook.createCellStyle();
             headerStyle.setFont(fontsContainer.headerFont);
+            headerStyle.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
+            headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setBorderBottom(XSSFCellStyle.BORDER_MEDIUM);
         }
 
         private static HSSFCellStyle aligned(HSSFCellStyle style, short align) {

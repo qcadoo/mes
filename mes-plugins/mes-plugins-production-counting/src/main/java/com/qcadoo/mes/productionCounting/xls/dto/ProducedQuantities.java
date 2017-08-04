@@ -22,20 +22,6 @@ public class ProducedQuantities {
 
     private String productUnit;
 
-    public ProducedQuantities(String orderNumber, String productNumber, String productName, BigDecimal plannedQuantity,
-            BigDecimal producedQuantity, BigDecimal wastesQuantity, BigDecimal producedWastes, BigDecimal deviation,
-            String productUnit) {
-        this.orderNumber = orderNumber;
-        this.productNumber = productNumber;
-        this.productName = productName;
-        this.plannedQuantity = plannedQuantity;
-        this.producedQuantity = producedQuantity;
-        this.wastesQuantity = wastesQuantity;
-        this.producedWastes = producedWastes;
-        this.deviation = deviation;
-        this.productUnit = productUnit;
-    }
-
     public String getOrderNumber() {
         return orderNumber;
     }
