@@ -19,14 +19,38 @@ class ProductionBalanceRepository {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    List<ProductionCost> getCumulatedProductionCosts() {
+    List<ProductionCost> getProductionCosts(List<Long> ordersIds) {
 
         StringBuilder query = new StringBuilder("SELECT ");
-        query.append("o.number AS orderNumber ");
+        query.append("o.number AS orderNumber, ");
+        query.append("NULL AS operationNumber, ");
+        query.append("p.number AS productNumber, ");
+        query.append("p.name AS productName ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
-        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' ");
-        query.append("ORDER BY o.number ");
+        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
+        query.append("AND pcq.typeofproductionrecording = '02cumulated' ");
+        appendWhereClause(query);
+        query.append("GROUP BY o.number ");
+        query.append("UNION ");
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("to.number AS operationNumber, ");
+        query.append("p.number AS productNumber, ");
+        query.append("p.name AS productName ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
+        query.append("JOIN technologies_operation to ON toc.operation_id = to.id ");
+        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
+        query.append("AND pcq.typeofproductionrecording = '03forEach' ");
+        appendWhereClause(query);
+        query.append("ORDER BY orderNumber ");
+
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("ordersIds", ordersIds);
 
         return jdbcTemplate.query(query.toString(), Collections.emptyMap(),
                 BeanPropertyRowMapper.newInstance(ProductionCost.class));
