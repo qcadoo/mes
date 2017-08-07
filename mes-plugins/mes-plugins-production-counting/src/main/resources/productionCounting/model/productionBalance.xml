@@ -259,9 +259,6 @@
 
         <boolean name="generatedWithCosts"/>
 
-        <belongsTo name="productionBalance" model="productionBalance"
-                   plugin="productionCounting"/>
-
         <tree name="calculationOperationComponents"
               joinField="productionBalance" model="calculationOperationComponent"
               plugin="costNormsForOperation" cascade="delete"/>
