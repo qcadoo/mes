@@ -1,6 +1,5 @@
 package com.qcadoo.mes.productionCounting.xls;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
 
 @Repository
 class ProductionBalanceRepository {
@@ -21,41 +20,49 @@ class ProductionBalanceRepository {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    List<ProductionCost> getProductionCosts(List<Long> ordersIds) {
+    List<MaterialCost> getMaterialCosts(List<Long> ordersIds) {
 
         StringBuilder query = new StringBuilder("SELECT ");
         query.append("o.number AS orderNumber, ");
         query.append("NULL AS operationNumber, ");
         query.append("p.number AS productNumber, ");
-        query.append("p.name AS productName ");
+        query.append("p.name AS productName, ");
+        query.append("SUM(pcq.plannedquantity) AS plannedQuantity, ");
+        query.append("SUM(pcq.usedquantity) AS usedQuantity, ");
+        query.append("SUM(pcq.usedquantity) - SUM(pcq.plannedquantity) AS quantitativeDeviation, ");
+        query.append("p.unit AS productUnit ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
-        query.append("AND pcq.typeofproductionrecording = '02cumulated' ");
+        query.append("AND o.typeofproductionrecording = '02cumulated' AND ");
         appendWhereClause(query);
-        query.append("GROUP BY o.number ");
+        query.append("GROUP BY o.number, p.number ");
         query.append("UNION ");
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
-        query.append("to.number AS operationNumber, ");
+        query.append("op.number AS operationNumber, ");
         query.append("p.number AS productNumber, ");
-        query.append("p.name AS productName ");
+        query.append("p.name AS productName, ");
+        query.append("pcq.plannedquantity AS plannedQuantity, ");
+        query.append("pcq.usedquantity AS usedQuantity, ");
+        query.append("pcq.usedquantity - pcq.plannedquantity AS quantitativeDeviation, ");
+        query.append("p.unit AS productUnit ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
-        query.append("JOIN technologies_operation to ON toc.operation_id = to.id ");
+        query.append("JOIN technologies_operation op ON toc.operation_id = op.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
-        query.append("AND pcq.typeofproductionrecording = '03forEach' ");
+        query.append("AND o.typeofproductionrecording = '03forEach' AND ");
         appendWhereClause(query);
         query.append("ORDER BY orderNumber ");
 
         Map<String, Object> params = Maps.newHashMap();
         params.put("ordersIds", ordersIds);
 
-        return jdbcTemplate.query(query.toString(), Collections.emptyMap(),
-                BeanPropertyRowMapper.newInstance(ProductionCost.class));
+        return jdbcTemplate.query(query.toString(), params,
+                BeanPropertyRowMapper.newInstance(MaterialCost.class));
     }
 
     List<ProducedQuantities> getProducedQuantities(final List<Long> ordersIds) {

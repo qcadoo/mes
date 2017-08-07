@@ -1,6 +1,6 @@
 package com.qcadoo.mes.productionCounting.xls.dto;
 
-public class ProductionCost {
+public class MaterialCost {
 
     private String orderNumber;
 
