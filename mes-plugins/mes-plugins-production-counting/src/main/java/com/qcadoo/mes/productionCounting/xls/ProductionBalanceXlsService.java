@@ -79,7 +79,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     @Override
     protected void addExtraSheets(final HSSFWorkbook workbook, Entity entity, Locale locale) {
         List<Long> ordersIds = getOrdersIds(entity);
-        createMaterialCostsSheet(createSheet(workbook, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)), ordersIds, locale);
+        createMaterialCostsSheet(entity, createSheet(workbook, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)), ordersIds, locale);
         createPieceworkSheet(entity, createSheet(workbook, translationService.translate(L_SHEET_PIECEWORK, locale)), ordersIds, locale);
         createProductionCostsSheet(createSheet(workbook, translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)));
     }
@@ -112,7 +112,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         }
     }
 
-    private void createMaterialCostsSheet(HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+    private void createMaterialCostsSheet(Entity entity, HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         final int rowOffset = 1;
@@ -130,7 +130,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.valueDeviation", locale), 10, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.usedWasteQuantity", locale), 11, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.unit", locale), 12, CellStyle.ALIGN_LEFT);
-        List<MaterialCost> materialCosts = productionBalanceRepository.getMaterialCosts(ordersIds);
+        List<MaterialCost> materialCosts = productionBalanceRepository.getMaterialCosts(entity, ordersIds);
         int rowCounter = 0;
         for (MaterialCost materialCost : materialCosts) {
             row = sheet.createRow(rowOffset + rowCounter);
@@ -138,15 +138,15 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, materialCost.getOperationNumber());
             createRegularCell(stylesContainer, row, 2, materialCost.getProductNumber());
             createRegularCell(stylesContainer, row, 3, materialCost.getProductName());
-            createRegularCell(stylesContainer, row, 4, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 5, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 6, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 7, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 8, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 9, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 10, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 11, materialCost.getOrderNumber());
-            createRegularCell(stylesContainer, row, 12, materialCost.getOrderNumber());
+            createNumericCell(stylesContainer, row, 4, materialCost.getPlannedQuantity());
+            createNumericCell(stylesContainer, row, 5, materialCost.getUsedQuantity());
+            createNumericCell(stylesContainer, row, 6, materialCost.getQuantitativeDeviation());
+            createRegularCell(stylesContainer, row, 7, materialCost.getProductUnit());
+            createNumericCell(stylesContainer, row, 8, materialCost.getPlannedCost());
+            createNumericCell(stylesContainer, row, 9, materialCost.getRealCost());
+            createNumericCell(stylesContainer, row, 10, materialCost.getValueDeviation());
+            createNumericCell(stylesContainer, row, 11, materialCost.getUsedWasteQuantity());
+            createRegularCell(stylesContainer, row, 12, materialCost.getUsedWasteUnit());
             rowCounter++;
         }
     }
