@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.model.api.Entity;
@@ -27,6 +29,14 @@ import com.qcadoo.report.api.xls.XlsDocumentService;
 
 @Service
 public class ProductionBalanceXlsService extends XlsDocumentService {
+
+    private static final String L_SHEET_PIECEWORK = "productionCounting.productionBalance.report.xls.sheet.piecework";
+
+    private static final String L_SHEET_PIECEWORK_ORDER_NUMBER = "productionCounting.productionBalance.report.xls.sheet.piecework.orderNumber";
+
+    private static final String L_SHEET_PIECEWORK_OPERATION_NUMBER = "productionCounting.productionBalance.report.xls.sheet.piecework.operationNumber";
+
+    private static final String L_SHEET_PIECEWORK_TOTAL_EXECUTED_OPERATION_CYCLES = "productionCounting.productionBalance.report.xls.sheet.piecework.totalExecutedOperationCycles";
 
     @Autowired
     private TranslationService translationService;
@@ -70,6 +80,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     protected void addExtraSheets(final HSSFWorkbook workbook, Entity entity, Locale locale) {
         List<Long> ordersIds = getOrdersIds(entity);
         createProductionCostsSheet(createSheet(workbook, translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)), ordersIds, locale);
+        createPieceworkSheet(entity, createSheet(workbook, translationService.translate(L_SHEET_PIECEWORK, locale)), ordersIds, locale);
     }
 
     private List<Long> getOrdersIds(final Entity productionBalance) {
@@ -137,6 +148,37 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 12, productionCost.getOrderNumber());
             rowCounter++;
         }
+    }
+
+    private void createPieceworkSheet(Entity productionBalance, HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(stylesContainer, row, translationService.translate(L_SHEET_PIECEWORK_ORDER_NUMBER, locale), 0,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row, translationService.translate(L_SHEET_PIECEWORK_OPERATION_NUMBER, locale), 1,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(L_SHEET_PIECEWORK_TOTAL_EXECUTED_OPERATION_CYCLES, locale), 2, CellStyle.ALIGN_LEFT);
+
+        String calculateOperationCostMode = productionBalance
+                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
+
+        if (CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostMode)
+                || CalculateOperationCostsMode.MIXED.getStringValue().equals(calculateOperationCostMode)) {
+            List<PieceworkDetails> pieceworkDetailsList = productionBalanceRepository.getPieceworkDetails(ordersIds);
+            int rowCounter = 0;
+            for (PieceworkDetails pieceworkDetails : pieceworkDetailsList) {
+                row = sheet.createRow(rowOffset + rowCounter);
+                createRegularCell(stylesContainer, row, 0, pieceworkDetails.getOrderNumber());
+                createRegularCell(stylesContainer, row, 1, pieceworkDetails.getOperationNumber());
+                createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles());
+                rowCounter++;
+            }
+        }
+        sheet.setColumnWidth(2, 8000);
     }
 
     private HSSFCell createRegularCell(StylesContainer stylesContainer, HSSFRow row, int column, String content) {

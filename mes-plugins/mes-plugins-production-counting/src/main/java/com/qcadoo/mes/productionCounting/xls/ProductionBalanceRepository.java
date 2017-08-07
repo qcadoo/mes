@@ -6,10 +6,12 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 
@@ -77,6 +79,25 @@ class ProductionBalanceRepository {
         params.put("ordersIds", ordersIds);
 
         return jdbcTemplate.query(query.toString(), params, BeanPropertyRowMapper.newInstance(ProducedQuantities.class));
+    }
+
+    List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("  o.number                        AS orderNumber, ");
+        query.append("  op.number                       AS operationNumber, ");
+        query.append("  SUM(pt.executedoperationcycles) AS totalexecutedoperationcycles ");
+        query.append("FROM orders_order o ");
+        query.append("  JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("  JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("  JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE ");
+        appendWhereClause(query);
+        query.append("  AND o.typeofproductionrecording = '03forEach' AND pt.state = '02accepted' ");
+        query.append("GROUP BY orderNumber, operationNumber");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(PieceworkDetails.class));
     }
 
     private void appendWhereClause(StringBuilder query) {
