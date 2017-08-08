@@ -38,49 +38,24 @@ class ProductionBalanceRepository {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     List<MaterialCost> getMaterialCosts(Entity entity, List<Long> ordersIds) {
-        StringBuilder query = new StringBuilder("SELECT ");
-        query.append("o.number AS orderNumber, ");
-        query.append("NULL AS operationNumber, ");
-        query.append("p.number AS productNumber, ");
-        query.append("p.name AS productName, ");
-        query.append("p.unit AS productUnit, ");
+        StringBuilder query = new StringBuilder();
+        appendMaterialCostsSelectionClause(query);
         appendQuantityAndCosts(entity, query, CUMULATED_PLANNED_QUANTITY_CLAUSE, CUMULATED_USED_QUANTITY_CLAUSE);
-        query.append("topic.wasteunit AS usedWasteUnit ");
-        query.append("FROM orders_order o ");
-        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
-        query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
-        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("NULL AS operationNumber ");
+        appendMaterialCostsFromClause(query);
         query.append(
                 "JOIN basicproductioncounting_basicproductioncounting bpc ON bpc.product_id = p.id AND bpc.order_id = o.id ");
-        query.append(
-                "LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
-        query.append(
-                "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
-        query.append("AND o.typeofproductionrecording = '02cumulated' AND ");
-        appendWhereClause(query);
+        appendMaterialCostsWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("GROUP BY o.number, p.number, p.name, p.unit, topic.wasteunit ");
         query.append("UNION ");
-        query.append("SELECT ");
-        query.append("o.number AS orderNumber, ");
-        query.append("op.number AS operationNumber, ");
-        query.append("p.number AS productNumber, ");
-        query.append("p.name AS productName, ");
-        query.append("p.unit AS productUnit, ");
+        appendMaterialCostsSelectionClause(query);
         appendQuantityAndCosts(entity, query, FOREACH_PLANNED_QUANTITY_CLAUSE, FOREACH_USED_QUANTITY_CLAUSE);
-        query.append("topic.wasteunit AS usedWasteUnit ");
-        query.append("FROM orders_order o ");
-        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
-        query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
+        query.append("op.number AS operationNumber ");
+        appendMaterialCostsFromClause(query);
         query.append("JOIN technologies_operation op ON toc.operation_id = op.id ");
-        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
-        query.append(
-                "LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
-        query.append(
-                "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND pcq.isnoncomponent = true ");
-        query.append("AND o.typeofproductionrecording = '03forEach' AND ");
-        appendWhereClause(query);
+        appendMaterialCostsWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("GROUP BY o.number, op.number, p.number, p.name, p.unit, topic.wasteunit ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
@@ -90,6 +65,32 @@ class ProductionBalanceRepository {
         LOGGER.info("---------" + query.toString());
 
         return jdbcTemplate.query(query.toString(), params, BeanPropertyRowMapper.newInstance(MaterialCost.class));
+    }
+
+    private void appendMaterialCostsWhereClause(StringBuilder query) {
+        query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL AND ");
+        appendWhereClause(query);
+    }
+
+    private void appendMaterialCostsFromClause(StringBuilder query) {
+        query.append("FROM orders_order o ");
+        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
+        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
+        query.append(
+                "LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
+    }
+
+    private void appendMaterialCostsSelectionClause(StringBuilder query) {
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("p.number AS productNumber, ");
+        query.append("p.name AS productName, ");
+        query.append("p.unit AS productUnit, ");
+        query.append("topic.wasteunit AS usedWasteUnit, ");
     }
 
     private void appendQuantityAndCosts(Entity entity, StringBuilder query, String plannedQuantityClause,
@@ -111,7 +112,7 @@ class ProductionBalanceRepository {
     void appendOrdersMaterialCosts(StringBuilder query, String plannedQuantityClause, String usedQuantityClause) {
         // TODO KRNA add logic when KASI do sth with TKW
         query.append("COALESCE(" + plannedQuantityClause + "* NULL / " + usedQuantityClause + ",0) AS plannedCost, ");
-        query.append("COALESCE(NULL ,0) AS realCost, ");
+        query.append("COALESCE(NULL, 0) AS realCost, ");
         query.append("COALESCE(NULL - " + plannedQuantityClause + "* NULL / " + usedQuantityClause + ",0) AS valueDeviation, ");
     }
 
