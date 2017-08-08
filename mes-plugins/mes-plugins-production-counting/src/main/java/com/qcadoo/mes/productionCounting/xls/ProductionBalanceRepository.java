@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
 import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
@@ -185,6 +186,30 @@ class ProductionBalanceRepository {
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(PieceworkDetails.class));
+    }
+
+    List<LaborTimeDetails> getLaborTimeDetails(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("  o.number           AS orderNumber, ");
+        query.append("  op.number          AS operationNumber, ");
+        query.append("  stf.number         AS staffNumber, ");
+        query.append("  stf.name           AS staffName, ");
+        query.append("  stf.surname        AS staffSurname, ");
+        query.append("  SUM(swt.labortime) AS laborTime ");
+        query.append("FROM orders_order o ");
+        query.append("  JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("  JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
+        query.append("  JOIN basic_staff stf ON swt.worker_id = stf.id ");
+        query.append("  LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("  LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE ");
+        appendWhereClause(query);
+        query.append("  AND pt.state = '02accepted' ");
+        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(LaborTimeDetails.class));
     }
 
     private void appendWhereClause(StringBuilder query) {
