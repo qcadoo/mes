@@ -1,7 +1,6 @@
 package com.qcadoo.mes.productionCounting.xls;
 
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +10,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
@@ -19,6 +17,7 @@ import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
 import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
+import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.model.api.Entity;
 
 @Repository
@@ -59,12 +58,9 @@ class ProductionBalanceRepository {
         query.append("GROUP BY o.number, op.number, p.number, p.name, p.unit, topic.wasteunit ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("ordersIds", ordersIds);
-
         LOGGER.info("---------" + query.toString());
 
-        return jdbcTemplate.query(query.toString(), params, BeanPropertyRowMapper.newInstance(MaterialCost.class));
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds), BeanPropertyRowMapper.newInstance(MaterialCost.class));
     }
 
     private void appendMaterialCostsWhereClause(StringBuilder query) {
@@ -148,7 +144,6 @@ class ProductionBalanceRepository {
     }
 
     List<ProducedQuantities> getProducedQuantities(final List<Long> ordersIds) {
-
         StringBuilder query = new StringBuilder();
         query.append("select o.number as orderNumber, product.number as productNumber, product.name as productName, o.plannedquantity AS plannedQuantity, ");
         query.append("COALESCE(SUM(topoc.usedquantity),0) AS producedQuantity,  ");
@@ -164,10 +159,7 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("group by orderNumber, productNumber, productName, o.plannedQuantity, productUnit");
 
-        Map<String, Object> params = Maps.newHashMap();
-        params.put("ordersIds", ordersIds);
-
-        return jdbcTemplate.query(query.toString(), params, BeanPropertyRowMapper.newInstance(ProducedQuantities.class));
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds), BeanPropertyRowMapper.newInstance(ProducedQuantities.class));
     }
 
     List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
@@ -211,6 +203,39 @@ class ProductionBalanceRepository {
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(LaborTimeDetails.class));
+    }
+
+    List<ProductionCost> getProductionCosts(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("op.number AS operationNumber, ");
+        query.append("0 AS plannedStaffTime, ");
+        query.append("COALESCE(SUM(swt.labortime), 0) AS realStaffTime, ");
+        query.append("0 AS plannedMachineTime, ");
+        query.append("COALESCE(SUM(pt.machinetime), 0) AS realMachineTime, ");
+        query.append("0 AS plannedStaffCosts, ");
+        query.append("0 AS realStaffCosts, ");
+        query.append("0 AS staffCostsDeviation, ");
+        query.append("0 AS plannedMachineCosts, ");
+        query.append("0 AS realMachineCosts, ");
+        query.append("0 AS machineCostsDeviation, ");
+        query.append("0 AS plannedPieceworkCosts, ");
+        query.append("0 AS realPieceworkCosts, ");
+        query.append("0 AS plannedCostsSum, ");
+        query.append("0 AS realCostsSum, ");
+        query.append("0 AS sumCostsDeviation ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
+        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE ");
+        appendWhereClause(query);
+        query.append("AND pt.state = '02accepted' ");
+        query.append("GROUP BY orderNumber, operationNumber ");
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(ProductionCost.class));
     }
 
     private void appendWhereClause(StringBuilder query) {
