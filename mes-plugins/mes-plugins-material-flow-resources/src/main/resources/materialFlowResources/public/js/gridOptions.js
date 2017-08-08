@@ -285,7 +285,7 @@ function validateSerializeData(data) {
 
 function roundTo(n) {
     var places = 5;
-    return +(Math.round(parseFloat(n) + "e+" + places) + "e-" + places);
+    return +(Math.floor(parseFloat(n) + "e+" + places) + "e-" + places);
 }
 
 function validatorNumber(val) {
