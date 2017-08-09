@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +41,8 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+
+import java.util.Optional;
 
 @Service
 public class CompanyService {
@@ -157,4 +161,8 @@ public class CompanyService {
         ribbonActionItem.requestUpdate(true);
     }
 
+    public Optional<Entity> findCompanyByNumber(final String number) {
+        return Optional.ofNullable(getCompanyDD().find().add(SearchRestrictions.eq(CompanyFields.NUMBER, number))
+                .setMaxResults(1).uniqueResult());
+    }
 }
