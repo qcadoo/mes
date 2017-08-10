@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
@@ -58,8 +59,6 @@ class ProductionBalanceRepository {
         query.append("GROUP BY o.number, op.number, p.number, p.name, p.unit, topic.wasteunit ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
-        LOGGER.info("---------" + query.toString());
-
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds), BeanPropertyRowMapper.newInstance(MaterialCost.class));
     }
 
@@ -105,15 +104,15 @@ class ProductionBalanceRepository {
         query.append("COALESCE(SUM(topic.wasteusedquantity), 0) AS usedWasteQuantity, ");
     }
 
-    void appendOrdersMaterialCosts(StringBuilder query, String plannedQuantityClause, String usedQuantityClause) {
+    private void appendOrdersMaterialCosts(StringBuilder query, String plannedQuantityClause, String usedQuantityClause) {
         // TODO KRNA add logic when KASI do sth with TKW
         query.append("COALESCE(" + plannedQuantityClause + "* NULL / " + usedQuantityClause + ",0) AS plannedCost, ");
         query.append("COALESCE(NULL, 0) AS realCost, ");
         query.append("COALESCE(NULL - " + plannedQuantityClause + "* NULL / " + usedQuantityClause + ",0) AS valueDeviation, ");
     }
 
-    void appendGlobalDefinitionsCosts(StringBuilder query, String calculateMaterialCostsMode, String plannedQuantityClause,
-            String usedQuantityClause) {
+    private void appendGlobalDefinitionsCosts(StringBuilder query, String calculateMaterialCostsMode, String plannedQuantityClause,
+                                              String usedQuantityClause) {
         switch (CalculateMaterialCostsMode.parseString(calculateMaterialCostsMode)) {
             case NOMINAL:
                 insertComponentPrice(query, "MIN(p.nominalcost) ", plannedQuantityClause, usedQuantityClause);
@@ -135,8 +134,8 @@ class ProductionBalanceRepository {
         }
     }
 
-    void insertComponentPrice(StringBuilder query, String componentPriceClause, String plannedQuantityClause,
-            String usedQuantityClause) {
+    private void insertComponentPrice(StringBuilder query, String componentPriceClause, String plannedQuantityClause,
+                                      String usedQuantityClause) {
         query.append("COALESCE(" + plannedQuantityClause + " * " + componentPriceClause + ",0) AS plannedCost, ");
         query.append("COALESCE(" + usedQuantityClause + " * " + componentPriceClause + ",0) AS realCost, ");
         query.append("COALESCE(" + usedQuantityClause + " * " + componentPriceClause + " - ");
@@ -165,17 +164,16 @@ class ProductionBalanceRepository {
     List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
-        query.append("  o.number                        AS orderNumber, ");
-        query.append("  op.number                       AS operationNumber, ");
-        query.append("  SUM(pt.executedoperationcycles) AS totalexecutedoperationcycles ");
+        query.append("o.number                        AS orderNumber, ");
+        query.append("op.number                       AS operationNumber, ");
+        query.append("COALESCE(SUM(pt.executedoperationcycles), 0) AS totalexecutedoperationcycles ");
         query.append("FROM orders_order o ");
-        query.append("  JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
-        query.append("  JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("  JOIN technologies_operation op ON toc.operation_id = op.id ");
-        query.append("WHERE ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE o.typeofproductionrecording = '03forEach' AND pt.state = '02accepted' AND ");
         appendWhereClause(query);
-        query.append("  AND o.typeofproductionrecording = '03forEach' AND pt.state = '02accepted' ");
-        query.append("GROUP BY orderNumber, operationNumber");
+        query.append("GROUP BY orderNumber, operationNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(PieceworkDetails.class));
@@ -189,53 +187,240 @@ class ProductionBalanceRepository {
         query.append("  stf.number         AS staffNumber, ");
         query.append("  stf.name           AS staffName, ");
         query.append("  stf.surname        AS staffSurname, ");
-        query.append("  SUM(swt.labortime) AS laborTime ");
+        query.append("  COALESCE(SUM(swt.labortime), 0) AS laborTime ");
         query.append("FROM orders_order o ");
-        query.append("  JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
-        query.append("  JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
-        query.append("  JOIN basic_staff stf ON swt.worker_id = stf.id ");
-        query.append("  LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("  LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
-        query.append("WHERE ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
+        query.append("LEFT JOIN basic_staff stf ON swt.worker_id = stf.id ");
+        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE pt.state = '02accepted' AND ");
         appendWhereClause(query);
-        query.append("  AND pt.state = '02accepted' ");
-        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname");
+        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(LaborTimeDetails.class));
     }
 
-    List<ProductionCost> getProductionCosts(List<Long> ordersIds) {
+    List<ProductionCost> getProductionCosts(Entity entity, List<Long> ordersIds) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
-        query.append("op.number AS operationNumber, ");
-        query.append("0 AS plannedStaffTime, ");
-        query.append("COALESCE(SUM(swt.labortime), 0) AS realStaffTime, ");
-        query.append("0 AS plannedMachineTime, ");
+        query.append("NULL AS operationNumber, ");
+        appendPlannedStaffTime(entity, query);
+        query.append("AS plannedStaffTime, ");
+        query.append("COALESCE(SUM(pt.labortime), 0) AS realStaffTime, ");
+        appendPlannedMachineTime(entity, query);
+        query.append("AS plannedMachineTime, ");
         query.append("COALESCE(SUM(pt.machinetime), 0) AS realMachineTime, ");
-        query.append("0 AS plannedStaffCosts, ");
-        query.append("0 AS realStaffCosts, ");
-        query.append("0 AS staffCostsDeviation, ");
-        query.append("0 AS plannedMachineCosts, ");
-        query.append("0 AS realMachineCosts, ");
-        query.append("0 AS machineCostsDeviation, ");
+        appendCumulatedPlannedStaffCosts(entity, query);
+        query.append("AS plannedStaffCosts, ");
+        appendCumulatedRealStaffCosts(query);
+        query.append("AS realStaffCosts, ");
+        query.append("COALESCE( ");
+        appendCumulatedRealStaffCosts(query);
+        query.append("- ");
+        appendCumulatedPlannedStaffCosts(entity, query);
+        query.append(", 0) AS staffCostsDeviation, ");
+        appendCumulatedPlannedMachineCosts(entity, query);
+        query.append("AS plannedMachineCosts, ");
+        appendCumulatedRealMachineCosts(query);
+        query.append("AS realMachineCosts, ");
+        query.append("COALESCE( ");
+        appendCumulatedRealMachineCosts(query);
+        query.append("- ");
+        appendCumulatedPlannedMachineCosts(entity, query);
+        query.append(", 0) AS machineCostsDeviation, ");
         query.append("0 AS plannedPieceworkCosts, ");
         query.append("0 AS realPieceworkCosts, ");
-        query.append("0 AS plannedCostsSum, ");
-        query.append("0 AS realCostsSum, ");
-        query.append("0 AS sumCostsDeviation ");
+        appendCumulatedPlannedStaffCosts(entity, query);
+        query.append("+ ");
+        appendCumulatedPlannedMachineCosts(entity, query);
+        query.append("AS plannedCostsSum, ");
+        appendCumulatedRealStaffCosts(query);
+        query.append("+ ");
+        appendCumulatedRealMachineCosts(query);
+        query.append("AS realCostsSum, ");
+        appendCumulatedRealStaffCosts(query);
+        query.append("+ ");
+        appendCumulatedRealMachineCosts(query);
+        query.append("- ");
+        appendCumulatedPlannedStaffCosts(entity, query);
+        query.append("- ");
+        appendCumulatedPlannedMachineCosts(entity, query);
+        query.append("AS sumCostsDeviation ");
         query.append("FROM orders_order o ");
-        query.append("JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
-        query.append("JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
-        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
+        query.append("JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id ");
+        query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("CROSS JOIN basic_parameter bp ");
         query.append("WHERE ");
         appendWhereClause(query);
-        query.append("AND pt.state = '02accepted' ");
+        query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = '02cumulated' ");
+        query.append("GROUP BY orderNumber ");
+        query.append("UNION ");
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("op.number AS operationNumber, ");
+        appendPlannedStaffTime(entity, query);
+        query.append("AS plannedStaffTime, ");
+        query.append("COALESCE(SUM(pt.labortime), 0) AS realStaffTime, ");
+        appendPlannedMachineTime(entity, query);
+        query.append("AS plannedMachineTime, ");
+        query.append("COALESCE(SUM(pt.machinetime), 0) AS realMachineTime, ");
+        appendForEachPlannedStaffCosts(entity, query);
+        query.append("AS plannedStaffCosts, ");
+        appendForEachRealStaffCosts(entity, query);
+        query.append("AS realStaffCosts, ");
+        query.append("COALESCE( ");
+        appendForEachRealStaffCosts(entity, query);
+        query.append("- ");
+        appendForEachPlannedStaffCosts(entity, query);
+        query.append(", 0) AS staffCostsDeviation, ");
+        appendForEachPlannedMachineCosts(entity, query);
+        query.append("AS plannedMachineCosts, ");
+        appendForEachRealMachineCosts(entity, query);
+        query.append("AS realMachineCosts, ");
+        query.append("COALESCE( ");
+        appendForEachRealMachineCosts(entity, query);
+        query.append("- ");
+        appendForEachPlannedMachineCosts(entity, query);
+        query.append(", 0) AS machineCostsDeviation, ");
+        query.append("COALESCE(MIN(pcor.runs / toc.numberofoperations * toc.pieceworkcost), 0) AS plannedPieceworkCosts, ");
+        query.append("COALESCE(SUM(pt.executedoperationcycles) / MIN(toc.numberofoperations) * MIN(toc.pieceworkcost), 0) AS realPieceworkCosts, ");
+        appendForEachPlannedStaffCosts(entity, query);
+        query.append("+ ");
+        appendForEachPlannedMachineCosts(entity, query);
+        query.append("AS plannedCostsSum, ");
+        appendForEachRealStaffCosts(entity, query);
+        query.append("+ ");
+        appendForEachRealMachineCosts(entity, query);
+        query.append("AS realCostsSum, ");
+        appendForEachRealStaffCosts(entity, query);
+        query.append("+ ");
+        appendForEachRealMachineCosts(entity, query);
+        query.append("- ");
+        appendForEachPlannedStaffCosts(entity, query);
+        query.append("- ");
+        appendForEachPlannedMachineCosts(entity, query);
+        query.append("AS sumCostsDeviation ");
+        query.append("FROM orders_order o ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("CROSS JOIN basic_parameter bp ");
+        query.append("WHERE ");
+        appendWhereClause(query);
+        query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = '03forEach' ");
         query.append("GROUP BY orderNumber, operationNumber ");
+
+        LOGGER.info("---------" + query.toString());
+
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(ProductionCost.class));
+    }
+
+    private void appendForEachRealMachineCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE(SUM(pt.machinetime) / 3600 * ");
+        appendForEachMachineHourCost(entity, query);
+        query.append(", 0) ");
+    }
+
+    private void appendForEachPlannedMachineCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE( ");
+        appendPlannedMachineTime(entity, query);
+        query.append("/ 3600 * ");
+        appendForEachMachineHourCost(entity, query);
+        query.append(", 0) ");
+    }
+
+    private void appendForEachRealStaffCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE(SUM(pt.labortime) / 3600 * ");
+        appendForEachStaffHourCost(entity, query);
+        query.append(", 0) ");
+    }
+
+    private void appendForEachPlannedStaffCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE( ");
+        appendPlannedStaffTime(entity, query);
+        query.append("/ 3600 * ");
+        appendForEachStaffHourCost(entity, query);
+        query.append(", 0) ");
+    }
+
+    private void appendCumulatedRealMachineCosts(StringBuilder query) {
+        query.append("COALESCE(SUM(pt.machinetime) / 3600 * ");
+        appendCumulatedMachineHourCost(query);
+        query.append(", 0) ");
+    }
+
+    private void appendCumulatedPlannedMachineCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE( ");
+        appendPlannedMachineTime(entity, query);
+        query.append("/ 3600 * ");
+        appendCumulatedMachineHourCost(query);
+        query.append(", 0) ");
+    }
+
+    private void appendCumulatedRealStaffCosts(StringBuilder query) {
+        query.append("COALESCE(SUM(pt.labortime) / 3600 * ");
+        appendCumulatedStaffHourCost(query);
+        query.append(", 0) ");
+    }
+
+    private void appendCumulatedPlannedStaffCosts(Entity entity, StringBuilder query) {
+        query.append("COALESCE( ");
+        appendPlannedStaffTime(entity, query);
+        query.append("/ 3600 * ");
+        appendCumulatedStaffHourCost(query);
+        query.append(", 0) ");
+    }
+
+    private void appendPlannedMachineTime(Entity entity, StringBuilder query) {
+        query.append("COALESCE(SUM(toc.tj * pcor.runs * toc.machineutilization ");
+        appendTPZandAdditionalTime(entity, query);
+        query.append("), 0) ");
+    }
+
+    private void appendPlannedStaffTime(Entity entity, StringBuilder query) {
+        query.append("COALESCE(SUM(toc.tj * pcor.runs * toc.laborutilization ");
+        appendTPZandAdditionalTime(entity, query);
+        query.append("), 0) ");
+    }
+
+    private void appendCumulatedStaffHourCost(StringBuilder query) {
+        query.append("MIN(bp.averagelaborhourlycostpb) ");
+    }
+
+    private void appendCumulatedMachineHourCost(StringBuilder query) {
+        query.append("MIN(bp.averagemachinehourlycostpb) ");
+    }
+
+    private void appendForEachStaffHourCost(Entity entity, StringBuilder query) {
+        if(SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))){
+            query.append("MIN(toc.laborhourlycost) ");
+        } else if(SourceOfOperationCosts.PARAMETERS.getStringValue().equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))){
+            query.append("MIN(bp.averagelaborhourlycostpb) ");
+        }
+    }
+
+    private void appendForEachMachineHourCost(Entity entity, StringBuilder query) {
+        if(SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))){
+            query.append("MIN(toc.machinehourlycost) ");
+        } else if(SourceOfOperationCosts.PARAMETERS.getStringValue().equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))){
+            query.append("MIN(bp.averagemachinehourlycostpb) ");
+        }
+    }
+
+    private void appendTPZandAdditionalTime(Entity entity, StringBuilder query) {
+        if(entity.getBooleanField(ProductionBalanceFields.INCLUDE_TPZ)){
+            query.append("+ toc.tpz ");
+        }
+        if(entity.getBooleanField(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME)){
+            query.append("+ toc.timenextoperation ");
+        }
     }
 
     private void appendWhereClause(StringBuilder query) {

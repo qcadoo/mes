@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
@@ -73,14 +72,18 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     @Override
     protected void addExtraSheets(final HSSFWorkbook workbook, Entity entity, Locale locale) {
         List<Long> ordersIds = getOrdersIds(entity);
-        createMaterialCostsSheet(entity, createSheet(workbook, translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)), ordersIds, locale);
-        createLaborTimeSheet(entity, createSheet(workbook, translationService.translate(LaborTimeSheetConstants.SHEET_TITLE, locale)), ordersIds, locale);
-        createPieceworkSheet(entity, createSheet(workbook, translationService.translate(PieceworkSheetConstants.SHEET_TITLE, locale)), ordersIds, locale);
-        if (CalculateOperationCostsMode.HOURLY.getStringValue()
-                .equals(entity.getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE))) {
-            createProductionCostsSheet(createSheet(workbook, translationService
-                    .translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)), ordersIds, locale);
-        }
+        createMaterialCostsSheet(entity,
+                createSheet(workbook, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts", locale)),
+                ordersIds, locale);
+        createLaborTimeSheet(createSheet(workbook, translationService.translate(LaborTimeSheetConstants.SHEET_TITLE, locale)),
+                ordersIds, locale);
+        createPieceworkSheet(createSheet(workbook, translationService.translate(PieceworkSheetConstants.SHEET_TITLE, locale)),
+                ordersIds, locale);
+        createProductionCostsSheet(entity,
+                createSheet(workbook, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.productionCosts", locale)),
+                ordersIds, locale);
     }
 
     private List<Long> getOrdersIds(final Entity productionBalance) {
@@ -153,7 +156,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         }
     }
 
-    private void createPieceworkSheet(Entity productionBalance, HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+    private void createPieceworkSheet(HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         final int rowOffset = 1;
@@ -166,27 +169,21 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 translationService.translate(PieceworkSheetConstants.TOTAL_EXECUTED_OPERATION_CYCLES, locale), 2,
                 CellStyle.ALIGN_LEFT);
 
-        String calculateOperationCostMode = productionBalance
-                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
-
-        if (CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostMode)
-                || CalculateOperationCostsMode.MIXED.getStringValue().equals(calculateOperationCostMode)) {
-            List<PieceworkDetails> pieceworkDetailsList = productionBalanceRepository.getPieceworkDetails(ordersIds);
-            int rowCounter = 0;
-            for (PieceworkDetails pieceworkDetails : pieceworkDetailsList) {
-                row = sheet.createRow(rowOffset + rowCounter);
-                createRegularCell(stylesContainer, row, 0, pieceworkDetails.getOrderNumber());
-                createRegularCell(stylesContainer, row, 1, pieceworkDetails.getOperationNumber());
-                createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles());
-                rowCounter++;
-            }
+        List<PieceworkDetails> pieceworkDetailsList = productionBalanceRepository.getPieceworkDetails(ordersIds);
+        int rowCounter = 0;
+        for (PieceworkDetails pieceworkDetails : pieceworkDetailsList) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, pieceworkDetails.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, pieceworkDetails.getOperationNumber());
+            createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles());
+            rowCounter++;
         }
         for (int i = 0; i <= 2; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
 
-    private void createLaborTimeSheet(Entity productionBalance, HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+    private void createLaborTimeSheet(HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         final int rowOffset = 1;
@@ -204,30 +201,24 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.LABOR_TIME, locale), 5,
                 CellStyle.ALIGN_LEFT);
 
-        String calculateOperationCostMode = productionBalance
-                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
-
-        if (CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode)
-                || CalculateOperationCostsMode.MIXED.getStringValue().equals(calculateOperationCostMode)) {
-            List<LaborTimeDetails> laborTimeDetailsList = productionBalanceRepository.getLaborTimeDetails(ordersIds);
-            int rowCounter = 0;
-            for (LaborTimeDetails laborTimeDetails : laborTimeDetailsList) {
-                row = sheet.createRow(rowOffset + rowCounter);
-                createRegularCell(stylesContainer, row, 0, laborTimeDetails.getOrderNumber());
-                createRegularCell(stylesContainer, row, 1, laborTimeDetails.getOperationNumber());
-                createRegularCell(stylesContainer, row, 2, laborTimeDetails.getStaffNumber());
-                createRegularCell(stylesContainer, row, 3, laborTimeDetails.getStaffName());
-                createRegularCell(stylesContainer, row, 4, laborTimeDetails.getStaffSurname());
-                createTimeCell(stylesContainer, row, 5, laborTimeDetails.getLaborTime());
-                rowCounter++;
-            }
+        List<LaborTimeDetails> laborTimeDetailsList = productionBalanceRepository.getLaborTimeDetails(ordersIds);
+        int rowCounter = 0;
+        for (LaborTimeDetails laborTimeDetails : laborTimeDetailsList) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, laborTimeDetails.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, laborTimeDetails.getOperationNumber());
+            createRegularCell(stylesContainer, row, 2, laborTimeDetails.getStaffNumber());
+            createRegularCell(stylesContainer, row, 3, laborTimeDetails.getStaffName());
+            createRegularCell(stylesContainer, row, 4, laborTimeDetails.getStaffSurname());
+            createTimeCell(stylesContainer, row, 5, laborTimeDetails.getLaborTime());
+            rowCounter++;
         }
         for (int i = 0; i <= 5; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
 
-    private void createProductionCostsSheet(HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+    private void createProductionCostsSheet(Entity entity, HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         final int rowOffset = 1;
@@ -249,7 +240,8 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedCostsSum", locale), 14, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.realCostsSum", locale), 15, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row, translationService.translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.sumCostsDeviation", locale), 16, CellStyle.ALIGN_LEFT);
-        List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(ordersIds);
+
+        List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(entity, ordersIds);
         int rowCounter = 0;
         for (ProductionCost productionCost : productionCosts) {
             row = sheet.createRow(rowOffset + rowCounter);
