@@ -16,6 +16,7 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
+import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
 import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
@@ -65,6 +66,10 @@ class ProductionBalanceRepository {
     private void appendMaterialCostsWhereClause(StringBuilder query) {
         query.append("WHERE pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL AND ");
         appendWhereClause(query);
+    }
+
+    private void appendWhereClause(StringBuilder query) {
+        query.append("o.id IN (:ordersIds) ");
     }
 
     private void appendMaterialCostsFromClause(StringBuilder query) {
@@ -168,10 +173,10 @@ class ProductionBalanceRepository {
         query.append("op.number                       AS operationNumber, ");
         query.append("COALESCE(SUM(pt.executedoperationcycles), 0) AS totalexecutedoperationcycles ");
         query.append("FROM orders_order o ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
-        query.append("WHERE o.typeofproductionrecording = '03forEach' AND pt.state = '02accepted' AND ");
+        query.append("WHERE o.typeofproductionrecording = '03forEach' AND ");
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, operationNumber ");
 
@@ -189,12 +194,12 @@ class ProductionBalanceRepository {
         query.append("  stf.surname        AS staffSurname, ");
         query.append("  COALESCE(SUM(swt.labortime), 0) AS laborTime ");
         query.append("FROM orders_order o ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
         query.append("LEFT JOIN basic_staff stf ON swt.worker_id = stf.id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
-        query.append("WHERE pt.state = '02accepted' AND ");
+        query.append("WHERE ");
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname ");
 
@@ -253,11 +258,11 @@ class ProductionBalanceRepository {
         query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id ");
         query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("CROSS JOIN basic_parameter bp ");
         query.append("WHERE ");
         appendWhereClause(query);
-        query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = '02cumulated' ");
+        query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("GROUP BY orderNumber ");
         query.append("UNION ");
         query.append("SELECT ");
@@ -306,17 +311,15 @@ class ProductionBalanceRepository {
         appendForEachPlannedMachineCosts(entity, query);
         query.append("AS sumCostsDeviation ");
         query.append("FROM orders_order o ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
         query.append("CROSS JOIN basic_parameter bp ");
         query.append("WHERE ");
         appendWhereClause(query);
-        query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = '03forEach' ");
+        query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("GROUP BY orderNumber, operationNumber ");
-
-        LOGGER.info("---------" + query.toString());
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(ProductionCost.class));
@@ -423,7 +426,39 @@ class ProductionBalanceRepository {
         }
     }
 
-    private void appendWhereClause(StringBuilder query) {
-        query.append("o.id IN (:ordersIds) ");
+    List<OrderBalance> getOrdersBalance(Entity entity, List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("p.number AS productNumber, ");
+        query.append("p.name AS productName, ");
+        query.append("0 AS producedQuantity, ");
+        query.append("0 AS materialCosts, ");
+        query.append("0 AS productionCosts, ");
+        query.append("0 AS technicalProductionCosts, ");
+        query.append(entity.getDecimalField(ProductionBalanceFields.MATERIAL_COST_MARGIN) + "AS materialCostMargin, ");
+        query.append("0 AS materialCostMarginValue, ");
+        query.append(entity.getDecimalField(ProductionBalanceFields.PRODUCTION_COST_MARGIN) + "AS productionCostMargin, ");
+        query.append("0 AS productionCostMarginValue, ");
+        query.append(entity.getDecimalField(ProductionBalanceFields.ADDITIONAL_OVERHEAD) + "AS additionalOverhead, ");
+        query.append("COALESCE(MIN(o.directadditionalcost), 0) AS directAdditionalCost, ");
+        query.append("0 AS totalCosts, ");
+        query.append("0 AS registrationPrice, ");
+        query.append(entity.getDecimalField(ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD) + "AS registrationPriceOverhead, ");
+        query.append("0 AS registrationPriceOverheadValue, ");
+        query.append("0 AS realProductionCosts, ");
+        query.append(entity.getDecimalField(ProductionBalanceFields.PROFIT) + "AS profit, ");
+        query.append("0 AS profitValue, ");
+        query.append("0 AS sellPrice ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN basic_product p ON o.product_id = p.id ");
+        query.append("WHERE ");
+        appendWhereClause(query);
+        query.append("group by orderNumber, productNumber, productName ");
+
+        LOGGER.info("---------" + query.toString());
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(OrderBalance.class));
     }
 }
