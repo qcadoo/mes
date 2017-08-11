@@ -42,7 +42,7 @@
             <component type="form" name="resourceForm" reference="form">
                 <component type="gridLayout" name="resourceGridLayout"
                            hasBorders="false" columns="11" rows="7">
-                    
+
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" field="number"
                                    reference="number" defaultEnabled="false">
@@ -90,16 +90,17 @@
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
-                                method="showStorageLocationsForProductAndLocation"/>
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"
+                                    method="showStorageLocationsForProductAndLocation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
-                            <listener event="onInputChange" class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
-                                                          method="onQuantityChange" />
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
+                                      method="onQuantityChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="5" width="1">
@@ -112,8 +113,9 @@
                         <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
                                    reference="quantityInAdditionalUnit">
                             <option type="alignment" value="right"/>
-                            <listener event="onInputChange" class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
-                                                          method="onQuantityInAdditionalUnitChange" />
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
+                                      method="onQuantityInAdditionalUnitChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="6" row="6" width="1">
@@ -127,7 +129,7 @@
                                    reference="price" defaultEnabled="true">
                             <option type="alignment" value="right"/>
                         </component>
-                    </layoutElement>                    
+                    </layoutElement>
                     <layoutElement column="6" row="7" width="1">
                         <component type="input" name="priceCurrency" reference="priceCurrency"
                                    defaultEnabled="false" hasLabel="false">
@@ -159,7 +161,10 @@
                     </layoutElement>
                     <layoutElement column="7" row="5" width="5">
                         <component type="input" name="conversion" field="conversion"
-                                   reference="conversion" defaultEnabled="false">
+                                   reference="conversion">
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
+                                      method="onConversionChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="6" width="5">
@@ -201,9 +206,9 @@
                         expression="#oldStorageLocation['number']"/>
                 <option type="column" name="newStorageLocation" fields="newStorageLocation"
                         expression="#newStorageLocation['number']"/>
-                
-                <option type="column" name="oldPrice" fields="oldPrice" />
-                <option type="column" name="newPrice" fields="newPrice" />
+
+                <option type="column" name="oldPrice" fields="oldPrice"/>
+                <option type="column" name="newPrice" fields="newPrice"/>
 
                 <option type="order" column="number" direction="desc"/>
 

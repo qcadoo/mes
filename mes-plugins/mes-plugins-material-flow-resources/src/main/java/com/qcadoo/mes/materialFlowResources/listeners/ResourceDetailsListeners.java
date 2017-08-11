@@ -52,39 +52,48 @@ public class ResourceDetailsListeners {
         FormComponent resourceForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent quantityInput = (FieldComponent) view.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent priceInput = (FieldComponent) view.getComponentByReference(ResourceFields.PRICE);
+        FieldComponent conversionInput = (FieldComponent) view.getComponentByReference(ResourceFields.CONVERSION);
         String newQuantity = (String) quantityInput.getFieldValue();
         String newPrice = (String) priceInput.getFieldValue();
+        String newConversion = (String) conversionInput.getFieldValue();
 
         Either<Exception, Optional<BigDecimal>> quantity = BigDecimalUtils.tryParseAndIgnoreSeparator(newQuantity,
                 view.getLocale());
         Either<Exception, Optional<BigDecimal>> price = BigDecimalUtils.tryParseAndIgnoreSeparator(newPrice, view.getLocale());
+        Either<Exception, Optional<BigDecimal>> conversion = BigDecimalUtils.tryParseAndIgnoreSeparator(newConversion,
+                view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
             if (price.isRight()) {
-                Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
-                BigDecimal correctQuantity = quantity.getRight().get();
-                BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
-                if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
-                    if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
-                        boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
-                        if (!resource.isValid()) {
-                            copyErrors(resource, resourceForm);
+                if (conversion.isRight() && conversion.getRight().isPresent()) {
+                    Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+                    BigDecimal correctQuantity = quantity.getRight().get();
+                    BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
+                    if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                        if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
+                            boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
+                            if (!resource.isValid()) {
+                                copyErrors(resource, resourceForm);
 
-                        } else if (!corrected) {
-                            resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
+                            } else if (!corrected) {
+                                resourceForm.addMessage("materialFlow.info.correction.resourceNotChanged", MessageType.INFO);
+
+                            } else {
+                                resourceForm.performEvent(view, "reset");
+                                quantityInput.requestComponentUpdateState();
+                                resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+                            }
 
                         } else {
-                            resourceForm.performEvent(view, "reset");
-                            quantityInput.requestComponentUpdateState();
-                            resourceForm.addMessage("materialFlow.success.correction.correctionCreated", MessageType.SUCCESS);
+                            quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanReserved",
+                                    MessageType.FAILURE);
                         }
 
                     } else {
-                        quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanReserved", MessageType.FAILURE);
+                        quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
                     }
-
                 } else {
-                    quantityInput.addMessage("materialFlow.error.correction.invalidQuantity", MessageType.FAILURE);
+                    conversionInput.addMessage("materialFlow.error.correction.invalidConversion", MessageType.FAILURE);
                 }
             } else {
                 priceInput.addMessage("materialFlow.error.correction.invalidPrice", MessageType.FAILURE);

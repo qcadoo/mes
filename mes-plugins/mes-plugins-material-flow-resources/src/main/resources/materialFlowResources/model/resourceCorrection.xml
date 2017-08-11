@@ -50,9 +50,12 @@
 
         <belongsTo name="oldStorageLocation" model="storageLocation"/>
         <belongsTo name="newStorageLocation" model="storageLocation"/>
-        
+
         <decimal name="oldPrice"/>
         <decimal name="newPrice"/>
+
+        <decimal name="oldConversion"/>
+        <decimal name="newConversion"/>
 
         <belongsTo name="oldPalletNumber" model="palletNumber" plugin="basic"/>
         <belongsTo name="newPalletNumber" model="palletNumber" plugin="basic"/>
