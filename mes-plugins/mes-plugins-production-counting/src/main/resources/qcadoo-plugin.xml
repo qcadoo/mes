@@ -181,7 +181,7 @@
             <model:boolean name="consumptionOfRawMaterialsBasedOnStandards"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="allowChangesToUsedQuantityOnTerminal"/>
+            <model:boolean name="allowChangesToUsedQuantityOnTerminal" default="false" required="true"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
