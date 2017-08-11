@@ -101,26 +101,19 @@
                 </component>
             </layoutElement>
             <layoutElement column="3" row="1">
-                <component type="checkbox" name="generateProductionRecordNumberFromOrderNumber"
-                           reference="generateProductionRecordNumberFromOrderNumber"
-                           field="#{form}.generateProductionRecordNumberFromOrderNumber">
-                    <option type="labelWidth" value="80"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="3" row="2">
                 <component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
                            reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes">
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="3">
+            <layoutElement column="3" row="2">
                 <component type="checkbox" name="allowMultipleRegisteringTimeForWorker"
                            reference="allowMultipleRegisteringTimeForWorker"
                            field="#{form}.allowMultipleRegisteringTimeForWorker">
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="4">
+            <layoutElement column="3" row="3">
                 <component type="checkbox" name="consumptionOfRawMaterialsBasedOnStandards"
                            reference="consumptionOfRawMaterialsBasedOnStandards"
                            field="#{form}.consumptionOfRawMaterialsBasedOnStandards">
@@ -129,14 +122,14 @@
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="5">
+            <layoutElement column="3" row="4">
                 <component type="checkbox" name="allowChangesToUsedQuantityOnTerminal"
                            reference="allowChangesToUsedQuantityOnTerminal"
                            field="#{form}.allowChangesToUsedQuantityOnTerminal" hasDescription="true">
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="6">
+            <layoutElement column="3" row="5">
                 <component type="checkbox" name="acceptRecordsFromTerminal"
                            reference="acceptRecordsFromTerminal"
                            field="#{form}.acceptRecordsFromTerminal" hasDescription="true">

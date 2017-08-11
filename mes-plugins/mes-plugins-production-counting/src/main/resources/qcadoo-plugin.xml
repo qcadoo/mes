@@ -184,9 +184,6 @@
             <model:boolean name="allowChangesToUsedQuantityOnTerminal" default="false" required="true"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
-        </model:model-field>
-        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="autoRecalculateOrder"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
@@ -387,9 +384,6 @@
         </model:model-field>
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="autoCloseOrder"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
         </model:model-field>
         <model:model-field model="productionCountingQuantity" plugin="basicProductionCounting">
             <model:hasMany name="productionCountingQuantitySetComponents" model="productionCountingQuantitySetComponent"
