@@ -2,7 +2,7 @@ package com.qcadoo.mes.productionCounting.xls.dto;
 
 import java.math.BigDecimal;
 
-public class ProducedQuantities {
+public class ProducedQuantity {
 
     private String orderNumber;
 
@@ -101,7 +101,7 @@ public class ProducedQuantities {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        ProducedQuantities that = (ProducedQuantities) o;
+        ProducedQuantity that = (ProducedQuantity) o;
 
         if (!orderNumber.equals(that.orderNumber))
             return false;

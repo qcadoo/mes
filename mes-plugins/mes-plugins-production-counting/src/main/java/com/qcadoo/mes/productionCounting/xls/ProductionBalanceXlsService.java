@@ -24,7 +24,7 @@ import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
 import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
 import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantities;
+import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -98,9 +98,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     }
 
     private void createProducedQuantitiesSheet(HSSFSheet sheet, List<Long> ordersIds, StylesContainer stylesContainer) {
-        List<ProducedQuantities> producedQuantities = productionBalanceRepository.getProducedQuantities(ordersIds);
+        List<ProducedQuantity> producedQuantities = productionBalanceRepository.getProducedQuantities(ordersIds);
         int rowIndex = 1;
-        for (ProducedQuantities producedQuantity : producedQuantities) {
+        for (ProducedQuantity producedQuantity : producedQuantities) {
             HSSFRow row = sheet.createRow(rowIndex);
             createRegularCell(stylesContainer, row, 0, producedQuantity.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, producedQuantity.getProductNumber());
