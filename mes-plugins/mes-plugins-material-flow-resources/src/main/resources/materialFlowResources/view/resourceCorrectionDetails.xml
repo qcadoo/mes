@@ -99,16 +99,16 @@
                 </layoutElement>
 
                 <layoutElement column="2" row="1" height="8" width="2">
-                    <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="8" hasBorders="false">
+                    <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="9" hasBorders="false">
 
                         <layoutElement column="3" row="1" width="2">
                             <component type="label" name="beforeCorrection">
-                                <option type="labelStyle" value="normal" />
+                                <option type="labelStyle" value="normal"/>
                             </component>
                         </layoutElement>
                         <layoutElement column="7" row="1" width="2">
                             <component type="label" name="afterCorrection">
-                                <option type="labelStyle" value="normal" />
+                                <option type="labelStyle" value="normal"/>
                             </component>
                         </layoutElement>
 
@@ -134,45 +134,59 @@
                         </layoutElement>
 
                         <layoutElement column="1" row="3" width="5">
+                            <component type="input" name="oldConversion" field="oldConversion"
+                                       reference="oldConversion" defaultEnabled="false">
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+
+                        <layoutElement column="6" row="3" width="4">
+                            <component type="input" name="newConversion" field="newConversion"
+                                       reference="newConversion" defaultEnabled="false" hasLabel="false">
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+
+                        <layoutElement column="1" row="4" width="5">
                             <component type="input" name="oldPrice" field="oldPrice"
                                        reference="oldPrice" defaultEnabled="false">
                                 <option type="alignment" value="right"/>
                             </component>
                         </layoutElement>
-                        <layoutElement column="6" row="3" width="4">
+                        <layoutElement column="6" row="4" width="4">
                             <component type="input" name="newPrice" field="newPrice"
                                        reference="newPrice" defaultEnabled="false" hasLabel="false">
                                 <option type="alignment" value="right"/>
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="4" width="5">
+                        <layoutElement column="1" row="5" width="5">
                             <component type="input" name="oldBatch" field="oldBatch"
                                        reference="oldBatch" defaultEnabled="false">
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="6" row="4" width="4">
+                        <layoutElement column="6" row="5" width="4">
                             <component type="input" name="newBatch" field="newBatch"
                                        reference="newBatch" defaultEnabled="false" hasLabel="false">
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="5" width="5">
+                        <layoutElement column="1" row="6" width="5">
                             <component type="calendar" name="oldExpirationDate" field="oldExpirationDate"
                                        reference="oldExpirationDate" defaultEnabled="false">
                                 <option type="withTimePicker" value="false"/>
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="6" row="5" width="4">
+                        <layoutElement column="6" row="6" width="4">
                             <component type="calendar" name="newExpirationDate" field="newExpirationDate"
                                        reference="newExpirationDate" defaultEnabled="false" hasLabel="false">
                                 <option type="withTimePicker" value="false"/>
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="6" width="5">
+                        <layoutElement column="1" row="7" width="5">
                             <component type="lookup" name="oldStorageLocation" field="oldStorageLocation"
                                        reference="oldStorageLocation" defaultEnabled="false">
                                 <option type="column" fields="location" name="location" link="true"
@@ -186,7 +200,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="6" row="6" width="4">
+                        <layoutElement column="6" row="7" width="4">
                             <component type="lookup" name="newStorageLocation" field="newStorageLocation"
                                        reference="newStorageLocation" defaultEnabled="false" hasLabel="false">
                                 <option type="column" fields="location" name="location" link="true"
@@ -200,7 +214,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="7" width="5">
+                        <layoutElement column="1" row="8" width="5">
                             <component type="lookup" name="oldPalletNumber" field="oldPalletNumber"
                                        reference="oldPalletNumber" defaultEnabled="false">
 
@@ -212,7 +226,7 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="6" row="7" width="4">
+                        <layoutElement column="6" row="8" width="4">
                             <component type="lookup" name="newPalletNumber" field="newPalletNumber"
                                        reference="newPalletNumber" defaultEnabled="false" hasLabel="false">
 
@@ -224,13 +238,13 @@
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="1" row="8" width="5">
+                        <layoutElement column="1" row="9" width="5">
                             <component type="input" name="oldTypeOfPallet" field="oldTypeOfPallet"
                                        reference="oldTypeOfPallet" defaultEnabled="false">
                             </component>
                         </layoutElement>
 
-                        <layoutElement column="6" row="8" width="4">
+                        <layoutElement column="6" row="9" width="4">
                             <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
                                        reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
                             </component>

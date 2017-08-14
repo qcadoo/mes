@@ -28,6 +28,10 @@ public final class ResourceCorrectionFields {
     private ResourceCorrectionFields() {
     }
 
+    public static final String OLD_CONVERSION = "oldConversion";
+
+    public static final String NEW_CONVERSION = "newConversion";
+
     public static final String PRODUCTION_DATE = "productionDate";
 
     public static final String OLD_PALLET_NUMBER = "oldPalletNumber";

@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -30,15 +40,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 public class PositionDataProvider {
 
@@ -161,10 +163,8 @@ public class PositionDataProvider {
     public static String amountAndRest(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
         amount = amount.setScale(0, RoundingMode.DOWN);
-        BigDecimal wholeAmount = amount.multiply(BigDecimalUtils.convertNullToZero(position
-                .getDecimalField(PositionFields.CONVERSION)));
-        BigDecimal rest = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(
-                wholeAmount);
+        BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
+        BigDecimal rest = convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(wholeAmount);
         rest = rest.setScale(5, RoundingMode.HALF_UP);
         return amount.stripTrailingZeros().toPlainString() + "\n" + rest.stripTrailingZeros().toPlainString();
     }
@@ -213,12 +213,9 @@ public class PositionDataProvider {
     public static BigDecimal restDecimal(Entity position) {
         BigDecimal amount = position.getDecimalField(PositionFields.QUANTITY);
         amount = amount.setScale(0, RoundingMode.DOWN);
-        BigDecimal wholeAmount = amount.multiply(BigDecimalUtils.convertNullToZero(position
-                .getDecimalField(PositionFields.CONVERSION)));
-        BigDecimal rest = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(
-                wholeAmount);
+        BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
+        BigDecimal rest = convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(wholeAmount);
         return rest.setScale(5, RoundingMode.HALF_UP);
-
     }
 
     public static String storageLocation(Entity position) {
@@ -239,4 +236,9 @@ public class PositionDataProvider {
     public static String productName(Entity position) {
         return position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NAME);
     }
+
+    public static BigDecimal conversion(Entity position) {
+        return convertNullToZero(position.getDecimalField(PositionFields.CONVERSION));
+    }
+
 }

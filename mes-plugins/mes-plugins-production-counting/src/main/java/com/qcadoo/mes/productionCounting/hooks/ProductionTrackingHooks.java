@@ -259,40 +259,13 @@ public class ProductionTrackingHooks {
 
     private void generateNumberIfNeeded(final Entity productionTracking) {
         if (productionTracking.getField(ProductionTrackingFields.NUMBER) == null) {
-            Entity parameter = parameterService.getParameter();
-            if (parameter.getBooleanField(ParameterFieldsPC.GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER)) {
-                String[] orderNumberSplited = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)
-                        .getStringField(OrderFields.NUMBER).split("-");
-                if (orderNumberSplited.length > 1) {
-                    String productionRecordNumber = getProductionRecordNumber(orderNumberSplited);
-                    productionTracking.setField(ProductionTrackingFields.NUMBER, productionRecordNumber);
-                } else {
-                    setNumberFromSequence(productionTracking);
-                }
-            } else {
-                setNumberFromSequence(productionTracking);
-            }
+            productionTracking.setField(ProductionTrackingFields.NUMBER, setNumberFromSequence(productionTracking));
         }
     }
 
-    private void setNumberFromSequence(final Entity productionTracking) {
-
-        String number = jdbcTemplate.queryForObject("select generate_productiontracking_number()", Maps.newHashMap(),
+    private String setNumberFromSequence(final Entity productionTracking) {
+        return jdbcTemplate.queryForObject("select generate_productiontracking_number()", Maps.newHashMap(),
                 String.class);
-        productionTracking.setField(ProductionTrackingFields.NUMBER, number);
-    }
-
-    private String getProductionRecordNumber(final String[] orderNumberSplited) {
-        StringBuilder number = new StringBuilder();
-        for (int i = 0; i < orderNumberSplited.length; i++) {
-            if (i > 0) {
-                number.append(orderNumberSplited[i]);
-                if (i != orderNumberSplited.length - 1) {
-                    number.append("-");
-                }
-            }
-        }
-        return StringUtils.strip(number.toString());
     }
 
     private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {

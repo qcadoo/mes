@@ -32,19 +32,15 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -53,7 +49,6 @@ import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConst
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
-import com.qcadoo.mes.materialFlowResources.hooks.DocumentDetailsHooks;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
@@ -65,14 +60,12 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class DocumentDetailsListeners {
@@ -83,7 +76,7 @@ public class DocumentDetailsListeners {
 
     private static final String L_BATCH = "batch";
 
-    public static final String L_POSITIONS = "positions";
+    private static final String L_POSITIONS = "positions";
 
     private static final Logger logger = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
@@ -94,31 +87,16 @@ public class DocumentDetailsListeners {
     private UnitConversionService unitConversionService;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private TranslationService translationService;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
     private ParameterService parameterService;
 
     @Autowired
     private ResourceManagementService resourceManagementService;
 
     @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
-
-    @Autowired
-    private DocumentDetailsHooks documentDetailsHooks;
-
-    @Autowired
     private ResourceReservationsService resourceReservationsService;
+
+    @Autowired
+    private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -218,28 +196,15 @@ public class DocumentDetailsListeners {
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper = new ReceiptDocumentForReleaseHelper(
-                    dataDefinitionService, resourceManagementService, userService, numberGeneratorService, translationService,
-                    parameterService);
             if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                tryBuildPz(document, receiptDocumentForReleaseHelper, view);
+                receiptDocumentForReleaseHelper.tryBuildPz(document, view);
             }
         }
-
 
         documentForm.setEntity(document);
 
         logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void tryBuildPz(Entity documentToCreateResourcesFor,
-            ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, ViewDefinitionState view) {
-        boolean created = receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
-        if (created) {
-            view.addMessage("materialFlow.document.info.createdConnectedPZ", MessageType.INFO);
-        }
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {

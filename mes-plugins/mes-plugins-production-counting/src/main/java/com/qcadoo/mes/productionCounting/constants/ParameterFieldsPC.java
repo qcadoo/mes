@@ -29,6 +29,38 @@ public final class ParameterFieldsPC {
 
     }
 
+    public static final String PRINT_OPERATION_NORMS_PB = "printOperationNormsPB";
+
+    public static final String CALCULATE_OPERATION_COST_MODE_PB = "calculateOperationCostsModePB";
+
+    public static final String INCLUDE_TPZ_PB = "includeTPZPB";
+
+    public static final String INCLUDE_ADDITIONAL_TIME_PB = "includeAdditionalTimePB";
+
+    public static final String PRINT_COST_NORMS_OF_MATERIALS_PB = "printCostNormsOfMaterialsPB";
+
+    public static final String SOURCE_OF_MATERIAL_COSTS_PB = "sourceOfMaterialCostsPB";
+
+    public static final String CALCULATE_MATERIAL_COSTS_MODE_PB = "calculateMaterialCostsModePB";
+
+    public static final String AVERAGE_MACHINE_HOURLY_COST_PB = "averageMachineHourlyCostPB";
+
+    public static final String AVERAGE_LABOR_HOURLY_COST_PB = "averageLaborHourlyCostPB";
+
+    public static final String PRODUCTION_COST_MARGIN_PB = "productionCostMarginPB";
+
+    public static final String MATERIAL_COST_MARGIN_PB = "materialCostMarginPB";
+
+    public static final String ADDITIONAL_OVERHEAD_PB = "additionalOverheadPB";
+
+    public static final String PRICE_BASED_ON = "priceBasedOn";
+
+    public static final String SOURCE_OF_OPERATION_COSTS_PB = "sourceOfOperationCostsPB";
+
+    public static final String REGISTRATION_PRICE_OVERHEAD_PB = "registrationPriceOverheadPB";
+
+    public static final String PROFIT_PB = "profitPB";
+
     public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     public static final String REGISTER_PRODUCTION_TIME = "registerProductionTime";
@@ -49,13 +81,13 @@ public final class ParameterFieldsPC {
 
     public static final String AUTO_RECALCULATE_ORDER = "autoRecalculateOrder";
 
-    public static final String GENERATE_PRODUCTION_RECORD_NUMBER_FROM_ORDER_NUMBER = "generateProductionRecordNumberFromOrderNumber";
-
     public static final String VALIDATE_PRODUCTION_RECORD_TIMES = "validateProductionRecordTimes";
 
     public static final String ALLOW_MULTIPLE_REGISTERING_TIME_FOR_WORKER = "allowMultipleRegisteringTimeForWorker";
 
     public static final String CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS = "consumptionOfRawMaterialsBasedOnStandards";
+
+    public static final String ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL = "allowChangesToUsedQuantityOnTerminal";
 
     public static final String ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD = "allowAnomalyCreationOnAcceptanceRecord";
 

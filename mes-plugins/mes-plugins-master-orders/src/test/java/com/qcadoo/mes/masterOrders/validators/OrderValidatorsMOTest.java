@@ -23,21 +23,23 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.search.*;
-import com.qcadoo.testing.model.EntityListMock;
-import com.qcadoo.testing.model.EntityTestUtils;
+import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
+import static com.qcadoo.model.api.search.SearchRestrictions.or;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubId;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+
+import java.util.Collection;
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,16 +53,27 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.Collection;
-import java.util.List;
-
-import static com.qcadoo.mes.masterOrders.constants.OrderFieldsMO.MASTER_ORDER;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
-import static com.qcadoo.testing.model.EntityTestUtils.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.mock;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.testing.model.EntityListMock;
+import com.qcadoo.testing.model.EntityTestUtils;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -126,10 +139,9 @@ public class OrderValidatorsMOTest {
         PowerMockito.mockStatic(SearchRestrictions.class);
 
         given(isNull(MasterOrderProductFields.TECHNOLOGY)).willReturn(technologyIsNullRestriction);
-        given(
-                or(isNull(MasterOrderProductFields.TECHNOLOGY),
-                        belongsTo(MasterOrderProductFields.TECHNOLOGY, technologyPrototype))).willReturn(
-                technologyIsEmptyOrMatchTechPrototypeRestriction);
+        given(or(isNull(MasterOrderProductFields.TECHNOLOGY),
+                belongsTo(MasterOrderProductFields.TECHNOLOGY, technologyPrototype)))
+                        .willReturn(technologyIsEmptyOrMatchTechPrototypeRestriction);
     }
 
     private void stubOrderType(final String typeStringValue) {
@@ -147,7 +159,6 @@ public class OrderValidatorsMOTest {
     private void stubOrderTechnologyPrototype(final Entity technology) {
         EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
     }
-
 
     private void stubMasterOrderProducts(final Collection<Entity> elements) {
         EntityList entityList = EntityListMock.create(elements);

@@ -285,7 +285,7 @@ function validateSerializeData(data) {
 
 function roundTo(n) {
     var places = 5;
-    return +(Math.round(parseFloat(n) + "e+" + places) + "e-" + places);
+    return +(Math.floor(parseFloat(n) + "e+" + places) + "e-" + places);
 }
 
 function validatorNumber(val) {
@@ -1048,15 +1048,33 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         var rowId = getRowIdFromElement(t);
 
                         var conversion = getFieldValue('conversion', rowId);
+                        var givenUnitValue = getFieldValue('givenunit', rowId);
+
                         var newGivenQuantity = null;
 
                         if (quantities[rowId]) {
                             newGivenQuantity = roundTo(quantityValueNew * conversion);
                         }
-                        newGivenQuantity = roundTo(newGivenQuantity);
+
+
+                        var isInteger = false;
+                        if (available_additionalunits) {
+                            var entry = available_additionalunits.filter(function (element, index) {
+                                return element.key === givenUnitValue;
+                            })[0];
+                            if (entry && entry.isinteger) {
+                                isInteger = true;
+                            }
+                        }
+                        if (isInteger) {
+                            newGivenQuantity = Math.round(newGivenQuantity);
+                        } else {
+                            newGivenQuantity = roundTo(newGivenQuantity);
+                        }
                         if (!newGivenQuantity || t.hasClass('error-grid')) {
                             newGivenQuantity = '';
                         }
+
 
                         updateFieldValue('givenquantity', newGivenQuantity, rowId);
                     }, 500)));
@@ -1275,6 +1293,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var totalGridHeight = $('#gbox_grid', $flowGridLayout).outerHeight();
                 var newGridHeightToFillWholeSpace = containerHeight - totalGridHeight + gridHeight;
                 $grid.setGridHeight(newGridHeightToFillWholeSpace);
+                config.height = newGridHeightToFillWholeSpace;
             }
         };
 

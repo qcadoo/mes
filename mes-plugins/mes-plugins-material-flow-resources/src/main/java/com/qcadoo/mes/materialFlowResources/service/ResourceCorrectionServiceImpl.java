@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
@@ -32,11 +38,6 @@ import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class ResourceCorrectionServiceImpl implements ResourceCorrectionService {
@@ -62,6 +63,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
         BigDecimal newQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
         BigDecimal newPrice = resource.getDecimalField(ResourceFields.PRICE);
+        BigDecimal newConversion = resource.getDecimalField(ResourceFields.CONVERSION);
         Entity newStorageLocation = resource.getBelongsToField(ResourceFields.STORAGE_LOCATION);
         String newBatch = resource.getStringField(ResourceFields.BATCH);
         String newTypeOfPallet = resource.getStringField(ResourceFields.TYPE_OF_PALLET);
@@ -69,7 +71,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         Entity newPalletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
 
         if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet,
-                newPalletNumber, newExpirationDate)) {
+                newPalletNumber, newExpirationDate, newConversion)) {
 
             Entity correction = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION).create();
@@ -94,6 +96,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             correction.setField(ResourceCorrectionFields.NEW_PALLET_NUMBER, newPalletNumber);
             correction.setField(ResourceCorrectionFields.OLD_PALLET_NUMBER, oldPalletNumber(oldResource));
             correction.setField(ResourceCorrectionFields.PRODUCTION_DATE, productionDate(oldResource));
+            correction.setField(ResourceCorrectionFields.OLD_CONVERSION, oldConversion(oldResource));
+            correction.setField(ResourceCorrectionFields.NEW_CONVERSION, newConversion);
             correction.setField(ResourceCorrectionFields.NUMBER, numberGeneratorService.generateNumber(
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION));
 
@@ -101,7 +105,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
-            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, calculateQuantityInAdditionalUnit(resource, oldResource.getStringField(ResourceFields.GIVEN_UNIT)));
+            resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
+                    calculateQuantityInAdditionalUnit(resource, oldResource.getStringField(ResourceFields.GIVEN_UNIT)));
             resource.setField(ResourceFields.AVAILABLE_QUANTITY,
                     newQuantity.subtract(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY)));
             Entity savedResource = resource.getDataDefinition().save(resource);
@@ -125,7 +130,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation,
             final BigDecimal newPrice, final String newBatch, final String newTypeOfPallet, final Entity newPalletNumber,
-            final Date newExpirationDate) {
+            final Date newExpirationDate, final BigDecimal newConversion) {
         Entity oldStorageLocation = oldStorageLocation(resource);
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
         boolean priceChanged = isPriceChanged(oldPrice(resource), newPrice);
@@ -133,11 +138,12 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         boolean typeOfPalletChanged = isStringChanged(oldTypeOfPallet(resource), newTypeOfPallet);
         boolean palletNumberChanged = isPalletNumberChanged(oldPalletNumber(resource), newPalletNumber);
         boolean expirationDateChanged = isExpirationDateChanged(oldExpirationDate(resource), newExpirationDate);
+        boolean conversionChanged = newConversion.compareTo(oldConversion(resource)) != 0;
 
         boolean storageLocationChanged = (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation.getId()
                 .compareTo(oldStorageLocation.getId()) != 0) : !(newStorageLocation == null && oldStorageLocation == null);
         return quantityChanged || storageLocationChanged || priceChanged || batchChanged || typeOfPalletChanged
-                || palletNumberChanged || expirationDateChanged;
+                || palletNumberChanged || expirationDateChanged || conversionChanged;
     }
 
     private Entity product(final Entity resource) {
@@ -150,6 +156,10 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     private BigDecimal oldPrice(final Entity resource) {
         return resource.getDecimalField(ResourceFields.PRICE);
+    }
+
+    private BigDecimal oldConversion(final Entity resource) {
+        return resource.getDecimalField(ResourceFields.CONVERSION);
     }
 
     private Entity location(final Entity resource) {
@@ -187,7 +197,6 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private BigDecimal calculateQuantityInAdditionalUnit(Entity resource, String unit) {
         BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
         BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
-
 
         boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
         BigDecimal value = quantity.multiply(conversion, numberService.getMathContext());

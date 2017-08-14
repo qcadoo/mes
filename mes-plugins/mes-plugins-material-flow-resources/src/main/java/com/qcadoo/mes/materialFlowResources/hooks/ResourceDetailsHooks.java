@@ -1,5 +1,10 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -15,10 +20,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Service
 public class ResourceDetailsHooks {
@@ -45,6 +46,38 @@ public class ResourceDetailsHooks {
 
         fillUnitField(view, resource);
         togglePriceFields(view, resource);
+    }
+
+    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponent conversionField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.CONVERSION);
+        FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
+        FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ResourceFields.GIVEN_UNIT);
+
+        Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                (String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
+        if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            Entity resource = form.getPersistedEntityWithIncludedFormValues();
+
+            boolean isInteger = dictionaryService.checkIfUnitIsInteger((String) additionalUnitField.getFieldValue());
+            if (isInteger) {
+                BigDecimal quantityInAdditionalUnit = maybeConversion.getRight().get()
+                        .multiply(resource.getDecimalField(ResourceFields.QUANTITY), numberService.getMathContext());
+                String quantityInAdditionalUnitFormatted = numberService.format(numberService.setScale(quantityInAdditionalUnit,
+                        0));
+                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
+            } else {
+                BigDecimal quantityInAdditionalUnit = maybeConversion.getRight().get()
+                        .multiply(resource.getDecimalField(ResourceFields.QUANTITY));
+                String quantityInAdditionalUnitFormatted = numberService.format(quantityInAdditionalUnit);
+                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
+            }
+
+        } else {
+            quantityInAdditionalUnitField.setFieldValue(null);
+        }
     }
 
     public void onQuantityChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {

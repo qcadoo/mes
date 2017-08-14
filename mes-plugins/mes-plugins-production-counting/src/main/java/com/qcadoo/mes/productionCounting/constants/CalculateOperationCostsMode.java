@@ -24,7 +24,7 @@
 package com.qcadoo.mes.productionCounting.constants;
 
 public enum CalculateOperationCostsMode {
-    HOURLY("01hourly"), PIECEWORK("02piecework");
+    HOURLY("01hourly"), PIECEWORK("02piecework"), MIXED("03mixed");
 
     private String calculateOperationCostsMode;
 
@@ -41,6 +41,8 @@ public enum CalculateOperationCostsMode {
             return HOURLY;
         } else if ("02piecework".equals(string)) {
             return PIECEWORK;
+        } else if ("03mixed".equals(string)) {
+            return MIXED;
         }
 
         throw new IllegalStateException("Unsupported calculateOperationCostMode: " + string);

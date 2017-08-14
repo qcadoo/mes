@@ -274,7 +274,9 @@ public class DocumentPositionService {
     private List<Map<String, Object>> getAvailableAdditionalUnitsByProduct(final Map<String, Object> units) {
         Long productId = Long.valueOf(units.get("id").toString());
 
-        String query = "SELECT unitto, quantityto, quantityfrom FROM qcadoomodel_unitconversionitem WHERE product_id = :id";
+        String query = "SELECT convItem.unitto, convItem.quantityto, convItem.quantityfrom, dictItem.isinteger FROM qcadoomodel_unitconversionitem convItem "
+                + " JOIN qcadoomodel_dictionaryitem dictItem ON dictItem.name = convItem.unitto "
+                + " WHERE convItem.product_id = :id";
 
         List<Map<String, Object>> availableUnits = jdbcTemplate.queryForList(query, Collections.singletonMap("id", productId));
 
@@ -286,6 +288,7 @@ public class DocumentPositionService {
             type.put("conversion", entry.get("conversion"));
             type.put("quantityto", entry.get("quantityto"));
             type.put("quantityfrom", entry.get("quantityfrom"));
+            type.put("isinteger", entry.get("isinteger"));
 
             return type;
         }).collect(Collectors.toList());
@@ -296,6 +299,7 @@ public class DocumentPositionService {
         type.put("key", units.get("unit"));
         type.put("quantityfrom", BigDecimal.valueOf(1));
         type.put("quantityto", BigDecimal.valueOf(1));
+        type.put("isinteger", false);
         result.add(type);
 
         return result;

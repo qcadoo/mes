@@ -32,6 +32,13 @@ public final class ProductionCountingConstants {
     public static final String PLUGIN_IDENTIFIER = "productionCounting";
 
     // MODEL
+
+    public static final String MODEL_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENT = "technologyOperationProductInComp";
+
+    public static final String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
+
+    public static final String MODEL_OPERATION_PIECEWORK_COST_COMPONENT = "operationPieceworkCostComponent";
+
     public static final String MODEL_PRODUCTION_TRACKING = "productionTracking";
 
     public static final String MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY = "finalProductAnalysisEntry";

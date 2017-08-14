@@ -69,6 +69,11 @@
             <plugin>states</plugin>
             <version>[1.1.7</version>
         </dependency>
+
+        <dependency>
+            <plugin>costCalculation</plugin>
+            <version>[1.1.8</version>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -127,6 +132,12 @@
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
+        <model:model model="technologyOperationProductInComp"
+                     resource="model/technologyOperationProductInComp.xml"/>
+        <model:model model="operationCostComponent" resource="model/operationCostComponent.xml"/>
+        <model:model model="operationPieceworkCostComponent"
+                     resource="model/operationPieceworkCostComponent.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -170,7 +181,7 @@
             <model:boolean name="consumptionOfRawMaterialsBasedOnStandards"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
+            <model:boolean name="allowChangesToUsedQuantityOnTerminal" default="false" required="true"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="autoRecalculateOrder"/>
@@ -178,6 +189,110 @@
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="allowAnomalyCreationOnAcceptanceRecord"/>
         </model:model-field>
+
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="printOperationNormsPB" default="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="calculateOperationCostsModePB" values="01hourly,02piecework"
+                        required="true" default="01hourly"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeTPZPB" default="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeAdditionalTimePB" default="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="printCostNormsOfMaterialsPB"
+                           default="true"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="sourceOfMaterialCostsPB"
+                        values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
+                        required="true" default="01currentGlobalDefinitionsInProduct"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="calculateMaterialCostsModePB"
+                        values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+                        required="true" default="01nominal"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="sourceOfOperationCostsPB"
+                        values="01technologyOperation,02parameters"
+                        required="true" default="01technologyOperation"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="averageMachineHourlyCostPB">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="averageLaborHourlyCostPB">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="productionCostMarginPB" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="materialCostMarginPB" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="additionalOverheadPB" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="registrationPriceOverheadPB" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="profitPB" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0" exclusively="false"/>
+            </model:decimal>
+        </model:model-field>
+
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="priceBasedOn" values="01nominalProductCost,02realProductionCost"
+                        required="true" default="01nominalProductCost"/>
+        </model:model-field>
+
+
         <model:model-field model="staff" plugin="basic">
             <model:hasMany name="productionTrackings" model="productionTracking"
                            joinField="staff" plugin="productionCounting"/>
@@ -241,6 +356,11 @@
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field model="order" plugin="orders">
+            <model:belongsTo name="productionBalance"
+                             plugin="productionCounting" model="productionBalance"/>
+        </model:model-field>
+
         <model:model-field model="technology" plugin="technologies">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"/>
         </model:model-field>
@@ -265,9 +385,6 @@
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="autoCloseOrder"/>
         </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="generateProductionRecordNumberFromOrderNumber"/>
-        </model:model-field>
         <model:model-field model="productionCountingQuantity" plugin="basicProductionCounting">
             <model:hasMany name="productionCountingQuantitySetComponents" model="productionCountingQuantitySetComponent"
                            joinField="productionCountingQuantity" plugin="productionCounting" cascade="delete"/>
@@ -280,6 +397,12 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="anomalyExplanations" plugin="productionCounting" model="anomalyExplanation"
                            joinField="location" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field model="calculationOperationComponent"
+                           plugin="costNormsForOperation">
+            <model:belongsTo name="productionBalance" model="productionBalance"
+                             plugin="productionCounting"/>
         </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">
@@ -420,6 +543,9 @@
         <view:view-hook plugin="basic" view="parameters" type="beforeRender"
                         class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
                         method="checkIfRegisterProductionTimeIsSet"/>
+        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
+                        method="toggleAllowChangesToUsedQuantityOnTerminalState"/>
 
         <view:view-hook plugin="basic" view="productDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductDetailsHooksPC"
@@ -445,6 +571,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityDetailsPC"
                         method="beforeRender"/>
+
+
+        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+                        class="com.qcadoo.mes.productionCounting.hooks.ParameterPBDetailsViewHooks"
+                        method="fillCurrencyAndUnitFields"/>
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form"

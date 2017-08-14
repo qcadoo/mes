@@ -38,13 +38,16 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionCounting.GenerateProductionBalanceWithCosts;
 import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingGenerateProductionBalance;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.print.ProductionBalancePdfService;
+import com.qcadoo.mes.productionCounting.xls.ProductionBalanceXlsService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
@@ -87,6 +90,12 @@ public class ProductionBalanceDetailsListeners {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    private GenerateProductionBalanceWithCosts generateProductionBalanceWithCosts;
+
+    @Autowired
+    private ProductionBalanceXlsService productionBalanceXlsService;
+
     @Transactional
     public void generateProductionBalance(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", new String[0]);
@@ -115,8 +124,18 @@ public class ProductionBalanceDetailsListeners {
             checkOrderDoneQuantity(state, productionBalance);
 
             try {
-                generateProductionBalanceDocuments(productionBalance, state.getLocale());
+                if (ProductionBalanceType.ONE_ORDER.getStringValue().equals(
+                        productionBalance.getStringField(ProductionBalanceFields.TYPE))) {
+                    generateProductionBalanceDocuments(productionBalance, state.getLocale());
 
+                    generateProductionBalanceWithCosts.generateProductionBalanceWithCosts(productionBalance);
+                } else if (!productionBalance.getHasManyField(ProductionBalanceFields.ORDERS).isEmpty()) {
+                    generateProductionBalanceDocumentXls(productionBalance, state.getLocale());
+                } else {
+                    state.addMessage("productionCounting.productionBalance.report.error.noOrders", MessageType.FAILURE);
+
+                    return;
+                }
                 state.performEvent(view, "reset", new String[0]);
 
                 state.addMessage(
@@ -136,11 +155,13 @@ public class ProductionBalanceDetailsListeners {
 
     private void checkOrderDoneQuantity(final ComponentState componentState, final Entity productionBalance) {
         final Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
-        final BigDecimal doneQuantityFromOrder = order.getDecimalField(OrderFields.DONE_QUANTITY);
+        if (order != null) {
+            final BigDecimal doneQuantityFromOrder = order.getDecimalField(OrderFields.DONE_QUANTITY);
 
-        if (doneQuantityFromOrder == null || BigDecimal.ZERO.compareTo(doneQuantityFromOrder) == 0) {
-            componentState.addMessage("productionCounting.productionBalance.report.info.orderWithoutDoneQuantity",
-                    MessageType.INFO);
+            if (doneQuantityFromOrder == null || BigDecimal.ZERO.compareTo(doneQuantityFromOrder) == 0) {
+                componentState.addMessage("productionCounting.productionBalance.report.info.orderWithoutDoneQuantity",
+                        MessageType.INFO);
+            }
         }
     }
 
@@ -159,6 +180,21 @@ public class ProductionBalanceDetailsListeners {
             throw new IllegalStateException("Problem with saving productionBalance report", e);
         } catch (DocumentException e) {
             throw new IllegalStateException("Problem with generating productionBalance report", e);
+        }
+    }
+
+    private void generateProductionBalanceDocumentXls(final Entity productionBalance, final Locale locale) throws IOException,
+            DocumentException {
+        String localePrefix = "productionCounting.productionBalance.report.fileName";
+
+        Entity productionBalanceWithFileName = fileService.updateReportFileName(productionBalance, ProductionBalanceFields.DATE,
+                localePrefix);
+
+        try {
+            productionBalanceXlsService.generateDocument(productionBalanceWithFileName, locale);
+
+        } catch (IOException e) {
+            throw new IllegalStateException("Problem with saving productionBalance report", e);
         }
     }
 
@@ -259,6 +295,10 @@ public class ProductionBalanceDetailsListeners {
 
     public void disableCheckboxes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         productionBalanceService.disableCheckboxes(view);
+    }
+
+    public void changeTabsVisible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        productionBalanceService.changeTabsVisible(view);
     }
 
 }

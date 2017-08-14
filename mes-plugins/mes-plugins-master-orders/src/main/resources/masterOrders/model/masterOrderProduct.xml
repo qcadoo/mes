@@ -73,6 +73,8 @@
 
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus"/>
 
+        <hasMany name="orders" model="order" plugin="orders" joinField="masterOrderProductComponent" />
+
     </fields>
 
     <hooks>

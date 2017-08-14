@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
@@ -33,16 +40,14 @@ import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -111,14 +116,18 @@ public class MasterOrderDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName(L_ORDERS);
         RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("generateOrders");
+
         createOrder.setMessage("qcadooView.ribbon.orders.generateOrders.message");
+
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
         } else {
             createOrder.setEnabled(true);
         }
+
         createOrder.requestUpdate(true);
     }
 
@@ -127,6 +136,7 @@ public class MasterOrderDetailsHooks {
 
         Entity masterOrder = masterOrderForm.getEntity();
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
+
         if (masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
             orderCriteriaModifier.putMasterOrderNumberFilter(orderLookup, masterOrder.getStringField(NUMBER));
         } else {
@@ -137,6 +147,7 @@ public class MasterOrderDetailsHooks {
     private void setDefaultMasterOrderNumber(final ViewDefinitionState view) {
         if (checkIfShouldInsertNumber(view)) {
             FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
+
             numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                     MasterOrdersConstants.MODEL_MASTER_ORDER));
             numberField.requestComponentUpdateState();
@@ -146,6 +157,7 @@ public class MasterOrderDetailsHooks {
     private boolean checkIfShouldInsertNumber(final ViewDefinitionState state) {
         FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
         FieldComponent number = (FieldComponent) state.getComponentByReference(MasterOrderFields.NUMBER);
+
         if (form.getEntityId() != null) {
             // form is already saved
             return false;
@@ -158,6 +170,7 @@ public class MasterOrderDetailsHooks {
             // there is a validation message for that field
             return false;
         }
+
         return true;
     }
 
@@ -166,6 +179,7 @@ public class MasterOrderDetailsHooks {
         Entity masterOrder = form.getEntity();
         Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+
         if (company == null) {
             addressLookup.setFieldValue(null);
             addressLookup.setEnabled(false);

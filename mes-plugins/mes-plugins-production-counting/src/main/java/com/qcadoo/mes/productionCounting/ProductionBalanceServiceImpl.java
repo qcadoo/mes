@@ -23,9 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import static java.util.Arrays.asList;
-
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -45,6 +44,7 @@ import com.qcadoo.mes.productionCounting.constants.OperationPieceworkComponentFi
 import com.qcadoo.mes.productionCounting.constants.OperationTimeComponentFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -59,6 +59,7 @@ import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ProductionBalanceServiceImpl implements ProductionBalanceService {
@@ -74,6 +75,13 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     private static final String L_PLANNED_MACHINE_TIME = "plannedMachineTime";
 
     private static final String L_PLANNED_LABOR_TIME = "plannedLaborTime";
+
+    private static final String L_FORM = "form";
+
+    private static final String L_ORDERS_TAB = "ordersTab";
+
+    private static final List<String> L_FIELDS_FOR_ONE_ORDER = Arrays.asList("inputProductsTab", "outputProductsTab", "workTab",
+            "materialCostsTab", "workCostsTab", "costsSummaryTab", "order");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -98,27 +106,29 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if ((productionBalance != null) && (productionTrackings != null)) {
             Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-            String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            if (order != null) {
+                String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-            for (Entity productionTracking : productionTrackings) {
-                Entity technologyOperationComponent = productionTracking
-                        .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+                for (Entity productionTracking : productionTrackings) {
+                    Entity technologyOperationComponent = productionTracking
+                            .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-                if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                    Long technologyOperationComponentId = technologyOperationComponent.getId();
+                    if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
+                        Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                    if (groupedProductionTrackings.containsKey(technologyOperationComponentId)) {
-                        updateProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
-                                technologyOperationComponentId);
-                    } else {
-                        addProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
-                                technologyOperationComponentId);
-                    }
-                } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
-                    if (groupedProductionTrackings.isEmpty()) {
-                        addProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking, 0L);
-                    } else {
-                        updateProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking, 0L);
+                        if (groupedProductionTrackings.containsKey(technologyOperationComponentId)) {
+                            updateProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
+                                    technologyOperationComponentId);
+                        } else {
+                            addProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking,
+                                    technologyOperationComponentId);
+                        }
+                    } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
+                        if (groupedProductionTrackings.isEmpty()) {
+                            addProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking, 0L);
+                        } else {
+                            updateProductionTrackingRegisteredTimes(groupedProductionTrackings, productionTracking, 0L);
+                        }
                     }
                 }
             }
@@ -174,25 +184,27 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         if ((productionBalance != null) && (productionTrackings != null)) {
             Entity order = productionBalance.getBelongsToField(ProductionBalanceFields.ORDER);
 
-            String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            if (order != null) {
+                String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-            for (Entity productionTracking : productionTrackings) {
-                Map<String, Integer> plannedTimes = countPlannedTimes(productionBalance, productionTracking);
+                for (Entity productionTracking : productionTrackings) {
+                    Map<String, Integer> plannedTimes = countPlannedTimes(productionBalance, productionTracking);
 
-                if (!plannedTimes.isEmpty()) {
-                    Entity technologyOperationComponent = productionTracking
-                            .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+                    if (!plannedTimes.isEmpty()) {
+                        Entity technologyOperationComponent = productionTracking
+                                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-                    if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-                        Long technologyOperationComponentId = technologyOperationComponent.getId();
+                        if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
+                            Long technologyOperationComponentId = technologyOperationComponent.getId();
 
-                        if (!productionTrackingsWithPlannedTimes.containsKey(technologyOperationComponentId)) {
-                            addProductionTrackingWithPlannedTimes(productionTrackingsWithPlannedTimes, plannedTimes,
-                                    technologyOperationComponentId);
+                            if (!productionTrackingsWithPlannedTimes.containsKey(technologyOperationComponentId)) {
+                                addProductionTrackingWithPlannedTimes(productionTrackingsWithPlannedTimes, plannedTimes,
+                                        technologyOperationComponentId);
+                            }
+                        } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)
+                                && productionTrackingsWithPlannedTimes.isEmpty()) {
+                            addProductionTrackingWithPlannedTimes(productionTrackingsWithPlannedTimes, plannedTimes, 0L);
                         }
-                    } else if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)
-                            && productionTrackingsWithPlannedTimes.isEmpty()) {
-                        addProductionTrackingWithPlannedTimes(productionTrackingsWithPlannedTimes, plannedTimes, 0L);
                     }
                 }
             }
@@ -337,6 +349,22 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
                 && order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)) {
             fillOperationPieceworkComponents(productionBalance, productionTrackingsWithRegisteredTimes);
         }
+    }
+
+    @Override
+    public void changeTabsVisible(final ViewDefinitionState view) {
+        FormComponent productionBalanceForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity productionBalance = productionBalanceForm.getEntity();
+        String type = productionBalance.getStringField(ProductionBalanceFields.TYPE);
+        if (ProductionBalanceType.ONE_ORDER.getStringValue().equals(type)) {
+            productionCountingService.setComponentsVisibility(view, Lists.newArrayList(L_ORDERS_TAB), false, false);
+            productionCountingService.setComponentsVisibility(view, L_FIELDS_FOR_ONE_ORDER, true, false);
+        } else {
+            productionCountingService.setComponentsVisibility(view, Lists.newArrayList(L_ORDERS_TAB), true, false);
+            productionCountingService.setComponentsVisibility(view, L_FIELDS_FOR_ONE_ORDER, false, false);
+        }
+
     }
 
     private void fillBalanceOperationProductComponents(final Entity productionBalance, final List<Entity> productionTrackings,
@@ -563,8 +591,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         OperationProductComponentWithQuantityContainer productComponents = productQuantitiesService
-                .getProductComponentQuantities(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER),
-                        operationRuns);
+                .getProductComponentQuantities(productionBalance.getBelongsToField(ProductionBalanceFields.ORDER), operationRuns);
 
         if (!productComponents.asMap().isEmpty()) {
             for (Entry<Long, Entity> productionTrackingWithRegisteredTimes : productionTrackingsWithRegisteredTimes.entrySet()) {

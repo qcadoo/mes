@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
@@ -40,11 +46,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -69,6 +70,7 @@ public class MasterOrderDetailsListeners {
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+
         address.setFieldValue(null);
     }
 
@@ -79,6 +81,7 @@ public class MasterOrderDetailsListeners {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
         RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
         } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
@@ -86,6 +89,7 @@ public class MasterOrderDetailsListeners {
         } else {
             createOrder.setEnabled(false);
         }
+
         createOrder.requestUpdate(true);
     }
 
@@ -99,6 +103,7 @@ public class MasterOrderDetailsListeners {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
+
         ordersGenerationService.generateOrders(masterOrderProducts, true).showMessage(view);
     }
 
@@ -117,6 +122,7 @@ public class MasterOrderDetailsListeners {
 
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+
         if (PluginUtils.isEnabled("goodFood")) {
             Entity entity = masterOrderProductsGrid.getEntities().get(0);
             Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
@@ -132,6 +138,7 @@ public class MasterOrderDetailsListeners {
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 
         String url = "../page/orders/orderDetails.html";
+
         view.redirectTo(url, false, true, parameters);
     }
 

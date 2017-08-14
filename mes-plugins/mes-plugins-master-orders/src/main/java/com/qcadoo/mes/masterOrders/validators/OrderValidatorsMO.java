@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
+import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
+import static com.qcadoo.model.api.search.SearchRestrictions.or;
+
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
@@ -36,20 +50,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields.MASTER_ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class OrderValidatorsMO {
@@ -61,13 +61,13 @@ public class OrderValidatorsMO {
     private DataDefinitionService dataDefinitionService;
 
     public boolean checkOrderNumber(final DataDefinition orderDD, final Entity order) {
-        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
         if (masterOrder == null) {
             return true;
         }
 
-        if (!masterOrder.getBooleanField(ADD_MASTER_PREFIX_TO_NUMBER)) {
+        if (!masterOrder.getBooleanField(MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER)) {
             return true;
         }
 
@@ -87,27 +87,25 @@ public class OrderValidatorsMO {
     public boolean checkCompanyAndDeadline(final DataDefinition orderDD, final Entity order) {
         boolean isValid = true;
 
-        Entity masterOrder = order.getBelongsToField(MASTER_ORDER);
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
         if (masterOrder == null) {
             return isValid;
         }
 
-        if (!checkIfBelongToFieldIsTheSame(order, masterOrder, COMPANY)) {
-            Entity company = masterOrder.getBelongsToField(COMPANY);
+        if (!checkIfBelongToFieldIsTheSame(order, masterOrder, OrderFields.COMPANY)) {
+            Entity company = masterOrder.getBelongsToField(OrderFields.COMPANY);
 
-            order.addError(orderDD.getField(COMPANY), "masterOrders.order.masterOrder.company.fieldIsNotTheSame",
+            order.addError(orderDD.getField(OrderFields.COMPANY), "masterOrders.order.masterOrder.company.fieldIsNotTheSame",
                     createInfoAboutEntity(company, "company"));
 
             isValid = false;
         }
 
         if (!checkIfDeadlineIsCorrect(order, masterOrder)) {
-            Date deadline = (Date) masterOrder.getField(DEADLINE);
+            Date deadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
 
-            order.addError(
-                    orderDD.getField(DEADLINE),
-                    "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame",
+            order.addError(orderDD.getField(OrderFields.DEADLINE), "masterOrders.order.masterOrder.deadline.fieldIsNotTheSame",
                     deadline == null ? translationService.translate("masterOrders.order.masterOrder.deadline.hasNotDeadline",
                             Locale.getDefault()) : DateUtils.toDateTimeString(deadline));
 
@@ -119,18 +117,25 @@ public class OrderValidatorsMO {
 
     public boolean checkProductAndTechnology(final DataDefinition orderDD, final Entity order) {
         Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
         if (Objects.isNull(mo)) {
             return true;
         }
+
         StringBuilder query = new StringBuilder();
+
         query.append("SELECT masterOrder.id as masterOrderId, masterOrder.number as masterOrderNumber, ");
-        query.append("(select count(mproduct)  FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions ");
+        query.append(
+                "(select count(mproduct)  FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) as positions ");
         query.append("FROM #masterOrders_masterOrder masterOrder ");
         query.append("WHERE masterOrder.id = :oid");
+
         Entity masterOrder = orderDD.find(query.toString()).setLong("oid", mo.getId()).setMaxResults(1).uniqueResult();
+
         if (Objects.isNull(masterOrder) || masterOrder.getLongField("positions") == 0l) {
             return true;
         }
+
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
     }
 
@@ -138,8 +143,10 @@ public class OrderValidatorsMO {
     private boolean orderHasPatternTechnology(final DataDefinition orderDD, final Entity order) {
         if (OrderType.of(order) != OrderType.WITH_PATTERN_TECHNOLOGY) {
             order.addError(orderDD.getField(OrderFields.ORDER_TYPE), "masterOrders.order.masterOrder.wrongOrderType");
+
             return false;
         }
+
         return true;
     }
 
@@ -147,37 +154,43 @@ public class OrderValidatorsMO {
         if (hasMatchingMasterOrderProducts(order, masterOrder)) {
             return true;
         }
+
         addMatchValidationError(order, OrderFields.PRODUCT, null);
+
         return false;
     }
 
     private boolean hasMatchingMasterOrderProducts(final Entity order, final Entity masterOrder) {
-        Entity orderTechnologyPrototype = order.getBelongsToField(TECHNOLOGY_PROTOTYPE);
+        Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        SearchCriteriaBuilder masterCriteria = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.MODEL_MASTER_ORDER).find();
+        SearchCriteriaBuilder masterCriteria = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER).find();
         masterCriteria.setProjection(alias(id(), "id"));
         masterCriteria.add(idEq(masterOrder.getLongField("masterOrderId")));
 
         SearchCriteriaBuilder masterProductsCriteria = masterCriteria.createCriteria(MasterOrderFields.MASTER_ORDER_PRODUCTS,
                 "masterProducts", JoinType.INNER);
         masterProductsCriteria.add(belongsTo(MasterOrderProductFields.PRODUCT, orderProduct));
+
         if (orderTechnologyPrototype == null) {
             masterProductsCriteria.add(isNull(MasterOrderProductFields.TECHNOLOGY));
         } else {
             masterProductsCriteria.add(or(isNull(MasterOrderProductFields.TECHNOLOGY),
                     belongsTo(MasterOrderProductFields.TECHNOLOGY, orderTechnologyPrototype)));
         }
+
         return masterCriteria.setMaxResults(1).uniqueResult() != null;
     }
 
     private void addMatchValidationError(final Entity toOrder, final String fieldName, final String entityInfo) {
         if (entityInfo == null) {
             String errorMessage = String.format("masterOrders.order.masterOrder.%s.masterOrderProductDoesNotExist", fieldName);
+
             toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage);
         } else {
             String errorMessage = String.format("masterOrders.order.masterOrder.%s.fieldIsNotTheSame", fieldName);
+
             toOrder.addError(toOrder.getDataDefinition().getField(fieldName), errorMessage, entityInfo);
         }
     }
@@ -198,8 +211,9 @@ public class OrderValidatorsMO {
     }
 
     private boolean checkIfDeadlineIsCorrect(final Entity order, final Entity masterOrder) {
-        Date deadlineFromMaster = masterOrder.getDateField(DEADLINE);
-        Date deadlineFromOrder = order.getDateField(DEADLINE);
+        Date deadlineFromMaster = masterOrder.getDateField(MasterOrderFields.DEADLINE);
+        Date deadlineFromOrder = order.getDateField(OrderFields.DEADLINE);
+
         if ((deadlineFromMaster == null && deadlineFromOrder == null)
                 || (deadlineFromMaster == null && deadlineFromOrder != null)) {
             return true;
@@ -212,13 +226,16 @@ public class OrderValidatorsMO {
         if (deadlineFromOrder.equals(deadlineFromMaster)) {
             return true;
         }
-        order.addError(order.getDataDefinition().getField(DEADLINE), "masterOrders.masterOrder.deadline.isIncorrect");
+
+        order.addError(order.getDataDefinition().getField(OrderFields.DEADLINE), "masterOrders.masterOrder.deadline.isIncorrect");
+
         return false;
     }
 
     private String createInfoAboutEntity(final Entity entity, final String fieldName) {
-        return entity == null ? translationService.translate("masterOrders.order.masterOrder.hasNot" + fieldName,
-                Locale.getDefault()) : entity.getStringField(NUMBER) + " - " + entity.getStringField(NAME);
+        return entity == null
+                ? translationService.translate("masterOrders.order.masterOrder.hasNot" + fieldName, Locale.getDefault())
+                : entity.getStringField(MasterOrderFields.NUMBER) + " - " + entity.getStringField(MasterOrderFields.NAME);
     }
 
 }

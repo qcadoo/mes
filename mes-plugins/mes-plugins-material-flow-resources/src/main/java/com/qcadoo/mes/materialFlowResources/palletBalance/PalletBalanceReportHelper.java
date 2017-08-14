@@ -137,6 +137,7 @@ public class PalletBalanceReportHelper {
         query.append("  join basic_palletnumber pn on p.palletnumber_id = pn.id ");
         query.append("  join materialflowresources_document d on p.document_id = d.id ");
         query.append("      where d.type in ('01receipt','02internalInbound') ");
+        query.append("      and d.state ='02accepted' ");
         query.append("      and date_trunc('day', d.time) >= :dateFrom ");
         query.append("group by p.typeofpallet, date_trunc('day',d.time)");
 

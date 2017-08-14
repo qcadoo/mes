@@ -73,4 +73,5 @@ public interface ProductionBalanceService {
      */
     void fillFieldsAndGrids(final Entity productionBalance);
 
+    void changeTabsVisible(ViewDefinitionState view);
 }
