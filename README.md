@@ -9,7 +9,7 @@ qcadoo MES is an Internet application for production management targeted at smal
 Choose one of the following options:
 
 1. Download the latest binary stable release from
-   [SourceForge](https://sourceforge.net/projects/qcadoo/)
+   [GitHub Releases](https://github.com/qcadoo/mes/releases/latest)
 2. Build qcadoo MES from sources
    with [this instruction](https://qcadoo.atlassian.net/wiki/display/QCDMESDOC/Building+MES+from+source+code+-+tutorial)
 
@@ -24,7 +24,7 @@ Commercial version provides i.e.
 - full support
 - SaaS deployment
 - REST API for integration
-- ready integration modules with popular ERP software
+- ready integration modules with popular ERP software, Pipedrive, SCADA
 - additional features (like i.e. Gantt planning, warehouse material flow, maintenance planning module and others)
 
 ## Licensing
