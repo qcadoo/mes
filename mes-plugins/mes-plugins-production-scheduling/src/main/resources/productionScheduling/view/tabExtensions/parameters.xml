@@ -38,6 +38,27 @@
 					<option type="align" value="right" />
 				</component>
 			</layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="borderLayout" name="borderLayoutIncludedInWorkTime"
+                           reference="borderLayoutIncludedInWorkTime">
+                    <option type="label" value="includedInWorkTime" />
+                    <component type="gridLayout" name="includedInWorkTime"
+                               columns="1" rows="2">
+                        <layoutElement column="1" row="1">
+                            <component type="checkbox" name="includeTpzPS" reference="includeTpzPS"
+                                       field="#{form}.includeTpzPS">
+                                <option type="labelWidth" value="80" />
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="checkbox" name="includeAdditionalTimePS" reference="includeAdditionalTimePS"
+                                       field="#{form}.includeAdditionalTimePS">
+                                <option type="labelWidth" value="80" />
+                            </component>
+                        </layoutElement>
+                    </component>
+                </component>
+            </layoutElement>
 		</component>
 	</windowTab>
 </windowTabExtension>
