@@ -50,6 +50,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
@@ -175,6 +176,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         resourceStockService.addResourceStock(resource);
         resource = resourceDD.save(resource);
+        if (!resource.isValid()) {
+            throw new InvalidResourceException(resource);
+        }
         position.setField("resourceReceiptDocument", resource.getId().toString());
         return resource;
 
@@ -524,7 +528,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
                             numberService.setScale(quantityInAdditionalUnit));
-                    resource.getDataDefinition().save(resource);
+                    Entity savedResource = resource.getDataDefinition().save(resource);
+                    if (!savedResource.isValid()) {
+                        throw new InvalidResourceException(savedResource);
+                    }
                 }
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
@@ -555,7 +562,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
-                resource.getDataDefinition().save(resource);
+                Entity savedResource = resource.getDataDefinition().save(resource);
+                if (!savedResource.isValid()) {
+                    throw new InvalidResourceException(savedResource);
+                }
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
                 BigDecimal givenQuantity = convertToGivenUnit(quantity, position);
