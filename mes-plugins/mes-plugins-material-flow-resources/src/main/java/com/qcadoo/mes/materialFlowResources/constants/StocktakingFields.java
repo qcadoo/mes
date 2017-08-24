@@ -11,4 +11,7 @@ public final class StocktakingFields {
     public static final String STORAGE_LOCATIONS = "storageLocations";
 
     public static final String LOCATION = "location";
+
+    public static final String GENERATED = "generated";
+
 }

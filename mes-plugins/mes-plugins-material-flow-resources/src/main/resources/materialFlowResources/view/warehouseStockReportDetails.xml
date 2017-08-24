@@ -32,14 +32,98 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="generate">
+                <bigButton name="generate" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generate);" state="disabled">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="print">
+                <bigButton name="print" icon="pdfIcon24.png"
+                           action="#{form}.fireEvent(print);" state="disabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
+							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+							var printRibbonItem = #{window}.getRibbonItem("print.print");
+							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
+							var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
+
+							var entityExists = false;
+
+							this.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (value.content.entityId) {
+										entityExists = true;
+									} else {
+										entityExists = false;
+									}
+									updateRibbon();
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									updateRibbon();
+								}
+							});
+
+							function updateRibbon() {
+								if (entityExists) {
+									var isGeneratedCheckboxValue = #{generated}.getValue();
+									generatedRibbonItem.enable();
+									saveRibbonItem.disable();
+									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+										printRibbonItem.enable();
+										generatedRibbonItem.disable();
+										saveRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+										saveBackRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+										saveNewRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+										cancelRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.alreadyGenerated)}");
+									} else {
+										printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+										saveRibbonItem.enable();
+										cancelRibbonItem.enable()
+									}
+								} else {
+									copyRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+									printRibbonItem.disable("#{translate(materialFlowResources.warehouseStockReportDetails.ribbon.message.notGenerated)}");
+									saveRibbonItem.enable();
+									cancelRibbonItem.enable()
+								}
+							}
+					]]>
+                </script>
                 <component type="gridLayout" name="stocktakingGridLayout"
                            hasBorders="false" columns="2" rows="9">
 
                     <layoutElement row="1" column="1">
+                        <component type="checkbox" name="generated" field="generated"
+                                   reference="generated" defaultEnabled="false" defaultVisible="false"/>
                         <component type="calendar" name="warehouseStockDate" reference="warehouseStockDate"
                                    field="#{form}.warehouseStockDate" defaultEnabled="never"/>
                     </layoutElement>
@@ -115,6 +199,13 @@
                 </component>
 
                 <option type="header" value="true"/>
+
+                <listener event="generate"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.WarehouseStockReportDetailsListeners"
+                          method="generate"/>
+                <listener event="print"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.WarehouseStockReportDetailsListeners"
+                          method="print"/>
             </component>
         </windowTab>
     </component>

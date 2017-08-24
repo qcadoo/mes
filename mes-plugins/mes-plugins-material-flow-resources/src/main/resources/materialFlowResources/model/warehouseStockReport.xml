@@ -30,7 +30,7 @@
     <fields>
 
         <date name="warehouseStockDate" required="true"/>
-        <datetime name="generationDate"/>
+        <datetime name="generationDate" copyable="false"/>
         <dictionary name="category" dictionary="categories"/>
 
         <enum name="wasteMode" values="01all,02yes,03no" default="01all" required="true"/>
@@ -39,6 +39,10 @@
 
         <manyToMany name="storageLocations" model="storageLocation" joinField="warehouseStockReports" copyable="true"
                     cascade="nullify"/>
+
+        <boolean name="generated" default="false" copyable="false"/>
+        <string name="fileName" copyable="false"/>
+
     </fields>
     <hooks>
     </hooks>

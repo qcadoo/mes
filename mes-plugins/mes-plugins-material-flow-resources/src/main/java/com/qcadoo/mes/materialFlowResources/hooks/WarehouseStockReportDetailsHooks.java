@@ -1,9 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationMode;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseStockReportFields;
 import com.qcadoo.model.api.Entity;
@@ -14,6 +11,10 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Objects;
 
 @Service
 public class WarehouseStockReportDetailsHooks {
@@ -21,15 +22,23 @@ public class WarehouseStockReportDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity warehouseStockReport = form.getPersistedEntityWithIncludedFormValues();
-        if (warehouseStockReport.getDateField(WarehouseStockReportFields.WAREHOUSE_STOCK_DATE) == null) {
+        if (Objects.isNull(warehouseStockReport.getDateField(WarehouseStockReportFields.WAREHOUSE_STOCK_DATE))) {
             FieldComponent warehouseStockDateField = (FieldComponent) view
                     .getComponentByReference(WarehouseStockReportFields.WAREHOUSE_STOCK_DATE);
-            warehouseStockDateField.setFieldValue(new Date());
+            warehouseStockDateField.setFieldValue(DateUtils.toDateString(new Date()));
             warehouseStockDateField.requestComponentUpdateState();
         }
-
         setCriteriaModifierParameters(view, warehouseStockReport);
-        changeStorageLocationsGridEnabled(view);
+        disableForm(view, form, warehouseStockReport);
+    }
+
+    private void disableForm(final ViewDefinitionState view, final FormComponent form, final Entity stocktaking) {
+        if(stocktaking.getBooleanField(WarehouseStockReportFields.GENERATED)) {
+            form.setFormEnabled(false);
+        } else {
+            form.setFormEnabled(true);
+            changeStorageLocationsGridEnabled(view);
+        }
     }
 
     private void changeStorageLocationsGridEnabled(final ViewDefinitionState view) {
