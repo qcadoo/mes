@@ -4,7 +4,6 @@ import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
-import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDto;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class StocktakingDetailsListeners {
@@ -33,10 +31,6 @@ public class StocktakingDetailsListeners {
         if (state.isHasError()) {
             return;
         }
-
-        List<ResourceDto> resourceDtos = resourceDataProvider.findResourcesByLocation(1l);
-        resourceDtos.size();
-
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity report = form.getEntity();
         Entity reportDb = report.getDataDefinition().get(report.getId());
