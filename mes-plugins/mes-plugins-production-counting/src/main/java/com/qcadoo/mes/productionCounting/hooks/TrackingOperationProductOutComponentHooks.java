@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,7 +114,8 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         Entity product = trackingOperationProductOutComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-        if (checkIfShouldfillTrackingOperationProductInComponentsQuantities(productionTracking, product)) {
+        if (checkIfShouldfillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent,
+                productionTracking, product)) {
             BigDecimal usedQuantity = trackingOperationProductOutComponent
                     .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             BigDecimal wastesQuantity = trackingOperationProductOutComponent
@@ -137,17 +139,24 @@ public class TrackingOperationProductOutComponentHooks extends AbstractPlannedQu
         }
     }
 
-    private boolean checkIfShouldfillTrackingOperationProductInComponentsQuantities(final Entity productionTracking,
-            final Entity product) {
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+    private boolean checkIfShouldfillTrackingOperationProductInComponentsQuantities(Entity trackingOperationProductOutComponent,
+            final Entity productionTracking, final Entity product) {
 
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        return (parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS) && (TypeOfProductionRecording.FOR_EACH
-                .getStringValue().equals(typeOfProductionRecording) || (TypeOfProductionRecording.CUMULATED.getStringValue()
-                .equals(typeOfProductionRecording) && product.getId().equals(orderProduct.getId()))));
+        boolean enteredFromTerminal = BooleanUtils.isTrue(trackingOperationProductOutComponent
+                .getBooleanField(TrackingOperationProductOutComponentFields.ENTERED_FROM_TERMINAL));
+
+        boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(
+                parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
+
+        return (parameterService.getParameter().getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
+                && !(enteredFromTerminal && allowToOverrideQuantitiesFromTerminal)
+                && (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)
+                        || (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
+                                && product.getId().equals(orderProduct.getId()))));
     }
 
     private void fillQuantities(Entity trackingOperationProductInComponent, final BigDecimal ratio) {
