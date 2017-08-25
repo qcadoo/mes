@@ -691,7 +691,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
         errorMessage.append("(");
         errorMessage.append(product.getStringField(ProductFields.NUMBER));
-        errorMessage.append(" ) ");
+        errorMessage.append(") ");
         errorMessage.append(product.getStringField(ProductFields.NAME));
         errorMessage.append(" - ");
         errorMessage.append(numberService.format(quantity));
