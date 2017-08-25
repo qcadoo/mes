@@ -90,6 +90,8 @@
 
         <boolean name="deliveryActive"/>
 
+        <string name="mergedProductNumberAndAdditionalCode"/>
+
     </fields>
     <masterModel plugin="deliveries" model="orderedProduct"/>
 </model>

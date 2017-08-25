@@ -50,6 +50,7 @@ import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
@@ -95,8 +96,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     }
 
-    public ResourceManagementServiceImpl(DataDefinitionService dataDefinitionService, NumberService numberService,
-            UnitConversionService unitConversionService) {
+    public ResourceManagementServiceImpl(final DataDefinitionService dataDefinitionService, final NumberService numberService,
+            final UnitConversionService unitConversionService) {
         this.dataDefinitionService = dataDefinitionService;
         this.numberService = numberService;
         this.unitConversionService = unitConversionService;
@@ -106,6 +107,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void createResources(final Entity document) {
         DocumentType documentType = DocumentType.of(document);
+
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
             createResourcesForReceiptDocuments(document);
         } else if (DocumentType.INTERNAL_OUTBOUND.equals(documentType) || DocumentType.RELEASE.equals(documentType)) {
@@ -121,13 +123,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void createResourcesForReceiptDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
         Object date = document.getField(DocumentFields.TIME);
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             createResource(document, warehouse, position, date);
+
             position = position.getDataDefinition().save(position);
+
             if (!position.isValid()) {
                 document.setNotValid();
+
                 position.getGlobalErrors().forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                 position.getErrors().values()
                         .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
@@ -143,6 +149,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         Entity resource = resourceDD.create();
         Entity user = document.getBelongsToField(DocumentFields.USER);
         Entity delivery = document.getBelongsToField(ResourceFields.DELIVERY);
+
         resource.setField(ResourceFields.USER_NAME, user.getStringField(_FIRST_NAME) + " " + user.getStringField(L_LAST_NAME));
         resource.setField(ResourceFields.TIME, date);
         resource.setField(ResourceFields.LOCATION, warehouse);
@@ -159,6 +166,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
+
         if (delivery != null) {
             resource.setField(ResourceFields.DELIVERY_NUMBER, delivery.getStringField("number"));
         }
@@ -174,14 +182,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         resourceStockService.addResourceStock(resource);
-        resource = resourceDD.save(resource);
-        position.setField("resourceReceiptDocument", resource.getId().toString());
-        return resource;
 
+        resource = resourceDD.save(resource);
+
+        if (!resource.isValid()) {
+            throw new InvalidResourceException(resource);
+        }
+
+        position.setField("resourceReceiptDocument", resource.getId().toString());
+
+        return resource;
     }
 
-    private Entity createResource(final Entity position, final Entity warehouse, final Entity resource,
-            final BigDecimal quantity, Object date) {
+    private Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
+            Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -222,14 +236,17 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
         resourceStockService.addResourceStock(newResource);
+
         return resourceDD.save(newResource);
     }
 
-    private BigDecimal calculateAdditionalQuantity(BigDecimal quantity, BigDecimal conversion, String unit) {
+    private BigDecimal calculateAdditionalQuantity(final BigDecimal quantity, final BigDecimal conversion, final String unit) {
         boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
+
         if (isInteger) {
             return numberService.setScale(quantity.multiply(conversion), 0);
         }
+
         return numberService.setScale(quantity.multiply(conversion));
     }
 
@@ -238,6 +255,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION)
                 .find().add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, warehouse))
                 .add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product)).list().getEntities();
+
         if (storageLocations.isEmpty()) {
             return null;
         } else {
@@ -245,7 +263,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product, final Entity warehouse) {
+    private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
+            final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -255,7 +274,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     public Multimap<Long, BigDecimal> getQuantitiesInWarehouse(final Entity warehouse,
-            Multimap<Entity, Entity> productsAndPositions) {
+            final Multimap<Entity, Entity> productsAndPositions) {
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
 
         String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
@@ -268,7 +287,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
                 BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
+
                 Entity reservation = reservationsService.getReservationForPosition(productAndPosition.getValue());
+
                 List<Entity> resources = Lists.newArrayList();
 
                 if (additionalCode != null) {
@@ -292,9 +313,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
 
-                    resources.addAll(scb
-                            .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))).list().getEntities());
+                    resources
+                            .addAll(scb
+                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                                    .list().getEntities());
                 }
 
                 if (resources.isEmpty()) {
@@ -311,19 +334,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
 
                 BigDecimal reservedQuantity = BigDecimal.ZERO;
+
                 if (reservation != null) {
                     reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
                 }
+
                 if (result.containsKey(productAndPosition.getKey().getId())) {
-                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream()
-                            .reduce(reservedQuantity, BigDecimal::add);
+                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(reservedQuantity,
+                            BigDecimal::add);
 
                     result.put(productAndPosition.getKey().getId(),
-                            (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY)).reduce(
-                                    BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
+                            (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
+                                    .reduce(BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
                 } else {
-                    result.put(
-                            productAndPosition.getKey().getId(),
+                    result.put(productAndPosition.getKey().getId(),
                             resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
                                     .reduce(reservedQuantity, BigDecimal::add));
                 }
@@ -333,11 +357,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return result;
     }
 
-    public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, Entity position) {
+    public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, final Entity position) {
         BigDecimal quantity = BigDecimal.ZERO;
 
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+
         Entity reservation = reservationsService.getReservationForPosition(position);
+
         if (resource != null) {
             quantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
         } else {
@@ -354,6 +380,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (reservation != null) {
             quantity = quantity.add(reservation.getDecimalField(ReservationFields.QUANTITY));
         }
+
         return quantity;
     }
 
@@ -378,9 +405,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Transactional
     public void updateResourcesForReleaseDocuments(final Entity document) {
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+
         WarehouseAlgorithm warehouseAlgorithm;
 
         boolean enoughResources = true;
+
         StringBuilder errorMessage = new StringBuilder();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
@@ -419,12 +448,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
-                errorMessage.append(product.getStringField(ProductFields.NAME));
-                errorMessage.append(" - ");
-                errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
-                errorMessage.append(" ");
-                errorMessage.append(product.getStringField(ProductFields.UNIT));
-                errorMessage.append(", ");
+                completeMessage(errorMessage, product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
                 if (generatedPositions.size() > 1) {
@@ -449,18 +473,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private void addPositionErrors(Entity document, Entity saved) {
+    private void addPositionErrors(final Entity document, final Entity saved) {
         if (!saved.isValid()) {
             document.setNotValid();
+
             saved.getGlobalErrors().forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+
             if (!saved.getErrors().isEmpty()) {
-                document.addGlobalError("materialFlow.document.fillResources.global.error.positionNotValid", false, saved
-                        .getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                document.addGlobalError("materialFlow.document.fillResources.global.error.positionNotValid", false,
+                        saved.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER));
             }
         }
     }
 
-    private void copyPositionValues(Entity position, Entity newPosition) {
+    private void copyPositionValues(final Entity position, final Entity newPosition) {
         position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
         position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
         position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
@@ -475,7 +501,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
     }
 
-    private List<Entity> updateResources(Entity warehouse, Entity position, WarehouseAlgorithm warehouseAlgorithm) {
+    private List<Entity> updateResources(final Entity warehouse, final Entity position, final WarehouseAlgorithm warehouseAlgorithm) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
 
@@ -488,6 +514,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
 
         resourceStockService.removeResourceStock(product, warehouse, quantity);
+
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
@@ -510,21 +537,31 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
+
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
                     Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
                     resource.getDataDefinition().delete(resource.getId());
+
                     newPosition.setField(PositionFields.RESOURCE, null);
+
                     palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
                     BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(newResourceQuantity, resourceConversion,
                             resource.getStringField(ResourceFields.GIVEN_UNIT));
+
                     resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
                             numberService.setScale(quantityInAdditionalUnit));
-                    resource.getDataDefinition().save(resource);
+
+                    Entity savedResource = resource.getDataDefinition().save(resource);
+
+                    if (!savedResource.isValid()) {
+                        throw new InvalidResourceException(savedResource);
+                    }
                 }
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
@@ -541,12 +578,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
                 resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
+
                 if (position.getBelongsToField(PositionFields.RESOURCE) != null
                         && reservationsService.reservationsEnabledForDocumentPositions()) {
                     BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
                             numberService.getMathContext());
                     resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
                 }
+
                 BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
                 BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(resourceQuantity, resourceConversion,
                         resource.getStringField(ResourceFields.GIVEN_UNIT));
@@ -555,7 +594,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
-                resource.getDataDefinition().save(resource);
+                Entity savedResource = resource.getDataDefinition().save(resource);
+
+                if (!savedResource.isValid()) {
+                    throw new InvalidResourceException(savedResource);
+                }
+
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
                 BigDecimal givenQuantity = convertToGivenUnit(quantity, position);
@@ -573,23 +617,24 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return Lists.newArrayList(position);
     }
 
-    public BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position) {
+    public BigDecimal convertToGivenUnit(final BigDecimal quantity, final Entity position) {
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
-        return calculateAdditionalQuantity(quantity, conversion, givenUnit);
 
+        return calculateAdditionalQuantity(quantity, conversion, givenUnit);
     }
 
     @Override
     @Transactional
-    public void moveResourcesForTransferDocument(Entity document) {
+    public void moveResourcesForTransferDocument(final Entity document) {
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
         Object date = document.getField(DocumentFields.TIME);
 
-        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm.parseString(warehouseFrom
-                .getStringField(LocationFieldsMFR.ALGORITHM));
+        WarehouseAlgorithm warehouseAlgorithm = WarehouseAlgorithm
+                .parseString(warehouseFrom.getStringField(LocationFieldsMFR.ALGORITHM));
 
         boolean enoughResources = true;
 
@@ -599,7 +644,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+
             moveResources(warehouseFrom, warehouseTo, position, date, warehouseAlgorithm);
+
             enoughResources = enoughResources && position.isValid();
 
             if (!position.isValid()) {
@@ -618,19 +665,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
-                errorMessage.append(product.getStringField(ProductFields.NAME));
-                errorMessage.append(" - ");
-                errorMessage.append(numberService.format(quantity.subtract(quantityInWarehouse)));
-                errorMessage.append(" ");
-                errorMessage.append(product.getStringField(ProductFields.UNIT));
-                errorMessage.append(", ");
+                completeMessage(errorMessage, product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
                 position = position.getDataDefinition().save(position);
                 if (!position.isValid()) {
                     document.setNotValid();
-                    position.getGlobalErrors().forEach(
-                            e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+
+                    position.getGlobalErrors()
+                            .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                     position.getErrors().values()
                             .forEach(e -> document.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                 }
@@ -640,6 +683,20 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!enoughResources) {
             addDocumentError(document, warehouseFrom, errorMessage);
         }
+    }
+
+    private void completeMessage(final StringBuilder errorMessage, Entity product, final BigDecimal quantity) {
+        if (errorMessage.length() > 0) {
+            errorMessage.append(", ");
+        }
+        errorMessage.append("(");
+        errorMessage.append(product.getStringField(ProductFields.NUMBER));
+        errorMessage.append(") ");
+        errorMessage.append(product.getStringField(ProductFields.NAME));
+        errorMessage.append(" - ");
+        errorMessage.append(numberService.format(quantity));
+        errorMessage.append(" ");
+        errorMessage.append(product.getStringField(ProductFields.UNIT));
     }
 
     private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
@@ -653,26 +710,33 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private void moveResources(Entity warehouseFrom, Entity warehouseTo, Entity position, Object date,
-            WarehouseAlgorithm warehouseAlgorithm) {
+    private void moveResources(final Entity warehouseFrom, final Entity warehouseTo, final Entity position, final Object date,
+            final WarehouseAlgorithm warehouseAlgorithm) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
-        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position, warehouseAlgorithm);
+        List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position,
+                warehouseAlgorithm);
 
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
+
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+
         resourceStockService.removeResourceStock(product, warehouseFrom, quantity);
+
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
+
                 if (resourceQuantity.compareTo(resourceAvailableQuantity) <= 0) {
                     Entity palletNumberToDispose = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+
                     resource.getDataDefinition().delete(resource.getId());
                     position.setField(PositionFields.RESOURCE, null);
+
                     palletNumberDisposalService.tryToDispose(palletNumberToDispose);
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
@@ -685,6 +749,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
                             numberService.setScale(quantityInAdditionalUnit));
+
                     resource.getDataDefinition().save(resource);
                 }
 
@@ -702,7 +767,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
                 resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
+
                 String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+
                 BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
                 BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(resourceQuantity, conversion, givenUnit);
 
@@ -730,26 +797,30 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     @Override
-    public List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
-            WarehouseAlgorithm warehouseAlgorithm) {
+    public List<Entity> getResourcesForWarehouseProductAndAlgorithm(final Entity warehouse, final Entity product, final Entity position,
+            final WarehouseAlgorithm warehouseAlgorithm) {
         List<Entity> resources = Lists.newArrayList();
 
         Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
 
         if (resource != null && resource.getId() != null) {
-            resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
+            resource = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
+                    .get(resource.getId());
         }
 
         Entity additionalCode = position.getBelongsToField(PositionFields.ADDITIONAL_CODE);
 
         if (resource != null) {
             Entity reservation = reservationsService.getReservationForPosition(position);
+
             if (reservation != null) {
                 BigDecimal reservationQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
                 BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
+
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity.add(reservationQuantity));
             }
+
             resources.add(resource);
         } else if (WarehouseAlgorithm.FIFO.equals(warehouseAlgorithm)) {
             resources = getResourcesForLocationAndProductFIFO(warehouse, product, additionalCode, position);
@@ -779,7 +850,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private List<Entity> getResourcesForLocationCommonCode(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position, SearchOrder... searchOrders) {
-
         class SearchCriteriaHelper {
 
             private List<Entity> getAll() {
@@ -790,27 +860,33 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(product, warehouse);
 
                 if (!StringUtils.isEmpty(product.getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                    scb.add(SearchRestrictions.eq(PositionFields.CONVERSION, position.getDecimalField(PositionFields.CONVERSION)));
+                    scb.add(SearchRestrictions.eq(PositionFields.CONVERSION,
+                            position.getDecimalField(PositionFields.CONVERSION)));
                 } else {
                     scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                 }
+
                 Optional.ofNullable(searchCriterion).ifPresent(scb::add);
+
                 for (SearchOrder searchOrder : searchOrders) {
                     scb.addOrder(searchOrder);
                 }
+
                 return scb.list().getEntities();
             }
         }
 
         List<Entity> resources = Lists.newArrayList();
-        if (additionalCode != null) {
-            resources = new SearchCriteriaHelper().getAllThatSatisfies(SearchRestrictions.belongsTo(
-                    ResourceFields.ADDITIONAL_CODE, additionalCode));
 
-            resources.addAll(new SearchCriteriaHelper().getAllThatSatisfies(SearchRestrictions.or(
-                    SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                    SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))));
+        if (additionalCode != null) {
+            resources = new SearchCriteriaHelper()
+                    .getAllThatSatisfies(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode));
+
+            resources.addAll(new SearchCriteriaHelper()
+                    .getAllThatSatisfies(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId()))));
         }
+
         if (resources.isEmpty()) {
             resources = new SearchCriteriaHelper().getAll();
         }

@@ -98,6 +98,9 @@
 
         <model:model model="reservation" resource="model/reservation.xml"/>
 
+        <model:model model="stocktaking" resource="model/stocktaking.xml"/>
+        <model:model model="warehouseStockReport" resource="model/warehouseStockReport.xml"/>
+
         <model:model-field plugin="basic" model="parameter">
             <model:enum name="changeDateWhenTransferToWarehouseType"
                         values="01never,02validateWithResources" default="01never"/>
@@ -132,6 +135,7 @@
             <model:hasMany name="resources" model="resource"
                            plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
+
         <model:model-field plugin="materialFlow" model="location">
             <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo"/>
         </model:model-field>
@@ -151,6 +155,11 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceCorrections" model="resourceCorrection"
                            plugin="materialFlowResources" joinField="location" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="stocktakings" model="stocktaking"
+                           plugin="materialFlowResources" joinField="location" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -276,6 +285,11 @@
         <menu:menu-item name="palletBalances" category="materialFlow"
                         view="palletBalancesList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item name="stocktaking" category="materialFlow"
+                        view="stocktakingsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
+        <menu:menu-item name="warehouseStockReports" category="materialFlow"
+                        view="warehouseStockReportsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
         <view:view-listener plugin="materialFlow" view="transferDetails"
                             component="locationFrom" event="onSelectedEntityChange"
@@ -335,6 +349,12 @@
         <view:view resource="view/palletBalancesList.xml"/>
 
         <view:view resource="view/productStorageLocationHistoryDetails.xml"/>
+
+        <view:view resource="view/stocktakingDetails.xml"/>
+        <view:view resource="view/stocktakingsList.xml"/>
+
+        <view:view resource="view/warehouseStockReportDetails.xml"/>
+        <view:view resource="view/warehouseStockReportsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>

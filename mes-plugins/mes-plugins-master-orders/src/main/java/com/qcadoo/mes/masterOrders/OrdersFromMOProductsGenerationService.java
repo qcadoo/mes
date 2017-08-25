@@ -225,6 +225,8 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
 
+        order.setField("ignoreMissingComponents", parameter.getBooleanField("ignoreMissingComponents"));
+
         boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
                 .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);

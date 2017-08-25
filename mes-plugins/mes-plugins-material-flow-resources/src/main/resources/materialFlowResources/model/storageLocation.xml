@@ -51,8 +51,14 @@
         <boolean name="highStorageLocation" default="false"/>
 
         <hasMany name="history" model="storageLocationHistory" cascade="delete" copyable="false" joinField="storageLocation"/>
-        <hasMany name="productFromHistory" model="productStorageLocationHistory" cascade="delete" copyable="false" joinField="storageLocationFrom"/>
-        <hasMany name="productToHistory" model="productStorageLocationHistory" cascade="delete" copyable="false" joinField="storageLocationTo"/>
+        <hasMany name="productFromHistory" model="productStorageLocationHistory" cascade="delete" copyable="false"
+                 joinField="storageLocationFrom"/>
+        <hasMany name="productToHistory" model="productStorageLocationHistory" cascade="delete" copyable="false"
+                 joinField="storageLocationTo"/>
+
+        <manyToMany name="stocktakings" model="stocktaking" joinField="storageLocations" copyable="false" cascade="nullify"/>
+        <manyToMany name="warehouseStockReports" model="warehouseStockReport" joinField="storageLocations" copyable="false"
+                    cascade="nullify"/>
 
     </fields>
     <hooks>

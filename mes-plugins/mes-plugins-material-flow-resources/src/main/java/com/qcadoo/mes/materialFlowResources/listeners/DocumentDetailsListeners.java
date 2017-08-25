@@ -48,7 +48,9 @@ import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
@@ -182,7 +184,16 @@ public class DocumentDetailsListeners {
         }
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            resourceManagementService.createResources(document);
+            try {
+                resourceManagementService.createResources(document);
+            } catch (InvalidResourceException ire) {
+                document.setNotValid();
+                String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+                String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                        .getStringField(ProductFields.NUMBER);
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
+                        resourceNumber, productNumber);
+            }
         } else {
             document.setNotValid();
 
@@ -193,18 +204,21 @@ public class DocumentDetailsListeners {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
+
+            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
             if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
                 receiptDocumentForReleaseHelper.tryBuildPz(document, view);
             }
+
+            logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
+                    + document.getStringField(DocumentFields.NUMBER));
         }
 
         documentForm.setEntity(document);
-
-        logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
-                + document.getStringField(DocumentFields.NUMBER));
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
