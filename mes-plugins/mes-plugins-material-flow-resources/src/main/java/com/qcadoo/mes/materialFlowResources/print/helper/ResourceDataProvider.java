@@ -1,11 +1,14 @@
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.model.api.NumberService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +23,33 @@ public class ResourceDataProvider {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public List<ResourceDto> findResourcesByLocation(final Long locationId, List<Long> storageLocationIds, String category,
+    @Autowired
+    private NumberService numberService;
+
+    public List<Resource> findResourcesAndGroup(final Long locationId, List<Long> storageLocationIds, String category,
+            String wasteMode, boolean appendOrderBy) {
+        List<ResourceDto> resourceDtos = findResources(locationId, storageLocationIds, category, wasteMode, appendOrderBy);
+        List<Resource> resources = Lists.newArrayList();
+        resourceDtos.forEach(rdto -> {
+            Resource resource = new Resource(rdto);
+            if (resources.contains(resource)) {
+                Resource containedResource = resources.get(resources.indexOf(resource));
+                BigDecimal quantity = containedResource.getQuantity();
+                quantity = quantity.add(resource.getQuantity(), numberService.getMathContext());
+                BigDecimal quantityInAdditionalUnit = containedResource.getQuantityInAdditionalUnit();
+                quantityInAdditionalUnit = quantityInAdditionalUnit.add(resource.getQuantityInAdditionalUnit(),
+                        numberService.getMathContext());
+                containedResource.setQuantity(quantity);
+                containedResource.setQuantityInAdditionalUnit(quantityInAdditionalUnit);
+            } else {
+                resources.add(resource);
+            }
+
+        });
+        return resources;
+    }
+
+    public List<ResourceDto> findResources(final Long locationId, List<Long> storageLocationIds, String category,
             String wasteMode, boolean appendOrderBy) {
         Map<String, Object> queryParameters = new HashMap<String, Object>();
         queryParameters.put("location", locationId);
@@ -74,7 +103,7 @@ public class ResourceDataProvider {
             query.append(" AND resource.waste = :wasteMode");
         }
         if (appendOrderBy) {
-            query.append(" ORDER BY storagelocation.number, palletnumber.number");
+            query.append(" ORDER BY storagelocation.number, palletnumber.number, product.number");
 
         }
         return query.toString();
