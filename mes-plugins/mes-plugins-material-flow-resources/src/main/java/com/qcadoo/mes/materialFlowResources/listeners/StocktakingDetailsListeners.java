@@ -1,6 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.mes.materialFlowResources.print.StocktakingReportService;
 import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
@@ -8,16 +7,19 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.Date;
 
 @Service
 public class StocktakingDetailsListeners {
 
     private static final String L_FORM = "form";
+
+    private static final Logger LOG = LoggerFactory.getLogger(StocktakingDetailsListeners.class);
 
     @Autowired
     private ResourceDataProvider resourceDataProvider;
@@ -39,10 +41,9 @@ public class StocktakingDetailsListeners {
         reportDb = reportDb.getDataDefinition().save(reportDb);
         try {
             reportService.generateReport(state, reportDb);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (DocumentException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOG.error("Error when generate stocktaking report", e);
+            throw new IllegalStateException(e.getMessage(), e);
         }
         state.performEvent(view, "reset", new String[0]);
 
