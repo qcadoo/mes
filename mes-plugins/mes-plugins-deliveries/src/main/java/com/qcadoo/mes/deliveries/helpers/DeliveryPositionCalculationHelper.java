@@ -17,7 +17,6 @@ public final class DeliveryPositionCalculationHelper {
     @Autowired
     private DictionaryService dictionaryService;
 
-
     @Autowired
     private NumberService numberService;
 

@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
+import com.qcadoo.mes.deliveries.helpers.DeliveryPositionCalculationHelper;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
@@ -88,6 +90,9 @@ public class DeliveredProductAddMultiListeners {
 
     @Autowired
     private DeliveredProductMultiPositionService deliveredProductMultiPositionService;
+
+    @Autowired
+    private DeliveryPositionCalculationHelper deliveryPositionCalculationHelper;
 
     public void createDeliveredProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -461,19 +466,29 @@ public class DeliveredProductAddMultiListeners {
             Entity deliveredProductMultiPosition = deliveredProductMultiPositionsFormComponent
                     .getPersistedEntityWithIncludedFormValues();
 
-            BigDecimal quantity = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY);
-            BigDecimal conversion = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
+            boolean quantityComponentInForm = state.getUuid()
+                    .equals(deliveredProductMultiPositionsFormComponent.findFieldComponentByName("quantity").getUuid());
+            boolean conversionComponentInForm = state.getUuid()
+                    .equals(deliveredProductMultiPositionsFormComponent.findFieldComponentByName("conversion").getUuid());
 
-            if (conversion != null && quantity != null) {
-                FieldComponent additionalQuantity = (FieldComponent) deliveredProductMultiPositionsFormComponent
-                        .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
+            if (quantityComponentInForm || conversionComponentInForm) {
 
-                BigDecimal newAdditionalQuantity = quantity.multiply(conversion, numberService.getMathContext());
-                newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                        RoundingMode.HALF_UP);
+                Entity product = deliveredProductMultiPosition.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+                BigDecimal quantity = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY);
+                BigDecimal conversion = deliveredProductMultiPosition
+                        .getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
 
-                additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
-                additionalQuantity.requestComponentUpdateState();
+                if (conversion != null && quantity != null && product != null) {
+                    String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                            .orElse(product.getStringField(ProductFields.UNIT));
+                    FieldComponent additionalQuantity = deliveredProductMultiPositionsFormComponent
+                            .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
+                    BigDecimal newAdditionalQuantity = deliveryPositionCalculationHelper.calculateAdditionalQuantity(quantity,
+                            conversion, additionalQuantityUnit);
+                    additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+                    additionalQuantity.requestComponentUpdateState();
+                }
+                break;
             }
         }
     }
@@ -488,19 +503,27 @@ public class DeliveredProductAddMultiListeners {
             Entity deliveredProductMultiPosition = deliveredProductMultiPositionsFormComponent
                     .getPersistedEntityWithIncludedFormValues();
 
-            BigDecimal additionalQuantity = deliveredProductMultiPosition
-                    .getDecimalField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
-            BigDecimal conversion = deliveredProductMultiPosition.getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
+            if (state.getUuid().equals(
+                    deliveredProductMultiPositionsFormComponent.findFieldComponentByName("additionalQuantity").getUuid())) {
 
-            if (conversion != null && additionalQuantity != null) {
-                FieldComponent quantity = (FieldComponent) deliveredProductMultiPositionsFormComponent
-                        .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY);
+                Entity product = deliveredProductMultiPosition.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT);
+                BigDecimal additionalQuantity = deliveredProductMultiPosition
+                        .getDecimalField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY);
+                BigDecimal conversion = deliveredProductMultiPosition
+                        .getDecimalField(DeliveredProductMultiPositionFields.CONVERSION);
 
-                BigDecimal newQuantity = additionalQuantity.divide(conversion, numberService.getMathContext());
-                newQuantity = newQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, RoundingMode.HALF_UP);
+                if (conversion != null && additionalQuantity != null) {
+                    String unit = product.getStringField(ProductFields.UNIT);
+                    FieldComponent quantity = deliveredProductMultiPositionsFormComponent
+                            .findFieldComponentByName(DeliveredProductMultiPositionFields.QUANTITY);
 
-                quantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newQuantity, 0));
-                quantity.requestComponentUpdateState();
+                    BigDecimal newQuantity = deliveryPositionCalculationHelper.calculateQuantity(additionalQuantity, conversion,
+                            unit);
+
+                    quantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newQuantity, 0));
+                    quantity.requestComponentUpdateState();
+                }
+                break;
             }
         }
     }
