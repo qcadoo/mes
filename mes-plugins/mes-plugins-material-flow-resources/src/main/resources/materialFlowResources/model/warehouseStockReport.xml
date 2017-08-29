@@ -45,5 +45,8 @@
 
     </fields>
     <hooks>
+        <onSave
+                class="com.qcadoo.mes.materialFlowResources.hooks.WarehouseStockReportModelHooks"
+                method="onSave"/>
     </hooks>
 </model>

@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -69,20 +70,28 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             storageLocationIdsToQuery = storageLocations.stream().map(e -> e.getId()).collect(Collectors.toList());
         }
         String currentStorageLocation = StringUtils.EMPTY;
-        List<Resource> resources = resourceDataProvider.findResourcesAndGroup(
-                entity.getBelongsToField(StocktakingFields.LOCATION).getId(), storageLocationIdsToQuery,
-                entity.getStringField("category"), entity.getStringField("wasteMode"), true);
+        List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
+                .getBelongsToField(StocktakingFields.LOCATION).getId(), storageLocationIdsToQuery, entity
+                .getStringField("category"), entity.getStringField("wasteMode"), true);
+        int counter = 1;
         for (Resource resource : resources) {
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             String storageLocation = resource.getStorageLocationNumber();
             if (!storageLocation.equals(currentStorageLocation)) {
                 currentStorageLocation = storageLocation;
+                if(counter == 1) {
+                    dataTable.getDefaultCell().disableBorderSide(PdfPCell.BOTTOM);
+                }
                 dataTable.addCell(new Phrase(currentStorageLocation, FontUtils.getDejavuBold9Dark()));
-
             } else {
+                dataTable.getDefaultCell().disableBorderSide(PdfPCell.TOP);
+                dataTable.getDefaultCell().disableBorderSide(PdfPCell.BOTTOM);
+
                 dataTable.addCell(new Phrase("", FontUtils.getDejavuBold9Dark()));
             }
+            dataTable.getDefaultCell().enableBorderSide(PdfPCell.TOP);
+
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.addCell(new Phrase(extractProductNumberAndCode(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -92,23 +101,35 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             dataTable.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            dataTable.addCell(new Phrase(extractExpirationQuantity(resource), FontUtils.getDejavuRegular10Dark()));
-            dataTable
-                    .addCell(new Phrase(extractExpirationQuantityInAdditionalUnit(resource), FontUtils.getDejavuRegular10Dark()));
+            dataTable.addCell(new Phrase(extractQuantity(resource), FontUtils.getDejavuRegular10Dark()));
+            dataTable.addCell(new Phrase(extractQuantityInAdditionalUnit(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-
+            counter ++;
         }
         document.add(dataTable);
 
     }
 
-    private String extractExpirationQuantity(Resource resource) {
-        return Objects.isNull(resource.getQuantity()) ? "" : numberService.format(resource.getQuantity());
+    private String extractQuantity(Resource resource) {
+        if (Objects.isNull(resource.getQuantity())) {
+            return "";
+        } else if (isIntegerValue(resource.getQuantity())) {
+            return numberService.formatWithMinimumFractionDigits(resource.getQuantity(), 0);
+        } else {
+            return numberService.formatWithMinimumFractionDigits(
+                    numberService.setScale(resource.getQuantity(), 1), 1);
+        }
     }
 
-    private String extractExpirationQuantityInAdditionalUnit(Resource resource) {
-        return Objects.isNull(resource.getQuantityInAdditionalUnit()) ? "" : numberService.format(resource
-                .getQuantityInAdditionalUnit());
+    private String extractQuantityInAdditionalUnit(Resource resource) {
+        if (Objects.isNull(resource.getQuantityInAdditionalUnit())) {
+            return "";
+        } else if (isIntegerValue(resource.getQuantityInAdditionalUnit())) {
+            return numberService.formatWithMinimumFractionDigits(resource.getQuantityInAdditionalUnit(), 0);
+        } else {
+            return numberService.formatWithMinimumFractionDigits(
+                    numberService.setScale(resource.getQuantityInAdditionalUnit(), 1), 1);
+        }
     }
 
     private String extractExpirationDate(Resource resource) {
@@ -116,12 +137,13 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
     }
 
     private String extractConversion(Resource resource) {
-        return Objects.isNull(resource.getConversion()) ? "" : numberService.formatWithMinimumFractionDigits(resource.getConversion(),0);
+        return Objects.isNull(resource.getConversion()) ? "" : numberService.formatWithMinimumFractionDigits(
+                resource.getConversion(), 0);
     }
 
     private String extractProductName(Resource resource) {
         return StringUtils.isNoneBlank(resource.getProductName()) ? resource.getProductName().substring(0,
-                Math.min(16, resource.getProductName().length())) : "";
+                Math.min(15, resource.getProductName().length())) : "";
     }
 
     private String extractPalletNumber(Resource resource) {
@@ -154,8 +176,8 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
 
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumberAndCode",
                 locale));
-        alignments.put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productNumberAndCode",
-                locale), HeaderAlignment.RIGHT);
+        alignments.put(translationService.translate(
+                "materialFlowResources.warehouseStockReport.report.data.productNumberAndCode", locale), HeaderAlignment.RIGHT);
 
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.productName", locale));
         alignments.put(
@@ -177,11 +199,10 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         header.add(translationService.translate("materialFlowResources.warehouseStockReport.report.data.additionalQuantity",
                 locale));
         alignments
-                .put(translationService
-                        .translate("materialFlowResources.warehouseStockReport.report.data.additionalQuantity", locale),
-                        HeaderAlignment.RIGHT);
+                .put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.additionalQuantity",
+                        locale), HeaderAlignment.RIGHT);
 
-        int[] columnWidths = { 80, 70, 90, 170, 65, 100, 75, 75 };
+        int[] columnWidths = { 85, 70, 95, 160, 65, 100, 75, 75 };
 
         return pdfHelper.createTableWithHeader(8, header, false, columnWidths, alignments);
     }
@@ -242,6 +263,10 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         headerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         headerTable.getDefaultCell().setPadding(2.0f);
         headerTable.getDefaultCell().setVerticalAlignment(PdfPCell.ALIGN_TOP);
+    }
+
+    private boolean isIntegerValue(BigDecimal bd) {
+        return bd.signum() == 0 || bd.scale() <= 0 || bd.stripTrailingZeros().scale() <= 0;
     }
 
     @Override

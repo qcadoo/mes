@@ -43,6 +43,8 @@
         <manyToMany name="storageLocations" model="storageLocation" joinField="stocktakings" copyable="true" cascade="nullify"/>
     </fields>
     <hooks>
-
+        <onSave
+                class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingModelHooks"
+                method="onSave"/>
     </hooks>
 </model>
