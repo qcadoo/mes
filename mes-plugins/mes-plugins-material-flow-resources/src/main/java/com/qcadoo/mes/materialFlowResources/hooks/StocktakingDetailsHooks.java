@@ -47,8 +47,10 @@ public class StocktakingDetailsHooks {
     }
 
     private void disableForm(final ViewDefinitionState view, final FormComponent form, final Entity stocktaking) {
-        if(stocktaking.getBooleanField(StocktakingFields.GENERATED)) {
+        if (stocktaking.getBooleanField(StocktakingFields.GENERATED)) {
             form.setFormEnabled(false);
+            GridComponent storageLocations = (GridComponent) view.getComponentByReference(StocktakingFields.STORAGE_LOCATIONS);
+            storageLocations.setEnabled(false);
         } else {
             form.setFormEnabled(true);
             changeStorageLocationsGridEnabled(view);

@@ -35,6 +35,9 @@ public class WarehouseStockReportDetailsHooks {
     private void disableForm(final ViewDefinitionState view, final FormComponent form, final Entity stocktaking) {
         if(stocktaking.getBooleanField(WarehouseStockReportFields.GENERATED)) {
             form.setFormEnabled(false);
+            GridComponent storageLocations = (GridComponent) view
+                    .getComponentByReference(WarehouseStockReportFields.STORAGE_LOCATIONS);
+            storageLocations.setEnabled(false);
         } else {
             form.setFormEnabled(true);
             changeStorageLocationsGridEnabled(view);
