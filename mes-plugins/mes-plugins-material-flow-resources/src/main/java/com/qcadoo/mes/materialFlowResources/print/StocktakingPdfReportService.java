@@ -72,17 +72,27 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         List<Resource> resources = resourceDataProvider.findResourcesAndGroup(entity
                 .getBelongsToField(StocktakingFields.LOCATION).getId(), storageLocationIdsToQuery, entity
                 .getStringField("category"), entity.getStringField("wasteMode"), true);
+        int counter = 1;
         for (Resource resource : resources) {
+
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
             String storageLocation = resource.getStorageLocationNumber();
             if (!storageLocation.equals(currentStorageLocation)) {
                 currentStorageLocation = storageLocation;
+                if (counter == 1) {
+                    dataTable.getDefaultCell().disableBorderSide(PdfPCell.BOTTOM);
+                }
                 dataTable.addCell(new Phrase(currentStorageLocation, FontUtils.getDejavuBold9Dark()));
 
             } else {
+                dataTable.getDefaultCell().disableBorderSide(PdfPCell.TOP);
+                dataTable.getDefaultCell().disableBorderSide(PdfPCell.BOTTOM);
+
                 dataTable.addCell(new Phrase("", FontUtils.getDejavuBold9Dark()));
             }
+            dataTable.getDefaultCell().enableBorderSide(PdfPCell.TOP);
+
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.addCell(new Phrase(extractProductNumberAndCode(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -96,6 +106,7 @@ public class StocktakingPdfReportService extends PdfDocumentService {
             dataTable.addCell(new Phrase("", FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().disableBorderSide(Rectangle.LEFT);
             dataTable.getDefaultCell().disableBorderSide(Rectangle.RIGHT);
+            counter++;
         }
         document.add(dataTable);
 
@@ -112,7 +123,7 @@ public class StocktakingPdfReportService extends PdfDocumentService {
 
     private String extractProductName(Resource resource) {
         return StringUtils.isNoneBlank(resource.getProductName()) ? resource.getProductName().substring(0,
-                Math.min(16, resource.getProductName().length())) : "";
+                Math.min(15, resource.getProductName().length())) : "";
     }
 
     private String extractPalletNumber(Resource resource) {
@@ -163,7 +174,7 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale),
                 HeaderAlignment.LEFT);
 
-        int[] columnWidths = { 90, 70, 90, 170, 65, 100, 80 };
+        int[] columnWidths = { 90, 70, 95, 160, 65, 100, 80 };
 
         return pdfHelper.createTableWithHeader(7, header, false, columnWidths, alignments);
     }
