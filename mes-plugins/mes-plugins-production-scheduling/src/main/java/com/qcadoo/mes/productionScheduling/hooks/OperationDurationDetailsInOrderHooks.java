@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,6 +53,28 @@ public class OperationDurationDetailsInOrderHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (orderForm.getEntityId() == null && view.isViewAfterRedirect()) {
+            CheckBoxComponent includeTpzField = (CheckBoxComponent) view.getComponentByReference(OrderFieldsPS.INCLUDE_TPZ);
+            boolean checkIncludeTpzField = parameterService.getParameter().getBooleanField("includeTpzPS");
+            includeTpzField.setChecked(checkIncludeTpzField);
+            includeTpzField.requestComponentUpdateState();
+
+            CheckBoxComponent includeAdditionalTimeField = (CheckBoxComponent) view.getComponentByReference(OrderFieldsPS.INCLUDE_ADDITIONAL_TIME);
+            boolean checkIncludeAdditionalTimeField = parameterService.getParameter().getBooleanField("includeAdditionalTimePS");
+            includeAdditionalTimeField.setChecked(checkIncludeAdditionalTimeField);
+            includeAdditionalTimeField.requestComponentUpdateState();
+        }
+        fillUnitField(view);
+        disableCopyRealizationTimeButton(view);
+
+    }
 
     public void fillUnitField(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);

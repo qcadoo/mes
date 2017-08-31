@@ -289,10 +289,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
-                method="fillUnitField"/>
-        <beforeRender
-                class="com.qcadoo.mes.productionScheduling.hooks.OperationDurationDetailsInOrderHooks"
-                method="disableCopyRealizationTimeButton"/>
+                method="onBeforeRender"/>
     </hooks>
 
 </view>

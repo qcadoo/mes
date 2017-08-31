@@ -96,6 +96,12 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:boolean name="workstationsQuantityFromProductionLine"/>
 		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="includeTpzPS"/>
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="includeAdditionalTimePS"/>
+		</model:model-field>
 		<menu:menu-category name="calculations" />
 
 		<menu:menu-item view="orderTimePrediction" name="orderTimePrediction"
