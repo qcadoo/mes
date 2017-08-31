@@ -50,6 +50,9 @@
             <option type="column" name="unit" fields="product" width="30"
                     expression="#product['unit']"/>
 
+            <option type="column" name="resourceNumber" fields="resource" width="50"
+                    expression="#resource?.get('number')"/>
+
             <option type="column" name="documentDate" fields="position"
                     expression="#position?.get('document')?.get('time')"/>
 
@@ -62,9 +65,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
             <option type="orderable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
 
             <criteriaModifier
                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ReservationCriteriaModifiers"

@@ -24,7 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +34,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.helpers.DeliveryPositionCalculationHelper;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -61,6 +62,9 @@ public class OrderedProductDetailsListeners {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private DeliveryPositionCalculationHelper deliveryPositionCalculationHelper;
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderedProductDetailsHooks.fillUnitFields(view);
@@ -124,16 +128,18 @@ public class OrderedProductDetailsListeners {
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity orderedProduct = form.getEntity();
-        if (decimalFieldsInvalid(form)) {
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        if (decimalFieldsInvalid(form) || product == null) {
             return;
         }
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
         if (conversion != null && orderedQuantity != null) {
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
+                    .orElse(product.getStringField(ProductFields.UNIT));
             FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference("additionalQuantity");
-            BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-            newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                    RoundingMode.HALF_UP);
+            BigDecimal newAdditionalQuantity = deliveryPositionCalculationHelper.calculateAdditionalQuantity(orderedQuantity,
+                    conversion, additionalQuantityUnit);
             additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
             additionalQuantity.requestComponentUpdateState();
         }
@@ -162,16 +168,17 @@ public class OrderedProductDetailsListeners {
     public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity orderedProduct = form.getEntity();
-        if (decimalFieldsInvalid(form)) {
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        if (decimalFieldsInvalid(form) || product == null) {
             return;
         }
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         BigDecimal additionalQuantity = orderedProduct.getDecimalField(OrderedProductFields.ADDITIONAL_QUANTITY);
         if (conversion != null && additionalQuantity != null) {
+            String orderedQuantityUnit = product.getStringField(ProductFields.UNIT);
             FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference("orderedQuantity");
-            BigDecimal newOrderedQuantity = additionalQuantity.divide(conversion, numberService.getMathContext());
-            newOrderedQuantity = newOrderedQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
-                    RoundingMode.HALF_UP);
+            BigDecimal newOrderedQuantity = deliveryPositionCalculationHelper.calculateQuantity(additionalQuantity, conversion,
+                    orderedQuantityUnit);
             orderedQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newOrderedQuantity, 0));
             orderedQuantity.requestComponentUpdateState();
             deliveriesService.recalculatePrice(view, OrderedProductFields.ORDERED_QUANTITY);

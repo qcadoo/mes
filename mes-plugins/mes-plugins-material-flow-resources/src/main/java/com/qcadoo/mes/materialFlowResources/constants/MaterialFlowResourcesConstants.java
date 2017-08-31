@@ -32,6 +32,9 @@ public final class MaterialFlowResourcesConstants {
     public static final String PLUGIN_IDENTIFIER = "materialFlowResources";
 
     // MODEL
+    public static final String MODEL_STOCKTAKING = "stocktaking";
+
+    public static final String MODEL_WAREHOUSE_STOCK_REPORT = "warehouseStockReport";
 
     public static final String MODEL_PRODUCT_STORAGE_LOCATION_HISTORY = "productStorageLocationHistory";
 

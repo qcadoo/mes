@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="stocktakingDetails" modelName="stocktaking">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="generate">
+                <bigButton name="generate" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generate);" state="disabled">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="print">
+                <bigButton name="print" icon="pdfIcon24.png"
+                           action="#{form}.fireEvent(print);" state="disabled"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
+							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
+							var printRibbonItem = #{window}.getRibbonItem("print.print");
+							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
+							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
+							var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
+							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
+							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
+
+							var entityExists = false;
+
+							this.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (value.content.entityId) {
+										entityExists = true;
+									} else {
+										entityExists = false;
+									}
+									updateRibbon();
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									updateRibbon();
+								}
+							});
+
+							function updateRibbon() {
+								if (entityExists) {
+									var isGeneratedCheckboxValue = #{generated}.getValue();
+									generatedRibbonItem.enable();
+									saveRibbonItem.disable();
+									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
+										printRibbonItem.enable();
+										generatedRibbonItem.disable();
+										saveRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
+										saveBackRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
+										saveNewRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
+										cancelRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.alreadyGenerated)}");
+									} else {
+										printRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
+										saveRibbonItem.enable();
+										cancelRibbonItem.enable()
+									}
+								} else {
+									copyRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
+									printRibbonItem.disable("#{translate(materialFlowResources.stocktakingDetails.ribbon.message.notGenerated)}");
+									saveRibbonItem.enable();
+									cancelRibbonItem.enable()
+								}
+							}
+					]]>
+                </script>
+                <component type="gridLayout" name="stocktakingGridLayout"
+                           hasBorders="false" columns="2" rows="10">
+
+                    <layoutElement row="1" column="1">
+                        <component type="checkbox" name="generated" field="generated"
+                                   reference="generated" defaultEnabled="false" defaultVisible="false"/>
+                        <component type="input" name="number" reference="number" field="#{form}.number"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement row="2" column="1">
+                        <component type="calendar" name="stocktakingDate" reference="stocktakingDate"
+                                   field="#{form}.stocktakingDate"/>
+                    </layoutElement>
+
+                    <layoutElement row="3" column="1">
+                        <component type="select" name="category" reference="category" field="#{form}.category"/>
+                    </layoutElement>
+
+                    <layoutElement row="4" column="1">
+                        <component type="select" name="wasteMode" reference="wasteMode" field="#{form}.wasteMode"/>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="location" field="location"
+                                   reference="location">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                    method="showWarehousesOnly"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement row="2" column="2">
+                        <component type="select" name="storageLocationMode" reference="storageLocationMode"
+                                   field="#{form}.storageLocationMode">
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingDetailsHooks"
+                                      method="changeStorageLocationsGridEnabled"/>
+                        </component>
+                    </layoutElement>
+
+
+                    <layoutElement column="1" row="5" height="6" width="2">
+                        <component type="lookup" name="storageLocationLookup" reference="storageLocationLookup"
+                                   field="#{form}.storageLocations"
+                                   defaultVisible="false" persistent="false" hasLabel="false">
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="multiselect" value="true"/>
+
+                            <option type="searchable" value="number"/>
+                            <option type="orderable" value="number"/>
+                            <criteriaModifier method="showStorageLocationsForProductAndLocation"
+                                              class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.StorageLocationCriteriaModifiers"/>
+                        </component>
+
+                        <component type="grid" name="storageLocations" reference="storageLocations"
+                                   source="#{form}.storageLocations" defaultEnabled="false">
+                            <option type="column" name="number" fields="number"/>
+
+                            <option type="searchable" value="number"/>
+                            <option type="orderable" value="number"/>
+
+                            <option type="order" column="number" direction="asc"/>
+
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
+                            <option type="weakRelation" value="true"/>
+                            <option type="correspondingLookup" value="storageLocationLookup"/>
+
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="generate"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
+                          method="generate"/>
+                <listener event="print"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.StocktakingDetailsListeners"
+                          method="print"/>
+            </component>
+        </windowTab>
+    </component>
+    <hooks>
+
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.StocktakingDetailsHooks" method="onBeforeRender"/>
+    </hooks>
+</view>

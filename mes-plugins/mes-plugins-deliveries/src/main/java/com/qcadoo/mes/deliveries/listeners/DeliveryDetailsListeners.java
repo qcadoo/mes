@@ -23,23 +23,50 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import com.google.common.base.Strings;
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.*;
-import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryAttachmentFields;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -53,16 +80,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -84,9 +101,6 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private DeliveryDetailsHooks deliveryDetailsHooks;
-
-    @Autowired
-    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
     @Autowired
     private NumberService numberService;
@@ -242,29 +256,32 @@ public class DeliveryDetailsListeners {
             final SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find();
             searchCriteria.add(SearchRestrictions.in("id", ids));
             result = searchCriteria.list().getEntities();
-        }
 
-        String numbersFilter = orderdProductGrid.getFilters().get("productNumber");
-        if (!Strings.isNullOrEmpty(numbersFilter)) {
-            ArrayList<String> numbersOrder = Lists.newArrayList(numbersFilter.replace("[", "").replace("]", "").split(","));
-            result.sort((o1, o2) -> {
-                String number1 = o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
-                String number2 = o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
-                return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
-            });
-        }
-
-        return result;
-    }
-
-    private List<Entity> getSelectedDeliveredProducts(ViewDefinitionState view) {
-        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
-        List<Entity> result = Lists.newArrayList();
-        Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
-        if (ids != null && !ids.isEmpty()) {
-            final SearchCriteriaBuilder searchCriteria = deliveriesService.getDeliveredProductDD().find();
-            searchCriteria.add(SearchRestrictions.in("id", ids));
-            result = searchCriteria.list().getEntities();
+            if (!result.isEmpty()) {
+                String numbersFilter = orderdProductGrid.getFilters().get("productNumber");
+                String numberAndAdditionalCodeFilter = orderdProductGrid.getFilters().get("mergedProductNumberAndAdditionalCode");
+                if (StringUtils.isNotBlank(numbersFilter) && numbersFilter.startsWith("[") && numbersFilter.endsWith("]")) {
+                    List<String> numbersOrder = Lists.newArrayList(numbersFilter.replace("[", "").replace("]", "").split(","));
+                    result.sort((o1, o2) -> {
+                        String number1 = o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+                        String number2 = o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+                        return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
+                    });
+                } else if (StringUtils.isNotBlank(numberAndAdditionalCodeFilter) && numberAndAdditionalCodeFilter.startsWith("[")
+                        && numberAndAdditionalCodeFilter.endsWith("]")) {
+                    List<String> numbersOrder = Lists
+                            .newArrayList(numberAndAdditionalCodeFilter.replace("[", "").replace("]", "").split(","));
+                    result.sort((o1, o2) -> {
+                        String number1 = Optional.ofNullable(o1.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
+                                .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
+                                .orElse(o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                        String number2 = Optional.ofNullable(o2.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
+                                .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
+                                .orElse(o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                        return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
+                    });
+                }
+            }
         }
         return result;
     }
