@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.print;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
@@ -77,7 +78,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
         for (Resource resource : resources) {
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
 
-            String storageLocation = resource.getStorageLocationNumber();
+            String storageLocation = Strings.nullToEmpty(resource.getStorageLocationNumber());
             if (!storageLocation.equals(currentStorageLocation)) {
                 currentStorageLocation = storageLocation;
                 if(counter == 1) {

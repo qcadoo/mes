@@ -5,6 +5,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class WarehouseStockReportModelHooks {
 
@@ -12,5 +14,13 @@ public class WarehouseStockReportModelHooks {
         if (StorageLocationMode.ALL.getStringValue().equals(warehouseStockReport.getStringField("storageLocationMode"))) {
             warehouseStockReport.setField("storageLocations", null);
         }
+        if (Objects.nonNull(warehouseStockReport.getId())) {
+            Entity warehouseStockReportDb = warehouseStockReportDD.get(warehouseStockReport.getId());
+            if (!warehouseStockReport.getBelongsToField("location").getId()
+                    .equals(warehouseStockReportDb.getBelongsToField("location").getId())) {
+                warehouseStockReport.setField("storageLocations", null);
+            }
+        }
+
     }
 }

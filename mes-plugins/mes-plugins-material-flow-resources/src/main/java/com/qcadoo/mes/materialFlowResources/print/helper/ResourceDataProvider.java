@@ -92,7 +92,7 @@ public class ResourceDataProvider {
         query.append("LEFT JOIN basic_additionalcode additionalcode ON additionalcode.id = resource.additionalcode_id ");
         query.append("LEFT JOIN basic_product product ON product.id = resource.product_id ");
         query.append("LEFT JOIN basic_palletnumber palletnumber ON palletnumber.id = resource.palletnumber_id ");
-        query.append("WHERE resource.location_id = :location AND resource.storagelocation_id IS NOT NULL");
+        query.append("WHERE resource.location_id = :location");
         if (appendStorageLocationIds) {
             query.append(" AND storagelocation.id IN (:ids)");
         }
@@ -103,7 +103,7 @@ public class ResourceDataProvider {
             query.append(" AND resource.waste = :wasteMode");
         }
         if (appendOrderBy) {
-            query.append(" ORDER BY storagelocation.number, palletnumber.number, product.number");
+            query.append(" ORDER BY storagelocation.number NULLS FIRST, palletnumber.number NULLS FIRST, product.number NULLS FIRST");
 
         }
         return query.toString();
