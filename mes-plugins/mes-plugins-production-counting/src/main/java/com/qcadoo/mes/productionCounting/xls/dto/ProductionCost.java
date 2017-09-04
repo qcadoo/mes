@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class ProductionCost {
 
+    private Long orderId;
+
     private String orderNumber;
 
     private String operationNumber;
@@ -172,5 +174,13 @@ public class ProductionCost {
 
     public void setStaffCostsDeviation(BigDecimal staffCostsDeviation) {
         this.staffCostsDeviation = staffCostsDeviation;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }
