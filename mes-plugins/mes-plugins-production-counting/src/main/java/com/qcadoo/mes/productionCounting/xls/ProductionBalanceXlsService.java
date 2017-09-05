@@ -27,6 +27,7 @@ import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 
 @Service
@@ -34,6 +35,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private ProductionBalanceRepository productionBalanceRepository;
@@ -496,7 +500,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
-        cell.setCellValue(value.setScale(5).doubleValue());
+        cell.setCellValue(numberService.setScale(value, 2).doubleValue());
         cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HSSFCellStyle.ALIGN_RIGHT));
         return cell;
     }

@@ -197,15 +197,23 @@ class ProductionBalanceRepository {
 
     private void appendOrdersMaterialCosts(StringBuilder query) {
         // TODO KRNA add logic when KASI do sth with TKW
+        query.append("CASE WHEN ");
+        appendUsedQuantity(query);
+        query.append("<> 0 THEN ");
         appendPlannedQuantity(query);
         query.append("* 0 / ");
         appendUsedQuantity(query);
+        query.append("ELSE 0 END ");
         query.append("AS plannedCost, ");
         query.append("0 AS realCost, ");
         query.append("0 - ");
+        query.append("CASE WHEN ");
+        appendUsedQuantity(query);
+        query.append("<> 0 THEN ");
         appendPlannedQuantity(query);
         query.append("* 0 / ");
         appendUsedQuantity(query);
+        query.append("ELSE 0 END ");
         query.append("AS valueDeviation, ");
     }
 
@@ -378,6 +386,8 @@ class ProductionBalanceRepository {
         query.append("GROUP BY orderId, orderNumber, operationNumber ");
         query.append("ORDER BY orderNumber, operationNumber ");
 
+        LOGGER.info("---------" + query.toString());
+
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(ProductionCost.class));
     }
@@ -484,7 +494,7 @@ class ProductionBalanceRepository {
             query.append("+ toc.timenextoperation ");
         }
     }
-    
+
     List<OrderBalance> getOrdersBalance(Entity entity, List<Long> ordersIds, List<MaterialCost> materialCosts, List<ProductionCost> productionCosts) {
         StringBuilder query = new StringBuilder();
         appendWithQueries(materialCosts, productionCosts, query);
@@ -519,8 +529,6 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, productNumber, productName ");
         query.append("ORDER BY orderNumber ");
-
-        LOGGER.info("---------" + query.toString());
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(OrderBalance.class));
@@ -601,9 +609,11 @@ class ProductionBalanceRepository {
     }
 
     private void appendRealProductionCosts(Entity entity, StringBuilder query) {
+        query.append("( ");
         appendRegistrationPrice(entity, query);
         query.append("+ ");
         appendRegistrationPriceOverheadValue(entity, query);
+        query.append(") ");
     }
 
     private void appendRegistrationPriceOverheadValue(Entity entity, StringBuilder query) {
@@ -615,9 +625,9 @@ class ProductionBalanceRepository {
     private void appendRegistrationPrice(Entity entity, StringBuilder query) {
         query.append("CASE WHEN ");
         appendProducedQuantity(query);
-        query.append("<> 0 THEN ");
+        query.append("<> 0 THEN (");
         appendTotalCosts(entity, query);
-        query.append("/ ");
+        query.append(")/ ");
         appendProducedQuantity(query);
         query.append("ELSE 0 END ");
     }
