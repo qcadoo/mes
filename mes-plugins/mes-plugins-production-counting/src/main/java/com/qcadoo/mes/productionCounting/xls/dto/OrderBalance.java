@@ -4,6 +4,10 @@ import java.math.BigDecimal;
 
 public class OrderBalance {
 
+    private Long orderId;
+
+    private Long rootId;
+
     private String orderNumber;
 
     private String productNumber;
@@ -212,5 +216,21 @@ public class OrderBalance {
 
     public void setSellPrice(BigDecimal sellPrice) {
         this.sellPrice = sellPrice;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
+
+    public Long getRootId() {
+        return rootId;
+    }
+
+    public void setRootId(Long rootId) {
+        this.rootId = rootId;
     }
 }
