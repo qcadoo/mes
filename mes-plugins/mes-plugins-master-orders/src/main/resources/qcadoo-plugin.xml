@@ -125,6 +125,11 @@
                                  method="checkOrderNumber"/>
         </model:model-hook>
 
+        <model:model-hook model="order" plugin="orders">
+            <model:onSave class="com.qcadoo.mes.masterOrders.hooks.OrderHooksMO"
+                                 method="onSave"/>
+        </model:model-hook>
+
         <menu:menu-item name="masterOrders" category="orders"
                         view="masterOrdersList" defaultAuthorizationRole="ROLE_PLANNING"/>
 

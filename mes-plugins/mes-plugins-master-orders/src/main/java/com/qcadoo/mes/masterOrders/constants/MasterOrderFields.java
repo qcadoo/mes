@@ -67,4 +67,6 @@ public final class MasterOrderFields {
 
     public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
 
+    public static final String STATE = "state";
+
 }
