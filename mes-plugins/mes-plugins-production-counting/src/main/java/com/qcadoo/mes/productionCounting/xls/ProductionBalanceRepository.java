@@ -48,14 +48,19 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("JOIN basic_product prod ON o.product_id = prod.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
         query.append("LEFT JOIN ");
-        query.append("  (SELECT pcq.order_id as orderId, wastePt.order_id AS wastePtOrderId, COALESCE(SUM(wasteTopoc.usedquantity), 0) AS producedWastes ");
+        query.append(
+                "  (SELECT pcq.order_id as orderId, wastePt.order_id AS wastePtOrderId, COALESCE(SUM(wasteTopoc.usedquantity), 0) AS producedWastes ");
         query.append("  FROM basicproductioncounting_productioncountingquantity pcq ");
-        query.append("  LEFT JOIN productioncounting_trackingoperationproductoutcomponent wasteTopoc ON  wasteTopoc.product_id = pcq.product_id ");
-        query.append("  LEFT JOIN productioncounting_productiontracking wastePt ON wasteTopoc.productiontracking_id = wastePt.id AND wastePt.state = '02accepted' ");
+        query.append(
+                "  LEFT JOIN productioncounting_trackingoperationproductoutcomponent wasteTopoc ON  wasteTopoc.product_id = pcq.product_id ");
+        query.append(
+                "  LEFT JOIN productioncounting_productiontracking wastePt ON wasteTopoc.productiontracking_id = wastePt.id AND wastePt.state = '02accepted' ");
         query.append("  WHERE pcq.typeofmaterial = '04waste' AND pcq.role = '02produced' ");
-        query.append("  GROUP BY orderId, wastePtOrderId) prodWaste ON prodWaste.orderId = o.id AND prodWaste.wastePtOrderId = o.id ");
+        query.append(
+                "  GROUP BY orderId, wastePtOrderId) prodWaste ON prodWaste.orderId = o.id AND prodWaste.wastePtOrderId = o.id ");
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, productNumber, productName, productUnit, prodWaste.producedWastes");
 
@@ -74,23 +79,25 @@ class ProductionBalanceRepository {
     List<MaterialCost> getMaterialCosts(Entity entity, List<Long> ordersIds) {
         StringBuilder query = new StringBuilder();
         appendCumulatedPlannedQuantities(query);
-        appendMaterialCostsSelectionClause(query);
-        appendQuantityAndCosts(entity, query);
+        appendMaterialCostsSelectionClause(query, entity);
         query.append("NULL AS operationNumber ");
         appendMaterialCostsFromClause(query);
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
         query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit) ");
         query.append("UNION ");
         appendForEachPlannedQuantities(query);
-        appendMaterialCostsSelectionClause(query);
-        appendQuantityAndCosts(entity, query);
+        appendMaterialCostsSelectionClause(query, entity);
         query.append("op.number AS operationNumber ");
         appendMaterialCostsFromClause(query);
         query.append("JOIN technologies_operation op ON q.operation_id = op.id ");
-        query.append("JOIN technologies_technologyoperationcomponent toc ON toc.operation_id = op.id AND o.technology_id = toc.technology_id ");
-        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
+        query.append(
+                "JOIN technologies_technologyoperationcomponent toc ON toc.operation_id = op.id AND o.technology_id = toc.technology_id ");
+        query.append(
+                "LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
         query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit) ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
@@ -130,7 +137,7 @@ class ProductionBalanceRepository {
         query.append("GROUP BY o.id, p.id) ");
     }
 
-    private void appendMaterialCostsSelectionClause(StringBuilder query) {
+    private void appendMaterialCostsSelectionClause(StringBuilder query, Entity entity) {
         query.append("SELECT ");
         query.append("o.id AS orderId, ");
         query.append("o.number AS orderNumber, ");
@@ -138,15 +145,6 @@ class ProductionBalanceRepository {
         query.append("p.name AS productName, ");
         query.append("p.unit AS productUnit, ");
         query.append("topic.wasteunit AS usedWasteUnit, ");
-    }
-
-    private void appendMaterialCostsFromClause(StringBuilder query) {
-        query.append("FROM orders_order o ");
-        query.append("JOIN planned_quantity q ON q.order_id = o.id ");
-        query.append("JOIN basic_product p ON q.product_id = p.id ");
-    }
-
-    private void appendQuantityAndCosts(Entity entity, StringBuilder query) {
         appendPlannedQuantity(query);
         query.append("AS plannedQuantity, ");
         appendUsedQuantity(query);
@@ -155,16 +153,55 @@ class ProductionBalanceRepository {
         query.append("- ");
         appendPlannedQuantity(query);
         query.append("AS quantitativeDeviation, ");
-        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
-            String componentPriceClause = evaluateComponentPrice(entity
-                    .getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE));
-            appendGlobalDefinitionsCosts(query, componentPriceClause);
-        } else if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
-            appendOrdersMaterialCosts(query);
-        }
+        appendPlannedCost(query, entity);
+        query.append("AS plannedCost, ");
+        appendRealCost(query, entity);
+        query.append("AS realCost, ");
+        appendRealCost(query, entity);
+        query.append("- ");
+        appendPlannedCost(query, entity);
+        query.append("AS valueDeviation, ");
         query.append("COALESCE(SUM(topic.wasteusedquantity), 0) AS usedWasteQuantity, ");
+    }
+
+    private void appendMaterialCostsFromClause(StringBuilder query) {
+        query.append("FROM orders_order o ");
+        query.append("JOIN planned_quantity q ON q.order_id = o.id ");
+        query.append("JOIN basic_product p ON q.product_id = p.id ");
+    }
+
+    private void appendPlannedCost(StringBuilder query, Entity entity) {
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
+            String componentPriceClause = evaluateComponentPrice(
+                    entity.getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE));
+            appendPlannedQuantity(query);
+            query.append("* " + componentPriceClause);
+        } else if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
+            query.append("CASE WHEN ");
+            appendUsedQuantity(query);
+            query.append("<> 0 THEN ");
+            appendPlannedQuantity(query);
+            query.append("* ");
+            appendRealCost(query, entity);
+            query.append("/ ");
+            appendUsedQuantity(query);
+            query.append("ELSE 0 END ");
+        }
+    }
+
+    private void appendRealCost(StringBuilder query, Entity entity) {
+        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
+            String componentPriceClause = evaluateComponentPrice(
+                    entity.getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE));
+            appendUsedQuantity(query);
+            query.append("* " + componentPriceClause);
+        } else if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))) {
+            query.append("COALESCE(MIN(o.productpriceperunit), 0) ");
+        }
     }
 
     private String evaluateComponentPrice(String calculateMaterialCostsMode) {
@@ -182,39 +219,6 @@ class ProductionBalanceRepository {
             default:
                 throw new IllegalStateException("Unsupported calculateMaterialCostsMode: " + calculateMaterialCostsMode);
         }
-    }
-
-    private void appendGlobalDefinitionsCosts(StringBuilder query, String componentPriceClause) {
-        appendPlannedQuantity(query);
-        query.append(" * " + componentPriceClause + "AS plannedCost, ");
-        appendUsedQuantity(query);
-        query.append(" * " + componentPriceClause + "AS realCost, ");
-        appendUsedQuantity(query);
-        query.append(" * " + componentPriceClause + " - ");
-        appendPlannedQuantity(query);
-        query.append(" * " + componentPriceClause + "AS valueDeviation, ");
-    }
-
-    private void appendOrdersMaterialCosts(StringBuilder query) {
-        // TODO KRNA add logic when KASI do sth with TKW
-        query.append("CASE WHEN ");
-        appendUsedQuantity(query);
-        query.append("<> 0 THEN ");
-        appendPlannedQuantity(query);
-        query.append("* 0 / ");
-        appendUsedQuantity(query);
-        query.append("ELSE 0 END ");
-        query.append("AS plannedCost, ");
-        query.append("0 AS realCost, ");
-        query.append("0 - ");
-        query.append("CASE WHEN ");
-        appendUsedQuantity(query);
-        query.append("<> 0 THEN ");
-        appendPlannedQuantity(query);
-        query.append("* 0 / ");
-        appendUsedQuantity(query);
-        query.append("ELSE 0 END ");
-        query.append("AS valueDeviation, ");
     }
 
     private void appendPlannedQuantity(StringBuilder query) {
@@ -275,7 +279,8 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("JOIN technologies_technology t ON o.technology_id = t.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id ");
-        query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
+        query.append(
+                "LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("GROUP BY o.id) ");
@@ -358,7 +363,8 @@ class ProductionBalanceRepository {
         appendForEachPlannedMachineCosts(entity, query);
         query.append("AS machineCostsDeviation, ");
         query.append("COALESCE(MIN(pcor.runs / toc.numberofoperations * toc.pieceworkcost), 0) AS plannedPieceworkCosts, ");
-        query.append("COALESCE(SUM(pt.executedoperationcycles) / MIN(toc.numberofoperations) * MIN(toc.pieceworkcost), 0) AS realPieceworkCosts, ");
+        query.append(
+                "COALESCE(SUM(pt.executedoperationcycles) / MIN(toc.numberofoperations) * MIN(toc.pieceworkcost), 0) AS realPieceworkCosts, ");
         appendForEachPlannedStaffCosts(entity, query);
         query.append("+ ");
         appendForEachPlannedMachineCosts(entity, query);
@@ -378,7 +384,8 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
+        query.append(
+                "LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
         query.append("CROSS JOIN basic_parameter bp ");
         appendWhereClause(query);
@@ -465,21 +472,21 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachStaffHourCost(Entity entity, StringBuilder query) {
-        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
+        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
             query.append("COALESCE(MIN(toc.laborhourlycost), 0) ");
-        } else if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
+        } else if (SourceOfOperationCosts.PARAMETERS.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
             query.append("COALESCE(MIN(bp.averagelaborhourlycostpb), 0) ");
         }
     }
 
     private void appendForEachMachineHourCost(Entity entity, StringBuilder query) {
-        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
+        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
             query.append("COALESCE(MIN(toc.machinehourlycost), 0) ");
-        } else if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(
-                entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
+        } else if (SourceOfOperationCosts.PARAMETERS.getStringValue()
+                .equals(entity.getStringField(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB))) {
             query.append("COALESCE(MIN(bp.averagemachinehourlycostpb), 0) ");
         }
     }
@@ -493,7 +500,8 @@ class ProductionBalanceRepository {
         }
     }
 
-    List<OrderBalance> getOrdersBalance(Entity entity, List<Long> ordersIds, List<MaterialCost> materialCosts, List<ProductionCost> productionCosts) {
+    List<OrderBalance> getOrdersBalance(Entity entity, List<Long> ordersIds, List<MaterialCost> materialCosts,
+            List<ProductionCost> productionCosts) {
         StringBuilder query = new StringBuilder();
         appendOrdersBalanceWithQueries(materialCosts, productionCosts, query);
         appendOrdersBalanceSelectionClause(entity, query);
@@ -521,7 +529,8 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("JOIN basic_product prod ON o.product_id = prod.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
         query.append("JOIN grouped_material_cost gmc ON gmc.order_id = o.id ");
         query.append("JOIN grouped_production_cost gpc ON gpc.order_id = o.id ");
         appendWhereClause(query);
@@ -532,27 +541,29 @@ class ProductionBalanceRepository {
                 BeanPropertyRowMapper.newInstance(OrderBalance.class));
     }
 
-    private void appendOrdersBalanceWithQueries(List<MaterialCost> materialCosts, List<ProductionCost> productionCosts, StringBuilder query) {
+    private void appendOrdersBalanceWithQueries(List<MaterialCost> materialCosts, List<ProductionCost> productionCosts,
+            StringBuilder query) {
         query.append("WITH real_material_cost (order_id, cost) AS (VALUES ");
-        for(int i = 0; i< materialCosts.size(); i++ ){
+        for (int i = 0; i < materialCosts.size(); i++) {
             MaterialCost materialCost = materialCosts.get(i);
             query.append("(" + materialCost.getOrderId() + ", " + materialCost.getRealCost() + ") ");
-            if(i != materialCosts.size() - 1){
+            if (i != materialCosts.size() - 1) {
                 query.append(", ");
             }
         }
         query.append("), ");
         query.append("grouped_material_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_material_cost GROUP BY order_id), ");
         query.append("real_production_cost (order_id, cost) AS (VALUES ");
-        for(int i = 0; i< productionCosts.size(); i++ ){
+        for (int i = 0; i < productionCosts.size(); i++) {
             ProductionCost productionCost = productionCosts.get(i);
             query.append("(" + productionCost.getOrderId() + ", " + productionCost.getRealCostsSum() + ") ");
-            if(i != productionCosts.size() - 1){
+            if (i != productionCosts.size() - 1) {
                 query.append(", ");
             }
         }
         query.append("), ");
-        query.append("grouped_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_production_cost GROUP BY order_id) ");
+        query.append(
+                "grouped_production_cost AS (SELECT order_id, SUM(cost) AS cost FROM real_production_cost GROUP BY order_id) ");
     }
 
     private void appendOrdersBalanceSelectionClause(Entity entity, StringBuilder query) {
@@ -678,7 +689,7 @@ class ProductionBalanceRepository {
         query.append("MIN(obr.material_cost_margin_value) AS materialCostMarginValue, ");
         query.append("MIN(obr.production_cost_margin_value) AS productionCostMarginValue, ");
         query.append("MIN(obr.total_costs) AS totalCosts, ");
-        appendComponentsBalanceRegistrationPrice(entity, query);
+        appendComponentsBalanceRegistrationPrice(query);
         query.append("AS registrationPrice, ");
         appendComponentsBalanceRegistrationPriceOverheadValue(entity, query);
         query.append("AS registrationPriceOverheadValue, ");
@@ -693,7 +704,8 @@ class ProductionBalanceRepository {
         query.append("FROM orders_order o ");
         query.append("JOIN basic_product prod ON o.product_id = prod.id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
-        query.append("LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
+        query.append(
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
         query.append("LEFT JOIN order_balance_rec obr ON obr.order_id = o.id ");
         appendWhereClause(query);
         query.append("AND o.root_id IS NULL ");
@@ -714,19 +726,19 @@ class ProductionBalanceRepository {
 
     private void appendComponentsBalanceRealProductionCosts(Entity entity, StringBuilder query) {
         query.append("( ");
-        appendComponentsBalanceRegistrationPrice(entity, query);
+        appendComponentsBalanceRegistrationPrice(query);
         query.append("+ ");
         appendComponentsBalanceRegistrationPriceOverheadValue(entity, query);
         query.append(") ");
     }
 
     private void appendComponentsBalanceRegistrationPriceOverheadValue(Entity entity, StringBuilder query) {
-        appendComponentsBalanceRegistrationPrice(entity, query);
+        appendComponentsBalanceRegistrationPrice(query);
         query.append(" / 100 * ");
         appendRegistrationPriceOverhead(entity, query);
     }
 
-    private void appendComponentsBalanceRegistrationPrice(Entity entity, StringBuilder query) {
+    private void appendComponentsBalanceRegistrationPrice(StringBuilder query) {
         query.append("CASE WHEN ");
         appendProducedQuantity(query);
         query.append("<> 0 THEN MIN(obr.total_costs) ");
@@ -735,13 +747,12 @@ class ProductionBalanceRepository {
         query.append("ELSE 0 END ");
     }
 
-
-    private void appendComponentsBalanceWithQueries(List<OrderBalance> ordersBalance, StringBuilder query){
+    private void appendComponentsBalanceWithQueries(List<OrderBalance> ordersBalance, StringBuilder query) {
         query.append("WITH order_balance (order_id, root_id, material_costs, ");
         query.append("production_costs, technical_production_costs, material_cost_margin_value, ");
         query.append("production_cost_margin_value, additional_overhead, direct_additional_cost, total_costs ");
         query.append(") AS (VALUES ");
-        for(int i = 0; i< ordersBalance.size(); i++ ){
+        for (int i = 0; i < ordersBalance.size(); i++) {
             OrderBalance orderBalance = ordersBalance.get(i);
             query.append("(");
             query.append(orderBalance.getOrderId() + ", ");
@@ -755,7 +766,7 @@ class ProductionBalanceRepository {
             query.append(orderBalance.getDirectAdditionalCost() + ", ");
             query.append(orderBalance.getTotalCosts());
             query.append(") ");
-            if(i != ordersBalance.size() - 1){
+            if (i != ordersBalance.size() - 1) {
                 query.append(", ");
             }
         }
@@ -771,8 +782,10 @@ class ProductionBalanceRepository {
         query.append("ob.production_cost_margin_value, ob.additional_overhead, ob.direct_additional_cost, ob.total_costs ");
         query.append("FROM order_balance_rec obr JOIN order_balance ob USING(root_id)) ");
         query.append("SELECT order_id, SUM(material_costs) AS material_costs, SUM(production_costs) AS production_costs, ");
-        query.append("SUM(technical_production_costs) AS technical_production_costs, SUM(material_cost_margin_value) AS material_cost_margin_value, ");
-        query.append("SUM(production_cost_margin_value) AS production_cost_margin_value, SUM(additional_overhead) AS additional_overhead,  ");
+        query.append(
+                "SUM(technical_production_costs) AS technical_production_costs, SUM(material_cost_margin_value) AS material_cost_margin_value, ");
+        query.append(
+                "SUM(production_cost_margin_value) AS production_cost_margin_value, SUM(additional_overhead) AS additional_overhead,  ");
         query.append("SUM(direct_additional_cost) AS direct_additional_cost, SUM(total_costs) AS total_costs ");
         query.append("FROM order_balance_rec GROUP BY order_id) ");
     }
