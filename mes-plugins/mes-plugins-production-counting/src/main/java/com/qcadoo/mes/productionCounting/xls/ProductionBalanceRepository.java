@@ -2,8 +2,6 @@ package com.qcadoo.mes.productionCounting.xls;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -25,14 +23,11 @@ import com.qcadoo.model.api.Entity;
 @Repository
 class ProductionBalanceRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductionBalanceRepository.class);
-
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     List<ProducedQuantity> getProducedQuantities(final List<Long> ordersIds) {
         StringBuilder query = new StringBuilder();
-
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
         query.append("prod.number AS productNumber, ");
@@ -52,17 +47,18 @@ class ProductionBalanceRepository {
                 "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
         query.append("LEFT JOIN ");
         query.append(
-                "  (SELECT pcq.order_id as orderId, wastePt.order_id AS wastePtOrderId, COALESCE(SUM(wasteTopoc.usedquantity), 0) AS producedWastes ");
-        query.append("  FROM basicproductioncounting_productioncountingquantity pcq ");
+                "(SELECT pcq.order_id as orderId, wastePt.order_id AS wastePtOrderId, COALESCE(SUM(wasteTopoc.usedquantity), 0) AS producedWastes ");
+        query.append("FROM basicproductioncounting_productioncountingquantity pcq ");
         query.append(
-                "  LEFT JOIN productioncounting_trackingoperationproductoutcomponent wasteTopoc ON  wasteTopoc.product_id = pcq.product_id ");
+                "LEFT JOIN productioncounting_trackingoperationproductoutcomponent wasteTopoc ON  wasteTopoc.product_id = pcq.product_id ");
         query.append(
-                "  LEFT JOIN productioncounting_productiontracking wastePt ON wasteTopoc.productiontracking_id = wastePt.id AND wastePt.state = '02accepted' ");
-        query.append("  WHERE pcq.typeofmaterial = '04waste' AND pcq.role = '02produced' ");
+                "LEFT JOIN productioncounting_productiontracking wastePt ON wasteTopoc.productiontracking_id = wastePt.id AND wastePt.state = '02accepted' ");
+        query.append("WHERE pcq.typeofmaterial = '04waste' AND pcq.role = '02produced' ");
         query.append(
-                "  GROUP BY orderId, wastePtOrderId) prodWaste ON prodWaste.orderId = o.id AND prodWaste.wastePtOrderId = o.id ");
+                "GROUP BY orderId, wastePtOrderId) prodWaste ON prodWaste.orderId = o.id AND prodWaste.wastePtOrderId = o.id ");
         appendWhereClause(query);
-        query.append("GROUP BY orderNumber, productNumber, productName, productUnit, prodWaste.producedWastes");
+        query.append("GROUP BY orderNumber, productNumber, productName, productUnit, prodWaste.producedWastes ");
+        query.append("ORDER BY orderNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(ProducedQuantity.class));
@@ -242,6 +238,7 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("GROUP BY orderNumber, operationNumber ");
+        query.append("ORDER BY orderNumber, operationNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(PieceworkDetails.class));
@@ -264,6 +261,7 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
         appendWhereClause(query);
         query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname ");
+        query.append("ORDER BY orderNumber, operationNumber, staffNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(LaborTimeDetails.class));
@@ -669,6 +667,7 @@ class ProductionBalanceRepository {
         appendComponentsBalanceWithQueries(ordersBalance, query);
         query.append("SELECT ");
         query.append("o.number AS orderNumber, ");
+        query.append("prod.id AS productId, ");
         query.append("prod.number AS productNumber, ");
         query.append("prod.name AS productName, ");
         appendProducedQuantity(query);
@@ -706,13 +705,11 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append(
                 "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
-        query.append("LEFT JOIN order_balance_rec obr ON obr.order_id = o.id ");
+        query.append("JOIN order_balance_rec obr ON obr.order_id = o.id ");
         appendWhereClause(query);
         query.append("AND o.root_id IS NULL ");
-        query.append("GROUP BY orderNumber, productNumber, productName ");
+        query.append("GROUP BY orderNumber, productId, productNumber, productName ");
         query.append("ORDER BY orderNumber ");
-
-        LOGGER.info("---------" + query.toString());
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
                 BeanPropertyRowMapper.newInstance(OrderBalance.class));
@@ -788,5 +785,111 @@ class ProductionBalanceRepository {
                 "SUM(production_cost_margin_value) AS production_cost_margin_value, SUM(additional_overhead) AS additional_overhead,  ");
         query.append("SUM(direct_additional_cost) AS direct_additional_cost, SUM(total_costs) AS total_costs ");
         query.append("FROM order_balance_rec GROUP BY order_id) ");
+    }
+
+    List<OrderBalance> getProductsBalance(Entity entity, List<Long> ordersIds, List<OrderBalance> componentsBalance) {
+        StringBuilder query = new StringBuilder();
+        appendProductsBalanceWithQueries(componentsBalance, query);
+        query.append("SELECT ");
+        query.append("prod.number AS productNumber, ");
+        query.append("prod.name AS productName, ");
+        appendMaterialCostMargin(entity, query);
+        query.append("AS materialCostMargin, ");
+        appendProductionCostMargin(entity, query);
+        query.append("AS productionCostMargin, ");
+        appendRegistrationPriceOverhead(entity, query);
+        query.append("AS registrationPriceOverhead, ");
+        appendProfit(entity, query);
+        query.append("AS profit, ");
+        query.append("MIN(gcb.produced_quantity) AS producedQuantity, ");
+        query.append("MIN(gcb.additional_overhead) AS additionalOverhead, ");
+        query.append("MIN(gcb.direct_additional_cost) AS directAdditionalCost, ");
+        query.append("MIN(gcb.material_costs) AS materialCosts, ");
+        query.append("MIN(gcb.production_costs) AS productionCosts, ");
+        query.append("MIN(gcb.technical_production_costs) AS technicalProductionCosts, ");
+        query.append("MIN(gcb.material_cost_margin_value) AS materialCostMarginValue, ");
+        query.append("MIN(gcb.production_cost_margin_value) AS productionCostMarginValue, ");
+        query.append("MIN(gcb.total_costs) AS totalCosts, ");
+        appendProductsBalanceRegistrationPrice(query);
+        query.append("AS registrationPrice, ");
+        appendProductsBalanceRegistrationPriceOverheadValue(entity, query);
+        query.append("AS registrationPriceOverheadValue, ");
+        appendProductsBalanceRealProductionCosts(entity, query);
+        query.append("AS realProductionCosts, ");
+        appendProductsBalanceProfitValue(entity, query);
+        query.append("AS profitValue, ");
+        appendProductsBalanceRealProductionCosts(entity, query);
+        query.append("+ ");
+        appendProductsBalanceProfitValue(entity, query);
+        query.append("AS sellPrice ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN basic_product prod ON o.product_id = prod.id ");
+        query.append("JOIN grouped_component_balance gcb ON gcb.product_id = prod.id ");
+        appendWhereClause(query);
+        query.append("AND o.root_id IS NULL ");
+        query.append("GROUP BY productNumber, productName ");
+        query.append("ORDER BY productNumber ");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(OrderBalance.class));
+    }
+
+    private void appendProductsBalanceProfitValue(Entity entity, StringBuilder query) {
+        appendProductsBalanceRealProductionCosts(entity, query);
+        query.append(" / 100 * ");
+        appendProfit(entity, query);
+    }
+
+    private void appendProductsBalanceRealProductionCosts(Entity entity, StringBuilder query) {
+        query.append("( ");
+        appendProductsBalanceRegistrationPrice(query);
+        query.append("+ ");
+        appendProductsBalanceRegistrationPriceOverheadValue(entity, query);
+        query.append(") ");
+    }
+
+    private void appendProductsBalanceRegistrationPriceOverheadValue(Entity entity, StringBuilder query) {
+        appendProductsBalanceRegistrationPrice(query);
+        query.append(" / 100 * ");
+        appendRegistrationPriceOverhead(entity, query);
+    }
+
+    private void appendProductsBalanceRegistrationPrice(StringBuilder query) {
+        query.append("CASE WHEN MIN(gcb.produced_quantity) <> 0 THEN MIN(gcb.total_costs) ");
+        query.append("/ MIN(gcb.produced_quantity) ELSE 0 END ");
+    }
+
+    private void appendProductsBalanceWithQueries(List<OrderBalance> componentsBalance, StringBuilder query) {
+        query.append("WITH component_balance (product_id, produced_quantity, material_costs, ");
+        query.append("production_costs, technical_production_costs, material_cost_margin_value, ");
+        query.append("production_cost_margin_value, additional_overhead, direct_additional_cost, total_costs ");
+        query.append(") AS (VALUES ");
+        for (int i = 0; i < componentsBalance.size(); i++) {
+            OrderBalance orderBalance = componentsBalance.get(i);
+            query.append("(");
+            query.append(orderBalance.getProductId() + ", ");
+            query.append(orderBalance.getProducedQuantity() + ", ");
+            query.append(orderBalance.getMaterialCosts() + ", ");
+            query.append(orderBalance.getProductionCosts() + ", ");
+            query.append(orderBalance.getTechnicalProductionCosts() + ", ");
+            query.append(orderBalance.getMaterialCostMarginValue() + ", ");
+            query.append(orderBalance.getProductionCostMarginValue() + ", ");
+            query.append(orderBalance.getAdditionalOverhead() + ", ");
+            query.append(orderBalance.getDirectAdditionalCost() + ", ");
+            query.append(orderBalance.getTotalCosts());
+            query.append(") ");
+            if (i != componentsBalance.size() - 1) {
+                query.append(", ");
+            }
+        }
+        query.append("), ");
+        query.append("grouped_component_balance AS (SELECT product_id, SUM(produced_quantity) AS produced_quantity, ");
+        query.append("SUM(material_costs) AS material_costs, SUM(production_costs) AS production_costs, ");
+        query.append(
+                "SUM(technical_production_costs) AS technical_production_costs, SUM(material_cost_margin_value) AS material_cost_margin_value, ");
+        query.append(
+                "SUM(production_cost_margin_value) AS production_cost_margin_value, SUM(additional_overhead) AS additional_overhead,  ");
+        query.append("SUM(direct_additional_cost) AS direct_additional_cost, SUM(total_costs) AS total_costs ");
+        query.append("FROM component_balance GROUP BY product_id) ");
     }
 }
