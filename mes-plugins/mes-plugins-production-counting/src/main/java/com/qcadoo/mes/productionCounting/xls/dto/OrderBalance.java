@@ -8,6 +8,8 @@ public class OrderBalance {
 
     private Long rootId;
 
+    private Long productId;
+
     private String orderNumber;
 
     private String productNumber;
@@ -232,5 +234,13 @@ public class OrderBalance {
 
     public void setRootId(Long rootId) {
         this.rootId = rootId;
+    }
+
+    public Long getProductId() {
+        return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 }
