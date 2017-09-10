@@ -27,7 +27,7 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
 
         <ribbon>
             <group name="navigation">
@@ -113,6 +113,37 @@
 			]]></script>
                 </smallButton>
             </group>
+
+            <group name="status">
+                <smallButton name="completeMasterOrder" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(masterOrders.masterOrderDetails.window.ribbon.status.completeMasterOrder.confirm)}")) {
+										#{form}.performEvent('changeState', ['03completed']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="declineMasterOrder" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(masterOrders.masterOrderDetails.window.ribbon.status.declineMasterOrder.confirm)}")) {
+										#{form}.performEvent('changeState', ['04declined']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
             <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png">
                     <script>
@@ -145,9 +176,51 @@
 
         <windowTab name="mainTab">
             <component type="form" name="masterOrderDetails" reference="form">
+                <script>
+                    <![CDATA[
+
+                       	var completeMasterOrder = #{window}.getRibbonItemOrNull("status.completeMasterOrder");
+    					var declineMasterOrder = #{window}.getRibbonItemOrNull("status.declineMasterOrder");
+
+                        this.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+
+						    if (! value.content.entityId) {
+						        return;
+						    }
+
+							var state = #{state}.getValue().content.value;
+                            if (!state) {
+								return;
+							}
+
+							if (state == "01new") {
+                                completeMasterOrder.enable();
+                                declineMasterOrder.enable();
+							} else if (state == "02inExecution") {
+                                completeMasterOrder.enable();
+                                declineMasterOrder.disable();
+							} else if (state == "03completed") {
+                                completeMasterOrder.disable();
+                                declineMasterOrder.disable();
+							} else if (state == "04declined") {
+                                completeMasterOrder.disable();
+                                declineMasterOrder.disable();
+							}
+
+						}
+					});
+
+
+                    ]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="8">
                     <layoutElement column="1" row="1">
+
                         <component type="lookup" name="masterOrderDefinition" reference="masterOrderDefinition"
                                    field="#{form}.masterOrderDefinition">
                             <option type="column" name="name" fields="name" link="true"
@@ -266,6 +339,7 @@
                     <layoutElement column="3" row="1">
                         <component type="select" name="masterOrderState"
                                    reference="masterOrderState" field="masterOrderState"/>
+
                     </layoutElement>
                     <layoutElement column="3" row="2">
                         <component type="calendar" name="createDate" reference="createDate" field="createDate"
@@ -273,10 +347,14 @@
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression" value="#number + ' - ' + '@masterOrders.masterOrderDto.state.value.' + #state"/>
 
                 <listener event="createOrder"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
@@ -285,6 +363,11 @@
                 <listener event="generateOrders"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="generateOrders"/>
+
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="changeState"/>
             </component>
         </windowTab>
 
@@ -335,10 +418,12 @@
                 <option type="footerRow" value="true"/>
                 <option type="columnsToSummary"
                         value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease"/>
-
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="onProductsChange"/>
+
+
+
 
             </component>
 
@@ -394,7 +479,16 @@
                 <option type="fixedHeight" value="true"/>
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
+
+
                 <option type="creatable" value="true"/>
+                <listener event="addExistingEntity"
+                          method="onAddExistingEntity"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+                <listener event="remove"
+                          method="onRemoveSelectedEntity"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"/>
+
             </component>
         </windowTab>
 

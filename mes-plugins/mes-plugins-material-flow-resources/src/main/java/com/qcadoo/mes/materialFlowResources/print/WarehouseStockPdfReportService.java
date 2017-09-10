@@ -144,7 +144,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
 
     private String extractProductName(Resource resource) {
         return StringUtils.isNoneBlank(resource.getProductName()) ? resource.getProductName().substring(0,
-                Math.min(15, resource.getProductName().length())) : "";
+                Math.min(12, resource.getProductName().length())) : "";
     }
 
     private String extractPalletNumber(Resource resource) {

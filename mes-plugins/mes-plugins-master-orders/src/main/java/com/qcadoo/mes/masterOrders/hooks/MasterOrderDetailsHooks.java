@@ -23,14 +23,8 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
@@ -48,6 +42,12 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -81,10 +81,24 @@ public class MasterOrderDetailsHooks {
     private NumberService numberService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
+        initState(view);
         setOrderLookupCriteriaModifier(view);
         setDefaultMasterOrderNumber(view);
         disableFields(view);
         ribbonRender(view);
+    }
+
+    public void initState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent stateField = (FieldComponent) view.getComponentByReference(MasterOrderFields.STATE);
+
+        stateField.setEnabled(false);
+
+        if (orderForm.getEntityId() != null) {
+            return;
+        }
+
+        stateField.setFieldValue(MasterOrderState.NEW.getStringValue());
     }
 
     public void ribbonRender(final ViewDefinitionState view) {

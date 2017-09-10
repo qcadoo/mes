@@ -40,7 +40,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
@@ -51,6 +50,9 @@ import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
+import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
+import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
@@ -61,7 +63,6 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
@@ -78,9 +79,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private NumberService numberService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
-
-    @Autowired
     private PalletNumberDisposalService palletNumberDisposalService;
 
     @Autowired
@@ -92,15 +90,16 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     @Autowired
     private DictionaryService dictionaryService;
 
+    @Autowired
+    private NotEnoughResourcesErrorMessageHolderFactory notEnoughResourcesErrorMessageHolderFactory;
+
     public ResourceManagementServiceImpl() {
 
     }
 
-    public ResourceManagementServiceImpl(final DataDefinitionService dataDefinitionService, final NumberService numberService,
-            final UnitConversionService unitConversionService) {
+    public ResourceManagementServiceImpl(final DataDefinitionService dataDefinitionService, final NumberService numberService) {
         this.dataDefinitionService = dataDefinitionService;
         this.numberService = numberService;
-        this.unitConversionService = unitConversionService;
     }
 
     @Override
@@ -410,7 +409,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         boolean enoughResources = true;
 
-        StringBuilder errorMessage = new StringBuilder();
+        NotEnoughResourcesErrorMessageHolder errorMessageHolder = notEnoughResourcesErrorMessageHolderFactory.create();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
 
@@ -448,7 +447,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
-                completeMessage(errorMessage, product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
+                errorMessageHolder.addErrorEntry(product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
                 if (generatedPositions.size() > 1) {
@@ -469,7 +468,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         if (!enoughResources) {
-            addDocumentError(document, warehouse, errorMessage);
+            NotEnoughResourcesErrorMessageCopyToEntityHelper.addError(document, warehouse, errorMessageHolder);
         }
     }
 
@@ -638,7 +637,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         boolean enoughResources = true;
 
-        StringBuilder errorMessage = new StringBuilder();
+        NotEnoughResourcesErrorMessageHolder errorMessageHolder = notEnoughResourcesErrorMessageHolderFactory.create();
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
 
@@ -665,7 +664,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
-                completeMessage(errorMessage, product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
+                errorMessageHolder.addErrorEntry(product, quantity.subtract(quantityInWarehouse, numberService.getMathContext()));
             } else {
                 reservationsService.deleteReservationFromDocumentPosition(position);
                 position = position.getDataDefinition().save(position);
@@ -681,32 +680,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
 
         if (!enoughResources) {
-            addDocumentError(document, warehouseFrom, errorMessage);
-        }
-    }
-
-    private void completeMessage(final StringBuilder errorMessage, Entity product, final BigDecimal quantity) {
-        if (errorMessage.length() > 0) {
-            errorMessage.append(", ");
-        }
-        errorMessage.append("(");
-        errorMessage.append(product.getStringField(ProductFields.NUMBER));
-        errorMessage.append(") ");
-        errorMessage.append(product.getStringField(ProductFields.NAME));
-        errorMessage.append(" - ");
-        errorMessage.append(numberService.format(quantity));
-        errorMessage.append(" ");
-        errorMessage.append(product.getStringField(ProductFields.UNIT));
-    }
-
-    private void addDocumentError(final Entity document, final Entity warehouseFrom, final StringBuilder errorMessage) {
-        String warehouseName = warehouseFrom.getStringField(LocationFields.NAME);
-
-        if ((errorMessage.toString().length() + warehouseName.length()) < 255) {
-            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResources", false, errorMessage.toString(),
-                    warehouseName);
-        } else {
-            document.addGlobalError("materialFlow.error.position.quantity.notEnoughResourcesShort", false);
+            NotEnoughResourcesErrorMessageCopyToEntityHelper.addError(document, warehouseFrom, errorMessageHolder);
         }
     }
 

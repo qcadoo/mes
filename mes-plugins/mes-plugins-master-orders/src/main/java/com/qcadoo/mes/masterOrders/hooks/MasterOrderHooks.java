@@ -25,6 +25,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.masterOrders.util.MasterOrderProductsDataService;
@@ -53,6 +54,7 @@ public class MasterOrderHooks {
 
     public void onCreate(final DataDefinition dataDefinition, final Entity masterOrder) {
         setExternalSynchronizedField(masterOrder);
+        setInitialState(masterOrder);
     }
 
     public void onSave(final DataDefinition dataDefinition, final Entity masterOrder) {
@@ -65,6 +67,10 @@ public class MasterOrderHooks {
 
     public void onCopy(final DataDefinition dataDefinition, final Entity masterOrder) {
         clearExternalFields(masterOrder);
+    }
+
+    private void setInitialState(final Entity masterOrder) {
+        masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
     }
 
     protected void setExternalSynchronizedField(final Entity masterOrder) {

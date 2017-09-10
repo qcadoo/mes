@@ -28,7 +28,7 @@
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
 
         <ribbon>
             <group name="orderListActions" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
@@ -67,21 +67,99 @@
                            action="#{window}.performRefresh;"/>
             </group>
             <template name="standardGridTemplate" excludeGroups="actions"/>
-
+            <group name="status">
+                <smallButton name="completeMasterOrder" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(masterOrders.masterOrderDetails.window.ribbon.status.completeMasterOrder.confirm)}")) {
+										#{grid}.performEvent('changeState', ['03completed']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="declineMasterOrder" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(masterOrders.masterOrderDetails.window.ribbon.status.declineMasterOrder.confirm)}")) {
+										#{grid}.performEvent('changeState', ['04declined']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="masterOrdersList" reference="grid">
+            <script>
+                <![CDATA[
+					var completeMasterOrder = #{window}.getRibbonItemOrNull("status.completeMasterOrder");
+    				var declineMasterOrder = #{window}.getRibbonItemOrNull("status.declineMasterOrder");
+
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+							    completeMasterOrder.disable();
+								declineMasterOrder.disable();
+							} else {
+							    var noDifferentStates = true;
+
+							    if(selectedEntitiesArray.length > 1) {
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+											noDifferentStates = false;
+											break;
+										}
+									}
+								}
+								if (noDifferentStates) {
+									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
+									if (selectedEntityStatus == "01new") {
+                                        completeMasterOrder.enable();
+                                        declineMasterOrder.enable();
+							        } else if (selectedEntityStatus == "02inExecution") {
+                                        completeMasterOrder.enable();
+                                        declineMasterOrder.disable();
+							        } else if (selectedEntityStatus == "03completed") {
+                                        completeMasterOrder.disable();
+                                        declineMasterOrder.disable();
+							        } else if (selectedEntityStatus == "04declined") {
+                                        completeMasterOrder.disable();
+                                        declineMasterOrder.disable();
+							        }
+								} else {
+									completeMasterOrder.disable("#{translate(masterOrders.masterOrders.ribbon.message.ordersWithDifferentStatesSelected)}");
+									declineMasterOrder.disable("#{translate(masterOrders.masterOrders.ribbon.message.ordersWithDifferentStatesSelected)}");
+								}
+							}
+						}
+					}
+
+					this.addOnChangeListener(listener);
+				]]>
+            </script>
             <option type="column" name="masterOrderDefinitionNumber" fields="masterOrderDefinitionNumber" link="true" width="50"/>
             <option type="column" name="number" fields="number" link="true"
                     width="150"/>
             <option type="column" name="name" fields="name" link="true"
                     width="250"/>
             <option type="column" name="deadline" fields="deadline"/>
-            <option type="column" name="company" fields="company"  width="150"/>
+            <option type="column" name="company" fields="company" width="150"/>
 
             <option type="column" name="companyPayer" fields="companyPayer" width="150"/>
 
             <option type="column" name="masterOrderState" fields="masterOrderState" width="100"/>
+
+            <option type="column" name="state" fields="state" width="70"/>
 
             <option type="column" name="orderedPositionQuantity" fields="orderedPositionQuantity" width="100"/>
 
@@ -92,8 +170,9 @@
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,company,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission"/>
-            <option type="orderable" value="masterOrderDefinitionNumber,number,name,deadline,company,companyPayer,masterOrderState"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,company,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,state"/>
+            <option type="orderable"
+                    value="masterOrderDefinitionNumber,number,name,deadline,company,companyPayer,masterOrderState,state"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
@@ -104,6 +183,8 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+            <listener event="changeState" class="com.qcadoo.mes.masterOrders.listeners.MasterOrdersListListeners" method="changeState"/>
+
         </component>
 
         <option type="fixedHeight" value="true"/>

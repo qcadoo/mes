@@ -23,16 +23,11 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.Entity;
@@ -46,6 +41,11 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -67,6 +67,33 @@ public class MasterOrderDetailsListeners {
 
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
+
+    public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        form.performEvent(view, "reset", new String[0]);
+    }
+
+    public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        form.performEvent(view, "reset", new String[0]);
+    }
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity masterOrder = masterOrderForm.getEntity();
+        Entity masterOrderDB = masterOrder.getDataDefinition().get(masterOrder.getId());
+
+        String status = args[0];
+
+        if(status.equals(MasterOrderState.COMPLETED.getStringValue())) {
+            masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
+            masterOrderDB.getDataDefinition().save(masterOrderDB);
+        } else if(status.equals(MasterOrderState.DECLINED.getStringValue())){
+            masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.DECLINED.getStringValue());
+            masterOrderDB.getDataDefinition().save(masterOrderDB);
+        }
+        state.performEvent(view, "reset", new String[0]);
+    }
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);

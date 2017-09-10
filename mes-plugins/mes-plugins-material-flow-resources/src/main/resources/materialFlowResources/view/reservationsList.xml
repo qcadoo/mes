@@ -65,9 +65,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
             <option type="orderable"
-                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate"/>
+                    value="location,productNumber,productName,quantity,documentNumber,documentName,documentDate,resourceNumber"/>
 
             <criteriaModifier
                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ReservationCriteriaModifiers"

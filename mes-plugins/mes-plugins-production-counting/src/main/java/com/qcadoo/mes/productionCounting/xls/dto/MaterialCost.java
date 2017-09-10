@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 
 public class MaterialCost {
 
+    private Long orderId;
+
     private String orderNumber;
 
     private String operationNumber;
@@ -132,5 +134,13 @@ public class MaterialCost {
 
     public void setUsedWasteUnit(String usedWasteUnit) {
         this.usedWasteUnit = usedWasteUnit;
+    }
+
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 }

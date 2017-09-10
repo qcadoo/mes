@@ -192,5 +192,9 @@
 		
 		<option type="header" value="true" />
 	</component>
-	
+	<hooks>
+		<beforeRender
+				class="com.qcadoo.mes.productionScheduling.hooks.OrderTimePredictionHooks"
+				method="onBeforeRender"/>
+	</hooks>
 </view>
