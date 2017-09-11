@@ -753,7 +753,7 @@ class ProductionBalanceRepository {
             OrderBalance orderBalance = ordersBalance.get(i);
             query.append("(");
             query.append(orderBalance.getOrderId() + ", ");
-            query.append(orderBalance.getRootId() + ", ");
+            query.append(orderBalance.getRootId() + "::INTEGER, ");
             query.append(orderBalance.getMaterialCosts() + ", ");
             query.append(orderBalance.getProductionCosts() + ", ");
             query.append(orderBalance.getTechnicalProductionCosts() + ", ");
