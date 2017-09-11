@@ -53,7 +53,7 @@ public class OrderHooksMO {
                 .getEntities();
         if (positions.size() == producedPositions.size()) {
             mo.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
-            mo = mo.getDataDefinition().fastSave(mo);
+            mo = mo.getDataDefinition().save(mo);
             order.setField(OrderFieldsMO.MASTER_ORDER, mo);
         }
     }
@@ -64,7 +64,7 @@ public class OrderHooksMO {
         if (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrderStatus)
                 && moDB.getHasManyField(MasterOrderFields.ORDERS).size() == 1) {
             moDB.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
-            moDB = moDB.getDataDefinition().fastSave(moDB);
+            moDB = moDB.getDataDefinition().save(moDB);
             order.setField(OrderFieldsMO.MASTER_ORDER, moDB);
         }
     }
@@ -80,7 +80,7 @@ public class OrderHooksMO {
         boolean hasAnOrderedQuantity = checkIfHasAnOrderedQuantity(positions);
         if (hasAnOrderedQuantity && MasterOrderState.NEW.getStringValue().equals(masterOrderStatus)) {
             masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.IN_EXECUTION.getStringValue());
-            masterOrder = masterOrder.getDataDefinition().fastSave(masterOrder);
+            masterOrder = masterOrder.getDataDefinition().save(masterOrder);
             order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
         }
     }
