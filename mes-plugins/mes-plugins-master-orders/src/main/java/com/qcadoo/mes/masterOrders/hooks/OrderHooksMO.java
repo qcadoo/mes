@@ -4,16 +4,19 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderHooksMO {
@@ -22,6 +25,9 @@ public class OrderHooksMO {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
         if (Objects.nonNull(order.getId())) {
@@ -33,24 +39,38 @@ public class OrderHooksMO {
             } else if (Objects.nonNull(order.getBelongsToField(OrderFieldsMO.MASTER_ORDER))
                     && MasterOrderState.IN_EXECUTION.getStringValue().equals(
                             order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE))) {
-                changeToCompleted(order);
+                changeToCompleted(order, orderDb);
             }
         }
     }
 
-    private void changeToCompleted(Entity order) {
+    private void changeToCompleted(Entity order, Entity orderDb) {
         Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        String queryForProducedPositions = MASTER_ORDER_POSITIONS_QUERY
-                + " AND pos.producedOrderQuantity >= masterOrderQuantity";
+        String queryForProducedPositions = MASTER_ORDER_POSITIONS_QUERY + " AND pos.producedOrderQuantity >= masterOrderQuantity";
 
         List<Entity> positions = dataDefinitionService
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
-                .find(MASTER_ORDER_POSITIONS_QUERY).setParameter("masterOrderId", mo.getId().intValue()).list()
-                .getEntities();
-        List<Entity> producedPositions = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
-                .find(queryForProducedPositions).setParameter("masterOrderId", mo.getId().intValue()).list()
-                .getEntities();
+                .find(MASTER_ORDER_POSITIONS_QUERY).setParameter("masterOrderId", mo.getId().intValue()).list().getEntities();
+
+        BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
+        BigDecimal doneQuantityDB = orderDb.getDecimalField(OrderFields.DONE_QUANTITY);
+        BigDecimal done = BigDecimalUtils.convertNullToZero(doneQuantity).subtract(
+                BigDecimalUtils.convertNullToZero(doneQuantityDB), numberService.getMathContext());
+        for (Entity position : positions) {
+            if (position.getIntegerField("productId").equals(order.getBelongsToField(OrderFields.PRODUCT).getId().intValue())) {
+                BigDecimal value = position.getDecimalField("producedOrderQuantity").add(done, numberService.getMathContext());
+                position.setField("producedOrderQuantity", value);
+            }
+        }
+
+        List<Entity> producedPositions = positions
+                .stream()
+                .filter(pos ->
+                        pos.getDecimalField("producedOrderQuantity").compareTo(pos.getDecimalField("masterOrderQuantity")) == 1
+                                ||
+                                pos.getDecimalField("producedOrderQuantity").compareTo(pos.getDecimalField("masterOrderQuantity"))
+                                        == 0).collect(Collectors.toList());
+
         if (positions.size() == producedPositions.size()) {
             mo.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
             mo = mo.getDataDefinition().save(mo);
