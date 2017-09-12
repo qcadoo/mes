@@ -65,7 +65,6 @@ public class OrderHooksMO {
                 && moDB.getHasManyField(MasterOrderFields.ORDERS).size() == 1) {
             moDB.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
             moDB = moDB.getDataDefinition().save(moDB);
-            order.setField(OrderFieldsMO.MASTER_ORDER, moDB);
         }
     }
 
