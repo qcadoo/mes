@@ -6455,7 +6455,7 @@ CREATE VIEW goodfood_palletdto AS
         CASE
             WHEN (ordersorder.id IS NULL) THEN ((row_number() OVER (PARTITION BY masterorder.id ORDER BY pallet.id) || ' z '::text) || (ceiling((masterorderproduct.masterorderquantity / unitconversionitem.quantityfrom)))::integer)
             ELSE ((row_number() OVER (PARTITION BY masterorder.id ORDER BY pallet.id) || ' z '::text) || (ceiling((ordersorder.plannedquantity / unitconversionitem.quantityfrom)))::integer)
-        END AS palletserialnumber,
+        END AS numberofpallets,
     pallet.state,
     pallet.laststatechangefails,
     pallet.active
