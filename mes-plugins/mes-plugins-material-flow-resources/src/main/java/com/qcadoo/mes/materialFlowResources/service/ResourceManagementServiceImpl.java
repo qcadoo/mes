@@ -413,7 +413,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
 
-        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+        for (Entity position : document.getHasManyField(DocumentFields.POSITIONS).find()
+                .createAlias(PositionFields.PRODUCT, PositionFields.PRODUCT)
+                .addOrder(SearchOrders.asc(PositionFields.PRODUCT + "." + ProductFields.NUMBER)).list().getEntities()) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
 
