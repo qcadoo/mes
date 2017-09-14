@@ -99,6 +99,9 @@
             <option type="column" name="technologyName" fields="technologyName"
                     width="55"/>
             <option type="column" name="masterOrderPositionStatus" fields="masterOrderPositionStatus" width="55"/>
+
+            <option type="column" name="state" fields="state" width="70"/>
+
             <option type="column" name="comments" fields="comments"
                     width="45"/>
             <option type="column" name="masterOrderQuantity" fields="masterOrderQuantity" width="45"/>
@@ -111,9 +114,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>
