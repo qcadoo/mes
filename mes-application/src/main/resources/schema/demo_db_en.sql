@@ -6133,7 +6133,8 @@ CREATE TABLE masterorders_masterorder (
     asanatasknameupdated boolean DEFAULT false,
     asanataskcommentadded boolean DEFAULT false,
     sendagaintoasana boolean DEFAULT false,
-    sendagaintoasanatries integer DEFAULT 0
+    sendagaintoasanatries integer DEFAULT 0,
+    asanastatecompleteddate timestamp without time zone
 );
 
 
