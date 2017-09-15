@@ -60,6 +60,21 @@
                     <layoutElement column="1" row="4">
                         <component type="file" name="attachment" field="attachment"/>
                     </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="product" field="product"
+                                   reference="product" hasDescription="true">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="column" name="ean" fields="ean"/>
+
+                            <option type="searchable" value="name,ean"/>
+                            <option type="orderable" value="name,ean"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1" height="2">
                         <component type="textarea" name="comment" field="comment"/>
                     </layoutElement>
