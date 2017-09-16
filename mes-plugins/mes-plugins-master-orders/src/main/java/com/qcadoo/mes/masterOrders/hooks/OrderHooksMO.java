@@ -30,20 +30,21 @@ public class OrderHooksMO {
     private NumberService numberService;
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
+        Entity orderDb = null;
         if (Objects.nonNull(order.getId())) {
-            Entity orderDb = orderDD.get(order.getId());
-            if (Objects.nonNull(order.getBelongsToField(OrderFieldsMO.MASTER_ORDER))
-                    && (MasterOrderState.IN_EXECUTION.getStringValue().equals(
-                            order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)) || MasterOrderState.NEW
-                            .getStringValue().equals(
-                                    order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)))
-                    && canChangeToCompltead(order, orderDb)) {
-                changeToCompleted(order, orderDb);
-            } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
-                changeToInExecution(order);
-            } else if (canChangeMasterOrderStateToNew(order, orderDb)) {
-                changeToNew(order, orderDb);
-            }
+            orderDb = orderDD.get(order.getId());
+        }
+        if (Objects.nonNull(order.getBelongsToField(OrderFieldsMO.MASTER_ORDER))
+                && (MasterOrderState.IN_EXECUTION.getStringValue().equals(
+                        order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)) || MasterOrderState.NEW
+                        .getStringValue().equals(
+                                order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)))
+                && canChangeToCompltead(order, orderDb)) {
+            changeToCompleted(order, orderDb);
+        } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
+            changeToInExecution(order);
+        } else if (canChangeMasterOrderStateToNew(order, orderDb)) {
+            changeToNew(order, orderDb);
         }
     }
 
@@ -61,10 +62,16 @@ public class OrderHooksMO {
                 .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                 .find(MASTER_ORDER_POSITIONS_QUERY).setParameter("masterOrderId", mo.getId().intValue()).list().getEntities();
 
-        BigDecimal doneQuantity = order.getDecimalField(OrderFields.DONE_QUANTITY);
-        BigDecimal doneQuantityDB = orderDb.getDecimalField(OrderFields.DONE_QUANTITY);
-        BigDecimal done = BigDecimalUtils.convertNullToZero(doneQuantity).subtract(
-                BigDecimalUtils.convertNullToZero(doneQuantityDB), numberService.getMathContext());
+        BigDecimal doneQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY));
+        BigDecimal done = BigDecimal.ZERO;
+        if(Objects.nonNull(orderDb)){
+            BigDecimal doneQuantityDB = orderDb.getDecimalField(OrderFields.DONE_QUANTITY);
+            done = BigDecimalUtils.convertNullToZero(doneQuantity).subtract(
+                    BigDecimalUtils.convertNullToZero(doneQuantityDB), numberService.getMathContext());
+        } else {
+            done = doneQuantity;
+        }
+
         for (Entity position : positions) {
             if (position.getIntegerField("productId").equals(order.getBelongsToField(OrderFields.PRODUCT).getId().intValue())) {
                 BigDecimal value = position.getDecimalField("producedOrderQuantity").add(done, numberService.getMathContext());
@@ -90,7 +97,7 @@ public class OrderHooksMO {
         if (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrderStatus)
                 && moDB.getHasManyField(MasterOrderFields.ORDERS).size() == 1) {
             moDB.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
-            moDB = moDB.getDataDefinition().save(moDB);
+            moDB.getDataDefinition().save(moDB);
         }
     }
 
@@ -106,14 +113,18 @@ public class OrderHooksMO {
 
     private boolean canChangeMasterOrderStateToInExecution(final Entity order, final Entity orderDB) {
         Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        Entity moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity moDB = null;
+        if(Objects.nonNull(orderDB)){
+            moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        }
+
         if (Objects.isNull(mo) && Objects.isNull(moDB)) {
             return false;
         } else if (Objects.nonNull(mo) && Objects.isNull(moDB)) {
             return true;
         } else if (Objects.isNull(mo) && Objects.nonNull(moDB)) {
             return false;
-        } else if (Objects.nonNull(mo) && Objects.isNull(moDB)) {
+        } else if (Objects.nonNull(mo) && Objects.nonNull(moDB)) {
             if (mo.getId().equals(moDB.getId())) {
                 return false;
             } else {
@@ -126,7 +137,10 @@ public class OrderHooksMO {
 
     private boolean canChangeMasterOrderStateToNew(final Entity order, final Entity orderDB) {
         Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        Entity moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity moDB = null;
+        if(Objects.nonNull(orderDB)){
+            moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        }
         if (Objects.isNull(mo) && Objects.nonNull(moDB)) {
             return true;
         }
