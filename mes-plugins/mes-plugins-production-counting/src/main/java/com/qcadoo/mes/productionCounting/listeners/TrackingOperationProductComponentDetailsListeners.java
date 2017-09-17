@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.Set;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -47,10 +39,15 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Service
 public class TrackingOperationProductComponentDetailsListeners {
@@ -158,7 +155,7 @@ public class TrackingOperationProductComponentDetailsListeners {
                             searchCriteriaBuilder -> searchCriteriaBuilder
                                     .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(baseUnit)) {
-                        BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
+                        BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit, BigDecimal.ROUND_FLOOR);
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
@@ -210,7 +207,7 @@ public class TrackingOperationProductComponentDetailsListeners {
                             searchCriteriaBuilder -> searchCriteriaBuilder
                                     .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(givenUnit)) {
-                        BigDecimal convertedQuantity = unitConversions.convertTo(quantity, givenUnit);
+                        BigDecimal convertedQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
                         productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
