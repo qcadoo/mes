@@ -1,18 +1,17 @@
-package com.qcadoo.mes.deliveries.helpers;
+package com.qcadoo.mes.basic;
 
 import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.NumberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-//TODO replace usage with com.qcadoo.mes.basic.CalculationQuantityService
-@Component
-public final class DeliveryPositionCalculationHelper {
+@Service
+public class CalculationQuantityService {
 
     @Autowired
     private DictionaryService dictionaryService;
@@ -38,5 +37,4 @@ public final class DeliveryPositionCalculationHelper {
     private Function<BigDecimal, BigDecimal> withDefaultMathContext(BiFunction<BigDecimal, MathContext, BigDecimal> operation) {
         return value -> operation.apply(value, numberService.getMathContext());
     }
-
 }
