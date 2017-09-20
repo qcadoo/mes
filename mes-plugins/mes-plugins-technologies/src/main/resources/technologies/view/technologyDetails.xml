@@ -67,6 +67,10 @@
                 <bigButton name="generateProductStructure" icon="generateIcon24.png"
                            action="#{productStructureForm}.fireEvent(generateProductStructure);" state="disabled"/>
             </group>
+            <group name="fillProducts">
+                <bigButton name="fillProducts" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(fillProducts);" state="disabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -89,9 +93,6 @@
 								}
 								var state = #{state}.getValue().content.value;
 								if (!state) {
-									return;
-								}
-								if (! value || ! value.content) {
 									return;
 								}
 
@@ -139,6 +140,7 @@
 							var deleteItem = #{window}.getRibbonItem("actions.delete");
 							
 							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
+							var fillProducts = #{window}.getRibbonItem("fillProducts.fillProducts");
 
 							acceptState.forState="02accepted";
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
@@ -157,6 +159,7 @@
 								checkState.enable();
 								generateProductStructure.disable();
 								toggleEditable(true, "");
+								fillProducts.enable();
 							} else if (state == "02accepted") {
 								acceptState.disable();
 								checkState.disable();
@@ -167,6 +170,7 @@
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
 								toggleEditable(true, "");
 								deleteItem.disable();
+								fillProducts.disable();
 							} else if (state == "03declined" || state == "04outdated") {
 								acceptState.disable();
 								checkState.disable();
@@ -174,6 +178,7 @@
 								generateProductStructure.disable();
 								toggleEditable(false);
 								deleteItem.enable();
+								fillProducts.disable();
 							} else if ( state == "05checked"){
 								cancelState.enable();
 								checkState.enable();
@@ -184,6 +189,7 @@
 								acceptState.enable();
 								toggleEditable(true, "");
                                 deleteItem.disable();
+                                fillProducts.disable();
 							}
 							if (externalSynchronized == '0') {
 								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}");
@@ -290,6 +296,9 @@
                           method="printTechnologyDetailsReport"/>
                 <listener event="downloadAtachment" method="downloadAtachment"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"/>
+                <listener event="fillProducts"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="fillProducts"/>
             </component>
         </windowTab>
 

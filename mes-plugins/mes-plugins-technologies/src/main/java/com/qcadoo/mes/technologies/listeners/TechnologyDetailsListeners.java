@@ -26,6 +26,8 @@ package com.qcadoo.mes.technologies.listeners;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +36,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.RemoveTOCService;
 import com.qcadoo.model.api.DataDefinition;
@@ -142,5 +149,36 @@ public class TechnologyDetailsListeners {
         productStructureForm.setEntity(productTechnology);
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         window.setActiveTab("productStructure");
+    }
+
+    public void fillProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(form.getEntityId());
+        List<Entity> tocs = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        DataDefinition opicDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+        List<Entity> operationsWithManyOutProducts = Lists.newArrayList();
+        for (Entity toc : tocs) {
+            List<Entity> outComponents = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            Entity parent = toc.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+            if (outComponents.size() == 1 && Objects.nonNull(parent)) {
+                Entity opoc = outComponents.get(0);
+                Entity opic = opicDD.create();
+                opic.setField(OperationProductInComponentFields.QUANTITY,
+                        opoc.getField(OperationProductOutComponentFields.QUANTITY));
+                opic.setField(OperationProductInComponentFields.PRODUCT,
+                        opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+                opic.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
+                opicDD.save(opic);
+            } else if (outComponents.size() > 1) {
+                operationsWithManyOutProducts.add(toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+            }
+        }
+        if (!operationsWithManyOutProducts.isEmpty()) {
+            state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
+                    operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
+                            .collect(Collectors.joining(", ")));
+        }
     }
 }

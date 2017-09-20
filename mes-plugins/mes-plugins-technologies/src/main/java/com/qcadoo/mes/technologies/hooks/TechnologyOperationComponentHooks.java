@@ -95,11 +95,7 @@ public class TechnologyOperationComponentHooks {
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
-        if (tree == null) {
-            return;
-        }
-
-        if (tree.isEmpty()) {
+        if (tree == null || tree.isEmpty()) {
             return;
         }
 
