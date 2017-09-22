@@ -128,7 +128,6 @@ public class ProductStructureTreeService {
         List<Entity> technologiesForProduct = technologyDD
                 .find()
                 .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP))
                 .add(SearchRestrictions.and(
                         SearchRestrictions.belongsTo(L_PRODUCT, product),
                         SearchRestrictions.or(SearchRestrictions.eq("state", "02accepted"),
@@ -277,9 +276,8 @@ public class ProductStructureTreeService {
         usedTechnologies.add(technology.getId());
 
         generateTreeForSubproducts(operation, technology, productStructureList, root, view, usedTechnologies);
-        EntityTree productStructureTree = EntityTreeUtilsService.getDetachedEntityTree(productStructureList);
 
-        return productStructureTree;
+        return EntityTreeUtilsService.getDetachedEntityTree(productStructureList);
     }
 
     public EntityTree getOperationComponentsFromTechnology(final Entity technology) {

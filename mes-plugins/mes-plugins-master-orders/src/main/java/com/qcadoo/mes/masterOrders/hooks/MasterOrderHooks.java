@@ -67,6 +67,7 @@ public class MasterOrderHooks {
 
     public void onCopy(final DataDefinition dataDefinition, final Entity masterOrder) {
         clearExternalFields(masterOrder);
+        setInitialState(masterOrder);
     }
 
     private void setInitialState(final Entity masterOrder) {

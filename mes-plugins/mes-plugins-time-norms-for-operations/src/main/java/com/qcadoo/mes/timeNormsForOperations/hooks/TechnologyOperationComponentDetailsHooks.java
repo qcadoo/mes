@@ -37,6 +37,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -144,7 +145,7 @@ public class TechnologyOperationComponentDetailsHooks {
         // you can use someEntity.getSTH().getSTH() only when you are 100% sure that all the passers-relations
         // will not return null (i.e. all relations using below are mandatory on the model definition level)
         String unit = formEntity.getBelongsToField("technology").getBelongsToField("product").getField("unit").toString();
-        for (String referenceName : Sets.newHashSet(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT, "productionInOneCycleUNIT")) {
+        for (String referenceName : Sets.newHashSet(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT, TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE_UNIT)) {
             component = (FieldComponent) view.getComponentByReference(referenceName);
             if (component == null) {
                 continue;

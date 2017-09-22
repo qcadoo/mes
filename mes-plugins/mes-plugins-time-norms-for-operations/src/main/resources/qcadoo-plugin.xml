@@ -201,6 +201,18 @@
 				copyable="false" />
 		</model:model-field>
 	
+		<model:model-hook plugin="technologies" model="operation">
+			<model:onSave
+				class="com.qcadoo.mes.timeNormsForOperations.hooks.OperationModelHooksTNFO"
+				method="setProductionInOneCycleUNIT" />
+		</model:model-hook>
+
+		<model:model-hook plugin="technologies" model="operationProductOutComponent">
+			<model:onSave
+				class="com.qcadoo.mes.timeNormsForOperations.hooks.OPOCModelHooksTNFO"
+				method="setProductionInOneCycleUNIT" />
+		</model:model-hook>
+
 		<model:model-hook plugin="technologies" model="technology">
 			<model:onSave
 				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooksTNFO"
