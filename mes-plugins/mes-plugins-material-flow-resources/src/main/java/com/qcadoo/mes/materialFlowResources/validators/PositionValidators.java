@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.validators;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,7 +34,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceStockFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
@@ -132,7 +130,7 @@ public class PositionValidators {
         }
 
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            BigDecimal availableQuantity = getAvailableQuantityWithoutOldQuantities(dataDefinition, position, document);
+            BigDecimal availableQuantity = getAvailableQuantityWithoutOldQuantities(position, document);
             BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
             if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
                 position.addError(dataDefinition.getField(PositionFields.QUANTITY),
@@ -162,17 +160,10 @@ public class PositionValidators {
         return true;
     }
 
-    private BigDecimal getAvailableQuantityWithoutOldQuantities(final DataDefinition positionDD, final Entity position,
+    private BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position,
             final Entity document) {
-        BigDecimal availableQuantity = BigDecimal.ZERO;
-        Optional<Entity> resourceStock = resourceStockService.getResourceStockForProductAndLocation(
-                position.getBelongsToField(PositionFields.PRODUCT), document.getBelongsToField(DocumentFields.LOCATION_FROM));
-
-        if (resourceStock.isPresent()) {
-            availableQuantity = resourceStock.get().getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
-        }
-
-        return availableQuantity;
+        return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
+                document.getBelongsToField(DocumentFields.LOCATION_FROM));
     }
 
     public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
@@ -184,7 +175,7 @@ public class PositionValidators {
             }
         }
 
-        return getAvailableQuantityWithoutOldQuantities(positionDD, position, document).add(oldQuantity);
+        return getAvailableQuantityWithoutOldQuantities(position, document).add(oldQuantity);
     }
 
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {

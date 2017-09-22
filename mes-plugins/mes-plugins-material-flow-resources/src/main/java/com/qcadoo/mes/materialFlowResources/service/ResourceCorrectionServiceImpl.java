@@ -49,9 +49,6 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
-    private ResourceStockService resourceStockService;
-
-    @Autowired
     private DictionaryService dictionaryService;
 
     @Autowired
@@ -112,15 +109,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             Entity savedResource = resource.getDataDefinition().save(resource);
             if (savedResource.isValid()) {
                 correction.getDataDefinition().save(correction);
-
-                BigDecimal difference = newQuantity.subtract(oldQuantity);
-                if (difference.compareTo(BigDecimal.ZERO) > 0) {
-                    resourceStockService.addResourceStock(product(oldResource), location(oldResource), difference);
-                } else {
-                    resourceStockService.removeResourceStock(product(oldResource), location(oldResource), difference.abs());
-                }
                 return true;
-
             } else {
                 return false;
             }

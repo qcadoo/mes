@@ -55,20 +55,21 @@ public class WarehouseMinimalStateHelper {
         String query = "select COALESCE(sum(op.orderedQuantity),0) as  orderedQuantity from #deliveries_orderedProduct op, "
                 + "#deliveries_delivery del where op.delivery.id=del.id and op.product.id=:product and del.location.id = :warehouseId "
                 + "and del.state in ('01draft', '02prepared', '03duringCorrection', '05approved') and del.active=true";
-        return getWarehouseStockDD().find(query).setParameter("warehouseId", warehouse).setParameter("product", product)
+        return getResourceStockDtoDD().find(query).setParameter("warehouseId", warehouse).setParameter("product", product)
                 .setMaxResults(1).uniqueResult().getDecimalField("orderedQuantity");
     }
 
     // WARNING unused argument is used in aspect in plugin integration
     public List<Entity> getWarehouseStockWithTooSmallMinState(final Entity warehouse, final List<Entity> product) {
 
-        String query = "select stock from #materialFlowResources_warehouseStock as stock where stock.minimumState > 0"
-                + " and stock.location.id = :warehouseId";
-        return getWarehouseStockDD().find(query).setParameter("warehouseId", warehouse.getId()).list().getEntities();
+        String query = "select stock from #materialFlowResources_resourceStockDto as stock where stock.minimumState > 0"
+                + " and stock.location_id = :warehouseId";
+        return getResourceStockDtoDD().find(query).setParameter("warehouseId", warehouse.getId()).list().getEntities();
     }
 
-    private DataDefinition getWarehouseStockDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "warehouseStock");
+    private DataDefinition getResourceStockDtoDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
     }
 
     public Entity getDefaultSupplier(Long productId) {

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -15,21 +14,9 @@ import com.qcadoo.model.api.Entity;
 public class ReservationHooks {
 
     @Autowired
-    private ResourceStockService resourceStockService;
-
-    @Autowired
     private ResourceReservationsService resourceReservationsService;
 
-    public boolean onDelete(DataDefinition reservationDD, Entity reservation) {
-        resourceStockService.updateResourceStock(reservation.getBelongsToField(ReservationFields.PRODUCT),
-                reservation.getBelongsToField(ReservationFields.LOCATION),
-                reservation.getDecimalField(ReservationFields.QUANTITY).negate());
-        return true;
-    }
-
     public void onSave(DataDefinition reservationDD, Entity reservation) {
-        Entity product = reservation.getBelongsToField(ReservationFields.PRODUCT);
-        Entity location = reservation.getBelongsToField(ReservationFields.LOCATION);
         Entity newResource = reservation.getBelongsToField(ReservationFields.RESOURCE);
         Entity oldResource = null;
         Entity oldReservation = null;
@@ -41,7 +28,6 @@ public class ReservationHooks {
             oldResource = oldReservation.getBelongsToField(ReservationFields.RESOURCE);
         }
         BigDecimal quantityToAdd = newQuantity.subtract(oldQuantity);
-        resourceStockService.updateResourceStock(product, location, quantityToAdd);
 
         if (oldResource != null && newResource != null) {
             if (oldResource.getId().compareTo(newResource.getId()) != 0) {
