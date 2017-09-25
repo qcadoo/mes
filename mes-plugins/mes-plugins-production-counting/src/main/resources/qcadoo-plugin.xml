@@ -357,8 +357,9 @@
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
-            <model:belongsTo name="productionBalance"
-                             plugin="productionCounting" model="productionBalance"/>
+            <model:manyToMany name="productionBalance"
+                              plugin="productionCounting" model="productionBalance"
+                              joinField="orders" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field model="technology" plugin="technologies">
