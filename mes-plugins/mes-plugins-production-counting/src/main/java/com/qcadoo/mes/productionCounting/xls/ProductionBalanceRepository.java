@@ -405,7 +405,7 @@ class ProductionBalanceRepository {
 
     private void appendForEachRealMachineCosts(Entity entity, StringBuilder query) {
         appendRealMachineTime(query);
-        query.append("/ 3600 * ");
+        query.append("::numeric/ 3600 * ");
         appendForEachMachineHourCost(entity, query);
     }
 
@@ -417,7 +417,7 @@ class ProductionBalanceRepository {
 
     private void appendForEachRealStaffCosts(Entity entity, StringBuilder query) {
         appendRealStaffTime(query);
-        query.append("/ 3600 * ");
+        query.append("::numeric/ 3600 * ");
         appendForEachStaffHourCost(entity, query);
     }
 
@@ -429,7 +429,7 @@ class ProductionBalanceRepository {
 
     private void appendCumulatedRealMachineCosts(StringBuilder query) {
         appendRealMachineTime(query);
-        query.append("/ 3600 * ");
+        query.append("::numeric/ 3600 * ");
         appendCumulatedMachineHourCost(query);
     }
 
@@ -440,7 +440,7 @@ class ProductionBalanceRepository {
 
     private void appendCumulatedRealStaffCosts(StringBuilder query) {
         appendRealStaffTime(query);
-        query.append("/ 3600 * ");
+        query.append("::numeric/ 3600 * ");
         appendCumulatedStaffHourCost(query);
     }
 
