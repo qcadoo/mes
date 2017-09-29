@@ -106,6 +106,10 @@
                         values="01never,02validateWithResources" default="01never"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="fillResourceIrrespectiveOfConversion" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="company" cascade="nullify"/>
@@ -137,7 +141,7 @@
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
-            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo,05manual" default="01fifo"/>
+            <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requirePrice"/>

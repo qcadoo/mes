@@ -23,11 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface ResourceManagementService {
 
@@ -35,12 +32,5 @@ public interface ResourceManagementService {
 
     void createResourcesForReceiptDocuments(final Entity document);
 
-    void updateResourcesForReleaseDocuments(final Entity document);
-
-    void moveResourcesForTransferDocument(Entity document);
-
-    List<Entity> getResourcesForWarehouseProductAndAlgorithm(Entity warehouse, Entity product, Entity position,
-            WarehouseAlgorithm warehouseAlgorithm);
-
-    BigDecimal convertToGivenUnit(BigDecimal quantity, Entity position);
+    void fillResourcesInDocument(final ViewDefinitionState view, final Entity document);
 }
