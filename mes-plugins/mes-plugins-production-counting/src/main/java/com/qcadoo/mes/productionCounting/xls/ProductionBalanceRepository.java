@@ -503,9 +503,9 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         appendOrdersBalanceWithQueries(materialCosts, productionCosts, query);
         appendOrdersBalanceSelectionClause(entity, query);
-        query.append("MIN(gmc.cost) AS materialCosts, ");
+        query.append("MIN(COALESCE(gmc.cost, 0)) AS materialCosts, ");
         query.append("MIN(gpc.cost) AS productionCosts, ");
-        query.append("MIN(gmc.cost) + MIN(gpc.cost) AS technicalProductionCosts, ");
+        query.append("MIN(COALESCE(gmc.cost, 0)) + MIN(gpc.cost) AS technicalProductionCosts, ");
         appendMaterialCostMarginValue(entity, query);
         query.append("AS materialCostMarginValue, ");
         appendProductionCostMarginValue(entity, query);
@@ -529,7 +529,7 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append(
                 "LEFT JOIN productioncounting_trackingoperationproductoutcomponent topoc ON topoc.productiontracking_id = pt.id AND topoc.product_id = prod.id ");
-        query.append("JOIN grouped_material_cost gmc ON gmc.order_id = o.id ");
+        query.append("LEFT JOIN grouped_material_cost gmc ON gmc.order_id = o.id ");
         query.append("JOIN grouped_production_cost gpc ON gpc.order_id = o.id ");
         appendWhereClause(query);
         query.append("GROUP BY orderId, rootId, orderNumber, productNumber, productName ");
@@ -542,11 +542,15 @@ class ProductionBalanceRepository {
     private void appendOrdersBalanceWithQueries(List<MaterialCost> materialCosts, List<ProductionCost> productionCosts,
             StringBuilder query) {
         query.append("WITH real_material_cost (order_id, cost) AS (VALUES ");
-        for (int i = 0; i < materialCosts.size(); i++) {
-            MaterialCost materialCost = materialCosts.get(i);
-            query.append("(" + materialCost.getOrderId() + ", " + materialCost.getRealCost() + ") ");
-            if (i != materialCosts.size() - 1) {
-                query.append(", ");
+        if(materialCosts.isEmpty()){
+            query.append("(NULL::numeric, NULL::numeric) ");
+        } else {
+            for (int i = 0; i < materialCosts.size(); i++) {
+                MaterialCost materialCost = materialCosts.get(i);
+                query.append("(" + materialCost.getOrderId() + ", " + materialCost.getRealCost() + ") ");
+                if (i != materialCosts.size() - 1) {
+                    query.append(", ");
+                }
             }
         }
         query.append("), ");
@@ -642,7 +646,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendTotalCosts(Entity entity, StringBuilder query) {
-        query.append("MIN(gmc.cost) + MIN(gpc.cost) + ");
+        query.append("MIN(COALESCE(gmc.cost, 0)) + MIN(gpc.cost) + ");
         appendMaterialCostMarginValue(entity, query);
         query.append("+ ");
         appendProductionCostMarginValue(entity, query);
@@ -659,7 +663,7 @@ class ProductionBalanceRepository {
 
     private void appendMaterialCostMarginValue(Entity entity, StringBuilder query) {
         appendMaterialCostMargin(entity, query);
-        query.append("/ 100 * MIN(gmc.cost) ");
+        query.append("/ 100 * MIN(COALESCE(gmc.cost, 0)) ");
     }
 
     List<OrderBalance> getComponentsBalance(Entity entity, List<Long> ordersIds, List<OrderBalance> ordersBalance) {
