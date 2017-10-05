@@ -450,15 +450,15 @@ class ProductionBalanceRepository {
     }
 
     private void appendPlannedMachineTime(Entity entity, StringBuilder query) {
-        query.append("COALESCE(SUM(toc.tj * pcor.runs * toc.machineutilization ");
+        query.append("COALESCE(SUM((toc.tj * pcor.runs ");
         appendTPZandAdditionalTime(entity, query);
-        query.append("), 0) ");
+        query.append(") * toc.machineutilization), 0) ");
     }
 
     private void appendPlannedStaffTime(Entity entity, StringBuilder query) {
-        query.append("COALESCE(SUM(toc.tj * pcor.runs * toc.laborutilization ");
+        query.append("COALESCE(SUM((toc.tj * pcor.runs ");
         appendTPZandAdditionalTime(entity, query);
-        query.append("), 0) ");
+        query.append(") * toc.laborutilization), 0) ");
     }
 
     private void appendCumulatedStaffHourCost(StringBuilder query) {
