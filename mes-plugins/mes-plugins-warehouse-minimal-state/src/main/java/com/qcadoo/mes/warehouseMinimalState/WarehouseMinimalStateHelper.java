@@ -64,7 +64,7 @@ public class WarehouseMinimalStateHelper {
 
         String query = "select stock from #materialFlowResources_resourceStockDto as stock where stock.minimumState > 0"
                 + " and stock.location_id = :warehouseId";
-        return getResourceStockDtoDD().find(query).setParameter("warehouseId", warehouse.getId()).list().getEntities();
+        return getResourceStockDtoDD().find(query).setParameter("warehouseId", warehouse.getId().intValue()).list().getEntities();
     }
 
     private DataDefinition getResourceStockDtoDD() {
