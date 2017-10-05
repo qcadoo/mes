@@ -39,6 +39,7 @@
         <text name="details"/>
         <enum name="logLevel" values="01trace,02debug,03info,04warn,05error,06fatal,07activity" default="01trace"
               required="true"/>
+        <hasMany name="viewedActivities" model="viewedActivity" joinField="log" cascade="delete" copyable="false"/>
     </fields>
 
     <hooks/>
