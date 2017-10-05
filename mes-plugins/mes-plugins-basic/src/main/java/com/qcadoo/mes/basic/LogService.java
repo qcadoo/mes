@@ -195,10 +195,14 @@ public class LogService {
     }
 
     private void deleteOldLogs() {
+        String sqlForViewed = "DELETE FROM basic_viewedactivity va JOIN basic_log log ON va.log_id = log.id "
+                + " WHERE log.createtime < (now() - interval '3 month');";
+
         String sql = "DELETE FROM basic_log WHERE createtime < (now() - interval '3 month');";
 
         Map<String, Object> params = Maps.newHashMap();
 
+        jdbcTemplate.update(sqlForViewed, params);
         jdbcTemplate.update(sql, params);
     }
 
