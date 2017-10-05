@@ -60,6 +60,8 @@ public class LogService {
 
         private String details;
 
+        private Date createTime;
+
         private LogLevel logLevel = LogLevel.TRACE;
 
         public static Builder newBuilder(LogLevel logLevel, String type, String action) {
@@ -78,6 +80,10 @@ public class LogService {
             return new Builder().withLogLevel(LogLevel.INFO).withType(type).withAction(action);
         }
 
+        public static Builder activity(String type, String action) {
+            return new Builder().withLogLevel(LogLevel.ACTIVITY).withType(type).withAction(action);
+        }
+
         public Builder withType(String type) {
             this.type = type;
             return this;
@@ -85,6 +91,11 @@ public class LogService {
 
         public Builder withAction(String action) {
             this.action = action;
+            return this;
+        }
+
+        public Builder withCreateTime(Date createTime) {
+            this.createTime = createTime;
             return this;
         }
 
@@ -127,7 +138,11 @@ public class LogService {
         Entity logEntity = logDD.create();
 
         logEntity.setField(LogFields.ACTION, builder.action);
-        logEntity.setField(LogFields.CREATE_TIME, new Date());
+        if (builder.createTime == null) {
+            logEntity.setField(LogFields.CREATE_TIME, new Date());
+        } else {
+            logEntity.setField(LogFields.CREATE_TIME, builder.createTime);
+        }
         logEntity.setField(LogFields.DETAILS, builder.details);
         logEntity.setField(LogFields.ITEM_1, builder.item1);
         logEntity.setField(LogFields.ITEM_2, builder.item2);

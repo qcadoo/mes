@@ -25,7 +25,6 @@ package com.qcadoo.mes.orders.constants;
 
 public final class OrdersConstants {
 
-
     private OrdersConstants() {
 
     }
@@ -73,4 +72,9 @@ public final class OrdersConstants {
     public static final String FIELD_GRID = "grid";
 
     public static final String MODEL_INSTRUCTION = "instruction";
+
+    public static String orderDetailsUrl(final Long id) {
+        return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id
+                + "%22%2C%22form.undefined%22%3Anull%7D";
+    }
 }

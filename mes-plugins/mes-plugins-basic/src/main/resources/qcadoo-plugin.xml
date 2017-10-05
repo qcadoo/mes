@@ -230,6 +230,7 @@
 
         <model:model model="parameter" resource="model/parameter.xml"/>
         <model:model model="log" resource="model/log.xml"/>
+        <model:model model="viewedActivity" resource="model/viewedActivity.xml"/>
 
         <model:model model="country" resource="model/country.xml"/>
         <model:model model="address" resource="model/address.xml"/>
