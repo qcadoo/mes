@@ -25,7 +25,7 @@ package com.qcadoo.mes.basic.constants;
 
 public enum LogLevel {
 
-    TRACE("01trace"), DEBUG("02debug"), INFO("03info"), WARN("04warn"), ERROR("05error"), FATAL("06fatal");
+    TRACE("01trace"), DEBUG("02debug"), INFO("03info"), WARN("04warn"), ERROR("05error"), FATAL("06fatal"), ACTIVITY("07activity");
 
     private final String code;
 
