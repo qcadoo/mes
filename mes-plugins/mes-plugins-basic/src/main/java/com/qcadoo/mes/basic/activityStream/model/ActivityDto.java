@@ -47,10 +47,11 @@ public class ActivityDto {
     }
 
     public Date getDate() {
-        return date;
+        return (date == null) ? null : new Date(date.getTime());
     }
 
-    public void setDate(Date date) {
-        this.date = date;
+    public void setDate(final Date date) {
+        this.date = (date == null) ? null : new Date(date.getTime());
     }
+
 }
