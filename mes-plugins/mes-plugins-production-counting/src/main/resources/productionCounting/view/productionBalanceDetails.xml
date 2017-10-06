@@ -1217,11 +1217,6 @@
 
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
-                method="disableFieldsAndGridsWhenGenerated"/>
-
-
-        <beforeRender
-                class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="setTheFieldBasedOnParameters"/>
     </hooks>
 

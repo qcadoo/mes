@@ -2,8 +2,33 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
 
 --
 -- Name: add_group_role(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
@@ -1960,7 +1985,8 @@ CREATE TABLE basic_parameter (
     acceptrecordsfromterminal boolean DEFAULT false,
     allowchangestousedquantityonterminal boolean DEFAULT false,
     includeadditionaltimeps boolean DEFAULT false,
-    includetpzps boolean DEFAULT false
+    includetpzps boolean DEFAULT false,
+    fillresourceirrespectiveofconversion boolean DEFAULT false
 );
 
 
@@ -2530,6 +2556,36 @@ CREATE SEQUENCE basic_substitutecomponent_id_seq
 --
 
 ALTER SEQUENCE basic_substitutecomponent_id_seq OWNED BY basic_substitutecomponent.id;
+
+
+--
+-- Name: basic_viewedactivity; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_viewedactivity (
+    id bigint NOT NULL,
+    user_id bigint,
+    log_id bigint
+);
+
+
+--
+-- Name: basic_viewedactivity_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_viewedactivity_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_viewedactivity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_viewedactivity_id_seq OWNED BY basic_viewedactivity.id;
 
 
 --
@@ -6415,8 +6471,7 @@ CREATE TABLE orders_order (
     ordersgroup_id bigint,
     plannedquantityforadditionalunit numeric,
     directadditionalcost numeric,
-    directadditionalcostdescription character varying,
-    productionbalance_id bigint
+    directadditionalcostdescription character varying
 );
 
 
@@ -7028,6 +7083,16 @@ CREATE TABLE jointable_operation_workstation (
 
 CREATE TABLE jointable_order_printlabelshelper (
     printlabelshelper_id bigint NOT NULL,
+    order_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_order_productionbalance; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_order_productionbalance (
+    productionbalance_id bigint NOT NULL,
     order_id bigint NOT NULL
 );
 
@@ -17580,6 +17645,13 @@ ALTER TABLE ONLY basic_substitutecomponent ALTER COLUMN id SET DEFAULT nextval('
 
 
 --
+-- Name: basic_viewedactivity id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_viewedactivity ALTER COLUMN id SET DEFAULT nextval('basic_viewedactivity_id_seq'::regclass);
+
+
+--
 -- Name: basic_workstation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -20643,8 +20715,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, changedatewhentransfertowarehousetype, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, printoperationnormspb, printcostnormsofmaterialspb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	01never	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, changedatewhentransfertowarehousetype, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, printoperationnormspb, printcostnormsofmaterialspb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, fillresourceirrespectiveofconversion) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	01never	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f
 \.
 
 
@@ -20819,6 +20891,21 @@ COPY basic_substitutecomponent (id, product_id, substitute_id, quantity, basepro
 --
 
 SELECT pg_catalog.setval('basic_substitutecomponent_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_viewedactivity; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_viewedactivity (id, user_id, log_id) FROM stdin;
+\.
+
+
+--
+-- Name: basic_viewedactivity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_viewedactivity_id_seq', 1, false);
 
 
 --
@@ -22509,6 +22596,14 @@ COPY jointable_order_printlabelshelper (printlabelshelper_id, order_id) FROM std
 
 
 --
+-- Data for Name: jointable_order_productionbalance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_order_productionbalance (productionbalance_id, order_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_order_workplan; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23623,7 +23718,7 @@ SELECT pg_catalog.setval('orders_mbrstatechange_id_seq', 1, false);
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, recipe_id, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, productionbalance_id) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, recipe_id, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription) FROM stdin;
 \.
 
 
@@ -27408,6 +27503,14 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
+-- Name: basic_viewedactivity basic_viewedactivity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_viewedactivity
+    ADD CONSTRAINT basic_viewedactivity_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_workstation basic_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -28349,6 +28452,14 @@ ALTER TABLE ONLY jointable_operation_workstation
 
 ALTER TABLE ONLY jointable_order_printlabelshelper
     ADD CONSTRAINT jointable_order_printlabelshelper_pkey PRIMARY KEY (order_id, printlabelshelper_id);
+
+
+--
+-- Name: jointable_order_productionbalance jointable_order_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_order_productionbalance
+    ADD CONSTRAINT jointable_order_productionbalance_pkey PRIMARY KEY (productionbalance_id, order_id);
 
 
 --
@@ -34087,11 +34198,19 @@ ALTER TABLE ONLY jointable_order_printlabelshelper
 
 
 --
--- Name: orders_order order_productionbalance_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_productionbalance order_productionbalance_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY orders_order
-    ADD CONSTRAINT order_productionbalance_fkey FOREIGN KEY (productionbalance_id) REFERENCES productioncounting_productionbalance(id) DEFERRABLE;
+ALTER TABLE ONLY jointable_order_productionbalance
+    ADD CONSTRAINT order_productionbalance_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: jointable_order_productionbalance order_productionbalance_productionbalance_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_order_productionbalance
+    ADD CONSTRAINT order_productionbalance_productionbalance_fkey FOREIGN KEY (productionbalance_id) REFERENCES productioncounting_productionbalance(id) DEFERRABLE;
 
 
 --
@@ -37212,6 +37331,22 @@ ALTER TABLE ONLY materialflow_userlocation
 
 ALTER TABLE ONLY materialflow_userlocation
     ADD CONSTRAINT userlocation_user_fkey FOREIGN KEY (user_id) REFERENCES qcadoosecurity_user(id) DEFERRABLE;
+
+
+--
+-- Name: basic_viewedactivity viewedactivity_log_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_viewedactivity
+    ADD CONSTRAINT viewedactivity_log_fkey FOREIGN KEY (log_id) REFERENCES basic_log(id) DEFERRABLE;
+
+
+--
+-- Name: basic_viewedactivity viewedactivity_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_viewedactivity
+    ADD CONSTRAINT viewedactivity_user_fkey FOREIGN KEY (user_id) REFERENCES qcadoosecurity_user(id) DEFERRABLE;
 
 
 --

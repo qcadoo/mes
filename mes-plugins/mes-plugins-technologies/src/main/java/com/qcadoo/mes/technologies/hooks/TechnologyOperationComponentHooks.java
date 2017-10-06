@@ -110,8 +110,10 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void setOperationOutProduct(Entity technologyOperationComponent) {
-        if (technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)
-                .isEmpty()) {
+        if (Objects.nonNull(
+                technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
+                && technologyOperationComponent
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
             Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
             DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -125,11 +127,13 @@ public class TechnologyOperationComponentHooks {
                         Collections.singletonList(opoc));
             } else {
                 Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-                Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
-                if (!Objects.isNull(product)) {
-                    opoc.setField(OperationProductOutComponentFields.PRODUCT, product);
-                    technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
-                            Collections.singletonList(opoc));
+                if (Objects.nonNull(operation)) {
+                    Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
+                    if (Objects.nonNull(product)) {
+                        opoc.setField(OperationProductOutComponentFields.PRODUCT, product);
+                        technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                                Collections.singletonList(opoc));
+                    }
                 }
             }
         }
