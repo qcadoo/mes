@@ -41,7 +41,7 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
 
-    public static final String PRODUCED_QUANTITY = "producedOrderQuantity";
+    public static final String PRODUCED_ORDER_QUANTITY = "producedOrderQuantity";
 
     public static final String COMMENTS = "comments";
 
