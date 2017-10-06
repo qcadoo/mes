@@ -1,6 +1,15 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
@@ -10,13 +19,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderHooksMO {
@@ -31,101 +33,124 @@ public class OrderHooksMO {
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
         Entity orderDb = null;
+
         if (Objects.nonNull(order.getId())) {
             orderDb = orderDD.get(order.getId());
         }
-        if (Objects.nonNull(order.getBelongsToField(OrderFieldsMO.MASTER_ORDER))
-                && (MasterOrderState.IN_EXECUTION.getStringValue().equals(
-                        order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)) || MasterOrderState.NEW
-                        .getStringValue().equals(
-                                order.getBelongsToField(OrderFieldsMO.MASTER_ORDER).getStringField(MasterOrderFields.STATE)))
-                && canChangeToCompltead(order, orderDb)) {
-            changeToCompleted(order, orderDb);
+
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
+        if (Objects.nonNull(masterOrder)
+                && (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
+                        || MasterOrderState.NEW.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
+                && canChangeToCompleted(order, orderDb)) {
+            changeToCompleted(order);
         } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
             changeToInExecution(order);
         } else if (canChangeMasterOrderStateToNew(order, orderDb)) {
-            changeToNew(order, orderDb);
+            changeToNew(order);
         }
     }
 
-    private void changeToCompleted(Entity order, Entity orderDb) {
-        Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        mo.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
-        mo = mo.getDataDefinition().save(mo);
-        order.setField(OrderFieldsMO.MASTER_ORDER, mo);
+    private void changeToCompleted(final Entity order) {
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
+        masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
+
+        masterOrder = masterOrder.getDataDefinition().save(masterOrder);
+
+        order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
     }
 
-    private boolean canChangeToCompltead(Entity order, Entity orderDb) {
-        Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        List<Entity> positions = dataDefinitionService
-                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
-                .find(MASTER_ORDER_POSITIONS_QUERY).setParameter("masterOrderId", mo.getId().intValue()).list().getEntities();
+    private boolean canChangeToCompleted(final Entity order, final Entity orderDb) {
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
+        List<Entity> positions = getMasterOrderPositions(masterOrder);
 
         BigDecimal doneQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY));
-        BigDecimal done = BigDecimal.ZERO;
-        if(Objects.nonNull(orderDb)){
+
+        BigDecimal done;
+
+        if (Objects.nonNull(orderDb)) {
             BigDecimal doneQuantityDB = orderDb.getDecimalField(OrderFields.DONE_QUANTITY);
-            done = BigDecimalUtils.convertNullToZero(doneQuantity).subtract(
-                    BigDecimalUtils.convertNullToZero(doneQuantityDB), numberService.getMathContext());
+
+            done = BigDecimalUtils.convertNullToZero(doneQuantity).subtract(BigDecimalUtils.convertNullToZero(doneQuantityDB),
+                    numberService.getMathContext());
         } else {
             done = doneQuantity;
         }
 
         for (Entity position : positions) {
-            if (position.getIntegerField("productId").equals(order.getBelongsToField(OrderFields.PRODUCT).getId().intValue())) {
-                BigDecimal value = position.getDecimalField("producedOrderQuantity").add(done, numberService.getMathContext());
+            Integer productId = position.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID);
+            Integer orderProductId = order.getBelongsToField(OrderFields.PRODUCT).getId().intValue();
+
+            if ((productId != null) && productId.equals(orderProductId)) {
+                BigDecimal value = position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY).add(done, numberService.getMathContext());
+
                 if (value.compareTo(doneQuantity) == -1) {
                     value = doneQuantity;
                 }
-                position.setField("producedOrderQuantity", value);
+
+                position.setField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY, value);
             }
         }
 
-        List<Entity> producedPositions = positions
-                .stream()
-                .filter(pos -> pos.getDecimalField("producedOrderQuantity").compareTo(pos.getDecimalField("masterOrderQuantity")) == 1
-                        || pos.getDecimalField("producedOrderQuantity").compareTo(pos.getDecimalField("masterOrderQuantity")) == 0)
+        List<Entity> producedPositions = positions.stream().filter(position ->
+                position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY)
+                        .compareTo(position.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY)) >= 0)
                 .collect(Collectors.toList());
 
-        return positions.size() == producedPositions.size();
+        return (positions.size() == producedPositions.size());
     }
 
-    private void changeToNew(Entity order, Entity orderDb) {
-        Entity moDB = orderDb.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        String masterOrderStatus = moDB.getStringField(MasterOrderFields.STATE);
+    private List<Entity> getMasterOrderPositions(final Entity masterOrder) {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                .find(MASTER_ORDER_POSITIONS_QUERY).setParameter("masterOrderId", masterOrder.getId().intValue()).list()
+                .getEntities();
+    }
+
+    private void changeToNew(final Entity order) {
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        String masterOrderStatus = masterOrder.getStringField(MasterOrderFields.STATE);
+
         if (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrderStatus)
-                && moDB.getHasManyField(MasterOrderFields.ORDERS).size() == 1) {
-            moDB.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
-            moDB.getDataDefinition().save(moDB);
+                && masterOrder.getHasManyField(MasterOrderFields.ORDERS).size() == 1) {
+            masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.NEW.getStringValue());
+
+            masterOrder.getDataDefinition().save(masterOrder);
         }
     }
 
-    private void changeToInExecution(Entity order) {
+    private void changeToInExecution(final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
         String masterOrderStatus = masterOrder.getStringField(MasterOrderFields.STATE);
+
         if (MasterOrderState.NEW.getStringValue().equals(masterOrderStatus)) {
             masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.IN_EXECUTION.getStringValue());
+
             masterOrder = masterOrder.getDataDefinition().save(masterOrder);
+
             order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
         }
     }
 
-    private boolean canChangeMasterOrderStateToInExecution(final Entity order, final Entity orderDB) {
-        Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        Entity moDB = null;
-        if(Objects.nonNull(orderDB)){
-            moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+    private boolean canChangeMasterOrderStateToInExecution(final Entity order, final Entity orderDb) {
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity masterOrderDb = null;
+
+        if (Objects.nonNull(orderDb)) {
+            masterOrderDb = orderDb.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
         }
 
-        if (Objects.isNull(mo) && Objects.isNull(moDB)) {
+        if (Objects.isNull(masterOrder) && Objects.isNull(masterOrderDb)) {
             return false;
-        } else if (Objects.nonNull(mo) && Objects.isNull(moDB)) {
+        } else if (Objects.nonNull(masterOrder) && Objects.isNull(masterOrderDb)) {
             return true;
-        } else if (Objects.isNull(mo) && Objects.nonNull(moDB)) {
+        } else if (Objects.isNull(masterOrder) && Objects.nonNull(masterOrderDb)) {
             return false;
-        } else if (Objects.nonNull(mo) && Objects.nonNull(moDB)) {
-            if (mo.getId().equals(moDB.getId())) {
+        } else if (Objects.nonNull(masterOrder) && Objects.nonNull(masterOrderDb)) {
+            if (masterOrder.getId().equals(masterOrderDb.getId())) {
                 return false;
             } else {
                 return true;
@@ -136,15 +161,17 @@ public class OrderHooksMO {
     }
 
     private boolean canChangeMasterOrderStateToNew(final Entity order, final Entity orderDB) {
-        Entity mo = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        Entity moDB = null;
-        if(Objects.nonNull(orderDB)){
-            moDB = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+        Entity masterOrderDb = null;
+
+        if (Objects.nonNull(orderDB)) {
+            masterOrderDb = orderDB.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
         }
-        if (Objects.isNull(mo) && Objects.nonNull(moDB)) {
+        if (Objects.isNull(masterOrder) && Objects.nonNull(masterOrderDb)) {
             return true;
         }
-        return false;
 
+        return false;
     }
+
 }
