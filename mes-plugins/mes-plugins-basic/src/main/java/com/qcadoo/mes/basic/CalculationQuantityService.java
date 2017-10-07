@@ -6,9 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 
 @Service
 public class CalculationQuantityService {
@@ -19,22 +16,21 @@ public class CalculationQuantityService {
     @Autowired
     private NumberService numberService;
 
-    private BigDecimal calculateTheOtherQuantity(Function<BigDecimal, BigDecimal> operation, BigDecimal conversion, String unit) {
-        if (dictionaryService.checkIfUnitIsInteger(unit)) {
-            return numberService.setScale(operation.apply(conversion), 0);
-        }
-        return operation.apply(conversion).setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, BigDecimal.ROUND_FLOOR);
-    }
-
     public BigDecimal calculateQuantity(BigDecimal additionalQuantity, BigDecimal conversion, String unit) {
-        return calculateTheOtherQuantity(withDefaultMathContext(additionalQuantity::divide), conversion, unit);
+        additionalQuantity = additionalQuantity.divide(conversion, NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
+                BigDecimal.ROUND_FLOOR);
+        if (dictionaryService.checkIfUnitIsInteger(unit)) {
+            return numberService.setScale(additionalQuantity, 0);
+        }
+        return additionalQuantity;
     }
 
     public BigDecimal calculateAdditionalQuantity(BigDecimal quantity, BigDecimal conversion, String unit) {
-        return calculateTheOtherQuantity(withDefaultMathContext(quantity::multiply), conversion, unit);
+        quantity = quantity.multiply(conversion, numberService.getMathContext());
+        if (dictionaryService.checkIfUnitIsInteger(unit)) {
+            return numberService.setScale(quantity, 0);
+        }
+        return quantity;
     }
 
-    private Function<BigDecimal, BigDecimal> withDefaultMathContext(BiFunction<BigDecimal, MathContext, BigDecimal> operation) {
-        return value -> operation.apply(value, numberService.getMathContext());
-    }
 }
