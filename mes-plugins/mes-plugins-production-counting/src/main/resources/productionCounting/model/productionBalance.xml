@@ -31,7 +31,7 @@
     <fields>
         <boolean name="generated"/>
         <belongsTo name="order" plugin="orders" model="order"/>
-        <hasMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify"/>
+        <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify" copyable="true"/>
         <belongsTo name="product" plugin="basic" model="product"/>
         <string name="name" required="true">
             <validatesLength max="1024"/>
