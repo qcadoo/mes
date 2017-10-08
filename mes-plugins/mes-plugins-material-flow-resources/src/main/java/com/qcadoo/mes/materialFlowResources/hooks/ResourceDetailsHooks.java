@@ -6,7 +6,6 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.SecurityService;
@@ -24,6 +23,8 @@ import java.math.BigDecimal;
 @Service
 public class ResourceDetailsHooks {
 
+    public static final String L_FORM = "form";
+
     @Autowired
     private NumberService numberService;
 
@@ -31,13 +32,10 @@ public class ResourceDetailsHooks {
     private SecurityService securityService;
 
     @Autowired
-    private DictionaryService dictionaryService;
-
-    @Autowired
     private CalculationQuantityService calculationQuantityService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity resource = form.getPersistedEntityWithIncludedFormValues();
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         FilterValueHolder filter = storageLocationLookup.getFilterValue();
@@ -61,7 +59,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getPersistedEntityWithIncludedFormValues();
 
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
@@ -86,7 +84,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getEntity();
 
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(maybeQuantity.getRight()
@@ -109,7 +107,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantityInAdditionalUnit = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) quantityInAdditionalUnitField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantityInAdditionalUnit.isRight() && maybeQuantityInAdditionalUnit.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getEntity();
             BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
