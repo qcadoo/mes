@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
@@ -43,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -109,6 +110,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     @Override
     @Transactional
@@ -200,7 +204,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private Entity createResource(final Entity position, final Entity warehouse, final Entity resource, final BigDecimal quantity,
-            Object date) {
+                                  Object date) {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
 
@@ -235,28 +239,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
         newResource.setField(ResourceFields.GIVEN_UNIT, resource.getField(ResourceFields.GIVEN_UNIT));
 
-        BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(quantity,
-                resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+        BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
         resourceStockService.addResourceStock(newResource);
 
         return resourceDD.save(newResource);
-    }
-
-    private BigDecimal calculateAdditionalQuantity(final BigDecimal quantity, final BigDecimal conversion, final String unit) {
-        boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
-
-        if (isInteger) {
-            return numberService.setScale(quantity.multiply(conversion), 0);
-        }
-
-        return numberService.setScale(quantity.multiply(conversion));
-    }
-
-    private BigDecimal calculateQuantity(final BigDecimal quantity, final BigDecimal conversion) {
-        return quantity.divide(conversion, NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, BigDecimal.ROUND_FLOOR);
     }
 
     private Entity findStorageLocationForProduct(final Entity warehouse, final Entity product) {
@@ -273,7 +262,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private SearchCriteriaBuilder getSearchCriteriaForResourceForProductAndWarehouse(final Entity product,
-            final Entity warehouse) {
+                                                                                     final Entity warehouse) {
         return dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
                 .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
@@ -283,7 +272,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     public Multimap<Long, BigDecimal> getQuantitiesInWarehouse(final Entity warehouse,
-            final Multimap<Entity, Entity> productsAndPositions) {
+                                                               final Multimap<Entity, Entity> productsAndPositions) {
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
 
         String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
@@ -404,7 +393,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private BigDecimal getQuantityOfProductFromMultimap(final Multimap<Long, BigDecimal> quantitiesForWarehouse,
-            final Entity product) {
+                                                        final Entity product) {
         List<BigDecimal> quantities = Lists.newArrayList(quantitiesForWarehouse.get(product.getId()));
 
         return quantities.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -551,13 +540,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 } else {
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
-                    BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(newResourceQuantity, resourceConversion,
-                            resource.getStringField(ResourceFields.GIVEN_UNIT));
+                    BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(newResourceQuantity, resourceConversion, resource.getStringField(ResourceFields.GIVEN_UNIT));
 
                     resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
-                            numberService.setScale(quantityInAdditionalUnit));
+                            quantityInAdditionalUnit);
 
                     Entity savedResource = resource.getDataDefinition().save(resource);
 
@@ -568,9 +556,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
 
-                BigDecimal givenResourceQuantity = calculateAdditionalQuantity(resourceAvailableQuantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
+                BigDecimal givenResourceQuantity = calculationQuantityService.calculateAdditionalQuantity(resourceAvailableQuantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
 
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenResourceQuantity));
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, givenResourceQuantity);
 
                 newPositions.add(newPosition);
 
@@ -589,10 +577,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 }
 
                 BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
-                BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(resourceQuantity, resourceConversion,
-                        resource.getStringField(ResourceFields.GIVEN_UNIT));
+                BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(resourceQuantity, resourceConversion, resource.getStringField(ResourceFields.GIVEN_UNIT));
 
-                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
+                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
@@ -604,9 +591,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
-                BigDecimal givenQuantity = calculateAdditionalQuantity(quantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
+                BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
 
-                newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+                newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
                 newPositions.add(newPosition);
 
                 return newPositions;
@@ -678,7 +665,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private void moveResources(final Entity warehouseFrom, final Entity warehouseTo, final Entity position, final Object date,
-            final WarehouseAlgorithm warehouseAlgorithm) {
+                               final WarehouseAlgorithm warehouseAlgorithm) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouseFrom, product, position,
@@ -716,13 +703,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     BigDecimal newResourceQuantity = resourceQuantity.subtract(resourceAvailableQuantity);
                     BigDecimal resourceConversion = resource.getDecimalField(ResourceFields.CONVERSION);
 
-                    BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(newResourceQuantity, resourceConversion,
-                            resource.getStringField(ResourceFields.GIVEN_UNIT));
+                    BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(newResourceQuantity, resourceConversion, resource.getStringField(ResourceFields.GIVEN_UNIT));
 
                     resource.setField(ResourceFields.AVAILABLE_QUANTITY, BigDecimal.ZERO);
                     resource.setField(ResourceFields.QUANTITY, newResourceQuantity);
                     resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT,
-                            numberService.setScale(quantityInAdditionalUnit));
+                            quantityInAdditionalUnit);
 
                     resource.getDataDefinition().save(resource);
                 }
@@ -742,10 +728,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
                 resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
 
-                BigDecimal quantityInAdditionalUnit = calculateAdditionalQuantity(resourceQuantity,
-                        resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+                BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(resourceQuantity, resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
 
-                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, numberService.setScale(quantityInAdditionalUnit));
+                resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
                 resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
@@ -805,7 +790,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationCommonCodeConversion(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position, boolean resourceIrrespectiveOfConversion, SearchOrder... searchOrders) {
+                                                                     final Entity additionalCode, final Entity position, boolean resourceIrrespectiveOfConversion, SearchOrder... searchOrders) {
         class SearchCriteriaHelper {
 
             private List<Entity> getAll() {
@@ -860,7 +845,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationCommonCode(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position, SearchOrder... searchOrders) {
+                                                           final Entity additionalCode, final Entity position, SearchOrder... searchOrders) {
         List<Entity> resources = getResourcesForLocationCommonCodeConversion(warehouse, product, additionalCode, position, false,
                 searchOrders);
         boolean fillResourceIrrespectiveOfConversion = parameterService.getParameter()
@@ -873,25 +858,25 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private List<Entity> getResourcesForLocationAndProductFIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
+                                                               final Entity additionalCode, final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
                 SearchOrders.asc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductLIFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
+                                                               final Entity additionalCode, final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
                 SearchOrders.desc(ResourceFields.TIME));
     }
 
     private List<Entity> getResourcesForLocationAndProductFEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
+                                                               final Entity additionalCode, final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
                 SearchOrders.asc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
 
     private List<Entity> getResourcesForLocationAndProductLEFO(final Entity warehouse, final Entity product,
-            final Entity additionalCode, final Entity position) {
+                                                               final Entity additionalCode, final Entity position) {
         return getResourcesForLocationCommonCode(warehouse, product, additionalCode, position,
                 SearchOrders.desc(ResourceFields.EXPIRATION_DATE), SearchOrders.asc(ResourceFields.AVAILABLE_QUANTITY));
     }
@@ -916,7 +901,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 if (!newPositions.isEmpty()) {
                     logger.info("GENERATED POSITIONS IN DOCUMENT: id = " + document.getId() + ", FOR POSITION: id = " + position.getId() + ", size = " + newPositions.size());
                     logger.info(newPositions.toString());
-                    if(newPositions.size() > 1) {
+                    if (newPositions.size() > 1) {
                         position.getDataDefinition().delete(position.getId());
                         for (Entity newPosition : newPositions) {
                             newPosition.setField(PositionFields.DOCUMENT, document);
@@ -969,7 +954,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
-            if(resource.getBooleanField(ResourceFields.WASTE)){
+            if (resource.getBooleanField(ResourceFields.WASTE)) {
                 continue;
             }
             logger.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
@@ -1016,8 +1001,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private BigDecimal recalculateQuantity(BigDecimal quantity, BigDecimal conversion, Entity resource, String givenUnit) {
         if (!conversion.equals(resource.getField(ResourceFields.CONVERSION))) {
-            BigDecimal givenQuantity = calculateAdditionalQuantity(quantity, conversion, givenUnit);
-            return calculateQuantity(givenQuantity, resource.getDecimalField(ResourceFields.CONVERSION));
+            BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
+            return calculationQuantityService.calculateQuantity(givenQuantity, resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
         }
         return quantity;
     }
@@ -1025,9 +1010,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private void setPositionQuantityAndGivenQuantity(BigDecimal quantity, Entity newPosition) {
         newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
 
-        BigDecimal givenQuantity = calculateAdditionalQuantity(quantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
+        BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));
 
-        newPosition.setField(PositionFields.GIVEN_QUANTITY, numberService.setScale(givenQuantity));
+        newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
     }
 
     private void createPositionWithoutResourceForMissingQuantity(Entity position, DataDefinition positionDD, List<Entity> newPositions, BigDecimal quantity) {
