@@ -29,13 +29,20 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
+
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+
         <boolean name="generated"/>
         <belongsTo name="order" plugin="orders" model="order"/>
         <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify" copyable="true"/>
         <belongsTo name="product" plugin="basic" model="product"/>
-        <string name="name" required="true">
-            <validatesLength max="1024"/>
-        </string>
+
         <datetime name="date"/>
         <string name="worker"/>
         <integer name="trackingsNumber">
