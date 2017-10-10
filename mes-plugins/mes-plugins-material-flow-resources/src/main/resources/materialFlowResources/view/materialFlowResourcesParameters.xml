@@ -38,39 +38,76 @@
 
         <windowTab name="mainTab">
             <component type="form" name="documentPositionParameters" reference="form">
+                <component type="gridLayout" name="documentPositionParametersGridLayout" reference="documentPositionParametersGridLayout"
+                           columns="3" rows="12">
+                    <layoutElement column="1" row="1">
+                        <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="draftMakesReservation" field="draftMakesReservation"
+                                   reference="draftMakesReservation">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="acceptanceOfDocumentBeforePrinting" field="acceptanceOfDocumentBeforePrinting"
+                                   reference="acceptanceOfDocumentBeforePrinting" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="notShowPrices" field="notShowPrices"
+                                   reference="notShowPrices" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2">
+                        <component type="checkbox" name="presentTotalAmountAndRest" field="presentTotalAmountAndRest"
+                                   reference="presentTotalAmountAndRest" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="select" name="changeDateWhenTransferToWarehouseType"
+                                   field="changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="checkbox" name="fillResourceIrrespectiveOfConversion"
+                                   field="fillResourceIrrespectiveOfConversion" reference="fillResourceIrrespectiveOfConversion"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" width="3" height="9">
+                        <component type="grid" name="grid" reference="grid" source="#{form}.items">
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="checked" fields="checked" width="50"/>
+                            <option type="column" name="editable" fields="editable" width="50"/>
 
-                <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource"/>
-                <component type="checkbox" name="draftMakesReservation" field="draftMakesReservation"
-                           reference="draftMakesReservation"/>
-                <component type="checkbox" name="acceptanceOfDocumentBeforePrinting" field="acceptanceOfDocumentBeforePrinting" 
-                           reference="acceptanceOfDocumentBeforePrinting" hasDescription="true"/>
-                <component type="checkbox" name="notShowPrices" field="notShowPrices"
-                           reference="notShowPrices" hasDescription="true"/>
-                <component type="checkbox" name="presentTotalAmountAndRest" field="presentTotalAmountAndRest"
-                           reference="presentTotalAmountAndRest" hasDescription="true"/>
-                <component type="grid" name="grid" reference="grid" source="#{form}.items">
-                    <option type="column" name="name" fields="name" link="true"/>
-                    <option type="column" name="checked" fields="checked" width="50"/>
-                    <option type="column" name="editable" fields="editable" width="50"/>
+                            <option type="searchable" value=""/>
+                            <option type="orderable" value=""/>
 
-                    <option type="searchable" value=""/>
-                    <option type="orderable" value=""/>
+                            <option type="order" column="name" direction="asc"/>
 
-                    <option type="order" column="name" direction="asc"/>
+                            <option type="correspondingView"
+                                    value="materialFlowResources/documentPositionParametersItemDetails"/>
+                            <option type="correspondingComponent" value="form"/>
+                            <option type="correspondingViewInModal" value="true"/>
+                            <option type="order" column="ordering" direction="desc"/>
 
-                    <option type="correspondingView"
-                            value="materialFlowResources/documentPositionParametersItemDetails"/>
-                    <option type="correspondingComponent" value="form"/>
-                    <option type="correspondingViewInModal" value="true"/>
-                    <option type="order" column="ordering" direction="desc"/>
-
-                    <option type="creatable" value="false"/>
-                    <option type="deletable" value="false"/>
-                    <option type="multiselect" value="false"/>
-                    <option type="fullscreen" value="true"/>
-                    <option type="fixedHeight" value="true"/>
+                            <option type="creatable" value="false"/>
+                            <option type="deletable" value="false"/>
+                            <option type="multiselect" value="false"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true"/>
+                        </component>
+                    </layoutElement>
                 </component>
-
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
             </component>
@@ -104,9 +141,7 @@
                 </component>
             </component>
 
-
         </windowTab>
-
     </component>
 
     <hooks>

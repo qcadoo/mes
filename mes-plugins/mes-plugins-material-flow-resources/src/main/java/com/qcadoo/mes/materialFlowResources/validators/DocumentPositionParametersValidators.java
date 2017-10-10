@@ -1,5 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
+import static com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE;
 import static com.qcadoo.model.api.search.SearchOrders.asc;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
@@ -31,6 +32,20 @@ public class DocumentPositionParametersValidators {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public final boolean checkIfChangeDateWhenTransferToWarehouseTypeIsSelected(final DataDefinition dataDefinition,
+                                                                                final Entity documentPositionParameters) {
+        String changeDateWhenTransferToWarehouseType = documentPositionParameters.getStringField(CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
+
+        if (changeDateWhenTransferToWarehouseType == null) {
+            documentPositionParameters.addError(dataDefinition.getField(CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE),
+                    "materialFlowResources.documentPositionParameters.message.changeDateWhenTransferToWarehouseTypeIsNotSelected");
+
+            return false;
+        }
+
+        return true;
+    }
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity documentPositionParameters) {
         if (draftMakesReservationChanged(dataDefinition, documentPositionParameters) && !noDraftDocumentExists()) {

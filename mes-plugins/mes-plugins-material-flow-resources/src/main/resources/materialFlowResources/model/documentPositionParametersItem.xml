@@ -38,7 +38,7 @@
     </fields>
     <hooks>
         <validatesWith
-            class="com.qcadoo.mes.materialFlowResources.hooks.DocumentPositionParametersItemModelValidators"
+            class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersItemModelValidators"
             method="validate"/>
     </hooks>
 </model>

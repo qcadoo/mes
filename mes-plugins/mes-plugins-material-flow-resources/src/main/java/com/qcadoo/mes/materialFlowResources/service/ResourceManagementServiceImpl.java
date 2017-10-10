@@ -50,6 +50,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -848,7 +849,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                                                            final Entity additionalCode, final Entity position, SearchOrder... searchOrders) {
         List<Entity> resources = getResourcesForLocationCommonCodeConversion(warehouse, product, additionalCode, position, false,
                 searchOrders);
-        boolean fillResourceIrrespectiveOfConversion = parameterService.getParameter()
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+
+        boolean fillResourceIrrespectiveOfConversion = documentPositionParameters
                 .getBooleanField("fillResourceIrrespectiveOfConversion");
         if (fillResourceIrrespectiveOfConversion) {
             resources.addAll(getResourcesForLocationCommonCodeConversion(warehouse, product, additionalCode, position, true,
