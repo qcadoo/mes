@@ -30,7 +30,7 @@ public class CalculationQuantityService {
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
             return numberService.setScale(additionalQuantity, 0);
         }
-        return additionalQuantity;
+        return numberService.setScale(additionalQuantity);
     }
 
 }
