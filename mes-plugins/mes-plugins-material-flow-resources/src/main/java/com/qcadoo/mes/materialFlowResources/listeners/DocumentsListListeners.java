@@ -21,16 +21,11 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -49,9 +44,6 @@ public class DocumentsListListeners {
     private static final String L_GRID = "grid";
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -60,28 +52,12 @@ public class DocumentsListListeners {
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
-    public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
-        boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
-        Set<Long> invalidEntities = new HashSet<>();
-        if (acceptanceOfDocumentBeforePrinting) {
-            invalidEntities = createResourcesForDocuments(view, componentState, args);
-        }
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
-        Set<Long> selectedEntitiesIds = grid.getSelectedEntitiesIds();
-
-        if (invalidEntities.isEmpty()) {
-            view.redirectTo("/materialFlowResources/dispositionOrder." + args[0] + "?id=" + selectedEntitiesIds.stream().map(String::valueOf).collect(Collectors.joining(",")), true, false);
-        }
-    }
-
     @Transactional
-    public Set<Long> createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
-        Set<Long> invalidEntities = new HashSet<>();
 
         for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
             Entity document = documentDD.get(documentId);
@@ -93,7 +69,6 @@ public class DocumentsListListeners {
             document = documentDD.save(document);
 
             if (!document.isValid()) {
-                invalidEntities.add(documentId);
                 continue;
             }
 
@@ -109,14 +84,11 @@ public class DocumentsListListeners {
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);
-
-                invalidEntities.add(documentId);
             } else {
                 if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
                     receiptDocumentForReleaseHelper.tryBuildPz(document, view);
                 }
             }
         }
-        return invalidEntities;
     }
 }

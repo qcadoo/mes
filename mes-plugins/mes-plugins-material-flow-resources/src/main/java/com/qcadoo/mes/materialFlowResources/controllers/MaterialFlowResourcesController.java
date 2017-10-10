@@ -44,15 +44,4 @@ public class MaterialFlowResourcesController {
 
         return mav;
     }
-    
-    @RequestMapping(value = "dispositionOrder.pdf")
-    public final ModelAndView dispositionOrderPdf(@RequestParam("id") final String id) {
-        ModelAndView mav = new ModelAndView();
-
-        mav.setViewName("dispositionOrderPdf");
-        mav.addObject("id", id);
-
-        return mav;
-    }
-
 }

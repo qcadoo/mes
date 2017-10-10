@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
@@ -51,6 +52,7 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
@@ -58,10 +60,12 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -100,6 +104,15 @@ public class DocumentDetailsListeners {
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
+    @Autowired
+    private ReportService reportService;
+
+    @Autowired
+    private FileService fileService;
+
+    @Autowired
+    private DispositionOrderPdfService dispositionOrderPdfService;
+
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -121,10 +134,21 @@ public class DocumentDetailsListeners {
 
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Entity document = documentForm.getEntity();
-
         if (documentForm.isValid()) {
-            view.redirectTo("/materialFlowResources/dispositionOrder." + args[0] + "?id=" + document.getId(), true, false);
+            Entity documentDb = documentForm.getEntity().getDataDefinition().get(documentForm.getEntityId());
+            if (StringUtils.isBlank(documentDb.getStringField(DocumentFields.FILE_NAME))) {
+                documentDb.setField(DocumentFields.GENERATION_DATE, new Date());
+                documentDb = documentDb.getDataDefinition().save(documentDb);
+                try {
+                    dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
+                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState.getLocale());
+                } catch (Exception e) {
+                    logger.error("Error when generate disposition order", e);
+                    throw new IllegalStateException(e.getMessage(), e);
+                }
+            }
+            reportService.printGeneratedReport(view, componentState, new String[]{args[0], MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_DOCUMENT});
         }
     }
 
