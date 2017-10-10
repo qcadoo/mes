@@ -54,6 +54,10 @@ public class OrderHooksMO {
     private void changeToCompleted(final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
+        if (Objects.isNull(masterOrder)) {
+            return;
+        }
+
         masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
 
         masterOrder = masterOrder.getDataDefinition().save(masterOrder);
