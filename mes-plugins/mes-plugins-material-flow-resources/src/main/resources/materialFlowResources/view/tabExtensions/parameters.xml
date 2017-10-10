@@ -30,11 +30,18 @@
 	plugin="basic" view="parameters">
 
 	<windowTab name="materialFlowResourcesTab" reference="materialFlowResourcesTab">
-		<component type="gridLayout" name="materialFlowResourcesGridLayout" columns="3" rows="1">
+		<component type="gridLayout" name="materialFlowResourcesGridLayout" columns="3" rows="2">
 			<layoutElement column="1" row="1">
 				<component type="select" name="changeDateWhenTransferToWarehouseType"
 					field="#{form}.changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType" 
 					hasDescription="true">
+					<option type="labelWidth" value="40" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="2">
+				<component type="checkbox" name="fillResourceIrrespectiveOfConversion"
+						   field="#{form}.fillResourceIrrespectiveOfConversion" reference="fillResourceIrrespectiveOfConversion"
+						   hasDescription="true">
 					<option type="labelWidth" value="40" />
 				</component>
 			</layoutElement>

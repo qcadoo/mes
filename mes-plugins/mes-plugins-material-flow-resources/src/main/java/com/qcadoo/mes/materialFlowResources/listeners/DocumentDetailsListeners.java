@@ -55,7 +55,6 @@ import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -97,9 +96,6 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private ResourceManagementService resourceManagementService;
-
-    @Autowired
-    private ResourceReservationsService resourceReservationsService;
 
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
@@ -376,7 +372,7 @@ public class DocumentDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         try {
-            resourceReservationsService.fillResourcesInDocument(view, document);
+            resourceManagementService.fillResourcesInDocument(view, document);
             document = form.getPersistedEntityWithIncludedFormValues();
             form.setEntity(document);
             view.performEvent(view, "reset");

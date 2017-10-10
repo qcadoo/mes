@@ -1,11 +1,12 @@
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.model.api.DictionaryService;
-import com.qcadoo.model.api.NumberService;
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class CalculationQuantityService {
