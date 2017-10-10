@@ -22,7 +22,7 @@ public class CalculationQuantityService {
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
             return numberService.setScale(quantity, 0);
         }
-        return quantity;
+        return numberService.setScale(quantity);
     }
 
     public BigDecimal calculateAdditionalQuantity(BigDecimal quantity, BigDecimal conversion, String unit) {
