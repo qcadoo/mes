@@ -272,111 +272,76 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                                                                final Multimap<Entity, Entity> productsAndPositions) {
         Multimap<Long, BigDecimal> result = ArrayListMultimap.create();
 
-        String algorithm = warehouse.getStringField(LocationFieldsMFR.ALGORITHM);
-
         for (Map.Entry<Entity, Entity> productAndPosition : productsAndPositions.entries()) {
-            Entity resource = productAndPosition.getValue().getBelongsToField(PositionFields.RESOURCE);
+            Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
+            BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
 
-            if (algorithm.equalsIgnoreCase(WarehouseAlgorithm.MANUAL.getStringValue()) && resource != null) {
-                result.put(productAndPosition.getKey().getId(), resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY));
-            } else {
-                Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
-                BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
+            Entity reservation = reservationsService.getReservationForPosition(productAndPosition.getValue());
 
-                Entity reservation = reservationsService.getReservationForPosition(productAndPosition.getValue());
+            List<Entity> resources = Lists.newArrayList();
 
-                List<Entity> resources = Lists.newArrayList();
+            if (additionalCode != null) {
+                SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
+                        warehouse);
 
-                if (additionalCode != null) {
-                    SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
-                            warehouse);
-
-                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                    } else {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                    }
-
-                    resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
-                            .getEntities();
-
-                    scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse);
-
-                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                    } else {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                    }
-
-                    resources
-                            .addAll(scb
-                                    .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
-                                            SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
-                                    .list().getEntities());
-                }
-
-                if (resources.isEmpty()) {
-                    SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
-                            warehouse);
-
-                    if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
-                    } else {
-                        scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
-                    }
-
-                    resources = scb.list().getEntities();
-                }
-
-                BigDecimal reservedQuantity = BigDecimal.ZERO;
-
-                if (reservation != null) {
-                    reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
-                }
-
-                if (result.containsKey(productAndPosition.getKey().getId())) {
-                    BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(reservedQuantity,
-                            BigDecimal::add);
-
-                    result.put(productAndPosition.getKey().getId(),
-                            (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
-                                    .reduce(BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
+                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
                 } else {
-                    result.put(productAndPosition.getKey().getId(),
-                            resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
-                                    .reduce(reservedQuantity, BigDecimal::add));
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                 }
+
+                resources = scb.add(SearchRestrictions.belongsTo(ResourceFields.ADDITIONAL_CODE, additionalCode)).list()
+                        .getEntities();
+
+                scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(), warehouse);
+
+                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+                } else {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                }
+
+                resources
+                        .addAll(scb
+                                .add(SearchRestrictions.or(SearchRestrictions.isNull(ResourceFields.ADDITIONAL_CODE),
+                                        SearchRestrictions.ne("additionalCode.id", additionalCode.getId())))
+                                .list().getEntities());
+            }
+
+            if (resources.isEmpty()) {
+                SearchCriteriaBuilder scb = getSearchCriteriaForResourceForProductAndWarehouse(productAndPosition.getKey(),
+                        warehouse);
+
+                if (!StringUtils.isEmpty(productAndPosition.getKey().getStringField(ProductFields.ADDITIONAL_UNIT))) {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, conversion));
+                } else {
+                    scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
+                }
+
+                resources = scb.list().getEntities();
+            }
+
+            BigDecimal reservedQuantity = BigDecimal.ZERO;
+
+            if (reservation != null) {
+                reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
+            }
+
+            if (result.containsKey(productAndPosition.getKey().getId())) {
+                BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(reservedQuantity,
+                        BigDecimal::add);
+
+                result.put(productAndPosition.getKey().getId(),
+                        (resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
+                                .reduce(BigDecimal.ZERO, BigDecimal::add)).add(currentQuantity));
+            } else {
+                result.put(productAndPosition.getKey().getId(),
+                        resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
+                                .reduce(reservedQuantity, BigDecimal::add));
             }
         }
 
         return result;
-    }
-
-    public BigDecimal getQuantityOfProductInWarehouse(final Entity warehouse, final Entity product, final Entity position) {
-        BigDecimal quantity = BigDecimal.ZERO;
-
-        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-
-        Entity reservation = reservationsService.getReservationForPosition(position);
-
-        if (resource != null) {
-            quantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-        } else {
-            List<Entity> resources = dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                    .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, warehouse))
-                    .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product)).list().getEntities();
-
-            for (Entity res : resources) {
-                quantity = quantity.add(res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY));
-            }
-        }
-
-        if (reservation != null) {
-            quantity = quantity.add(reservation.getDecimalField(ReservationFields.QUANTITY));
-        }
-
-        return quantity;
     }
 
     private Multimap<Entity, Entity> getProductsAndPositionsFromDocument(final Entity document) {
@@ -421,12 +386,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 if (quantitiesForWarehouse.isEmpty()) {
                     quantitiesForWarehouse = getQuantitiesInWarehouse(warehouse, getProductsAndPositionsFromDocument(document));
                 }
-                BigDecimal quantityInWarehouse;
-                if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
-                    quantityInWarehouse = getQuantityOfProductInWarehouse(warehouse, product, position);
-                } else {
-                    quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
-                }
+
+                BigDecimal quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 
@@ -629,13 +590,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                             getProductsAndPositionsFromDocument(document));
                 }
 
-                BigDecimal quantityInWarehouse;
-
-                if (warehouseAlgorithm.equals(WarehouseAlgorithm.MANUAL)) {
-                    quantityInWarehouse = getQuantityOfProductInWarehouse(warehouseFrom, product, position);
-                } else {
-                    quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
-                }
+                BigDecimal quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
 

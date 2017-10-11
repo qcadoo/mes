@@ -31,7 +31,6 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 
 @Service
 public class DocumentPositionValidator {
@@ -305,20 +304,6 @@ public class DocumentPositionValidator {
     private List<String> validateResources(final DocumentPositionDTO position, final DocumentDTO document) {
         if (DocumentState.parseString(document.getState()).compareTo(DocumentState.ACCEPTED) == 0) {
             return Lists.newArrayList();
-        }
-
-        DocumentType type = DocumentType.parseString(document.getType());
-
-        if (DocumentType.TRANSFER.equals(type) || DocumentType.RELEASE.equals(type)
-                || DocumentType.INTERNAL_OUTBOUND.equals(type)) {
-            LocationDTO warehouseFrom = getWarehouseById(document.getLocationFrom_id());
-            String algorithm = warehouseFrom.getAlgorithm();
-            if (WarehouseAlgorithm.MANUAL.getStringValue().compareTo(algorithm) == 0) {
-                boolean isValid = position.getResource() != null;
-                if (!isValid) {
-                    return Lists.newArrayList("documentGrid.error.position.resource.required");
-                }
-            }
         }
 
         if (!Strings.isNullOrEmpty(position.getResource())) {
