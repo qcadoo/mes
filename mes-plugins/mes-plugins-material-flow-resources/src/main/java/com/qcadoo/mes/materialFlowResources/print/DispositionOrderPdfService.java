@@ -61,7 +61,6 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentDataProvider;
-import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
 import com.qcadoo.mes.materialFlowResources.print.helper.Position;
 import com.qcadoo.mes.materialFlowResources.print.helper.PositionBuilder;
@@ -103,9 +102,6 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
 
     @Autowired
     private PdfHelper pdfHelper;
-
-    @Autowired
-    private DocumentPdfHelper documentPdfHelper;
 
     @Autowired
     private ParameterService parameterService;

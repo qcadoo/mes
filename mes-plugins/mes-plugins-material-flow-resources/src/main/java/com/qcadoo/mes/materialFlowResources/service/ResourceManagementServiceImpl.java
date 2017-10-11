@@ -62,7 +62,6 @@ import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessa
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -99,9 +98,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     @Autowired
     private ReservationsService reservationsService;
-
-    @Autowired
-    private DictionaryService dictionaryService;
 
     @Autowired
     private ParameterService parameterService;
