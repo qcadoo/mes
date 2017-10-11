@@ -50,7 +50,21 @@
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="order" reference="order"/>
+            <script>
+                <![CDATA[
+					var copyCostsFromProducts = #{window}.getRibbonItemOrNull("costs.copyCostsFromProducts");
+					var updateCosts = #{window}.getRibbonItemOrNull("costs.updateCosts");
 
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+
+						    copyCostsFromProducts.setLabel("#{translate(costNormsForMaterials.costNormsForMaterialsInOrderList.window.ribbon.copyCostsFromProducts)}");
+						    copyCostsFromProducts.setLabel("#{translate(costNormsForMaterials.costNormsForMaterialsInOrderList.window.ribbon.updateCosts)}");
+
+						}
+					});
+					]]>
+            </script>
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="costNormsForProductsGridLayout" hasBorders="false" columns="3" rows="6">
                     <layoutElement column="1" row="1" height="1">

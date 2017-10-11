@@ -169,6 +169,9 @@
                                                reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB"
                                                hasDescription="true">
                                         <option type="labelWidth" value="40"/>
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.productionCounting.hooks.ParameterPBDetailsViewHooks"
+                                                  method="onSourceOfOperationCostsChange"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3">

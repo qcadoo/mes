@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.view.api.ComponentState;
@@ -79,6 +80,15 @@ public class ParameterPBDetailsViewHooks {
         }
 
     }
+
+    public void onSourceOfOperationCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponent costsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB);
+        if(SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals((String) costsMode.getFieldValue())){
+           viewDefinitionState.addMessage("productionCounting.messages.onChangeToSourceOfOperationCosts", ComponentState.MessageType.INFO, false);
+        }
+    }
+
     public void disableCheckboxes(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         disableCheckboxes(viewDefinitionState);
     }
