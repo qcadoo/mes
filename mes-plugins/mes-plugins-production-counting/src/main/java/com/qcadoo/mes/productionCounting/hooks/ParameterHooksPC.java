@@ -34,6 +34,10 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterHooksPC {
 
+    public static final String L_FROM_ORDERS_MATERIAL_COSTS = "02fromOrdersMaterialCosts";
+
+    public static final String L_COST_FOR_ORDER = "06costForOrder";
+
     public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
         setParameterWithDefaultProductionCountingValues(parameter);
         parameter.setField(ParameterFieldsPC.PRICE_BASED_ON, PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
@@ -79,6 +83,11 @@ public class ParameterHooksPC {
         if (parameter.getStringField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
             parameter.addError(parameterDD.getField(ParameterFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if(L_FROM_ORDERS_MATERIAL_COSTS.equals(parameter.getStringField(ParameterFieldsPC.SOURCE_OF_MATERIAL_COSTS_PB))
+                && !L_COST_FOR_ORDER.equals(parameter.getStringField(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB))){
+            parameter.addError(parameterDD.getField(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB), "basic.parameter.sourceOfMaterialCostsPB.calculateMaterialCostsModePBWrongValue");
             return false;
         }
         String priceBasedOn = parameter.getStringField(ParameterFieldsPC.PRICE_BASED_ON);

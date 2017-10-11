@@ -23,18 +23,19 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
+import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ParameterPBDetailsViewHooks {
@@ -63,11 +64,21 @@ public class ParameterPBDetailsViewHooks {
 
     private void fillComponentWithPercent(String componentName, ViewDefinitionState viewDefinitionState) {
         FieldComponent materialCostMarginProc = (FieldComponent) viewDefinitionState
-.getComponentByReference(componentName);
+            .getComponentByReference(componentName);
         materialCostMarginProc.setFieldValue("%");
         materialCostMarginProc.requestComponentUpdateState();
     }
 
+    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        FieldComponent costsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ParameterFieldsPC.SOURCE_OF_MATERIAL_COSTS_PB);
+        if(SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals((String) costsMode.getFieldValue())){
+            FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
+                    .getComponentByReference(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB);
+            calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
+        }
+
+    }
     public void disableCheckboxes(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         disableCheckboxes(viewDefinitionState);
     }

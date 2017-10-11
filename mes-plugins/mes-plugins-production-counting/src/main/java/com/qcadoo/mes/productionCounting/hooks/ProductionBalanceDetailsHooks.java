@@ -114,10 +114,12 @@ public class ProductionBalanceDetailsHooks {
             ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS, ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE,
             ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST, ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST,
             ProductionBalanceFields.PRODUCTION_COST_MARGIN, ProductionBalanceFields.MATERIAL_COST_MARGIN,
-            ProductionBalanceFields.ADDITIONAL_OVERHEAD);
+            ProductionBalanceFields.ADDITIONAL_OVERHEAD, "sourceOfOperationCostsPB", "registrationPriceOverhead", "profit");
+
+    public static final String L_ORDERS_GRID = "orders";
 
     private static final List<String> L_COST_GRIDS = Arrays.asList(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID,
-            L_OPERATIONS_COST_GRID);
+            L_OPERATIONS_COST_GRID, L_ORDERS_GRID);
 
     private static final List<String> L_COST_GRIDS_AND_LAYOUTS = Arrays.asList(L_MATERIAL_COSTS_GRID_LAYOUT,
             L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT, L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID, L_WORK_COSTS_GRID_LAYOUT,
@@ -153,8 +155,8 @@ public class ProductionBalanceDetailsHooks {
     }
 
     public void generateOrderNumber(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_BALANCE,
-                L_FORM, ProductionBalanceFields.NUMBER);
+        numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, L_FORM, ProductionBalanceFields.NUMBER);
     }
 
     public void changeAssumptionsVisibility(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -435,6 +437,18 @@ public class ProductionBalanceDetailsHooks {
             fieldComponent.setFieldValue(currencyAlphabeticCode + "/" + unit);
             fieldComponent.requestComponentUpdateState();
         }
+    }
+
+    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        checkIfOptionsAreAvailable(viewDefinitionState, state, args);
+        FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
+        FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
+        if(SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals((String) sourceOfMaterialCosts.getFieldValue())){
+            calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
+        }
+
     }
 
     public void checkIfOptionsAreAvailable(final ViewDefinitionState view, final ComponentState state, final String[] args) {

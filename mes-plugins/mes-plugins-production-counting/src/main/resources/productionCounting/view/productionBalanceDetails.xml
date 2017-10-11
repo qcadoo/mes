@@ -494,7 +494,7 @@
                                            hasDescription="true">
                                     <listener event="onSelectedEntityChange"
                                               class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
-                                              method="checkIfOptionsAreAvailable"/>
+                                              method="onSourceOfMaterialCostsChange"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="2">
