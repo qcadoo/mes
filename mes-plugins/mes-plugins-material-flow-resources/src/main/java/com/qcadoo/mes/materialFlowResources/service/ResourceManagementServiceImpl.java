@@ -690,7 +690,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     return;
                 } else {
                     for (Map.Entry<String, ErrorMessage> error : newResource.getErrors().entrySet()) {
-                        position.addError(positionDD.getField(error.getKey()), error.getValue().getMessage());
+                        if (!error.getKey().equals(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT)) {
+                            position.addError(positionDD.getField(error.getKey()), error.getValue().getMessage());
+                        } else {
+                            position.addError(positionDD.getField(PositionFields.GIVEN_UNIT), error.getValue().getMessage());
+                        }
                     }
                 }
             }
