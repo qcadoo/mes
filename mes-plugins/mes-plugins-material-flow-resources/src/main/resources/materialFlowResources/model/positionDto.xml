@@ -58,6 +58,7 @@
         <string name="palletNumber"/>
         <integer name="documentId"/>
         <integer name="orderId"/>
+        <string name="resourceNumber"/>
     </fields>
     <masterModel plugin="materialFlowResources" model="position"/>
 </model>

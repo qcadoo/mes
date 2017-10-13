@@ -65,6 +65,7 @@
         <string name="resourceReceiptDocument"/>
 
         <boolean name="waste" default="false"/>
+        <string name="resourceNumber"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

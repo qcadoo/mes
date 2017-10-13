@@ -98,9 +98,11 @@ public class DocumentPositionService {
         }
 
         String keys = params.keySet().stream().collect(Collectors.joining(", "));
+        keys += ", resourcenumber";
         String values = params.keySet().stream().map(key -> {
             return ":" + key;
         }).collect(Collectors.joining(", "));
+        values += ", '" + documentPositionVO.getResource() + "'";
 
         String query = String.format("INSERT INTO materialflowresources_position (%s) "
 
@@ -121,6 +123,7 @@ public class DocumentPositionService {
         String set = params.keySet().stream().map(key -> {
             return key + "=:" + key;
         }).collect(Collectors.joining(", "));
+        set += ", resourcenumber = '" + documentPositionVO.getResource() + "'";
 
         String query = String.format("UPDATE materialflowresources_position " + "SET %s " + "WHERE id = :id ", set);
 
