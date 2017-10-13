@@ -1598,6 +1598,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
+                    name: 'resourceNumber',
+                    index: 'resourceNumber',
+                    editable: false
+                },
+                {
                     name: 'batch',
                     index: 'batch',
                     editable: true,
