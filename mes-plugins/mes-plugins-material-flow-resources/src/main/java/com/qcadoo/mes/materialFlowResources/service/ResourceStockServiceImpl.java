@@ -1,14 +1,20 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockFields;
+import com.qcadoo.mes.materialFlowResources.dto.ResourceStockDto;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -16,16 +22,17 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ResourceStockServiceImpl implements ResourceStockService {
 
-    private static final String RESOURCE_STOCK_QUERY = "SELECT stock FROM #materialFlowResources_resourceStockDto stock WHERE location_id = :locationId AND product_id = :productId";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Override
     public void createResourceStock(final Entity resource) {
         Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
         Entity location = resource.getBelongsToField(ResourceFields.LOCATION);
-        Optional<Entity> maybeStock = getResourceStockForProductAndLocation(product, location);
+        Optional<ResourceStockDto> maybeStock = getResourceStockForProductAndLocation(product, location);
         if (!maybeStock.isPresent()) {
             DataDefinition resourceStockDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK);
@@ -39,9 +46,9 @@ public class ResourceStockServiceImpl implements ResourceStockService {
     @Override
     public BigDecimal getResourceStockAvailableQuantity(final Entity product, final Entity location) {
         BigDecimal availableQuantity = BigDecimal.ZERO;
-        Optional<Entity> resourceStock = getResourceStockForProductAndLocation(product, location);
+        Optional<ResourceStockDto> resourceStock = getResourceStockForProductAndLocation(product, location);
         if (resourceStock.isPresent()) {
-            availableQuantity = resourceStock.get().getDecimalField(ResourceStockFields.AVAILABLE_QUANTITY);
+            availableQuantity = resourceStock.get().getAvailableQuantity();
         }
         return availableQuantity;
     }
@@ -49,19 +56,29 @@ public class ResourceStockServiceImpl implements ResourceStockService {
     @Override
     public BigDecimal getResourceStockQuantity(final Entity product, final Entity location) {
         BigDecimal quantity = BigDecimal.ZERO;
-        Optional<Entity> resourceStock = getResourceStockForProductAndLocation(product, location);
+        Optional<ResourceStockDto> resourceStock = getResourceStockForProductAndLocation(product, location);
         if (resourceStock.isPresent()) {
-            quantity = resourceStock.get().getDecimalField(ResourceStockFields.QUANTITY);
+            quantity = resourceStock.get().getQuantity();
         }
         return quantity;
     }
 
-    private Optional<Entity> getResourceStockForProductAndLocation(Entity product, Entity location) {
-        DataDefinition resourceStockDtoDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
-        Entity existingResourceStock = resourceStockDtoDD.find(RESOURCE_STOCK_QUERY)
-                .setParameter("locationId", location.getId().intValue()).setParameter("productId", product.getId().intValue())
-                .setMaxResults(1).uniqueResult();
-        return Optional.ofNullable(existingResourceStock);
+    private Optional<ResourceStockDto> getResourceStockForProductAndLocation(Entity product, Entity location) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT rs.* ");
+        query.append("FROM materialflowresources_resourcestockdto rs ");
+        query.append("WHERE rs.location_id = :locationId AND rs.product_id = :productId ");
+        query.append("LIMIT 1");
+
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("locationId", location.getId().intValue());
+        params.put("productId", product.getId().intValue());
+        List<ResourceStockDto> resourceStock = jdbcTemplate.query(query.toString(), params,
+                BeanPropertyRowMapper.newInstance(ResourceStockDto.class));
+        if(resourceStock.isEmpty()){
+            return Optional.empty();
+        } else {
+            return Optional.of(resourceStock.get(0));
+        }
     }
 }
