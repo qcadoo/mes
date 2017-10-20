@@ -35,26 +35,6 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy"/>
-            <group name="print">
-                <bigButton name="printDispositionOrderPdf" icon="pdfIcon24.png" state="enabled">
-                    <script>
-                        <![CDATA[
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    #{grid}.performEvent({
-                                        name    : 'printDispositionOrder',
-                                        args    : ['pdf'],
-                                        type    : undefined,
-                                        callback : function(){
-                                            setTimeout(function(){#{grid}.performRefresh();}, 2000);
-                                        }
-                                    });
-                                }
-                            });
-                        ]]>
-                    </script>
-                </bigButton>
-            </group>
             <group name="state">
                 <smallButton name="accept" icon="startIcon16.png" state="enabled">
                     <script>
@@ -134,9 +114,6 @@
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentsCriteriaModifier"
                               method="hideDraftDocumentsWithOrder"/>
 
-            <listener event="printDispositionOrder"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
-                      method="printDispositionOrder"/>
             <listener event="createResourcesForDocuments"
                       class="com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners"
                       method="createResourcesForDocuments"/>
@@ -151,8 +128,5 @@
     </component>
 
     <hooks>
-        <beforeRender
-                class="com.qcadoo.mes.materialFlowResources.hooks.DocumentsListHooks"
-                method="onBeforeRender"/>
     </hooks>
 </view>

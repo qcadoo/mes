@@ -2,33 +2,9 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.2
--- Dumped by pg_dump version 9.6.2
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.6.1
 
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SET check_function_bodies = false;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
-SET search_path = public, pg_catalog;
 
 --
 -- Name: add_group_role(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
@@ -150,6 +126,27 @@ $$;
 --
 
 CREATE FUNCTION f_add_col(_tbl regclass, _col text, _type regtype) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+   IF EXISTS (SELECT 1 FROM pg_attribute
+              WHERE  attrelid = _tbl
+              AND    attname = lower(_col)
+              AND    NOT attisdropped) THEN
+      RETURN FALSE;
+   ELSE
+      EXECUTE format('ALTER TABLE %s ADD COLUMN %I %s', _tbl, lower(_col), _type);
+      RETURN TRUE;
+   END IF;
+END
+$$;
+
+
+--
+-- Name: f_add_col(regclass, text, text); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION f_add_col(_tbl regclass, _col text, _type text) RETURNS boolean
     LANGUAGE plpgsql
     AS $$
 BEGIN
@@ -1848,7 +1845,6 @@ CREATE TABLE basic_parameter (
     earliereffectivedatetotime integer DEFAULT 900,
     reasonneededwhencorrectingtherequestedvolume boolean DEFAULT false,
     reasonneededwhencorrectingdateto boolean DEFAULT false,
-    changedatewhentransfertowarehousetype character varying(255) DEFAULT '01never'::character varying,
     reasonneededwhenchangingstatetodeclined boolean DEFAULT false,
     imageurlinworkplan character varying(255),
     hidedescriptioninworkplans boolean,
@@ -1985,8 +1981,7 @@ CREATE TABLE basic_parameter (
     acceptrecordsfromterminal boolean DEFAULT false,
     allowchangestousedquantityonterminal boolean DEFAULT false,
     includeadditionaltimeps boolean DEFAULT false,
-    includetpzps boolean DEFAULT false,
-    fillresourceirrespectiveofconversion boolean DEFAULT false
+    includetpzps boolean DEFAULT false
 );
 
 
@@ -5729,7 +5724,8 @@ CREATE TABLE goodfood_extrusionaddedingrediententry (
     partialquantity4 numeric(12,5),
     partialquantity5 numeric(12,5),
     partialquantity6 numeric(12,5),
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -5769,7 +5765,8 @@ CREATE TABLE goodfood_extrusionaddedmixentry (
     partialquantity4 numeric(12,5),
     partialquantity5 numeric(12,5),
     partialquantity6 numeric(12,5),
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -6021,7 +6018,8 @@ CREATE TABLE goodfood_extrusiontakenoffmixentry (
     partialquantity4 numeric(12,5),
     partialquantity5 numeric(12,5),
     partialquantity6 numeric(12,5),
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -6307,7 +6305,7 @@ CREATE TABLE goodfood_pallet (
     state character varying(255),
     isstateerror boolean,
     stateerror character varying(255),
-    registrationdate date,
+    registrationdate timestamp without time zone,
     senddate timestamp without time zone,
     active boolean DEFAULT true,
     packagescount integer,
@@ -8083,7 +8081,9 @@ CREATE TABLE materialflowresources_document (
     inbuffer boolean DEFAULT false,
     dispositionshift_id bigint,
     positionsfile character varying,
-    printed boolean DEFAULT false
+    printed boolean DEFAULT false,
+    generationdate timestamp without time zone,
+    filename character varying(255)
 );
 
 
@@ -8262,7 +8262,9 @@ CREATE TABLE materialflowresources_documentpositionparameters (
     notshowprices boolean DEFAULT false,
     presenttotalamountandrest boolean DEFAULT false,
     pallettoshift integer,
-    palletwithfreeplace integer
+    palletwithfreeplace integer,
+    changedatewhentransfertowarehousetype character varying(255) DEFAULT '01never'::character varying,
+    fillresourceirrespectiveofconversion boolean DEFAULT false
 );
 
 
@@ -13213,7 +13215,8 @@ CREATE TABLE productioncounting_productionbalance (
     type character varying(255) DEFAULT '01oneOrder'::character varying,
     sourceofoperationcostspb character varying(255) DEFAULT '01technologyOperation'::character varying,
     registrationpriceoverhead numeric,
-    profit numeric
+    profit numeric,
+    number character varying(255)
 );
 
 
@@ -20715,8 +20718,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, changedatewhentransfertowarehousetype, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, printoperationnormspb, printcostnormsofmaterialspb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, fillresourceirrespectiveofconversion) FROM stdin;
-1	\N	5	pc	\N	1	t	\N	\N	\N	\N	01never	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, printoperationnormspb, printcostnormsofmaterialspb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps) FROM stdin;
+1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f
 \.
 
 
@@ -22057,7 +22060,7 @@ SELECT pg_catalog.setval('goodfood_eventlog_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionaddedingrediententry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionaddedingrediententry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion) FROM stdin;
+COPY goodfood_extrusionaddedingrediententry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion, beyondrecipe) FROM stdin;
 \.
 
 
@@ -22072,7 +22075,7 @@ SELECT pg_catalog.setval('goodfood_extrusionaddedingrediententry_id_seq', 1, fal
 -- Data for Name: goodfood_extrusionaddedmixentry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionaddedmixentry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion) FROM stdin;
+COPY goodfood_extrusionaddedmixentry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion, beyondrecipe) FROM stdin;
 \.
 
 
@@ -22169,7 +22172,7 @@ SELECT pg_catalog.setval('goodfood_extrusionsouse_id_seq', 1, false);
 -- Data for Name: goodfood_extrusiontakenoffmixentry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusiontakenoffmixentry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion) FROM stdin;
+COPY goodfood_extrusiontakenoffmixentry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion, beyondrecipe) FROM stdin;
 \.
 
 
@@ -22993,7 +22996,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename) FROM stdin;
 \.
 
 
@@ -23050,8 +23053,8 @@ SELECT pg_catalog.setval('materialflowresources_documentdto_id_seq', 1, false);
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_documentpositionparameters (id, suggestresource, draftmakesreservation, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace) FROM stdin;
-1	t	t	t	\N	\N	\N	\N
+COPY materialflowresources_documentpositionparameters (id, suggestresource, draftmakesreservation, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, changedatewhentransfertowarehousetype, fillresourceirrespectiveofconversion) FROM stdin;
+1	t	t	t	\N	\N	\N	\N	01never	f
 \.
 
 
@@ -24764,7 +24767,7 @@ SELECT pg_catalog.setval('productioncounting_productionanalysisdto_id_seq', 1, f
 -- Data for Name: productioncounting_productionbalance; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_productionbalance (id, generated, order_id, product_id, name, date, worker, trackingsnumber, description, filename, printoperationnorms, calculateoperationcostsmode, includetpz, includeadditionaltime, plannedmachinetime, machinetime, machinetimebalance, plannedlabortime, labortime, labortimebalance, plannedmachinecosts, averagelaborhourlycost, additionaloverheadvalue, averagemachinehourlycost, materialcostmargin, plannedcyclescosts, registeredtotaltechnicalproductioncostperunit, componentscostsbalance, plannedlaborcosts, sourceofmaterialcosts, cyclescosts, calculatematerialcostsmode, productionline_id, machinecosts, laborcosts, quantity, totalcostperunit, printcostnormsofmaterials, generatedwithcosts, plannedcomponentscosts, materialcostmarginvalue, machinecostsbalance, totaltechnicalproductioncosts, totaltechnicalproductioncostperunit, componentscosts, additionaloverhead, totaloverhead, balancetechnicalproductioncostperunit, laborcostsbalance, cyclescostsbalance, productioncostmarginvalue, productioncostmargin, technology_id, registeredtotaltechnicalproductioncosts, totalcosts, balancetechnicalproductioncosts, active, entityversion, type, sourceofoperationcostspb, registrationpriceoverhead, profit) FROM stdin;
+COPY productioncounting_productionbalance (id, generated, order_id, product_id, name, date, worker, trackingsnumber, description, filename, printoperationnorms, calculateoperationcostsmode, includetpz, includeadditionaltime, plannedmachinetime, machinetime, machinetimebalance, plannedlabortime, labortime, labortimebalance, plannedmachinecosts, averagelaborhourlycost, additionaloverheadvalue, averagemachinehourlycost, materialcostmargin, plannedcyclescosts, registeredtotaltechnicalproductioncostperunit, componentscostsbalance, plannedlaborcosts, sourceofmaterialcosts, cyclescosts, calculatematerialcostsmode, productionline_id, machinecosts, laborcosts, quantity, totalcostperunit, printcostnormsofmaterials, generatedwithcosts, plannedcomponentscosts, materialcostmarginvalue, machinecostsbalance, totaltechnicalproductioncosts, totaltechnicalproductioncostperunit, componentscosts, additionaloverhead, totaloverhead, balancetechnicalproductioncostperunit, laborcostsbalance, cyclescostsbalance, productioncostmarginvalue, productioncostmargin, technology_id, registeredtotaltechnicalproductioncosts, totalcosts, balancetechnicalproductioncosts, active, entityversion, type, sourceofoperationcostspb, registrationpriceoverhead, profit, number) FROM stdin;
 \.
 
 
@@ -37576,4 +37579,3 @@ ALTER TABLE ONLY basic_workstationattachment
 --
 -- PostgreSQL database dump complete
 --
-

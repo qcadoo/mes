@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Document;
@@ -41,13 +49,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 @Service
 public class DocumentPdfHelper {
@@ -55,8 +56,6 @@ public class DocumentPdfHelper {
     private static final String L_DOCUMENT_TYPE_KEY = "materialFlowResources.report.type.value.";
 
     private static final String L_FILENAME = "materialFlowResources.report.filename";
-
-    private static final String L_FILENAME_FOR_MULTIPLE = "materialFlowResources.report.filenameForMultiple";
 
     private static final String L_HEADER = "materialFlowResources.report.header";
 
@@ -154,13 +153,6 @@ public class DocumentPdfHelper {
     public String getFileName(final Entity documentEntity, final Locale locale) {
         return translationService.translate(L_FILENAME, locale, getDocumentType(documentEntity, locale),
                 documentEntity.getStringField(DocumentFields.NUMBER));
-    }
-
-    public String getFileName(List<Entity> documents, Locale locale) {
-        if (documents.size() == 1) {
-            return getFileName(documents.get(0), locale);
-        }
-        return translationService.translate(L_FILENAME_FOR_MULTIPLE, locale);
     }
 
     /**

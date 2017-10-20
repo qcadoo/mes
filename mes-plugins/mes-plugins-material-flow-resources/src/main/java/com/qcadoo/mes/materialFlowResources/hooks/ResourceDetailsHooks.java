@@ -1,16 +1,11 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.SecurityService;
@@ -20,9 +15,15 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class ResourceDetailsHooks {
+
+    public static final String L_FORM = "form";
 
     @Autowired
     private NumberService numberService;
@@ -31,10 +32,10 @@ public class ResourceDetailsHooks {
     private SecurityService securityService;
 
     @Autowired
-    private DictionaryService dictionaryService;
+    private CalculationQuantityService calculationQuantityService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity resource = form.getPersistedEntityWithIncludedFormValues();
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
         FilterValueHolder filter = storageLocationLookup.getFilterValue();
@@ -58,22 +59,15 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getPersistedEntityWithIncludedFormValues();
 
-            boolean isInteger = dictionaryService.checkIfUnitIsInteger((String) additionalUnitField.getFieldValue());
-            if (isInteger) {
-                BigDecimal quantityInAdditionalUnit = maybeConversion.getRight().get()
-                        .multiply(resource.getDecimalField(ResourceFields.QUANTITY), numberService.getMathContext());
-                String quantityInAdditionalUnitFormatted = numberService.format(numberService.setScale(quantityInAdditionalUnit,
-                        0));
-                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            } else {
-                BigDecimal quantityInAdditionalUnit = maybeConversion.getRight().get()
-                        .multiply(resource.getDecimalField(ResourceFields.QUANTITY));
-                String quantityInAdditionalUnitFormatted = numberService.format(quantityInAdditionalUnit);
-                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            }
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
+                    resource.getDecimalField(ResourceFields.QUANTITY), maybeConversion.getRight().get(),
+                    (String) additionalUnitField.getFieldValue());
+
+            String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
+            quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
 
         } else {
             quantityInAdditionalUnitField.setFieldValue(null);
@@ -90,22 +84,14 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getEntity();
 
-            boolean isInteger = dictionaryService.checkIfUnitIsInteger((String) additionalUnitField.getFieldValue());
-            if (isInteger) {
-                BigDecimal quantityInAdditionalUnit = resource.getDecimalField(ResourceFields.CONVERSION).multiply(
-                        maybeQuantity.getRight().get(), numberService.getMathContext());
-                String quantityInAdditionalUnitFormatted = numberService.format(numberService.setScale(quantityInAdditionalUnit,
-                        0));
-                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            } else {
-                BigDecimal quantityInAdditionalUnit = resource.getDecimalField(ResourceFields.CONVERSION).multiply(
-                        maybeQuantity.getRight().get());
-                String quantityInAdditionalUnitFormatted = numberService.format(quantityInAdditionalUnit);
-                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
-            }
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(maybeQuantity.getRight()
+                    .get(), resource.getDecimalField(ResourceFields.CONVERSION), (String) additionalUnitField.getFieldValue());
+
+            String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
+            quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
 
         } else {
             quantityInAdditionalUnitField.setFieldValue(null);
@@ -121,23 +107,16 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantityInAdditionalUnit = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) quantityInAdditionalUnitField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantityInAdditionalUnit.isRight() && maybeQuantityInAdditionalUnit.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getEntity();
             BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
 
-            boolean isInteger = dictionaryService.checkIfUnitIsInteger(product.getStringField(ProductFields.UNIT));
-            if (isInteger) {
-                BigDecimal quantity = maybeQuantityInAdditionalUnit.getRight().get()
-                        .divide(conversion, numberService.getMathContext());
-                String quantityFormatted = numberService.format(numberService.setScale(quantity, 0));
-                quantityField.setFieldValue(quantityFormatted);
-            } else {
-                BigDecimal quantity = maybeQuantityInAdditionalUnit.getRight().get()
-                        .divide(conversion, numberService.getMathContext());
-                String quantityFormatted = numberService.format(numberService.setScale(quantity));
-                quantityField.setFieldValue(quantityFormatted);
-            }
+            BigDecimal quantity = calculationQuantityService.calculateQuantity(maybeQuantityInAdditionalUnit.getRight().get(),
+                    conversion, product.getStringField(ProductFields.UNIT));
+
+            String quantityFormatted = numberService.format(numberService.setScale(quantity));
+            quantityField.setFieldValue(quantityFormatted);
 
         } else {
             quantityField.setFieldValue(null);

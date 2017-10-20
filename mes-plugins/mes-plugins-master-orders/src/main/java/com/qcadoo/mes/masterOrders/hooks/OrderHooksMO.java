@@ -1,5 +1,13 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
@@ -11,13 +19,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderHooksMO {
@@ -41,7 +42,7 @@ public class OrderHooksMO {
 
         if (Objects.nonNull(masterOrder)
                 && (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
-                        || MasterOrderState.NEW.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
+                || MasterOrderState.NEW.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
                 && canChangeToCompleted(order, orderDb)) {
             changeToCompleted(order);
         } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
@@ -53,6 +54,10 @@ public class OrderHooksMO {
 
     private void changeToCompleted(final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
+
+        if (Objects.isNull(masterOrder)) {
+            return;
+        }
 
         masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
 

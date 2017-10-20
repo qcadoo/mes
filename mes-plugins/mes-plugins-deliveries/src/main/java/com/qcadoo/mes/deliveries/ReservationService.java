@@ -1,5 +1,7 @@
 package com.qcadoo.mes.deliveries;
 
+import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.model.api.*;
@@ -26,6 +28,9 @@ public class ReservationService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public Entity createDefaultReservationsForDeliveredProduct(Entity deliveredProduct) {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
@@ -82,7 +87,9 @@ public class ReservationService {
         if (conversion == null) {
             return Optional.empty();
         }
-        BigDecimal currentDeliveredAdditionalQuantity = currentDeliveredQuantity.multiply(conversion);
+
+        BigDecimal currentDeliveredAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(currentDeliveredQuantity, conversion, deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(
+                ProductFields.ADDITIONAL_UNIT));
 
         if (currentDeliveredQuantity.compareTo(BigDecimal.ZERO) <= 0
                 || currentDeliveredAdditionalQuantity.compareTo(BigDecimal.ZERO) <= 0) {

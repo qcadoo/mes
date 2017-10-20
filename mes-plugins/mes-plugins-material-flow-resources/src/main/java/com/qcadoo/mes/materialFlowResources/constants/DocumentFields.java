@@ -61,4 +61,8 @@ public final class DocumentFields {
     
     public static final String IN_BUFFER = "inBuffer";
 
+    public static final String GENERATION_DATE = "generationDate";
+
+    public static final String FILE_NAME = "fileName";
+
 }

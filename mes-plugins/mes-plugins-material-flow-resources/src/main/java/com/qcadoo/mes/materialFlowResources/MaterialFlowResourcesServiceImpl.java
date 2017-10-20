@@ -340,7 +340,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean canChangeDateWhenTransferToWarehouse() {
-        String changeDateWhenTransferToWarehouseType = parameterService.getParameter().getStringField(
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        String changeDateWhenTransferToWarehouseType = documentPositionParameters.getStringField(
                 ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
 
         return !ChangeDateWhenTransferToWarehouseType.NEVER.getStringValue().equals(changeDateWhenTransferToWarehouseType);
@@ -348,7 +350,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean shouldValidateDateWhenTransferToWarehouse() {
-        String changeDateWhenTransferToWarehouseType = parameterService.getParameter().getStringField(
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        String changeDateWhenTransferToWarehouseType = documentPositionParameters.getStringField(
                 ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
 
         return ChangeDateWhenTransferToWarehouseType.VALIDATE_WITH_RESOURCES.getStringValue().equals(

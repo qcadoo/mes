@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -44,6 +37,7 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -54,6 +48,13 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductionBalanceDetailsHooks {
@@ -113,10 +114,12 @@ public class ProductionBalanceDetailsHooks {
             ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS, ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE,
             ProductionBalanceFields.AVERAGE_MACHINE_HOURLY_COST, ProductionBalanceFields.AVERAGE_LABOR_HOURLY_COST,
             ProductionBalanceFields.PRODUCTION_COST_MARGIN, ProductionBalanceFields.MATERIAL_COST_MARGIN,
-            ProductionBalanceFields.ADDITIONAL_OVERHEAD);
+            ProductionBalanceFields.ADDITIONAL_OVERHEAD, "sourceOfOperationCostsPB", "registrationPriceOverhead", "profit");
+
+    public static final String L_ORDERS_GRID = "orders";
 
     private static final List<String> L_COST_GRIDS = Arrays.asList(L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID,
-            L_OPERATIONS_COST_GRID);
+            L_OPERATIONS_COST_GRID, L_ORDERS_GRID);
 
     private static final List<String> L_COST_GRIDS_AND_LAYOUTS = Arrays.asList(L_MATERIAL_COSTS_GRID_LAYOUT,
             L_COMPONENTS_COST_SUMMARY_BORDER_LAYOUT, L_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENTS_GRID, L_WORK_COSTS_GRID_LAYOUT,
@@ -143,6 +146,18 @@ public class ProductionBalanceDetailsHooks {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generateOrderNumber(view);
+    }
+
+    public void generateOrderNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, L_FORM, ProductionBalanceFields.NUMBER);
+    }
 
     public void changeAssumptionsVisibility(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         changeAssumptionsVisibility(view);
@@ -422,6 +437,18 @@ public class ProductionBalanceDetailsHooks {
             fieldComponent.setFieldValue(currencyAlphabeticCode + "/" + unit);
             fieldComponent.requestComponentUpdateState();
         }
+    }
+
+    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+        checkIfOptionsAreAvailable(viewDefinitionState, state, args);
+        FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
+        FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
+        if(SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals((String) sourceOfMaterialCosts.getFieldValue())){
+            calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
+        }
+
     }
 
     public void checkIfOptionsAreAvailable(final ViewDefinitionState view, final ComponentState state, final String[] args) {

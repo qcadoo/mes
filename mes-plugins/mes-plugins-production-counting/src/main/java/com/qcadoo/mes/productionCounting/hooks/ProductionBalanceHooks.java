@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class ProductionBalanceHooks {
@@ -43,9 +43,6 @@ public class ProductionBalanceHooks {
             ProductionBalanceFields.PLANNED_MACHINE_TIME, ProductionBalanceFields.MACHINE_TIME,
             ProductionBalanceFields.MACHINE_TIME_BALANCE, ProductionBalanceFields.PLANNED_LABOR_TIME,
             ProductionBalanceFields.LABOR_TIME, ProductionBalanceFields.LABOR_TIME_BALANCE);
-
-    @Autowired
-    private ProductionCountingService productionCountingService;
 
     private static final List<String> L_PRODUCTION_BALANCE_COST_FIELDS = Arrays.asList(
             ProductionBalanceFields.PLANNED_COMPONENTS_COSTS, ProductionBalanceFields.COMPONENTS_COSTS,
@@ -63,6 +60,9 @@ public class ProductionBalanceHooks {
             ProductionBalanceFields.PRODUCTION_COST_MARGIN_VALUE, ProductionBalanceFields.MATERIAL_COST_MARGIN_VALUE,
             ProductionBalanceFields.ADDITIONAL_OVERHEAD_VALUE, ProductionBalanceFields.TOTAL_OVERHEAD,
             ProductionBalanceFields.TOTAL_COSTS, ProductionBalanceFields.TOTAL_COST_PER_UNIT);
+
+    @Autowired
+    private ProductionCountingService productionCountingService;
 
     private void clearGeneratedCosts(final Entity productionBalance) {
         for (String fieldName : L_PRODUCTION_BALANCE_COST_FIELDS) {

@@ -125,6 +125,8 @@ public final class ProductionBalanceFields {
 
     public static final String NAME = "name";
 
+    public static final String NUMBER = "number";
+
     public static final String DATE = "date";
 
     public static final String WORKER = "worker";

@@ -25,12 +25,8 @@ package com.qcadoo.mes.deliveries.listeners;
 
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.CalculationQuantityService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -40,13 +36,20 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class OrderedProductReservationDetailsListeners {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void quantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -55,13 +58,16 @@ public class OrderedProductReservationDetailsListeners {
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
 
         Object orderedQuantityRawValue = orderedProductReservation.getField(OrderedProductReservationFields.ORDERED_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(orderedQuantityRawValue == null ? "" : orderedQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Either<Exception, Optional<BigDecimal>> tryParseOrderedQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                orderedQuantityRawValue == null ? "" : orderedQuantityRawValue.toString(), LocaleContextHolder.getLocale());
 
         if (conversion != null && tryParseOrderedQuantity.isRight() && tryParseOrderedQuantity.getRight().isPresent()) {
             BigDecimal orderedQuantity = tryParseOrderedQuantity.getRight().get();
-            FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference(OrderedProductReservationFields.ADDITIONAL_QUANTITY);
-            BigDecimal newAdditionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-            newAdditionalQuantity = newAdditionalQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, RoundingMode.HALF_UP);
+            FieldComponent additionalQuantity = (FieldComponent) view
+                    .getComponentByReference(OrderedProductReservationFields.ADDITIONAL_QUANTITY);
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(orderedQuantity,
+                    conversion,
+                    orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.ADDITIONAL_UNIT));
             additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
             additionalQuantity.requestComponentUpdateState();
         }
@@ -73,14 +79,19 @@ public class OrderedProductReservationDetailsListeners {
         Entity orderedProduct = orderedProductReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT);
 
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
-        Object additionalQuantityRawValue = orderedProductReservation.getField(OrderedProductReservationFields.ADDITIONAL_QUANTITY);
-        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(additionalQuantityRawValue == null ? "" : additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
+        Object additionalQuantityRawValue = orderedProductReservation
+                .getField(OrderedProductReservationFields.ADDITIONAL_QUANTITY);
+        Either<Exception, Optional<BigDecimal>> tryParseAdditionalQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                additionalQuantityRawValue == null ? "" : additionalQuantityRawValue.toString(), LocaleContextHolder.getLocale());
 
         if (conversion != null && tryParseAdditionalQuantity.isRight() && tryParseAdditionalQuantity.getRight().isPresent()) {
             BigDecimal additionalQuantity = tryParseAdditionalQuantity.getRight().get();
-            FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(OrderedProductReservationFields.ORDERED_QUANTITY);
-            BigDecimal newOrderedQuantity = additionalQuantity.divide(conversion, numberService.getMathContext());
-            newOrderedQuantity = newOrderedQuantity.setScale(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, RoundingMode.HALF_UP);
+            FieldComponent orderedQuantity = (FieldComponent) view
+                    .getComponentByReference(OrderedProductReservationFields.ORDERED_QUANTITY);
+
+            BigDecimal newOrderedQuantity = calculationQuantityService.calculateQuantity(additionalQuantity, conversion,
+                    orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.UNIT));
+
             orderedQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newOrderedQuantity, 0));
             orderedQuantity.requestComponentUpdateState();
         }

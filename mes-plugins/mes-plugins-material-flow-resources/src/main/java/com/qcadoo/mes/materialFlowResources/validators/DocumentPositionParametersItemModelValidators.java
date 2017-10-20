@@ -13,23 +13,21 @@
  * You should have received a copy of the GNU Affero General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.hooks;
+package com.qcadoo.mes.materialFlowResources.validators;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import java.util.Locale;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Service
 public class DocumentPositionParametersItemModelValidators {

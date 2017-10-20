@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -34,6 +31,8 @@ import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionBalanceValidators {
@@ -93,6 +92,13 @@ public class ProductionBalanceValidators {
             return false;
         }
 
+        if(SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
+                productionBalance.getStringField(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS))
+                && !CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(
+                productionBalance.getStringField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE))){
+            productionBalance.addError(productionBalanceDD.getField(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE), "basic.parameter.sourceOfMaterialCostsPB.calculateMaterialCostsModePBWrongValue");
+            return false;
+        }
         return true;
     }
 

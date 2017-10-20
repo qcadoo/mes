@@ -23,56 +23,18 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.RowStyle;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 @Service
 public class DocumentsListHooks {
-
-    public void onBeforeRender(final ViewDefinitionState view) {
-        lockDispositionOrder(view);
-    }
-
-    private void lockDispositionOrder(ViewDefinitionState view) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonActionItem dispositionOrderPdfItem = (RibbonActionItem) window.getRibbon().getGroupByName("print")
-                .getItemByName("printDispositionOrderPdf");
-        dispositionOrderPdfItem.setEnabled(false);
-
-        List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
-                DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
-
-        String errorMessage = null;
-        for (Entity document : gridComponent.getSelectedEntities()) {
-            String documentType = document.getStringField(DocumentFields.TYPE);
-            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {
-                errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
-                break;
-            }
-            if (document.getBooleanField(DocumentFields.IN_BUFFER)) {
-                errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
-                break;
-            }
-        }
-
-        dispositionOrderPdfItem.setMessage(errorMessage);
-        dispositionOrderPdfItem.setEnabled(!gridComponent.getSelectedEntities().isEmpty() && errorMessage == null);
-        dispositionOrderPdfItem.requestUpdate(true);
-    }
 
     public Set<String> fillRowStyles(final Entity document) {
         final Set<String> rowStyles = Sets.newHashSet();

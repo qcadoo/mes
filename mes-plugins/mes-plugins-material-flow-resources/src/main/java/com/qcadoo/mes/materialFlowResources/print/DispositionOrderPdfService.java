@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.materialFlowResources.print;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -48,7 +61,6 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentDataProvider;
-import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper;
 import com.qcadoo.mes.materialFlowResources.print.helper.DocumentPdfHelper.HeaderPair;
 import com.qcadoo.mes.materialFlowResources.print.helper.Position;
 import com.qcadoo.mes.materialFlowResources.print.helper.PositionBuilder;
@@ -63,24 +75,11 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ColorUtils;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
+import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import com.qcadoo.report.api.pdf.ReportPdfView;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-@Component(value = "dispositionOrderPdf")
-public class DispositionOrderPdf extends ReportPdfView {
+@Service
+public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
 
     private static final String L_POSITION_HEADER_PREFIX = "materialFlowResources.dispositionOrder.positionsHeader.";
 
@@ -105,9 +104,6 @@ public class DispositionOrderPdf extends ReportPdfView {
     private PdfHelper pdfHelper;
 
     @Autowired
-    private DocumentPdfHelper documentPdfHelper;
-
-    @Autowired
     private ParameterService parameterService;
 
     @Autowired
@@ -117,69 +113,6 @@ public class DispositionOrderPdf extends ReportPdfView {
     private NumberService numberService;
 
     private boolean acceptanceOfDocumentBeforePrinting;
-
-    @Override
-    protected String addContent(Document document, Map<String, Object> model, Locale locale, PdfWriter writer)
-            throws DocumentException, IOException {
-        String[] ids = model.get("id").toString().split(",");
-        List<Entity> documents = new ArrayList<>();
-
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
-        acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
-
-        for (String rawId : ids) {
-            Long id = Long.valueOf(rawId);
-            Entity documentEntity = documentPdfHelper.getDocumentEntity(id);
-            if (ids.length == 1) {
-                class DispositionOrderHeader extends PdfPageEventHelper {
-
-                    @Override
-                    public void onEndPage(PdfWriter writer, Document document) {
-                        try {
-                            PdfContentByte cb = writer.getDirectContent();
-                            cb.saveState();
-                            String text = DocumentDataProvider.name(documentEntity) + "\n"
-                                    + DocumentDataProvider.number(documentEntity);
-
-                            float textBase = document.top();
-
-                            cb.setColorFill(ColorUtils.getLightColor());
-                            cb.setColorStroke(ColorUtils.getLightColor());
-                            cb.beginText();
-                            cb.setFontAndSize(FontUtils.getDejavu(), 7);
-
-                            cb.setTextMatrix(document.left(), textBase + 20);
-                            cb.showText((translationService.translate(L_PZ, locale) +": "+ DocumentDataProvider
-                                    .pzLocation(documentEntity)));
-                            cb.endText();
-                            cb.stroke();
-                            cb.restoreState();
-                        } catch (Exception ex) {
-                            throw new RuntimeException(ex);
-                        }
-
-                    }
-
-                }
-                writer.setPageEvent(new DispositionOrderHeader());
-            }
-            documents.add(documentEntity);
-            String documentHeader = getDocumentHeader(documentEntity, locale);
-            pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
-            addHeaderTable(document, documentEntity, locale);
-            addPositionsTable(document, documentEntity, locale);
-            addPlaceForComments(document, locale);
-            addPlaceForSignature(document, locale);
-            document.newPage();
-        }
-
-        return documentPdfHelper.getFileName(documents, locale);
-    }
-
-    @Override
-    protected void addTitle(Document document, Locale locale) {
-        document.addTitle(translationService.translate("materialFlowResources.dispositionOrder.title", locale));
-    }
 
     private void addHeaderTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
         PdfPTable table = pdfHelper.createPanelTable(2);
@@ -392,7 +325,53 @@ public class DispositionOrderPdf extends ReportPdfView {
         return product != null ? product.getStringField(ProductFields.NAME) : StringUtils.EMPTY;
     }
 
-    public String getDocumentHeader(final Entity documentEntity, final Locale locale) {
+    private String getDocumentHeader(final Entity documentEntity, final Locale locale) {
         return translationService.translate(L_HEADER, locale, documentEntity.getStringField(DocumentFields.NUMBER));
+    }
+
+    @Override
+    protected void buildPdfContent(PdfWriter writer, Document document, Entity entity, Locale locale) throws DocumentException {
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
+        acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
+
+            class DispositionOrderHeader extends PdfPageEventHelper {
+
+                @Override
+                public void onEndPage(PdfWriter writer, Document document) {
+                    try {
+                        PdfContentByte cb = writer.getDirectContent();
+                        cb.saveState();
+                        float textBase = document.top();
+
+                        cb.setColorFill(ColorUtils.getLightColor());
+                        cb.setColorStroke(ColorUtils.getLightColor());
+                        cb.beginText();
+                        cb.setFontAndSize(FontUtils.getDejavu(), 7);
+
+                        cb.setTextMatrix(document.left(), textBase + 20);
+                        cb.showText((translationService.translate(L_PZ, locale) +": "+ DocumentDataProvider
+                                .pzLocation(entity)));
+                        cb.endText();
+                        cb.stroke();
+                        cb.restoreState();
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+
+                }
+            }
+            writer.setPageEvent(new DispositionOrderHeader());
+
+            String documentHeader = getDocumentHeader(entity, locale);
+            pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
+            addHeaderTable(document, entity, locale);
+            addPositionsTable(document, entity, locale);
+            addPlaceForComments(document, locale);
+            addPlaceForSignature(document, locale);
+    }
+
+    @Override
+    public String getReportTitle(Locale locale) {
+        return translationService.translate("materialFlowResources.dispositionOrder.title", locale);
     }
 }
