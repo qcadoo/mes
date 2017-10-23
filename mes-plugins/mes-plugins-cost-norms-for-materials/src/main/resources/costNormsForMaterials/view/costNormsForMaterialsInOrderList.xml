@@ -58,9 +58,6 @@
 					this.addOnChangeListener({
 						onSetValue: function(value) {
 
-						    copyCostsFromProducts.setLabel("#{translate(costNormsForMaterials.costNormsForMaterialsInOrderList.window.ribbon.copyCostsFromProducts)}");
-						    copyCostsFromProducts.setLabel("#{translate(costNormsForMaterials.costNormsForMaterialsInOrderList.window.ribbon.updateCosts)}");
-
 						}
 					});
 					]]>
