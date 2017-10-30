@@ -44,6 +44,8 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_RESOURCE_STOCK = "resourceStock";
 
+    public static final String MODEL_RESOURCE_STOCK_DTO = "resourceStockDto";
+
     public static final String MODEL_RESOURCE = "resource";
 
     public static final String MODEL_DOCUMENT = "document";

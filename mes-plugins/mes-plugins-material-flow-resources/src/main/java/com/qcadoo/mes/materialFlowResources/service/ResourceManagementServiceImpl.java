@@ -189,7 +189,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             resource.setField(ResourceFields.CONVERSION, position.getField(PositionFields.CONVERSION));
         }
 
-        resourceStockService.addResourceStock(resource);
+        resourceStockService.createResourceStock(resource);
 
         resource = resourceDD.save(resource);
 
@@ -241,7 +241,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
-        resourceStockService.addResourceStock(newResource);
+        resourceStockService.createResourceStock(newResource);
 
         return resourceDD.save(newResource);
     }
@@ -497,8 +497,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
-        resourceStockService.removeResourceStock(product, warehouse, quantity);
-
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
@@ -678,8 +676,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
-
-        resourceStockService.removeResourceStock(product, warehouseFrom, quantity);
 
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);

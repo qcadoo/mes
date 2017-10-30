@@ -151,7 +151,7 @@ public class DocumentPdf extends ReportPdfView {
 
         List<Entity> stocks = warehouseMinimalStateHelper.getWarehouseStockWithTooSmallMinState(warehouse,minimumStates.stream().map(res -> res.getBelongsToField("product")).collect(Collectors.toList()));
         Map<Long, Entity> stocksByProduct = stocks.stream()
-                .collect(Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
+                .collect(Collectors.toMap(res -> res.getIntegerField("product_id").longValue(), (res) -> res));
         boolean rowsWereAdded = false;
         for (Entity minimumState : minimumStates) {
             rowsWereAdded |= addRow(minimumState, stocksByProduct, warehouseTable);

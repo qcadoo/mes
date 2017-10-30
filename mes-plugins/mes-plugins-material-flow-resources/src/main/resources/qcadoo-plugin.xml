@@ -75,8 +75,6 @@
         <model:model model="documentDto" resource="model/documentDto.xml"/>
         <model:model model="position" resource="model/position.xml"/>
         <model:model model="positionDto" resource="model/positionDto.xml"/>
-        <model:model model="warehouseStock" resource="model/warehouseStock.xml"/>
-        <model:model model="warehouseStockListDto" resource="model/warehouseStockListDto.xml"/>
         <model:model model="resourceCorrection" resource="model/resourceCorrection.xml"/>
         <model:model model="resourceCorrectionDto" resource="model/resourceCorrectionDto.xml"/>
 

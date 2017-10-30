@@ -235,7 +235,7 @@ public class DocumentPositionValidator {
             }
         }
 
-        String query = "SELECT availableQuantity FROM materialflowresources_resourcestock "
+        String query = "SELECT availableQuantity FROM materialflowresources_resourcestockdto "
                 + "WHERE product_id = :product_id AND location_id = :location_id";
 
         Map<String, Object> params = Maps.newHashMap();
