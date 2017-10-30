@@ -690,6 +690,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
+            if (position.getBelongsToField(PositionFields.RESOURCE) != null
+                    && reservationsService.reservationsEnabledForDocumentPositions()) {
+                BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
+                        numberService.getMathContext());
+                resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
+            }
+
             if (quantity.compareTo(resourceAvailableQuantity) >= 0) {
                 quantity = quantity.subtract(resourceAvailableQuantity, numberService.getMathContext());
 
@@ -728,13 +735,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
                 resourceAvailableQuantity = resourceAvailableQuantity.subtract(quantity, numberService.getMathContext());
-
-                if (position.getBelongsToField(PositionFields.RESOURCE) != null
-                        && reservationsService.reservationsEnabledForDocumentPositions()) {
-                    BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
-                            numberService.getMathContext());
-                    resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
-                }
 
                 BigDecimal quantityInAdditionalUnit = calculationQuantityService.calculateAdditionalQuantity(resourceQuantity,
                         resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
