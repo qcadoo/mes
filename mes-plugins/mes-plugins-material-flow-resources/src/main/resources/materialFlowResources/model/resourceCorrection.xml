@@ -45,8 +45,6 @@
         <string name="newBatch"/>
 
         <belongsTo name="resource" model="resource"/>
-        <!--<dictionary name="oldStorageLocation" dictionary="storageLocations" />-->
-        <!--<dictionary name="newStorageLocation" dictionary="storageLocations" />-->
 
         <belongsTo name="oldStorageLocation" model="storageLocation"/>
         <belongsTo name="newStorageLocation" model="storageLocation"/>
@@ -67,6 +65,7 @@
         <date name="newExpirationDate"/>
         <date name="productionDate"/>
         <string name="resourceNumber"/>
+        <string name="deliveryNumber"/>
     </fields>
     <hooks/>
 </model>

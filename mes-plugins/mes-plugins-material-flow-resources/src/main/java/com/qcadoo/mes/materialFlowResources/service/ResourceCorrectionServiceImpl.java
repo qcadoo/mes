@@ -102,6 +102,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
             correction.setField(ResourceCorrectionFields.RESOURCE, oldResource);
             correction.setField(ResourceCorrectionFields.RESOURCE_NUMBER, oldResource.getStringField(ResourceFields.NUMBER));
+            correction.setField(ResourceCorrectionFields.DELIVERY_NUMBER, oldResource.getStringField(ResourceFields.DELIVERY_NUMBER));
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);

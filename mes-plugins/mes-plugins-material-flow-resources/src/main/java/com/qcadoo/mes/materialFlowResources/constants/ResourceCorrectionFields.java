@@ -74,4 +74,6 @@ public final class ResourceCorrectionFields {
 
     public static final String OLD_PRICE = "oldPrice";
 
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
 }
