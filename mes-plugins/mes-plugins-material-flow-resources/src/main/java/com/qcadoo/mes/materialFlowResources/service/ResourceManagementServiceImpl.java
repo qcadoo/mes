@@ -503,7 +503,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             Entity newPosition = positionDD.create();
 
-            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            newPosition.setField(PositionFields.PRODUCT, product);
             newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
             newPosition.setField(PositionFields.WASTE, resource.getBooleanField(ResourceFields.WASTE));
             newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
@@ -517,7 +517,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
 
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -682,7 +682,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -973,7 +973,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             Entity newPosition = positionDD.create();
 
-            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            newPosition.setField(PositionFields.PRODUCT, product);
             newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
             newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
             newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
@@ -987,7 +987,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
             newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
 
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -1007,11 +1007,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return newPositions;
     }
 
-    private BigDecimal recalculateQuantity(BigDecimal quantity, BigDecimal conversion, Entity resource, String givenUnit) {
-        if (!conversion.equals(resource.getField(ResourceFields.CONVERSION))) {
+    private BigDecimal recalculateQuantity(BigDecimal quantity, BigDecimal conversion, String givenUnit, BigDecimal resourceConversion,  String unit) {
+        if (conversion.compareTo(resourceConversion) != 0) {
             BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
             return calculationQuantityService.calculateQuantity(givenQuantity,
-                    resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+                    resourceConversion, unit);
         }
         return quantity;
     }
