@@ -23,31 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.ADDITIONAL_CODE;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -57,6 +42,22 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.ADDITIONAL_CODE;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DAMAGED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERED_QUANTITY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.DELIVERY;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PALLET_NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveredProductFields.PRODUCT;
 
 @Service
 public class DeliveredProductHooks {
@@ -92,6 +93,20 @@ public class DeliveredProductHooks {
     public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
         updateDeliveredQuantityInOrderedProduct(deliveredProduct);
+        tryFillStorageLocation(deliveredProduct);
+    }
+
+    private void tryFillStorageLocation(Entity deliveredProduct) {
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
+        if (Objects.nonNull(location)
+                && Objects.isNull(deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION))) {
+            Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+            Optional<Entity> storageLocation = findStorageLocationForProduct(product, location);
+            if (storageLocation.isPresent()) {
+                deliveredProduct.setField(DeliveredProductFields.STORAGE_LOCATION, storageLocation.get());
+            }
+        }
     }
 
     public boolean onDelete(final DataDefinition dataDefinition, final Entity deliveredProduct) {
@@ -405,8 +420,8 @@ public class DeliveredProductHooks {
     private boolean notTooManyPalletsInStorageLocation(DataDefinition deliveredProductDD, Entity deliveredProduct) {
         Entity storageLocation = deliveredProduct.getBelongsToField(DeliveredProductFields.STORAGE_LOCATION);
         final BigDecimal maxNumberOfPallets;
-        if (storageLocation != null && (maxNumberOfPallets = storageLocation
-                .getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS)) != null) {
+        if (storageLocation != null
+                && (maxNumberOfPallets = storageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS)) != null) {
 
             Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
             if (palletNumber != null) {
@@ -430,9 +445,11 @@ public class DeliveredProductHooks {
                         + "         palletsInStorageLocation.palletnumber_id <> :palletNumberId";
 
                 Long deliveredProductId = Optional.ofNullable(deliveredProduct.getId()).orElse(-1L);
-                Long palletsCount = jdbcTemplate.queryForObject(query, new MapSqlParameterSource()
-                        .addValue("storageLocationId", storageLocation.getId()).addValue("palletNumberId", palletNumber.getId()).addValue("deliveredProductId", deliveredProductId),
-                        Long.class);
+                Long palletsCount = jdbcTemplate.queryForObject(
+                        query,
+                        new MapSqlParameterSource().addValue("storageLocationId", storageLocation.getId())
+                                .addValue("palletNumberId", palletNumber.getId())
+                                .addValue("deliveredProductId", deliveredProductId), Long.class);
 
                 boolean valid = maxNumberOfPallets.compareTo(BigDecimal.valueOf(palletsCount)) > 0;
                 if (!valid) {
@@ -445,19 +462,12 @@ public class DeliveredProductHooks {
         return true;
     }
 
-    // private boolean validatePallet(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-    // return (!existsOtherDeliveredProductForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
-    // !existsOtherDeliveredProductForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-    // && !existsOtherDeliveredProductForOtherPalletType(deliveredProductDD, deliveredProduct)
-    //
-    // // && (!existsOtherPositionForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
-    // !existsOtherPositionForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-    // // && !existsOtherPositionForOtherPalletType(deliveredProductDD, deliveredProduct)
-    //
-    // && (!existsOtherResourceForPalletAndStorageLocation(deliveredProductDD, deliveredProduct) ||
-    // !existsOtherResourceForStorageLocationAndPallet(deliveredProductDD, deliveredProduct))
-    // && !existsOtherResourceForOtherPalletType(deliveredProductDD, deliveredProduct);
-    // }
-    //
+    public Optional<Entity> findStorageLocationForProduct(final Entity product, final Entity location) {
+        SearchCriteriaBuilder scb = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION).find();
+        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product));
+        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location));
+        return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
+    }
 
 }
