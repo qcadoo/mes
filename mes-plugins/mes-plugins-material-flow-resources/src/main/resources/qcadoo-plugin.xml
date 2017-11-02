@@ -99,6 +99,8 @@
         <model:model model="stocktaking" resource="model/stocktaking.xml"/>
         <model:model model="warehouseStockReport" resource="model/warehouseStockReport.xml"/>
 
+        <model:model model="importStorageLocation" resource="model/importStorageLocation.xml"/>
+
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="company" cascade="nullify"/>
@@ -336,6 +338,7 @@
 
         <view:view resource="view/warehouseStockReportDetails.xml"/>
         <view:view resource="view/warehouseStockReportsList.xml"/>
+        <view:view resource="view/importStorageLocationList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
 

@@ -22,6 +22,12 @@ public class StorageLocationsListener {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    public void importCurrentList(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        String url = "../page/materialFlowResources/importStorageLocationList.html";
+        view.openModal(url);
+    }
+
     public void redirectToAddManyStorageLocations(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         Entity entity = createEntity();
