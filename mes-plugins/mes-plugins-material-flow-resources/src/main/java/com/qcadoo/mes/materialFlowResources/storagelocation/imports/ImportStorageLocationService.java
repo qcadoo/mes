@@ -1,7 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.storagelocation.imports;
 
-import com.google.api.client.util.Lists;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
