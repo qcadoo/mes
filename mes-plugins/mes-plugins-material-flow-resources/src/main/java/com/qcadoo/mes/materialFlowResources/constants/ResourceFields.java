@@ -45,8 +45,6 @@ public final class ResourceFields {
 
     public static final String PRICE = "price";
 
-    public static final String VALUE = "value";
-
     public static final String BATCH = "batch";
 
     public static final String TIME = "time";

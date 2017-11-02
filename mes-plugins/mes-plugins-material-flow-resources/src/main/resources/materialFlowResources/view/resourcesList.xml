@@ -28,7 +28,7 @@
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="resourcesList"
-      modelName="resource"
+      modelName="resourceDto"
       menuAccessible="true">
 
     <component type="window" name="window">
@@ -38,15 +38,11 @@
 
         <component type="grid" name="resourceGrid" reference="grid">
             <option type="column" name="number" fields="number" link="true"/>
-            <option type="column" name="locationNumber" fields="location"
-                    expression="#location['number']" link="true" width="90"/>
-            <option type="column" name="productNumber" fields="product"
-                    expression="#product['number']" link="true" width="100"/>
-            <option type="column" name="productName" fields="product"
-                    expression="#product['name']" link="true" width="110"/>
+            <option type="column" name="locationNumber" fields="locationNumber" link="true" width="90"/>
+            <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
+            <option type="column" name="productName" fields="productName" link="true" width="110"/>
             <option type="column" name="quantity" fields="quantity" width="100"/>
-            <option type="column" name="productUnit" fields="product"
-                    expression="#product['unit']" width="50"/>
+            <option type="column" name="productUnit" fields="productUnit" width="50"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit"/>
             <option type="column" name="givenUnit" fields="givenUnit" width="50"/>
             <option type="column" name="conversion" fields="conversion" width="80"/>
@@ -58,11 +54,10 @@
             <option type="column" name="productionDate" fields="productionDate"/>
             <option type="column" name="expirationDate" fields="expirationDate"/>
             <option type="column" name="batch" fields="batch"/>
-            <option type="column" name="storageLocation" fields="storageLocation"
-                    expression="#storageLocation['number']"/>
+            <option type="column" name="storageLocation" fields="storageLocationNumber"/>
 
-            <option type="column" name="additionalCode" fields="additionalCode" expression="#additionalCode['code']"/>
-            <option type="column" name="palletNumber" fields="palletNumber" expression="#palletNumber['number']"/>
+            <option type="column" name="additionalCode" fields="additionalCode"/>
+            <option type="column" name="palletNumber" fields="palletNumber"/>
             <option type="column" name="typeOfPallet" fields="typeOfPallet"/>
             <option type="column" name="userName" fields="userName"/>
             <option type="column" name="isCorrected" fields="isCorrected" width="50"/>
@@ -73,9 +68,9 @@
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,value"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,value"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>

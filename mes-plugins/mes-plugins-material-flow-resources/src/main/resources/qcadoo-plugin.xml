@@ -71,6 +71,7 @@
         <model:dictionary name="storageLocations"/>
 
         <model:model model="resource" resource="model/resource.xml"/>
+        <model:model model="resourceDto" resource="model/resourceDto.xml"/>
         <model:model model="document" resource="model/document.xml"/>
         <model:model model="documentDto" resource="model/documentDto.xml"/>
         <model:model model="position" resource="model/position.xml"/>
