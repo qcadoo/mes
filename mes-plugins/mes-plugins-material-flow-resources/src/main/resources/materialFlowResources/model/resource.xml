@@ -88,13 +88,9 @@
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelValidators"
                 method="validatesWith"/>
-        <onView
-                class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
-                method="onView"/>
         <onCreate
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
                 method="onCreate"/>
-
         <onSave
                 class="com.qcadoo.mes.materialFlowResources.hooks.ResourceModelHooks"
                 method="onSave"/>

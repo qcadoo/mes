@@ -189,7 +189,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             resource.setField(ResourceFields.CONVERSION, position.getField(PositionFields.CONVERSION));
         }
 
-        resourceStockService.addResourceStock(resource);
+        resourceStockService.createResourceStock(resource);
 
         resource = resourceDD.save(resource);
 
@@ -241,7 +241,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
-        resourceStockService.addResourceStock(newResource);
+        resourceStockService.createResourceStock(newResource);
 
         return resourceDD.save(newResource);
     }
@@ -475,6 +475,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
         position.setField(PositionFields.STORAGE_LOCATION, newPosition.getField(PositionFields.STORAGE_LOCATION));
         position.setField(PositionFields.ADDITIONAL_CODE, newPosition.getField(PositionFields.ADDITIONAL_CODE));
+        position.setField(PositionFields.CONVERSION, newPosition.getField(PositionFields.CONVERSION));
         position.setField(PositionFields.PALLET_NUMBER, newPosition.getField(PositionFields.PALLET_NUMBER));
         position.setField(PositionFields.TYPE_OF_PALLET, newPosition.getField(PositionFields.TYPE_OF_PALLET));
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
@@ -484,9 +485,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private List<Entity> updateResources(final Entity warehouse, final Entity position,
             final WarehouseAlgorithm warehouseAlgorithm) {
-        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION);
-
         List<Entity> newPositions = Lists.newArrayList();
 
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -497,29 +495,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
-        resourceStockService.removeResourceStock(product, warehouse, quantity);
-
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
-            Entity newPosition = positionDD.create();
+            Entity newPosition = createNewPosition(position, product, resource);
 
-            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-            newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
-            newPosition.setField(PositionFields.WASTE, resource.getBooleanField(ResourceFields.WASTE));
-            newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
-            newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
-            newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
-            newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
-            newPosition.setField(PositionFields.RESOURCE, resource);
-            newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-            newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
-            newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
-            newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-            newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -679,14 +661,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
-        resourceStockService.removeResourceStock(product, warehouseFrom, quantity);
-
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
 
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -975,23 +955,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
-            Entity newPosition = positionDD.create();
+            Entity newPosition = createNewPosition(position, product, resource);
 
-            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-            newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
-            newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
-            newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
-            newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
-            newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
-            newPosition.setField(PositionFields.RESOURCE, resource);
-            newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-            newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
-            newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
-            newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-            newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
-            newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
-
-            quantity = recalculateQuantity(quantity, conversion, resource, givenUnit);
+            quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
@@ -1011,11 +977,31 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return newPositions;
     }
 
-    private BigDecimal recalculateQuantity(BigDecimal quantity, BigDecimal conversion, Entity resource, String givenUnit) {
-        if (!conversion.equals(resource.getField(ResourceFields.CONVERSION))) {
+    private Entity createNewPosition(Entity position, Entity product, Entity resource) {
+        Entity newPosition = position.getDataDefinition().create();
+
+        newPosition.setField(PositionFields.PRODUCT, product);
+        newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
+        newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
+        newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
+        newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
+        newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
+        newPosition.setField(PositionFields.RESOURCE, resource);
+        newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
+        newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
+        newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
+        newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
+        newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+        newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
+
+        return newPosition;
+    }
+
+    private BigDecimal recalculateQuantity(BigDecimal quantity, BigDecimal conversion, String givenUnit, BigDecimal resourceConversion, String unit) {
+        if (conversion.compareTo(resourceConversion) != 0) {
             BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
             return calculationQuantityService.calculateQuantity(givenQuantity,
-                    resource.getDecimalField(ResourceFields.CONVERSION), resource.getStringField(ResourceFields.GIVEN_UNIT));
+                    resourceConversion, unit);
         }
         return quantity;
     }

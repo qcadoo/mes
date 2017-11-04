@@ -38,9 +38,6 @@ public class ReservationsService {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
-    private ResourceStockService resourceStockService;
-
-    @Autowired
     private ResourceReservationsService resourceReservationsService;
 
     @Autowired
@@ -99,7 +96,6 @@ public class ReservationsService {
                 + "VALUES ((SELECT locationfrom_id FROM materialflowresources_document WHERE id=:document_id), :product_id, :quantity, :id, :resource_id)";
 
         jdbcTemplate.update(query, params);
-        resourceStockService.updateResourceStock(params, BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)));
         resourceReservationsService.updateResourceQuantites(params, BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)));
     }
 
@@ -164,7 +160,6 @@ public class ReservationsService {
                         }
                     });
             Long newResourceId = (Long) params.get("resource_id");
-            Long oldProductId = (Long) oldPosition.get("product_id");
             Long oldResourceId = (Long) oldPosition.get("resource_id");
             BigDecimal oldPositionQuantity = (BigDecimal) oldPosition.get("quantity");
 
@@ -176,14 +171,6 @@ public class ReservationsService {
 
             jdbcTemplate.update(query, params);
 
-            if (oldProductId.compareTo((Long) params.get("product_id")) != 0) {
-                resourceStockService.updateResourceStock(params, newQuantity);
-                Map<String, Object> paramsForOld = Maps.newHashMap(params);
-                paramsForOld.put("product_id", oldProductId);
-                resourceStockService.updateResourceStock(paramsForOld, oldPositionQuantity.negate());
-            } else {
-                resourceStockService.updateResourceStock(params, quantityToAdd);
-            }
             if (oldResourceId != null && newResourceId != null) {
                 if (oldResourceId.compareTo(newResourceId) != 0) {
                     resourceReservationsService.updateResourceQuantites(params, newQuantity);
@@ -248,7 +235,6 @@ public class ReservationsService {
         }
         String query = "DELETE FROM materialflowresources_reservation WHERE position_id = :id";
         jdbcTemplate.update(query, params);
-        resourceStockService.updateResourceStock(params, (BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY))).negate());
         resourceReservationsService.updateResourceQuantites(params,
                 BigDecimalUtils.convertNullToZero(params.get(L_QUANTITY)).negate());
     }

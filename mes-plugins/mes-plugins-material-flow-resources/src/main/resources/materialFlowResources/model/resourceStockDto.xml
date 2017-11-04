@@ -30,6 +30,7 @@
        activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
     <fields>
         <decimal name="quantity"/>
+        <decimal name="quantityInAdditionalUnit"/>
         <decimal name="reservedQuantity"/>
         <decimal name="availableQuantity"/>
         <string name="locationNumber"/>
