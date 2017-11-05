@@ -1,15 +1,13 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlowResources.storagelocation.imports.ImportStorageLocationService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
@@ -20,9 +18,6 @@ public class ImportStorageLocationListListeners {
 
     @Autowired
     private ImportStorageLocationService importService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void importPositions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
@@ -36,7 +31,7 @@ public class ImportStorageLocationListListeners {
         }
         boolean imported = importService.importPositionsFromFile(entity, view);
         if (imported) {
-            view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.success",
+            view.addMessage("materialFlowResources.importStorageLocationList.importPositions.impsuccess",
                     ComponentState.MessageType.SUCCESS);
         } else {
             view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.failure",
