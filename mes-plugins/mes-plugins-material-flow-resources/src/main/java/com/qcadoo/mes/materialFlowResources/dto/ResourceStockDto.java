@@ -27,8 +27,12 @@ public class ResourceStockDto {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ResourceStockDto that = (ResourceStockDto) o;
         return Objects.equals(quantity, that.quantity) &&
                 Objects.equals(availableQuantity, that.availableQuantity);

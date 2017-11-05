@@ -140,9 +140,6 @@ public class ImportStorageLocationService {
         queryProductByNumberParameters.put("number", position.getProduct());
         Long productId = jdbcTemplate.queryForObject(queryProductByNumber, queryProductByNumberParameters, Long.class);
 
-        if (productId == null) {
-            productId.getClass();
-        }
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("number", position.getStorageLocation());
         parameters.put("location_id", id);
