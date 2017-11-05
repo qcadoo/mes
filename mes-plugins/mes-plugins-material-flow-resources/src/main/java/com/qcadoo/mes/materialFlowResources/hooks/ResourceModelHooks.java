@@ -23,36 +23,31 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
+import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
 
 @Service
 public class ResourceModelHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
