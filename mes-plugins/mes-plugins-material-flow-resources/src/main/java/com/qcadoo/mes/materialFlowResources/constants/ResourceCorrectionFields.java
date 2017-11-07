@@ -68,8 +68,12 @@ public final class ResourceCorrectionFields {
 
     public static final String RESOURCE = "resource";
 
+    public static final String RESOURCE_NUMBER = "resourceNumber";
+
     public static final String NEW_PRICE = "newPrice";
 
     public static final String OLD_PRICE = "oldPrice";
+
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
 
 }

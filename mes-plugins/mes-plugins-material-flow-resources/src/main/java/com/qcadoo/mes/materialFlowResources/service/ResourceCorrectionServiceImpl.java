@@ -28,6 +28,7 @@ import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -55,6 +56,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
     private NumberService numberService;
 
     @Override
+    @Transactional
     public boolean createCorrectionForResource(final Entity resource) {
         Entity oldResource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
@@ -99,6 +101,8 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_CORRECTION));
 
             correction.setField(ResourceCorrectionFields.RESOURCE, oldResource);
+            correction.setField(ResourceCorrectionFields.RESOURCE_NUMBER, oldResource.getStringField(ResourceFields.NUMBER));
+            correction.setField(ResourceCorrectionFields.DELIVERY_NUMBER, oldResource.getStringField(ResourceFields.DELIVERY_NUMBER));
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
@@ -108,7 +112,10 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                     newQuantity.subtract(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY)));
             Entity savedResource = resource.getDataDefinition().save(resource);
             if (savedResource.isValid()) {
-                correction.getDataDefinition().save(correction);
+                Entity savedCorrection = correction.getDataDefinition().save(correction);
+                if(!savedCorrection.isValid()){
+                    throw new IllegalStateException("Could not save correction");
+                }
                 return true;
             } else {
                 return false;

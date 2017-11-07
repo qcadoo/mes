@@ -24,7 +24,7 @@
 package com.qcadoo.mes.materialFlowResources.constants;
 
 public enum WarehouseAlgorithm {
-    FIFO("01fifo"), LIFO("02lifo"), FEFO("03fefo"), LEFO("04lefo"), MANUAL("05manual");
+    FIFO("01fifo"), LIFO("02lifo"), FEFO("03fefo"), LEFO("04lefo");
 
     private final String value;
 
@@ -43,8 +43,6 @@ public enum WarehouseAlgorithm {
             return FEFO;
         } else if (LEFO.getStringValue().equalsIgnoreCase(type)) {
             return LEFO;
-        } else if (MANUAL.getStringValue().equalsIgnoreCase(type)) {
-            return MANUAL;
         } else {
             return FIFO;
         }
