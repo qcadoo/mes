@@ -31,7 +31,7 @@
 
     <windowTab name="masterOrderDefinitionsTab" reference="masterOrderDefinitionsTab">
         <component type="gridLayout" name="gridLayout" columns="2"
-                   rows="2">
+                   rows="3">
             <layoutElement column="1" row="1">
                 <component type="checkbox" name="sameOrderNumber" field="#{form}.sameOrderNumber"
                            reference="sameOrderNumber" hasDescription="true">
@@ -39,6 +39,12 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="2">
+                <component type="checkbox" name="ordersGenerationNotCompleteDates" field="#{form}.ordersGenerationNotCompleteDates"
+                           reference="ordersGenerationNotCompleteDates">
+                    <option type="labelWidth" value="90"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3">
                 <component type="grid" name="masterOrderDefinitions"
                            source="#{form}.masterOrderDefinitions" reference="masterOrderDefinitions">
                     <option type="column" name="number" fields="number" link="true"

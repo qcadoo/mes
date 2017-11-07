@@ -50,6 +50,8 @@ public class OrdersFromMOProductsGenerationService {
             "registerQuantityOutProduct", "registerProductionTime", "registerPiecework", "justOne", "allowToClose",
             "autoCloseOrder", "typeOfProductionRecording");
 
+    public static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
+
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
@@ -109,8 +111,9 @@ public class OrdersFromMOProductsGenerationService {
         } else {
             result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
         }
+        Entity parameter = parameterService.getParameter();
 
-        if (order.isValid() && generatePPS && automaticPps) {
+        if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             try {
                 tryGeneratePPS(order);
             } catch (Exception ex) {
@@ -215,9 +218,11 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
         order.setField(OrderFields.PRODUCTION_LINE, getProductionLine(technology));
-        order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
-        order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
-        order.setField(OrderFields.DEADLINE, masterOrderDeadline);
+        if(!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+            order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
+            order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
+            order.setField(OrderFields.DEADLINE, masterOrderDeadline);
+        }
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField("isSubcontracted", false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
