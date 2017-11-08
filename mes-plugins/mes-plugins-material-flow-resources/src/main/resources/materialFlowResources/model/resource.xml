@@ -82,8 +82,6 @@
         <boolean name="validatePallet" default="true" persistent="false"/>
 
         <string name="deliveryNumber"/>
-        <!--TODO KRNA remove after merge-->
-        <string name="mergedProductNumberAndAdditionalCode"/>
 
     </fields>
     <hooks>        

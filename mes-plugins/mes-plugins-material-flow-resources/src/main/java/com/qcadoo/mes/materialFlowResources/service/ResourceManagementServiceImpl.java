@@ -618,23 +618,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         for (Entity resource : resources) {
             BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
-            //TODO KRNA refactor after merge
-            Entity newPosition = position.getDataDefinition().create();
 
-            newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-            newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
-            newPosition.setField(PositionFields.WASTE, resource.getBooleanField(ResourceFields.WASTE));
-            newPosition.setField(PositionFields.PRICE, resource.getField(ResourceFields.PRICE));
-            newPosition.setField(PositionFields.BATCH, resource.getField(ResourceFields.BATCH));
-            newPosition.setField(PositionFields.PRODUCTION_DATE, resource.getField(ResourceFields.PRODUCTION_DATE));
-            newPosition.setField(PositionFields.EXPIRATION_DATE, resource.getField(ResourceFields.EXPIRATION_DATE));
-            newPosition.setField(PositionFields.RESOURCE, null);
-            newPosition.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
-            newPosition.setField(PositionFields.STORAGE_LOCATION, resource.getField(ResourceFields.STORAGE_LOCATION));
-            newPosition.setField(PositionFields.ADDITIONAL_CODE, resource.getField(ResourceFields.ADDITIONAL_CODE));
-            newPosition.setField(PositionFields.CONVERSION, resource.getField(ResourceFields.CONVERSION));
-            newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
-            newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
+            Entity newPosition = createNewPosition(position, product, resource);
 
             quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
