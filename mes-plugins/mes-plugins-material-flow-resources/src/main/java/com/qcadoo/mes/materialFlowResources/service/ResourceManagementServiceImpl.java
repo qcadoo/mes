@@ -944,6 +944,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             BigDecimal resourceAvailableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
 
             Entity newPosition = createNewPosition(position, product, resource);
+            newPosition.setField(PositionFields.RESOURCE, resource);
 
             quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             conversion = resource.getDecimalField(ResourceFields.CONVERSION);
