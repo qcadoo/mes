@@ -31,6 +31,7 @@
     <fields>
         <string name="number"/>
         <string name="locationNumber"/>
+        <integer name="location_id"/>
         <string name="productNumber"/>
         <string name="productName"/>
         <decimal name="quantity"/>
