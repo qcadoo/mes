@@ -134,7 +134,7 @@
 		<appender-ref ref="connector-log" />
 	</logger>
 
-    <logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter">
+    <logger name="com.qcadoo.view.internal.JsonMapperHttpMessageConverter" additivity="false">
         <level value="debug" />
         <appender-ref ref="connector-log" />
     </logger>
