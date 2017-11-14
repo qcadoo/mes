@@ -46,6 +46,11 @@
                 <ref bean="deleteTemporaryPalletNumberHelpersTrigger"/>
             </list>
         </property>
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+            </props>
+        </property>
     </bean>
 
     <bean id="deleteOldLogsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">

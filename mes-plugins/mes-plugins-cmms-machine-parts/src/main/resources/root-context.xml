@@ -59,6 +59,11 @@
                 <ref bean="cleanOldFilters"/>
             </list>
         </property>
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
+            </props>
+        </property>
     </bean>
 
      <bean id="cleanOldFilters" class="org.springframework.scheduling.quartz.CronTriggerBean">
