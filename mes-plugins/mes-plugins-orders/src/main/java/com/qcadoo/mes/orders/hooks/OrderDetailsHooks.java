@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -76,6 +67,14 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -323,6 +322,11 @@ public class OrderDetailsHooks {
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
                     OrderFields.DATE_FROM, OrderFields.DATE_TO);
+            Boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField("canChangeProdLineForAcceptedOrders");
+            if(canChangeProdLineForAcceptedOrders) {
+                LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+                productionLineLookup.setEnabled(true);
+            }
             changedEnabledFields(view, references, true);
         }
         if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)

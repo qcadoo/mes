@@ -34,8 +34,8 @@ public class ImportStorageLocationListListeners {
             view.addMessage("materialFlowResources.importStorageLocationList.importPositions.impsuccess",
                     ComponentState.MessageType.SUCCESS);
         } else {
-            view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.failure",
-                    ComponentState.MessageType.FAILURE, false);
+              view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.failure",
+                            ComponentState.MessageType.FAILURE, false);
         }
     }
 
