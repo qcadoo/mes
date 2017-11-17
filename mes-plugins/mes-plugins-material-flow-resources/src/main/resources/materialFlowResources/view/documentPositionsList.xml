@@ -72,6 +72,8 @@
             <option type="column" name="documentName" fields="documentName"
                     width="50"/>
 
+            <option type="column" name="resourceNumber" fields="resourceNumber"/>
+
             <option type="column" name="company" fields="companyName"/>
 
             <option type="column" name="address" fields="documentAddress"/>
@@ -95,9 +97,9 @@
             <option type="order" column="documentDate" direction="desc"/>
 
             <option type="searchable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletType,palletNumber,address"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletType,palletNumber,address,resourceNumber"/>
             <option type="orderable"
-                    value="locationFrom,locationTo,productNumber,productName,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletNumber,palletNumber,address"/>
+                    value="locationFrom,locationTo,productNumber,productName,quantity,givenQuantity,givenUnit,conversion,documentType,documentNumber,documentName,company,batch,expirationDate,productionDate,storageLocation,state,waste,documentDate,price,palletNumber,palletNumber,address,resourceNumber"/>
 
             <option type="creatable" value="false"/>
             <option type="deletable" value="false"/>

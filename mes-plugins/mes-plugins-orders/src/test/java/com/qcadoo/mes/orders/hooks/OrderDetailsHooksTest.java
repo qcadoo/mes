@@ -108,7 +108,7 @@ public class OrderDetailsHooksTest {
     private DataDefinition orderDD, technologyDD;
 
     @Mock
-    private Entity order, product, defaultTechnology, defaultProductionLine, company;
+    private Entity order, product, defaultTechnology, defaultProductionLine, company, parameter;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
@@ -362,7 +362,8 @@ public class OrderDetailsHooksTest {
     public void shouldCheckEnabledFieldWhenOrderStateIsAccepted() throws Exception {
         // given
         given(order.getStringField(OrderFields.STATE)).willReturn(OrderState.ACCEPTED.getStringValue());
-
+        given(parameterService.getParameter()).willReturn(parameter);
+        given(parameter.getBooleanField("canChangeProdLineForAcceptedOrders")).willReturn(false);
         // when
         orderDetailsHooks.changedEnabledFieldForSpecificOrderState(view);
 

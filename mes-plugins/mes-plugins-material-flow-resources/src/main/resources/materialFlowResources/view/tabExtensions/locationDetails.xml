@@ -34,11 +34,7 @@
 			columns="3" rows="4">
 			<layoutElement column="1" row="1">
 				<component type="select" name="algorithm" field="#{form}.algorithm"
-					reference="algorithm">
-					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.materialFlowResources.listeners.LocationDetailsListenersMFR"
-						method="onAlgorithmChange" />
-				</component>
+					reference="algorithm"/>
 			</layoutElement>
 			<layoutElement column="2" row="1" height="4">
 				<component type="borderLayout" name="attributeBorderLayout"

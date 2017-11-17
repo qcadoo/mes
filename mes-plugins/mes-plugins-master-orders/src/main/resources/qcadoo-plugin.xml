@@ -80,6 +80,9 @@
             <model:boolean name="sameOrderNumber" default="false"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="ordersGenerationNotCompleteDates" default="false"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
             <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
                            joinField="parameter" cascade="nullify"/>
         </model:model-field>

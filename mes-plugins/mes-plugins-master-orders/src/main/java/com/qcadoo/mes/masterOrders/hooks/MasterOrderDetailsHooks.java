@@ -23,9 +23,18 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
+
+import java.util.Collections;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -41,13 +50,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -63,7 +65,7 @@ public class MasterOrderDetailsHooks {
     private static final String L_ORDERS_LOOKUP = "ordersLookup";
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private ExpressionService expressionService;
@@ -162,8 +164,9 @@ public class MasterOrderDetailsHooks {
         if (checkIfShouldInsertNumber(view)) {
             FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
 
-            numberField.setFieldValue(numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                    MasterOrdersConstants.MODEL_MASTER_ORDER));
+            numberField.setFieldValue(
+                    jdbcTemplate.queryForObject("select generate_master_order_number()", Collections.emptyMap(), String.class));
+
             numberField.requestComponentUpdateState();
         }
     }

@@ -47,6 +47,8 @@ public class DocumentPositionDTO {
 
     private String palletNumber;
 
+    private String resourceNumber;
+
     @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String typeOfPallet;
 
@@ -246,6 +248,7 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.batch);
         hash = 67 * hash + Objects.hashCode(this.resource);
         hash = 67 * hash + Objects.hashCode(this.waste);
+        hash = 67 * hash + Objects.hashCode(this.resourceNumber);
         return hash;
     }
 
@@ -309,6 +312,9 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.resource, other.resource)) {
             return false;
         }
+        if (!Objects.equals(this.resourceNumber, other.resourceNumber)) {
+            return false;
+        }
         return true;
     }
 
@@ -319,7 +325,7 @@ public class DocumentPositionDTO {
                 + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationDate=" + expirationDate
                 + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
-                + '}';
+                + ", resourceNumber=" + resourceNumber + '}';
     }
 
     public Boolean getLastResource() {
@@ -328,5 +334,13 @@ public class DocumentPositionDTO {
 
     public void setLastResource(Boolean lastResource) {
         this.lastResource = lastResource;
+    }
+
+    public String getResourceNumber() {
+        return resourceNumber;
+    }
+
+    public void setResourceNumber(String resourceNumber) {
+        this.resourceNumber = resourceNumber;
     }
 }

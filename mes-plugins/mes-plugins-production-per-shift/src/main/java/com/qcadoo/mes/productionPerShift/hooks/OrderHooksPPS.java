@@ -186,6 +186,22 @@ public class OrderHooksPPS {
         BigDecimal plannedQuantity1 = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
         BigDecimal plannedQuantity2 = orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity productionLineDb = orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+        if(productionLine == null && productionLineDb != null) {
+            return true;
+        }
+
+        if(productionLine != null && productionLineDb == null) {
+            return true;
+        }
+
+        if(!productionLine.getId().equals(productionLineDb.getId())) {
+            return true;
+        }
+
+
         if (plannedQuantity1 == null && plannedQuantity2 != null) {
             return true;
         }
