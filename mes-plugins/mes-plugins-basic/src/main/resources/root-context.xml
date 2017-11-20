@@ -41,10 +41,7 @@
 
     <bean id="schedulerFactoryBeanBasic" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
-            <list>
-                <ref bean="deleteOldLogsTrigger"/>
-                <ref bean="deleteTemporaryPalletNumberHelpersTrigger"/>
-            </list>
+            <bean class="com.qcadoo.mes.basic.TriggersFactoryBean"/>
         </property>
         <property name="quartzProperties">
             <props>
