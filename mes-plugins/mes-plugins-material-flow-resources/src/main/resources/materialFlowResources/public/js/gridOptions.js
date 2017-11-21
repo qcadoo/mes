@@ -1753,13 +1753,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $.extend(config, JSON.parse(c));
             }
 
-            var readOnlyInType = function (outDocument, columnIndex, responseDate) {
+            var readOnlyInType = function (outDocument, inBufferDocument, columnIndex, responseDate) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
                         columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
-                if (!outDocument && (columnIndex === 'resource')) {
+                if ((columnIndex === 'resource') && (inBufferDocument || !outDocument)) {
                     return true;
                 }
                 if (columnIndex === 'lastResource') {
@@ -1774,7 +1774,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             }).then(function successCallback(response) {
                 config.readOnly = response.data.readOnly;
-                config.suggestResource = response.data.suggestResource;
+                config.inBufferDocument = response.data.inBufferDocument;
+                config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
                 config.outDocument = response.data.outDocument;
 
                 var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config)];
@@ -1788,7 +1789,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         gridColModel.editrules = gridColModel.editrules || {};
                         gridColModel.editrules.edithidden = true;
                     }
-                    if (readOnlyInType(config.outDocument, key, response.data)) {
+                    if (readOnlyInType(config.outDocument, config.inBufferDocument, key, response.data)) {
                         gridColModel.editoptions = gridColModel.editoptions || {};
                         if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
                             gridColModel.editoptions.disabled = 'disabled';

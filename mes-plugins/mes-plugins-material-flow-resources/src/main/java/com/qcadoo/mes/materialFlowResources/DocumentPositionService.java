@@ -190,6 +190,7 @@ public class DocumentPositionService {
             config.put("readOnly", isGridReadOnly(documentId));
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument(documentId));
+            config.put("inBufferDocument", isInBufferDocument(documentId));
 
             Map<String, Object> columns = Maps.newLinkedHashMap();
 
@@ -348,9 +349,7 @@ public class DocumentPositionService {
     private boolean shouldSuggestResource() {
         String query = "SELECT suggestResource FROM materialflowresources_documentpositionparameters LIMIT 1";
 
-        Boolean suggestResource = jdbcTemplate.queryForObject(query, Collections.EMPTY_MAP, Boolean.class);
-
-        return suggestResource;
+        return jdbcTemplate.queryForObject(query, Collections.EMPTY_MAP, Boolean.class);
     }
 
     private Object isOutDocument(final Long documentId) {
@@ -361,6 +360,12 @@ public class DocumentPositionService {
         DocumentType type = DocumentType.parseString(stateString);
 
         return type == DocumentType.INTERNAL_OUTBOUND || type == DocumentType.RELEASE || type == DocumentType.TRANSFER;
+    }
+
+    private boolean isInBufferDocument(final Long documentId) {
+        String query = "SELECT inbuffer FROM materialflowresources_document WHERE id = :id";
+
+        return jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), Boolean.class);
     }
 
     public StorageLocationDTO getStorageLocation(final String product, final String document) {
