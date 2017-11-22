@@ -274,8 +274,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             Entity additionalCode = productAndPosition.getValue().getBelongsToField(PositionFields.ADDITIONAL_CODE);
             BigDecimal conversion = productAndPosition.getValue().getDecimalField(PositionFields.CONVERSION);
 
-            Entity reservation = reservationsService.getReservationForPosition(productAndPosition.getValue());
-
             List<Entity> resources = Lists.newArrayList();
 
             if (additionalCode != null) {
@@ -319,14 +317,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                 resources = scb.list().getEntities();
             }
 
-            BigDecimal reservedQuantity = BigDecimal.ZERO;
-
-            if (reservation != null) {
-                reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
-            }
-
             if (result.containsKey(productAndPosition.getKey().getId())) {
-                BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(reservedQuantity,
+                BigDecimal currentQuantity = result.get(productAndPosition.getKey().getId()).stream().reduce(BigDecimal.ZERO,
                         BigDecimal::add);
 
                 result.put(productAndPosition.getKey().getId(),
@@ -335,7 +327,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             } else {
                 result.put(productAndPosition.getKey().getId(),
                         resources.stream().map(res -> res.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))
-                                .reduce(reservedQuantity, BigDecimal::add));
+                                .reduce(BigDecimal.ZERO, BigDecimal::add));
             }
         }
 
@@ -369,7 +361,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         NotEnoughResourcesErrorMessageHolder errorMessageHolder = notEnoughResourcesErrorMessageHolderFactory.create();
 
-        Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
+        Multimap<Long, BigDecimal> quantitiesForWarehouse = getQuantitiesInWarehouse(warehouse,
+                getProductsAndPositionsFromDocument(document));
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -379,10 +372,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             enoughResources = enoughResources && position.isValid();
 
             if (!position.isValid()) {
-                if (quantitiesForWarehouse.isEmpty()) {
-                    quantitiesForWarehouse = getQuantitiesInWarehouse(warehouse, getProductsAndPositionsFromDocument(document));
-                }
-
                 BigDecimal quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
@@ -467,7 +456,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
             if (position.getBelongsToField(PositionFields.RESOURCE) != null
-                    && reservationsService.reservationsEnabledForDocumentPositions()) {
+                    && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
                 BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
                         numberService.getMathContext());
                 resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
@@ -562,7 +551,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         NotEnoughResourcesErrorMessageHolder errorMessageHolder = notEnoughResourcesErrorMessageHolderFactory.create();
 
-        Multimap<Long, BigDecimal> quantitiesForWarehouse = ArrayListMultimap.create();
+        Multimap<Long, BigDecimal> quantitiesForWarehouse = getQuantitiesInWarehouse(warehouseFrom,
+                getProductsAndPositionsFromDocument(document));
 
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -572,11 +562,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             enoughResources = enoughResources && position.isValid();
 
             if (!position.isValid()) {
-                if (quantitiesForWarehouse.isEmpty()) {
-                    quantitiesForWarehouse = getQuantitiesInWarehouse(warehouseFrom,
-                            getProductsAndPositionsFromDocument(document));
-                }
-
                 BigDecimal quantityInWarehouse = getQuantityOfProductFromMultimap(quantitiesForWarehouse, product);
 
                 BigDecimal quantity = position.getDecimalField(QUANTITY);
@@ -632,7 +617,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             givenUnit = resource.getStringField(PositionFields.GIVEN_UNIT);
 
             if (position.getBelongsToField(PositionFields.RESOURCE) != null
-                    && reservationsService.reservationsEnabledForDocumentPositions()) {
+                    && warehouseFrom.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION)) {
                 BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY).subtract(quantity,
                         numberService.getMathContext());
                 resource.setField(ResourceFields.RESERVED_QUANTITY, reservedQuantity);
@@ -675,14 +660,14 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenResourceQuantity);
 
-                newPositions.add(newPosition);
-
                 if (BigDecimal.ZERO.compareTo(quantity) == 0) {
-                    if (newResource.isValid()) {
-                        return newPositions;
-                    } else {
-                        copyResourceErrorsToPosition(position, newResource);
+                    if (!newResource.isValid()) {
+                        copyResourceErrorsToPosition(newPosition, newResource);
                     }
+                    newPositions.add(newPosition);
+                    return newPositions;
+                } else {
+                    newPositions.add(newPosition);
                 }
             } else {
                 resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
@@ -711,13 +696,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
 
-                newPositions.add(newPosition);
-
-                if (newResource.isValid()) {
-                    return newPositions;
-                } else {
-                    copyResourceErrorsToPosition(position, newResource);
+                if (!newResource.isValid()) {
+                    copyResourceErrorsToPosition(newPosition, newResource);
                 }
+                newPositions.add(newPosition);
+                return newPositions;
             }
         }
 

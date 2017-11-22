@@ -47,4 +47,5 @@ public final class LocationFieldsMFR {
 
     public static final String RESOURCES = "resources";
 
+    public static final String DRAFT_MAKES_RESERVATION = "draftMakesReservation";
 }

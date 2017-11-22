@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -121,25 +120,26 @@ public class DocumentPositionValidator {
     private List<String> validateAvailableQuantity(DocumentPositionDTO position, DocumentDTO document, List<String> errors) {
         String type = document.getType();
 
-        String query = "SELECT draftmakesreservation FROM materialflowresources_documentpositionparameters LIMIT 1";
+        if (DocumentType.isOutbound(type) && !document.getInBuffer()) {
+            String query = "SELECT draftmakesreservation FROM materialflow_location WHERE id = :location_id";
+            Boolean enabled = jdbcTemplate.queryForObject(query,
+                    Collections.singletonMap("location_id", document.getLocationFrom_id()), Boolean.class);
 
-        Boolean enabled = jdbcTemplate.queryForObject(query, new HashMap<String, Object>() {
-        }, Boolean.class);
+            if (enabled) {
+                BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(position,
+                        tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
+                BigDecimal quantity = position.getQuantity();
 
-        if (enabled && DocumentType.isOutbound(type) && !document.getInBuffer()) {
-            BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(position,
-                    tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
-            BigDecimal quantity = position.getQuantity();
+                if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
+                    errors.add("documentGrid.error.position.quantity.notEnoughResources");
+                } else {
+                    if (!StringUtils.isEmpty(position.getResource())) {
+                        BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(position,
+                                tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
 
-            if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
-                errors.add("documentGrid.error.position.quantity.notEnoughResources");
-            } else {
-                if (!StringUtils.isEmpty(position.getResource())) {
-                    BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(position,
-                            tryGetProductIdByNumber(position.getProduct(), errors), document.getLocationFrom_id());
-
-                    if (resourceAvailableQuantity == null || quantity.compareTo(resourceAvailableQuantity) > 0) {
-                        errors.add("documentGrid.error.position.quantity.notEnoughResources");
+                        if (resourceAvailableQuantity == null || quantity.compareTo(resourceAvailableQuantity) > 0) {
+                            errors.add("documentGrid.error.position.quantity.notEnoughResources");
+                        }
                     }
                 }
             }

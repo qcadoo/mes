@@ -49,7 +49,6 @@ public class PositionValidators {
     private ResourceStockService resourceStockService;
 
     public boolean checkAttributesRequirement(final DataDefinition dataDefinition, final Entity position) {
-
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
 
         DocumentType documentType = DocumentType.of(document);
@@ -69,7 +68,6 @@ public class PositionValidators {
 
     public boolean validatePositionAttributes(DataDefinition dataDefinition, Entity position, boolean requirePrice,
             boolean requireBatch, boolean requireProductionDate, boolean requireExpirationDate) {
-
         boolean result = true;
         if (requirePrice && position.getField(PositionFields.PRICE) == null) {
             position.addError(dataDefinition.getField(PositionFields.PRICE), "materialFlow.error.position.price.required");
@@ -96,30 +94,6 @@ public class PositionValidators {
 
     public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        return validateAvailableQuantity(dataDefinition, position, document);
-    }
-
-    public boolean validateAvailableQuantityWithoutPreviousQuantities(final DataDefinition dataDefinition, final Entity position,
-            final Entity document) {
-        String state = document.getStringField(DocumentFields.STATE);
-
-        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
-            return true;
-        }
-
-        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            BigDecimal availableQuantity = getAvailableQuantityWithoutOldQuantities(position, document);
-            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-            if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
-                position.addError(dataDefinition.getField(PositionFields.QUANTITY),
-                        "documentGrid.error.position.quantity.notEnoughResources");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {
         String state = document.getStringField(DocumentFields.STATE);
 
         if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
@@ -138,8 +112,7 @@ public class PositionValidators {
         return true;
     }
 
-    private BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position,
-            final Entity document) {
+    public BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position, final Entity document) {
         return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
                 document.getBelongsToField(DocumentFields.LOCATION_FROM));
     }
@@ -157,7 +130,6 @@ public class PositionValidators {
     }
 
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {
-
         Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
         Date expirationDate = position.getDateField(PositionFields.EXPIRATION_DATE);
         if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
