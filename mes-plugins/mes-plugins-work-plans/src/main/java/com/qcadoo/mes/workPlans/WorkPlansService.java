@@ -28,6 +28,7 @@ import java.util.Set;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.view.api.ComponentState;
 
@@ -249,4 +250,6 @@ public interface WorkPlansService {
      * @param selectedEntities
      */
     void workPlanDelivered(ComponentState state, List<Entity> selectedEntities);
+
+    List<Entity> sortByColumn(Entity workPlan, EntityList components, List<String> headers);
 }

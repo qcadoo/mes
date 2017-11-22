@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -43,6 +38,10 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProduc
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTableHeader;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Locale;
 
 @Component
 public class OperationOrderSection {
@@ -82,7 +81,7 @@ public class OperationOrderSection {
         this.operationAdditionalFields = operationAdditionalFields;
     }
 
-    public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent,
+    public void print(Entity workPlan, PdfWriter pdfWriter, GroupingContainer groupingContainer, Entity order, Entity operationComponent,
             Document document, Locale locale) throws DocumentException {
         operationOrderHeader.print(order, operationComponent, document, locale);
 
@@ -96,13 +95,13 @@ public class OperationOrderSection {
 
         if (isOutputProductTableEnabled()) {
             operationProductOutTableHeader.print(document, locale);
-            operationProductOutTable.print(groupingContainer, operationComponent, document, locale);
+            operationProductOutTable.print(workPlan, groupingContainer, operationComponent, document, locale);
 
         }
 
         if (isInputProductTableEnabled()) {
             operationProductInTableHeader.print(document, locale);
-            operationProductInTable.print(groupingContainer, operationComponent, document, locale);
+            operationProductInTable.print(workPlan, groupingContainer, operationComponent, document, locale);
         }
 
         operationAdditionalFields.print(operationComponent, document, locale);

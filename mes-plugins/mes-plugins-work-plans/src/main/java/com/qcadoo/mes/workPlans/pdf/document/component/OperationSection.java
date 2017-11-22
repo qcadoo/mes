@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.ListMultimap;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -37,6 +32,11 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
+import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Locale;
 
 @Component
 public class OperationSection {
@@ -55,7 +55,7 @@ public class OperationSection {
         this.parameterService = parameterService;
     }
 
-    public void print(PdfWriter pdfWriter, GroupingContainer groupingContainer, Document document, Locale locale)
+    public void print(Entity workPlan, PdfWriter pdfWriter, GroupingContainer groupingContainer, Document document, Locale locale)
             throws DocumentException {
         if (notPrintOperationAtFirstPage()) {
             document.newPage();
@@ -68,7 +68,7 @@ public class OperationSection {
             int count = 0;
             for (OrderOperationComponent orderOperationComponent : groupingContainer.getTitleToOperationComponent().get(title)) {
                 count++;
-                operationOrderSection.print(pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
+                operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
                         orderOperationComponent.getOperationComponent(), document, locale);
                 if (count != titleToOperationComponent.get(title).size()) {
                     if (notPrintOperationAtFirstPage()) {

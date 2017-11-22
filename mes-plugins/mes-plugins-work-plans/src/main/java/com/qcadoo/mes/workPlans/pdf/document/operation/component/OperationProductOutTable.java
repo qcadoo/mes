@@ -23,21 +23,13 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
@@ -46,15 +38,25 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.Groupi
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class OperationProductOutTable {
 
     private PdfHelper pdfHelper;
+
+    @Autowired
+    private TranslationService translationService;
 
     @Autowired
     private WorkPlansService workPlansService;
@@ -64,8 +66,8 @@ public class OperationProductOutTable {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
-            throws DocumentException {
+    public void print(Entity workPlan, GroupingContainer groupingContainer, Entity operationComponent, Document document,
+            Locale locale) throws DocumentException {
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
                 .getOperationComponentIdProductOutColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
@@ -78,7 +80,7 @@ public class OperationProductOutTable {
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
-        for (Entity operationProduct : operationProductOutComponents(operationComponent)) {
+        for (Entity operationProduct : operationProductOutComponents(workPlan, operationComponent, headers)) {
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
                 alignColumn(defaultCell, e.getValue());
                 table.addCell(operationProductPhrase(operationProduct, e.getKey()));
@@ -101,8 +103,10 @@ public class OperationProductOutTable {
         document.add(table);
     }
 
-    private EntityList operationProductOutComponents(Entity operationComponent) {
-        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+    private List<Entity> operationProductOutComponents(Entity workPlan, Entity operationComponent, List<String> headers) {
+
+        return workPlansService.sortByColumn(workPlan,
+                operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS), headers);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
