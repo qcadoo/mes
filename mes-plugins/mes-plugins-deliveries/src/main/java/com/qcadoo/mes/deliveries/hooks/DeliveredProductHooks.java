@@ -438,7 +438,7 @@ public class DeliveredProductHooks {
                         + "                     JOIN deliveries_deliveredproduct deliveredproduct                   "
                         + "                       ON deliveredproduct.delivery_id = delivery.id                     "
                         + "                   WHERE                                                                 "
-                        + "                     delivery.state = '01draft' AND                                      "
+                        + "                     delivery.state not in ('06received','04declined') AND                                      "
                         + "                     deliveredproduct.id <> :deliveredProductId                          "
                         + "        ) palletsInStorageLocation                                                       "
                         + "   WHERE palletsInStorageLocation.storagelocation_id = :storageLocationId AND            "
