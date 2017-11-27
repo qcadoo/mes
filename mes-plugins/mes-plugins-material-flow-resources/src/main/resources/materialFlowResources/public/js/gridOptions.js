@@ -1753,7 +1753,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 $.extend(config, JSON.parse(c));
             }
 
-            var readOnlyInType = function (outDocument, inBufferDocument, columnIndex, responseDate) {
+            var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
                         columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
@@ -1789,11 +1789,14 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         gridColModel.editrules = gridColModel.editrules || {};
                         gridColModel.editrules.edithidden = true;
                     }
-                    if (readOnlyInType(config.outDocument, config.inBufferDocument, key, response.data)) {
+                    if (gridColModel.editoptions) {
+                        delete gridColModel.editoptions.disabled;
+                        delete gridColModel.editoptions.readonly;
+                    }
+                    if (readOnlyInType(config.outDocument, config.inBufferDocument, key)) {
                         gridColModel.editoptions = gridColModel.editoptions || {};
                         if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
                             gridColModel.editoptions.disabled = 'disabled';
-
                         } else {
                             gridColModel.editoptions.readonly = 'readonly';
                         }
