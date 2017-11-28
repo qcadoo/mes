@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,6 +36,12 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.security.api.UserService;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class DocumentBuilder {
 
@@ -62,6 +61,14 @@ public class DocumentBuilder {
         this.resourceManagementService = resourceManagementService;
         this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
         this.document = createDocument(userService);
+    }
+
+    DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
+            final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, final Entity user) {
+        this.dataDefinitionService = dataDefinitionService;
+        this.resourceManagementService = resourceManagementService;
+        this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
+        this.document = createDocument(user);
     }
 
     public Entity getDocument() {
@@ -364,18 +371,33 @@ public class DocumentBuilder {
         }
     }
 
+
+
     public Entity createDocument(UserService userService) {
+        Entity newDocument = createDocument();
+        newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
+        return newDocument;
+    }
+
+    private Entity createDocument(final Entity user) {
+        Entity newDocument = createDocument();
+        newDocument.setField(DocumentFields.USER, user.getId());
+        return newDocument;
+    }
+
+    private Entity createDocument() {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         Entity newDocument = documentDD.create();
 
         newDocument.setField(DocumentFields.TIME, new Date());
-        newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
         newDocument.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
         newDocument.setField(DocumentFields.POSITIONS, Lists.newArrayList());
 
         return newDocument;
     }
+
+
 
 }

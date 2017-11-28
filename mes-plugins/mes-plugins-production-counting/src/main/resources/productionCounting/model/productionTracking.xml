@@ -79,6 +79,9 @@
 
 		<hasMany name="stateChanges" model="productionTrackingStateChange"
 				 joinField="productionTracking" cascade="delete"/>
+
+		<belongsTo name="user" model="user" plugin="qcadooSecurity" persistent="false"/>
+
 	</fields>
 
 	<hooks>

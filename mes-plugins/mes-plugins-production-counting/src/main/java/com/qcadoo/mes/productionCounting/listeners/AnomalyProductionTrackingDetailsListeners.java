@@ -18,6 +18,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
@@ -52,6 +53,9 @@ public class AnomalyProductionTrackingDetailsListeners {
     @Autowired
     private StateExecutorService stateExecutorService;
 
+    @Autowired
+    private SecurityService securityService;
+
     public void perform(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         try {
             perform(view);
@@ -81,7 +85,12 @@ public class AnomalyProductionTrackingDetailsListeners {
             Long productionRecordId = view.getJsonContext().getLong("window.mainTab.form.productionTrackingId");
             Entity productionRecord = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionRecordId);
-            stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord,
+            Long userId = securityService.getCurrentUserId();
+
+            productionRecord.setField("user", userId);
+            String userLogin = securityService.getCurrentUserName();
+
+            stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, userLogin,
                     ProductionTrackingStateStringValues.ACCEPTED);
 
             if (productionRecord.isValid()) {
