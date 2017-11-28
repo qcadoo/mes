@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 
 @Service
@@ -48,5 +49,11 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
     public DocumentBuilder getDocumentBuilder() {
         return new DocumentBuilder(dataDefinitionService, resourceManagementService, userService,
                 receiptDocumentForReleaseHelper);
+    }
+
+    @Override
+    public DocumentBuilder getDocumentBuilder(Entity user) {
+        return new DocumentBuilder(dataDefinitionService, resourceManagementService,
+                receiptDocumentForReleaseHelper, user);
     }
 }

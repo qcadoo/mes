@@ -1,25 +1,5 @@
 package com.qcadoo.mes.newstates;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -43,12 +23,34 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 
 @Service
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class StateExecutorService {
 
     private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(StateExecutorService.class);
+
+    public static final String USER_CHANGE_STATE = "user";
 
     @Autowired
     private ApplicationContext applicationContext;
@@ -65,12 +67,16 @@ public class StateExecutorService {
 
     public <M extends StateService> void changeState(Class<M> serviceMarker, final ViewDefinitionState view, String[] args) {
         componentMessagesHolder = view;
+        Long userId = securityService.getCurrentUserId();
+        String userLogin = securityService.getCurrentUserName();
 
         Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
-                entity = changeState(serviceMarker, entity, args[0]);
+                entity.setField(USER_CHANGE_STATE, userId);
+
+                entity = changeState(serviceMarker, entity, userLogin, args[0]);
 
                 copyMessages(entity);
             });
@@ -81,19 +87,19 @@ public class StateExecutorService {
                 FormComponent formComponent = maybeForm.get();
                 Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
                 if (entity.isValid()) {
-                    entity = changeState(serviceMarker, entity, args[0]);
+                    entity = changeState(serviceMarker, entity, userLogin, args[0]);
                     formComponent.setEntity(entity);
                 }
             }
         }
     }
 
-    public <M extends StateService> Entity changeState(Class<M> serviceMarker, Entity entity, String targetState) {
+    public <M extends StateService> Entity changeState(Class<M> serviceMarker, Entity entity, String userLogin, String targetState) {
         List<M> services = lookupChangeStateServices(serviceMarker);
         StateChangeEntityDescriber describer = services.stream().findFirst().get().getChangeEntityDescriber();
         String sourceState = entity.getStringField(describer.getOwnerStateFieldName());
 
-        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, sourceState, targetState);
+        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, userLogin, sourceState, targetState);
 
         try {
 
@@ -204,8 +210,8 @@ public class StateExecutorService {
         return savedStateChangeEntity;
     }
 
-    private Entity buildStateChangeEntity(StateChangeEntityDescriber describer, Entity owner, String sourceState,
-            String targetState) {
+    private Entity buildStateChangeEntity(StateChangeEntityDescriber describer, Entity owner, String userLogin,
+            String sourceState, String targetState) {
         final Entity stateChangeEntity = describer.getDataDefinition().create();
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
 
@@ -213,7 +219,10 @@ public class StateExecutorService {
         stateChangeEntity.setField(describer.getSourceStateFieldName(), sourceState);
         stateChangeEntity.setField(describer.getTargetStateFieldName(), targetState);
         stateChangeEntity.setField(describer.getShiftFieldName(), shift);
-        stateChangeEntity.setField(describer.getWorkerFieldName(), securityService.getCurrentUserName());
+        if (StringUtils.isEmpty(userLogin)) {
+            userLogin = securityService.getCurrentUserName();
+        }
+        stateChangeEntity.setField(describer.getWorkerFieldName(), userLogin);
         stateChangeEntity.setField(describer.getPhaseFieldName(), 0);
         stateChangeEntity.setField(describer.getOwnerFieldName(), owner);
 
@@ -291,7 +300,7 @@ public class StateExecutorService {
         List<M> services = lookupChangeStateServices(serviceMarker);
 
         StateChangeEntityDescriber describer = services.get(0).getChangeEntityDescriber();
-        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, null, initialState);
+        Entity stateChangeEntity = buildStateChangeEntity(describer, entity, StringUtils.EMPTY, null, initialState);
         stateChangeEntity = saveStateChangeEntity(stateChangeEntity, StateChangeStatus.SUCCESSFUL);
 
         entity.setField(describer.getOwnerStateFieldName(), initialState);
