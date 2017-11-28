@@ -314,7 +314,7 @@ public class StateExecutorService {
     }
 
     private void copyMessages(Entity entity, Entity mainEntity) {
-        if (mainEntity != null && mainEntity.equals(entity)) {
+        if (mainEntity != null && mainEntity.equals(entity) && entity.getGlobalErrors() == mainEntity.getGlobalErrors()) {
             return;
         }
         if (componentMessagesHolder == null) {

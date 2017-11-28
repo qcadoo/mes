@@ -26,6 +26,8 @@ package com.qcadoo.mes.productionCounting.states.listener;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -196,6 +198,12 @@ public final class ProductionTrackingListenerService {
             }
             if (!orderFromDB.getGlobalErrors().isEmpty()) {
                 errors.addAll(order.getGlobalErrors());
+            }
+
+            if (!orderStateChangeContext.getAllMessages().isEmpty()) {
+                for (Entity entity : orderStateChangeContext.getAllMessages()) {
+                    errors.add(new ErrorMessage(getKey(entity), getArgs(entity)));
+                }
             }
 
             if (!errors.isEmpty()) {
