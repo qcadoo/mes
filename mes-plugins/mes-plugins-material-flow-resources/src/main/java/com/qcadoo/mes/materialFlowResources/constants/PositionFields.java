@@ -29,9 +29,11 @@ public final class PositionFields {
 
     }
 
-    public static final String RESERVATIONS = "reservations";
-
     public static final String DOCUMENT = "document";
+
+    public static final String EXTERNAL_DOCUMENT_NUMBER = "externalDocumentNumber";
+
+    public static final String ORDER_ID = "orderId";
 
     public static final String PRODUCT = "product";
 
@@ -69,8 +71,10 @@ public final class PositionFields {
 
     public static final String TYPE_OF_PALLET = "typeOfPallet";
 
-    public static final String WASTE = "waste";
+    public static final String RESERVATIONS = "reservations";
 
     public static final String RESOURCE_RECEIPT_DOCUMENT = "resourceReceiptDocument";
+
+    public static final String WASTE = "waste";
 
 }
