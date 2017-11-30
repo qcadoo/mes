@@ -30,7 +30,6 @@
     <fields>
         <hasMany name="items" model="documentPositionParametersItem" joinField="parameters"/>
         <boolean name="suggestResource" default="false"/>
-        <boolean name="draftMakesReservation" default="false"/>
         <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
         <boolean name="notShowPrices" default="false"/>
         <boolean name="presentTotalAmountAndRest" default="false"/>
@@ -48,8 +47,6 @@
         <boolean name="fillResourceIrrespectiveOfConversion" default="false"/>
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersValidators"
-                       method="validatesWith"/>
         <validatesWith
                 class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersValidators"
                 method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>

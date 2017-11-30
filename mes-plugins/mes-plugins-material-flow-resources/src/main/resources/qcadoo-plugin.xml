@@ -147,6 +147,9 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requireExpirationDate"/>
         </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:boolean name="draftMakesReservation" default="false"/>
+        </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceCorrections" model="resourceCorrection"
@@ -194,6 +197,10 @@
         </model:model-field>
 
         <!-- end -->
+        <model:model-hook plugin="materialFlow" model="location">
+            <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
+                           method="validatesWith"/>
+        </model:model-hook>
 
         <model:model-hook plugin="materialFlow" model="transfer">
             <model:validatesWith
