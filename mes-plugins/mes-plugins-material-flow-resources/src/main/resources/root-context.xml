@@ -38,19 +38,6 @@
                                 expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-    <bean id="schedulerFactoryBeanMFR" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
-        <property name="triggers">
-            <list>
-                <ref bean="cleanReservationsTrigger"/>
-            </list>
-        </property>
-        <property name="quartzProperties">
-            <props>
-                <prop key="org.quartz.scheduler.skipUpdateCheck">true</prop>
-            </props>
-        </property>
-    </bean>
-
     <bean id="cleanReservationsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
         <property name="jobDetail" ref="cleanReservations"/>
         <property name="cronExpression" value="0 0 2 * * ?"/>

@@ -47,7 +47,6 @@ public class MaterialFlowResourcesOnStartupService extends Module {
             positionParameters = positionParametersDD.create();
 
             positionParameters.setField("suggestResource", "true");
-            positionParameters.setField("draftMakesReservation", "true");
             positionParameters.setField("acceptanceOfDocumentBeforePrinting", "true");
 
             positionParameters = positionParametersDD.save(positionParameters);

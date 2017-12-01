@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document;
 
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -36,6 +31,10 @@ import com.qcadoo.mes.workPlans.pdf.document.component.OperationSection;
 import com.qcadoo.mes.workPlans.pdf.document.component.OrderSection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Locale;
 
 @Component
 public class WorkPlanPdf {
@@ -57,7 +56,7 @@ public class WorkPlanPdf {
             throws DocumentException {
         documentHeader.print(workPlan, document, locale);
         orderSection.print(workPlan, groupingContainer, document, locale);
-        operationSection.print(pdfWriter, groupingContainer, document, locale);
+        operationSection.print(workPlan, pdfWriter, groupingContainer, document, locale);
     }
 
 }

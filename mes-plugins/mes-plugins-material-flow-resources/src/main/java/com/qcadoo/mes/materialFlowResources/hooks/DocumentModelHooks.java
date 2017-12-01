@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -31,12 +38,6 @@ import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class DocumentModelHooks {
@@ -67,7 +68,6 @@ public class DocumentModelHooks {
         document.setField(DocumentFields.NUMBER, translatedType);
         document.setField(DocumentFields.NAME, null);
         document.setField(DocumentFields.TIME, new Date());
-        // documentValidators.validateAvailableQuantities(document);
     }
 
     public void onSave(final DataDefinition documentDD, final Entity document) {

@@ -3,7 +3,7 @@ package com.qcadoo.mes.materialFlowResources.service;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +17,8 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -61,21 +61,11 @@ public class ReservationsService {
         jdbcTemplate.update(sql, Maps.newHashMap());
     }
 
-    public boolean reservationsEnabledForDocumentPositions() {
-        Entity documentPositionParameters = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult();
-        if (documentPositionParameters != null) {
-            return documentPositionParameters.getBooleanField(ParameterFieldsMFR.DRAFT_MAKES_RESERVATION);
-        }
-        return false;
-    }
-
     public boolean reservationsEnabledForDocumentPositions(final Entity document) {
-        if (document == null) {
-            return ReservationsService.this.reservationsEnabledForDocumentPositions();
-        }
         String type = document.getStringField(DocumentFields.TYPE);
-        return ReservationsService.this.reservationsEnabledForDocumentPositions() && DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER);
+        Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+        return DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)
+                && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION);
     }
 
     /**
@@ -108,11 +98,11 @@ public class ReservationsService {
      * @see ReservationsService#createReservationFromDocumentPosition(Map)
      */
     public void createReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
-            return;
-        }
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
+            return;
+        }
+        if (!reservationsEnabledForDocumentPositions(document)) {
             return;
         }
         Entity reservation = dataDefinitionService
@@ -200,8 +190,7 @@ public class ReservationsService {
      * @see ReservationsService#updateReservationFromDocumentPosition(Map)
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        if (!reservationsEnabledForDocumentPositions(document)){
+        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))){
             return;
         }
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
@@ -259,12 +248,16 @@ public class ReservationsService {
     }
 
     public Boolean reservationsEnabledForDocumentPositions(Map<String, Object> params) {
-        String query = "SELECT draftmakesreservation FROM materialflowresources_documentpositionparameters LIMIT 1";
-        Boolean enabled = jdbcTemplate.queryForObject(query, new HashMap<String, Object>() {
-        }, Boolean.class);
-        String queryForDocumentType = "SELECT type, inBuffer FROM materialflowresources_document WHERE id = :document_id";
+        String queryForDocumentType = "SELECT type, inBuffer, locationfrom_id FROM materialflowresources_document WHERE id = :document_id";
         Map<String, Object> documentMap = jdbcTemplate.queryForMap(queryForDocumentType, params);
-        return enabled && DocumentType.isOutbound((String)documentMap.get("type")) && !(boolean)documentMap.get("inBuffer");
+        if (DocumentType.isOutbound((String) documentMap.get("type")) && !(boolean) documentMap.get("inBuffer")) {
+            String query = "SELECT draftmakesreservation FROM materialflow_location WHERE id = :location_id";
+            Boolean enabled = jdbcTemplate.queryForObject(query,
+                    Collections.singletonMap("location_id", (Long) documentMap.get("locationfrom_id")), Boolean.class);
+            return enabled;
+        } else {
+            return false;
+        }
     }
 
     public Entity getReservationForPosition(final Entity position) {

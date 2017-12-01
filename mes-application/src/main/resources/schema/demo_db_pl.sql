@@ -2,8 +2,33 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.6.2
+-- Dumped by pg_dump version 9.6.2
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
 
 --
 -- Name: add_group_role(character varying, character varying); Type: FUNCTION; Schema: public; Owner: -
@@ -7756,7 +7781,8 @@ CREATE TABLE materialflow_location (
     requireproductiondate boolean,
     requireexpirationdate boolean,
     entityversion bigint DEFAULT 0,
-    warehousenumberinoptima character varying(255)
+    warehousenumberinoptima character varying(255),
+    draftmakesreservation boolean DEFAULT false
 );
 
 
@@ -8324,7 +8350,6 @@ CREATE SEQUENCE materialflowresources_documentdto_id_seq
 CREATE TABLE materialflowresources_documentpositionparameters (
     id bigint NOT NULL,
     suggestresource boolean DEFAULT false,
-    draftmakesreservation boolean DEFAULT false,
     acceptanceofdocumentbeforeprinting boolean DEFAULT false,
     notshowprices boolean DEFAULT false,
     presenttotalamountandrest boolean DEFAULT false,
@@ -13563,8 +13588,12 @@ CREATE VIEW productioncounting_productiontrackingdto AS
     concat(product.number, ' - ', product.name) AS productnumber,
     product.unit AS productunit,
     outcomponent.usedquantity,
-    company.number AS companynumber
-   FROM ((((((((((((((productioncounting_productiontracking productiontracking
+    company.number AS companynumber,
+        CASE
+            WHEN (outproduct.* IS NULL) THEN concat(product.number, ' - ', product.name)
+            ELSE concat(outproduct.number, ' - ', outproduct.name)
+        END AS outproductnumber
+   FROM ((((((((((((((((productioncounting_productiontracking productiontracking
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      LEFT JOIN basic_product product ON ((ordersorder.product_id = product.id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
@@ -13577,8 +13606,10 @@ CREATE VIEW productioncounting_productiontrackingdto AS
      LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON ((productiontrackingcorrection.id = productiontracking.correction_id)))
      LEFT JOIN repairs_repairorderdto repairorderdto ON ((repairorderdto.id = productiontracking.repairorder_id)))
      LEFT JOIN ordersgroups_ordersgroupdto ordersgroupdto ON ((ordersgroupdto.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON (((outcomponent.product_id = product.id) AND (productiontracking.id = outcomponent.productiontracking_id))))
-     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)));
+     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY ((ARRAY['02intermediate'::character varying, '03finalProduct'::character varying])::text[])) AND ((pcq.role)::text = '02produced'::text))))
+     LEFT JOIN basic_product outproduct ON ((pcq.product_id = outproduct.id)))
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))));
 
 
 --
@@ -22955,7 +22986,7 @@ SELECT pg_catalog.setval('masterorders_masterorderproduct_id_seq', 1, false);
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflow_location (id, number, name, type, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima) FROM stdin;
+COPY materialflow_location (id, number, name, type, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation) FROM stdin;
 \.
 
 
@@ -23177,8 +23208,8 @@ SELECT pg_catalog.setval('materialflowresources_documentdto_id_seq', 1, false);
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_documentpositionparameters (id, suggestresource, draftmakesreservation, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, changedatewhentransfertowarehousetype, fillresourceirrespectiveofconversion) FROM stdin;
-1	t	t	t	\N	\N	\N	\N	01never	f
+COPY materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, changedatewhentransfertowarehousetype, fillresourceirrespectiveofconversion) FROM stdin;
+1	t	t	\N	\N	\N	\N	01never	f
 \.
 
 
@@ -25701,6 +25732,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 108	ROLE_DOCUMENTS_NOTIFICATION	\N	0
 109	ROLE_PALLET_LIST_EDIT	\N	0
 110	ROLE_EXTRUSION_PROTOCOLS_LIST	\N	0
+111	ROLE_PALLET_DETAILS_FIX_STATE	\N	0
 \.
 
 
@@ -25708,7 +25740,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 110, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 111, true);
 
 
 --

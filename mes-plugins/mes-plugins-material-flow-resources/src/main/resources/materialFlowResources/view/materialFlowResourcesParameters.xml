@@ -39,19 +39,13 @@
         <windowTab name="mainTab">
             <component type="form" name="documentPositionParameters" reference="form">
                 <component type="gridLayout" name="documentPositionParametersGridLayout" reference="documentPositionParametersGridLayout"
-                           columns="3" rows="12">
+                           columns="3" rows="11">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="suggestResource" field="suggestResource" reference="suggestResource">
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
-                        <component type="checkbox" name="draftMakesReservation" field="draftMakesReservation"
-                                   reference="draftMakesReservation">
-                            <option type="labelWidth" value="60" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="3">
                         <component type="checkbox" name="acceptanceOfDocumentBeforePrinting" field="acceptanceOfDocumentBeforePrinting"
                                    reference="acceptanceOfDocumentBeforePrinting" hasDescription="true">
                             <option type="labelWidth" value="60" />
@@ -69,21 +63,21 @@
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="3">
+                    <layoutElement column="3" row="1">
                         <component type="select" name="changeDateWhenTransferToWarehouseType"
                                    field="changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType"
                                    hasDescription="true">
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="1">
+                    <layoutElement column="3" row="2">
                         <component type="checkbox" name="fillResourceIrrespectiveOfConversion"
                                    field="fillResourceIrrespectiveOfConversion" reference="fillResourceIrrespectiveOfConversion"
                                    hasDescription="true">
                             <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="3" height="9">
+                    <layoutElement column="1" row="3" width="3" height="9">
                         <component type="grid" name="grid" reference="grid" source="#{form}.items">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="checked" fields="checked" width="50"/>

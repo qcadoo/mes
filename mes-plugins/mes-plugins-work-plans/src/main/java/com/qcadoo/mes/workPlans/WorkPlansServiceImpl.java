@@ -24,17 +24,20 @@
 package com.qcadoo.mes.workPlans;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.workPlans.constants.OrderSorting;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -46,12 +49,18 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Service
 public class WorkPlansServiceImpl implements WorkPlansService {
+
+    private static final String PLANED_QUANTITY = "plannedQuantity";
+    private static final String PLANED_QUANTIT_OPERATION = "plannedQuantityOperationProductColumn";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -264,6 +273,53 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         }
 
         state.addMessage("workPlans.workPlanDelivered.message.generated", ComponentState.MessageType.SUCCESS);
+    }
+
+    @Override
+    public List<Entity> sortByColumn(Entity workPlan, EntityList components, List<String> headers) {
+        Entity columnIdentifier = workPlan.getBelongsToField(WorkPlanFields.INPUT_PRODUCT_COLUMN_TO_SORT_BY);
+        columnIdentifier = columnIdentifier.getDataDefinition().get(columnIdentifier.getId());
+        String translatedName = translationService.translate(columnIdentifier.getStringField("name"),
+                LocaleContextHolder.getLocale());
+        if (columnIdentifier == null || StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
+                || !headers.contains(translatedName)) {
+            return components;
+        }
+        final String identifier = columnIdentifier.getStringField("identifier");
+        Map<Entity, String> tempMap = Maps.newHashMap();
+        for (Entity productComponent : components) {
+            tempMap.put(productComponent, identifier);
+        }
+
+        List<Entity> sortedProductComponents = Lists.newLinkedList();
+
+        List<Map.Entry<Entity, String>> entries = Lists.newLinkedList(tempMap.entrySet());
+        Collections.sort(entries, new Comparator<Map.Entry<Entity, String>>() {
+
+            @Override public int compare(Map.Entry<Entity, String> o1, Map.Entry<Entity, String> o2) {
+                if (o1.getValue() == null && o2.getValue() == null) {
+                    return 0;
+                }
+                if (o1.getValue() == null) {
+                    return -1;
+                }
+                if (PLANED_QUANTITY.equals(identifier) || PLANED_QUANTIT_OPERATION.equals(identifier)) {
+                    return o1.getKey().getDecimalField("quantity").compareTo(o2.getKey().getDecimalField("quantity"));
+                }
+                return o1.getValue().compareTo(o2.getValue());
+            }
+        });
+
+        for (Map.Entry<Entity, String> entry : entries) {
+            sortedProductComponents.add(entry.getKey());
+        }
+
+        if (OrderSorting.ASC.getStringValue().equals(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))) {
+            return sortedProductComponents;
+        }
+        Collections.reverse(sortedProductComponents);
+
+        return sortedProductComponents;
     }
 
 }

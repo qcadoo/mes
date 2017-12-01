@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -49,6 +40,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Component
 public class OperationProductInTable {
@@ -63,7 +62,7 @@ public class OperationProductInTable {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
+    public void print(Entity workPlan, GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
             throws DocumentException {
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
                 .getOperationComponentIdProductInColumnToAlignment();
@@ -77,7 +76,7 @@ public class OperationProductInTable {
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
-        for (Entity operationProduct : operationProductInComponents(operationComponent)) {
+        for (Entity operationProduct : operationProductInComponents(workPlan, operationComponent, headers)) {
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
                 alignColumn(defaultCell, e.getValue());
                 table.addCell(operationProductPhrase(operationProduct, e.getKey()));
@@ -99,10 +98,9 @@ public class OperationProductInTable {
         document.add(table);
     }
 
-    private List<Entity> operationProductInComponents(Entity operationComponent) {
-        List<Entity> productOutComponents = operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-        return productOutComponents;
+    private List<Entity> operationProductInComponents(Entity workPlan, Entity operationComponent, List<String> headers) {
+        return workPlansService.sortByColumn(workPlan, operationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS), headers);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
