@@ -23,21 +23,26 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.*;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class DocumentValidators {
@@ -49,9 +54,7 @@ public class DocumentValidators {
     private PositionValidators positionValidators;
 
     public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
-//        validateDocumentName(dataDefinition, entity);
         boolean hasWarehouses = hasWarehouses(dataDefinition, entity);
-        // validateAvailableQuantities(entity);
 
         if (hasWarehouses) {
             hasDifferentWarehouses(dataDefinition, entity);
@@ -129,18 +132,6 @@ public class DocumentValidators {
         }
         return true;
 
-    }
-
-    private void validateDocumentName(final DataDefinition documentDD, final Entity document) {
-        if (document.getId() == null) {
-            return;
-        }
-
-        String documentName = document.getStringField(DocumentFields.NAME);
-
-        if (Strings.isNullOrEmpty(documentName)) {
-            document.addError(documentDD.getField(DocumentFields.NAME), "materialFlow.error.document.name.required");
-        }
     }
 
     public boolean validateAvailableQuantities(final Entity document) {
