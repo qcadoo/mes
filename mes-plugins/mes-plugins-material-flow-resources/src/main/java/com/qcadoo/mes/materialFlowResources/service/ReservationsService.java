@@ -65,7 +65,7 @@ public class ReservationsService {
         String type = document.getStringField(DocumentFields.TYPE);
         Entity warehouse = document.getBelongsToField(DocumentFields.LOCATION_FROM);
         return DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)
-                && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION);
+                && (warehouse != null && warehouse.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION));
     }
 
     /**
