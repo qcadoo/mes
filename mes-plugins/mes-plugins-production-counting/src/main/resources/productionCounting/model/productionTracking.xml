@@ -71,9 +71,16 @@
 		<hasMany name="trackingOperationProductInComponents"
 				 joinField="productionTracking" model="trackingOperationProductInComponent"
 				 cascade="delete"/>
+		<hasMany name="trackingOperationProductInComponentDtos"
+				 joinField="productionTracking" model="trackingOperationProductInComponentDto"
+				 cascade="nullify" persistent="false"/>
 		<hasMany name="trackingOperationProductOutComponents"
 				 joinField="productionTracking" model="trackingOperationProductOutComponent"
 				 cascade="delete"/>
+		<hasMany name="trackingOperationProductOutComponentDtos"
+				 joinField="productionTracking" model="trackingOperationProductOutComponentDto"
+				 cascade="nullify" persistent="false"/>
+
 		<hasMany name="staffWorkTimes" model="staffWorkTime"
 				 joinField="productionRecord" copyable="false" cascade="delete"/>
 
