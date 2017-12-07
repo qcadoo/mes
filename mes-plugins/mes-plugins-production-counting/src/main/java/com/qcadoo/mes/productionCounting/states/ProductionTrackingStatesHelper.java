@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.states;
 
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.security.api.SecurityService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ public class ProductionTrackingStatesHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingStatesHelper.class);
 
+    public static final String USER_CHANGE_STATE = "user";
+
     @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
 
@@ -66,16 +69,27 @@ public class ProductionTrackingStatesHelper {
     @Autowired
     private StateExecutorService stateExecutorService;
 
+    @Autowired
+    private SecurityService securityService;
+
     public void setInitialState(final Entity productionTracking) {
         stateChangeEntityBuilder.buildInitial(stateChangeDescriber, productionTracking, ProductionTrackingState.DRAFT);
     }
 
     public void resumeStateChange(final Entity productionTracking) {
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, ProductionTrackingState.ACCEPTED.getStringValue());
+        Long userId = securityService.getCurrentUserId();
+        productionTracking.setField(USER_CHANGE_STATE, userId);
+        String userLogin = securityService.getCurrentUserName();
+
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, userLogin, ProductionTrackingState.ACCEPTED.getStringValue());
     }
 
     public void cancelStateChange(final Entity productionTracking) {
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, ProductionTrackingState.DRAFT.getStringValue());
+        Long userId = securityService.getCurrentUserId();
+        productionTracking.setField(USER_CHANGE_STATE, userId);
+        String userLogin = securityService.getCurrentUserName();
+
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, userLogin, ProductionTrackingState.DRAFT.getStringValue());
     }
 
     public StateChangeContext findStateTransition(final Entity productionTracking) {
@@ -99,7 +113,10 @@ public class ProductionTrackingStatesHelper {
     }
 
     public StateChangeStatus tryAccept(final Entity productionRecord, final boolean logMessages) {
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.ACCEPTED);
+        Long userId = securityService.getCurrentUserId();
+        productionRecord.setField(USER_CHANGE_STATE, userId);
+        String userLogin = securityService.getCurrentUserName();
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, userLogin, ProductionTrackingStateStringValues.ACCEPTED);
 
         if (productionRecord.isValid()) {
             return StateChangeStatus.SUCCESSFUL;
@@ -114,7 +131,10 @@ public class ProductionTrackingStatesHelper {
     }
 
     public StateChangeStatus tryCorrect(final Entity productionRecord, final boolean logMessages) {
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, ProductionTrackingStateStringValues.CORRECTED);
+        Long userId = securityService.getCurrentUserId();
+        productionRecord.setField(USER_CHANGE_STATE, userId);
+        String userLogin = securityService.getCurrentUserName();
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionRecord, userLogin, ProductionTrackingStateStringValues.CORRECTED);
 
         if (productionRecord.isValid()) {
             return StateChangeStatus.SUCCESSFUL;

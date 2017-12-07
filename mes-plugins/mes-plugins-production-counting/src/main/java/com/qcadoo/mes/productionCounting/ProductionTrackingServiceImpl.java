@@ -34,13 +34,13 @@ import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
-import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -73,6 +73,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     private static final String L_FORM = "form";
 
+    public static final String USER_CHANGE_STATE = "user";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -81,7 +83,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private StateExecutorService stateExecutorService;
-    
+
+    @Autowired
+    private SecurityService securityService;
+
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
         String recordingType = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
@@ -168,8 +173,10 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 //                productionTrackingStateChangeAspect.getChangeEntityDescriber(), productionTracking, state.getStringValue());
 //        
 //        productionTrackingStateChangeAspect.changeState(orderStateChangeContext);
-        
-        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, state.getStringValue());
+        Long userId = securityService.getCurrentUserId();
+        productionTracking.setField(USER_CHANGE_STATE, userId);
+        String userLogin = securityService.getCurrentUserName();
+        stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, productionTracking, userLogin, state.getStringValue());
     }
 
     @Override
