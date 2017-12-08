@@ -112,20 +112,23 @@ public class ReservationsService {
             return;
         }
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
-            return;
-        }
-        Entity reservation = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
 
-        reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
-        reservation.setField(ReservationFields.POSITION, position);
-        reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-        reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
-        reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
-        reservation = reservation.getDataDefinition().save(reservation);
-        
-        position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
+        if (document != null) {
+            if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
+                return;
+            }
+            Entity reservation = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
+
+            reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
+            reservation.setField(ReservationFields.POSITION, position);
+            reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
+            reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
+            reservation = reservation.getDataDefinition().save(reservation);
+
+            position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
+        }
     }
 
     /**
