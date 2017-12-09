@@ -24,7 +24,6 @@
 package com.qcadoo.mes.workPlans;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -34,10 +33,10 @@ import com.qcadoo.mes.workPlans.constants.OrderSorting;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -48,18 +47,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
 public class WorkPlansServiceImpl implements WorkPlansService {
 
     private static final String PLANED_QUANTITY = "plannedQuantity";
+
     private static final String PLANED_QUANTIT_OPERATION = "plannedQuantityOperationProductColumn";
 
     @Autowired
@@ -259,12 +260,12 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         return rows != null ? rows : 0;
     }
 
-
-    public void workPlanDelivered(final ComponentState state, List<Entity> selectedEntities){
-        for(Entity orderListDtoEntity : selectedEntities){
+    public void workPlanDelivered(final ComponentState state, List<Entity> selectedEntities) {
+        for (Entity orderListDtoEntity : selectedEntities) {
             boolean isWorkPlanDelivered = orderListDtoEntity.getBooleanField(ColumnForOrdersFields.WORK_PLAN_DELIVERED);
-            if(!isWorkPlanDelivered){
-                DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+            if (!isWorkPlanDelivered) {
+                DataDefinition orderDD = dataDefinitionService
+                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
                 Entity order = orderDD.get(orderListDtoEntity.getId());
                 orderListDtoEntity.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
                 order.setField(ColumnForOrdersFields.WORK_PLAN_DELIVERED, true);
@@ -276,50 +277,56 @@ public class WorkPlansServiceImpl implements WorkPlansService {
     }
 
     @Override
-    public List<Entity> sortByColumn(Entity workPlan, EntityList components, List<String> headers) {
+    public List<OperationProductHelper> sortByColumn(Entity workPlan, List<OperationProductHelper> operationProductsValue,
+            List<String> headers) {
         Entity columnIdentifier = workPlan.getBelongsToField(WorkPlanFields.INPUT_PRODUCT_COLUMN_TO_SORT_BY);
+        if (Objects.isNull(columnIdentifier)) {
+            return operationProductsValue;
+        }
         columnIdentifier = columnIdentifier.getDataDefinition().get(columnIdentifier.getId());
         String translatedName = translationService.translate(columnIdentifier.getStringField("name"),
                 LocaleContextHolder.getLocale());
         if (columnIdentifier == null || StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
                 || !headers.contains(translatedName)) {
-            return components;
+            return operationProductsValue;
         }
         final String identifier = columnIdentifier.getStringField("identifier");
-        Map<Entity, String> tempMap = Maps.newHashMap();
-        for (Entity productComponent : components) {
-            tempMap.put(productComponent, identifier);
-        }
 
-        List<Entity> sortedProductComponents = Lists.newLinkedList();
+        Collections.sort(operationProductsValue, new Comparator<OperationProductHelper>() {
 
-        List<Map.Entry<Entity, String>> entries = Lists.newLinkedList(tempMap.entrySet());
-        Collections.sort(entries, new Comparator<Map.Entry<Entity, String>>() {
-
-            @Override public int compare(Map.Entry<Entity, String> o1, Map.Entry<Entity, String> o2) {
-                if (o1.getValue() == null && o2.getValue() == null) {
+            @Override
+            public int compare(OperationProductHelper o1, OperationProductHelper o2) {
+                if (o1 == null && o2 == null) {
                     return 0;
                 }
-                if (o1.getValue() == null) {
-                    return -1;
-                }
+
                 if (PLANED_QUANTITY.equals(identifier) || PLANED_QUANTIT_OPERATION.equals(identifier)) {
-                    return o1.getKey().getDecimalField("quantity").compareTo(o2.getKey().getDecimalField("quantity"));
+                    return new BigDecimal(o1.getOperationProductColumnHelpers().stream()
+                            .filter(oc -> oc.getIdentifier().equals(identifier)).findAny().get().getValue().replace(",", "."))
+                            .compareTo(new BigDecimal(o2.getOperationProductColumnHelpers().stream()
+                                    .filter(oc -> oc.getIdentifier().equals(identifier)).findAny().get().getValue()
+                                    .replace(",", ".")));
                 }
-                return o1.getValue().compareTo(o2.getValue());
+
+                return o1
+                        .getOperationProductColumnHelpers()
+                        .stream()
+                        .filter(oc -> oc.getIdentifier().equals(identifier))
+                        .findAny()
+                        .get()
+                        .getValue()
+                        .compareTo(
+                                o2.getOperationProductColumnHelpers().stream()
+                                        .filter(oc -> oc.getIdentifier().equals(identifier)).findAny().get().getValue());
             }
         });
 
-        for (Map.Entry<Entity, String> entry : entries) {
-            sortedProductComponents.add(entry.getKey());
-        }
-
         if (OrderSorting.ASC.getStringValue().equals(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))) {
-            return sortedProductComponents;
+            return operationProductsValue;
         }
-        Collections.reverse(sortedProductComponents);
+        Collections.reverse(operationProductsValue);
 
-        return sortedProductComponents;
+     return operationProductsValue;
     }
 
 }

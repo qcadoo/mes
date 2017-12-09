@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.workPlans;
 
-import java.util.List;
-import java.util.Set;
-
+import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductHelper;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.view.api.ComponentState;
+
+import java.util.List;
+import java.util.Set;
 
 public interface WorkPlansService {
 
@@ -251,5 +251,5 @@ public interface WorkPlansService {
      */
     void workPlanDelivered(ComponentState state, List<Entity> selectedEntities);
 
-    List<Entity> sortByColumn(Entity workPlan, EntityList components, List<String> headers);
+    List<OperationProductHelper> sortByColumn(Entity workPlan, List<OperationProductHelper> operationProductsValue, List<String> headers);
 }
