@@ -112,11 +112,6 @@ public class PositionValidators {
         return true;
     }
 
-    public BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position, final Entity document) {
-        return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
-                document.getBelongsToField(DocumentFields.LOCATION_FROM));
-    }
-
     public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
         BigDecimal oldQuantity = BigDecimal.ZERO;
         if (position.getId() != null) {
@@ -126,7 +121,8 @@ public class PositionValidators {
             }
         }
 
-        return getAvailableQuantityWithoutOldQuantities(position, document).add(oldQuantity);
+        return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
+                document.getBelongsToField(DocumentFields.LOCATION_FROM)).add(oldQuantity);
     }
 
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {

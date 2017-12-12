@@ -70,6 +70,11 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="resourcesStock">
+                <bigButton name="checkResourcesStock" icon="generateIcon24.png" action="#{form}.fireEvent(checkResourcesStock);"
+                           state="enabled"
+                           message="materialFlowResources.documentDetails.window.ribbon.resourcesStock.checkResourcesStock.message"/>
+            </group>
             <group name="resources">
                 <bigButton name="fillResources" icon="generateIcon24.png" action="#{form}.fireEvent(fillResources);"
                            state="enabled"
@@ -245,6 +250,10 @@
                 <listener event="fillResources"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="fillResources"/>
+
+                <listener event="checkResourcesStock"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="checkResourcesStock"/>
             </component>
         </windowTab>
 
