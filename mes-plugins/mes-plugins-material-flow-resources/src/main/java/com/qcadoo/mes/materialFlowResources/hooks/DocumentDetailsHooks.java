@@ -56,24 +56,15 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 @Service
 public class DocumentDetailsHooks {
 
-    private static final String L_FORM = "form";
-
-    private static final String L_WINDOW = "window";
-
-    private static final String L_ACTIONS = "actions";
-
-    private static final String L_STATE = "state";
-
-    private static final String L_PRINT = "print";
-
-    private static final String L_ACCEPT = "accept";
-
-    private static final String L_PRINT_PDF = "printPdf";
-
-    private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
-
     public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
-
+    private static final String L_FORM = "form";
+    private static final String L_WINDOW = "window";
+    private static final String L_ACTIONS = "actions";
+    private static final String L_STATE = "state";
+    private static final String L_PRINT = "print";
+    private static final String L_ACCEPT = "accept";
+    private static final String L_PRINT_PDF = "printPdf";
+    private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -166,7 +157,8 @@ public class DocumentDetailsHooks {
             changeAcceptButtonState(window, true);
             changePrintButtonState(window, true);
             changeFillResourceButtonState(window, reservationsService.reservationsEnabledForDocumentPositions(document));
-            changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
+            changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE))
+                    && !reservationsService.reservationsEnabledForDocumentPositions(document));
         } else if (DocumentState.ACCEPTED.equals(state)) {
             documentForm.setFormEnabled(false);
             disableRibbon(window);
