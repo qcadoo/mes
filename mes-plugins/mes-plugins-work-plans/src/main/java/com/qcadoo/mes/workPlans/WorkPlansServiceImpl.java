@@ -286,7 +286,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         columnIdentifier = columnIdentifier.getDataDefinition().get(columnIdentifier.getId());
         String translatedName = translationService.translate(columnIdentifier.getStringField("name"),
                 LocaleContextHolder.getLocale());
-        if (columnIdentifier == null || StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
+        if (StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
                 || !headers.contains(translatedName)) {
             return operationProductsValue;
         }
@@ -296,7 +296,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
 
             @Override
             public int compare(OperationProductHelper o1, OperationProductHelper o2) {
-                if (o1 == null && o2 == null) {
+                if (o1 == null || o2 == null) {
                     return 0;
                 }
 
