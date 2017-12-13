@@ -209,7 +209,7 @@ public class ReservationsService {
             if (!reservationsEnabledForDocumentPositions(document)) {
                 return;
             }
-            
+
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
             Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
