@@ -51,18 +51,20 @@ public class PositionValidators {
     public boolean checkAttributesRequirement(final DataDefinition dataDefinition, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
 
-        DocumentType documentType = DocumentType.of(document);
-        DocumentState documentState = DocumentState.of(document);
+        if (document != null) {
+            DocumentType documentType = DocumentType.of(document);
+            DocumentState documentState = DocumentState.of(document);
 
-        if (documentState == DocumentState.ACCEPTED
-                && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
-            Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+            if (documentState == DocumentState.ACCEPTED
+                    && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
+                Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
-            return validatePositionAttributes(dataDefinition, position,
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+                return validatePositionAttributes(dataDefinition, position,
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+            }
         }
 
         return true;
@@ -149,8 +151,7 @@ public class PositionValidators {
         return true;
     }
 
-    private BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position,
-            final Entity document) {
+    private BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position, final Entity document) {
         return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
                 document.getBelongsToField(DocumentFields.LOCATION_FROM));
     }
