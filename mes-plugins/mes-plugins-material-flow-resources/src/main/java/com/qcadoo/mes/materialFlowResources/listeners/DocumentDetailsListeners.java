@@ -303,6 +303,9 @@ public class DocumentDetailsListeners {
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
         resourceStockService.checkResourcesStock(document);
+        if (document.getGlobalErrors().isEmpty()) {
+            view.addMessage("materialFlow.document.checkResourcesStock.global.message.success", MessageType.SUCCESS, true);
+        }
         formComponent.setEntity(document);
     }
 }
