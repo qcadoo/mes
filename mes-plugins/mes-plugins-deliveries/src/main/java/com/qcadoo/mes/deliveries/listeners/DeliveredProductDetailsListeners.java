@@ -29,10 +29,10 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.helpers.DeliveryPositionCalculationHelper;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductDetailsHooks;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -57,7 +57,7 @@ public class DeliveredProductDetailsListeners {
     private NumberService numberService;
 
     @Autowired
-    private DeliveryPositionCalculationHelper deliveryPositionCalculationHelper;
+    private CalculationQuantityService calculationQuantityService;
 
     public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
@@ -135,7 +135,7 @@ public class DeliveredProductDetailsListeners {
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                     .orElse(product.getStringField(ProductFields.UNIT));
             FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference("additionalQuantity");
-            BigDecimal newAdditionalQuantity = deliveryPositionCalculationHelper.calculateAdditionalQuantity(deliveredQuantity,
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(deliveredQuantity,
                     conversion, additionalQuantityUnit);
             additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
             additionalQuantity.requestComponentUpdateState();
@@ -172,7 +172,7 @@ public class DeliveredProductDetailsListeners {
         if (conversion != null && additionalQuantity != null) {
             String deliveredQuantityUnit = product.getStringField(ProductFields.UNIT);
             FieldComponent deliveredQuantity = (FieldComponent) view.getComponentByReference("deliveredQuantity");
-            BigDecimal newDeliveredQuantity = deliveryPositionCalculationHelper.calculateQuantity(additionalQuantity, conversion,
+            BigDecimal newDeliveredQuantity = calculationQuantityService.calculateQuantity(additionalQuantity, conversion,
                     deliveredQuantityUnit);
             deliveredQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newDeliveredQuantity, 0));
             deliveredQuantity.requestComponentUpdateState();
