@@ -204,22 +204,26 @@ public class ReservationsService {
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        if (!reservationsEnabledForDocumentPositions(document)){
-            return;
-        }
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
-        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-        BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
 
-        Entity existingReservation = getReservationForPosition(position);
+        if (document != null) {
+            if (!reservationsEnabledForDocumentPositions(document)) {
+                return;
+            }
+            
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
+            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+            BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
 
-        if (existingReservation != null) {
-            existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
-            existingReservation.setField(ReservationFields.PRODUCT, product);
-            existingReservation.setField(ReservationFields.LOCATION, location);
-            existingReservation.setField(ReservationFields.RESOURCE, resource);
-            existingReservation.getDataDefinition().save(existingReservation);
+            Entity existingReservation = getReservationForPosition(position);
+
+            if (existingReservation != null) {
+                existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
+                existingReservation.setField(ReservationFields.PRODUCT, product);
+                existingReservation.setField(ReservationFields.LOCATION, location);
+                existingReservation.setField(ReservationFields.RESOURCE, resource);
+                existingReservation.getDataDefinition().save(existingReservation);
+            }
         }
     }
 
