@@ -30,16 +30,10 @@ import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -97,10 +91,7 @@ public class DocumentDetailsListeners {
     private DispositionOrderPdfService dispositionOrderPdfService;
 
     @Autowired
-    private LogService logService;
-
-    @Autowired
-    private TranslationService translationService;
+    DocumentErrorsLogger documentErrorsLogger;
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -216,7 +207,7 @@ public class DocumentDetailsListeners {
         if (!document.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
-            saveResourceStockLackErrorsToSystemLogs(document);
+            documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
@@ -234,29 +225,6 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(document);
-    }
-
-    private void saveResourceStockLackErrorsToSystemLogs(final Entity document) {
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-
-            @Override
-            public void afterCompletion(int status) {
-                super.afterCompletion(status);
-                if (TransactionSynchronization.STATUS_ROLLED_BACK == status) {
-                    document.getGlobalErrors().stream().filter(errorMessage -> "materialFlow.error.position.quantity.notEnoughResources"
-                            .equals(errorMessage.getMessage())).forEach(errorMessage ->
-                            logService.add(LogService.Builder
-                                    .error("document",
-                                            translationService.translate("materialFlowResources.document.accept",
-                                                    LocaleContextHolder.getLocale()))
-                                    .withMessage(translationService.translate("materialFlow.error.position.quantity.notEnough",
-                                            LocaleContextHolder.getLocale()))
-                                    .withItem1(document.getStringField(DocumentFields.NUMBER))
-                                    .withItem2(errorMessage.getVars()[0])
-                                    .withItem3(errorMessage.getVars()[1])));
-                }
-            }
-        });
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
