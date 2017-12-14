@@ -53,7 +53,7 @@ public class DocumentsListListeners {
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     @Autowired
-    DocumentErrorsLogger documentErrorsLogger;
+    private DocumentErrorsLogger documentErrorsLogger;
 
     @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
