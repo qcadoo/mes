@@ -54,6 +54,10 @@ public class ProductionCountingOrderStatesListenerService {
         final Entity order = stateChangeContext.getOwner();
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
+        if (checkIfOrderHasProductionTrackings(order)) {
+            stateChangeContext.addValidationError("orders.order.state.error.draftProductionTrackingsExists");
+        }
+
         if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)) {
             checkFinalProductionCountingForOrderCumulated(stateChangeContext);
         } else if (productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {

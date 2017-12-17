@@ -43,9 +43,6 @@ public class ReservationHooks {
         }
     }
 
-    public void onCreate(DataDefinition reservationDD, Entity reservation) {
-    }
-
     public void onCopy(DataDefinition reservationDD, Entity reservation) {
         reservation.setField(ReservationFields.RESOURCE, null);
     }

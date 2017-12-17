@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -48,6 +49,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class OperationProductInTable {
@@ -76,11 +78,16 @@ public class OperationProductInTable {
 
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
-        for (Entity operationProduct : operationProductInComponents(workPlan, operationComponent, headers)) {
-            for (Map.Entry<OperationProductColumn, ColumnAlignment> e : operationProductColumnAlignmentMap.entrySet()) {
-                alignColumn(defaultCell, e.getValue());
-                table.addCell(operationProductPhrase(operationProduct, e.getKey()));
+        List<OperationProductHelper> operationProductsValue = prepareOperationProductsValue(
+                operationProductInComponents(operationComponent), operationProductColumnAlignmentMap.entrySet());
+        operationProductsValue = workPlansService.sortByColumn(workPlan,
+                operationProductsValue, headers);
+        for (OperationProductHelper operationProduct : operationProductsValue) {
+            for (OperationProductColumnHelper e : operationProduct.getOperationProductColumnHelpers()) {
+                alignColumn(defaultCell, e.getColumnAlignment());
+                table.addCell(operationProductPhrase(e.getValue()));
             }
+
         }
 
         int additionalRows = workPlansService.getAdditionalRowsFromParameter(ParameterFieldsWP.ADDITIONAL_INPUT_ROWS);
@@ -98,9 +105,9 @@ public class OperationProductInTable {
         document.add(table);
     }
 
-    private List<Entity> operationProductInComponents(Entity workPlan, Entity operationComponent, List<String> headers) {
-        return workPlansService.sortByColumn(workPlan, operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS), headers);
+    private List<Entity> operationProductInComponents(Entity operationComponent) {
+        return operationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
@@ -126,8 +133,29 @@ public class OperationProductInTable {
         return new Phrase(operationProductColumn.getColumnValue(operationProduct), FontUtils.getDejavuRegular7Dark());
     }
 
+    private Phrase operationProductPhrase(String value) {
+        return new Phrase(value, FontUtils.getDejavuRegular7Dark());
+    }
+
     private HeaderAlignment headerAlignment(ColumnAlignment value) {
         return ColumnAlignment.LEFT.equals(value) ? HeaderAlignment.LEFT : HeaderAlignment.RIGHT;
     }
 
+    private List<OperationProductHelper> prepareOperationProductsValue(List<Entity> operationProducts,
+            Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
+        List<OperationProductHelper> operationProductsValue = Lists.newArrayList();
+        for (Entity operationProduct : operationProducts) {
+            OperationProductHelper operationProductHelper = new OperationProductHelper();
+            List<OperationProductColumnHelper> operationProductColumnHelpers = Lists.newArrayList();
+            for (Map.Entry<OperationProductColumn, ColumnAlignment> e : alignments) {
+                OperationProductColumnHelper operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),  e.getKey().getColumnValue(
+                        operationProduct), e.getKey().getIdentifier());
+                operationProductColumnHelpers.add(operationProductColumnHelper);
+            }
+            operationProductHelper.setOperationProductColumnHelpers(operationProductColumnHelpers);
+            operationProductsValue.add(operationProductHelper);
+        }
+
+        return operationProductsValue;
+    }
 }

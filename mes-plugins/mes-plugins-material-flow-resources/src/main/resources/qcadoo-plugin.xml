@@ -248,6 +248,8 @@
                                  method="isFieldVisible"/>
         </model:model-hook>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="document"/>
+
         <menu:menu-item name="resources" category="materialFlow"
                         view="resourcesList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
         <menu:menu-item name="resourceCorrections" category="materialFlow"

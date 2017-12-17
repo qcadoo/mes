@@ -11,4 +11,6 @@ public interface ResourceStockService {
     BigDecimal getResourceStockAvailableQuantity(final Entity product, final Entity location);
 
     BigDecimal getResourceStockQuantity(Entity product, Entity location);
+
+    void checkResourcesStock(Entity document);
 }

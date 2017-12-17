@@ -45,6 +45,7 @@ import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -63,7 +64,7 @@ public class DocumentDetailsListeners {
 
     private static final String L_FORM = "form";
 
-    private static final Logger logger = LoggerFactory.getLogger(DocumentDetailsListeners.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -73,6 +74,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private ResourceManagementService resourceManagementService;
+
+    @Autowired
+    private ResourceStockService resourceStockService;
 
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
@@ -85,6 +89,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private DispositionOrderPdfService dispositionOrderPdfService;
+
+    @Autowired
+    private DocumentErrorsLogger documentErrorsLogger;
 
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -116,7 +123,7 @@ public class DocumentDetailsListeners {
                     dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
                             DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState.getLocale());
                 } catch (Exception e) {
-                    logger.error("Error when generate disposition order", e);
+                    LOGGER.error("Error when generate disposition order", e);
                     throw new IllegalStateException(e.getMessage(), e);
                 }
             }
@@ -160,7 +167,7 @@ public class DocumentDetailsListeners {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
-        logger.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
+        LOGGER.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
         if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
@@ -175,7 +182,7 @@ public class DocumentDetailsListeners {
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(document);
-            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+            LOGGER.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
             return;
         }
@@ -200,9 +207,11 @@ public class DocumentDetailsListeners {
         if (!document.isValid()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
+            documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
+
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
-            logger.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+            LOGGER.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
@@ -211,7 +220,7 @@ public class DocumentDetailsListeners {
                 receiptDocumentForReleaseHelper.tryBuildPz(document, view);
             }
 
-            logger.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
+            LOGGER.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
         }
 
@@ -247,14 +256,24 @@ public class DocumentDetailsListeners {
             form.setEntity(document);
             view.performEvent(view, "reset");
         } catch (IllegalStateException e) {
-            logger.warn("Fill resources: " + e.getMessage());
-            logger.warn(document.toString());
+            LOGGER.warn("Fill resources: " + e.getMessage());
+            LOGGER.warn(document.toString());
             view.addMessage("materialFlow.document.fillResources.global.error.documentNotValid", MessageType.FAILURE, false);
         } catch (LockAcquisitionException e) {
-            logger.warn("Fill resources: " + e.getMessage());
-            logger.warn(document.toString());
+            LOGGER.warn("Fill resources: " + e.getMessage());
+            LOGGER.warn(document.toString());
             view.addMessage("materialFlow.document.fillResources.global.error.concurrentModify", MessageType.FAILURE, false);
         }
     }
 
+    public void checkResourcesStock(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+
+        resourceStockService.checkResourcesStock(document);
+        if (document.getGlobalErrors().isEmpty()) {
+            view.addMessage("materialFlow.document.checkResourcesStock.global.message.success", MessageType.SUCCESS, true);
+        }
+        formComponent.setEntity(document);
+    }
 }

@@ -26,12 +26,14 @@ package com.qcadoo.mes.productionCounting.states.listener;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -198,12 +200,18 @@ public final class ProductionTrackingListenerService {
                 errors.addAll(order.getGlobalErrors());
             }
 
+            if (!orderStateChangeContext.getAllMessages().isEmpty()) {
+                for (Entity entity : orderStateChangeContext.getAllMessages()) {
+                    errors.add(new ErrorMessage(getKey(entity), getArgs(entity)));
+                }
+            }
+
             if (!errors.isEmpty()) {
                 StringBuilder errorMessages = new StringBuilder();
 
                 for (ErrorMessage errorMessage : errors) {
-                    String translatedErrorMessage = translationService.translate(errorMessage.getMessage(), Locale.getDefault(),
-                            errorMessage.getVars());
+                    String translatedErrorMessage = translationService.translate(errorMessage.getMessage(),
+                            LocaleContextHolder.getLocale(), errorMessage.getVars());
                     errorMessages.append(translatedErrorMessage);
                     errorMessages.append(", ");
                 }

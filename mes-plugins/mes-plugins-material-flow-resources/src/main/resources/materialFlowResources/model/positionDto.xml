@@ -53,6 +53,7 @@
         <string name="documentAddress"/>
         <string name="batch"/>
         <string name="storageLocation"/>
+        <string name="additionalCode"/>
         <boolean name="waste"/>
         <string name="palletType"/>
         <string name="palletNumber"/>

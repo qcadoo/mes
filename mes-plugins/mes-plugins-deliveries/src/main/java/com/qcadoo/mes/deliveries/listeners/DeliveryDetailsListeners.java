@@ -42,6 +42,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -134,6 +135,9 @@ public class DeliveryDetailsListeners {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private CalculationQuantityService calculationQuantityService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
@@ -304,7 +308,8 @@ public class DeliveryDetailsListeners {
             quantity = BigDecimal.ZERO;
         }
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
-        BigDecimal additionalQuantity = conversion.multiply(quantity);
+        BigDecimal additionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
+                additionalUnit);
 
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);

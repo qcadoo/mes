@@ -52,6 +52,9 @@ public class DocumentsListListeners {
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
+    @Autowired
+    private DocumentErrorsLogger documentErrorsLogger;
+
     @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -81,6 +84,7 @@ public class DocumentsListListeners {
 
             if (!document.isValid()) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);

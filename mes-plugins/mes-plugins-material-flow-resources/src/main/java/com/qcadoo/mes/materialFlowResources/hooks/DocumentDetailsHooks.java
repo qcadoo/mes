@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
@@ -43,36 +52,19 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
 
 @Service
 public class DocumentDetailsHooks {
 
-    private static final String L_FORM = "form";
-
-    private static final String L_WINDOW = "window";
-
-    private static final String L_ACTIONS = "actions";
-
-    private static final String L_STATE = "state";
-
-    private static final String L_PRINT = "print";
-
-    private static final String L_ACCEPT = "accept";
-
-    private static final String L_PRINT_PDF = "printPdf";
-
-    private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
-
     public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
-
+    private static final String L_FORM = "form";
+    private static final String L_WINDOW = "window";
+    private static final String L_ACTIONS = "actions";
+    private static final String L_STATE = "state";
+    private static final String L_PRINT = "print";
+    private static final String L_ACCEPT = "accept";
+    private static final String L_PRINT_PDF = "printPdf";
+    private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -151,6 +143,7 @@ public class DocumentDetailsHooks {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
             changeFillResourceButtonState(window, false);
+            changeCheckResourcesStockButtonState(window, false);
 
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
@@ -164,11 +157,14 @@ public class DocumentDetailsHooks {
             changeAcceptButtonState(window, true);
             changePrintButtonState(window, true);
             changeFillResourceButtonState(window, reservationsService.reservationsEnabledForDocumentPositions(document));
+            changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE))
+                    && !reservationsService.reservationsEnabledForDocumentPositions(document));
         } else if (DocumentState.ACCEPTED.equals(state)) {
             documentForm.setFormEnabled(false);
             disableRibbon(window);
             changePrintButtonState(window, true);
             changeFillResourceButtonState(window, false);
+            changeCheckResourcesStockButtonState(window, false);
         }
     }
 
@@ -187,6 +183,14 @@ public class DocumentDetailsHooks {
 
         acceptRibbonActionItem.setEnabled(enable);
         acceptRibbonActionItem.requestUpdate(true);
+    }
+
+    private void changeCheckResourcesStockButtonState(WindowComponent window, final boolean enable) {
+        RibbonActionItem checkResourcesStockItem = (RibbonActionItem) window.getRibbon().getGroupByName("resourcesStock")
+                .getItemByName("checkResourcesStock");
+
+        checkResourcesStockItem.setEnabled(enable);
+        checkResourcesStockItem.requestUpdate(true);
     }
 
     private void changeFillResourceButtonState(WindowComponent window, final boolean enable) {
