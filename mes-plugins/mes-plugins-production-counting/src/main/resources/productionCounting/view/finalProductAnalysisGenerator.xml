@@ -139,6 +139,8 @@
                         <option type="fixedHeight" value="true"/>
                         <option type="header" value="true"/>
 
+                        <option type="suppressSelectEvent" value="true" />
+
                         <listener event="calculateTotalQuantity"
                                   class="com.qcadoo.mes.productionCounting.listeners.FinalProductAnalysisGeneratorListeners"
                                   method="calculateTotalQuantity"/>

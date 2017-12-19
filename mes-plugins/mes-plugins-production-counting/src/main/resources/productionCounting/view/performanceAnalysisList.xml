@@ -72,6 +72,17 @@
 									}
 								}
 							});
+
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    var tooltipMessage = "#{translate(productionCounting.analysis.ribbon.message.selectOneRecord)}";
+                                    if (selectedArray.length === 0) {
+                                        this.disable(tooltipMessage);
+                                    } else {
+                                        this.enable(tooltipMessage);
+                                    }
+                                }
+                            });
 						]]>
                     </script>
                 </bigButton>
@@ -165,6 +176,8 @@
                     <option type="fullscreen" value="true"/>
                     <option type="fixedHeight" value="true"/>
 
+                    <option type="suppressSelectEvent" value="true" />
+
                     <listener event="showDetails"
                               class="com.qcadoo.mes.productionCounting.listeners.PerformanceAnalysisListeners"
                               method="showDetails"/>
@@ -181,9 +194,6 @@
         <option type="header" value="false"/>
     </component>
 
-    <hooks>
-        <beforeRender
-                class="com.qcadoo.mes.productionCounting.hooks.PerformanceAnalysisHooks"
-                method="toggleShowDetailsButton"/>
-    </hooks>
+    <hooks/>
+
 </view>

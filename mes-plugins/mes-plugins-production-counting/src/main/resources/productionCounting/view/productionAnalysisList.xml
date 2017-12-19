@@ -128,6 +128,8 @@
                     <option type="fullscreen" value="true"/>
                     <option type="fixedHeight" value="true"/>
 
+                    <option type="suppressSelectEvent" value="true" />
+
                     <listener event="calculateTotalQuantities"
                               class="com.qcadoo.mes.productionCounting.listeners.ProductionAnalysisListeners"
                               method="calculateTotalQuantities"/>
