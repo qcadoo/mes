@@ -93,7 +93,7 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="2" minHeight="4">
-                <component type="grid" name="productionAnalysisList" reference="grid">
+                <component type="grid" name="productionAnalysisList" reference="grid" defaultEnabled="false">
 
                     <option type="column" name="productionLineNumber" fields="productionLineNumber" width="100"/>
                     <option type="column" name="companyNumber" fields="companyNumber" width="100"/>
@@ -127,8 +127,6 @@
 
                     <option type="fullscreen" value="true"/>
                     <option type="fixedHeight" value="true"/>
-
-                    <option type="suppressSelectEvent" value="true" />
 
                     <listener event="calculateTotalQuantities"
                               class="com.qcadoo.mes.productionCounting.listeners.ProductionAnalysisListeners"
