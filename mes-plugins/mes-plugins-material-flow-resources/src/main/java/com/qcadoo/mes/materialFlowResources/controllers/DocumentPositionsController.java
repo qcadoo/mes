@@ -131,9 +131,9 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "productFromLocation/{location}")
-    public ProductDTO getProductFromLocation(@PathVariable String location) {
-        return documentPositionService.getProductFromLocation(location);
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "productFromLocation")
+    public ProductDTO getProductFromLocation(@RequestParam String location, @RequestParam Long document) {
+        return documentPositionService.getProductFromLocation(location, document);
     }
 
     @ResponseBody
