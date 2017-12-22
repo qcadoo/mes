@@ -372,7 +372,7 @@ public class DocumentBuilder {
 
         private final List<Entity> invalidPositions;
 
-        private BuildContext(Entity savedDocument, ArrayList<Entity> invalidPositions) {
+        private BuildContext(Entity savedDocument, List<Entity> invalidPositions) {
             this.savedDocument = Objects.requireNonNull(savedDocument);
             this.invalidPositions = Objects.requireNonNull(invalidPositions);
         }

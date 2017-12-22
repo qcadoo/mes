@@ -6,7 +6,7 @@ import java.util.Objects;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 
-final public class DocumentBuildException extends EntityRuntimeException {
+public final class DocumentBuildException extends EntityRuntimeException {
 
     private final List<Entity> invalidPositions;
 
