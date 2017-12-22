@@ -34,6 +34,8 @@
 
         <integer name="productionTrackingId"/>
 
+        <integer name="productId"/>
+
         <string name="productNumber"/>
 
         <string name="productName"/>

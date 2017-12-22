@@ -272,8 +272,4 @@ public interface ProductionCountingService {
     BigDecimal getRegisteredProductValueForOperationProductIn(final Entity operationProduct, final BigDecimal planed);
 
     BigDecimal getRegisteredProductValueForOperationProductOut(final Entity operationProduct, final BigDecimal planed);
-
-    BigDecimal getWastesSumForProduct(final Entity product, final Entity order, final Entity operation);
-
-    BigDecimal getUsedQuantitySumForProduct(final Entity product, final Entity order, final Entity operation);
 }

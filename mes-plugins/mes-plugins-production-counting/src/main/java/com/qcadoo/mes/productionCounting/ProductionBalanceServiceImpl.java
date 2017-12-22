@@ -430,7 +430,20 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
     private void addBalanceOperationComponent(final Map<Long, Entity> balanceOperationProductComponents,
             final String balanceOperationProductComponentModel, final Entity trackingOperationProductComponent,
             final Long productId) {
-        BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductComponent
+        Entity trackingOperationProductComponentDto;
+        if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO
+                .equals(trackingOperationProductComponent.getDataDefinition().getName())) {
+            trackingOperationProductComponentDto = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                    .get(trackingOperationProductComponent.getId());
+        } else {
+            trackingOperationProductComponentDto = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
+                    .get(trackingOperationProductComponent.getId());
+        }
+        BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductComponentDto
                 .getDecimalField(L_PLANNED_QUANTITY));
         BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(trackingOperationProductComponent
                 .getDecimalField(L_USED_QUANTITY));
@@ -457,8 +470,21 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
         BigDecimal usedQuantity = addedBalanceOperationProductInComponent.getDecimalField(L_USED_QUANTITY);
 
         if (shouldAddPlannedQuantity) {
+            Entity trackingOperationProductComponentDto;
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO
+                    .equals(trackingOperationProductComponent.getDataDefinition().getName())) {
+                trackingOperationProductComponentDto = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                        .get(trackingOperationProductComponent.getId());
+            } else {
+                trackingOperationProductComponentDto = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
+                        .get(trackingOperationProductComponent.getId());
+            }
             plannedQuantity = plannedQuantity.add(
-                    BigDecimalUtils.convertNullToZero(trackingOperationProductComponent.getDecimalField(L_PLANNED_QUANTITY)),
+                    BigDecimalUtils.convertNullToZero(trackingOperationProductComponentDto.getDecimalField(L_PLANNED_QUANTITY)),
                     numberService.getMathContext());
         }
 

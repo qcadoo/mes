@@ -31,10 +31,7 @@
     <fields>
         <belongsTo name="productionTracking" model="productionTracking" required="true"/>
         <belongsTo name="product" model="product" plugin="basic" required="true"/>
-        <decimal name="plannedQuantity" persistent="false">
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
+        <decimal name="plannedQuantity" persistent="false"/>
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
@@ -73,9 +70,6 @@
     </fields>
 
     <hooks>
-        <onView
-                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
-                method="onView"/>
         <onSave
                 class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
                 method="onSave"/>
