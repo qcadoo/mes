@@ -41,7 +41,4 @@
     <mvc:resources mapping="/basic/resources/**"
                    location="classpath:basic/public/resources/"/>
 
-    <bean id="multipartResolver"
-          class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-
 </beans>
