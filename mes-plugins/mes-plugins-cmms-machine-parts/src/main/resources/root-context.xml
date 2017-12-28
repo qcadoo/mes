@@ -25,7 +25,6 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:c="http://www.springframework.org/schema/c"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
@@ -38,17 +37,6 @@
         <context:exclude-filter type="annotation"
                                 expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
-
-    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-          destroy-method="close">
-        <property name="driverClass" value="${dbDriverClass}"/>
-        <property name="jdbcUrl" value="${dbJdbcUrl}"/>
-        <property name="user" value="${dbUsername}"/>
-        <property name="password" value="${dbPassword}"/>
-    </bean>
-
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate"
-          c:dataSource-ref="dataSource"/>
 
      <bean id="cleanOldFilters" class="org.springframework.scheduling.quartz.CronTriggerBean">
         <property name="jobDetail" ref="cleanOldUsageFilters"/>
