@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -131,50 +132,37 @@ public class DocumentPositionService {
         jdbcTemplate.update(query, params);
     }
 
-    public List<AbstractDTO> getStorageLocations(final String q, final String product, final String document) {
+    private List<StorageLocationDTO> getStorageLocations(String preparedQuery, String q, Map<String, Object> paramMap) {
         if (Strings.isNullOrEmpty(q)) {
             return Lists.newArrayList();
         } else {
-            Map<String, Object> paramMap = Maps.newHashMap();
-
-            paramMap.put("q", '%' + q + '%');
-            paramMap.put("document", Integer.parseInt(document));
-
-            if (Strings.isNullOrEmpty(product)) {
-                String query = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :q "
-                        + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
-                        + "LIMIT 20;";
-
-                return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
-            } else {
-                String query = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :q "
-                        + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
-                        + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE :product) OR product_id IS NULL) LIMIT 20;";
-                paramMap.put("product", product);
-
-                return jdbcTemplate.query(query, paramMap, new BeanPropertyRowMapper(StorageLocationDTO.class));
-            }
+            MapSqlParameterSource queryParameters = new MapSqlParameterSource(paramMap).addValue("query", '%' + q + '%');
+            preparedQuery = preparedQuery.substring(0, preparedQuery.length() - 1); // remove trailing ';' char
+            preparedQuery = preparedQuery + " LIMIT " + DataProvider.MAX_RESULTS + ';';
+            return jdbcTemplate.query(preparedQuery, queryParameters,
+                    BeanPropertyRowMapper.newInstance(StorageLocationDTO.class));
         }
     }
 
     public DataResponse getStorageLocationsResponse(final String q, String product, String document) {
         String preparedQuery;
 
+        Map<String, Object> paramMap = Maps.newHashMap();
+        paramMap.put("document", Integer.parseInt(document));
+
         if (Strings.isNullOrEmpty(product)) {
             preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :query "
-                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = "
-                    + Integer.parseInt(document) + ") AND active = true; ";
+                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
+                    + "AND active = true;";
         } else {
 
             preparedQuery = "SELECT id, number FROM materialflowresources_storagelocation WHERE number ilike :query "
-                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = "
-                    + Integer.parseInt(document) + ") " + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE '"
-                    + product + "') OR product_id IS NULL) AND active = true;";
+                    + "AND location_id IN (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document) "
+                    + "AND (product_id IN (SELECT id FROM basic_product WHERE number LIKE :product) OR product_id IS NULL) "
+                    + "AND active = true;";
+            paramMap.put("product", product);
         }
-
-        List<AbstractDTO> entities = getStorageLocations(q, product, document);
-
-        Map<String, Object> paramMap = Maps.newHashMap();
+        List<StorageLocationDTO> entities = getStorageLocations(preparedQuery, q, paramMap);
 
         return dataProvider.getDataResponse(q, preparedQuery, entities, paramMap);
     }
@@ -392,18 +380,19 @@ public class DocumentPositionService {
         }
     }
 
-    public ProductDTO getProductFromLocation(final String location) {
+    public ProductDTO getProductFromLocation(final String location, Long documentId) {
         if (StringUtils.isEmpty(location)) {
             return null;
         }
 
-        String query = "SELECT p.number FROM materialflowresources_storagelocation l JOIN basic_product p ON l.product_id = p.id WHERE l.number = :location;";
+        String query = "SELECT p.number FROM materialflowresources_storagelocation sl JOIN basic_product p ON sl.product_id = p.id JOIN materialflow_location l on l.id = sl.location_id WHERE sl.number = :location AND l.id = (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) FROM materialflowresources_document WHERE id = :document);";
 
         Map<String, Object> filter = Maps.newHashMap();
 
         filter.put("location", location);
+        filter.put("document", documentId);
 
-        List<ProductDTO> products = jdbcTemplate.query(query, filter, new BeanPropertyRowMapper(ProductDTO.class));
+        List<ProductDTO> products = jdbcTemplate.query(query, filter, BeanPropertyRowMapper.newInstance(ProductDTO.class));
 
         if (products.isEmpty()) {
             return null;

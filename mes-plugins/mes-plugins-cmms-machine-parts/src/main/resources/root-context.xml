@@ -39,9 +39,6 @@
                                 expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
-    <bean id="multipartResolver"
-      class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-
     <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
           destroy-method="close">
         <property name="driverClass" value="${dbDriverClass}"/>

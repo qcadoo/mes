@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -34,14 +43,8 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.security.api.UserService;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.function.Consumer;
 
 public class DocumentBuilder {
 
@@ -317,7 +320,7 @@ public class DocumentBuilder {
         positions.forEach(p -> p.setField(PositionFields.DOCUMENT, savedDocument));
 
         savedDocument.setField(DocumentFields.POSITIONS, positions);
-
+        final ArrayList<Entity> invalidPositions = Lists.newArrayList();
         if (savedDocument.isValid()) {
             if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
                 resourceManagementService.createResources(savedDocument);
@@ -329,6 +332,7 @@ public class DocumentBuilder {
                 positions.forEach(p -> {
                     p = p.getDataDefinition().save(p);
                     if (!p.isValid()) {
+                        invalidPositions.add(p);
                         savedDocument.setNotValid();
                         p.getGlobalErrors()
                                 .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
@@ -340,7 +344,7 @@ public class DocumentBuilder {
         }
 
         if (!savedDocument.isValid()) {
-            strategy.accept(new BuildContext(savedDocument));
+            strategy.accept(new BuildContext(savedDocument, invalidPositions));
         }
 
         return savedDocument;
@@ -358,7 +362,7 @@ public class DocumentBuilder {
 
     public Entity buildWithEntityRuntimeException() {
         return buildWithInvalidStrategy((buildContext) -> {
-            throw new EntityRuntimeException(buildContext.savedDocument);
+            throw new DocumentBuildException(buildContext.savedDocument, buildContext.invalidPositions);
         });
     }
 
@@ -366,8 +370,11 @@ public class DocumentBuilder {
 
         private final Entity savedDocument;
 
-        private BuildContext(Entity savedDocument) {
-            this.savedDocument = savedDocument;
+        private final List<Entity> invalidPositions;
+
+        private BuildContext(Entity savedDocument, List<Entity> invalidPositions) {
+            this.savedDocument = Objects.requireNonNull(savedDocument);
+            this.invalidPositions = Objects.requireNonNull(invalidPositions);
         }
     }
 

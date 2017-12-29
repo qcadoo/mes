@@ -86,8 +86,7 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" minHeight="4">
-                    <component type="grid" name="finalProductAnalysisEntries"
-                               reference="grid">
+                    <component type="grid" name="finalProductAnalysisEntries" reference="grid" defaultEnabled="false">
 
                         <option type="column" name="productionLineNumber" fields="productionLineNumber"
                                 width="50"/>

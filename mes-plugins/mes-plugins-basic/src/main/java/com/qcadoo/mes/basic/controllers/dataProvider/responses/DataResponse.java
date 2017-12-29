@@ -6,7 +6,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 
 public class DataResponse {
 
-    private List<AbstractDTO> entities;
+    private final List<? extends AbstractDTO> entities;
 
     private int numberOfResults;
 
@@ -18,15 +18,11 @@ public class DataResponse {
         this.numberOfResults = numberOfResults;
     }
 
-    public List<AbstractDTO> getEntities() {
+    public List<? extends AbstractDTO> getEntities() {
         return entities;
     }
 
-    public void setEntities(List<AbstractDTO> entities) {
-        this.entities = entities;
-    }
-
-    public DataResponse(List<AbstractDTO> entities, int numberOfResults) {
+    public DataResponse(List<? extends AbstractDTO> entities, int numberOfResults) {
         this.entities = entities;
         this.numberOfResults = numberOfResults;
     }

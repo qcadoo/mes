@@ -32,7 +32,7 @@ public class DataProvider {
     @Autowired
     private DictionaryService dictionaryService;
 
-    private static final int MAX_RESULTS = 20;
+    public static final int MAX_RESULTS = 20;
 
     private String prepareProductsQuery() {
         return "SELECT product.id AS id, product.number AS code, product.number AS number, product.name AS name "
@@ -93,12 +93,12 @@ public class DataProvider {
         return getDataResponse(query, preparePalletNumbersQuery(), getPalletNumbersByQuery(query), Maps.newHashMap());
     }
 
-    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<AbstractDTO> entities,
+    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<? extends AbstractDTO> entities,
             final Map<String, Object> paramMap) {
         return getDataResponse(query, preparedQuery, entities, paramMap, true);
     }
 
-    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<AbstractDTO> entities,
+    public DataResponse getDataResponse(final String query, final String preparedQuery, final List<? extends AbstractDTO> entities,
             Map<String, Object> paramMap, boolean shouldCheckMaxResults) {
         int numberOfResults = countQueryResults(preparedQuery, query, paramMap);
 

@@ -297,6 +297,8 @@
                 </predefinedFilter>
             </predefinedFilters>
 
+            <option type="suppressSelectEvent" value="true" />
+
             <listener event="changeState"
                       class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState"/>
 
