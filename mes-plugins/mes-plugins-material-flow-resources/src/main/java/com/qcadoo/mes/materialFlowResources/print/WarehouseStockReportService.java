@@ -15,6 +15,8 @@ import java.io.IOException;
 @Service
 public class WarehouseStockReportService {
 
+    public static final String GENERATION_DATE = "generationDate";
+
     @Autowired
     private WarehouseStockPdfReportService warehouseStockPdfReportService;
 
@@ -25,8 +27,7 @@ public class WarehouseStockReportService {
     private ReportService reportService;
 
     public void generateReport(final ComponentState state, final Entity report) throws IOException, DocumentException {
-        warehouseStockPdfReportService.generateDocument(fileService.updateReportFileName(report,
-                "warehouseStockDate", "materialFlowResources.warehouseStockReport.report.fileName"), state.getLocale());
+        warehouseStockPdfReportService.generateDocument(fileService.updateReportFileName(report, GENERATION_DATE, "materialFlowResources.warehouseStockReport.report.fileName"), state.getLocale());
     }
 
     public void printReport(final ViewDefinitionState view, final ComponentState state) {
