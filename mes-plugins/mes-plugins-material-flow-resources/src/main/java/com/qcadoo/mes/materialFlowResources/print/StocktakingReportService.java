@@ -2,7 +2,6 @@ package com.qcadoo.mes.materialFlowResources.print;
 
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
@@ -16,6 +15,8 @@ import java.io.IOException;
 @Service
 public class StocktakingReportService {
 
+    public static final String GENERATION_DATE = "generationDate";
+
     @Autowired
     private StocktakingPdfReportService stocktakingPdfReportService;
 
@@ -27,7 +28,7 @@ public class StocktakingReportService {
 
     public void generateReport(final ComponentState state, final Entity stocktakingReport) throws IOException, DocumentException {
         stocktakingPdfReportService.generateDocument(fileService.updateReportFileName(stocktakingReport,
-                StocktakingFields.STOCKTAKING_DATE, "materialFlowResources.stocktaking.report.fileName"), state.getLocale());
+                GENERATION_DATE, "materialFlowResources.stocktaking.report.fileName"), state.getLocale());
     }
 
     public void printReport(final ViewDefinitionState view, final ComponentState state) {
