@@ -431,7 +431,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             final String balanceOperationProductComponentModel, final Entity trackingOperationProductComponent,
             final Long productId) {
         Entity trackingOperationProductComponentDto;
-        if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO
+        if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
                 .equals(trackingOperationProductComponent.getDataDefinition().getName())) {
             trackingOperationProductComponentDto = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -471,7 +471,7 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
 
         if (shouldAddPlannedQuantity) {
             Entity trackingOperationProductComponentDto;
-            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
                     .equals(trackingOperationProductComponent.getDataDefinition().getName())) {
                 trackingOperationProductComponentDto = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,

@@ -244,7 +244,7 @@ public class ProductionTrackingDetailsListeners {
             Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
             Entity recordOperationProductComponentDto;
-            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
                     .equals(recordOperationProductComponent.getDataDefinition().getName())) {
                 recordOperationProductComponentDto = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
