@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -37,7 +49,12 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductDtoFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
@@ -54,17 +71,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -134,14 +140,12 @@ public class ProductionTrackingDetailsListeners {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
-        Entity productionTracking = productionTrackingForm.getEntity();
-        // detailedProductionCountingList
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity order = productionTrackingForm.getEntity().getBelongsToField(ProductionTrackingFields.ORDER);
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("window.mainTab.order.id", order.getId());
         parameters.put("form.productionTrackingId", productionTrackingId);
 
-        String url = "/page/basicProductionCounting/detailedProductionCountingList.html";
+        String url = "/page/basicProductionCounting/detailedProductionCountingAndProgressList.html";
         view.redirectTo(url, false, true, parameters);
 
     }
