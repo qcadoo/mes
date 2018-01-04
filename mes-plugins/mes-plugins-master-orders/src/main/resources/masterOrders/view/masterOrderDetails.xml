@@ -373,37 +373,44 @@
 
         <windowTab name="productsTab">
 
-            <component type="grid" name="masterOrderProducts" reference="masterOrderProducts"
-                       source="#{form}.masterOrderProducts" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
-                <option type="column" name="productNumber" fields="product"
-                        link="true" expression="#product['number']" width="100"/>
-                <option type="column" name="productName" fields="product"
-                        link="true" expression="#product['name']" width="120"/>
-                <option type="column" name="technologyNumber" fields="technology"
-                        expression="#technology['number']" width="100"/>
+            <component type="grid" name="masterOrderProducts" useDto="true" source="#{form}.masterOrderProductsDto"
+                       model="masterOrderPositionDto" reference="masterOrderProducts"
+                       defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
+
+                <option type="column" name="productNumber" fields="productNumber"
+                        link="true"  width="100"/>
+                <option type="column" name="productName" fields="productName"
+                        link="true" width="120"/>
+                <option type="column" name="technologyName" fields="technologyName"
+                         width="100"/>
                 <option type="column" name="masterOrderPositionStatus"
                         fields="masterOrderPositionStatus" width="100"/>
                 <option type="column" name="comments"
                         fields="comments" width="100"/>
                 <option type="column" name="masterOrderQuantity"
                         fields="masterOrderQuantity" width="60"/>
+
                 <option type="column" name="cumulatedOrderQuantity"
-                        fields="cumulatedOrderQuantity" width="60"/>
+                        fields="cumulatedMasterOrderQuantity" width="60"/>
+
                 <option type="column" name="leftToRelease"
                         fields="leftToRelease" width="60"/>
+
                 <option type="column" name="producedOrderQuantity"
                         fields="producedOrderQuantity" width="60"/>
-                <option type="column" name="productUnit" fields="product"
-                        expression="#product['unit']" width="60"/>
-                <option type="column" name="assortmentName"
-                        expression="#product.get('assortment')?.get('name')" width="120"/>
+
+                <option type="column" name="unit" fields="unit"
+                         width="60"/>
+
+                <option type="column" name="assortmentName" fields="assortmentName"
+                        width="120"/>
 
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
                 <option type="orderable"
-                        value="productNumber,productName,masterOrderQuantity,productUnit,masterOrderPositionStatus,comments,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -446,17 +453,20 @@
                         class="com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier"
                         method="filterByMasterOrderNumber"/>
             </component>
-            <component type="grid" name="orders" reference="orders"
-                       source="#{form}.orders" defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
+
+            <component type="grid" name="orders" useDto="true" source="#{form}.ordersDto"
+                       model="orderListDto" reference="orders" plugin="orders"
+                       defaultAuthorizationRole="ROLE_PLANNING_MASTER_ORDERS">
+
                 <option type="column" name="number" fields="number" link="true"/>
-                <option type="column" name="productNumber" fields="product"
-                        expression="#product['number']" link="true"/>
-                <option type="column" name="technologyNumber" fields="technology"
-                        expression="#technology['number']" link="true"/>
+                <option type="column" name="productNumber" fields="productNumber"
+                       link="true"/>
+                <option type="column" name="technologyNumber" fields="technologyNumber"
+                       link="true"/>
                 <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
                 <option type="column" name="doneQuantity" fields="doneQuantity"/>
-                <option type="column" name="unit" fields="product"
-                        expression="#product['unit']"/>
+                <option type="column" name="unit" fields="unit"
+                      />
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="startDate" fields="startDate"/>
                 <option type="column" name="finishDate" fields="finishDate"/>
@@ -465,9 +475,9 @@
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate,deadline"/>
+                        value="number,productNumber,technologyNumber,plannedQuantity,doneQuantity,unit,state,startDate,finishDate,deadline"/>
                 <option type="orderable"
-                        value="number,productNumber,technologyNumber,plannedQuantity,unit,state,startDate,finishDate,deadline"/>
+                        value="number,productNumber,technologyNumber,plannedQuantity,doneQuantity,unit,state,startDate,finishDate,deadline"/>
 
                 <option type="weakRelation" value="true"/>
                 <option type="correspondingLookup" value="ordersLookup"/>

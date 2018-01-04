@@ -81,8 +81,6 @@
         <validatesWith
                 class="com.qcadoo.mes.masterOrders.validators.MasterOrderProductValidators"
                 method="onValidate"/>
-        <onView class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
-                method="onView"/>
         <onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
                   method="onDelete"/>
     </hooks>

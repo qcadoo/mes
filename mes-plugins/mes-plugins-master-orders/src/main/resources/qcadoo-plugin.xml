@@ -100,6 +100,12 @@
                              plugin="masterOrders" lazy="true"/>
         </model:model-field>
 
+
+        <model:model-field model="orderListDto" plugin="orders">
+            <model:belongsTo name="masterOrder" model="masterOrder"
+                             plugin="masterOrders" persistent="false"/>
+        </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:belongsTo name="masterOrderProductComponent" model="masterOrderProduct"
                              plugin="masterOrders" lazy="true"/>

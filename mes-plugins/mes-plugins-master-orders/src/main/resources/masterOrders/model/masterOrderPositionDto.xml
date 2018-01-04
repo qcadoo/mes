@@ -30,6 +30,8 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
+        <belongsTo name="masterOrder" model="masterOrder" persistent="false"/>
+
         <string name="masterOrderDefinitionNumber"/>
         <string name="number"/>
         <string name="name"/>

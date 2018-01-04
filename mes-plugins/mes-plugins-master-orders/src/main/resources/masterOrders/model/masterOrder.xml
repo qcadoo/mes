@@ -81,6 +81,13 @@
                  model="masterOrderProduct" cascade="delete"/>
 
 
+        <hasMany name="masterOrderProductsDto" joinField="masterOrder" model="masterOrderPositionDto"
+                 cascade="nullify" copyable="false" persistent="false" />
+
+        <hasMany name="ordersDto" joinField="masterOrder" model="orderListDto"
+                 plugin="orders" cascade="nullify" copyable="false" persistent="false"/>
+
+
         <enum name="state" values="01new,02inExecution,03completed,04declined"
               default="01new" required="true" copyable="false"/>
 

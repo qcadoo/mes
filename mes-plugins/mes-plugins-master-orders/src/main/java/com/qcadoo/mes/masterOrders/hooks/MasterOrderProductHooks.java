@@ -23,17 +23,17 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Service
 public class MasterOrderProductHooks {
@@ -51,40 +51,6 @@ public class MasterOrderProductHooks {
 
     public boolean onDelete(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
         return checkAssignedOrder(masterOrderProduct);
-    }
-
-    public void onView(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
-        countCumulativeOrderQuantity(masterOrderProduct);
-        fillRegisteredQuantity(masterOrderProduct);
-        calculateLeftToRelease(masterOrderProduct);
-    }
-
-    private void calculateLeftToRelease(Entity masterOrderProduct) {
-        BigDecimal value = BigDecimalUtils.convertNullToZero(masterOrderProduct.getDecimalField("masterOrderQuantity")).subtract(
-                BigDecimalUtils.convertNullToZero(masterOrderProduct.getDecimalField("producedOrderQuantity")),
-                numberService.getMathContext());
-        if (BigDecimal.ZERO.compareTo(value) == 1) {
-            value = BigDecimal.ZERO;
-        }
-        masterOrderProduct.setField(MasterOrderProductFields.LEFT_TO_RELASE, value);
-    }
-
-    private void fillRegisteredQuantity(Entity masterOrderProduct) {
-        BigDecimal doneQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersDoneQuantities(
-                masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER),
-                masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT));
-        masterOrderProduct.setField("producedOrderQuantity", doneQuantity);
-
-    }
-
-    private void countCumulativeOrderQuantity(final Entity masterOrderProduct) {
-        if (masterOrderProduct.getId() == null) {
-            return;
-        }
-        BigDecimal cumulativeQuantity = masterOrderOrdersDataProvider.sumBelongingOrdersPlannedQuantities(
-                masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER),
-                masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT));
-        masterOrderProduct.setField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY, cumulativeQuantity);
     }
 
     private boolean checkAssignedOrder(final Entity masterOrderProduct) {

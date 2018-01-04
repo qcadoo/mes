@@ -46,6 +46,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -151,12 +152,12 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         if (PluginUtils.isEnabled("goodFood")) {
-            Entity entity = masterOrderProductsGrid.getEntities().get(0);
+            Entity entity = extractMasterOrderProduct(masterOrderProductsGrid.getEntities().get(0));
             Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
             parameters.put("form.masterOrderProduct", product.getId());
             parameters.put("form.masterOrderProductComponent", entity.getId());
         } else {
-            Entity entity = masterOrderProductsGrid.getSelectedEntities().get(0);
+            Entity entity = extractMasterOrderProduct(masterOrderProductsGrid.getSelectedEntities().get(0));
             Entity product = entity.getBelongsToField(MasterOrderProductFields.PRODUCT);
             parameters.put("form.masterOrderProduct", product.getId());
             parameters.put("form.masterOrderProductComponent", entity.getId());
@@ -167,6 +168,16 @@ public class MasterOrderDetailsListeners {
         String url = "../page/orders/orderDetails.html";
 
         view.redirectTo(url, false, true, parameters);
+    }
+
+    private Entity extractMasterOrderProduct(Entity masterOrderProduct) {
+        Optional<Entity> dtoEntity = Optional.ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(
+                masterOrderProduct.getId()));
+        if (dtoEntity.isPresent()) {
+           return dtoEntity.get();
+        } else {
+            return masterOrderProduct;
+        }
     }
 
 }
