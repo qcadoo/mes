@@ -212,7 +212,9 @@ public class CostNormsForMaterialsService {
             Map<Long, List<Entity>> orderMaterialCostsGroupedByProductId = orderMaterialCostsList.stream().collect(
                     Collectors.groupingBy(e -> e.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT).getId()));
 
-            for (Long productId : productsInfoGroupedByProductId.keySet()) {
+            for (Map.Entry<Long, ProductWithQuantityAndCost> entry : productsInfoGroupedByProductId.entrySet()) {
+
+                Long productId = entry.getKey();
 
                 if (orderMaterialCostsGroupedByProductId.containsKey(productId)) {
 
@@ -221,7 +223,7 @@ public class CostNormsForMaterialsService {
 
                     Entity orderMaterialCosts = orderMaterialCostsForProduct.get(0);
 
-                    Optional<BigDecimal> costForOrder = productsInfoGroupedByProductId.get(productId).getCostOpt();
+                    Optional<BigDecimal> costForOrder = entry.getValue().getCostOpt();
                     orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
                             numberService.setScale(costForOrder.orElse(BigDecimal.ZERO)));
                     BigDecimal oldQuantity = orderMaterialCosts
@@ -232,7 +234,7 @@ public class CostNormsForMaterialsService {
                                 "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
                                 orderMaterialCosts.getId()));
                     } else {
-                        Optional<BigDecimal> newQuantity = productsInfoGroupedByProductId.get(productId).getQuantityOpt();
+                        Optional<BigDecimal> newQuantity = entry.getValue().getQuantityOpt();
                         updateCosts(zeroToOne(newQuantity.orElse(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
                     }
                     result.add(orderMaterialCosts.getDataDefinition().save(orderMaterialCosts));
