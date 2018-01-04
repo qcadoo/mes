@@ -145,7 +145,7 @@
             <component type="form" name="productionLine" reference="form"
                        defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="mainTabGridLayout" columns="3"
-                           rows="5">
+                           rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number" reference="number"/>
                     </layoutElement>
@@ -157,6 +157,10 @@
                                    reference="productionLinePlaces" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="1" row="5">
+                        <component type="select" name="placeInSCADA" field="placeInSCADA"
+                                   reference="placeInSCADA" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
                         <component type="checkbox" name="production"
                                    field="#{form}.production" reference="production">
                         </component>
