@@ -37,6 +37,8 @@ public final class ProductionLineFields {
 
     public static final String PLACE = "place";
 
+    public static final String PLACE_IN_SCADA = "placeInSCADA";
+
     public static final String DESCRIPTION = "description";
 
     public static final String DOCUMENTATION = "documentation";

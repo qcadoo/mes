@@ -38,6 +38,8 @@
         <manyToMany name="divisions" model="division" plugin="basic" cascade="nullify" joinField="productionLines"/>
         <dictionary name="place" dictionary="productionLinePlaces"
                     required="false"/>
+        <dictionary name="placeInSCADA" dictionary="productionLinePlacesForSCADA"
+                    required="false"/>
         <string name="description">
             <validatesLength max="2048"/>
         </string>

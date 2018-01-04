@@ -62,6 +62,7 @@
         <localization:translation path="locales"/>
 
         <model:dictionary name="productionLinePlaces"/>
+        <model:dictionary name="productionLinePlacesForSCADA"/>
 
         <model:model model="productionLine" resource="model/productionLine.xml"/>
         <model:model model="factoryStructureElement" resource="model/factoryStructureElement.xml"/>
