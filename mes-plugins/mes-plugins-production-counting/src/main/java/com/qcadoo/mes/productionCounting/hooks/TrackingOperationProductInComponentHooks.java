@@ -23,38 +23,23 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.hooks.helpers.AbstractPlannedQuantitiesCounter;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
 @Service
-public class TrackingOperationProductInComponentHooks extends AbstractPlannedQuantitiesCounter {
+public class TrackingOperationProductInComponentHooks {
 
     @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
-
-    public TrackingOperationProductInComponentHooks() {
-        super(ProductionCountingQuantityRole.USED);
-    }
-
-    public void onView(final DataDefinition trackingOperationProductInComponentDD,
-            final Entity trackingOperationProductInComponent) {
-        fillPlannedQuantity(trackingOperationProductInComponent);
-    }
-
-    public void fillPlannedQuantity(final Entity trackingOperationProductInComponent) {
-        trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY,
-                getPlannedQuantity(trackingOperationProductInComponent));
-    }
 
     public void onSave(final DataDefinition trackingOperationProductInComponentDD, Entity trackingOperationProductInComponent) {
         fillSetTechnologyInComponents(trackingOperationProductInComponent);

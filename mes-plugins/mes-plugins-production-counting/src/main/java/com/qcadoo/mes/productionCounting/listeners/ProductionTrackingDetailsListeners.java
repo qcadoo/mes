@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -37,11 +49,19 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductDtoFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
@@ -54,17 +74,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -98,6 +107,9 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("trackingOperationProductInComponents");
@@ -231,8 +243,21 @@ public class ProductionTrackingDetailsListeners {
         for (Entity recordOperationProductComponent : recordOperationProductComponents) {
             Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
-            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponent
-                    .getDecimalField(TrackingOperationProductInComponentFields.PLANNED_QUANTITY));
+            Entity recordOperationProductComponentDto;
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
+                    .equals(recordOperationProductComponent.getDataDefinition().getName())) {
+                recordOperationProductComponentDto = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                        .get(recordOperationProductComponent.getId());
+            } else {
+                recordOperationProductComponentDto = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
+                        .get(recordOperationProductComponent.getId());
+            }
+            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponentDto
+                    .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
                     numberService.setScale(plannedQuantity));
 

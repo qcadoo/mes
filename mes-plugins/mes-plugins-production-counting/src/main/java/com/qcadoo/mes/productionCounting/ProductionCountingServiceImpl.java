@@ -58,7 +58,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -503,39 +502,5 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         }
 
         return value;
-    }
-
-    @Override
-    public BigDecimal getWastesSumForProduct(Entity product, Entity order, Entity operation) {
-        return getFieldSum(product, order, operation, TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
-    }
-
-    @Override
-    public BigDecimal getUsedQuantitySumForProduct(Entity product, Entity order, Entity operation) {
-        return getFieldSum(product, order, operation, TrackingOperationProductOutComponentFields.USED_QUANTITY);
-    }
-
-    private BigDecimal getFieldSum(final Entity product, final Entity order, final Entity operation, String fieldToSum) {
-
-        DataDefinition trackingOpocDD = getTrackingOperationProductOutComponentDD();
-        String hql = "SELECT coalesce(SUM(opoc." + fieldToSum + "), 0) AS sum "
-                + "FROM #productionCounting_trackingOperationProductOutComponent opoc " + "JOIN opoc.productionTracking AS pt "
-                + "WHERE pt.order = :order_id AND opoc.product = :product_id AND pt.state = '02accepted' AND " + fieldToSum
-                + " IS NOT NULL ";
-        if (operation != null) {
-            hql = hql + "AND pt.technologyOperationComponent = :toc_id ";
-        }
-        SearchQueryBuilder scb = trackingOpocDD.find(hql);
-        scb.setLong("order_id", order.getId());
-        scb.setLong("product_id", product.getId());
-        if (operation != null) {
-            scb.setLong("toc_id", operation.getId());
-        }
-        Entity result = scb.setMaxResults(1).uniqueResult();
-        if (result == null) {
-            return BigDecimal.ZERO;
-        }
-        return result.getDecimalField("sum");
-
     }
 }

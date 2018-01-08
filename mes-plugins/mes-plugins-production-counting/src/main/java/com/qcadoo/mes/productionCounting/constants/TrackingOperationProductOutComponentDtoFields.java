@@ -23,32 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.constants;
 
-public final class TrackingOperationProductInComponentFields {
+public final class TrackingOperationProductOutComponentDtoFields {
 
-    private TrackingOperationProductInComponentFields() {
+    private TrackingOperationProductOutComponentDtoFields() {
 
     }
 
-    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    public static final String PRODUCTION_TRACKING = "productionTracking";
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
 
-    public static final String PRODUCT = "product";
+    public static final String PRODUCED_SUM = "producedSum";
 
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String GIVEN_QUANTITY = "givenQuantity";
-
-    public static final String GIVEN_UNIT = "givenUnit";
-
-    public static final String SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
-
-    public static final String WASTE_UNIT = "wasteUnit";
-
-    public static final String WASTE_USED = "wasteUsed";
-
-    public static final String WASTE_USED_ONLY = "wasteUsedOnly";
-
-    public static final String WASTE_USED_QUANTITY = "wasteUsedQuantity";
+    public static final String WASTES_SUM = "wastesSum";
 
 }
