@@ -36,7 +36,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
@@ -64,9 +63,6 @@ public class TrackingOperationProductOutComponentHooks {
 
     @Autowired
     private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponentsService;
-
-    @Autowired
-    private ProductionCountingService productionCountingService;
 
     @Autowired
     private ProductUnitsConversionService productUnitsConversionService;

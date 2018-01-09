@@ -69,6 +69,8 @@ public final class ProductionTrackingListenerService {
 
     private static final String L_PRODUCT = "product";
 
+    private static final String L_COUNT = "count";
+
     @Autowired
     private NumberService numberService;
 
@@ -131,9 +133,9 @@ public final class ProductionTrackingListenerService {
         final SearchCriteriaBuilder searchBuilder = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
                 .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY))
-                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), "count")).addOrder(asc("count"));
+                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField("count") > 0;
+        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) > 0;
     }
 
     public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
@@ -141,9 +143,9 @@ public final class ProductionTrackingListenerService {
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
                 .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)))
-                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), "count")).addOrder(asc("count"));
+                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField("count") > 0;
+        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) > 0;
     }
 
     public void checkIfExistsFinalRecord(final Entity productionTracking) {

@@ -37,9 +37,6 @@ public class AnomalyProductionTrackingDetailsHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TrackingOperationProductInComponentHooks trackingOperationProductInComponentHooks;
-
-    @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
