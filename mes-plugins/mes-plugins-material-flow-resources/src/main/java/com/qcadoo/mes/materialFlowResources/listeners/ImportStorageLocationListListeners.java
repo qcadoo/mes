@@ -1,6 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.qcadoo.mes.materialFlowResources.storagelocation.imports.ImportStorageLocationService;
+import com.qcadoo.mes.materialFlowResources.storagelocation.imports.ImportStorageLocationsResult;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ImportStorageLocationListListeners {
@@ -29,10 +31,14 @@ public class ImportStorageLocationListListeners {
                     ComponentState.MessageType.FAILURE);
             return;
         }
-        boolean imported = importService.importPositionsFromFile(entity, view);
-        if (imported) {
-            view.addMessage("materialFlowResources.importStorageLocationList.importPositions.impsuccess",
+        ImportStorageLocationsResult result = importService.importPositionsFromFile(entity, view);
+        if (result.isImported()) {
+            view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.success",
                     ComponentState.MessageType.SUCCESS);
+            if(!result.getNotExistingProducts().isEmpty()) {
+                view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.success.notExistingProducts",
+                        ComponentState.MessageType.INFO, result.getNotExistingProducts().stream().collect(Collectors.joining(", ")));
+            }
         } else {
               view.addMessage("materialFlowResources.importStorageLocationList.importPositions.import.failure",
                             ComponentState.MessageType.FAILURE, false);
