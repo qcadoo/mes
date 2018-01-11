@@ -28,4 +28,6 @@ import com.qcadoo.model.api.Entity;
 public interface ResourceCorrectionService {
 
     boolean createCorrectionForResource(final Entity resource);
+
+    long getPalletsCountInStorageLocation(final Entity newStorageLocation);
 }
