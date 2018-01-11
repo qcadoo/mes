@@ -146,14 +146,12 @@ public class ProductionTrackingDetailsListeners {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
-        Entity productionTracking = productionTrackingForm.getEntity();
-        // detailedProductionCountingList
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity order = productionTrackingForm.getEntity().getBelongsToField(ProductionTrackingFields.ORDER);
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("window.mainTab.order.id", order.getId());
         parameters.put("form.productionTrackingId", productionTrackingId);
 
-        String url = "/page/basicProductionCounting/detailedProductionCountingList.html";
+        String url = "/page/basicProductionCounting/detailedProductionCountingAndProgressList.html";
         view.redirectTo(url, false, true, parameters);
 
     }

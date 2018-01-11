@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -68,6 +69,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         Entity productionCountingQuantity = productionCountingQuantityForm.getEntity();
 
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity basicProductionCounting = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
 
         if (order != null) {
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -77,6 +80,25 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
                 filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
 
                 technologyOperationComponentLookup.setFilterValue(filterValueHolder);
+
+                return;
+            }
+        }
+
+        if (basicProductionCounting != null) {
+            Entity basicProductionCountingOrder = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
+
+            if (basicProductionCountingOrder != null) {
+                Entity technology = basicProductionCountingOrder.getBelongsToField(OrderFields.TECHNOLOGY);
+
+                if (technology != null) {
+                    FilterValueHolder filterValueHolder = technologyOperationComponentLookup.getFilterValue();
+                    filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
+
+                    technologyOperationComponentLookup.setFilterValue(filterValueHolder);
+
+                    return;
+                }
             }
         }
     }
@@ -103,6 +125,32 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     private void updateFieldComponentState(final FieldComponent filedComponent, final boolean isEnabled) {
         filedComponent.setEnabled(isEnabled);
         filedComponent.requestComponentUpdateState();
+    }
+
+    public void fillProductField(final ViewDefinitionState view) {
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
+
+        Long productionCountingQuantityId = productionCountingQuantityForm.getEntityId();
+
+        if (productionCountingQuantityId != null) {
+            return;
+        }
+
+        Entity productionCountingQuantity = productionCountingQuantityForm.getEntity();
+
+        Entity basicProductionCounting = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
+
+        if (basicProductionCounting != null) {
+            Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
+
+            if (product != null) {
+                productLookup.setFieldValue(product.getId());
+                productLookup.setEnabled(false);
+                productLookup.requestComponentUpdateState();
+            }
+        }
     }
 
     public void hideFieldsDependsOfState(final ViewDefinitionState view) {

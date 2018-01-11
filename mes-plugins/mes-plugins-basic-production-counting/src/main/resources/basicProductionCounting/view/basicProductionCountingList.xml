@@ -50,20 +50,6 @@
 						]]>
 					</script>
 				</bigButton>
-				<bigButton name="showDetailedProductionCounting"
-					icon="genealogyIcon24.png">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if(window.canClose()) {
-										#{order}.performEvent('showDetailedProductionCounting', []);
-									}
-								}
-							});		
-						]]>
-					</script>
-				</bigButton>
 			</group>
 		</ribbon>
 
@@ -72,10 +58,6 @@
 				event="showDetailedProductionCountingAndProgress" 
 				class="com.qcadoo.mes.basicProductionCounting.listeners.BasicProductionCountingListListeners" 
 				method="showDetailedProductionCountingAndProgress" />
-			<listener 
-				event="showDetailedProductionCounting" 
-				class="com.qcadoo.mes.basicProductionCounting.listeners.BasicProductionCountingListListeners" 
-				method="showDetailedProductionCounting" />
 		</component>
 		<component type="form" name="basicProductionCounting"
 			reference="form">
@@ -110,9 +92,6 @@
 	</component>
 
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingListHooks"
-			method="updateRibbonState" />
 	</hooks>
 
 </view>

@@ -32,7 +32,7 @@
 
         <ribbon>
             <template name="standardFormTemplate"
-                      excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh"/>
+                      excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh,actions.saveNew"/>
         </ribbon>
 
         <component type="form" name="productionCountingQuantityDetails"
@@ -159,6 +159,9 @@
         <beforeRender
                 class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
                 method="hideFieldsDependsOfState"/>
+        <beforeRender
+                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
+                method="fillProductField" />
         <beforeRender
                 class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
                 method="fillUnitFields"/>

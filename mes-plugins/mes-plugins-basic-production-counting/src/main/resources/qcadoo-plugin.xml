@@ -138,9 +138,7 @@
 		<view:view resource="view/basicProductionCountingList.xml" />
 		<view:view resource="view/basicProductionCountingDetails.xml" />
 		<view:view resource="view/detailedProductionCountingAndProgressList.xml" />
-		<view:view resource="view/detailedProductionCountingList.xml" />
 		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
-		<view:view resource="view/productionCountingQuantityDetails.xml" />
 	</modules>
 
 	<features>
