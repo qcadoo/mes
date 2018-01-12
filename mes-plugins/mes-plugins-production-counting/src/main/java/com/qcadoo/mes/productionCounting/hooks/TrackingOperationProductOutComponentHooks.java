@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -79,11 +80,8 @@ public class TrackingOperationProductOutComponentHooks {
         Entity productionTracking = trackingOperationProductOutComponent
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
 
-        Entity product = trackingOperationProductOutComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-
         if (checkIfShouldfillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent,
-                productionTracking, product)) {
+                productionTracking)) {
             BigDecimal usedQuantity = trackingOperationProductOutComponent
                     .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             BigDecimal wastesQuantity = trackingOperationProductOutComponent
@@ -113,8 +111,13 @@ public class TrackingOperationProductOutComponentHooks {
     }
 
     private boolean checkIfShouldfillTrackingOperationProductInComponentsQuantities(Entity trackingOperationProductOutComponent,
-            final Entity productionTracking, final Entity product) {
+            final Entity productionTracking) {
+        if (Objects.isNull(trackingOperationProductOutComponent.getId())) {
+            return false;
+        }
 
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
