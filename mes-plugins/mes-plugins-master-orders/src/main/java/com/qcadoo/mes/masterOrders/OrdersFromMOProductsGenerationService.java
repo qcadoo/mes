@@ -11,6 +11,7 @@ import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -51,6 +52,8 @@ public class OrdersFromMOProductsGenerationService {
             "autoCloseOrder", "typeOfProductionRecording");
 
     public static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
+
+    public static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -244,8 +247,9 @@ public class OrdersFromMOProductsGenerationService {
 
     private BigDecimal getPlannedQuantityForOrder(final Entity masterOrderProduct) {
         BigDecimal masterOrderQuantity, cumulatedOrderQuantity;
-        masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
-        cumulatedOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
+        Entity masterOrderProductDto = getMasterOrderProductDtoDD().get(masterOrderProduct.getId());
+        masterOrderQuantity = masterOrderProductDto.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+        cumulatedOrderQuantity = masterOrderProductDto.getDecimalField(CUMULATED_MASTER_ORDER_QUANTITY);
 
         BigDecimal quantity = masterOrderQuantity.subtract(convertNullToZero(cumulatedOrderQuantity));
 
@@ -299,6 +303,10 @@ public class OrdersFromMOProductsGenerationService {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
+    private DataDefinition getMasterOrderProductDtoDD() {
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
+    }
+    
     private List<Entity> getAllShifts() {
         return getShiftDataDefinition().find().list().getEntities();
     }

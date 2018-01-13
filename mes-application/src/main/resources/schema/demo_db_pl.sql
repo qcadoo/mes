@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.9
--- Dumped by pg_dump version 9.5.9
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.5.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -3196,7 +3196,8 @@ CREATE TABLE productionlines_productionline (
     eurocodsymbol character varying(3),
     availabilityindicator numeric(12,5),
     production boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    placeinscada character varying(255)
 );
 
 
@@ -10346,6 +10347,29 @@ CREATE SEQUENCE orders_orderdto_id_seq
 
 
 --
+-- Name: ordersgroups_ordersgroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE ordersgroups_ordersgroup (
+    id bigint NOT NULL,
+    number character varying(255),
+    assortment_id bigint,
+    productionline_id bigint,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    deadline timestamp without time zone,
+    quantity numeric(12,5),
+    producedquantity numeric(12,5),
+    remainingquantity numeric(12,5),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    active boolean DEFAULT true,
+    masterorder_id bigint,
+    parent_id bigint,
+    remainingquantityinorders numeric
+);
+
+
+--
 -- Name: repairs_repairorder; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10394,6 +10418,7 @@ CREATE VIEW orders_orderlistdto AS
     ordersorder.externalsynchronized,
     ordersorder.issubcontracted,
     ordersorder.plannedquantity,
+    ordersorder.donequantity,
     ordersorder.workplandelivered,
     ordersorder.deadline,
     ordersorder.ordercategory,
@@ -10411,13 +10436,16 @@ CREATE VIEW orders_orderlistdto AS
                FROM repairs_repairorder repairoder
               WHERE (repairoder.order_id = ordersorder.id))) THEN true
             ELSE false
-        END AS existsrepairorders
-   FROM ((((((orders_order ordersorder
+        END AS existsrepairorders,
+    (masterorder.id)::integer AS masterorderid,
+    ordersgroup.number AS ordersgroupnumber
+   FROM (((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
      LEFT JOIN basic_division division ON ((division.id = technology.division_id)));
 
 
@@ -10870,29 +10898,6 @@ CREATE SEQUENCE ordersgroups_drafrptquantitydto_id_seq
 
 
 --
--- Name: ordersgroups_ordersgroup; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ordersgroups_ordersgroup (
-    id bigint NOT NULL,
-    number character varying(255),
-    assortment_id bigint,
-    productionline_id bigint,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    deadline timestamp without time zone,
-    quantity numeric(12,5),
-    producedquantity numeric(12,5),
-    remainingquantity numeric(12,5),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    active boolean DEFAULT true,
-    masterorder_id bigint,
-    parent_id bigint,
-    remainingquantityinorders numeric
-);
-
-
---
 -- Name: ordersgroups_ordersgroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11018,7 +11023,7 @@ CREATE VIEW ordersgroups_plannedworkingtimeanalysisdto AS
      LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
-  WHERE (((ordersgroup.state)::text = ANY ((ARRAY['01draft'::character varying, '02inProgress'::character varying])::text[])) AND (ordersorder.remainingamountofproducttoproduce <> (0)::numeric));
+  WHERE (((ordersgroup.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02inProgress'::character varying)::text])) AND (ordersorder.remainingamountofproducttoproduce <> (0)::numeric));
 
 
 --
@@ -13693,7 +13698,7 @@ CREATE VIEW productioncounting_productiontrackingdto AS
      LEFT JOIN repairs_repairorderdto repairorderdto ON ((repairorderdto.id = productiontracking.repairorder_id)))
      LEFT JOIN ordersgroups_ordersgroupdto ordersgroupdto ON ((ordersgroupdto.id = ordersorder.ordersgroup_id)))
      LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY ((ARRAY['02intermediate'::character varying, '03finalProduct'::character varying])::text[])) AND ((pcq.role)::text = '02produced'::text))))
+     LEFT JOIN basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('02intermediate'::character varying)::text, ('03finalProduct'::character varying)::text])) AND ((pcq.role)::text = '02produced'::text))))
      LEFT JOIN basic_product outproduct ON ((pcq.product_id = outproduct.id)))
      LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))));
 
@@ -13758,7 +13763,7 @@ CREATE VIEW productioncounting_trackingoperationproductincomponenthelper AS
      LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductincomponent.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
-  WHERE ((productiontracking.state)::text <> ALL ((ARRAY[('03declined'::text)::character varying, ('04corrected'::text)::character varying])::text[]))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
   GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
 
 
@@ -13784,7 +13789,7 @@ CREATE VIEW productioncounting_trackingoperationproductoutcomponenthelper AS
      LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
-  WHERE ((productiontracking.state)::text <> ALL ((ARRAY[('03declined'::text)::character varying, ('04corrected'::text)::character varying])::text[]))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
   GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
 
 
@@ -14154,6 +14159,7 @@ CREATE VIEW productioncounting_trackingoperationproductincomponentdto AS
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
+    (product.id)::integer AS productid,
     COALESCE(sum(productioncountingquantity.plannedquantity), (0)::numeric) AS plannedquantity,
     trackingoperationproductincomponent.usedquantity,
     trackingoperationproductincomponent.obtainedquantity,
@@ -14166,13 +14172,14 @@ CREATE VIEW productioncounting_trackingoperationproductincomponentdto AS
      LEFT JOIN advancedgenealogy_batch b ON ((b.id = trackingoperationproductincomponent.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text))))
   WHERE (productiontracking.technologyoperationcomponent_id IS NULL)
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number
 UNION
  SELECT trackingoperationproductincomponent.id,
     (productiontracking.id)::integer AS productiontrackingid,
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
+    (product.id)::integer AS productid,
     COALESCE(sum(productioncountingquantity.plannedquantity), (0)::numeric) AS plannedquantity,
     trackingoperationproductincomponent.usedquantity,
     trackingoperationproductincomponent.obtainedquantity,
@@ -14185,7 +14192,7 @@ UNION
      LEFT JOIN advancedgenealogy_batch b ON ((b.id = trackingoperationproductincomponent.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text))))
   WHERE (productiontracking.technologyoperationcomponent_id IS NOT NULL)
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number, productiontracking.technologyoperationcomponent_id;
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number, productiontracking.technologyoperationcomponent_id;
 
 
 --
@@ -25454,8 +25461,8 @@ SELECT pg_catalog.setval('productionlines_factorystructureelement_id_seq', 1, fa
 -- Data for Name: productionlines_productionline; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productionlines_productionline (id, number, name, division_id, place, description, supportsalltechnologies, documentation, supportsothertechnologiesworkstationtypes, quantityforotherworkstationtypes, active, eurocodsymbol, availabilityindicator, production, entityversion) FROM stdin;
-1	000001	Linia główna	\N	\N	\N	t	\N	t	1	t	\N	\N	\N	0
+COPY productionlines_productionline (id, number, name, division_id, place, description, supportsalltechnologies, documentation, supportsothertechnologiesworkstationtypes, quantityforotherworkstationtypes, active, eurocodsymbol, availabilityindicator, production, entityversion, placeinscada) FROM stdin;
+1	000001	Linia główna	\N	\N	\N	t	\N	t	1	t	\N	\N	\N	0	\N
 \.
 
 
@@ -25593,6 +25600,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 15	masterOrderPositionStatus	masterOrders	t	0
 16	masterOrderState	masterOrders	t	0
 17	occupationType	assignmentToShift	t	0
+18	productionLinePlacesForSCADA	productionLines	t	0
 \.
 
 
@@ -25600,7 +25608,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 17, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 18, true);
 
 
 --

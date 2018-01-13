@@ -52,22 +52,4 @@ public class BasicProductionCountingListListeners {
         view.redirectTo(url, false, true);
     }
 
-    public void showDetailedProductionCounting(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long orderId = (Long) state.getFieldValue();
-
-        if (orderId == null) {
-            return;
-        }
-
-        JSONObject json = new JSONObject();
-        try {
-            json.put("order.id", orderId);
-        } catch (JSONException e) {
-            throw new IllegalStateException(e);
-        }
-
-        String url = "../page/basicProductionCounting/detailedProductionCountingList.html?context=" + json.toString();
-        view.redirectTo(url, false, true);
-    }
-
 }

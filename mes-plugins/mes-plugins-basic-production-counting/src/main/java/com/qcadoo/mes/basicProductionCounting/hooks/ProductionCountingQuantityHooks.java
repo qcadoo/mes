@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.util.List;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,6 +37,8 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
@@ -92,9 +94,10 @@ public class ProductionCountingQuantityHooks {
     }
 
     private boolean checkIfBasicProductionCountingIsEmpty(final Entity order) {
-        List<Entity> basicProductionCounting = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS);
+        SearchCriteriaBuilder searchBuilder = order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).find()
+                .setProjection(SearchProjections.alias(SearchProjections.rowCount(), "count")).addOrder(asc("count"));
 
-        return ((basicProductionCounting == null) || basicProductionCounting.isEmpty());
+        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField("count") == 0;
     }
 
     private Entity fillBasicProductionCounting(final Entity order, final Entity product) {

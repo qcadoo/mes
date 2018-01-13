@@ -37,6 +37,7 @@
         <datetime name="deadline"/>
         <enum name="state" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
         <decimal name="plannedQuantity"/>
+        <decimal name="doneQuantity"/>
         <decimal name="plannedQuantityForAdditionalUnit"/>
         <string name="externalNumber"/>
         <boolean name="externalSynchronized" default="true"/>
@@ -51,6 +52,8 @@
         <string name="companyName"/>
         <string name="orderCategory"/>
         <string name="unitForAdditionalUnit"/>
+        <string name="ordersGroupNumber"/>
+        <integer name="masterOrderId"/>
 
     </fields>
     <identifier expression="#number + ' - ' + #name"/>

@@ -24,17 +24,18 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 
 import java.math.BigDecimal;
-
-import junit.framework.Assert;
+import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -46,6 +47,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.google.common.base.Optional;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -75,7 +77,7 @@ public class CostNormsForMaterialsServiceTest {
     }
 
     private void stubOrderMaterialSearchResults(final Entity orderMaterial) {
-        given(orderMaterialCostsDataProvider.find(eq(order.getId()), anyLong())).willReturn(Optional.fromNullable(orderMaterial));
+        given(orderMaterialCostsDataProvider.findAll(anyObject())).willReturn(Collections.singletonList(orderMaterial));
     }
 
     private Entity mockMaterialCostsEntity(final BigDecimal averageCost, final BigDecimal costForNumber,
@@ -85,6 +87,7 @@ public class CostNormsForMaterialsServiceTest {
         stubDecimalField(entity, TechnologyInstOperProductInCompFields.COST_FOR_NUMBER, costForNumber);
         stubDecimalField(entity, TechnologyInstOperProductInCompFields.NOMINAL_COST, nominalCost);
         stubDecimalField(entity, TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST, lastPurchaseCost);
+        stubBelongsToField(entity, TechnologyInstOperProductInCompFields.PRODUCT, mockEntity(1L));
         return entity;
     }
 
@@ -122,8 +125,8 @@ public class CostNormsForMaterialsServiceTest {
         stubOrderMaterialSearchResults(materialCosts);
 
         // when
-        costNormsForMaterialsService.updateCostsForProductInOrder(order, productId, Optional.fromNullable(newQuantity),
-                Optional.fromNullable(newCostForOrder));
+        costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                Collections.singleton(new ProductWithQuantityAndCost(productId, newQuantity, newCostForOrder)));
 
         // then
         verifySetDecimalField(materialCosts, TechnologyInstOperProductInCompFields.COST_FOR_ORDER, newCostForOrder);
@@ -149,8 +152,8 @@ public class CostNormsForMaterialsServiceTest {
         stubOrderMaterialSearchResults(materialCosts);
 
         // when
-        costNormsForMaterialsService.updateCostsForProductInOrder(order, productId, Optional.fromNullable(newQuantity),
-                Optional.fromNullable(newCostForOrder));
+        costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                Collections.singleton(new ProductWithQuantityAndCost(productId, newQuantity, newCostForOrder)));
 
         // then
         verifySetDecimalField(materialCosts, TechnologyInstOperProductInCompFields.COST_FOR_ORDER, newCostForOrder);
@@ -176,8 +179,8 @@ public class CostNormsForMaterialsServiceTest {
         stubOrderMaterialSearchResults(materialCosts);
 
         // when
-        costNormsForMaterialsService.updateCostsForProductInOrder(order, productId, Optional.fromNullable(newQuantity),
-                Optional.fromNullable(newCostForOrder));
+        costNormsForMaterialsService.updateCostsForProductInOrder(order,
+                Collections.singleton(new ProductWithQuantityAndCost(productId, newQuantity, newCostForOrder)));
 
         // then
         verifySetDecimalField(materialCosts, TechnologyInstOperProductInCompFields.COST_FOR_ORDER, newCostForOrder);

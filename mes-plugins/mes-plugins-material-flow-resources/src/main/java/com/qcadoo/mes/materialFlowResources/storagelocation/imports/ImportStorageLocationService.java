@@ -7,10 +7,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -40,18 +42,20 @@ public class ImportStorageLocationService {
     private FileService fileService;
 
     @Transactional
-    public boolean importPositionsFromFile(final Entity entity, final ViewDefinitionState view) {
+    public ImportStorageLocationsResult importPositionsFromFile(final Entity entity, final ViewDefinitionState view) {
+        ImportStorageLocationsResult result = new ImportStorageLocationsResult();
+
         ImportedStorageLocationsPositionsContainer positionsContainer = importPositionsToContainer(entity, view);
 
         if (!positionsContainer.isImportedPositions()) {
-            return false;
+            result.setImported(false);
+            return result;
         }
 
         Entity warehouse = entity.getBelongsToField(LOCATION);
         warehouse.isValid();
 
         List<StorageLocationDto> storageLocations = findStorageLocationsForWarehouse(warehouse.getId());
-        storageLocations.size();
 
         Map<String, StorageLocationDto> storageLocationsByNumber = storageLocations.stream().collect(
                 Collectors.toMap(StorageLocationDto::getStorageLocationNumber, item -> item));
@@ -62,7 +66,7 @@ public class ImportStorageLocationService {
             if (storageLocationsByNumber.containsKey(position.getStorageLocation())) {
                 storageLocationsToUpdate.add(position);
             } else {
-                createStorageLocation(warehouse.getId(), position);
+                createStorageLocation(result, warehouse.getId(), position);
             }
         }
 
@@ -72,8 +76,9 @@ public class ImportStorageLocationService {
             List<String> productsNumber = storageLocationsToUpdate.stream().map(s -> s.getProduct()).collect(Collectors.toList());
 
             List<ProductDto> prods = findProductsByList(productsNumber);
-            Map<String, Long> productsIdByNumber = prods.stream().collect(
-                    Collectors.toMap(ProductDto::getProductNumber, ProductDto::getProductId));
+            fillResultWithNotExistingProducts(result, productsNumber, prods);
+            Map<String, Long> productsIdByNumber = prods.stream()
+                    .collect(Collectors.toMap(ProductDto::getProductNumber, ProductDto::getProductId));
             for (ImportedStorageLocationPosition position : list) {
                 updateStorageLocation(storageLocationsByNumber.get(position.getStorageLocation()),
                         productsIdByNumber.get(position.getProduct()));
@@ -89,7 +94,15 @@ public class ImportStorageLocationService {
         });
 
         updateStorageLocationInResource(warehouse.getId());
-        return true;
+        return result;
+    }
+
+    private void fillResultWithNotExistingProducts(ImportStorageLocationsResult result, List<String> productsNumberFromFile,
+            List<ProductDto> existingProducts) {
+        Map<String, ProductDto> existingProductsByNumber = existingProducts.stream().collect(
+                Collectors.toMap(ProductDto::getProductNumber, item -> item));
+        productsNumberFromFile.stream().filter(productNumber -> !existingProductsByNumber.containsKey(productNumber))
+                .forEach(result::addNotExcitingProduct);
     }
 
     private int updateStorageLocationInResource(Long warehouse) {
@@ -131,19 +144,31 @@ public class ImportStorageLocationService {
                 ProductDto.class));
     }
 
-    private void createStorageLocation(Long id, ImportedStorageLocationPosition position) {
+    private void createStorageLocation(ImportStorageLocationsResult result, Long id, ImportedStorageLocationPosition position) {
         String insert = "INSERT INTO materialflowresources_storagelocation(number, location_id, product_id, active) "
                 + "VALUES (:number, :location_id, :product_id, :active);";
 
-        String queryProductByNumber = "SELECT id FROM basic_product WHERE number = :number";
-        Map<String, Object> queryProductByNumberParameters = new HashMap<String, Object>();
-        queryProductByNumberParameters.put("number", position.getProduct());
-        Long productId = jdbcTemplate.queryForObject(queryProductByNumber, queryProductByNumberParameters, Long.class);
-
         Map<String, Object> parameters = new HashMap<String, Object>();
+
+        if(StringUtils.isNotEmpty(position.getProduct())) {
+            String queryProductByNumber = "SELECT id FROM basic_product WHERE number = :number";
+            Map<String, Object> queryProductByNumberParameters = new HashMap<String, Object>();
+            queryProductByNumberParameters.put("number", position.getProduct());
+            try {
+                Long productId = jdbcTemplate.queryForObject(queryProductByNumber, queryProductByNumberParameters, Long.class);
+                parameters.put("product_id", productId);
+            } catch (EmptyResultDataAccessException ex) {
+                result.addNotExcitingProduct(position.getProduct());
+                return;
+            }
+
+        } else {
+            result.addNotExcitingProduct(position.getProduct());
+            parameters.put("product_id", null);
+        }
+
         parameters.put("number", position.getStorageLocation());
         parameters.put("location_id", id);
-        parameters.put("product_id", productId);
         parameters.put("active", true);
 
         jdbcTemplate.update(insert, parameters);

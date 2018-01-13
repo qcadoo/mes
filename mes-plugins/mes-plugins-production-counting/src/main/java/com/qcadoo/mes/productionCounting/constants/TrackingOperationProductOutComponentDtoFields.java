@@ -21,24 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basicProductionCounting.rowStyleResolvers;
+package com.qcadoo.mes.productionCounting.constants;
 
-import java.util.Set;
+public final class TrackingOperationProductOutComponentDtoFields {
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+    private TrackingOperationProductOutComponentDtoFields() {
 
-import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.model.api.Entity;
-
-@Service
-public class DetailedProductionCountingListCriteriaModifiers {
-
-    @Autowired
-    private BasicProductionCountingService basicProductionCountingService;
-
-    public Set<String> fillRowStylesDependsOfTypeOfMaterial(final Entity productionCountingQuantity) {
-        return basicProductionCountingService.fillRowStylesDependsOfTypeOfMaterial(productionCountingQuantity);
     }
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
+
+    public static final String PRODUCED_SUM = "producedSum";
+
+    public static final String WASTES_SUM = "wastesSum";
 
 }

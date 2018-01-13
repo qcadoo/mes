@@ -27,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -59,6 +62,9 @@ public class TrackingOperationProductInComponentDetailsHooks {
     @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
 
@@ -68,6 +74,15 @@ public class TrackingOperationProductInComponentDetailsHooks {
 
         toggleEnabledForWastes(view);
         hideOrShowSetTab(view, trackingOperationProductInComponent);
+
+        Entity trackingOperationProductInComponentDto = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                .get(trackingOperationProductInComponentForm.getEntityId());
+        FieldComponent plannedQuantity = (FieldComponent) view
+                .getComponentByReference(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
+        plannedQuantity.setFieldValue(trackingOperationProductInComponentDto
+                .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));
     }
 
     private void toggleEnabledForWastes(final ViewDefinitionState view) {

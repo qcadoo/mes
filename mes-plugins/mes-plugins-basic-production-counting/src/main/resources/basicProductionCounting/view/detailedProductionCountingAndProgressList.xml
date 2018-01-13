@@ -30,8 +30,10 @@
 
 	<component type="window" name="window">
 
-		<ribbon>
-			<group template="navigation" />
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.fireEvent(performActionOnBack); #{window}.performBack" />
+            </group>
 
 			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
 		</ribbon>
@@ -41,6 +43,17 @@
 			reference="form">
 			<component type="grid" name="productionCountingQuantities" reference="grid"
 				source="#{order}.productionCountingQuantities">
+				<script>
+					<![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    var selectedEntities = #{grid}.getValue().content.selectedEntities;
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{grid}.fireEvent(null,'removeSelectedProductionCountingQuantities',[selectedEntities]);
+                                    }
+                                };
+                            ]]>
+				</script>
 				<option type="column" name="productNumber" fields="product"
 					expression="#product['number']" link="true" width="70"/>
 				<option type="column" name="productName" fields="product"
@@ -62,11 +75,12 @@
 				<option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
 				<option type="column" name="productUnit" fields="product"
 					expression="#product['unit']" width="20"/>
+                <option type="column" name="set" fields="set" width="30"/>
 
 				<option type="order" column="productNumber" direction="asc" />
 
-				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit" />
+				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
+				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
 				
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />
@@ -82,9 +96,15 @@
 				<rowStyleResolver
 					class="com.qcadoo.mes.basicProductionCounting.rowStyleResolvers.DetailedProductionCountingAndProgressListCriteriaModifiers"
 					method="fillRowStylesDependsOfTypeOfMaterial" />
+
+				<listener event="removeSelectedProductionCountingQuantities"
+						  method="onRemoveSelectedProductionCountingQuantities"
+						  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
+
 			</component>
 		</component>
-
+		<listener event="performActionOnBack" method="performActionOnBack"
+				  class="com.qcadoo.mes.basicProductionCounting.hooks.DetailedProductionCountingAndProgressListHooks"/>
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 		

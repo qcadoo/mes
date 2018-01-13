@@ -24,23 +24,30 @@
 package com.qcadoo.mes.costNormsForMaterials;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsCriteria;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -190,32 +197,57 @@ public class CostNormsForMaterialsService {
         grid.setEntities(inputProducts);
     }
 
-    public Entity updateCostsForProductInOrder(final Entity order, final Long productId, final Optional<BigDecimal> newQuantity,
-            final Optional<BigDecimal> costForOrder) {
-        Optional<Entity> orderMaterialCostsOpt = orderMaterialCostsDataProvider.find(order.getId(), productId);
+    public List<Entity> updateCostsForProductInOrder(Entity order, Collection<ProductWithQuantityAndCost> productsInfo) {
 
-        if (orderMaterialCostsOpt.isPresent()) {
-            Entity orderMaterialCosts = orderMaterialCostsOpt.get();
-            orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
-                    numberService.setScale(costForOrder.or(BigDecimal.ZERO)));
-            BigDecimal oldQuantity = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
+        List<Entity> result = Lists.newArrayList();
 
-            if (oldQuantity == null) {
-                LOG.debug(String.format(
-                        "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
-                        orderMaterialCosts.getId()));
-            } else {
-                updateCosts(zeroToOne(newQuantity.or(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
-            }
-            return orderMaterialCosts.getDataDefinition().save(orderMaterialCosts);
-        } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(String.format(
-                        "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for "
-                                + "product: %d order: %d", productId, order.getId()));
+        if (!productsInfo.isEmpty()) {
+
+            Map<Long, ProductWithQuantityAndCost> productsInfoGroupedByProductId = productsInfo.stream()
+                    .collect(Collectors.toMap(ProductWithQuantityAndCost::getProductId, Function.identity()));
+
+            List<Entity> orderMaterialCostsList = orderMaterialCostsDataProvider.findAll(OrderMaterialCostsCriteria
+                    .forOrder(order.getId()).setProductCriteria(in("id", productsInfoGroupedByProductId.keySet())));
+
+            Map<Long, List<Entity>> orderMaterialCostsGroupedByProductId = orderMaterialCostsList.stream().collect(
+                    Collectors.groupingBy(e -> e.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT).getId()));
+
+            for (Map.Entry<Long, ProductWithQuantityAndCost> entry : productsInfoGroupedByProductId.entrySet()) {
+
+                Long productId = entry.getKey();
+
+                if (orderMaterialCostsGroupedByProductId.containsKey(productId)) {
+
+                    List<Entity> orderMaterialCostsForProduct = orderMaterialCostsGroupedByProductId.get(productId);
+                    Assert.state(orderMaterialCostsForProduct.size() == 1, "Duplicate costs info for order and product pair");
+
+                    Entity orderMaterialCosts = orderMaterialCostsForProduct.get(0);
+
+                    Optional<BigDecimal> costForOrder = entry.getValue().getCostOpt();
+                    orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
+                            numberService.setScale(costForOrder.orElse(BigDecimal.ZERO)));
+                    BigDecimal oldQuantity = orderMaterialCosts
+                            .getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
+
+                    if (oldQuantity == null) {
+                        LOG.debug(String.format(
+                                "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
+                                orderMaterialCosts.getId()));
+                    } else {
+                        Optional<BigDecimal> newQuantity = entry.getValue().getQuantityOpt();
+                        updateCosts(zeroToOne(newQuantity.orElse(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
+                    }
+                    result.add(orderMaterialCosts.getDataDefinition().save(orderMaterialCosts));
+                } else {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug(String.format(
+                                "TechnologyInstanceOperationProductInComponent (order material costs entity) not found for product: %d order: %d",
+                                productId, order.getId()));
+                    }
+                }
             }
         }
-        return null;
+        return result;
     }
 
     private BigDecimal zeroToOne(final BigDecimal bigDecimal) {

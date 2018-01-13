@@ -53,12 +53,9 @@
 							}
 						var externalNumber = #{externalNumber}.getValue().content.value;
 						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-							if (externalNumber == ""){
+							if (externalNumber == "" || !externalSynchronized){
 								this.disable();
-							} if(!externalSynchronized){
-								this.disable();
-							}
-							else {
+							} else {
 								this.enable();
 							}
 						}

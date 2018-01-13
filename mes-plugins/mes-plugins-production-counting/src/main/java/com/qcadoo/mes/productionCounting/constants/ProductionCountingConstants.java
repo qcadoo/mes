@@ -57,7 +57,11 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT = "trackingOperationProductInComponent";
 
+    public static final String MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO = "trackingOperationProductInComponentDto";
+
     public static final String MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT = "trackingOperationProductOutComponent";
+
+    public static final String MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO = "trackingOperationProductOutComponentDto";
 
     public static final String MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT = "balanceOperationProductInComponent";
 

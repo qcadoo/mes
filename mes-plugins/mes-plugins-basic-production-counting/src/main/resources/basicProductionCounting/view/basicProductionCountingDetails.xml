@@ -133,7 +133,7 @@
 						<option type="orderable" value="role,typeOfMaterial,plannedQuantity,productUnit" />
 
 						<option type="correspondingView"
-							value="basicProductionCounting/productionCountingQuantityDetails" />
+							value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />
 						<option type="correspondingComponent" value="form" />
 						<option type="correspondingViewInModal" value="true" />
 
