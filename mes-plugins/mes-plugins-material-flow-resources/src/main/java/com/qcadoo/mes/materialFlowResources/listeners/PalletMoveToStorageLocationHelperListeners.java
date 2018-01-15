@@ -76,7 +76,8 @@ public class PalletMoveToStorageLocationHelperListeners {
         DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
         for (Entity dto : dtos) {
-            final List<Entity> resources = resourceDD.find()
+            final List<Entity> resources = resourceDD
+                    .find()
                     .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
                     .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.INNER)
                     .createAlias(ResourceFields.STORAGE_LOCATION, ResourceFields.STORAGE_LOCATION, JoinType.LEFT)
@@ -111,19 +112,6 @@ public class PalletMoveToStorageLocationHelperListeners {
         generated.setChecked(true);
     }
 
-    private long getPalletsCountInStorageLocation(final Entity newStorageLocation) {
-        StringBuilder hql = new StringBuilder();
-        hql.append("select count(distinct p.number) as palletsCount from #materialFlowResources_resource r ");
-        hql.append("join r.palletNumber p ");
-        hql.append("join r.storageLocation sl ");
-        hql.append("where sl.id = '").append(newStorageLocation.getId()).append("'");
-
-        Entity result = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
-                .find(hql.toString()).setMaxResults(1).uniqueResult();
-        return result.getLongField("palletsCount");
-    }
-
     private long getNewPalletsCountInStorageLocation(final Entity newStorageLocation, final List<Entity> dtos) {
         return dtos
                 .stream()
@@ -148,7 +136,7 @@ public class PalletMoveToStorageLocationHelperListeners {
 
             if (maxNumberOfPallets != null) {
                 BigDecimal totalPallets = BigDecimal.valueOf(getNewPalletsCountInStorageLocation(newLocation, dtos)
-                        + getPalletsCountInStorageLocation(newLocation));
+                        + resourceCorrectionService.getPalletsCountInStorageLocation(newLocation));
                 if (totalPallets.compareTo(maxNumberOfPallets) > 0) {
                     newStorageLocation.addMessage("materialFlowResources.palletMoveToStorageLocation.error.tooManyPallets",
                             ComponentState.MessageType.FAILURE);
