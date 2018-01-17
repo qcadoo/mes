@@ -73,7 +73,7 @@
         <property name="config" value="${logdigger}"/>
     </bean>
 
-    <task:annotation-driven executor="wrappedExecutor"/>
+    <task:annotation-driven executor="wrappedExecutor" mode="aspectj"/>
 
     <bean id="wrappedExecutor" class="com.qcadoo.commons.tasks.DefaultAsyncTaskExecutorWrapper">
         <constructor-arg ref="executor"/>
