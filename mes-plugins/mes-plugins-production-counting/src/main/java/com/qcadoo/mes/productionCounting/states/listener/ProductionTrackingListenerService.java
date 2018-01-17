@@ -266,7 +266,7 @@ public final class ProductionTrackingListenerService {
         final List<Entity> trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
-        trackingOperationProductInComponents.parallelStream().forEach(trackingOperationProductInComponent -> {
+        trackingOperationProductInComponents.forEach(trackingOperationProductInComponent -> {
             Entity basicProductionCounting = getBasicProductionCounting(trackingOperationProductInComponent, order);
 
             if (basicProductionCounting == null) {
@@ -282,7 +282,7 @@ public final class ProductionTrackingListenerService {
             basicProductionCounting.getDataDefinition().save(basicProductionCounting);
         });
 
-        trackingOperationProductOutComponents.parallelStream().forEach(trackingOperationProductOutComponent -> {
+        trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
             Entity basicProductionCounting = getBasicProductionCounting(trackingOperationProductOutComponent, order);
 
             if (basicProductionCounting == null) {
