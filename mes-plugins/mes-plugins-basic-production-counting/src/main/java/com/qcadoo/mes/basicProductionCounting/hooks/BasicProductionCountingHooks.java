@@ -23,8 +23,12 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
+
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,13 +38,17 @@ import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class BasicProductionCountingHooks {
+
+    private static final String QUANTITIES_SUM_ALIAS = "sum";
 
     @Autowired
     private NumberService numberService;
@@ -55,7 +63,7 @@ public class BasicProductionCountingHooks {
     }
 
     private BigDecimal getPlannedQuantity(final Entity basicProductionCounting) {
-        BigDecimal plannedQuantity = BigDecimal.ZERO;
+        BigDecimal plannedQuantity;
 
         Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
         Entity product = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.PRODUCT);
@@ -63,22 +71,14 @@ public class BasicProductionCountingHooks {
         if (checkIfProductIsOrderFinalProduct(order, product)) {
             plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
         } else {
-            List<Entity> productionCountingQuantities = order
-                    .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
-                    .find()
+            Entity entity = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).find()
                     .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.USED.getStringValue()))
-                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).list().getEntities();
-
-            for (Entity productionCountingQuantity : productionCountingQuantities) {
-                BigDecimal productionCountingQuantityPlannedQuantity = productionCountingQuantity
-                        .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
-
-                if (productionCountingQuantityPlannedQuantity != null) {
-                    plannedQuantity = plannedQuantity.add(productionCountingQuantityPlannedQuantity,
-                            numberService.getMathContext());
-                }
-            }
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                    .setProjection(list().add(alias(sum(ProductionCountingQuantityFields.PLANNED_QUANTITY), QUANTITIES_SUM_ALIAS))
+                            .add(rowCount()))
+                    .addOrder(SearchOrders.asc(QUANTITIES_SUM_ALIAS)).setMaxResults(1).uniqueResult();
+            plannedQuantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField(QUANTITIES_SUM_ALIAS));
         }
 
         return plannedQuantity;
@@ -87,11 +87,7 @@ public class BasicProductionCountingHooks {
     private boolean checkIfProductIsOrderFinalProduct(final Entity order, final Entity product) {
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        if (orderProduct == null) {
-            return false;
-        } else {
-            return product.getId().equals(orderProduct.getId());
-        }
+        return orderProduct != null && product.getId().equals(orderProduct.getId());
     }
 
 }
