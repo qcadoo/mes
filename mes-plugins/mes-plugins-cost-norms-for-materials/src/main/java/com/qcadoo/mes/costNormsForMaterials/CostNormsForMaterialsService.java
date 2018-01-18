@@ -38,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -219,7 +218,6 @@ public class CostNormsForMaterialsService {
                 if (orderMaterialCostsGroupedByProductId.containsKey(productId)) {
 
                     List<Entity> orderMaterialCostsForProduct = orderMaterialCostsGroupedByProductId.get(productId);
-                    Assert.state(orderMaterialCostsForProduct.size() == 1, "Duplicate costs info for order and product pair");
 
                     Entity orderMaterialCosts = orderMaterialCostsForProduct.get(0);
 
