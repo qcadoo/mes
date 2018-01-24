@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.base.Strings;
+import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -69,6 +70,20 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return result.getLongField("palletsCount");
     }
 
+    public long getPalletsCountInStorageLocationWithoutPalletNumber(final Entity newStorageLocation, final Entity newPalletNumber) {
+        StringBuilder hql = new StringBuilder();
+        hql.append("select count(distinct p.number) as palletsCount from #materialFlowResources_resource r ");
+        hql.append("join r.palletNumber p ");
+        hql.append("join r.storageLocation sl ");
+        hql.append("where sl.id = '").append(newStorageLocation.getId()).append("' ");
+        hql.append("and p.number != '").append(newPalletNumber.getStringField(PalletNumberFields.NUMBER)).append("'");
+
+        Entity result = dataDefinitionService
+                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
+                .find(hql.toString()).setMaxResults(1).uniqueResult();
+        return result.getLongField("palletsCount");
+    }
+
     @Override
     @Transactional
     public boolean createCorrectionForResource(final Entity resource) {
@@ -85,17 +100,21 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
         if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet,
                 newPalletNumber, newExpirationDate, newConversion)) {
+            boolean palletNumberChanged = isPalletNumberChanged(oldPalletNumber(oldResource), newPalletNumber);
+            if ((storageLocationChanged(oldResource, newStorageLocation) || palletNumberChanged) && newStorageLocation != null) {
+                BigDecimal palletsInStorageLocation;
+                if (newPalletNumber != null) {
+                    palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocationWithoutPalletNumber(
+                            newStorageLocation, newPalletNumber) + 1);
 
-            if (storageLocationChanged(oldResource, newStorageLocation)) {
-                BigDecimal palletsInStorageLocation = BigDecimal
-                        .valueOf(getPalletsCountInStorageLocation(newStorageLocation) + 1);
+                } else {
+                    palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocation(newStorageLocation) + 1);
+                }
                 BigDecimal palletsLimit = newStorageLocation.getDecimalField(StorageLocationFields.MAXIMUM_NUMBER_OF_PALLETS);
-                if (palletsLimit != null) {
-                    if (palletsInStorageLocation.compareTo(palletsLimit) > 0) {
-                        resource.addGlobalError("materialFlow.error.correction.invalidStorageLocation");
-                        resource.setNotValid();
-                        return false;
-                    }
+                if (palletsLimit != null && palletsInStorageLocation.compareTo(palletsLimit) > 0) {
+                    resource.addGlobalError("materialFlow.error.correction.invalidStorageLocation");
+                    resource.setNotValid();
+                    return false;
                 }
 
             }
