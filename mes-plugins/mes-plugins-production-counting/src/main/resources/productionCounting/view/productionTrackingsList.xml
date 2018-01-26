@@ -181,6 +181,8 @@
                     width="80"/>
             <option type="column" name="state" fields="state"
                     width="90"/>
+            <option type="column" name="createDay" fields="createDay"
+                    width="100"/>
             <option type="column" name="createDate" fields="createDate"
                     width="100"/>
             <option type="column" name="lastTracking" fields="lastTracking"
@@ -198,11 +200,11 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="createDay,number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="multiSearch"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="createDay,number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
             <option type="orderable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="datecreate,number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="usedQuantity"/>

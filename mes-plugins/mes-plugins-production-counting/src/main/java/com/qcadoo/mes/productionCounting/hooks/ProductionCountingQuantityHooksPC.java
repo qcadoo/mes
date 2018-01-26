@@ -219,10 +219,8 @@ public class ProductionCountingQuantityHooksPC {
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
             if (product != null) {
                 Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
-                if (maybeTechnology.isPresent()) {
-                    generateProductionCountingQuantities(productionCountingQuantityDD, productionCountingQuantity,
-                            maybeTechnology.get());
-                }
+                maybeTechnology.ifPresent(entity -> generateProductionCountingQuantities(productionCountingQuantityDD,
+                        productionCountingQuantity, entity));
             }
         }
     }

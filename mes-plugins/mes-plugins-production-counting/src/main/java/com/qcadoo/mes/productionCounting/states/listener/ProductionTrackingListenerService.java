@@ -123,32 +123,33 @@ public final class ProductionTrackingListenerService {
     }
 
     private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
-        if (!checkIfUsedQuantitiesWereFilled(productionTracking) && !checkIfUsedOrWastesQuantitiesWereFilled(productionTracking)) {
-            productionTracking
-                    .addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+        if (checkIfUsedQuantitiesWereNotFilled(productionTracking)
+                && checkIfUsedOrWastesQuantitiesWereNotFilled(productionTracking)) {
+            productionTracking.addGlobalError(
+                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
-    public boolean checkIfUsedQuantitiesWereFilled(final Entity productionTracking) {
+    public boolean checkIfUsedQuantitiesWereNotFilled(final Entity productionTracking) {
         final SearchCriteriaBuilder searchBuilder = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
                 .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) > 0;
+        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0;
     }
 
-    public boolean checkIfUsedOrWastesQuantitiesWereFilled(final Entity productionTracking) {
+    public boolean checkIfUsedOrWastesQuantitiesWereNotFilled(final Entity productionTracking) {
         final SearchCriteriaBuilder searchBuilder = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
                 .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) > 0;
+        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0;
     }
 
-    public void checkIfExistsFinalRecord(final Entity productionTracking) {
+    private void checkIfExistsFinalRecord(final Entity productionTracking) {
         if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION)
                 && !productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
             return;
@@ -171,7 +172,7 @@ public final class ProductionTrackingListenerService {
         }
     }
 
-    public void closeOrder(final Entity productionTracking) {
+    private void closeOrder(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ORDER);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
         if (!orderClosingHelper.orderShouldBeClosed(productionTracking)) {
@@ -300,7 +301,7 @@ public final class ProductionTrackingListenerService {
         });
     }
 
-    public void checkIfTimesIsSet(final Entity productionTracking) {
+    private void checkIfTimesIsSet(final Entity productionTracking) {
         Entity orderEntity = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity parameter = parameterService.getParameter();
         if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
