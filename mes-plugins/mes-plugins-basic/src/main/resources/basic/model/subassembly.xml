@@ -50,8 +50,8 @@
     </fields>
 
     <hooks>
-        <validatesWith class="com.qcadoo.mes.basic.hooks.SubassemblyHooks"
-                       method="validateSubassembly"/>
+        <validatesWith class="com.qcadoo.mes.basic.validators.SubassemblyValidators"
+                       method="validateUniquenessOfWorkstationAndType"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

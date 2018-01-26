@@ -5,13 +5,11 @@ import org.joda.time.Minutes;
 
 public class WorkstationTypeComponentQuantity {
 
-    private final Integer quantity;
+    private Integer quantity;
 
     private final DateTime from;
 
     private final DateTime to;
-
-    private Integer min;
 
     private boolean toInfinity;
 
@@ -24,11 +22,14 @@ public class WorkstationTypeComponentQuantity {
         this.from = from;
         this.to = to;
         this.toInfinity= false;
-        this.min =  Minutes.minutesBetween(from, to).getMinutes();
     }
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public DateTime getFrom() {
@@ -37,14 +38,6 @@ public class WorkstationTypeComponentQuantity {
 
     public DateTime getTo() {
         return to;
-    }
-
-    public Integer getMin() {
-        return Minutes.minutesBetween(from, to).getMinutes();
-    }
-
-    public void setMin(Integer min) {
-        this.min = min;
     }
 
     public boolean isToInfinity() {

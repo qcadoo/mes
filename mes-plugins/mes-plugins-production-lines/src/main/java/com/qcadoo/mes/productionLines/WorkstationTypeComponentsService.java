@@ -1,19 +1,24 @@
 package com.qcadoo.mes.productionLines;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionLines.constants.WorkstationTypeComponentFields;
 import com.qcadoo.mes.productionLines.helper.WorkstationTypeComponentQuantity;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class WorkstationTypeComponentsService {
@@ -25,10 +30,8 @@ public class WorkstationTypeComponentsService {
 
     public List<WorkstationTypeComponentQuantity> getWorkstationTypeComponentsForPeriod(final Entity productionLine,
             final Entity workstationType, final Date from, final Date to) {
-        List<WorkstationTypeComponentQuantity> results = Lists.newArrayList();
         List<Entity> componentsEntity = findWorkstationTypeComponentsForPeriod(productionLine, workstationType, from, to);
-        results = calculateWorkstationTypeComponentQuantity(componentsEntity, from, to);
-        return results;
+        return calculateWorkstationTypeComponentQuantity(componentsEntity, from, to);
     }
 
     public boolean isWorkstationTypeComponentsAfterDate(final Entity productionLine, final Entity workstationType, final Date date) {
