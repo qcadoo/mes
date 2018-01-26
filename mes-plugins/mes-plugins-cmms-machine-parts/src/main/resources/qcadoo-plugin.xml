@@ -80,10 +80,7 @@
         <view:view resource="view/machinePartsList.xml"/>
         <view:view resource="view/machinePartDetails.xml"/>
 
-        <view:view resource="view/companyProductDetails.xml"/>
-        <view:view resource="view/companyProductsFamilyDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
-
 
         <view:view resource="view/actionsList.xml"/>
         <view:view resource="view/actionDetails.xml"/>
