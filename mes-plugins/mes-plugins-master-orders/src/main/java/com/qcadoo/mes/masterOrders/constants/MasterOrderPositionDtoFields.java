@@ -29,6 +29,8 @@ public final class MasterOrderPositionDtoFields {
 
     }
 
+    public static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
+
     public static final String MASTER_ORDER_DEFINITION_NUMBER = "masterOrderDefinitionNumber";
 
     public static final String NUMBER = "number";

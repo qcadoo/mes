@@ -29,6 +29,8 @@ public final class MasterOrderProductFields {
 
     }
 
+    public static final String PRODUCED_ORDER_QUANTITY = "producedOrderQuantity";
+
     public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
 
     public static final String PRODUCT = "product";
