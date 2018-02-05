@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveries;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
@@ -288,4 +289,9 @@ public interface DeliveriesService {
      */
     void disableShowProductButton(final ViewDefinitionState view);
 
+    Optional<Entity> getDefaultSupplier(Long productId);
+
+    Optional<Entity> getDefaultSupplierWithIntegration(Long productId);
+
+    List<Entity> getSuppliersWithIntegration(Long productId);
 }

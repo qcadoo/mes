@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
+package com.qcadoo.mes.deliveries.criteriaModifiers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +33,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
-public class CompanyCriteriaModifiersCMP {
+public class CompanyCriteriaModifiersD {
 
     @Autowired
     private ParameterService parameterService;

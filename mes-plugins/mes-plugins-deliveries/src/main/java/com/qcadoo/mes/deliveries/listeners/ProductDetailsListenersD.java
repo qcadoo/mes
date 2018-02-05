@@ -30,6 +30,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.mes.deliveries.hooks.ProductDetailsHooksD;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +46,9 @@ public class ProductDetailsListenersD {
 
     @Autowired
     private CompanyProductService companyProductService;
+
+    @Autowired
+    private ProductDetailsHooksD productDetailsHooksD;
 
     public void checkIfDefaultSupplierIsUnique(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference("form");
@@ -72,5 +76,9 @@ public class ProductDetailsListenersD {
 
         }
 
+    }
+
+    public void toggleSuppliersGrids(final ViewDefinitionState view, final ComponentState state, final String args[]) {
+        productDetailsHooksD.toggleSuppliersGrids(view);
     }
 }

@@ -36,9 +36,6 @@
         <boolean name="isDefault" default="false"/>
     </fields>
     <hooks>
-        <!--<validatesWith-->
-        <!--class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"-->
-        <!--method="checkIfProductIsParticularProduct"/>-->
         <validatesWith
                 class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"
                 method="checkIfProductIsNotAlreadyUsed"/>
