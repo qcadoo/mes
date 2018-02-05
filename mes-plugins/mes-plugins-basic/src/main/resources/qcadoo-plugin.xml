@@ -260,6 +260,7 @@
         <model:model model="assortmentElement" resource="model/assortmentElement.xml"/>
 
         <model:model model="timetableExceptionDto" resource="model/timetableExceptionDto.xml"/>
+        <model:model model="timetableExceptionPerShiftDto" resource="model/timetableExceptionPerShiftDto.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>

@@ -61,10 +61,12 @@
 		<string name="sundayHours" required="false">
 			<validatesLength max="255" />
 		</string>
-		<hasMany name="timetableExceptions" model="shiftTimetableException"
-			joinField="shift" cascade="delete" copyable="true" />
-                
-        <manyToMany name="productionLines" joinField="shifts" model="productionLine" cascade="nullify" plugin="productionLines" />
+
+		<hasMany name="timetableExceptionsDto" joinField="shift" model="timetableExceptionPerShiftDto"
+				 cascade="nullify" copyable="false" persistent="false" />
+
+
+		<manyToMany name="productionLines" joinField="shifts" model="productionLine" cascade="nullify" plugin="productionLines" />
 
 		<manyToMany name="shiftTimetableExceptions" plugin="basic" model="shiftTimetableException"
 					joinField="shifts" cascade="nullify" lazy="true"/>
