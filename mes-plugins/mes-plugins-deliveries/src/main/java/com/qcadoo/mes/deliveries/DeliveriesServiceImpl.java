@@ -598,15 +598,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public Optional<Entity> getDefaultSupplier(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                    .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
-                Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
-                if (defaultSupplier != null) {
-                    return Optional.of(defaultSupplier);
-                } else {
-                    return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
-                }
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+            if (defaultSupplier != null) {
+                return Optional.of(defaultSupplier);
+            } else {
+                return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
             }
         }
         return Optional.empty();
@@ -615,17 +613,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public Optional<Entity> getDefaultSupplierWithIntegration(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                    .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
-                Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
+            if (defaultSupplier != null) {
+                return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
+            } else {
+                defaultSupplier = getDefaultSupplierForProductsFamily(productId);
                 if (defaultSupplier != null) {
                     return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
-                } else {
-                    defaultSupplier = getDefaultSupplierForProductsFamily(productId);
-                    if (defaultSupplier != null) {
-                        return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
-                    }
                 }
             }
         }
