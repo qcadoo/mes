@@ -35,6 +35,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -52,6 +53,9 @@ public class MasterOrderProductDetailsHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderProductFields.PRODUCT);
@@ -79,19 +83,19 @@ public class MasterOrderProductDetailsHooks {
                     MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(productComponent.getId());
             FieldComponent cumulatedOrderQuantity = (FieldComponent) view
                     .getComponentByReference(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
-            cumulatedOrderQuantity.setFieldValue(masterOrderProductDto.getDecimalField(
-                    MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY).stripTrailingZeros());
+            cumulatedOrderQuantity.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY)));
             cumulatedOrderQuantity.requestComponentUpdateState();
 
             FieldComponent leftToRelease = (FieldComponent) view.getComponentByReference(MasterOrderProductFields.LEFT_TO_RELASE);
-            leftToRelease.setFieldValue(masterOrderProductDto.getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)
-                    .stripTrailingZeros());
+            leftToRelease.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)));
             leftToRelease.requestComponentUpdateState();
 
             FieldComponent producedOrderQuantity = (FieldComponent) view
                     .getComponentByReference(MasterOrderProductFields.PRODUCED_ORDER_QUANTITY);
-            producedOrderQuantity.setFieldValue(masterOrderProductDto.getDecimalField(
-                    MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY).stripTrailingZeros());
+            producedOrderQuantity.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY)));
             producedOrderQuantity.requestComponentUpdateState();
         }
     }
