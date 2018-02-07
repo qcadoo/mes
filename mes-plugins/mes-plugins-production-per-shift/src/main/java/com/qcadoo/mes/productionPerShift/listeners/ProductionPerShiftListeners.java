@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -55,16 +65,11 @@ import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -161,7 +166,6 @@ public class ProductionPerShiftListeners {
         if (progressForDaysContainer.isCalculationError()) {
             productionPerShift.getGlobalErrors().forEach(
                     error -> view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, false, error.getVars()));
-            return;
         } else if (progressForDaysContainer.isPartCalculation()) {
 
             productionPerShiftForm.setEntity(productionPerShift);
