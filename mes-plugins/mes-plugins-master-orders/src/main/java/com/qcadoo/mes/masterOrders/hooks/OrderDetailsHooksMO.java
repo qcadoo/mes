@@ -127,7 +127,7 @@ public class OrderDetailsHooksMO {
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
-        if (masterOrder != null) {
+        if (masterOrder != null && productComponent != null && productComponent.getId() != null) {
             Entity parameter = parameterService.getParameter();
 
             String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
