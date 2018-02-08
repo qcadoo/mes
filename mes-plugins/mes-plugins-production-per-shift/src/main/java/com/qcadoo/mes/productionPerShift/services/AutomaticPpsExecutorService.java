@@ -139,7 +139,8 @@ public class AutomaticPpsExecutorService {
             }
         }
 
-        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime, shift.getEntity(), dateOfDay);
+        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime,
+                order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift.getEntity(), dateOfDay);
 
         for (DateTimeRange range : shiftWorkDateTime) {
             if (range.durationInMins() >= time && time > 0) {

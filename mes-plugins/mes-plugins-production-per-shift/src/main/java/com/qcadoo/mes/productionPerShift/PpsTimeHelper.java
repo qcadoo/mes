@@ -23,27 +23,30 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
-import com.qcadoo.mes.basic.constants.ShiftFields;
+import com.qcadoo.mes.basic.TimetableExceptionService;
 import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PpsTimeHelper {
+
+    @Autowired
+    private TimetableExceptionService timetableExceptionService;
 
     public Date findFinishDate(final Entity dailyProgress, Date dateOfDay, Entity order) {
         DateTime endDate = null;
@@ -65,7 +68,7 @@ public class PpsTimeHelper {
             }
         }
 
-        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, shift.getEntity(), dateOfDay);
+        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift.getEntity(), dateOfDay);
 
         for (DateTimeRange range : shiftWorkDateTime) {
             if (range.durationInMins() >= time && time > 0) {
@@ -79,8 +82,9 @@ public class PpsTimeHelper {
         return endDate != null ? endDate.toDate() : null;
     }
 
-    public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, Entity shiftEntity, Date dateOfDay) {
-        List<Entity> exceptions = Lists.newArrayList(shiftEntity.getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS));
+    public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, Entity productionLine, Entity shiftEntity, Date dateOfDay) {
+        List<Entity> exceptions = timetableExceptionService.findForLineAndShift(productionLine, shiftEntity);
+
         if (!exceptions.isEmpty()) {
             trimWorkExceptions(exceptions, dateOfDay);
 
