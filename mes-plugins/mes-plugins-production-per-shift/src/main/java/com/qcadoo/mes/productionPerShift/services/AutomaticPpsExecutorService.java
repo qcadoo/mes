@@ -1,17 +1,11 @@
 package com.qcadoo.mes.productionPerShift.services;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Iterables;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.PpsAlgorithm;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -25,9 +19,6 @@ public class AutomaticPpsExecutorService {
 
     @Autowired
     private AutomaticPpsParametersService parametersService;
-
-    @Autowired
-    private PpsTimeHelper ppsTimeHelper;
 
     public void generateProgressForDays(ProgressForDaysContainer progressForDaysContainer, Entity productionPerShift) {
         PpsAlgorithm algorithm = parametersService.getPpsAlgorithm();
@@ -77,30 +68,5 @@ public class AutomaticPpsExecutorService {
             }
         }
         return true;
-    }
-
-    public Date calculateOrderFinishDate(final Entity order, final List<Entity> progressForDays) {
-        if (!progressForDays.isEmpty()) {
-            Entity progressForDay = Iterables.getLast(progressForDays);
-
-            if (progressForDay != null) {
-                Date dateOfDay = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
-
-                List<Entity> dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
-
-                if (!dailyProgresses.isEmpty()) {
-                    Entity dailyProgress = Iterables.getLast(dailyProgresses);
-
-                    if (dailyProgress != null) {
-                        if (dailyProgress.getIntegerField(DailyProgressFields.EFFICIENCY_TIME) == null) {
-                            return order.getDateField(OrderFields.FINISH_DATE);
-                        }
-
-                        return ppsTimeHelper.findFinishDate(dailyProgress, dateOfDay, order);
-                    }
-                }
-            }
-        }
-        return order.getDateField(OrderFields.FINISH_DATE);
     }
 }

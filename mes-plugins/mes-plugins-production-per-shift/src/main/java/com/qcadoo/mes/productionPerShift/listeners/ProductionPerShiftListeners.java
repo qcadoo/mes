@@ -45,6 +45,7 @@ import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
@@ -132,6 +133,9 @@ public class ProductionPerShiftListeners {
     private AutomaticPpsExecutorService automaticPpsExecutorService;
 
     @Autowired
+    private PpsTimeHelper ppsTimeHelper;
+
+    @Autowired
     private AutomaticPpsParametersService automaticPpsParametersService;
 
     public void generateProgressForDays(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -180,8 +184,7 @@ public class ProductionPerShiftListeners {
             }
             updateProgressForDays(view, componentState, args);
         } else {
-
-            Date orderFinishDate = automaticPpsExecutorService.calculateOrderFinishDate(order, progressForDays);
+            Date orderFinishDate = ppsTimeHelper.calculateOrderFinishDate(order, progressForDays);
 
             productionPerShift.setField(ProductionPerShiftFields.ORDER_FINISH_DATE, orderFinishDate);
             productionPerShiftForm.setEntity(productionPerShift);
