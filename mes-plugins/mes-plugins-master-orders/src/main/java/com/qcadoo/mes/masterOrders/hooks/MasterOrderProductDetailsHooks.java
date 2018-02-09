@@ -23,20 +23,25 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
 
 @Service
 public class MasterOrderProductDetailsHooks {
@@ -46,6 +51,12 @@ public class MasterOrderProductDetailsHooks {
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
+
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderProductFields.PRODUCT);
         Entity product = productField.getEntity();
@@ -53,12 +64,39 @@ public class MasterOrderProductDetailsHooks {
 
         if (product != null) {
             unit = product.getStringField(ProductFields.UNIT);
+
         }
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
                 "producedOrderQuantityUnit", "leftToReleaseUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
+        }
+
+    }
+
+    public void fillQuantities(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity productComponent = form.getEntity();
+        if (productComponent.getId() != null) {
+            Entity masterOrderProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                    MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(productComponent.getId());
+            FieldComponent cumulatedOrderQuantity = (FieldComponent) view
+                    .getComponentByReference(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
+            cumulatedOrderQuantity.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY)));
+            cumulatedOrderQuantity.requestComponentUpdateState();
+
+            FieldComponent leftToRelease = (FieldComponent) view.getComponentByReference(MasterOrderProductFields.LEFT_TO_RELASE);
+            leftToRelease.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.LEFT_TO_RELEASE)));
+            leftToRelease.requestComponentUpdateState();
+
+            FieldComponent producedOrderQuantity = (FieldComponent) view
+                    .getComponentByReference(MasterOrderProductFields.PRODUCED_ORDER_QUANTITY);
+            producedOrderQuantity.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY)));
+            producedOrderQuantity.requestComponentUpdateState();
         }
     }
 
@@ -80,7 +118,6 @@ public class MasterOrderProductDetailsHooks {
         }
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-
 
         BigDecimal cumulatedQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
         BigDecimal masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
