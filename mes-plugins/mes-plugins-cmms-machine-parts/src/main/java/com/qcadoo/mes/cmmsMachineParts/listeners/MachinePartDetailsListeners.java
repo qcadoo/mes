@@ -28,24 +28,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.view.api.components.GridComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks;
+import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class MachinePartDetailsListeners {
@@ -57,9 +55,6 @@ public class MachinePartDetailsListeners {
 
     @Autowired
     private FileService fileService;
-
-    @Autowired
-    private MachinePartDetailsHooks machinePartDetailsHooks;
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -100,10 +95,6 @@ public class MachinePartDetailsListeners {
     private String applyInOperator(final String value) {
         StringBuilder builder = new StringBuilder();
         return builder.append("[").append(value).append("]").toString();
-    }
-
-    public void toggleSuppliersGrids(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        machinePartDetailsHooks.toggleSuppliersGrids(view);
     }
 
     public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {

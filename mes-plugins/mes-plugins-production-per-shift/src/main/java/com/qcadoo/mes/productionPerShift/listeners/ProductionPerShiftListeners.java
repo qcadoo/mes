@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
+import java.util.Date;
+import java.util.List;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -35,6 +45,7 @@ import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
+import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
@@ -55,16 +66,11 @@ import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.List;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class ProductionPerShiftListeners {
@@ -127,6 +133,9 @@ public class ProductionPerShiftListeners {
     private AutomaticPpsExecutorService automaticPpsExecutorService;
 
     @Autowired
+    private PpsTimeHelper ppsTimeHelper;
+
+    @Autowired
     private AutomaticPpsParametersService automaticPpsParametersService;
 
     public void generateProgressForDays(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -161,7 +170,6 @@ public class ProductionPerShiftListeners {
         if (progressForDaysContainer.isCalculationError()) {
             productionPerShift.getGlobalErrors().forEach(
                     error -> view.addMessage(error.getMessage(), ComponentState.MessageType.FAILURE, false, error.getVars()));
-            return;
         } else if (progressForDaysContainer.isPartCalculation()) {
 
             productionPerShiftForm.setEntity(productionPerShift);
@@ -176,8 +184,7 @@ public class ProductionPerShiftListeners {
             }
             updateProgressForDays(view, componentState, args);
         } else {
-
-            Date orderFinishDate = automaticPpsExecutorService.calculateOrderFinishDate(order, progressForDays);
+            Date orderFinishDate = ppsTimeHelper.calculateOrderFinishDate(order, progressForDays);
 
             productionPerShift.setField(ProductionPerShiftFields.ORDER_FINISH_DATE, orderFinishDate);
             productionPerShiftForm.setEntity(productionPerShift);

@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.TimetableExceptionService;
@@ -31,16 +42,8 @@ import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.model.api.Entity;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PpsTimeHelper {
@@ -159,5 +162,30 @@ public class PpsTimeHelper {
         }
 
         return result;
+    }
+
+    public Date calculateOrderFinishDate(final Entity order, final List<Entity> progressForDays) {
+        if (!progressForDays.isEmpty()) {
+            Entity progressForDay = Iterables.getLast(progressForDays);
+
+            if (progressForDay != null) {
+                Date dateOfDay = progressForDay.getDateField(ProgressForDayFields.DATE_OF_DAY);
+
+                List<Entity> dailyProgresses = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS);
+
+                if (!dailyProgresses.isEmpty()) {
+                    Entity dailyProgress = Iterables.getLast(dailyProgresses);
+
+                    if (dailyProgress != null) {
+                        if (dailyProgress.getIntegerField(DailyProgressFields.EFFICIENCY_TIME) == null) {
+                            return order.getDateField(OrderFields.FINISH_DATE);
+                        }
+
+                        return findFinishDate(dailyProgress, dateOfDay, order);
+                    }
+                }
+            }
+        }
+        return order.getDateField(OrderFields.FINISH_DATE);
     }
 }
