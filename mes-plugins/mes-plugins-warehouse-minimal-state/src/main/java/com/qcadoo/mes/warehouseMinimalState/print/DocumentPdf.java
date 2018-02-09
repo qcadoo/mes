@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,6 +54,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.warehouseMinimalState.WarehouseMinimalStateHelper;
@@ -87,6 +89,9 @@ public class DocumentPdf extends ReportPdfView {
 
     @Autowired
     private WarehouseMinimalStateHelper warehouseMinimalStateHelper;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
 
     private Set<Entity> warehouses;
 
@@ -219,9 +224,9 @@ public class DocumentPdf extends ReportPdfView {
         }
         addAdditionalCells(table, product);
         addSmallCell(table, warehouseMinimumState.getDecimalField(WarehouseMinimumStateFields.OPTIMAL_ORDER_QUANTITY));
-        Entity supplier = warehouseMinimalStateHelper.getDefaultSupplier(product.getId());
-        if (supplier != null) {
-            Entity company = supplier.getBelongsToField(CompanyProductFields.COMPANY);
+        Optional<Entity> supplier = deliveriesService.getDefaultSupplier(product.getId());
+        if (supplier.isPresent()) {
+            Entity company = supplier.get().getBelongsToField(CompanyProductFields.COMPANY);
             addSmallCell(table, company.getStringField(CompanyFields.NAME));
         } else {
             table.completeRow();

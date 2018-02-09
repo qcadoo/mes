@@ -29,10 +29,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -43,9 +39,6 @@ public class WarehouseMinimalStateHelper {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private DeliveriesService deliveriesService;
 
     public boolean checkIfLowerThanMinimum(long productId, BigDecimal quantity, BigDecimal minimumState) {
         return quantity.compareTo(minimumState) == -1 || quantity.compareTo(minimumState) == 0;
@@ -70,34 +63,5 @@ public class WarehouseMinimalStateHelper {
     private DataDefinition getResourceStockDtoDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
-    }
-
-    public Entity getDefaultSupplier(Long productId) {
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
-
-        if (product != null) {
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                    .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
-                Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
-                if (defaultSupplier != null) {
-                    return defaultSupplier;
-                } else {
-                    return getDefaultSupplierForParticularProduct(productId);
-                }
-            }
-        }
-        return null;
-    }
-
-    private Entity getDefaultSupplierForProductsFamily(Long productId) {
-        String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
-                + " and company.isDefault = true";
-        return deliveriesService.getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getDefaultSupplierForParticularProduct(Long productId) {
-        String query = "select company from #deliveries_companyProduct company where company.product.id = :id"
-                + " and company.isDefault = true";
-        return deliveriesService.getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 }

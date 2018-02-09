@@ -177,7 +177,7 @@
                     <component type="select" name="entityType" field="#{form}.entityType"
                                reference="entityType">
                         <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"
+                                  class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
                                   method="toggleSuppliersGrids"/>
                     </component>
                 </layoutElement>
@@ -358,7 +358,7 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="correspondingView" value="cmmsMachineParts/companyProductDetails"/>
+                        <option type="correspondingView" value="deliveries/productCompanyDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
                         <option type="orderable" value="number,name,isDefault"/>
@@ -382,7 +382,7 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="correspondingView" value="cmmsMachineParts/companyProductsFamilyDetails"/>
+                        <option type="correspondingView" value="deliveries/productsFamilyCompanyDetails"/>
                         <option type="correspondingComponent" value="form"/>
                         <option type="correspondingViewInModal" value="true"/>
                         <option type="orderable" value="number,name,isDefault"/>
@@ -445,7 +445,7 @@
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
                       method="setMachinePartCheckbox"/>
 
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
+        <beforeRender class="com.qcadoo.mes.deliveries.hooks.ProductDetailsHooksD"
                       method="toggleSuppliersGrids"/>
 
         <beforeRender

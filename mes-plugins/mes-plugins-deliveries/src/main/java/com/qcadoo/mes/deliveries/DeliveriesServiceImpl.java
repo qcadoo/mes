@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,12 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
 import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -590,5 +593,72 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         }
 
         return product;
+    }
+
+    public Optional<Entity> getDefaultSupplier(Long productId) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+            if (defaultSupplier != null) {
+                return Optional.of(defaultSupplier);
+            } else {
+                return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
+            }
+        }
+        return Optional.empty();
+    }
+
+    public Optional<Entity> getDefaultSupplierWithIntegration(Long productId) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
+            if (defaultSupplier != null) {
+                return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
+            } else {
+                defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+                if (defaultSupplier != null) {
+                    return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
+                }
+            }
+        }
+
+        return getIntegrationDefaultSupplier();
+    }
+
+    public List<Entity> getSuppliersWithIntegration(Long productId) {
+        List<Entity> suppliers = getSuppliersForProductsFamily(productId);
+        suppliers.addAll(getSuppliersForParticularProduct(productId));
+        getIntegrationDefaultSupplier().ifPresent(suppliers::add);
+        return suppliers;
+    }
+
+    private Entity getDefaultSupplierForProductsFamily(Long productId) {
+        String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
+                + " and company.isDefault = true";
+        return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
+    }
+
+    private Entity getDefaultSupplierForParticularProduct(Long productId) {
+        String query = "select company from #deliveries_companyProduct company where company.product.id = :id"
+                + " and company.isDefault = true";
+        return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
+    }
+
+    private Optional<Entity> getIntegrationDefaultSupplier() {
+        return Optional.ofNullable(parameterService.getParameter().getBelongsToField("companyName"));
+    }
+
+    private List<Entity> getSuppliersForProductsFamily(Long productId) {
+        String query = "select company.company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id";
+        return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
+    }
+
+    private List<Entity> getSuppliersForParticularProduct(Long productId) {
+        String query = "select company.company from #deliveries_companyProduct company where company.product.id = :id";
+        return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
     }
 }

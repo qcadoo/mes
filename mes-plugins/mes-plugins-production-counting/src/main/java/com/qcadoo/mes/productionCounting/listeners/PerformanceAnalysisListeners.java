@@ -56,14 +56,9 @@ public class PerformanceAnalysisListeners {
         Entity analysis = performanceAnalysisGrid.getSelectedEntities().get(0);
 
         Map<String, String> filters = Maps.newHashMap();
-        StringBuilder productionLineNumberBuilder = new StringBuilder();
 
-        productionLineNumberBuilder.append("[");
-        productionLineNumberBuilder.append(analysis.getStringField(PerformanceAnalysisDetailsDtoFields.PRODUCTION_LINE_NUMBER));
-        productionLineNumberBuilder.append("]");
-
-        String productionLineNumber = productionLineNumberBuilder.toString();
-        filters.put(PerformanceAnalysisDetailsDtoFields.PRODUCTION_LINE_NUMBER, productionLineNumber);
+        filters.put(PerformanceAnalysisDetailsDtoFields.PRODUCTION_LINE_NUMBER,
+                "[" + analysis.getStringField(PerformanceAnalysisDetailsDtoFields.PRODUCTION_LINE_NUMBER) + "]");
 
         String staffName = analysis.getStringField(PerformanceAnalysisDetailsDtoFields.STAFF_NAME);
         if (!Objects.isNull(staffName)) {
@@ -87,8 +82,7 @@ public class PerformanceAnalysisListeners {
         }
         Date timeRangeTo = analysis.getDateField(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO);
         if (!Objects.isNull(timeRangeTo)) {
-            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO,
-                    DateUtils.toDateString(analysis.getDateField(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO)));
+            filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO, DateUtils.toDateString(timeRangeTo));
         } else {
             filters.put(PerformanceAnalysisDetailsDtoFields.TIME_RANGE_TO, ISNULL);
         }

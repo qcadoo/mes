@@ -23,11 +23,23 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -42,12 +54,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -121,7 +127,7 @@ public class OrderDetailsHooksMO {
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
-        if (masterOrder != null) {
+        if (masterOrder != null && productComponent != null && productComponent.getId() != null) {
             Entity parameter = parameterService.getParameter();
 
             String masterOrderNumber = masterOrder.getStringField(MasterOrderFields.NUMBER);
@@ -130,12 +136,14 @@ public class OrderDetailsHooksMO {
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
             Entity masterOrderAddress = masterOrder.getBelongsToField(MasterOrderFields.ADDRESS);
+            Entity masterOrderProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                    MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(productComponent.getId());
 
             BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(productComponent
                     .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
 
-            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(productComponent
-                    .getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY));
+            BigDecimal cumulatedOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.CUMULATED_MASTER_ORDER_QUANTITY));
 
             BigDecimal plannedQuantity = masterOrderQuantity.subtract(cumulatedOrderQuantity, numberService.getMathContext());
 

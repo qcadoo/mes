@@ -23,11 +23,24 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
@@ -41,17 +54,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 public class OrderHooksPPS {
@@ -70,6 +72,9 @@ public class OrderHooksPPS {
 
     @Autowired
     private AutomaticPpsExecutorService automaticPpsExecutorService;
+
+    @Autowired
+    private PpsTimeHelper ppsTimeHelper;
 
     @Autowired
     private AutomaticPpsParametersService automaticPpsParametersService;
@@ -135,7 +140,7 @@ public class OrderHooksPPS {
                     }
 
                     if (!progressForDaysContainer.isPartCalculation()) {
-                        Date finishDate = automaticPpsExecutorService.calculateOrderFinishDate(order, progressForDays);
+                        Date finishDate = ppsTimeHelper.calculateOrderFinishDate(order, progressForDays);
 
                         order.setField(OrderFields.FINISH_DATE, finishDate);
 
