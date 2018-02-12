@@ -23,26 +23,22 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyDetailsListenersCNFM {
@@ -79,38 +75,43 @@ public class TechnologyDetailsListenersCNFM {
             return;
         }
 
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyId);
-
-        List<Entity> technologyOperationComponents = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
-
-        List<Entity> operationProductInComponents = Lists.newArrayList();
-
-        for (Entity technologuOperationComponent : technologyOperationComponents) {
-            operationProductInComponents.addAll(technologuOperationComponent
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS));
-        }
-
-        List<Entity> products = Lists.newArrayList();
-
-        for (Entity operationProductInComponent : operationProductInComponents) {
-            products.add(operationProductInComponent.getBelongsToField(BasicConstants.MODEL_PRODUCT));
-        }
+        List<Entity> products = findComponentsForTechnology(technologyId);
 
         for (Entity product : products) {
-            if (technologyService.getProductType(product, technology).equals(TechnologyService.L_01_COMPONENT)
-                    && ((product.getField(ProductFieldsCNFP.COST_FOR_NUMBER) == null)
+            if ((product.getField(ProductFieldsCNFP.COST_FOR_NUMBER) == null)
                             || (product.getField(ProductFieldsCNFP.NOMINAL_COST) == null)
                             || (product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST) == null) || (product
-                            .getField(ProductFieldsCNFP.AVERAGE_COST) == null))) {
+                            .getField(ProductFieldsCNFP.AVERAGE_COST) == null)) {
                 technologyForm.addMessage("technologies.technologyDetails.error.inputProductsWithoutCostNorms", MessageType.INFO,
                         false);
-
                 break;
             }
         }
+    }
+
+    private List<Entity> findComponentsForTechnology(final Long technologyId) {
+         String query = "select DISTINCT opic.id as opicId, "
+                + "opic.product as product, "
+                + "(select count(*) from "
+                + "#technologies_operationProductOutComponent opoc "
+                + "left join opoc.operationComponent oc  "
+                + "left join oc.technology as tech "
+                + "left join oc.parent par  "
+                + "where "
+                + "opoc.product = inputProd and par.id = toc.id ) as isIntermediate "
+                + "from #technologies_operationProductInComponent opic "
+                + "left join opic.product as inputProd "
+                + "left join opic.operationComponent toc "
+                + "left join toc.technology tech "
+                + "where tech.id = :technologyId ";
+        List<Entity> allProducts = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                .find(query)
+                .setLong("technologyId", technologyId).list().getEntities();
+
+        List<Entity> components = allProducts.stream().filter(p -> (Long) p.getField("isIntermediate") == 0l).map(cmp -> cmp.getBelongsToField("product"))
+                .collect(Collectors.toList());
+        return components;
     }
 
 }
