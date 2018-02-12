@@ -1,15 +1,14 @@
 package com.qcadoo.mes.productionPerShift.services;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productionPerShift.constants.PpsAlgorithm;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AutomaticPpsExecutorService {
@@ -69,4 +68,5 @@ public class AutomaticPpsExecutorService {
         }
         return true;
     }
+
 }
