@@ -165,7 +165,7 @@ public class OrdersFromMOProductsGenerationService {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
             List<Entity> shifts = getAllShifts();
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
-                    new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)), shifts);
+                    new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)), order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }

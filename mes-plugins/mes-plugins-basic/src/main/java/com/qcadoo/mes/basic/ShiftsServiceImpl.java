@@ -23,28 +23,6 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
@@ -63,6 +41,28 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.IllegalFieldValueException;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -102,6 +102,9 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private TimetableExceptionService timetableExceptionService;
+
     private static final String[] WEEK_DAYS = { L_MONDAY, L_TUESDAY, L_WENSDAY, L_THURSDAY, L_FRIDAY, L_SATURDAY, L_SUNDAY };
 
     private static final Map<Integer, String> DAY_OF_WEEK = buildDayNumToNameMap();
@@ -127,11 +130,16 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, List<Entity> shiftsEntities) {
+        return getNearestWorkingDate(dateFrom, null, shiftsEntities);
+    }
+
+    @Override
+    public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine, List<Entity> shiftsEntities) {
         List<Shift> shifts = transformEntitiesToShifts(shiftsEntities);
         List<Interval> finalShiftWorkTimes = Lists.newArrayList();
         DateTime currentDate = dateFrom.minusDays(1);
 
-        if (!shifts.stream().anyMatch(shift -> checkShiftWorkingAfterDate(dateFrom, shift))) {
+        if (!shifts.stream().anyMatch(shift -> checkShiftWorkingAfterDate(dateFrom, productionLine, shift))) {
             return Optional.empty();
         }
         while (finalShiftWorkTimes.isEmpty()) {
@@ -188,7 +196,7 @@ public class ShiftsServiceImpl implements ShiftsService {
                         }
                     }
                 }
-                workTimes = manageExceptions(workTimes, shift, currentDate, dateFrom);
+                workTimes = manageExceptions(workTimes, productionLine, shift, currentDate, dateFrom);
                 finalShiftWorkTimes.addAll(workTimes);
             }
             currentDate = currentDate.plusDays(1);
@@ -201,9 +209,17 @@ public class ShiftsServiceImpl implements ShiftsService {
         return Optional.of(result);
     }
 
-    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, final Shift shift, final DateTime currentDate,
+    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, Entity productionLine, final Shift shift, final DateTime currentDate,
             final DateTime baseDate) {
-        List<Entity> exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS).stream()
+
+        List<Entity> _exceptions;
+        if(Objects.isNull(productionLine)) {
+            _exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+        } else {
+            _exceptions = timetableExceptionService.findForLineAndShift(productionLine, shift.getEntity());
+        }
+
+        List<Entity> exceptions = _exceptions.stream()
                 .filter(exception -> new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
                         .compareTo(currentDate.toLocalDate()) >= 0
                         && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
@@ -282,13 +298,18 @@ public class ShiftsServiceImpl implements ShiftsService {
         return finalWorkTimes;
     }
 
-    private boolean checkShiftWorkingAfterDate(final DateTime date, final Shift shift) {
+    private boolean checkShiftWorkingAfterDate(final DateTime date, final Entity productionLine, final Shift shift) {
         for (int i = 1; i <= 7; i++) {
             if (shift.worksAt(i)) {
                 return true;
             }
         }
-        List<Entity> exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+        List<Entity> exceptions;
+        if(Objects.isNull(productionLine)) {
+            exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+        } else {
+            exceptions = timetableExceptionService.findForLineAndShift(productionLine, shift.getEntity());
+        }
         return exceptions.stream()
                 .anyMatch(exception -> exception.getStringField(ShiftTimetableExceptionFields.TYPE)
                         .equals(TimetableExceptionType.WORK_TIME.getStringValue())

@@ -58,6 +58,6 @@ public final class ShiftFields {
 
     public static final String SUNDAY_HOURS = "sundayHours";
 
-    public static final String TIMETABLE_EXCEPTIONS = "timetableExceptions";
+    public static final String TIMETABLE_EXCEPTIONS = "shiftTimetableExceptions";
 
 }

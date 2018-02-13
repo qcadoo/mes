@@ -146,26 +146,30 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="3" row="1" width="7" height="8">
-					<component type="grid" name="timetableExceptions"
-						reference="timetableExceptions" source="#{form}.timetableExceptions">
+
+					<component type="grid" name="timetableExceptions" useDto="true" source="#{form}.timetableExceptionsDto"
+							   model="timetableExceptionPerShiftDto" reference="timetableExceptions">
 						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="column" name="fromDate" fields="fromDate"
-							link="true" width="200" />
+								width="150"/>
+						<option type="column" name="type" fields="type" link="true"
+								width="100"/>
+						<option type="column" name="fromDate" fields="fromDate" link="true"
+								width="70"/>
+
 						<option type="column" name="toDate" fields="toDate" link="true"
-							width="200" />
-						<option type="column" name="type" fields="type" link="false"
-							width="200" />
-						<option type="column" name="relatesToPrevDay" fields="relatesToPrevDay" link="false"
-							width="200" />
-							
-						<option type="order" column="fromDate" direction="desc" />
-						
-						<option type="searchable" value="name,fromDate,toDate,type" />
-						<option type="orderable" value="name,fromDate,toDate,type" />
-						
-						<option type="correspondingView" value="basic/shiftTimetableExceptionDetails" />
-						<option type="correspondingComponent" value="form" />
+								width="70"/>
+
+						<option type="column" name="productionLines" fields="productionLines"/>
+
+						<option type="column" name="shifts" fields="shifts"/>
+
+						<option type="order" column="name" direction="desc"/>
+
+						<option type="searchable" value="name,type,fromDate,toDate,shifts,productionLines"/>
+						<option type="orderable" value="name,type,fromDate,toDate,shifts,productionLines"/>
+
+						<option type="correspondingView" value="basic/shiftTimetableExceptionDetails"/>
+						<option type="correspondingComponent" value="form"/>
 						<option type="correspondingViewInModal" value="true" />
 						
 						<option type="paginable" value="true" />
