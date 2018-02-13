@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -41,13 +36,24 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TOCDetailsHooks {
 
     public static final String L_FORM = "form";
 
+    private static final String L_WINDOW = "window";
+
+    private static final String L_IMPORT = "import";
+
     private static final String L_WORKSTATION_LOOKUP = "workstationLookup";
+
+    private static final String L_IMPORT_OPERATION_PRODUCT_IN_COMPONENTS = "importOperationProductInComponents";
 
     private static final List<String> L_WORKSTATIONS_TAB_FIELDS = Arrays
             .asList(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION,
@@ -60,6 +66,7 @@ public class TOCDetailsHooks {
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
         setWorkstationsCriteriaModifiers(view);
+        updateRibbonState(view);
     }
 
     public void setProductionLineLookup(final ViewDefinitionState view) {
@@ -180,6 +187,25 @@ public class TOCDetailsHooks {
         RibbonActionItem addUp = window.getRibbon().getGroupByName("workstations").getItemByName("addUpTheNumberOfWorktations");
         addUp.setEnabled(enable);
         addUp.requestUpdate(true);
+    }
+
+    private void updateRibbonState(final ViewDefinitionState view) {
+        FormComponent technologyOperationComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        boolean isEnabled = (technologyOperationComponentForm.getEntityId() != null);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup importGroup = (RibbonGroup) window.getRibbon().getGroupByName(L_IMPORT);
+
+        RibbonActionItem importOperationProductInComponentsActionItem = (RibbonActionItem) importGroup
+                .getItemByName(L_IMPORT_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        updateButtonState(importOperationProductInComponentsActionItem, isEnabled);
+    }
+
+    private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
+        ribbonActionItem.setEnabled(isEnabled);
+        ribbonActionItem.requestUpdate(true);
     }
 
 }
