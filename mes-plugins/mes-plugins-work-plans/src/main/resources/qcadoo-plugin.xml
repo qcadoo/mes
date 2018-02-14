@@ -105,6 +105,9 @@
             <model:boolean name="hideTechnologyAndOrderInWorkPlans"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="generateEachOnSeparatePage"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
             <model:file name="imageUrlInWorkPlan">
                 <model:validatesWith
                         class="com.qcadoo.mes.workPlans.validators.ParameterValidatorsWP"

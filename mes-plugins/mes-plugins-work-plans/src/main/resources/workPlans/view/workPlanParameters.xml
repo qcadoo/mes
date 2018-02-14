@@ -71,6 +71,14 @@
                             <option type="align" value="left"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="generateEachOnSeparatePage"
+                                   field="#{form}.generateEachOnSeparatePage"
+                                   reference="generateEachOnSeparatePage">
+                            <option type="labelWidth" value="50"/>
+                            <option type="align" value="left"/>
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1" height="7">
                         <component type="grid" name="columnsForOrders"
                                    source="#{form}.parameterOrderColumns" reference="columnsForOrders">

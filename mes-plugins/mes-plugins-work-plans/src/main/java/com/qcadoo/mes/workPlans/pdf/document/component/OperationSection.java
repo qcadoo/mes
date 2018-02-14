@@ -70,6 +70,9 @@ public class OperationSection {
                 count++;
                 operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
                         orderOperationComponent.getOperationComponent(), document, locale);
+                if(generateEachOnSeparatePage()) {
+                    document.newPage();
+                }
                 if (count != titleToOperationComponent.get(title).size()) {
                     if (notPrintOperationAtFirstPage()) {
                         document.add(Chunk.NEXTPAGE);
@@ -81,6 +84,10 @@ public class OperationSection {
 
     private boolean notPrintOperationAtFirstPage() {
         return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.PRINT_OPERATION_AT_FIRST_PAGE_IN_WORK_PLANS);
+    }
+
+    private boolean generateEachOnSeparatePage() {
+        return parameterService.getParameter().getBooleanField(ParameterFieldsWP.GENERATE_EACH_ON_SEPARATE_PAGE);
     }
 
 }

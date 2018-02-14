@@ -57,4 +57,6 @@ public final class ParameterFieldsWP {
 
     public static final String ADDITIONAL_OUTPUT_ROWS = "additionalOutputRows";
 
+    public static final String GENERATE_EACH_ON_SEPARATE_PAGE = "generateEachOnSeparatePage";
+
 }
