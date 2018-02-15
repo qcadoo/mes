@@ -25,25 +25,28 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import java.util.Arrays;
 
-import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.view.api.components.GridComponent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingDtoFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class BasicProductionCountingDetailsHooks {
@@ -71,21 +74,26 @@ public class BasicProductionCountingDetailsHooks {
     @Autowired
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
-    public void setFieldEditableDependsOfOrderState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
-        Long formId = form.getEntityId();
-        if (formId == null) {
-            return;
-        }
-        Entity basicProductionCounting = form.getEntity();
+    public void onBeforeRender(final ViewDefinitionState view) {
+        disableUsedAndProducedFieldsDependsOfProductType(view);
+        setFieldEditableDependsOfOrderState(view);
+        fillUnitFields(view);
 
-        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder( basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()));
-        grid.setEnabled(!isLocked);
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity basicProductionCountingDto = dataDefinitionService
+                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING_DTO)
+                .get(basicProductionCountingForm.getEntityId());
+        FieldComponent plannedQuantity = (FieldComponent) view
+                .getComponentByReference(BasicProductionCountingDtoFields.PLANNED_QUANTITY);
+        plannedQuantity
+                .setFieldValue(basicProductionCountingDto.getDecimalField(BasicProductionCountingDtoFields.PLANNED_QUANTITY));
     }
 
-    public void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
+    private void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent producedQuantityField = (FieldComponent) view
                 .getComponentByReference(BasicProductionCountingFields.PRODUCED_QUANTITY);
@@ -134,7 +142,21 @@ public class BasicProductionCountingDetailsHooks {
                         ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getTotalNumberOfEntities() > 0);
     }
 
-    public void fillUnitFields(final ViewDefinitionState view) {
+    private void setFieldEditableDependsOfOrderState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+
+        Long formId = form.getEntityId();
+        if (formId == null) {
+            return;
+        }
+        Entity basicProductionCounting = form.getEntity();
+
+        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder( basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()));
+        grid.setEnabled(!isLocked);
+    }
+
+    private void fillUnitFields(final ViewDefinitionState view) {
         FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long basicProductionCountingId = basicProductionCountingForm.getEntityId();

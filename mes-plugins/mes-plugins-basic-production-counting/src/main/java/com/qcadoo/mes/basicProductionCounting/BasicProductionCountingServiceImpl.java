@@ -208,21 +208,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     private boolean checkIfProductsAreSame(final Entity order, final Entity product) {
         Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
-        if (orderProduct == null) {
-            return false;
-        } else {
-            return product.getId().equals(orderProduct.getId());
-        }
+        return orderProduct != null && product.getId().equals(orderProduct.getId());
     }
 
     private boolean checkIfTechnologyOperationComponentsAreSame(final Entity order, final Entity technologyOperationComponent) {
         Entity orderTechnologyOperationComponent = getOrderTechnologyOperationComponent(order);
 
-        if (orderTechnologyOperationComponent == null) {
-            return false;
-        } else {
-            return technologyOperationComponent.getId().equals(orderTechnologyOperationComponent.getId());
-        }
+        return orderTechnologyOperationComponent != null && technologyOperationComponent.getId().equals(orderTechnologyOperationComponent.getId());
     }
 
     private boolean isRoleProduced(final String role) {
@@ -235,9 +227,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         if (technology == null) {
             return null;
         } else {
-            Entity technologyOperationComponent = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-
-            return technologyOperationComponent;
+            return technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
         }
     }
 
@@ -248,11 +238,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             Entity previousTechnologyOperationComponent = technologyOperationComponent
                     .getBelongsToField(TechnologyOperationComponentFields.PARENT);
 
-            if (previousTechnologyOperationComponent == null) {
-                return false;
-            } else {
-                return checkIfProductExists(previousTechnologyOperationComponent, product);
-            }
+            return previousTechnologyOperationComponent != null && checkIfProductExists(previousTechnologyOperationComponent, product);
         }
     }
 
@@ -497,7 +483,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public Entity getProductionCountingQuantity(final Long productionCountingQuantityId) {
-        return getBasicProductionCountingDD().get(productionCountingQuantityId);
+        return getProductionCountingQuantityDD().get(productionCountingQuantityId);
     }
 
     @Override

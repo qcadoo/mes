@@ -151,14 +151,8 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
-			method="disableUsedAndProducedFieldsDependsOfProductType" />
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
-                method="setFieldEditableDependsOfOrderState" />
-		<beforeRender
-			class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
-			method="fillUnitFields" />
+				class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingDetailsHooks"
+				method="onBeforeRender"/>
 	</hooks>
 
 </view>

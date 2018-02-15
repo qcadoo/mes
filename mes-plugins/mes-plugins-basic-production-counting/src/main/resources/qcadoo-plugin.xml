@@ -65,6 +65,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="basicProductionCounting" resource="model/basicProductionCounting.xml" />
+		<model:model model="basicProductionCountingDto" resource="model/basicProductionCountingDto.xml" />
 		<model:model model="productionCountingQuantity" resource="model/productionCountingQuantity.xml" />
 		<model:model model="productionCountingOperationRun"
 			resource="model/productionCountingOperationRun.xml" />
@@ -99,6 +100,10 @@
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="basicProductionCountings" model="basicProductionCounting"
 				plugin="basicProductionCounting" joinField="order" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:hasMany name="basicProductionCountingDtos" model="basicProductionCountingDto"
+						   plugin="basicProductionCounting" joinField="order" cascade="nullify" persistent="false"/>
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionCountingQuantities"

@@ -33,8 +33,6 @@ public final class BasicProductionCountingFields {
 
     public static final String PRODUCT = "product";
 
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
     public static final String USED_QUANTITY = "usedQuantity";
 
     public static final String PRODUCED_QUANTITY = "producedQuantity";
