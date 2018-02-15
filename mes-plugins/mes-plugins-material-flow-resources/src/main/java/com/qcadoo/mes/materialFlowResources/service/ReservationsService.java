@@ -104,9 +104,11 @@ public class ReservationsService {
             if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
                 return;
             }
+            if (!reservationsEnabledForDocumentPositions(document)) {
+                return;
+            }
             Entity reservation = dataDefinitionService
-                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION)
-                    .create();
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
 
             reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
             reservation.setField(ReservationFields.POSITION, position);
@@ -117,22 +119,6 @@ public class ReservationsService {
 
             position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
         }
-
-        if (!reservationsEnabledForDocumentPositions(document)) {
-            return;
-        }
-
-        Entity reservation = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
-
-        reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
-        reservation.setField(ReservationFields.POSITION, position);
-        reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-        reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
-        reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
-        reservation = reservation.getDataDefinition().save(reservation);
-
-        position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
     }
 
     /**
