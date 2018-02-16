@@ -36,7 +36,6 @@
         <boolean name="lastTracking"/>
         <datetime name="timeRangeFrom"/>
         <datetime name="timeRangeTo"/>
-        <date name="createDay"/>
 
         <integer name="order_id"/>
         <string name="orderNumber"/>
