@@ -23,26 +23,14 @@
  */
 package com.qcadoo.mes.basicProductionCounting.constants;
 
-public final class BasicProductionCountingConstants {
+public final class ProductionCountingQuantityDtoFields {
 
-    private BasicProductionCountingConstants() {
+    private ProductionCountingQuantityDtoFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "basicProductionCounting";
+    public static final String USED_QUANTITY = "usedQuantity";
 
-    public static final String MODEL_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
-
-    public static final String MODEL_BASIC_PRODUCTION_COUNTING_DTO = "basicProductionCountingDto";
-
-    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
-
-    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY_DTO = "productionCountingQuantityDto";
-
-    public static final String MODEL_PRODUCTION_COUNTING_OPERATON_RUN = "productionCountingOperationRun";
-
-    public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "basicProductionCounting";
-
-    public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "productionCounting";
+    public static final String PRODUCED_QUANTITY = "producedQuantity";
 
 }

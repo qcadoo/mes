@@ -67,6 +67,7 @@
 		<model:model model="basicProductionCounting" resource="model/basicProductionCounting.xml" />
 		<model:model model="basicProductionCountingDto" resource="model/basicProductionCountingDto.xml" />
 		<model:model model="productionCountingQuantity" resource="model/productionCountingQuantity.xml" />
+		<model:model model="productionCountingQuantityDto" resource="model/productionCountingQuantityDto.xml" />
 		<model:model model="productionCountingOperationRun"
 			resource="model/productionCountingOperationRun.xml" />
 
@@ -109,6 +110,11 @@
 			<model:hasMany name="productionCountingQuantities"
 				model="productionCountingQuantity" plugin="basicProductionCounting"
 				joinField="order" cascade="delete" />
+		</model:model-field>
+		<model:model-field model="order" plugin="orders">
+			<model:hasMany name="productionCountingQuantityDtos"
+				model="productionCountingQuantityDto" plugin="basicProductionCounting"
+				joinField="order" cascade="nullify" persistent="false"/>
 		</model:model-field>
 		<model:model-field model="order" plugin="orders">
 			<model:hasMany name="productionCountingOperationRuns"

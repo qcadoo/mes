@@ -42,7 +42,9 @@
 		<component type="form" name="basicProductionCounting"
 			reference="form">
 			<component type="grid" name="productionCountingQuantities" reference="grid"
-				source="#{order}.productionCountingQuantities">
+					   useDto="true"
+					   source="#{order}.productionCountingQuantityDtos"
+					   model="productionCountingQuantityDto">
 				<script>
 					<![CDATA[
                                 var that = this;
@@ -54,18 +56,15 @@
                                 };
                             ]]>
 				</script>
-				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true" width="70"/>
-				<option type="column" name="productName" fields="product"
-					expression="#product['name']" link="true" width="100"/>
-				<option type="column" name="nodeNumber" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('nodeNumber')"
+				<option type="column" name="productNumber" fields="productNumber"
+					link="true" width="70"/>
+				<option type="column" name="productName" fields="productName"
+					link="true" width="100"/>
+				<option type="column" name="nodeNumber" fields="nodeNumber"
 					link="true" width="40"/>
-				<option type="column" name="operationNumber" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('number')"
+				<option type="column" name="operationNumber" fields="operationNumber"
 					link="true" width="40"/>
-				<option type="column" name="operationName" fields="technologyOperationComponent"
-					expression="(#technologyOperationComponent == null) ? '' : #technologyOperationComponent.get('operation')?.get('name')"
+				<option type="column" name="operationName" fields="operationName"
 					link="true" width="50"/>
 				<option type="column" name="role" fields="role" link="true" width="40"/>
 				<option type="column" name="typeOfMaterial" fields="typeOfMaterial"
@@ -73,14 +72,16 @@
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
 				<option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
 				<option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
-				<option type="column" name="productUnit" fields="product"
-					expression="#product['unit']" width="20"/>
+				<option type="column" name="productUnit" fields="productUnit"
+					width="20"/>
                 <option type="column" name="set" fields="set" width="30"/>
 
 				<option type="order" column="productNumber" direction="asc" />
 
-				<option type="searchable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
-				<option type="orderable" value="productNumber,productName,role,typeOfMaterial,plannedQuantity,productUnit,set" />
+				<option type="searchable" value="productNumber,productName,nodeNumber,operationNumber,operationName,role,
+					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit,set" />
+				<option type="orderable" value="productNumber,productName,nodeNumber,operationNumber,operationName,role,
+					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit,set" />
 				
 				<option type="correspondingView"
 					value="basicProductionCounting/productionCountingQuantityAdvancedDetails" />

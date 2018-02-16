@@ -152,22 +152,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="setCriteriaModifierParameters"/>
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="disableFieldsDependsOfState"/>
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="hideFieldsDependsOfState"/>
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="fillProductField" />
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="fillUnitFields"/>
-        <beforeRender
-                class="com.qcadoo.mes.basicProductionCounting.hooks.ProductionCountingQuantityAdvancedDetailsHooks"
-                method="setTechnologyOperationComponentFieldRequired"/>
+                method="onBeforeRender"/>
     </hooks>
 
 </view>
