@@ -31,10 +31,6 @@ public final class PositionFields {
 
     public static final String DOCUMENT = "document";
 
-    public static final String EXTERNAL_DOCUMENT_NUMBER = "externalDocumentNumber";
-
-    public static final String ORDER_ID = "orderId";
-
     public static final String PRODUCT = "product";
 
     public static final String QUANTITY = "quantity";
