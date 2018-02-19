@@ -47,6 +47,4 @@ public final class ProductionTrackingForProductGroupedDtoFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    public static final String USED_QUANTITY = "usedQuantity";
-
 }

@@ -38,13 +38,11 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantityFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantitySetComponentFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -56,19 +54,12 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductionCountingQuantityHooksPC {
 
     private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
-
-    private static final String L_TRACKING_OPERATION_OUT_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductOutComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
-
-    @Autowired
-    private NumberService numberService;
 
     @Autowired
     private SetTechnologyInComponentsService setTechnologyInComponentsService;
@@ -77,7 +68,6 @@ public class ProductionCountingQuantityHooksPC {
     private DataDefinitionService dataDefinitionService;
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
@@ -98,115 +88,10 @@ public class ProductionCountingQuantityHooksPC {
         return true;
     }
 
-    public void onView(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        fillUsedQuantity(productionCountingQuantity);
-        fillProducedQuantity(productionCountingQuantity);
-    }
-
-    private void fillUsedQuantity(final Entity productionCountingQuantity) {
-        productionCountingQuantity.setField(ProductionCountingQuantityFields.USED_QUANTITY,
-                numberService.setScale(getUsedQuantity(productionCountingQuantity)));
-    }
-
-    private void fillProducedQuantity(final Entity productionCountingQuantity) {
-        productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCED_QUANTITY,
-                numberService.setScale(getProducedQuantity(productionCountingQuantity)));
-    }
-
-    private BigDecimal getUsedQuantity(final Entity productionCountingQuantity) {
-        BigDecimal usedQuantity = BigDecimal.ZERO;
-
-        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        Entity technologyOperationComponent = productionCountingQuantity
-                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-
-        List<Entity> productionTrackings = getProductionTrackings(order, technologyOperationComponent);
-
-        for (Entity productionTracking : productionTrackings) {
-            BigDecimal quantity = getTrackingOperationProductInComponentQuantity(productionTracking, product);
-
-            if (quantity != null) {
-                usedQuantity = usedQuantity.add(quantity, numberService.getMathContext());
-            }
-        }
-
-        return usedQuantity;
-    }
-
-    private BigDecimal getTrackingOperationProductInComponentQuantity(final Entity productionTracking, final Entity product) {
-        Entity result = getTrackingOperationProductInComponent(productionTracking, product);
-
-        if (result != null) {
-            return result.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-        }
-
-        return null;
-    }
-
     private Entity getTrackingOperationProductInComponent(final Entity productionTracking, final Entity product) {
         return productionTracking.getDataDefinition()
-                .find(getTrackingOperationProductInComponentQuantityQuery(productionTracking.getId(), product.getId()))
+                .find(String.format(L_TRACKING_OPERATION_IN_QUANTITY_QUERY, productionTracking.getId(), product.getId()))
                 .setMaxResults(1).uniqueResult();
-    }
-
-    private String getTrackingOperationProductInComponentQuantityQuery(final Long productionTrackingId, final Long productId) {
-        String trackingOperationProductInComponentQuantityQuery = String.format(L_TRACKING_OPERATION_IN_QUANTITY_QUERY,
-                productionTrackingId, productId);
-
-        return trackingOperationProductInComponentQuantityQuery;
-    }
-
-    private BigDecimal getProducedQuantity(final Entity productionCountingQuantity) {
-        BigDecimal producedQuantity = BigDecimal.ZERO;
-
-        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        Entity technologyOperationComponent = productionCountingQuantity
-                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
-        Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-
-        List<Entity> productionTrackings = getProductionTrackings(order, technologyOperationComponent);
-
-        for (Entity productionTracking : productionTrackings) {
-            BigDecimal quantity = getTrackingOperationProductOutComponentQuantity(productionTracking, product);
-
-            if (quantity != null) {
-                producedQuantity = producedQuantity.add(quantity, numberService.getMathContext());
-            }
-        }
-
-        return producedQuantity;
-    }
-
-    private BigDecimal getTrackingOperationProductOutComponentQuantity(final Entity productionTracking, final Entity product) {
-        Entity result = productionTracking.getDataDefinition()
-                .find(getTrackingOperationProductOutComponentQuantityQuery(productionTracking.getId(), product.getId()))
-                .setMaxResults(1).uniqueResult();
-
-        if (result != null) {
-            return result.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
-        }
-
-        return null;
-    }
-
-    private String getTrackingOperationProductOutComponentQuantityQuery(final Long productionTrackingId, final Long productId) {
-        String trackingOperationProductOutComponentQuantityQuery = String.format(L_TRACKING_OPERATION_OUT_QUANTITY_QUERY,
-                productionTrackingId, productId);
-
-        return trackingOperationProductOutComponentQuantityQuery;
-    }
-
-    private List<Entity> getProductionTrackings(final Entity order, final Entity technologyOperationComponent) {
-        SearchCriteriaBuilder searchCriteriaBuilder = order.getHasManyField(OrderFieldsPC.PRODUCTION_TRACKINGS).find()
-                .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingState.ACCEPTED.getStringValue()));
-
-        if (technologyOperationComponent != null) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
-                    technologyOperationComponent));
-        }
-
-        return searchCriteriaBuilder.list().getEntities();
     }
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
