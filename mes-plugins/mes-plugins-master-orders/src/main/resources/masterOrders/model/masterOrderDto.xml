@@ -33,6 +33,7 @@
         <string name="masterOrderDefinitionNumber"/>
         <string name="number"/>
         <string name="name"/>
+        <string name="externalNumber"/>
         <datetime name="deadline"/>
         <string name="company"/>
         <string name="companyPayer"/>
