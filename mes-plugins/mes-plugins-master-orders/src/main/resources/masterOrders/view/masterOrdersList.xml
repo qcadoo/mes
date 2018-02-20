@@ -153,7 +153,7 @@
             <option type="column" name="name" fields="name" link="true"
                     width="250"/>
             <option type="column" name="externalNumber" fields="externalNumber" link="true"
-                    width="150"/>
+                    width="100"/>
             <option type="column" name="deadline" fields="deadline"/>
             <option type="column" name="company" fields="company" width="150"/>
 
