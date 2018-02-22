@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import java.math.BigDecimal;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -42,12 +49,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Set;
 
 @Service
 public class TrackingOperationProductComponentDetailsListeners {
@@ -65,18 +66,6 @@ public class TrackingOperationProductComponentDetailsListeners {
     private static final String L_NAME = "name";
 
     private static final String L_NUMBER = "number";
-
-    private static final String L_WASTE_USED = "wasteUsed";
-
-    private static final String L_WASTE_USED_ONLY = "wasteUsedOnly";
-
-    private static final String L_WASTE_USED_QUANTITY = "wasteUsedQuantity";
-
-    private static final String L_WASTE_UNIT = "wasteUnit";
-
-    private static final String L_USED_QUANTITY = "usedQuantity";
-
-    private static final String L_GIVEN_QUANTITY = "givenQuantity";
 
     @Autowired
     private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;

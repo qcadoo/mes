@@ -39,6 +39,4 @@ public final class TrackingOperationProductComponentDtoFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
-    public static final String USED_QUANTITY = "usedQuantity";
-
 }

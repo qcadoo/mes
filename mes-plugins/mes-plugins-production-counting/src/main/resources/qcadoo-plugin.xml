@@ -453,13 +453,6 @@
                                  method="validatesWith"/>
         </model:model-hook>
 
-        <model:model-hook model="productionCountingQuantity"
-                          plugin="basicProductionCounting">
-            <model:onView
-                    class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
-                    method="onView"/>
-        </model:model-hook>
-
         <menu:menu-category name="analysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="performanceAnalysis" category="analysis"

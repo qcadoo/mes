@@ -75,18 +75,19 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         fillUnitFields(view);
         setTechnologyOperationComponentFieldRequired(view);
 
-        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity basicProductionCountingDto = dataDefinitionService
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity productionCountingQuantityDto = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY_DTO)
-                .get(basicProductionCountingForm.getEntityId());
+                .get(productionCountingQuantityForm.getEntityId());
         FieldComponent usedQuantity = (FieldComponent) view
                 .getComponentByReference(ProductionCountingQuantityDtoFields.USED_QUANTITY);
         FieldComponent producedQuantity = (FieldComponent) view
                 .getComponentByReference(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY);
-        usedQuantity.setFieldValue(basicProductionCountingDto.getDecimalField(ProductionCountingQuantityDtoFields.USED_QUANTITY));
-        producedQuantity
-                .setFieldValue(basicProductionCountingDto.getDecimalField(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY));
+        usedQuantity
+                .setFieldValue(productionCountingQuantityDto.getDecimalField(ProductionCountingQuantityDtoFields.USED_QUANTITY));
+        producedQuantity.setFieldValue(
+                productionCountingQuantityDto.getDecimalField(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY));
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
