@@ -57,14 +57,23 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 public class DocumentDetailsHooks {
 
     public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
+
     private static final String L_FORM = "form";
+
     private static final String L_WINDOW = "window";
+
     private static final String L_ACTIONS = "actions";
+
     private static final String L_STATE = "state";
+
     private static final String L_PRINT = "print";
+
     private static final String L_ACCEPT = "accept";
+
     private static final String L_PRINT_PDF = "printPdf";
+
     private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -138,12 +147,13 @@ public class DocumentDetailsHooks {
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
-
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
+
+            changeaAdMultipleResourcesButtonState(window, false);
 
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
@@ -159,12 +169,15 @@ public class DocumentDetailsHooks {
             changeFillResourceButtonState(window, reservationsService.reservationsEnabledForDocumentPositions(document));
             changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE))
                     && !reservationsService.reservationsEnabledForDocumentPositions(document));
+            changeaAdMultipleResourcesButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
         } else if (DocumentState.ACCEPTED.equals(state)) {
             documentForm.setFormEnabled(false);
             disableRibbon(window);
             changePrintButtonState(window, true);
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
+            changeaAdMultipleResourcesButtonState(window, false);
+
         }
     }
 
@@ -199,6 +212,14 @@ public class DocumentDetailsHooks {
 
         fillResourcesItem.setEnabled(enable);
         fillResourcesItem.requestUpdate(true);
+    }
+
+    private void changeaAdMultipleResourcesButtonState(WindowComponent window, final boolean enable) {
+        RibbonActionItem addMultipleResources = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
+                .getItemByName("addMultipleResources");
+
+        addMultipleResources.setEnabled(enable);
+        addMultipleResources.requestUpdate(true);
     }
 
     private void changePrintButtonState(WindowComponent window, final boolean enable) {

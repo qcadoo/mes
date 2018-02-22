@@ -24,9 +24,12 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,14 +124,15 @@ public class DocumentDetailsListeners {
                 documentDb = documentDb.getDataDefinition().save(documentDb);
                 try {
                     dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
-                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState.getLocale());
+                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState
+                            .getLocale());
                 } catch (Exception e) {
                     LOGGER.error("Error when generate disposition order", e);
                     throw new IllegalStateException(e.getMessage(), e);
                 }
             }
-            reportService.printGeneratedReport(view, componentState, new String[]{args[0], MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_DOCUMENT});
+            reportService.printGeneratedReport(view, componentState, new String[] { args[0],
+                    MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT });
         }
     }
 
@@ -195,8 +199,8 @@ public class DocumentDetailsListeners {
                 String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
                 String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                         .getStringField(ProductFields.NUMBER);
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
-                        resourceNumber, productNumber);
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
+                        false, resourceNumber, productNumber);
             }
         } else {
             document.setNotValid();
@@ -216,7 +220,7 @@ public class DocumentDetailsListeners {
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
-            if(receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
+            if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
                 receiptDocumentForReleaseHelper.tryBuildPz(document, view);
             }
 
@@ -276,4 +280,22 @@ public class DocumentDetailsListeners {
         }
         formComponent.setEntity(document);
     }
+
+    public void addMultipleResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
+        Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+        final Map<String, Object> parameters = new HashMap<>();
+        parameters.put("documentId", document.getId());
+        if (warehouseFrom != null) {
+            parameters.put("warehouseId", warehouseFrom.getId());
+        }
+        JSONObject context = new JSONObject(parameters);
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html");
+        url.append("?context=");
+        url.append(context.toString());
+
+        view.openModal(url.toString());
+    }
+
 }
