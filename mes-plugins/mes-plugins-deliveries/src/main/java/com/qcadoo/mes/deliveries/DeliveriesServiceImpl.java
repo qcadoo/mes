@@ -32,6 +32,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -660,5 +662,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private List<Entity> getSuppliersForParticularProduct(Long productId) {
         String query = "select company.company from #deliveries_companyProduct company where company.product.id = :id";
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
+    }
+
+    public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {
+        List<Entity> result = Lists.newArrayList();
+        Set<Long> ids = orderedProductGrid.getSelectedEntitiesIds();
+        if (ids != null && !ids.isEmpty()) {
+            final SearchCriteriaBuilder searchCriteria = getOrderedProductDD().find();
+            searchCriteria.add(SearchRestrictions.in("id", ids));
+            result = searchCriteria.list().getEntities();
+        }
+        return result;
     }
 }
