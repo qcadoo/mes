@@ -25,23 +25,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Component
 public class ReceiptDocumentForReleaseHelper {
 
-    private final DocumentManagementService documentManagementService;
-
-    private final DataDefinitionService dataDefinitionService;
-
-    private final TranslationService translationService;
-
-    private final ParameterService parameterService;
+    @Autowired
+    private DocumentManagementService documentManagementService;
 
     @Autowired
-    ReceiptDocumentForReleaseHelper(final DataDefinitionService dataDefinitionService,
-            DocumentManagementService documentManagementService, final TranslationService translationService,
-            final ParameterService parameterService) {
-        this.dataDefinitionService = dataDefinitionService;
-        this.documentManagementService = documentManagementService;
-        this.translationService = translationService;
-        this.parameterService = parameterService;
-    }
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     boolean tryBuildConnectedPZDocument(Entity document, boolean fillDescription) {
         DocumentBuilder pzBuilder = documentManagementService.getDocumentBuilder();
