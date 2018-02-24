@@ -45,4 +45,6 @@ public final class OperationProductInComponentFields {
 
     public static final String QUANTITY_FORMULA = "quantityFormula";
 
+    public static final String ITEM_NUMBER_IN_THE_EXPLODED_VIEW = "itemNumberInTheExplodedView";
+
 }

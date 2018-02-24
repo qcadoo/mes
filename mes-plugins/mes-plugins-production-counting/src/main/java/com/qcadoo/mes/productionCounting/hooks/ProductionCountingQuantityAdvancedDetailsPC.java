@@ -17,13 +17,13 @@ public class ProductionCountingQuantityAdvancedDetailsPC {
     private static final String L_FORM = "form";
 
     @Autowired
-    SetTechnologyInComponentsService setTechnologyInComponentsService;
+    private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void beforeRender(final ViewDefinitionState view) {
         view.getComponentByReference("setTab").setVisible(shouldSetTabBeVisible(view));
     }
 
-    public boolean shouldSetTabBeVisible(final ViewDefinitionState view) {
+    private boolean shouldSetTabBeVisible(final ViewDefinitionState view) {
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity productionCountingQuantity = form.getPersistedEntityWithIncludedFormValues();

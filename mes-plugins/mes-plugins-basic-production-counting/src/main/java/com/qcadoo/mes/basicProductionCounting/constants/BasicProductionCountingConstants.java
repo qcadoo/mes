@@ -33,7 +33,11 @@ public final class BasicProductionCountingConstants {
 
     public static final String MODEL_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
 
+    public static final String MODEL_BASIC_PRODUCTION_COUNTING_DTO = "basicProductionCountingDto";
+
     public static final String MODEL_PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
+
+    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY_DTO = "productionCountingQuantityDto";
 
     public static final String MODEL_PRODUCTION_COUNTING_OPERATON_RUN = "productionCountingOperationRun";
 

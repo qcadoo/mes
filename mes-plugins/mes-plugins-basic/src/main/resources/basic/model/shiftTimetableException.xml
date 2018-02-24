@@ -35,8 +35,13 @@
 		<datetime name="toDate" required="true" />
 		<enum name="type" required="true" values="01freeTime,02workTime"
 			default="01freeTime" />
-		<belongsTo name="shift" model="shift" plugin="basic" lazy="false"
-			required="true" />
+
+		<manyToMany name="shifts" plugin="basic" model="shift"
+					joinField="shiftTimetableExceptions" cascade="nullify"/>
+
+		<manyToMany name="productionLines" plugin="productionLines" model="productionLine"
+					joinField="shiftTimetableExceptions" cascade="nullify"/>
+
 		<boolean name="relatesToPrevDay" default="false"/>
 	</fields>
 

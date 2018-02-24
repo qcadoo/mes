@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
+import java.math.BigDecimal;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -50,6 +52,17 @@ public class ResourceCriteriaModifiers {
                 .createAlias(ResourceFields.LOCATION, L_LOCATION_FROM, JoinType.INNER)
                 .add(SearchRestrictions.eq(L_PRODUCT + ".id", productId))
                 .add(SearchRestrictions.eq(L_LOCATION_FROM + ".id", locationId));
+    }
+
+    public void restrictToLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+
+        if (!filterValue.has(L_LOCATION_FROM)) {
+            return;
+        }
+
+        Long locationId = filterValue.getLong(L_LOCATION_FROM);
+        scb.add(SearchRestrictions.eq("location_id", locationId.intValue())).add(
+                SearchRestrictions.gt("availableQuantity", BigDecimal.ZERO));
     }
 
 }

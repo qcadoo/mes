@@ -49,14 +49,8 @@
             <validatesScale max="5" />
             <validatesRange from="0" exclusively="true"/>
         </decimal>
-        <decimal name="usedQuantity" persistent="false">
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
-        </decimal>
-        <decimal name="producedQuantity" persistent="false">
-            <validatesUnscaledValue max="9" />
-            <validatesScale max="5" />
-        </decimal>
+        <decimal name="usedQuantity" persistent="false"/>
+        <decimal name="producedQuantity" persistent="false"/>
         <enum name="set"
               values="01set,02intermediate" />
     </fields>

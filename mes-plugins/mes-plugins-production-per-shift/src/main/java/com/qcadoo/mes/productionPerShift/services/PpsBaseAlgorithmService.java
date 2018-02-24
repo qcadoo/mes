@@ -147,7 +147,7 @@ public abstract class PpsBaseAlgorithmService {
                 DateTime orderStartDateDT = new DateTime(orderStartDate, DateTimeZone.getDefault());
                 BigDecimal shiftEfficiency = BigDecimal.ZERO;
                 int time = 0;
-                for (DateTimeRange range : getShiftWorkDateTimes(shift, dateOfDay, orderStartDate)) {
+                for (DateTimeRange range : getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift, dateOfDay, orderStartDate)) {
                     if (orderStartDate.after(dateOfDay.toDate())) {
                         range = range.trimBefore(orderStartDateDT);
                     }
@@ -182,7 +182,7 @@ public abstract class PpsBaseAlgorithmService {
         return dailyProgressContainer;
     }
 
-    private List<DateTimeRange> getShiftWorkDateTimes(final Shift shift, DateTime dateOfDay, final Date orderStartDate) {
+    private List<DateTimeRange> getShiftWorkDateTimes(final Entity productionLine, final Shift shift, DateTime dateOfDay, final Date orderStartDate) {
         DateTime dateOfDayDT = dateOfDay;
         List<TimeRange> shiftWorkTime = Lists.newArrayList();
         List<DateTimeRange> shiftWorkDateTime = Lists.newArrayList();
@@ -193,7 +193,7 @@ public abstract class PpsBaseAlgorithmService {
             shiftWorkDateTime.add(new DateTimeRange(dateOfDayDT, range));
         }
 
-        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime, shift.getEntity(), dateOfDay.toDate());
+        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime, productionLine, shift.getEntity(), dateOfDay.toDate());
 
         return shiftWorkDateTime;
     }

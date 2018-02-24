@@ -33,8 +33,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 public interface DeliveriesService {
+
+    String L_ORDERED_PRODUCTS = "orderedProducts";
 
     /**
      * Gets delivery
@@ -294,4 +297,6 @@ public interface DeliveriesService {
     Optional<Entity> getDefaultSupplierWithIntegration(Long productId);
 
     List<Entity> getSuppliersWithIntegration(Long productId);
+
+    List<Entity> getSelectedOrderedProducts(GridComponent orderedProductsGrid);
 }

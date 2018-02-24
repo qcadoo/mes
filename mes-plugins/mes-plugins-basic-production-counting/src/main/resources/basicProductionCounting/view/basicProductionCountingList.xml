@@ -62,21 +62,23 @@
 		<component type="form" name="basicProductionCounting"
 			reference="form">
 			<component type="grid" name="basicProductionCountings" reference="grid"
-				source="#{order}.basicProductionCountings">
-				<option type="column" name="productNumber" fields="product"
-					expression="#product['number']" link="true" width="100"/>
-				<option type="column" name="productName" fields="product"
-					expression="#product['name']" link="true" width="100"/>
+					   useDto="true"
+					   source="#{order}.basicProductionCountingDtos"
+					   model="basicProductionCountingDto">
+				<option type="column" name="productNumber" fields="productNumber"
+					link="true" width="100"/>
+				<option type="column" name="productName" fields="productName"
+					link="true" width="100"/>
 				<option type="column" name="plannedQuantity" fields="plannedQuantity" width="50"/>
 				<option type="column" name="usedQuantity" fields="usedQuantity" width="50"/>
 				<option type="column" name="producedQuantity" fields="producedQuantity" width="50"/>
-				<option type="column" name="productUnit" fields="product"
-					expression="#product['unit']" width="25"/>
+				<option type="column" name="productUnit" fields="productUnit"
+					width="25"/>
 
-				<option type="order" column="productType" direction="desc" />
+				<option type="order" column="productNumber" direction="desc" />
 				
-				<option type="searchable" value="productNumber,productName,usedQuantity,producedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,usedQuantity,producedQuantity,productUnit" />
+				<option type="searchable" value="productNumber,productName,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
+				<option type="orderable" value="productNumber,productName,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
 				
 				<option type="correspondingView"
 					value="basicProductionCounting/basicProductionCountingDetails" />

@@ -23,16 +23,15 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
-
 import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 //FIXME maku: replace bounded time/date ranges with JodaTime's intervals.
 public interface ShiftsService {
@@ -61,6 +60,8 @@ public interface ShiftsService {
     boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
 
     String getWeekDayName(final DateTime dateTime);
+
+    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine, final List<Entity> shifts);
 
     Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final List<Entity> shifts);
 

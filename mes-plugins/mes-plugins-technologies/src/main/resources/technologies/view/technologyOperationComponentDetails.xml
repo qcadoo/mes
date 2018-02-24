@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="technologyOperationComponentDetails"
       modelName="technologyOperationComponent"
@@ -44,6 +45,21 @@
 								}
 							});
 						]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="import">
+                <bigButton name="importOperationProductInComponents" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('importOperationProductInComponents', []);
+							}
+						}
+					});
+				]]>
                     </script>
                 </bigButton>
             </group>
@@ -76,7 +92,8 @@
 
                 <listener event="addUpTheNumberOfWorktations" method="addUpTheNumberOfWorktations"
                           class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"/>
-
+                <listener event="importOperationProductInComponents" method="importOperationProductInComponents"
+                          class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"/>
             </component>
         </windowTab>
 
@@ -184,6 +201,15 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="import" reference="import">
+            <component type="gridLayout" name="importGridLayout"
+                       columns="3" rows="3">
+                <layoutElement column="1" row="1" height="3">
+                    <component type="textarea" name="operationProductInComponentsSource"
+                               reference="operationProductInComponentsSource" hasDescription="true"/>
                 </layoutElement>
             </component>
         </windowTab>
