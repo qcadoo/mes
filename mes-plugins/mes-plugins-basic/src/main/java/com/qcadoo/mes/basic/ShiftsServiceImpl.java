@@ -346,8 +346,6 @@ public class ShiftsServiceImpl implements ShiftsService {
                     }
                 }
             }
-
-            updatedWorkTimes = finalWorkTimes;
         }
     }
 
