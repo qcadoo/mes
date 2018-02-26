@@ -44,6 +44,7 @@
             <validatesScale max="5"/>
         </decimal>
         <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
+        <boolean name="attachmentsExists"/>
     </fields>
     <identifier expression="#number + ' - ' + #name"/>
     <masterModel plugin="technologies" model="technology" />
