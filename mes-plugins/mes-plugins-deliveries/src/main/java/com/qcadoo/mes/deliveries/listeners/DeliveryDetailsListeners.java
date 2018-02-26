@@ -178,7 +178,7 @@ public class DeliveryDetailsListeners {
     }
 
     public final void recalculateReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Long deliveryId = form.getEntityId();
         reservationService.recalculateReservationsForDelivery(deliveryId);
         view.addMessage("deliveries.delivery.recalculateReservations", MessageType.SUCCESS);
@@ -188,7 +188,7 @@ public class DeliveryDetailsListeners {
         GridComponent grid = (GridComponent) view.getComponentByReference("deliveredProducts");
         List<Entity> selectedProducts = grid.getSelectedEntities();
         Set<Long> selectedProductsIds = grid.getSelectedEntitiesIds();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity delivery = form.getPersistedEntityWithIncludedFormValues();
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
         for (Entity selectedProduct : selectedProducts) {
@@ -212,7 +212,7 @@ public class DeliveryDetailsListeners {
 
     public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         deleteOldEntries();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity delivery = form.getPersistedEntityWithIncludedFormValues();
         Entity deliveredProductMultiEntity = createDeliveredProductMultiEntity(delivery, view);
         deliveredProductMultiEntity.getDataDefinition().save(deliveredProductMultiEntity);
@@ -252,7 +252,7 @@ public class DeliveryDetailsListeners {
     }
 
     private List<Entity> getSelectedProducts(ViewDefinitionState view) {
-        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference("orderedProducts");
+        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
 
         List<Entity> result = Lists.newArrayList();
         Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
@@ -657,7 +657,7 @@ public class DeliveryDetailsListeners {
     }
 
     public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long deliveryId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Long deliveryId = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getId();
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         List<String> columnNames = orderReportPdf.getUsedColumnsInOrderReport(delivery);
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
@@ -666,7 +666,7 @@ public class DeliveryDetailsListeners {
     }
 
     public void validateColumnsWidthForDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long deliveryId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Long deliveryId = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getId();
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         List<String> columnNames = deliveryReportPdf.getUsedColumnsInDeliveryReport(delivery);
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
@@ -697,6 +697,32 @@ public class DeliveryDetailsListeners {
         }
 
         File zipFile = null;
+
+        try {
+            zipFile = fileService.compressToZipFile(attachements, false);
+        } catch (IOException e) {
+            LOG.error("Unable to compress documents to zip file.", e);
+            return;
+        }
+
+        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    public void downloadProductAttachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+        Set<Long> ids = orderedProductsGrid.getSelectedEntitiesIds();
+        SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find();
+        if (ids.isEmpty()) {
+            searchCriteria.add(SearchRestrictions.in(DeliveriesConstants.MODEL_DELIVERY + "id", form.getEntityId()));
+        } else {
+            searchCriteria.add(SearchRestrictions.in("id", ids));
+        }
+        List<Entity> result = searchCriteria.list().getEntities();
+
+        List<File> attachements = Lists.newArrayList();
+
+        File zipFile;
 
         try {
             zipFile = fileService.compressToZipFile(attachements, false);

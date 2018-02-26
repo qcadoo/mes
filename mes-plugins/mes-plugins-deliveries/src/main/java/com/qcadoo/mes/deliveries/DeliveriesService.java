@@ -51,11 +51,11 @@ public interface DeliveriesService {
     /**
      * Gets ordered product
      *
-     * @param deliveredProductId
+     * @param orderedProductId
      *
      * @return ordered product
      */
-    Entity getOrderedProduct(final Long deliveredProductId);
+    Entity getOrderedProduct(final Long orderedProductId);
 
     /**
      * Gets delivered product

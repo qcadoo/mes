@@ -111,8 +111,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public Entity getOrderedProduct(final Long deliveredProductId) {
-        return getOrderedProductDD().get(deliveredProductId);
+    public Entity getOrderedProduct(final Long orderedProductId) {
+        return getOrderedProductDD().get(orderedProductId);
     }
 
     @Override
