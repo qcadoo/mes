@@ -66,6 +66,12 @@
                 <component type="gridLayout" name="gridLayout" columns="1"
                            rows="1" hasBorders="false">
                     <layoutElement column="1" row="1">
+                        <component type="input" name="documentId" reference="documentId"
+                                   field="documentId" defaultVisible="false" defaultEnabled="false"/>
+                        <component type="input" name="warehouseId" reference="warehouseId"
+                                   field="warehouseId" defaultVisible="false" defaultEnabled="false"/>
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false"/>
                         <component type="grid" name="resourceGrid" reference="resourceGrid"
                                    field="#{form}.resourceDtos">
                             <option type="column" name="number" fields="number"/>
@@ -86,21 +92,14 @@
                                     value="number,productNumber,productName,availableQuantity,productUnit,price,storageLocation,deliveryNumber"/>
 
                             <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true"/>
                             <option type="multiselect" value="true"/>
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourceCriteriaModifiers"
                                     method="restrictToLocation"/>
                         </component>
-                        <component type="input" name="documentId" reference="documentId"
-                                   field="documentId" defaultVisible="false" defaultEnabled="false"/>
-
-                        <component type="input" name="warehouseId" reference="warehouseId"
-                                   field="warehouseId" defaultVisible="false" defaultEnabled="false"/>
-                        <component type="checkbox" name="generated" defaultVisible="false"
-                                   reference="generated" defaultEnabled="false"/>
                     </layoutElement>
-
 
                 </component>
 
@@ -111,7 +110,6 @@
                 <option type="header" value="true"/>
             </component>
         </windowTab>
-
 
     </component>
 
