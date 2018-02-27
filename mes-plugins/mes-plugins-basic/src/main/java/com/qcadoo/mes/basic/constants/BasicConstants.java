@@ -32,6 +32,7 @@ public final class BasicConstants {
     public static final String PLUGIN_IDENTIFIER = "basic";
 
     // MODEL
+    public static final String MODEL_PRODUCT_ATTACHMENT = "productAttachment";
 
     public static final String MODEL_ADDITIONAL_CODE = "additionalCode";
 
@@ -84,7 +85,7 @@ public final class BasicConstants {
     public static final String MODEL_PALLET_NUMBER_HELPER = "palletNumberHelper";
 
     public static final String MODEL_FAULT_TYPE = "faultType";
-    
+
     public static final String MODEL_LOG = "log";
 
     // VIEW

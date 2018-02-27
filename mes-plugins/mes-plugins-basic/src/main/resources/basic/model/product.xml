@@ -73,6 +73,9 @@
         <dictionary name="additionalUnit" dictionary="units"/>
         <hasMany name="additionalCodes" model="additionalCode" joinField="product" cascade="delete"/>
         <belongsTo name="assortment" model="assortment"/>
+
+        <hasMany name="productAttachments" joinField="product" model="productAttachment" cascade="delete"/>
+
     </fields>
 
     <hooks>
