@@ -105,6 +105,8 @@ public class DocumentPdfHelper {
 
     private static final String L_TOTAL = "materialFlowResources.report.tableHeader.total";
 
+    private static final String L_DELIVERY = "materialFlowResources.document.delivery.label";
+
     @Autowired
     private PdfHelper pdfHelper;
 
@@ -221,6 +223,11 @@ public class DocumentPdfHelper {
     public HeaderPair getDescription(final Entity documentEntity, final Locale locale) {
         return new HeaderPair(translationService.translate(L_DESCRIPTION, locale),
                 DocumentDataProvider.description(documentEntity), false);
+    }
+
+    public HeaderPair getDelivery(final Entity documentEntity, final Locale locale) {
+        return new HeaderPair(translationService.translate(L_DELIVERY, locale), DocumentDataProvider.delivery(documentEntity),
+                false);
     }
 
     /**
@@ -346,7 +353,11 @@ public class DocumentPdfHelper {
         }
         table.completeRow();
 
-        table.setSpacingAfter(20);
+        HeaderPair delivery = getDelivery(documentEntity, locale);
+        if (!delivery.getValue().isEmpty()) {
+            pdfHelper.addTableCellAsOneColumnTable(table, delivery.getLabel(), delivery.getValue());
+            table.completeRow();
+        }
 
         document.add(table);
 

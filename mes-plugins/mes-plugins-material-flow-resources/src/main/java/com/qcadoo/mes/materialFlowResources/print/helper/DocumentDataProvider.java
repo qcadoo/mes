@@ -23,15 +23,16 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
+import java.text.SimpleDateFormat;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AddressFields;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-
-import java.text.SimpleDateFormat;
 
 public final class DocumentDataProvider {
 
@@ -95,5 +96,10 @@ public final class DocumentDataProvider {
         Entity location = documentEntity.getBelongsToField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION);
         return location != null ? location.getStringField(LocationFields.NUMBER) + " - "
                 + location.getStringField(LocationFields.NAME) : StringUtils.EMPTY;
+    }
+
+    public static String delivery(Entity documentEntity) {
+        Entity delivery = documentEntity.getBelongsToField("delivery");
+        return delivery != null ? delivery.getStringField("number") : StringUtils.EMPTY;
     }
 }
