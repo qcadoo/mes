@@ -28,6 +28,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -142,4 +143,20 @@ public class ProductDetailsHooks {
         ribbonActionItem.requestUpdate(true);
     }
 
+    public void setProductIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent product = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent productIdForMultiUpload = (FieldComponent) view.getComponentByReference("productIdForMultiUpload");
+        FieldComponent productMultiUploadLocale = (FieldComponent) view.getComponentByReference("productMultiUploadLocale");
+
+        if (product.getEntityId() != null) {
+            productIdForMultiUpload.setFieldValue(product.getEntityId());
+            productIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            productIdForMultiUpload.setFieldValue("");
+            productIdForMultiUpload.requestComponentUpdateState();
+        }
+        productMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
+        productMultiUploadLocale.requestComponentUpdateState();
+
+    }
 }

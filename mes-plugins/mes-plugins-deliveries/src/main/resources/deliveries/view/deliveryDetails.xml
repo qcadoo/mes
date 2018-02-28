@@ -273,6 +273,18 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="downloadProductAttachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadProductAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
 
         </ribbon>
@@ -603,6 +615,8 @@
                           method="validateColumnsWidthForDelivery"/>
 
                 <listener event="downloadAtachment" method="downloadAtachment"
+                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
+                <listener event="downloadProductAttachment" method="downloadProductAttachment"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
             </component>
         </windowTab>

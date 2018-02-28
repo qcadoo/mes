@@ -48,6 +48,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="attachments">
+                <bigButton name="downloadAttachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -148,6 +162,8 @@
 
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.ProductDetailsListeners"/>
             </component>
         </windowTab>
 
@@ -344,7 +360,36 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="attachments">
+            <component type="gridLayout" name="attachmentsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" height="6">
 
+                    <component type="staticPage" name="multiUpload">
+                        <option type="page" value="basic/multiUploadForProduct.jsp"/>
+                    </component>
+                    <component type="input" name="productIdForMultiUpload"
+                               reference="productIdForMultiUpload" defaultVisible="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                    <component type="input" name="productMultiUploadLocale"
+                               reference="productMultiUploadLocale" defaultVisible="false">
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" height="6">
+                    <component type="grid" name="productAttachments"
+                               reference="productAttachments" source="#{form}.productAttachments">
+                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>
@@ -360,5 +405,7 @@
                       method="updateRibbonState"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
                       method="setCriteriaModifierParameters"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="setProductIdForMultiUploadField"/>
     </hooks>
 </view>
