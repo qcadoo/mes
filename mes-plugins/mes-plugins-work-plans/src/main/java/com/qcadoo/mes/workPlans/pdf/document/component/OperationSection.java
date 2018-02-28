@@ -24,7 +24,6 @@
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
 import com.google.common.collect.ListMultimap;
-import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -65,18 +64,11 @@ public class OperationSection {
                 .getTitleToOperationComponent();
         for (String title : titleToOperationComponent.keySet()) {
             operationSectionHeader.print(document, title);
-            int count = 0;
             for (OrderOperationComponent orderOperationComponent : groupingContainer.getTitleToOperationComponent().get(title)) {
-                count++;
                 operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
                         orderOperationComponent.getOperationComponent(), document, locale);
                 if(generateEachOnSeparatePage()) {
                     document.newPage();
-                }
-                if (count != titleToOperationComponent.get(title).size()) {
-                    if (notPrintOperationAtFirstPage()) {
-                        document.add(Chunk.NEXTPAGE);
-                    }
                 }
             }
         }
