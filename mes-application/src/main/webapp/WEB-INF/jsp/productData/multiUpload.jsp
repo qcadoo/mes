@@ -38,7 +38,7 @@ String ctx = request.getContextPath();
 <script src="/productData/public/js/multiuploadfunctions.js"></script>
 <script src="/productData/public/js/bootstrap.min.js"></script>
 
-<link href="/productData/public/css/dropzone.css" type="text/css" rel="stylesheet" />
+<link href="/basic/public/css/dropzone.css" type="text/css" rel="stylesheet" />
 
 
 

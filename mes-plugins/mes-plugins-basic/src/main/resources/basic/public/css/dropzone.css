@@ -28,6 +28,12 @@
     height: 45px;
     line-height: 50px;
     text-align: center;
+    font-family: "Lucida Grande",Arial, Helvetica, sans-serif;
+    font-size: 15px;
+}
+#dropzone p {
+    font-size: 11px;
+    display: inline;
 }
 #dropzone.in {
     width: 600px;
