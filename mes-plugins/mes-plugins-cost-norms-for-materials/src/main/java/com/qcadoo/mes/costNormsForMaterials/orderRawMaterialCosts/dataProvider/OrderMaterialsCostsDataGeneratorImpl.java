@@ -34,11 +34,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
-import com.qcadoo.commons.functional.FluentOptional;
-import com.qcadoo.commons.functional.Optionals;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
@@ -47,15 +43,11 @@ import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.Product
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsCriteria;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsDataProvider;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchProjection;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityUtils;
 
 @Service
@@ -84,19 +76,21 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
 
     @Override
     public List<Entity> generateUpdatedMaterialsListFor(final Entity order) {
-        for (Long technologyId : extractTechnologyIdFrom(order).asSet()) {
-            List<ProductWithCosts> allTechnologyRawProductsWithCosts = findRawInputProductsFor(technologyId);
-            List<Entity> existingOrderMaterialCosts;
-            if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
-                final Set<Long> technologyRawProductIds = allTechnologyRawProductsWithCosts.stream()
-                        .map(ProductWithCosts.EXTRACT_ID::apply).collect(Collectors.toSet());
-                existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, technologyRawProductIds);
-            } else {
-                existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, null);
-            }
-            return createMissingOrderMaterialCostsEntities(order, allTechnologyRawProductsWithCosts, existingOrderMaterialCosts);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            return Lists.newArrayList();
         }
-        return ImmutableList.of();
+        Long technologyId = technology.getId();
+        List<ProductWithCosts> allTechnologyRawProductsWithCosts = findRawInputProductsFor(technologyId);
+        List<Entity> existingOrderMaterialCosts;
+        if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
+            final Set<Long> technologyRawProductIds = allTechnologyRawProductsWithCosts.stream()
+                    .map(ProductWithCosts.EXTRACT_ID::apply).collect(Collectors.toSet());
+            existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, technologyRawProductIds);
+        } else {
+            existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, null);
+        }
+        return createMissingOrderMaterialCostsEntities(order, allTechnologyRawProductsWithCosts, existingOrderMaterialCosts);
     }
 
     private List<Entity> createMissingOrderMaterialCostsEntities(final Entity order,
@@ -105,6 +99,8 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
                 .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
                 .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
         if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            List<Entity> components = technologyService.findComponentsForTechnology(technology.getId());
             List<Entity> allOrderMaterialCosts = allTechnologyRawProductsWithCosts.stream()
                     .filter(productWithCosts -> !existingMaterialCostIds.contains(productWithCosts.getProductId()))
                     .map(productWithCosts -> orderMaterialCostsEntityBuilder.create(order, productWithCosts))
@@ -112,8 +108,8 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
             allOrderMaterialCosts.addAll(existingOrderMaterialCosts);
             allOrderMaterialCosts = allOrderMaterialCosts
                     .stream()
-                    .filter(materialCost -> !isIntermediate(order,
-                            materialCost.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT).getId()))
+                    .filter(materialCost -> isComponent(components,
+                            materialCost.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT)))
                     .collect(Collectors.toList());
             return allOrderMaterialCosts;
         } else {
@@ -137,19 +133,8 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
         }
     }
 
-    private boolean isIntermediate(final Entity order, final Long productId) {
-
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        List<Entity> opics = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                .find()
-                .createAlias(OperationProductInComponentFields.OPERATION_COMPONENT,
-                        OperationProductInComponentFields.OPERATION_COMPONENT, JoinType.INNER)
-                .createAlias(OperationProductInComponentFields.PRODUCT, OperationProductInComponentFields.PRODUCT, JoinType.INNER)
-                .add(SearchRestrictions.eq(OperationProductInComponentFields.OPERATION_COMPONENT + ".technology.id",
-                        technology.getId()))
-                .add(SearchRestrictions.eq(OperationProductInComponentFields.PRODUCT + ".id", productId)).list().getEntities();
-        return opics.stream().anyMatch(opic -> technologyService.isIntermediateProduct(opic));
+    private boolean isComponent(final List<Entity> components, final Entity product) {
+        return components.stream().anyMatch(component -> component.getId().equals(product.getId()));
     }
 
     private List<Entity> findExistingOrderMaterialCosts(final Entity order, final Collection<Long> productIds) {
@@ -171,13 +156,7 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     }
 
     private List<ProductWithCosts> asProductsWithCosts(final List<Entity> projectionResults) {
-        return FluentIterable.from(projectionResults).transform(ProductWithCostsBuilder.BUILD_FROM_PROJECTION).toList();
-    }
-
-    private Optional<Long> extractTechnologyIdFrom(final Entity order) {
-        return FluentOptional.fromNullable(order)
-                .flatMap(Optionals.lift(EntityUtils.getBelongsToFieldExtractor(OrderFields.TECHNOLOGY)))
-                .flatMap(EntityUtils.getSafeIdExtractor()).toOpt();
+        return projectionResults.stream().map(ProductWithCostsBuilder.BUILD_FROM_PROJECTION::apply).collect(Collectors.toList());
     }
 
 }

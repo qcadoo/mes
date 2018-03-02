@@ -33,12 +33,6 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class OperationModelHooks {
 
-    private static final Integer DEFAULT_QUANTITY_OF_WORKSTATIONS = 1;
-
-    public void onView(final DataDefinition operationDD, final Entity operation) {
-        fillQuantityOfWorkstations(operation);
-    }
-
     public void onSave(final DataDefinition operationDD, final Entity operation) {
         clearField(operation);
     }
@@ -47,13 +41,6 @@ public class OperationModelHooks {
         String assignedToOperation = operation.getStringField(OperationFields.ASSIGNED_TO_OPERATION);
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             operation.setField(OperationFields.WORKSTATIONS, null);
-        }
-    }
-
-    private void fillQuantityOfWorkstations(final Entity operation) {
-
-        if (operation.getIntegerField(OperationFields.QUANTITY_OF_WORKSTATIONS) == null) {
-            operation.setField(OperationFields.QUANTITY_OF_WORKSTATIONS, DEFAULT_QUANTITY_OF_WORKSTATIONS);
         }
     }
 

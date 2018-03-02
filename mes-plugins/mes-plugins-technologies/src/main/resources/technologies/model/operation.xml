@@ -75,7 +75,6 @@
         <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
                        method="checkIfProductsInProductComponentsAreDistinct"/>
 
-        <onView class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onView"/>
 
         <onSave class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onSave"/>
     </hooks>
