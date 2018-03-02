@@ -132,7 +132,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
     }
 
     private void addPositionsTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
-        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(20, 50, 50, 50, 50, 100, 40, 35));
+        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(30, 50, 50, 50, 50, 100, 40, 35));
         int numOfColumns = 8;
         if (acceptanceOfDocumentBeforePrinting) {
             headerWidthsList.add(45);
@@ -334,40 +334,39 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
         Entity documentPositionParameters = parameterService.getParameter().getBelongsToField("documentPositionParameters");
         acceptanceOfDocumentBeforePrinting = documentPositionParameters.getBooleanField("acceptanceOfDocumentBeforePrinting");
 
-            class DispositionOrderHeader extends PdfPageEventHelper {
+        class DispositionOrderHeader extends PdfPageEventHelper {
 
-                @Override
-                public void onEndPage(PdfWriter writer, Document document) {
-                    try {
-                        PdfContentByte cb = writer.getDirectContent();
-                        cb.saveState();
-                        float textBase = document.top();
+            @Override
+            public void onEndPage(PdfWriter writer, Document document) {
+                try {
+                    PdfContentByte cb = writer.getDirectContent();
+                    cb.saveState();
+                    float textBase = document.top();
 
-                        cb.setColorFill(ColorUtils.getLightColor());
-                        cb.setColorStroke(ColorUtils.getLightColor());
-                        cb.beginText();
-                        cb.setFontAndSize(FontUtils.getDejavu(), 7);
+                    cb.setColorFill(ColorUtils.getLightColor());
+                    cb.setColorStroke(ColorUtils.getLightColor());
+                    cb.beginText();
+                    cb.setFontAndSize(FontUtils.getDejavu(), 7);
 
-                        cb.setTextMatrix(document.left(), textBase + 20);
-                        cb.showText((translationService.translate(L_PZ, locale) +": "+ DocumentDataProvider
-                                .pzLocation(entity)));
-                        cb.endText();
-                        cb.stroke();
-                        cb.restoreState();
-                    } catch (Exception ex) {
-                        throw new RuntimeException(ex);
-                    }
-
+                    cb.setTextMatrix(document.left(), textBase + 20);
+                    cb.showText((translationService.translate(L_PZ, locale) + ": " + DocumentDataProvider.pzLocation(entity)));
+                    cb.endText();
+                    cb.stroke();
+                    cb.restoreState();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
                 }
-            }
-            writer.setPageEvent(new DispositionOrderHeader());
 
-            String documentHeader = getDocumentHeader(entity, locale);
-            pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
-            addHeaderTable(document, entity, locale);
-            addPositionsTable(document, entity, locale);
-            addPlaceForComments(document, locale);
-            addPlaceForSignature(document, locale);
+            }
+        }
+        writer.setPageEvent(new DispositionOrderHeader());
+
+        String documentHeader = getDocumentHeader(entity, locale);
+        pdfHelper.addDocumentHeader(document, "", documentHeader, "", new Date());
+        addHeaderTable(document, entity, locale);
+        addPositionsTable(document, entity, locale);
+        addPlaceForComments(document, locale);
+        addPlaceForSignature(document, locale);
     }
 
     @Override
