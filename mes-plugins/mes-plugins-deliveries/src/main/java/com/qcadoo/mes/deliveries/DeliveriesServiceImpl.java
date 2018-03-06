@@ -23,24 +23,10 @@
  */
 package com.qcadoo.mes.deliveries;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
@@ -74,6 +60,20 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -104,6 +104,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private ProductService productService;
 
     @Override
     public Entity getDelivery(final Long deliveryId) {
@@ -600,8 +603,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public Optional<Entity> getDefaultSupplier(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (product != null
+                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
+                product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier);
@@ -615,8 +619,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public Optional<Entity> getDefaultSupplierWithIntegration(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (product != null
+                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
+                product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
@@ -639,6 +644,30 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private Entity getDefaultSupplierForProductsFamily(Long productId) {
+        Entity product = getProductDD().get(productId);
+        if (productService.checkIfProductEntityTypeIsCorrect(product, ProductFamilyElementType.PRODUCTS_FAMILY)) {
+            Entity companyProduct = getDefaultCompanyProductEntity(productId);
+            if(companyProduct == null) {
+                boolean notFind = true;
+                while (notFind) {
+                    product = product.getBelongsToField(ProductFields.PARENT);
+                    if(product == null) {
+                        return null;
+                    }
+                    companyProduct = getDefaultCompanyProductEntity(product.getId());
+                    if(companyProduct != null) {
+                        return companyProduct;
+                    }
+                }
+            }
+            return companyProduct;
+
+        } else {
+            return null;
+        }
+    }
+
+    private Entity getDefaultCompanyProductEntity(Long productId) {
         String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
                 + " and company.isDefault = true";
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
