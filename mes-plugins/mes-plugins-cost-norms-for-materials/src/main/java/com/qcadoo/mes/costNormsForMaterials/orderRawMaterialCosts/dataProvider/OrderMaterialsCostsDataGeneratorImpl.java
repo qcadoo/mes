@@ -77,7 +77,7 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     @Override
     public List<Entity> generateUpdatedMaterialsListFor(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology == null) {
+        if (technology == null || technology.getId() == null) {
             return Lists.newArrayList();
         }
         Long technologyId = technology.getId();
