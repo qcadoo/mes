@@ -645,16 +645,18 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     private Entity getDefaultSupplierForProductsFamily(Long productId) {
         Entity product = getProductDD().get(productId);
-        if (productService.checkIfProductEntityTypeIsCorrect(product, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-            Entity companyProduct = getDefaultCompanyProductEntity(productId);
+
+        Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
+        if(productFamily != null) {
+            Entity companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
             if(companyProduct == null) {
                 boolean notFind = true;
                 while (notFind) {
-                    product = product.getBelongsToField(ProductFields.PARENT);
-                    if(product == null) {
+                    productFamily = productFamily.getBelongsToField(ProductFields.PARENT);
+                    if(productFamily == null) {
                         return null;
                     }
-                    companyProduct = getDefaultCompanyProductEntity(product.getId());
+                    companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
                     if(companyProduct != null) {
                         return companyProduct;
                     }
