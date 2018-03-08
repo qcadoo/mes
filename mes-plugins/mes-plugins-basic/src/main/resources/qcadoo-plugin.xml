@@ -264,6 +264,7 @@
 
         <model:model model="productAttachment" resource="model/productAttachment.xml"/>
         <model:model model="productDto" resource="model/productDto.xml"/>
+        <model:model model="attachmentDto" resource="model/attachmentDto.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -341,6 +342,10 @@
         <menu:menu-item name="logsList" category="administration"
                         view="logsList" defaultAuthorizationRole="ROLE_LOGS"/>
 
+
+        <menu:menu-item name="attachmentsList" category="basic"
+                        view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -395,6 +400,7 @@
         <view:view resource="view/logDetails.xml"/>
 
         <view:view resource="view/exceptionsForLineList.xml"/>
+        <view:view resource="view/attachmentsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>

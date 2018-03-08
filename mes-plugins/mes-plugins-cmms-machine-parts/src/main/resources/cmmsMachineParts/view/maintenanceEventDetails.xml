@@ -606,7 +606,10 @@
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="attachments"
                                reference="attachments" source="#{form}.attachments">
-                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
+                                link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+
                         <option type="column" name="size" fields="size"/>
                         <option type="order" column="attachment" direction="desc"/>
 

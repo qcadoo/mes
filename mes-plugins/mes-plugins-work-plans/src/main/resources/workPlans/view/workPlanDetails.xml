@@ -310,7 +310,10 @@
                     <component type="grid" name="technologyAttachments"
                                reference="technologyAttachments" model="technologyAttachment"
                                plugin="technologies">
-                        <option type="column" name="attachment" fields="name"/>
+                        <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
+                                link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+
                         <option type="column" name="size" fields="size"/>
                         <option type="column" name="technology" fields="technology"
                                 expression="#technology.get('number')"/>
