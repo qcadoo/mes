@@ -563,7 +563,7 @@
                           method="fillFieldValues"/>
 
                 <listener event="downloadAttachment" method="downloadAttachment"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
 
                 <listener event="showMaintenanceEvent" method="showMaintenanceEvent"
                           class="com.qcadoo.mes.cmmsMachineParts.listeners.PlannedEventDetailsListeners"/>
@@ -870,7 +870,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="attachments"
-                               reference="attachments" source="#{form}.attachments">
+                               reference="attachmentsGrid" source="#{form}.attachments">
                         <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>

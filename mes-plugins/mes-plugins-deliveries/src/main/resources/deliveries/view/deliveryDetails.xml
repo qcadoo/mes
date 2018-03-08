@@ -267,7 +267,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{form}.performEvent('downloadAtachment', []);
+									#{form}.performEvent('downloadAttachment', []);
 								}
 							});
 						]]>
@@ -614,8 +614,8 @@
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                           method="validateColumnsWidthForDelivery"/>
 
-                <listener event="downloadAtachment" method="downloadAtachment"
-                          class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
                 <listener event="downloadProductAttachment" method="downloadProductAttachment"
                           class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
             </component>
@@ -858,7 +858,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="attachments"
-                               reference="attachments" source="#{form}.attachments">
+                               reference="attachmentsGrid" source="#{form}.attachments">
                         <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>

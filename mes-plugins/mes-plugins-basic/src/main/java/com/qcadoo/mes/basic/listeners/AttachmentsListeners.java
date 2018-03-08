@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 public class AttachmentsListeners {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductDetailsListeners.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AttachmentsListeners.class);
 
     public static final String L_FORM = "form";
 
@@ -30,7 +30,7 @@ public class AttachmentsListeners {
     private FileService fileService;
 
     public void downloadAttachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference("attachmentsGrid");
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
             state.addMessage("basic.productDetails.window.ribbon.attachments.nonSelectedAttachment",
                     ComponentState.MessageType.INFO);

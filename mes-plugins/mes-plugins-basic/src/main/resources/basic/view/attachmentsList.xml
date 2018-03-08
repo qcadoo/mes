@@ -32,7 +32,9 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardGridTemplate"/>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{attachmentsGrid}.performRefresh;" accesskey="r" />
+            </group>
             <group name="attachments">
                 <bigButton name="downloadAttachment" icon="generateIcon24.png"
                            state="enabled">
@@ -40,7 +42,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{grid}.performEvent('downloadAttachment', []);
+									#{attachmentsGrid}.performEvent('downloadAttachment', []);
 								}
 							});
 						]]>
@@ -49,7 +51,7 @@
             </group>
         </ribbon>
 
-        <component type="grid" name="attachments" reference="grid">
+        <component type="grid" name="attachments" reference="attachmentsGrid">
             <option type="column" name="name" fields="name" correspondingField="attachment"
                     link="true" attachment="true" width="300"/>
 

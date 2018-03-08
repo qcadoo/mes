@@ -163,7 +163,7 @@
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
-                          class="com.qcadoo.mes.basic.listeners.ProductDetailsListeners"/>
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
 
@@ -378,7 +378,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="productAttachments"
-                               reference="productAttachments" source="#{form}.productAttachments">
+                               reference="attachmentsGrid" source="#{form}.productAttachments">
                         <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>

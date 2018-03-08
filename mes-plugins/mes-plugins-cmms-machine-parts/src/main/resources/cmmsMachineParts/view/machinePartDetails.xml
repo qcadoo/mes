@@ -54,7 +54,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									#{form}.performEvent('downloadAtachment', []);
+									#{form}.performEvent('downloadAttachment', []);
 								}
 							});
 						]]>
@@ -165,8 +165,8 @@
 
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
-                <listener event="downloadAtachment" method="downloadAtachment"
-                          class="com.qcadoo.mes.cmmsMachineParts.listeners.MachinePartDetailsListeners"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
 
@@ -416,7 +416,7 @@
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" height="6">
                     <component type="grid" name="machinePartAttachments"
-                               reference="machinePartAttachments" source="#{form}.machinePartAttachments">
+                               reference="attachmentsGrid" source="#{form}.machinePartAttachments">
                         <option type="column" name="attachment" fields="name" correspondingField="attachmentLocation"
                                 link="true" attachment="true"/>
                         <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>

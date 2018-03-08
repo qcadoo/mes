@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -50,7 +37,6 @@ import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
 import com.qcadoo.mes.productionLines.constants.FactoryStructureElementType;
 import com.qcadoo.mes.productionLines.factoryStructure.FactoryStructureElementsService;
-import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -60,9 +46,17 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -244,32 +238,6 @@ public class EventListeners {
                 type.setFieldValue(value);
             }
         }
-    }
-
-    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("attachments");
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().isEmpty()) {
-            state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment",
-                    ComponentState.MessageType.INFO);
-            return;
-        }
-        DataDefinition attachmentDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, "eventAttachment");
-        List<File> atachments = Lists.newArrayList();
-        for (Long attachmentId : grid.getSelectedEntitiesIds()) {
-            Entity attachment = attachmentDD.get(attachmentId);
-            File file = new File(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
-            atachments.add(file);
-        }
-
-        File zipFile = null;
-        try {
-            zipFile = fileService.compressToZipFile(atachments, false);
-        } catch (IOException e) {
-            LOG.error("Unable to compress documents to zip file.", e);
-            return;
-        }
-
-        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
     }
 
     public void showSolutions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
