@@ -23,10 +23,24 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
@@ -60,20 +74,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -104,9 +104,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Autowired
     private CurrencyService currencyService;
-
-    @Autowired
-    private ProductService productService;
 
     @Override
     public Entity getDelivery(final Long deliveryId) {
@@ -141,20 +138,22 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity successionColumn = getColumnForDeliveriesDD().find()
                 .add(SearchRestrictions.eq(ColumnForDeliveriesFields.IDENTIFIER, "succession")).uniqueResult();
         deliveriesColumn.add(successionColumn);
+
         for (Entity entity : columnsForDeliveries) {
-            if (!entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(
-                    successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
+            if (!entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER)
+                    .equals(successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
                 deliveriesColumn.add(entity);
             }
         }
+
         return deliveriesColumn;
     }
 
     @Override
     public List<Entity> getColumnsForOrders() {
         List<Entity> columns = new LinkedList<Entity>();
-        List<Entity> columnComponents = getColumnForOrdersDD().find()
-                .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
+        List<Entity> columnComponents = getColumnForOrdersDD().find().addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION))
+                .list().getEntities();
 
         for (Entity columnComponent : columnComponents) {
             Entity columnDefinition = columnComponent.getBelongsToField("columnForOrders");
@@ -191,8 +190,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public DataDefinition getCompanyProductsFamilyDD() {
-        return dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     @Override
@@ -579,6 +578,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         int sizeOfSelectedEntitiesOrderedGrid = orderedProductGrid.getSelectedEntities().size();
         int sizeOfSelectedEntitiesDelivereGrid = deliveredProductsGrid.getSelectedEntities().size();
+
         if ((sizeOfSelectedEntitiesOrderedGrid == 1 && sizeOfSelectedEntitiesDelivereGrid == 0)
                 || (sizeOfSelectedEntitiesOrderedGrid == 0 && sizeOfSelectedEntitiesDelivereGrid == 1)) {
             showProduct.setEnabled(true);
@@ -593,6 +593,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private Entity getProductEntityByComponentName(final ViewDefinitionState view, final String productName) {
         ComponentState productComponentState = view.getComponentByReference(productName);
         Entity product = null;
+
         if (productComponentState instanceof LookupComponent) {
             product = ((LookupComponent) productComponentState).getEntity();
         }
@@ -603,30 +604,32 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public Optional<Entity> getDefaultSupplier(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null
-                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier);
             } else {
                 return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
             }
         }
+
         return Optional.empty();
     }
 
     public Optional<Entity> getDefaultSupplierWithIntegration(Long productId) {
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product != null
-                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (product != null && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
+
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
             } else {
                 defaultSupplier = getDefaultSupplierForProductsFamily(productId);
+
                 if (defaultSupplier != null) {
                     return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
                 }
@@ -638,8 +641,10 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     public List<Entity> getSuppliersWithIntegration(Long productId) {
         List<Entity> suppliers = getSuppliersForProductsFamily(productId);
+
         suppliers.addAll(getSuppliersForParticularProduct(productId));
         getIntegrationDefaultSupplier().ifPresent(suppliers::add);
+
         return suppliers;
     }
 
@@ -647,23 +652,29 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity product = getProductDD().get(productId);
 
         Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
-        if(productFamily != null) {
+
+        if (productFamily != null) {
             Entity companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
-            if(companyProduct == null) {
+
+            if (companyProduct == null) {
                 boolean notFind = true;
+
                 while (notFind) {
                     productFamily = productFamily.getBelongsToField(ProductFields.PARENT);
-                    if(productFamily == null) {
+
+                    if (productFamily == null) {
                         return null;
                     }
+
                     companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
-                    if(companyProduct != null) {
+
+                    if (companyProduct != null) {
                         return companyProduct;
                     }
                 }
             }
-            return companyProduct;
 
+            return companyProduct;
         } else {
             return null;
         }
@@ -672,12 +683,14 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private Entity getDefaultCompanyProductEntity(Long productId) {
         String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
                 + " and company.isDefault = true";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultSupplierForParticularProduct(Long productId) {
         String query = "select company from #deliveries_companyProduct company where company.product.id = :id"
                 + " and company.isDefault = true";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
@@ -687,22 +700,27 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     private List<Entity> getSuppliersForProductsFamily(Long productId) {
         String query = "select company.company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
     }
 
     private List<Entity> getSuppliersForParticularProduct(Long productId) {
         String query = "select company.company from #deliveries_companyProduct company where company.product.id = :id";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
     }
 
     public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {
         List<Entity> result = Lists.newArrayList();
         Set<Long> ids = orderedProductGrid.getSelectedEntitiesIds();
+
         if (ids != null && !ids.isEmpty()) {
             final SearchCriteriaBuilder searchCriteria = getOrderedProductDD().find();
             searchCriteria.add(SearchRestrictions.in("id", ids));
             result = searchCriteria.list().getEntities();
         }
+
         return result;
     }
+
 }
