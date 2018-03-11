@@ -605,7 +605,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         if (product != null
                 && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                product.getStringField(ProductFields.ENTITY_TYPE))) {
+                        product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier);
@@ -621,7 +621,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         if (product != null
                 && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                product.getStringField(ProductFields.ENTITY_TYPE))) {
+                        product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
             if (defaultSupplier != null) {
                 return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
@@ -647,17 +647,17 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity product = getProductDD().get(productId);
 
         Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
-        if(productFamily != null) {
-            Entity companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
-            if(companyProduct == null) {
+        if (productFamily != null) {
+            Entity companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
+            if (companyProduct == null) {
                 boolean notFind = true;
                 while (notFind) {
                     productFamily = productFamily.getBelongsToField(ProductFields.PARENT);
-                    if(productFamily == null) {
+                    if (productFamily == null) {
                         return null;
                     }
-                    companyProduct = getDefaultCompanyProductEntity(productFamily.getId());
-                    if(companyProduct != null) {
+                    companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
+                    if (companyProduct != null) {
                         return companyProduct;
                     }
                 }
@@ -667,6 +667,12 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         } else {
             return null;
         }
+    }
+
+    private Entity getDefaultCompanyProductFamilyEntity(Long productId) {
+        String query = "select company from #deliveries_companyProductsFamily company WHERE company.product.id = :id"
+                + " and company.isDefault = true";
+        return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
     private Entity getDefaultCompanyProductEntity(Long productId) {
