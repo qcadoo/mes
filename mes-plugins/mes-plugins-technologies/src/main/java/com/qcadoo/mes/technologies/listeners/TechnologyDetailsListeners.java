@@ -23,14 +23,10 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +36,6 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
@@ -49,25 +44,24 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class TechnologyDetailsListeners {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TechnologyDetailsListeners.class);
+    private static final String L_OUT_PRODUCTS_REFERENCE = "outProducts";
+
+    private static final String L_IN_PRODUCTS_REFERENCE = "inProducts";
+
+    private static final String L_TECHNOLOGY_TREE_REFERENCE = "technologyTree";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private FileService fileService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -75,24 +69,20 @@ public class TechnologyDetailsListeners {
     @Autowired
     private RemoveTOCService removeTOCService;
 
-    private static final String OUT_PRODUCTS_REFERENCE = "outProducts";
-
-    private static final String IN_PRODUCTS_REFERENCE = "inProducts";
-
-    private static final String TECHNOLOGY_TREE_REFERENCE = "technologyTree";
-
     public void setGridEditable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         setGridEditable(view);
     }
 
     public void removeOnlySelectedOperation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
-        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(L_TECHNOLOGY_TREE_REFERENCE);
         final Long selectedEntityId = technologyTree.getSelectedEntityId();
+
         Entity selectedOperation = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
                 .get(selectedEntityId);
+
         boolean removed = removeTOCService.removeOnlySelectedOperation(selectedOperation, view);
+
         if (removed) {
             FormComponent form = (FormComponent) view.getComponentByReference("form");
 
@@ -104,41 +94,15 @@ public class TechnologyDetailsListeners {
     }
 
     public void setGridEditable(final ViewDefinitionState view) {
-        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE);
+        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(L_TECHNOLOGY_TREE_REFERENCE);
         final boolean gridsShouldBeEnabled = technologyTree.getSelectedEntityId() != null;
-        for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
+
+        for (String componentReference : Sets.newHashSet(L_OUT_PRODUCTS_REFERENCE, L_IN_PRODUCTS_REFERENCE)) {
             view.getComponentByReference(componentReference).setEnabled(gridsShouldBeEnabled);
         }
     }
 
-    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
-            state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
-            return;
-        }
-        DataDefinition attachmentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_ATTACHMENT);
-        List<File> atachments = Lists.newArrayList();
-        for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
-            Entity attachment = attachmentDD.get(confectionProtocolId);
-            File file = new File(attachment.getStringField(TechnologyAttachmentFields.ATTACHMENT));
-            atachments.add(file);
-        }
-
-        File zipFile = null;
-        try {
-            zipFile = fileService.compressToZipFile(atachments, false);
-        } catch (IOException e) {
-            LOG.error("Unable to compress documents to zip file.", e);
-            return;
-        }
-
-        view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
-    }
-
     public void generateProductStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
         Entity technology = form.getEntity();
@@ -159,9 +123,11 @@ public class TechnologyDetailsListeners {
         DataDefinition opicDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
         List<Entity> operationsWithManyOutProducts = Lists.newArrayList();
+
         for (Entity toc : tocs) {
             List<Entity> outComponents = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
             Entity parent = toc.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+
             if (outComponents.size() == 1 && Objects.nonNull(parent)) {
                 Entity opoc = outComponents.get(0);
                 Entity opic = opicDD.create();
@@ -175,10 +141,12 @@ public class TechnologyDetailsListeners {
                 operationsWithManyOutProducts.add(toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
             }
         }
+
         if (!operationsWithManyOutProducts.isEmpty()) {
             state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
                     operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
                             .collect(Collectors.joining(", ")));
         }
     }
+
 }

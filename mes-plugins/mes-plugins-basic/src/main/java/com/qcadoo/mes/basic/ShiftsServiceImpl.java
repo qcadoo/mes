@@ -292,7 +292,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
     }
 
-    private void manageExceptionsForTypeFreeTime(final Entity exception, List<Interval> updatedWorkTimes,
+    private void manageExceptionsForTypeFreeTime(final Entity exception, final List<Interval> updatedWorkTimes,
             final List<Interval> finalWorkTimes) {
         DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
         DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
@@ -786,7 +786,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     public static class ShiftHoursComparator implements Comparator<ShiftHour>, Serializable {
 
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = -3204783429616635555L;
 

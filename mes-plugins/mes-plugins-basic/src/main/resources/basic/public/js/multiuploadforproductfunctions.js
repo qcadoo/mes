@@ -32,23 +32,23 @@ $(function() {
 						submit : function(e, data) {
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"subassemblyMultiUploadLocale")
+								"productMultiUploadLocale")
 									.getValue().content.value;
 							var techId = window.mainController
 								.getComponentByReferenceName(
-									"subassemblyIdForMultiUpload")
+									"productIdForMultiUpload")
 										.getValue();
 							var techIdValue = techId.content;
 							if(!techIdValue.value || 0 === techIdValue.value){
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
-											"Podzespół niezapisany",
+											"Produkt niezapisany",
 											"Pominięto wgranie pliku: "
 													+ file.name);
 									} else {
 								    	showMessage("failure",
-												"Subassembly is not saved",
+												"Product is not saved",
 												"Omitted file upload: "
 														+ file.name);
 									}
@@ -72,7 +72,7 @@ $(function() {
 
 							var locale = window.mainController
 							.getComponentByReferenceName(
-								"subassemblyMultiUploadLocale")
+								"productMultiUploadLocale")
 									.getValue().content.value;
 							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
 
@@ -101,7 +101,7 @@ $(function() {
 					function(e, data) {
 						var techId = window.mainController
 								.getComponentByReferenceName(
-										"subassemblyIdForMultiUpload")
+										"productIdForMultiUpload")
 								.getValue();
 						var techIdValue = techId.content;
 						data.formData = {
@@ -115,7 +115,7 @@ $(function() {
 						var maxSize = 5242880;
 						var locale = window.mainController
 						.getComponentByReferenceName(
-							"subassemblyMultiUploadLocale")
+							"productMultiUploadLocale")
 								.getValue().content.value;
 						$.each(data.files, function(index, file) {
 							if (!filetype.test(file.name)) {
@@ -132,7 +132,7 @@ $(function() {
 								}
 								return false;
 							}
-                            if (file.size > maxSize) {
+							if (file.size > maxSize) {
 								if(locale === "pl_PL" || locale === "pl"){
 								showMessage("failure",
 										"Pominięto wgranie pliku",
@@ -146,6 +146,7 @@ $(function() {
 								}
 								return false;
 							}
+
 						});
 					});
 

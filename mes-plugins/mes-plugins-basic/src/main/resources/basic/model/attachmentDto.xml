@@ -24,28 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="technologyDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="attachmentDto" activable="false" auditable="false" deletable="false" insertable="false"
+       updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" />
-        <string name="name" />
-        <string name="technologyType" />
-        <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked" />
-        <boolean name="externalSynchronized" default="true" copyable="false"/>
-        <boolean name="master" default="false" copyable="false"/>
-        <string name="productNumber" />
-        <string name="technologyGroupNumber" />
-        <string name="divisionName" />
-        <string name="generatorName" />
-        <decimal name="standardPerformanceTechnology">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
-        <boolean name="attachmentsExists"/>
+        <enum name="pinnedTo" values="01products,02technologies,03parts,04components"/>
+        <string name="attachment"/>
+        <string name="name"/>
+        <decimal name="size"/>
+        <string name="ext"/>
+        <string name="pinnedToModelName"/>
+        <string name="pinnedToCorrespondingView"/>
+        <integer name="pinnedToObjectId"/>
+        <string name="pinnedToObjectIdentifier"/>
+        <string name="pinnedToObjectIdentifierName"/>
     </fields>
-    <identifier expression="#number + ' - ' + #name"/>
-    <masterModel plugin="technologies" model="technology" />
+    <identifier expression="#name"/>
+
 </model>

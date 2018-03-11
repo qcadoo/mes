@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="productsList" modelName="product" menuAccessible="true">
+      name="productsList" modelName="productDto" menuAccessible="true">
 
     <component type="window" name="window" reference="window">
 
@@ -49,9 +49,9 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="productImport" >
+            <group name="productImport">
                 <bigButton name="importFromXlsx" state="enabled" icon="xlsIcon24.png"
-                           action="#{window}.fireEvent(navigateToProductImportPage);" />
+                           action="#{window}.fireEvent(navigateToProductImportPage);"/>
             </group>
         </ribbon>
 
@@ -91,19 +91,23 @@
                     width="300"/>
             <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
             <option type="column" name="category" fields="category" width="85"/>
-            <option type="column" name="parent" fields="parent"
-                    expression="#parent['name']" width="200"/>
+            <option type="column" name="parent" fields="parentName" width="200"/>
             <option type="column" name="ean" fields="ean" width="85"/>
             <option type="column" name="externalNumber" fields="externalNumber"
                     hidden="true"/>
 
-            <option type="column" name="assortment" fields="assortment" expression="#assortment['name']"/>
+            <option type="column" name="assortment" fields="assortmentName"/>
+            <option type="column" name="hasAttachments" fields="hasAttachments"/>
+            <option type="column" name="additionalCodes" fields="additionalCodes"/>
 
             <option type="order" column="name" direction="asc"/>
 
-            <option type="searchable" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber"/>
-            <option type="multiSearch" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber"/>
-            <option type="orderable" value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber"/>
+            <option type="searchable"
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+            <option type="multiSearch"
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+            <option type="orderable"
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
             <option type="correspondingComponent" value="form"/>

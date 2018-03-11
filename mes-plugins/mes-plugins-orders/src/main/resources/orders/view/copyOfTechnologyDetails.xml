@@ -110,6 +110,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="atachments">
+                <bigButton name="downloadAtachment" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('downloadAttachment', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -225,6 +239,8 @@
                 <listener event="checkTechnology"
                           class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"
                           method="checkTechnology"/>
+                <listener event="downloadAttachment" method="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
             </component>
         </windowTab>
 
@@ -363,6 +379,27 @@
 
                         <option type="searchable" value="dateAndTime,sourceState,targetState"/>
                         <option type="orderable" value="dateAndTime,sourceState,targetState"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="atachments">
+            <component type="gridLayout" name="gridsLayout" columns="3"
+                       rows="6" hasBorders="false">
+                <layoutElement column="1" row="1" width="2" height="6">
+                    <component type="grid" name="technologyAttachments"
+                               reference="attachmentsGrid" source="#{form}.technologyAttachments">
+                        <option type="column" width="300" name="attachment" fields="name" correspondingField="attachmentLocation"
+                                link="true" attachment="true"/>
+                        <option type="column" name="attachmentLocation" fields="attachment" hidden="true"/>
+                        <option type="column"  width="100" name="ext" fields="ext"/>
+                        <option type="column"  width="100" name="size" fields="size"/>
+                        <option type="order" column="attachment" direction="desc"/>
+
+                        <option type="deletable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
                     </component>
                 </layoutElement>
             </component>

@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -44,21 +56,15 @@ import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 @Service
 public class OrderHooks {
@@ -293,15 +299,24 @@ public class OrderHooks {
     }
 
     protected boolean checkReasonOfStartDateCorrection(final Entity parameter, final Entity order) {
-        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
-                || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM,
-                        "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+        String state = order.getStringField(OrderFields.STATE);
+        if (OrderState.ACCEPTED.getStringValue().equals(state)) {
+            return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM)
+                    || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM,
+                            "orders.order.commentReasonTypeCorrectionDateFrom.isRequired");
+        }
+        return true;
     }
 
     protected boolean checkReasonOfEndDateCorrection(final Entity parameter, final Entity order) {
-        return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
-                || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
-                        "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+        String orderState = order.getStringField(OrderFields.STATE);
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.INTERRUPTED.getStringValue().equals(orderState)) {
+            return !parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO)
+                    || checkReasonNeeded(order, OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
+                            "orders.order.commentReasonTypeCorrectionDateTo.isRequired");
+        }
+        return true;
     }
 
     private boolean checkReasonNeeded(final Entity order, final String dateFieldName, final String reasonTypeFieldName,
@@ -318,42 +333,51 @@ public class OrderHooks {
     private boolean checkEffectiveDeviation(final Entity parameter, final Entity order) {
         Long differenceForDateFrom = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
         Long differenceForDateTo = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
-
+        String orderState = order.getStringField(OrderFields.STATE);
         // EFFECTIVE_DATE_FROM
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom > 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateFrom)));
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)
+                || OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.INTERRUPTED.getStringValue().equals(orderState)) {
 
-            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
-                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
-                    "orders.order.reasonNeededWhenDelayedEffectiveDateFrom.isRequired", differenceAsString);
-        }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
-                && differenceForDateFrom < 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateFrom)));
+            if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
+                    && differenceForDateFrom > 0L) {
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateFrom)));
 
-            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
-                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
-                    "orders.order.reasonNeededWhenEarlierEffectiveDateFrom.isRequired", differenceAsString);
+                checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                        "orders.order.reasonNeededWhenDelayedEffectiveDateFrom.isRequired", differenceAsString);
+            }
+            if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
+                    && differenceForDateFrom < 0L) {
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateFrom)));
+
+                checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                        "orders.order.reasonNeededWhenEarlierEffectiveDateFrom.isRequired", differenceAsString);
+            }
         }
 
         // EFFECTIVE_DATE_TO
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO) && differenceForDateTo > 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateTo)));
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+            if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
+                    && differenceForDateTo > 0L) {
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateTo)));
 
-            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
-                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
-                    "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
-        }
-        if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO) && differenceForDateTo < 0L) {
-            final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                    .abs(differenceForDateTo)));
-            checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
-                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
-                    "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
+                checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                        "orders.order.reasonNeededWhenDelayedEffectiveDateTo.isRequired", differenceAsString);
+            }
+            if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)
+                    && differenceForDateTo < 0L) {
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateTo)));
+                checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
+                        "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
+            }
         }
 
         return true;

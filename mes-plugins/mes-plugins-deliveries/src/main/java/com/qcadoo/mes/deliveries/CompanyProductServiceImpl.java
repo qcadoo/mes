@@ -23,12 +23,8 @@
  */
 package com.qcadoo.mes.deliveries;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
@@ -36,9 +32,22 @@ import com.qcadoo.mes.deliveries.constants.ProductFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyProductServiceImpl implements CompanyProductService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CompanyProductServiceImpl.class);
+
+    @Autowired
+    private ProductService productService;
 
     public boolean checkIfProductIsNotUsed(final Entity companyProduct, final String belongsToProductName,
             final String belongsToCompanyName, final String hasManyName) {
@@ -123,6 +132,7 @@ public class CompanyProductServiceImpl implements CompanyProductService {
     }
 
     public String checkIfDefaultExistsForProductsInFamily(final Entity companyProduct) {
+        LOG.warn("start");
         if (companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)) {
             Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
 
@@ -132,28 +142,35 @@ public class CompanyProductServiceImpl implements CompanyProductService {
                 StringBuilder productNames = new StringBuilder();
                 List<Entity> children = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
                 for (Entity child : children) {
-                    List<Entity> familiesCompanies = child.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
-                    if (!familiesCompanies.isEmpty()) {
-                        String defaultCompaniesForFamilies = familiesCompanies
-                                .stream()
-                                .filter(cp -> cp.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT))
-                                .map(cp -> cp.getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getStringField(
-                                        ProductFields.NUMBER)).collect(Collectors.joining(", "));
-                        productNames.append(defaultCompaniesForFamilies);
-                    }
-                    List<Entity> productCompanies = child.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
-                    if (!productCompanies.isEmpty()) {
-                        String defaultCompaniesForProducts = productCompanies
-                                .stream()
-                                .filter(cp -> cp.getBooleanField(CompanyProductFields.IS_DEFAULT))
-                                .map(cp -> cp.getBelongsToField(CompanyProductFields.PRODUCT)
-                                        .getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", "));
-                        productNames.append(defaultCompaniesForProducts);
+                    if (productService.checkIfProductEntityTypeIsCorrect(child, ProductFamilyElementType.PRODUCTS_FAMILY)) {
+                        List<Entity> familiesCompanies = child.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
+                        if (!familiesCompanies.isEmpty()) {
+                            String defaultCompaniesForFamilies = familiesCompanies
+                                    .stream()
+                                    .filter(cp -> cp.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT))
+                                    .map(cp -> cp.getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getStringField(
+                                            ProductFields.NUMBER)).collect(Collectors.joining(", "));
+                            productNames.append(defaultCompaniesForFamilies);
+                        }
+                    } else {
+                        List<Entity> productCompanies = child.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
+                        if (!productCompanies.isEmpty()) {
+                            String defaultCompaniesForProducts = productCompanies
+                                    .stream()
+                                    .filter(cp -> cp.getBooleanField(CompanyProductFields.IS_DEFAULT))
+                                    .map(cp -> cp.getBelongsToField(CompanyProductFields.PRODUCT)
+                                            .getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", "));
+                            productNames.append(defaultCompaniesForProducts);
+                        }
                     }
                 }
+                LOG.warn("stop");
+
                 return productNames.toString();
             }
         }
+        LOG.warn("stop");
+
         return StringUtils.EMPTY;
     }
 

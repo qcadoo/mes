@@ -21,27 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.hooks;
+package com.qcadoo.mes.basic.constants;
 
-import org.springframework.stereotype.Service;
+public final class ProductAttachmentFields {
 
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    private ProductAttachmentFields() {
 
-@Service
-public class OperationModelHooks {
-
-    public void onSave(final DataDefinition operationDD, final Entity operation) {
-        clearField(operation);
     }
 
-    private void clearField(final Entity operation) {
-        String assignedToOperation = operation.getStringField(OperationFields.ASSIGNED_TO_OPERATION);
-        if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
-            operation.setField(OperationFields.WORKSTATIONS, null);
-        }
-    }
+    public static final String NAME = "name";
+
+    public static final String PRODUCT = "product";
+
+    public static final String ATTACHMENT = "attachment";
+
+    public static final String SIZE = "size";
+
+    public static final String EXT = "ext";
 
 }

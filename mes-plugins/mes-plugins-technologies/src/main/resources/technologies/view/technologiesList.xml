@@ -218,9 +218,11 @@
 					width="55"/>
 			<option type="column" name="standardPerformanceTechnology" fields="standardPerformanceTechnology"
 					width="55"/>
+			<option type="column" name="attachmentsExists" fields="attachmentsExists"
+					width="55"/>
             <option type="order" column="number" direction="desc"/>
-            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology"/>
-            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology"/>
+            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology,attachmentsExists"/>
+            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology,attachmentsExists"/>
             <option type="correspondingView" value="technologies/technologyDetails"/>
             <option type="correspondingComponent" value="form"/>
             <option type="fullscreen" value="true"/>

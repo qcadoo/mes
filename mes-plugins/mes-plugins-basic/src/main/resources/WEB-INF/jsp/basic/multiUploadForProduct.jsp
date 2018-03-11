@@ -2,7 +2,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
+    Project: Qcadoo MES
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -31,23 +31,23 @@
 String ctx = request.getContextPath();
 %>
 
-<script src="/productData/public/js/jquery.form.js"></script>
-<script src="/productData/public/js/jquery.ui.widget.js"></script>
-<script src="/productData/public/js/jquery.iframe-transport.js"></script>
-<script src="/productData/public/js/jquery.fileupload.js"></script>
-<script src="/productData/public/js/multiuploadfunctions.js"></script>
-<script src="/productData/public/js/bootstrap.min.js"></script>
+<script src="/basic/public/js/jquery.form.js"></script>
+<script src="/basic/public/js/jquery.ui.widget.js"></script>
+<script src="/basic/public/js/jquery.iframe-transport.js"></script>
+<script src="/basic/public/js/jquery.fileupload.js"></script>
+<script src="/basic/public/js/multiuploadforproductfunctions.js"></script>
+<script src="/basic/public/js/bootstrap.min.js"></script>
 
 <link href="/basic/public/css/dropzone.css" type="text/css" rel="stylesheet" />
 
 
 
-<form id="fileupload" action="../../../rest/productData/multiUploadFiles.html" method="POST" enctype="multipart/form-data">
+<form id="fileupload" action="../../../rest/basic/multiUploadFilesForProduct.html" method="POST" enctype="multipart/form-data">
 
     <input type="file" name="files[]" multiple>
 
     <div id="dropzone">${requestScope.translationsMap['qcadooView.fileupload.dropzone']}</div>
- 
+
 	<div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"> </div>
     </div>

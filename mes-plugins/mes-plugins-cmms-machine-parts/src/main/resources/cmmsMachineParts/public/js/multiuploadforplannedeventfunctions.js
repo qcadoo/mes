@@ -110,6 +110,7 @@ $(function() {
 					'fileuploadadd',
 					function(e, data) {
 						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
+						var maxSize = 5242880;
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"eventMultiUploadLocale")
@@ -126,6 +127,20 @@ $(function() {
 											"Omitted file upload",
 											"Invalid file type: "
 													+ file.name);
+								}
+								return false;
+							}
+							if (file.size > maxSize) {
+								if(locale === "pl_PL" || locale === "pl"){
+								showMessage("failure",
+										"Pominięto wgranie pliku",
+										"Zbyt duży rozmiar pliku: "
+												+ file.name + ", dopuszczalny rozmiar to 5MB.");
+								} else {
+									showMessage("failure",
+											"Omitted file upload",
+											"File: "
+													+ file.name + " is too big, max. size is 5MB.");
 								}
 								return false;
 							}
