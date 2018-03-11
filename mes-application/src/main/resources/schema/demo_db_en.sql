@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.5.5
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1565,6 +1565,297 @@ ALTER SEQUENCE basic_assortmentelement_id_seq OWNED BY basic_assortmentelement.i
 
 
 --
+-- Name: basic_product; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_product (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    globaltypeofmaterial character varying(255),
+    ean character varying(255),
+    category character varying(255),
+    unit character varying(255),
+    externalnumber character varying(255),
+    description character varying(255),
+    parent_id bigint,
+    nodenumber character varying(255),
+    entitytype character varying(255) DEFAULT '01particularProduct'::character varying,
+    durabilityinmonths integer,
+    averageoffercost numeric(12,5) DEFAULT (0)::numeric,
+    costfornumber numeric(12,5) DEFAULT (1)::numeric,
+    lastpurchasecost numeric(12,5) DEFAULT (0)::numeric,
+    lastoffercost numeric(12,5) DEFAULT (0)::numeric,
+    isglutenproduct boolean,
+    symbol character varying(255),
+    averagecost numeric(12,5) DEFAULT (0)::numeric,
+    goodsgroup character varying(255),
+    nominalcost numeric(12,5) DEFAULT (0)::numeric,
+    bio character varying(255),
+    isdoublepallet boolean,
+    technologygroup_id bigint,
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    quantityofextrusioningredient integer DEFAULT 1,
+    norm character varying(255),
+    actualversion character varying(255),
+    hasnutritionelements boolean DEFAULT false,
+    quantityfornutritions numeric(12,0),
+    quantityfornutritionsunit character varying(255),
+    showinproductdata boolean DEFAULT false,
+    doublequantityfordoublepallet boolean,
+    size character varying(255),
+    uppershelf character varying(255),
+    lowershelf character varying(255),
+    upperform character varying(255),
+    lowerform character varying(255),
+    usedquantitycontrol boolean DEFAULT false,
+    automaticusedquantity boolean DEFAULT false,
+    nominalweight numeric(12,5),
+    countusedquantityforfullpallets boolean DEFAULT false,
+    quantityinpackage integer,
+    synchronize boolean,
+    capacitynormfortwodimensionalmachines numeric(12,5),
+    downform_id bigint,
+    upform_id bigint,
+    downshelve_id bigint,
+    upshelve_id bigint,
+    costnormsgenerator_id bigint,
+    producer_id bigint,
+    machinepart boolean,
+    drawingnumber character varying(255),
+    catalognumber character varying(255),
+    isproductiondate boolean DEFAULT false,
+    fabric boolean,
+    fabricgrammage numeric(14,5),
+    entityversion bigint DEFAULT 0,
+    ispallet boolean DEFAULT false,
+    additionalunit character varying(255),
+    fromgenerator boolean DEFAULT false,
+    generatorcontext_id bigint,
+    dateformatinqcp5code character varying(255),
+    assortment_id bigint,
+    isoil boolean,
+    isaroma boolean,
+    capacitynormforthreedimensionalmachines numeric(12,5),
+    recommendednumofheadsfortwodimensionalmachines integer,
+    recommendednumofheadsforthreedimensionalmachines integer,
+    iscartonlabel boolean
+);
+
+
+--
+-- Name: basic_productattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_productattachment (
+    id bigint NOT NULL,
+    product_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: basic_subassembly; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_subassembly (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    workstationtype_id bigint,
+    workstation_id bigint,
+    serialnumber character varying(255),
+    series character varying(255),
+    producer character varying(255),
+    productiondate date,
+    lastrepairsdate date,
+    active boolean DEFAULT true,
+    type character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: basic_subassemblyattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_subassemblyattachment (
+    id bigint NOT NULL,
+    subassembly_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: cmmsmachineparts_machinepartattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_machinepartattachment (
+    id bigint NOT NULL,
+    product_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: technologies_technology; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technology (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    product_id bigint,
+    technologygroup_id bigint,
+    externalsynchronized boolean DEFAULT true,
+    master boolean DEFAULT false,
+    description character varying(2048),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    recipeimportstatus character varying(255),
+    recipeimportmsg character varying(1024),
+    formula character varying(255),
+    minimalquantity numeric(10,5),
+    active boolean DEFAULT true,
+    technologybatchrequired boolean,
+    isstandardgoodfoodtechnology boolean DEFAULT true,
+    range character varying(255) DEFAULT '01oneDivision'::character varying,
+    division_id bigint,
+    componentslocation_id bigint,
+    componentsoutputlocation_id bigint,
+    productsinputlocation_id bigint,
+    isdivisionlocation boolean,
+    isdivisioninputlocation boolean,
+    isdivisionoutputlocation boolean,
+    technologytype character varying(255),
+    technologyprototype_id bigint,
+    productionline_id bigint,
+    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
+    productsflowlocation_id bigint,
+    automaticmoveforintermediate boolean DEFAULT false,
+    automaticmoveforfinal boolean DEFAULT false,
+    graphicsaccepted boolean,
+    constructionandtechnologyaccepted boolean,
+    typeofproductionrecording character varying(255),
+    justone boolean,
+    allowtoclose boolean,
+    registerquantityoutproduct boolean,
+    autocloseorder boolean,
+    registerpiecework boolean,
+    registerquantityinproduct boolean,
+    registerproductiontime boolean,
+    entityversion bigint DEFAULT 0,
+    standardperformancetechnology numeric(12,5),
+    template boolean DEFAULT false,
+    additionalactions boolean DEFAULT false,
+    generatorcontext_id bigint
+);
+
+
+--
+-- Name: technologies_technologyattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologyattachment (
+    id bigint NOT NULL,
+    technology_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: basic_attachmentdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW basic_attachmentdto AS
+ SELECT '01products'::text AS pinnedto,
+    product.number AS pinnedtoobjectidentifier,
+    product.name AS pinnedtoobjectidentifiername,
+    (product.id)::integer AS pinnedtoobjectid,
+    'basic_product'::text AS pinnedtomodelname,
+    productattachment.attachment,
+    productattachment.name,
+    productattachment.size,
+    productattachment.ext,
+    row_number() OVER () AS id,
+    'basic/productDetails'::text AS pinnedtocorrespondingview
+   FROM (basic_productattachment productattachment
+     LEFT JOIN basic_product product ON ((productattachment.product_id = product.id)))
+UNION ALL
+ SELECT '02technologies'::text AS pinnedto,
+    technology.number AS pinnedtoobjectidentifier,
+    technology.name AS pinnedtoobjectidentifiername,
+    (technology.id)::integer AS pinnedtoobjectid,
+    'technologies_technology'::text AS pinnedtomodelname,
+    technologyattachment.attachment,
+    technologyattachment.name,
+    technologyattachment.size,
+    technologyattachment.ext,
+    (1000000 + row_number() OVER ()) AS id,
+    'technologies/technologyDetails'::text AS pinnedtocorrespondingview
+   FROM (technologies_technologyattachment technologyattachment
+     LEFT JOIN technologies_technology technology ON ((technologyattachment.technology_id = technology.id)))
+UNION ALL
+ SELECT '03parts'::text AS pinnedto,
+    machinepart.number AS pinnedtoobjectidentifier,
+    machinepart.name AS pinnedtoobjectidentifiername,
+    (machinepart.id)::integer AS pinnedtoobjectid,
+    'basic_product'::text AS pinnedtomodelname,
+    machinepartattachment.attachment,
+    machinepartattachment.name,
+    machinepartattachment.size,
+    machinepartattachment.ext,
+    (2000000 + row_number() OVER ()) AS id,
+    'cmmsMachineParts/machinePartDetails'::text AS pinnedtocorrespondingview
+   FROM (cmmsmachineparts_machinepartattachment machinepartattachment
+     LEFT JOIN basic_product machinepart ON ((machinepartattachment.product_id = machinepart.id)))
+UNION ALL
+ SELECT '04components'::text AS pinnedto,
+    subassembly.number AS pinnedtoobjectidentifier,
+    subassembly.name AS pinnedtoobjectidentifiername,
+    (subassembly.id)::integer AS pinnedtoobjectid,
+    'basic_product'::text AS pinnedtomodelname,
+    subassemblyattachment.attachment,
+    subassemblyattachment.name,
+    subassemblyattachment.size,
+    subassemblyattachment.ext,
+    (3000000 + row_number() OVER ()) AS id,
+    'basic/subassemblyDetails'::text AS pinnedtocorrespondingview
+   FROM (basic_subassemblyattachment subassemblyattachment
+     LEFT JOIN basic_subassembly subassembly ON ((subassemblyattachment.subassembly_id = subassembly.id)));
+
+
+--
+-- Name: basic_attachmentdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_attachmentdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: basic_company; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2110,89 +2401,6 @@ ALTER SEQUENCE basic_parameter_id_seq OWNED BY basic_parameter.id;
 
 
 --
--- Name: basic_product; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_product (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    globaltypeofmaterial character varying(255),
-    ean character varying(255),
-    category character varying(255),
-    unit character varying(255),
-    externalnumber character varying(255),
-    description character varying(255),
-    parent_id bigint,
-    nodenumber character varying(255),
-    entitytype character varying(255) DEFAULT '01particularProduct'::character varying,
-    durabilityinmonths integer,
-    averageoffercost numeric(12,5) DEFAULT (0)::numeric,
-    costfornumber numeric(12,5) DEFAULT (1)::numeric,
-    lastpurchasecost numeric(12,5) DEFAULT (0)::numeric,
-    lastoffercost numeric(12,5) DEFAULT (0)::numeric,
-    isglutenproduct boolean,
-    symbol character varying(255),
-    averagecost numeric(12,5) DEFAULT (0)::numeric,
-    goodsgroup character varying(255),
-    nominalcost numeric(12,5) DEFAULT (0)::numeric,
-    bio character varying(255),
-    isdoublepallet boolean,
-    technologygroup_id bigint,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    quantityofextrusioningredient integer DEFAULT 1,
-    norm character varying(255),
-    actualversion character varying(255),
-    hasnutritionelements boolean DEFAULT false,
-    quantityfornutritions numeric(12,0),
-    quantityfornutritionsunit character varying(255),
-    showinproductdata boolean DEFAULT false,
-    doublequantityfordoublepallet boolean,
-    size character varying(255),
-    uppershelf character varying(255),
-    lowershelf character varying(255),
-    upperform character varying(255),
-    lowerform character varying(255),
-    usedquantitycontrol boolean DEFAULT false,
-    automaticusedquantity boolean DEFAULT false,
-    nominalweight numeric(12,5),
-    countusedquantityforfullpallets boolean DEFAULT false,
-    quantityinpackage integer,
-    synchronize boolean,
-    capacitynormfortwodimensionalmachines numeric(12,5),
-    downform_id bigint,
-    upform_id bigint,
-    downshelve_id bigint,
-    upshelve_id bigint,
-    costnormsgenerator_id bigint,
-    producer_id bigint,
-    machinepart boolean,
-    drawingnumber character varying(255),
-    catalognumber character varying(255),
-    isproductiondate boolean DEFAULT false,
-    fabric boolean,
-    fabricgrammage numeric(14,5),
-    entityversion bigint DEFAULT 0,
-    ispallet boolean DEFAULT false,
-    additionalunit character varying(255),
-    fromgenerator boolean DEFAULT false,
-    generatorcontext_id bigint,
-    dateformatinqcp5code character varying(255),
-    assortment_id bigint,
-    isoil boolean,
-    isaroma boolean,
-    capacitynormforthreedimensionalmachines numeric(12,5),
-    recommendednumofheadsfortwodimensionalmachines integer,
-    recommendednumofheadsforthreedimensionalmachines integer,
-    iscartonlabel boolean
-);
-
-
---
 -- Name: basic_product_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2209,6 +2417,61 @@ CREATE SEQUENCE basic_product_id_seq
 --
 
 ALTER SEQUENCE basic_product_id_seq OWNED BY basic_product.id;
+
+
+--
+-- Name: basic_productattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_productattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_productattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_productattachment_id_seq OWNED BY basic_productattachment.id;
+
+
+--
+-- Name: basic_productdto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_productdto (
+    id bigint,
+    number character varying(255),
+    name character varying(1024),
+    globaltypeofmaterial character varying(255),
+    category character varying(255),
+    parentname character varying(1024),
+    ean character varying(255),
+    externalnumber character varying(255),
+    assortmentname character varying(255),
+    norm character varying(255),
+    size character varying(255),
+    hasattachments boolean,
+    additionalcodes text,
+    active boolean
+);
+
+ALTER TABLE ONLY basic_productdto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: basic_productdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_productdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -2370,27 +2633,6 @@ ALTER SEQUENCE basic_staff_id_seq OWNED BY basic_staff.id;
 
 
 --
--- Name: basic_subassembly; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_subassembly (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    workstationtype_id bigint,
-    workstation_id bigint,
-    serialnumber character varying(255),
-    series character varying(255),
-    producer character varying(255),
-    productiondate date,
-    lastrepairsdate date,
-    active boolean DEFAULT true,
-    type character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: basic_subassembly_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -2407,21 +2649,6 @@ CREATE SEQUENCE basic_subassembly_id_seq
 --
 
 ALTER SEQUENCE basic_subassembly_id_seq OWNED BY basic_subassembly.id;
-
-
---
--- Name: basic_subassemblyattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_subassemblyattachment (
-    id bigint NOT NULL,
-    subassembly_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255),
-    entityversion bigint DEFAULT 0
-);
 
 
 --
@@ -3548,21 +3775,6 @@ CREATE SEQUENCE cmmsmachineparts_eventattachment_id_seq
 --
 
 ALTER SEQUENCE cmmsmachineparts_eventattachment_id_seq OWNED BY cmmsmachineparts_eventattachment.id;
-
-
---
--- Name: cmmsmachineparts_machinepartattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE cmmsmachineparts_machinepartattachment (
-    id bigint NOT NULL,
-    product_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255),
-    entityversion bigint DEFAULT 0
-);
 
 
 --
@@ -7794,60 +8006,6 @@ CREATE TABLE linechangeovernorms_linechangeovernorms (
     duration integer,
     name character varying(1024),
     entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: technologies_technology; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technology (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    product_id bigint,
-    technologygroup_id bigint,
-    externalsynchronized boolean DEFAULT true,
-    master boolean DEFAULT false,
-    description character varying(2048),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    recipeimportstatus character varying(255),
-    recipeimportmsg character varying(1024),
-    formula character varying(255),
-    minimalquantity numeric(10,5),
-    active boolean DEFAULT true,
-    technologybatchrequired boolean,
-    isstandardgoodfoodtechnology boolean DEFAULT true,
-    range character varying(255) DEFAULT '01oneDivision'::character varying,
-    division_id bigint,
-    componentslocation_id bigint,
-    componentsoutputlocation_id bigint,
-    productsinputlocation_id bigint,
-    isdivisionlocation boolean,
-    isdivisioninputlocation boolean,
-    isdivisionoutputlocation boolean,
-    technologytype character varying(255),
-    technologyprototype_id bigint,
-    productionline_id bigint,
-    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    productsflowlocation_id bigint,
-    automaticmoveforintermediate boolean DEFAULT false,
-    automaticmoveforfinal boolean DEFAULT false,
-    graphicsaccepted boolean,
-    constructionandtechnologyaccepted boolean,
-    typeofproductionrecording character varying(255),
-    justone boolean,
-    allowtoclose boolean,
-    registerquantityoutproduct boolean,
-    autocloseorder boolean,
-    registerpiecework boolean,
-    registerquantityinproduct boolean,
-    registerproductiontime boolean,
-    entityversion bigint DEFAULT 0,
-    standardperformancetechnology numeric(12,5),
-    template boolean DEFAULT false,
-    additionalactions boolean DEFAULT false,
-    generatorcontext_id bigint
 );
 
 
@@ -16866,21 +17024,6 @@ ALTER SEQUENCE technologies_technology_id_seq OWNED BY technologies_technology.i
 
 
 --
--- Name: technologies_technologyattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologyattachment (
-    id bigint NOT NULL,
-    technology_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: technologies_technologyattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -16900,30 +17043,29 @@ ALTER SEQUENCE technologies_technologyattachment_id_seq OWNED BY technologies_te
 
 
 --
--- Name: technologies_technologydto; Type: VIEW; Schema: public; Owner: -
+-- Name: technologies_technologydto; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE VIEW technologies_technologydto AS
- SELECT technology.id,
-    technology.name,
-    technology.number,
-    technology.externalsynchronized,
-    technology.master,
-    technology.state,
-    product.number AS productnumber,
-    product.globaltypeofmaterial AS productglobaltypeofmaterial,
-    tg.number AS technologygroupnumber,
-    division.name AS divisionname,
-    product.name AS productname,
-    technology.technologytype,
-    technology.active,
-    technology.standardperformancetechnology,
-    tcontext.number AS generatorname
-   FROM ((((technologies_technology technology
-     LEFT JOIN basic_product product ON ((technology.product_id = product.id)))
-     LEFT JOIN basic_division division ON ((technology.division_id = division.id)))
-     LEFT JOIN technologies_technologygroup tg ON ((technology.technologygroup_id = tg.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)));
+CREATE TABLE technologies_technologydto (
+    id bigint,
+    name character varying(2048),
+    number character varying(255),
+    externalsynchronized boolean,
+    master boolean,
+    state character varying(255),
+    productnumber character varying(255),
+    productglobaltypeofmaterial character varying(255),
+    technologygroupnumber character varying(255),
+    divisionname character varying(1024),
+    productname character varying(1024),
+    technologytype character varying(255),
+    active boolean,
+    standardperformancetechnology numeric(12,5),
+    generatorname character varying(255),
+    attachmentsexists boolean
+);
+
+ALTER TABLE ONLY technologies_technologydto REPLICA IDENTITY NOTHING;
 
 
 --
@@ -18215,6 +18357,13 @@ ALTER TABLE ONLY basic_parameter ALTER COLUMN id SET DEFAULT nextval('basic_para
 --
 
 ALTER TABLE ONLY basic_product ALTER COLUMN id SET DEFAULT nextval('basic_product_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattachment ALTER COLUMN id SET DEFAULT nextval('basic_productattachment_id_seq'::regclass);
 
 
 --
@@ -20793,6 +20942,13 @@ SELECT pg_catalog.setval('basic_assortmentelement_id_seq', 1, false);
 
 
 --
+-- Name: basic_attachmentdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_attachmentdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_company; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -21404,6 +21560,28 @@ COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit,
 --
 
 SELECT pg_catalog.setval('basic_product_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_productattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_productattachment (id, product_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: basic_productattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_productattachment_id_seq', 1, false);
+
+
+--
+-- Name: basic_productdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_productdto_id_seq', 1, false);
 
 
 --
@@ -26548,6 +26726,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 130	materialFlowResources	stocktaking	t	6	129	19	ROLE_MATERIAL_FLOW	0
 131	materialFlowResources	warehouseStockReports	t	6	130	20	ROLE_MATERIAL_FLOW	0
 132	basic	exceptionsForLineList	t	4	131	20	ROLE_SHIFTS	0
+133	qcadooView	attachmentViewer	f	1	132	14	\N	0
+134	basic	attachmentsList	t	4	133	21	ROLE_BASIC	0
 \.
 
 
@@ -26555,7 +26735,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 132, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 134, true);
 
 
 --
@@ -26690,6 +26870,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 129	materialFlowResources	stocktakingsList	stocktakingsList	\N	0
 130	materialFlowResources	warehouseStockReportsList	warehouseStockReportsList	\N	0
 131	basic	exceptionsForLineList	exceptionsForLineList	\N	0
+132	qcadooView	attachmentViewer	\N	/attachmentViewer.html	0
+133	basic	attachmentsList	attachmentsList	\N	0
 \.
 
 
@@ -26697,7 +26879,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 131, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 133, true);
 
 
 --
@@ -28230,6 +28412,14 @@ ALTER TABLE ONLY basic_parameter
 
 ALTER TABLE ONLY basic_product
     ADD CONSTRAINT basic_product_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_productattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattachment
+    ADD CONSTRAINT basic_productattachment_pkey PRIMARY KEY (id);
 
 
 --
@@ -31252,6 +31442,36 @@ CREATE INDEX basicproductioncounting_productioncountingqu_typeofmaterial_idx ON 
 --
 
 CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
+    technology.name,
+    technology.number,
+    technology.externalsynchronized,
+    technology.master,
+    technology.state,
+    product.number AS productnumber,
+    product.globaltypeofmaterial AS productglobaltypeofmaterial,
+    tg.number AS technologygroupnumber,
+    division.name AS divisionname,
+    product.name AS productname,
+    technology.technologytype,
+    technology.active,
+    technology.standardperformancetechnology,
+    tcontext.number AS generatorname,
+    (count(technologyattachment.id) <> 0) AS attachmentsexists
+   FROM (((((technologies_technology technology
+     LEFT JOIN basic_product product ON ((technology.product_id = product.id)))
+     LEFT JOIN basic_division division ON ((technology.division_id = division.id)))
+     LEFT JOIN technologies_technologygroup tg ON ((technology.technologygroup_id = tg.id)))
+     LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
     bool_or(productiontracking.active) AS active,
     (productionline.id)::integer AS productionline_id,
@@ -31356,6 +31576,33 @@ CREATE RULE "_RETURN" AS
      JOIN basic_product product ON ((topoc.product_id = product.id)))
   WHERE ((pt.state)::text = '01draft'::text)
   GROUP BY ordersgroup.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
+    product.number,
+    product.name,
+    product.globaltypeofmaterial,
+    product.category,
+    parent.name AS parentname,
+    product.ean,
+    product.externalnumber,
+    assortment.name AS assortmentname,
+    product.norm,
+    product.size,
+    (count(attachment.id) <> 0) AS hasattachments,
+    string_agg((code.code)::text, ', '::text) AS additionalcodes,
+    product.active
+   FROM ((((basic_product product
+     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
+     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
+     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
+  GROUP BY product.id, parent.name, assortment.name;
 
 
 --
@@ -36133,6 +36380,14 @@ ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
 
 ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
     ADD CONSTRAINT productandquantityhelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productattachment_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattachment
+    ADD CONSTRAINT productattachment_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
