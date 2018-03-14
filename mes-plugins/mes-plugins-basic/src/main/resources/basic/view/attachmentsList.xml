@@ -74,7 +74,7 @@
             <option type="column" name="size" fields="size" width="100"/>
 
 
-            <option type="order" column="attachment" direction="asc"/>
+            <option type="order" column="name" direction="asc"/>
 
             <option type="searchable" value="name,pinnedTo,pinnedToObjectIdentifier,pinnedToObjectIdentifierName,ext,size"/>
             <option type="orderable" value="name,pinnedTo,pinnedToObjectIdentifier,pinnedToObjectIdentifierName,ext,size"/>
