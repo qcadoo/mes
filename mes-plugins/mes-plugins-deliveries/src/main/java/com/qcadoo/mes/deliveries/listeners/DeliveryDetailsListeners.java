@@ -741,14 +741,14 @@ public class DeliveryDetailsListeners {
             return;
         }
 
-        List<File> attachements = result.stream()
+        List<File> attachments = result.stream()
                 .map(productAttachment -> new File(productAttachment.getStringField(ProductAttachmentFields.ATTACHMENT)))
                 .collect(Collectors.toList());
 
         File zipFile;
 
         try {
-            zipFile = fileService.compressToZipFile(attachements, false);
+            zipFile = fileService.compressToZipFile(attachments, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
             return;
