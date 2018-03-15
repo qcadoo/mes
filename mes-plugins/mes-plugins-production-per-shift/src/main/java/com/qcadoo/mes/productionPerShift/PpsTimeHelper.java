@@ -43,7 +43,6 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class PpsTimeHelper {
@@ -91,8 +90,6 @@ public class PpsTimeHelper {
         List<Entity> exceptions = timetableExceptionService.findForLineAndShift(productionLine, shiftEntity);
 
         if (!exceptions.isEmpty()) {
-            trimWorkExceptions(exceptions, dateOfDay);
-
             for (Entity exception : exceptions) {
                 if (TimetableExceptionType.FREE_TIME.getStringValue().equals(
                         exception.getStringField(ShiftTimetableExceptionFields.TYPE))) {
@@ -107,35 +104,19 @@ public class PpsTimeHelper {
             for (Entity exception : exceptions) {
                 if (TimetableExceptionType.WORK_TIME.getStringValue().equals(
                         exception.getStringField(ShiftTimetableExceptionFields.TYPE))) {
-                    shiftWorkDateTime = addWorkTimeException(shiftWorkDateTime, exception, shiftForDay);
+                    if(new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
+                            .compareTo(new DateTime(dateOfDay).toLocalDate()) >= 0
+                            && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
+                            .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0) {
+                        shiftWorkDateTime = addWorkTimeException(shiftWorkDateTime, exception, shiftForDay);
+
+                    }
+
+
                 }
             }
         }
         return shiftWorkDateTime;
-    }
-
-    private void trimWorkExceptions(final List<Entity> exceptions, Date dateOfDay) {
-        Date dayStart = new Date(dateOfDay.getYear(), dateOfDay.getMonth(), dateOfDay.getDate());
-        Date dayEnd = new Date(dayStart.getTime() + TimeUnit.DAYS.toMillis(1));
-        Date nextDayEnd = new Date(dayEnd.getTime() + TimeUnit.DAYS.toMillis(1));
-
-        List<Entity> hoursToRemove = Lists.newArrayList();
-
-        for (Entity exception : exceptions) {
-            if (TimetableExceptionType.WORK_TIME.getStringValue().equals(
-                    exception.getStringField(ShiftTimetableExceptionFields.TYPE))) {
-
-                Date fromDate = exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE);
-                Boolean relatesToPrevDay = exception.getBooleanField(ShiftTimetableExceptionFields.RELATES_TO_PREV_DAY);
-                if (!relatesToPrevDay && (fromDate.before(dayStart) || !fromDate.before(dayEnd))) {
-                    hoursToRemove.add(exception);
-                }
-                if (relatesToPrevDay && (fromDate.before(dayEnd) || !fromDate.before(nextDayEnd))) {
-                    hoursToRemove.add(exception);
-                }
-            }
-        }
-        exceptions.removeAll(hoursToRemove);
     }
 
     private List<DateTimeRange> removeFreeTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,
