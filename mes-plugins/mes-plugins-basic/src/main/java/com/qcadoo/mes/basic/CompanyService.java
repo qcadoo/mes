@@ -165,4 +165,14 @@ public class CompanyService {
         return Optional.ofNullable(getCompanyDD().find().add(SearchRestrictions.eq(CompanyFields.NUMBER, number))
                 .setMaxResults(1).uniqueResult());
     }
+
+    public Optional<Entity> findCompanyByTax(final String tax, boolean useLike) {
+        if(useLike) {
+            return Optional.ofNullable(getCompanyDD().find().add(SearchRestrictions.ilike(CompanyFields.TAX, tax))
+                    .setMaxResults(1).uniqueResult());
+        } else {
+            return Optional.ofNullable(getCompanyDD().find().add(SearchRestrictions.eq(CompanyFields.TAX, tax))
+                    .setMaxResults(1).uniqueResult());
+        }
+    }
 }
