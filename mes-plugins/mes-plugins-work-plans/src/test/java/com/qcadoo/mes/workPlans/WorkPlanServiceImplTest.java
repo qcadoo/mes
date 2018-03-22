@@ -33,8 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -45,7 +43,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -55,6 +55,8 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchResult;
+
+import junit.framework.Assert;
 
 public class WorkPlanServiceImplTest {
 
@@ -69,13 +71,16 @@ public class WorkPlanServiceImplTest {
     private TranslationService translationService;
 
     @Mock
-    private Entity workPlan, entity;
+    private Entity workPlan, entity, parameter;
 
     @Mock
     private DataDefinition workPlanDD, entityDD;
 
     @Mock
     private FieldDefinition attachmentFieldDef;
+
+    @Mock
+    private ParameterService parameterService;
 
     @Before
     public final void init() {
@@ -85,6 +90,7 @@ public class WorkPlanServiceImplTest {
 
         ReflectionTestUtils.setField(workPlanService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(workPlanService, "translationService", translationService);
+        ReflectionTestUtils.setField(workPlanService, "parameterService", parameterService);
 
         when(translationService.translate(Mockito.anyString(), Mockito.any(Locale.class), Mockito.anyString())).thenReturn(
                 L_TRANSLATED_STRING);
@@ -95,6 +101,7 @@ public class WorkPlanServiceImplTest {
 
         when(workPlan.getDataDefinition()).thenReturn(workPlanDD);
         when(workPlan.getId()).thenReturn(1L);
+        when(parameterService.getParameter()).thenReturn(parameter);
     }
 
     @Test
@@ -116,6 +123,7 @@ public class WorkPlanServiceImplTest {
         when(workPlanDD.save(emptyWorkPlan)).thenReturn(emptyWorkPlan);
         when(emptyWorkPlan.getDataDefinition()).thenReturn(workPlanDD);
 
+        when(parameter.getField(ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS)).thenReturn(true);
         Entity order = mock(Entity.class);
 
         @SuppressWarnings("unchecked")
