@@ -43,7 +43,7 @@
 
         <enum name="type"
               values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
-              default="01allOperations" required="true"/>
+              default="01noDistinction" required="true"/>
 
         <hasMany name="workPlanOrderColumns" plugin="workPlans"
                  model="workPlanOrderColumn" joinField="workPlan" cascade="delete"

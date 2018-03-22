@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.workPlans;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -30,6 +44,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.workPlans.constants.ColumnForOrdersFields;
 import com.qcadoo.mes.workPlans.constants.OrderSorting;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.constants.WorkPlansConstants;
@@ -42,19 +57,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ComponentState;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @Service
 public class WorkPlansServiceImpl implements WorkPlansService {
@@ -163,6 +165,8 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         workPlan.setField(WorkPlanFields.ORDERS, orders);
         workPlan.setField(WorkPlanFields.GENERATED, false);
 
+        workPlan.setField(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS,
+                parameterService.getParameter().getField(ParameterFieldsWP.DONT_PRINT_ORDERS_IN_WORK_PLANS));
         return workPlan.getDataDefinition().save(workPlan);
     }
 
@@ -286,8 +290,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         columnIdentifier = columnIdentifier.getDataDefinition().get(columnIdentifier.getId());
         String translatedName = translationService.translate(columnIdentifier.getStringField("name"),
                 LocaleContextHolder.getLocale());
-        if (StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING))
-                || !headers.contains(translatedName)) {
+        if (StringUtils.isEmpty(workPlan.getStringField(WorkPlanFields.ORDER_SORTING)) || !headers.contains(translatedName)) {
             return operationProductsValue;
         }
         final String identifier = columnIdentifier.getStringField("identifier");
@@ -326,7 +329,7 @@ public class WorkPlansServiceImpl implements WorkPlansService {
         }
         Collections.reverse(operationProductsValue);
 
-     return operationProductsValue;
+        return operationProductsValue;
     }
 
 }
