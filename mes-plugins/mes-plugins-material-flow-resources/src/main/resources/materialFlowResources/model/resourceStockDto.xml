@@ -42,6 +42,7 @@
         <decimal name="minimumState"/>
         <decimal name="orderedQuantity"/>
         <integer name="product_id"/>
+        <decimal name="totalValue"/>
     </fields>
     <masterModel plugin="materialFlowResources" model="resourceStock"/>
 </model>
