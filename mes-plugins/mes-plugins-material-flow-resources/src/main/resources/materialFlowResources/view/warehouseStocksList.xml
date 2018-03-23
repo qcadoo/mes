@@ -47,13 +47,14 @@
             <option type="column" name="unit" fields="productUnit" width="60"/>
             <option type="column" name="quantityInAdditionalUnit" fields="quantityInAdditionalUnit" width="100"/>
             <option type="column" name="totalValue" fields="totalValue" width="100"/>
+            <option type="column" name="familyNumber" fields="familyNumber" width="100"/>
 
             <option type="order" column="locationName" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,totalValue"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,totalValue,familyNumber"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,totalValue"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,unit,reservedQuantity,availableQuantity,quantityInAdditionalUnit,totalValue,familyNumber"/>
 
             <!-- column orderedQuantity from deliveriesToMaterialFlow -->
             <option type="columnsToSummary"

@@ -43,6 +43,8 @@
         <decimal name="orderedQuantity"/>
         <integer name="product_id"/>
         <decimal name="totalValue"/>
+        <string name="familyNumber"/>
+
     </fields>
     <masterModel plugin="materialFlowResources" model="resourceStock"/>
 </model>
