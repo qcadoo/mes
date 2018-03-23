@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.materialFlowResources.rowStyleResolvers;
 
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.constants.RowStyle;
-import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class WarehouseStocksListResolver {
@@ -39,8 +40,8 @@ public class WarehouseStocksListResolver {
 
         if (warehouseStocks.getDecimalField("minimumState") != null) {
 
-            if (BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState"))
-                    .compareTo(BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("quantity"))) == 1) {
+            if (BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState")).compareTo(
+                    BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("quantity"))) == 1) {
                 rowStyles.add(RowStyle.RED_BACKGROUND);
             }
 
