@@ -76,6 +76,7 @@
         <string name="orderNumber"/>
 
         <string name="obtainedMasterOrderNumber"/>
+        <string name="technologyGroupNumber"/>
     </fields>
 
 </model>

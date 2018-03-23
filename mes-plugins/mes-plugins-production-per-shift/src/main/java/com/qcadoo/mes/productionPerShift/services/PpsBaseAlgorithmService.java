@@ -193,7 +193,7 @@ public abstract class PpsBaseAlgorithmService {
             shiftWorkDateTime.add(new DateTimeRange(dateOfDayDT, range));
         }
 
-        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime, productionLine, shift.getEntity(), dateOfDay.toDate());
+        shiftWorkDateTime = ppsTimeHelper.manageExceptions(shiftWorkDateTime, productionLine, shift, dateOfDay.toDate());
 
         return shiftWorkDateTime;
     }

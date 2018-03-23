@@ -79,7 +79,7 @@
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                    method="showPatternTechnology"/>
+                                    method="showAcceptedPatternTechnology"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4" height="2">

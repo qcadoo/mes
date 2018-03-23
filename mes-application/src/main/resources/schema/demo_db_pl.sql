@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.5
--- Dumped by pg_dump version 9.5.5
+-- Dumped from database version 9.5.1
+-- Dumped by pg_dump version 9.5.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1643,7 +1643,8 @@ CREATE TABLE basic_product (
     capacitynormforthreedimensionalmachines numeric(12,5),
     recommendednumofheadsfortwodimensionalmachines integer,
     recommendednumofheadsforthreedimensionalmachines integer,
-    iscartonlabel boolean
+    iscartonlabel boolean,
+    scale_id bigint
 );
 
 
@@ -1794,7 +1795,7 @@ CREATE VIEW basic_attachmentdto AS
     productattachment.attachment,
     productattachment.name,
     productattachment.size,
-    productattachment.ext,
+    upper((productattachment.ext)::text) AS ext,
     row_number() OVER () AS id,
     'basic/productDetails'::text AS pinnedtocorrespondingview
    FROM (basic_productattachment productattachment
@@ -1808,7 +1809,7 @@ UNION ALL
     technologyattachment.attachment,
     technologyattachment.name,
     technologyattachment.size,
-    technologyattachment.ext,
+    upper((technologyattachment.ext)::text) AS ext,
     (1000000 + row_number() OVER ()) AS id,
     'technologies/technologyDetails'::text AS pinnedtocorrespondingview
    FROM (technologies_technologyattachment technologyattachment
@@ -1822,7 +1823,7 @@ UNION ALL
     machinepartattachment.attachment,
     machinepartattachment.name,
     machinepartattachment.size,
-    machinepartattachment.ext,
+    upper((machinepartattachment.ext)::text) AS ext,
     (2000000 + row_number() OVER ()) AS id,
     'cmmsMachineParts/machinePartDetails'::text AS pinnedtocorrespondingview
    FROM (cmmsmachineparts_machinepartattachment machinepartattachment
@@ -1836,7 +1837,7 @@ UNION ALL
     subassemblyattachment.attachment,
     subassemblyattachment.name,
     subassemblyattachment.size,
-    subassemblyattachment.ext,
+    upper((subassemblyattachment.ext)::text) AS ext,
     (3000000 + row_number() OVER ()) AS id,
     'basic/subassemblyDetails'::text AS pinnedtocorrespondingview
    FROM (basic_subassemblyattachment subassemblyattachment
@@ -6684,6 +6685,76 @@ ALTER SEQUENCE goodfood_extrusioncontext_id_seq OWNED BY goodfood_extrusionconte
 
 
 --
+-- Name: goodfood_extrusionmix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_extrusionmix (
+    id bigint NOT NULL,
+    number character varying(1024),
+    technology_id bigint,
+    product_id bigint,
+    productionline_id bigint,
+    takenoffdate timestamp without time zone,
+    shift_id bigint,
+    quantity numeric(12,5),
+    operator_id bigint,
+    comment text,
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: goodfood_extrusionmix_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_extrusionmix_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_extrusionmix_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_extrusionmix_id_seq OWNED BY goodfood_extrusionmix.id;
+
+
+--
+-- Name: goodfood_extrusionmixingredient; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_extrusionmixingredient (
+    id bigint NOT NULL,
+    extrusionmix_id bigint,
+    product_id bigint,
+    batch_id bigint,
+    quantity numeric(12,5)
+);
+
+
+--
+-- Name: goodfood_extrusionmixingredient_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_extrusionmixingredient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_extrusionmixingredient_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_extrusionmixingredient_id_seq OWNED BY goodfood_extrusionmixingredient.id;
+
+
+--
 -- Name: goodfood_extrusionprotocol; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7621,6 +7692,67 @@ ALTER SEQUENCE integrationbaselinker_statusesformasterorder_id_seq OWNED BY inte
 
 
 --
+-- Name: integrationscales_scale; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE integrationscales_scale (
+    id bigint NOT NULL,
+    name character varying(255),
+    comment character varying(255),
+    port character varying(255),
+    ip character varying(255),
+    type character varying(255) DEFAULT '01siemens'::character varying
+);
+
+
+--
+-- Name: integrationscales_scale_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE integrationscales_scale_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: integrationscales_scale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE integrationscales_scale_id_seq OWNED BY integrationscales_scale.id;
+
+
+--
+-- Name: integrationscales_scaledto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE integrationscales_scaledto (
+    id bigint,
+    name character varying(255),
+    comment character varying(255),
+    type character varying(255),
+    ip text,
+    productionlines text
+);
+
+ALTER TABLE ONLY integrationscales_scaledto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: integrationscales_scaledto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE integrationscales_scaledto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: jointable_action_subassembly; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7907,6 +8039,16 @@ CREATE TABLE jointable_printlabelshelper_printedlabel (
 CREATE TABLE jointable_product_warehouseminimumstatemulti (
     product_id bigint NOT NULL,
     warehouseminimumstatemulti_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_productionline_scale; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_productionline_scale (
+    productionline_id bigint NOT NULL,
+    scale_id bigint NOT NULL
 );
 
 
@@ -8293,7 +8435,8 @@ CREATE VIEW masterorders_masterorderdto AS
     masterorder.active,
     masterorder.pipedriveupdate,
     masterorder.state,
-    masterorder.externalnumber
+    masterorder.externalnumber,
+    masterorder.asanataskid
    FROM (((((masterorders_masterorder masterorder
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
@@ -9746,7 +9889,8 @@ CREATE VIEW materialflowresources_resourcestockdto AS
          SELECT materialflowresources_resource.product_id,
             materialflowresources_resource.location_id,
             sum(materialflowresources_resource.quantity) AS quantity,
-            sum(materialflowresources_resource.quantityinadditionalunit) AS quantityinadditionalunit
+            sum(materialflowresources_resource.quantityinadditionalunit) AS quantityinadditionalunit,
+            sum((materialflowresources_resource.quantity * materialflowresources_resource.price)) AS totalvalue
            FROM materialflowresources_resource
           GROUP BY materialflowresources_resource.product_id, materialflowresources_resource.location_id
         ), reserved_quantities AS (
@@ -9777,14 +9921,17 @@ CREATE VIEW materialflowresources_resourcestockdto AS
     location.name AS locationname,
     product.number AS productnumber,
     product.name AS productname,
-    product.unit AS productunit
-   FROM ((((((materialflowresources_resourcestock rs
+    product.unit AS productunit,
+    COALESCE(q.totalvalue, (0)::numeric) AS totalvalue,
+    family.number AS familynumber
+   FROM (((((((materialflowresources_resourcestock rs
      LEFT JOIN ordered_quantities oq ON (((oq.product_id = rs.product_id) AND (oq.location_id = rs.location_id))))
      LEFT JOIN minimum_states ms ON (((ms.product_id = rs.product_id) AND (ms.location_id = rs.location_id))))
      LEFT JOIN quantities q ON (((q.product_id = rs.product_id) AND (q.location_id = rs.location_id))))
      LEFT JOIN reserved_quantities rq ON (((rq.product_id = rs.product_id) AND (rq.location_id = rs.location_id))))
      JOIN materialflow_location location ON ((location.id = rs.location_id)))
-     JOIN basic_product product ON ((product.id = rs.product_id)));
+     JOIN basic_product product ON ((product.id = rs.product_id)))
+     LEFT JOIN basic_product family ON ((product.parent_id = family.id)));
 
 
 --
@@ -11054,7 +11201,8 @@ CREATE VIEW orders_orderplanninglistdto AS
     COALESCE(ordersorder.plannedquantityforadditionalunit, ordersorder.plannedquantity) AS plannedquantityforadditionalunit,
     COALESCE(product.additionalunit, product.unit) AS unitforadditionalunit,
     company.number AS company,
-    ordersorder.description
+    ordersorder.description,
+    product.name AS productname
    FROM ((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -13886,7 +14034,8 @@ CREATE TABLE productioncounting_productionanalysisdto (
     generatorname character varying(255),
     order_id integer,
     ordernumber character varying(255),
-    obtainedmasterordernumber character varying(255)
+    obtainedmasterordernumber character varying(255),
+    technologygroupnumber character varying(255)
 );
 
 ALTER TABLE ONLY productioncounting_productionanalysisdto REPLICA IDENTITY NOTHING;
@@ -14112,7 +14261,7 @@ CREATE VIEW productioncounting_productiontrackingdto AS
      LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('02intermediate'::character varying)::text, ('03finalProduct'::character varying)::text])) AND ((pcq.role)::text = '02produced'::text))))
      LEFT JOIN basic_product outproduct ON ((pcq.product_id = outproduct.id)))
-     JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))));
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))));
 
 
 --
@@ -18958,6 +19107,20 @@ ALTER TABLE ONLY goodfood_extrusioncontext ALTER COLUMN id SET DEFAULT nextval('
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY goodfood_extrusionmix ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionmix_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmixingredient ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionmixingredient_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY goodfood_extrusionprotocol ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocol_id_seq'::regclass);
 
 
@@ -19078,6 +19241,13 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument ALTER COLUMN id SET D
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder ALTER COLUMN id SET DEFAULT nextval('integrationbaselinker_statusesformasterorder_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_scale ALTER COLUMN id SET DEFAULT nextval('integrationscales_scale_id_seq'::regclass);
 
 
 --
@@ -21551,7 +21721,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 1, true);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, uppershelf, lowershelf, upperform, lowerform, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, fabric, fabricgrammage, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, uppershelf, lowershelf, upperform, lowerform, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, fabric, fabricgrammage, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, scale_id) FROM stdin;
 \.
 
 
@@ -23000,6 +23170,36 @@ SELECT pg_catalog.setval('goodfood_extrusioncontext_id_seq', 1, false);
 
 
 --
+-- Data for Name: goodfood_extrusionmix; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_extrusionmix (id, number, technology_id, product_id, productionline_id, takenoffdate, shift_id, quantity, operator_id, comment, active) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_extrusionmix_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_extrusionmix_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_extrusionmixingredient; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_extrusionmixingredient (id, extrusionmix_id, product_id, batch_id, quantity) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_extrusionmixingredient_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_extrusionmixingredient_id_seq', 1, false);
+
+
+--
 -- Data for Name: goodfood_extrusionprotocol; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23312,6 +23512,28 @@ SELECT pg_catalog.setval('integrationbaselinker_statusesformasterorder_id_seq', 
 
 
 --
+-- Data for Name: integrationscales_scale; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY integrationscales_scale (id, name, comment, port, ip, type) FROM stdin;
+\.
+
+
+--
+-- Name: integrationscales_scale_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('integrationscales_scale_id_seq', 1, false);
+
+
+--
+-- Name: integrationscales_scaledto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('integrationscales_scaledto_id_seq', 1, false);
+
+
+--
 -- Data for Name: jointable_action_subassembly; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23549,6 +23771,14 @@ COPY jointable_printlabelshelper_printedlabel (printedlabel_id, printlabelshelpe
 --
 
 COPY jointable_product_warehouseminimumstatemulti (product_id, warehouseminimumstatemulti_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_productionline_scale; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_productionline_scale (productionline_id, scale_id) FROM stdin;
 \.
 
 
@@ -26361,6 +26591,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 146	ordersGroups	1.5.0	ENABLED	f	0	other	Commercial
 145	ordersGantt	1.5.0	ENABLED	f	0	other	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	\N
+151	integrationScales	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -26368,7 +26599,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 150, true);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 151, true);
 
 
 --
@@ -26728,6 +26959,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 132	basic	exceptionsForLineList	t	4	131	20	ROLE_SHIFTS	0
 133	qcadooView	attachmentViewer	f	1	132	14	\N	0
 134	basic	attachmentsList	t	4	133	21	ROLE_BASIC	0
+135	goodFood	extrusionMixesList	t	\N	134	1	ROLE_TERMINAL_EXTRUSION_USER	0
+136	integrationScales	scales	t	4	135	22	ROLE_COMPANY_STRUCTURE	0
 \.
 
 
@@ -26735,7 +26968,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 134, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 136, true);
 
 
 --
@@ -26872,6 +27105,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 131	basic	exceptionsForLineList	exceptionsForLineList	\N	0
 132	qcadooView	attachmentViewer	\N	/attachmentViewer.html	0
 133	basic	attachmentsList	attachmentsList	\N	0
+134	goodFood	extrusionMixesList	extrusionMixesList	\N	0
+135	integrationScales	scalesList	scalesList	\N	0
 \.
 
 
@@ -26879,7 +27114,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 133, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 135, true);
 
 
 --
@@ -29127,6 +29362,22 @@ ALTER TABLE ONLY goodfood_extrusioncontext
 
 
 --
+-- Name: goodfood_extrusionmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: goodfood_extrusionmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmixingredient
+    ADD CONSTRAINT goodfood_extrusionmixingredient_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -29284,6 +29535,14 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
     ADD CONSTRAINT integrationbaselinker_statusesformasterorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: integrationscales_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_scale
+    ADD CONSTRAINT integrationscales_scale_pkey PRIMARY KEY (id);
 
 
 --
@@ -29516,6 +29775,14 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
     ADD CONSTRAINT jointable_product_warehouseminimumstatemulti_pkey PRIMARY KEY (warehouseminimumstatemulti_id, product_id);
+
+
+--
+-- Name: jointable_productionline_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_productionline_scale
+    ADD CONSTRAINT jointable_productionline_scale_pkey PRIMARY KEY (scale_id, productionline_id);
 
 
 --
@@ -31472,56 +31739,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    product.size,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber
-   FROM (((((((((((((productioncounting_productiontracking productiontracking
-     LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO masterorders_masterorderposition_manyproducts DO INSTEAD  SELECT COALESCE(masterorderproduct.id, (0)::bigint) AS id,
     masterorderdefinition.number AS masterorderdefinitionnumber,
     (masterorder.id)::integer AS masterorderid,
@@ -31603,6 +31820,75 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
      LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
   GROUP BY product.id, parent.name, assortment.name;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO integrationscales_scaledto DO INSTEAD  SELECT scale.id,
+    scale.name,
+    scale.comment,
+    scale.type,
+    concat_ws(':'::text, scale.ip, scale.port) AS ip,
+    string_agg((pl.number)::text, ', '::text) AS productionlines
+   FROM ((integrationscales_scale scale
+     LEFT JOIN jointable_productionline_scale jps ON ((jps.scale_id = scale.id)))
+     LEFT JOIN productionlines_productionline pl ON ((jps.productionline_id = pl.id)))
+  GROUP BY scale.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    product.size,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    tg.number AS technologygroupnumber
+   FROM ((((((((((((((productioncounting_productiontracking productiontracking
+     LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN technologies_technologygroup tg ON ((technologyprototype.technologygroup_id = tg.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, tg.number;
 
 
 --
@@ -34071,6 +34357,70 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
+-- Name: goodfood_extrusionmix_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_operator_fkey FOREIGN KEY (operator_id) REFERENCES basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmix_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmix_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmix_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmix_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmix
+    ADD CONSTRAINT goodfood_extrusionmix_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmixingredient
+    ADD CONSTRAINT goodfood_extrusionmixingredient_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmixingredient_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmixingredient
+    ADD CONSTRAINT goodfood_extrusionmixingredient_extrusionmix_fkey FOREIGN KEY (extrusionmix_id) REFERENCES goodfood_extrusionmix(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionmixingredient
+    ADD CONSTRAINT goodfood_extrusionmixingredient_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
 -- Name: goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -36351,6 +36701,14 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
+-- Name: product_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_product
+    ADD CONSTRAINT product_scale_fkey FOREIGN KEY (scale_id) REFERENCES integrationscales_scale(id) DEFERRABLE;
+
+
+--
 -- Name: product_upform_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -36716,6 +37074,22 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 ALTER TABLE ONLY timegapspreview_timegap
     ADD CONSTRAINT productionline_fk FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: productionline_scale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_productionline_scale
+    ADD CONSTRAINT productionline_scale_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: productionline_scale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_productionline_scale
+    ADD CONSTRAINT productionline_scale_scale_fkey FOREIGN KEY (scale_id) REFERENCES integrationscales_scale(id) DEFERRABLE;
 
 
 --

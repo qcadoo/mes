@@ -423,16 +423,19 @@
                        rows="1">
                 <layoutElement column="1" row="1">
                     <component type="lookup" name="ordersLookup" reference="ordersLookup"
-                               field="#{form}.orders" defaultVisible="false" persistent="false"
+                               model="orderPlanningListDto" plugin="orders" defaultVisible="false" persistent="false"
                                hasLabel="false">
-                        <option type="column" name="product" fields="product" link="true"
-                                expression="#product['number']"/>
+                        <option type="column" name="product" fields="productNumber" link="true"/>
                         <option type="column" name="state" fields="state"/>
-                        <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                        <option type="column" name="productName" fields="productName"/>
                         <option type="column" name="startDate" fields="startDate"/>
                         <option type="column" name="finishDate" fields="finishDate"/>
-                        <option type="searchable" value="number,product,state,productName,startDate,finishDate"/>
-                        <option type="orderable" value="number,product,state,productName,dateFrom,finishDate"/>
+                        <option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+                        <option type="column" name="divisionNumber" fields="divisionNumber"/>
+                        <option type="searchable"
+                                value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
+                        <option type="orderable"
+                                value="number,product,state,productName,dateFrom,finishDate,divisionNumber,productionLineNumber"/>
                         <option type="multiselect" value="true"/>
                         <option type="expression"
                                 value="#number"/>

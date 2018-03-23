@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.field;
+
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -45,7 +48,9 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
+import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
@@ -69,7 +74,9 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -94,6 +101,10 @@ public class DeliveryDetailsListeners {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_PRODUCT = "product";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_PRODUCT_ATTACHMENTS = "productAttachments";
 
     public static final String OFFER = "offer";
 
@@ -712,20 +723,32 @@ public class DeliveryDetailsListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
         Set<Long> ids = orderedProductsGrid.getSelectedEntitiesIds();
-        SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find();
+        SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find()
+                .createAlias(BasicConstants.MODEL_PRODUCT, BasicConstants.MODEL_PRODUCT, JoinType.INNER)
+                .createAlias(BasicConstants.MODEL_PRODUCT + L_DOT + L_PRODUCT_ATTACHMENTS, L_PRODUCT_ATTACHMENTS, JoinType.INNER)
+                .setProjection(SearchProjections.list()
+                        .add(alias(field(L_PRODUCT_ATTACHMENTS + L_DOT + ProductAttachmentFields.ATTACHMENT),
+                                ProductAttachmentFields.ATTACHMENT)));
         if (ids.isEmpty()) {
-            searchCriteria.add(SearchRestrictions.in(DeliveriesConstants.MODEL_DELIVERY + "id", form.getEntityId()));
+            searchCriteria.createAlias(DeliveriesConstants.MODEL_DELIVERY, DeliveriesConstants.MODEL_DELIVERY, JoinType.INNER)
+                    .add(SearchRestrictions.in(DeliveriesConstants.MODEL_DELIVERY + L_DOT + "id", form.getEntityId()));
         } else {
             searchCriteria.add(SearchRestrictions.in("id", ids));
         }
         List<Entity> result = searchCriteria.list().getEntities();
 
-        List<File> attachements = Lists.newArrayList();
+        if (result.isEmpty()) {
+            return;
+        }
+
+        List<File> attachments = result.stream()
+                .map(productAttachment -> new File(productAttachment.getStringField(ProductAttachmentFields.ATTACHMENT)))
+                .collect(Collectors.toList());
 
         File zipFile;
 
         try {
-            zipFile = fileService.compressToZipFile(attachements, false);
+            zipFile = fileService.compressToZipFile(attachments, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
             return;

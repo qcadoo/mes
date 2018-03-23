@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -65,6 +53,17 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class OrderHooks {
@@ -496,7 +495,7 @@ public class OrderHooks {
         setProductQuantity(order);
     }
 
-    private void setProductQuantity(final Entity order) {
+    public void setProductQuantity(final Entity order) {
         Long orderId = order.getId();
 
         if (orderId == null) {
