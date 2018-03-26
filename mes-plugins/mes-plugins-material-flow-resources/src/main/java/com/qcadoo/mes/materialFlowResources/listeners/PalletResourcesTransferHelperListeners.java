@@ -87,14 +87,15 @@ public class PalletResourcesTransferHelperListeners {
         Set<Entity> palletNumbersToDispose = Sets.newHashSet();
 
         DataDefinition resourceDD = resourceDataDefinition();
+        boolean hasErrors = false;
         for (Entity dto : dtos) {
             Entity selectedPallet = dto.getBelongsToField(PalletStorageStateDtoFields.NEW_PALLET_NUMBER);
             if (selectedPallet != null) {
 
                 String oldPalletNumber = dto.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER);
-                palletNumbersToDispose.add(findPalletNumberByNumber(oldPalletNumber));
 
-                final List<Entity> resources = resourceDD.find()
+                final List<Entity> resources = resourceDD
+                        .find()
                         .createAlias(ResourceFields.PALLET_NUMBER, ResourceFields.PALLET_NUMBER, JoinType.INNER)
                         .createAlias(ResourceFields.LOCATION, ResourceFields.LOCATION, JoinType.INNER)
                         .createAlias(ResourceFields.STORAGE_LOCATION, ResourceFields.STORAGE_LOCATION, JoinType.LEFT)
@@ -104,24 +105,40 @@ public class PalletResourcesTransferHelperListeners {
                                 dto.getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
                         .add(storageLocationCriterion(dto)).add(typeOfPalletCriterion(dto)).list().getEntities();
 
-                final Entity palletNumberEntity = findPalletNumberByNumber(
-                        selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
+                final Entity palletNumberEntity = findPalletNumberByNumber(selectedPallet
+                        .getStringField(PalletStorageStateDtoFields.PALLET_NUMBER));
                 final Entity storageLocationEntity = Optional
                         .ofNullable(selectedPallet.getStringField(PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER))
                         .map(this::findStorageLocationByNumber).orElse(null);
 
+                boolean shouldDispose = true;
                 for (Entity resource : resources) {
                     resource.setField(ResourceFields.PALLET_NUMBER, palletNumberEntity);
                     resource.setField(ResourceFields.STORAGE_LOCATION, storageLocationEntity);
                     resource.setField(ResourceFields.TYPE_OF_PALLET,
                             selectedPallet.getStringField(PalletStorageStateDtoFields.TYPE_OF_PALLET));
                     resource.setField(ResourceFields.VALIDATE_PALLET, false);
-                    resourceCorrectionService.createCorrectionForResource(resource);
+                    boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
+                    if (!corrected) {
+                        resource.getGlobalErrors().forEach(view::addMessage);
+                        view.addMessage("materialFlowResources.palletResourcesTransfer.resource.failure",
+                                ComponentState.MessageType.FAILURE, false, resource.getStringField(ResourceFields.NUMBER));
+                        hasErrors = true;
+                        shouldDispose = false;
+                    }
+                }
+                if (shouldDispose) {
+                    palletNumbersToDispose.add(findPalletNumberByNumber(oldPalletNumber));
+
                 }
             }
         }
         palletNumbersToDispose.forEach(pn -> palletNumberDisposalService.tryToDispose(pn));
-        view.addMessage("materialFlowResources.palletResourcesTransfer.success", ComponentState.MessageType.SUCCESS);
+        if (hasErrors) {
+            view.addMessage("materialFlowResources.palletResourcesTransfer.partialSuccess", ComponentState.MessageType.INFO);
+        } else {
+            view.addMessage("materialFlowResources.palletResourcesTransfer.success", ComponentState.MessageType.SUCCESS);
+        }
         generated.setChecked(true);
     }
 
@@ -131,8 +148,8 @@ public class PalletResourcesTransferHelperListeners {
     }
 
     private Entity findPalletNumberByNumber(final String palletNumber) {
-        return Objects.requireNonNull(
-                palletNumberDataDefinition().find().add(eq(PalletNumberFields.NUMBER, palletNumber)).uniqueResult());
+        return Objects.requireNonNull(palletNumberDataDefinition().find().add(eq(PalletNumberFields.NUMBER, palletNumber))
+                .uniqueResult());
     }
 
     private DataDefinition resourceDataDefinition() {
@@ -176,12 +193,13 @@ public class PalletResourcesTransferHelperListeners {
     }
 
     private boolean isSelectedPalletNumberAmbiguous(Entity selectedPallet, FormComponent modifiedForm) {
-        SearchResult searchResult = selectedPallet.getDataDefinition().find()
+        SearchResult searchResult = selectedPallet
+                .getDataDefinition()
+                .find()
                 .add(eq(PalletStorageStateDtoFields.PALLET_NUMBER,
                         selectedPallet.getStringField(PalletStorageStateDtoFields.PALLET_NUMBER)))
                 .add(eq(PalletStorageStateDtoFields.LOCATION_NUMBER,
-                        modifiedForm.getEntity().getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER)))
-                .list();
+                        modifiedForm.getEntity().getStringField(PalletStorageStateDtoFields.LOCATION_NUMBER))).list();
         return searchResult.getTotalNumberOfEntities() > 1;
     }
 
