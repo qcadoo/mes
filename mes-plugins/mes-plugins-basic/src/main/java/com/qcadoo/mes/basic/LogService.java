@@ -196,9 +196,9 @@ public class LogService {
 
     private void deleteOldLogs() {
         String sqlForViewed = "DELETE FROM basic_viewedactivity " +
-                "WHERE log_id IN (SELECT id FROM basic_log WHERE createtime < (now() - interval '3 month'))";
+                "WHERE log_id IN (SELECT id FROM basic_log WHERE createtime < (now() - interval '1 month'))";
 
-        String sql = "DELETE FROM basic_log WHERE createtime < (now() - interval '3 month');";
+        String sql = "DELETE FROM basic_log WHERE createtime < (now() - interval '1 month');";
 
         Map<String, Object> params = Maps.newHashMap();
 
