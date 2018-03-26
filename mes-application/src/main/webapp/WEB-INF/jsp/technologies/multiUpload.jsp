@@ -48,6 +48,8 @@ String ctx = request.getContextPath();
 
     <div id="dropzone">${requestScope.translationsMap['qcadooView.fileupload.dropzone']}</div>
 
+    <div id="maxUploadFileMessage" style="display: none;">${requestScope.translationsMap['qcadooView.errorPage.error.uploadException.maxSizeExceeded.explanation']}</div>
+
 	<div id="progress" class="progress">
         <div class="progress-bar progress-bar-success"> </div>
     </div>
