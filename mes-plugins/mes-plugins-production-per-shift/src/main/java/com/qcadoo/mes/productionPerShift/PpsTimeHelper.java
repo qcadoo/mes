@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
@@ -44,6 +34,15 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PpsTimeHelper {
@@ -122,7 +121,7 @@ public class PpsTimeHelper {
         return ((new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
                 .compareTo(new DateTime(dateOfDay).toLocalDate()) >= 0)
                 && (new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                        .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
+                .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
     }
 
     private List<DateTimeRange> removeFreeTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,
@@ -166,7 +165,7 @@ public class PpsTimeHelper {
         Date fromDate = exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE);
         Date toDate = exception.getDateField(ShiftTimetableExceptionFields.TO_DATE);
 
-        if (toDate.before(shift.getShiftStartDate().toDate())) {
+        if (toDate.before(shift.getShiftStartDate().toDate()) || shift.getShiftEndDate().toDate().before(fromDate)) {
             return Optional.empty();
         }
 
