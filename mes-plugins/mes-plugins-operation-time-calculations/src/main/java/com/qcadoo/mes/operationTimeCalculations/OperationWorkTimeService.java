@@ -50,9 +50,6 @@ public interface OperationWorkTimeService {
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved);
 
-    Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(final Entity order, Map<Entity, BigDecimal> operationRuns,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved);
-
     Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForTechnology(final Entity technology,
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved);
