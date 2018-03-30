@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
@@ -48,9 +47,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class ProductionBalanceDetailsListeners {
-
-    @Autowired
-    private TranslationService translationService;
 
     @Autowired
     private SecurityService securityService;

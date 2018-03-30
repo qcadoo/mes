@@ -41,7 +41,6 @@ import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -71,9 +70,6 @@ public class ProductionBalanceDetailsHooks {
     private static final List<String> L_COST_GRIDS = Collections.singletonList(ProductionBalanceFields.ORDERS);
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private CurrencyService currencyService;
 
     @Autowired
@@ -90,10 +86,6 @@ public class ProductionBalanceDetailsHooks {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    public void onBeforeRender(final ViewDefinitionState view) {
-        generateOrderNumber(view);
-    }
 
     public void generateOrderNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER,

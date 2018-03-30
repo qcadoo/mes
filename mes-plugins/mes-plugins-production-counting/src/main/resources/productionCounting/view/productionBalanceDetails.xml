@@ -197,6 +197,8 @@
                         <option type="column" name="divisionNumber" fields="divisionNumber"/>
                         <option type="searchable"
                                 value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
+                        <option type="multiSearch"
+                                value="number,product,state,productName,startDate,finishDate,divisionNumber,productionLineNumber"/>
                         <option type="orderable"
                                 value="number,product,state,productName,dateFrom,finishDate,divisionNumber,productionLineNumber"/>
                         <option type="multiselect" value="true"/>
@@ -361,7 +363,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
-                method="onBeforeRender"/>
+                method="generateOrderNumber"/>
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="disableCheckboxes"/>

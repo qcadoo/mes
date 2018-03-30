@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productionCounting.xls;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
 import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
 import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
@@ -83,6 +85,10 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 locale);
         createLaborTimeSheet(createSheet(workbook, translationService.translate(LaborTimeSheetConstants.SHEET_TITLE, locale)),
                 ordersIds, locale);
+        List<LaborTimeDetails> laborTimeDetailsList = productionBalanceRepository.getLaborTimeDetails(entity, ordersIds);
+        createLaborTimeDetailsSheet(laborTimeDetailsList, createSheet(workbook,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails", locale)),
+                locale);
         createPieceworkSheet(createSheet(workbook, translationService.translate(PieceworkSheetConstants.SHEET_TITLE, locale)),
                 ordersIds, locale);
         List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(entity, ordersIds);
@@ -95,7 +101,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance", locale)),
                 locale);
         List<OrderBalance> componentsBalance = productionBalanceRepository.getComponentsBalance(entity, ordersIds, ordersBalance);
-        createComponentsBalanceSheet(componentsBalance, createSheet(workbook,
+        createOrdersBalanceSheet(componentsBalance, createSheet(workbook,
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.componentsBalance", locale)),
                 locale);
         List<OrderBalance> productsBalance = productionBalanceRepository.getProductsBalance(entity, ordersIds, componentsBalance);
@@ -103,7 +109,6 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.productsBalance", locale)),
                 locale);
     }
-
 
     private List<Long> getOrdersIds(final Entity productionBalance) {
 
@@ -257,19 +262,166 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.LABOR_TIME, locale), 5,
                 CellStyle.ALIGN_LEFT);
 
-        List<LaborTimeDetails> laborTimeDetailsList = productionBalanceRepository.getLaborTimeDetails(ordersIds);
+        List<LaborTime> laborTimeList = productionBalanceRepository.getLaborTime(ordersIds);
         int rowCounter = 0;
-        for (LaborTimeDetails laborTimeDetails : laborTimeDetailsList) {
+        for (LaborTime laborTime : laborTimeList) {
             row = sheet.createRow(rowOffset + rowCounter);
-            createRegularCell(stylesContainer, row, 0, laborTimeDetails.getOrderNumber());
-            createRegularCell(stylesContainer, row, 1, laborTimeDetails.getOperationNumber());
-            createRegularCell(stylesContainer, row, 2, laborTimeDetails.getStaffNumber());
-            createRegularCell(stylesContainer, row, 3, laborTimeDetails.getStaffName());
-            createRegularCell(stylesContainer, row, 4, laborTimeDetails.getStaffSurname());
-            createTimeCell(stylesContainer, row, 5, laborTimeDetails.getLaborTime());
+            createRegularCell(stylesContainer, row, 0, laborTime.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, laborTime.getOperationNumber());
+            createRegularCell(stylesContainer, row, 2, laborTime.getStaffNumber());
+            createRegularCell(stylesContainer, row, 3, laborTime.getStaffName());
+            createRegularCell(stylesContainer, row, 4, laborTime.getStaffSurname());
+            createTimeCell(stylesContainer, row, 5, laborTime.getLaborTime());
             rowCounter++;
         }
         for (int i = 0; i <= 5; i++) {
+            sheet.autoSizeColumn(i, false);
+        }
+    }
+
+    private void createLaborTimeDetailsSheet(List<LaborTimeDetails> laborTimeDetailsList, HSSFSheet sheet, Locale locale) {
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.divisionNumber", locale),
+                0, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.productionLineNumber", locale),
+                1, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.orderNumber", locale),
+                2, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.orderState", locale),
+                3, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.plannedDateFrom", locale),
+                4, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.effectiveDateFrom", locale),
+                5, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.plannedDateTo", locale),
+                6, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.effectiveDateTo", locale),
+                7, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.productNumber", locale),
+                8, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.orderName", locale),
+                9, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.plannedQuantity", locale),
+                10, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.amountOfProductProduced", locale),
+                11, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.staffNumber", locale),
+                12, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.staffName", locale),
+                13, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.staffSurname", locale),
+                14, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.operationNumber", locale),
+                15, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.timeRangeFrom", locale),
+                16, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.timeRangeTo", locale),
+                17, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.shiftName", locale),
+                18, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.createDate", locale),
+                19, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.laborTime", locale),
+                20, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.plannedLaborTime", locale),
+                21, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.laborTimeDeviation", locale),
+                22, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.machineTime", locale),
+                23, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.plannedMachineTime", locale),
+                24, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.laborTimeDetails.machineTimeDeviation", locale),
+                25, CellStyle.ALIGN_LEFT);
+
+        int rowCounter = 0;
+        for (LaborTimeDetails laborTimeDetails : laborTimeDetailsList) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, laborTimeDetails.getDivisionNumber());
+            createRegularCell(stylesContainer, row, 1, laborTimeDetails.getProductionLineNumber());
+            createRegularCell(stylesContainer, row, 2, laborTimeDetails.getOrderNumber());
+            createRegularCell(stylesContainer, row, 3, translationService.translate(
+                    "orders.order.state.value." + laborTimeDetails.getOrderState(), locale));
+            createDateTimeCell(stylesContainer, row, 4, laborTimeDetails.getPlannedDateFrom());
+            createDateTimeCell(stylesContainer, row, 5, laborTimeDetails.getEffectiveDateFrom());
+            createDateTimeCell(stylesContainer, row, 6, laborTimeDetails.getPlannedDateTo());
+            createDateTimeCell(stylesContainer, row, 7, laborTimeDetails.getEffectiveDateTo());
+            createRegularCell(stylesContainer, row, 8, laborTimeDetails.getProductNumber());
+            createRegularCell(stylesContainer, row, 9, laborTimeDetails.getOrderName());
+            createNumericCell(stylesContainer, row, 10, laborTimeDetails.getPlannedQuantity());
+            createNumericCell(stylesContainer, row, 11, laborTimeDetails.getAmountOfProductProduced());
+            createRegularCell(stylesContainer, row, 12, laborTimeDetails.getStaffNumber());
+            createRegularCell(stylesContainer, row, 13, laborTimeDetails.getStaffName());
+            createRegularCell(stylesContainer, row, 14, laborTimeDetails.getStaffSurname());
+            createRegularCell(stylesContainer, row, 15, laborTimeDetails.getOperationNumber());
+            createDateTimeCell(stylesContainer, row, 16, laborTimeDetails.getTimeRangeFrom());
+            createDateTimeCell(stylesContainer, row, 17, laborTimeDetails.getTimeRangeTo());
+            createRegularCell(stylesContainer, row, 18, laborTimeDetails.getShiftName());
+            createDateTimeCell(stylesContainer, row, 19, laborTimeDetails.getCreateDate());
+            createTimeCell(stylesContainer, row, 20, laborTimeDetails.getLaborTime());
+            createTimeCell(stylesContainer, row, 21, laborTimeDetails.getPlannedLaborTime());
+            createTimeCell(stylesContainer, row, 22, laborTimeDetails.getLaborTimeDeviation());
+            createTimeCell(stylesContainer, row, 23, laborTimeDetails.getMachineTime());
+            createTimeCell(stylesContainer, row, 24, laborTimeDetails.getPlannedMachineTime());
+            createTimeCell(stylesContainer, row, 25, laborTimeDetails.getMachineTimeDeviation());
+            rowCounter++;
+        }
+        for (int i = 0; i <= 25; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
@@ -499,130 +651,6 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         }
     }
 
-    private void createComponentsBalanceSheet(List<OrderBalance> componentsBalance, HSSFSheet sheet, Locale locale) {
-        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
-        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
-        final int rowOffset = 1;
-        HSSFRow row = sheet.createRow(0);
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.orderNumber", locale),
-                0, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.productNumber", locale),
-                1, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.productName", locale),
-                2, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.producedQuantity", locale),
-                3, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.materialCosts", locale),
-                4, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.productionCosts", locale),
-                5, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.technicalProductionCosts", locale),
-                6, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.materialCostMargin", locale),
-                7, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.materialCostMarginValue", locale),
-                8, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.productionCostMargin", locale),
-                9, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.productionCostMarginValue", locale),
-                10, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.additionalOverhead", locale),
-                11, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.directAdditionalCost", locale),
-                12, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.totalCosts", locale),
-                13, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.registrationPrice", locale),
-                14, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.registrationPriceOverhead", locale),
-                15, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.registrationPriceOverheadValue",
-                        locale),
-                16, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.ordersBalance.realProductionCosts", locale),
-                17, CellStyle.ALIGN_LEFT);
-        createHeaderCell(
-                stylesContainer, row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.profit", locale),
-                18, CellStyle.ALIGN_LEFT);
-
-        createHeaderCell(stylesContainer,
-                row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.profitValue", locale),
-                19, CellStyle.ALIGN_LEFT);
-
-        createHeaderCell(
-                stylesContainer, row, translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.ordersBalance.sellPrice", locale),
-                20, CellStyle.ALIGN_LEFT);
-
-        int rowCounter = 0;
-        for (OrderBalance orderBalance : componentsBalance) {
-            row = sheet.createRow(rowOffset + rowCounter);
-            createRegularCell(stylesContainer, row, 0, orderBalance.getOrderNumber());
-            createRegularCell(stylesContainer, row, 1, orderBalance.getProductNumber());
-            createRegularCell(stylesContainer, row, 2, orderBalance.getProductName());
-            createNumericCell(stylesContainer, row, 3, orderBalance.getProducedQuantity());
-            createNumericCell(stylesContainer, row, 4, orderBalance.getMaterialCosts());
-            createNumericCell(stylesContainer, row, 5, orderBalance.getProductionCosts());
-            createNumericCell(stylesContainer, row, 6, orderBalance.getTechnicalProductionCosts());
-            createNumericCell(stylesContainer, row, 7, orderBalance.getMaterialCostMargin());
-            createNumericCell(stylesContainer, row, 8, orderBalance.getMaterialCostMarginValue());
-            createNumericCell(stylesContainer, row, 9, orderBalance.getProductionCostMargin());
-            createNumericCell(stylesContainer, row, 10, orderBalance.getProductionCostMarginValue());
-            createNumericCell(stylesContainer, row, 11, orderBalance.getAdditionalOverhead());
-            createNumericCell(stylesContainer, row, 12, orderBalance.getDirectAdditionalCost());
-            createNumericCell(stylesContainer, row, 13, orderBalance.getTotalCosts());
-            createNumericCell(stylesContainer, row, 14, orderBalance.getRegistrationPrice());
-            createNumericCell(stylesContainer, row, 15, orderBalance.getRegistrationPriceOverhead());
-            createNumericCell(stylesContainer, row, 16, orderBalance.getRegistrationPriceOverheadValue());
-            createNumericCell(stylesContainer, row, 17, orderBalance.getRealProductionCosts());
-            createNumericCell(stylesContainer, row, 18, orderBalance.getProfit());
-            createNumericCell(stylesContainer, row, 19, orderBalance.getProfitValue());
-            createNumericCell(stylesContainer, row, 20, orderBalance.getSellPrice());
-            rowCounter++;
-        }
-        for (int i = 0; i <= 20; i++) {
-            sheet.autoSizeColumn(i, false);
-        }
-    }
-
     private void createProductsBalanceSheet(List<OrderBalance> productsBalance, HSSFSheet sheet, Locale locale) {
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
@@ -763,6 +791,15 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         return cell;
     }
 
+    private HSSFCell createDateTimeCell(StylesContainer stylesContainer, HSSFRow row, int column, Date value) {
+        HSSFCell cell = row.createCell(column);
+        if (value != null) {
+            cell.setCellValue(value);
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.dateTimeStyle, HSSFCellStyle.ALIGN_RIGHT));
+        }
+        return cell;
+    }
+
     private HSSFCell createHeaderCell(StylesContainer stylesContainer, HSSFRow row, String content, int column, short align) {
         HSSFCell cell = row.createCell(column);
         cell.setCellValue(content);
@@ -780,6 +817,8 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
         private final HSSFCellStyle numberStyle;
 
+        private final HSSFCellStyle dateTimeStyle;
+
         StylesContainer(HSSFWorkbook workbook, FontsContainer fontsContainer) {
             regularStyle = workbook.createCellStyle();
             regularStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
@@ -796,6 +835,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
             numberStyle = workbook.createCellStyle();
             numberStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00###"));
+
+            dateTimeStyle = workbook.createCellStyle();
+            dateTimeStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd hh:mm"));
         }
 
         private static HSSFCellStyle aligned(HSSFCellStyle style, short align) {
