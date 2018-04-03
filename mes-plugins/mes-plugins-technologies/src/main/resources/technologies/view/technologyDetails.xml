@@ -270,14 +270,14 @@
                                    field="standardPerformanceTechnology" reference="standardPerformanceTechnology"
                                    hasDescription="true">
                             <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="40" />
+                            <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
 
                     <layoutElement column="3" row="2">
                         <component type="checkbox" name="additionalActions" field="additionalActions"
                                    reference="additionalActions" hasDescription="true">
-                            <option type="labelWidth" value="40" />
+                            <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -314,7 +314,17 @@
                                field="#{form}.operationComponents">
                         <dataType name="operation">
                             <option type="nodeLabelExpression"
-                                    value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']"/>
+                                    value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #operation['number'] + ' &lt;/span&gt;' + #operation['name']
+                                    + ' - ('
+                                    + (#tpz != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz) + '/') : '')
+                                    + (#tj != null ? (T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)) : '')
+                                    + ')'
+                                    + (#operationProductOutComponents.size() > 0 ? ' - &lt;b&gt;' +
+                                        #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('name') + ' &lt;span style=&quot;color: #68bb25&quot;&gt;(' + #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('number') + ')&lt;/span&gt; - '
+                                        + '&lt;/b&gt;'
+                                        + #operationProductOutComponents.get(0).getDecimalField('quantity').stripTrailingZeros() + ' ' + #operationProductOutComponents.get(0).getBelongsToField('product').getStringField('unit')
+                                        : ''
+                                    )"/>
                             <option type="correspondingView"
                                     value="technologies/technologyOperationComponentDetails"/>
                             <option type="correspondingComponent" value="form"/>
