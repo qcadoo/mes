@@ -786,8 +786,15 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private HSSFCell createTimeCell(StylesContainer stylesContainer, HSSFRow row, int column, Integer value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
-        cell.setCellValue(value == null ? 0d : value / 86400d);
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.timeStyle, HSSFCellStyle.ALIGN_RIGHT));
+        if (value == null) {
+            value = 0;
+        }
+        cell.setCellValue(Math.abs(value) / 86400d);
+        if (value >= 0) {
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.timeStyle, HSSFCellStyle.ALIGN_RIGHT));
+        } else {
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.negativeTimeStyle, HSSFCellStyle.ALIGN_RIGHT));
+        }
         return cell;
     }
 
@@ -815,6 +822,8 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
         private final HSSFCellStyle timeStyle;
 
+        private final HSSFCellStyle negativeTimeStyle;
+
         private final HSSFCellStyle numberStyle;
 
         private final HSSFCellStyle dateTimeStyle;
@@ -832,6 +841,9 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
             timeStyle = workbook.createCellStyle();
             timeStyle.setDataFormat(workbook.createDataFormat().getFormat("[HH]:MM:SS"));
+
+            negativeTimeStyle = workbook.createCellStyle();
+            negativeTimeStyle.setDataFormat(workbook.createDataFormat().getFormat("-[HH]:MM:SS"));
 
             numberStyle = workbook.createCellStyle();
             numberStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00###"));
