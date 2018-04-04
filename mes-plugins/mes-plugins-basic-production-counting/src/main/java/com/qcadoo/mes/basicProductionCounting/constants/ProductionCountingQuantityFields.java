@@ -47,4 +47,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String SET = "set";
 
+    public static final String FLOW_FILLED = "flowFilled";
+
 }
