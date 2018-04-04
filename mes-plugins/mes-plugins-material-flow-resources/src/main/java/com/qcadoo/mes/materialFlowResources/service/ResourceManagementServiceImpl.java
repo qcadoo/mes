@@ -574,6 +574,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     }
                 } else {
                     copyPositionValues(position, generatedPositions.get(0));
+                    copyPositionErrors(position, generatedPositions.get(0));
                     Entity saved = position.getDataDefinition().save(position);
                     addPositionErrors(document, saved);
                 }
@@ -582,6 +583,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         if (!enoughResources) {
             NotEnoughResourcesErrorMessageCopyToEntityHelper.addError(document, warehouseFrom, errorMessageHolder);
+        }
+    }
+
+    private void copyPositionErrors(final Entity position, final Entity newPosition) {
+        for (Map.Entry<String, ErrorMessage> error : newPosition.getErrors().entrySet()) {
+            position.addError(position.getDataDefinition().getField(error.getKey()), error.getValue().getMessage());
         }
     }
 
