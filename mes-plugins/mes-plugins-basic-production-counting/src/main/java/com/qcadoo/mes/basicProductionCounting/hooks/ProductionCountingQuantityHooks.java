@@ -53,7 +53,7 @@ public class ProductionCountingQuantityHooks {
         fillOrder(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
-        productionCountingQuantitySetService.fillSetField(productionCountingQuantity);
+        //productionCountingQuantitySetService.fillSetField(productionCountingQuantity);
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
