@@ -112,6 +112,11 @@ public class ProductionBalanceDetailsHooks {
             productionCountingService.setComponentsState(view, L_COST_FIELDS, true, true);
             productionCountingService.setComponentsState(view, L_COST_GRIDS, true, false);
         }
+
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if (form.getEntityId() == null) {
+            productionCountingService.setComponentsState(view, L_COST_GRIDS, false, false);
+        }
     }
 
     public void fillCurrencyAndUnitFields(final ViewDefinitionState view) {
@@ -155,7 +160,7 @@ public class ProductionBalanceDetailsHooks {
         if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
                 sourceOfMaterialCosts.getFieldValue())
                 && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
-            sourceOfMaterialCosts.addMessage("productionCounting.messages.optionUnavailable", ComponentState.MessageType.FAILURE);
+            sourceOfMaterialCosts.addMessage("productionCounting.productionBalance.messages.optionUnavailable", ComponentState.MessageType.FAILURE);
         }
     }
 
