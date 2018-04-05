@@ -67,4 +67,6 @@ public final class ParameterFieldsO {
 
     public static final String FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION = "fillOrderDescriptionBasedOnTechnologyDescription";
 
+    public static final String CREATE_SET_ELEMENTS_ON_ACCEPT = "createSetElementsOnAccept";
+
 }
