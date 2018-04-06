@@ -83,8 +83,6 @@ public class ProductQuantitiesServiceImplTest {
     @Mock
     private NumberService numberService;
 
-    private EntityList orders;
-
     private EntityTree tree;
 
     private Map<Entity, List<Entity>> productInComponents;
@@ -114,8 +112,6 @@ public class ProductQuantitiesServiceImplTest {
         productQuantitiesService = new ProductQuantitiesServiceImpl();
 
         ReflectionTestUtils.setField(productQuantitiesService, "numberService", numberService);
-
-        orders = mockEntityListIterator(asList(order));
 
         when(order.getBelongsToField("technology")).thenReturn(technology);
 
@@ -269,34 +265,6 @@ public class ProductQuantitiesServiceImplTest {
     }
 
     @Test
-    public void shouldReturnOperationRuns() {
-        // given
-        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-
-        // when
-        productQuantitiesService.getNeededProductQuantities(orders, MrpAlgorithm.ALL_PRODUCTS_IN, operationRuns);
-
-        // then
-        assertEquals(2, operationRuns.size());
-        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2.getId()));
-        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1.getId()));
-    }
-
-    @Test
-    public void shouldReturnOperationRunsAlsoForComponents() {
-        // given
-        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-
-        // when
-        productQuantitiesService.getProductComponentQuantities(order, operationRuns);
-
-        // then
-        assertEquals(2, operationRuns.size());
-        assertEquals(new BigDecimal(5), operationRuns.get(operationComponent2.getId()));
-        assertEquals(new BigDecimal(10), operationRuns.get(operationComponent1.getId()));
-    }
-
-    @Test
     public void shouldReturnOperationRunsAlsoForPlainTechnology() {
         // given
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
@@ -336,26 +304,6 @@ public class ProductQuantitiesServiceImplTest {
         assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
         assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
         assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
-    }
-
-    @Test
-    public void shouldNotRoundOperationRunsIfTjIsDivisable() {
-        // given
-        when(operationComponent1.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
-        when(operationComponent2.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);
-
-        when(operationComponent1.getBooleanField("isTjDivisible")).thenReturn(true);
-        when(operationComponent2.getBooleanField("isTjDivisible")).thenReturn(true);
-
-        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-
-        // when
-        productQuantitiesService.getNeededProductQuantities(orders, MrpAlgorithm.ALL_PRODUCTS_IN, operationRuns);
-
-        // then
-        assertEquals(2, operationRuns.size());
-        assertEquals(0, new BigDecimal(4.5).compareTo(operationRuns.get(operationComponent2)));
-        assertEquals(0, new BigDecimal(9.0).compareTo(operationRuns.get(operationComponent1)));
     }
 
     @Test

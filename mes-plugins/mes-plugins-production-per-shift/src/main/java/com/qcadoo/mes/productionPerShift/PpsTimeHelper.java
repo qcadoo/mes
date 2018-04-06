@@ -121,7 +121,7 @@ public class PpsTimeHelper {
         return ((new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
                 .compareTo(new DateTime(dateOfDay).toLocalDate()) >= 0)
                 && (new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                        .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
+                .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
     }
 
     private List<DateTimeRange> removeFreeTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,

@@ -25,7 +25,7 @@ $(function() {
 	$('#fileupload')
 			.fileupload(
 					{
-						
+						pasteZone: null,
 						dataType : 'json',
 						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i,
 
@@ -112,7 +112,7 @@ $(function() {
 					'fileuploadadd',
 					function(e, data) {
 						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
-						var maxSize = 5242880;
+                        var maxUploadFileMessage = $('#maxUploadFileMessage').text();
 						var locale = window.mainController
 						.getComponentByReferenceName(
 							"workstationMultiUploadLocale")
@@ -132,21 +132,22 @@ $(function() {
 								}
 								return false;
 							}
-                            if (file.size > maxSize) {
-								if(locale === "pl_PL" || locale === "pl"){
-								showMessage("failure",
-										"Pominięto wgranie pliku",
-										"Zbyt duży rozmiar pliku: "
-												+ file.name + ", dopuszczalny rozmiar to 5MB.");
-								} else {
-									showMessage("failure",
-											"Omitted file upload",
-											"File: "
-													+ file.name + " is too big, max. size is 5MB.");
-								}
-								return false;
-							}
-
+                            if (file.size/1048576 > maxUploadFileMessage.replace( /^\D+/g, '')) {
+                                if(locale === "pl_PL" || locale === "pl"){
+                                    showMessage("failure",
+                                        "Pominięto wgranie pliku",
+                                        "Plik: "
+                                        + file.name + " "
+                                        + maxUploadFileMessage);
+                                } else {
+                                    showMessage("failure",
+                                        "Omitted file upload",
+                                        "File: "
+                                        + file.name + " "
+                                        + maxUploadFileMessage);
+                                }
+                                return false;
+                            }
 						});
 					});
 

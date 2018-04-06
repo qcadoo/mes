@@ -113,17 +113,11 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         return costPerUnit.multiply(quantity, numberService.getMathContext());
     }
 
-    @Override
-    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String calculateMaterialCostsMode) {
-        return getProductWithCostForPlannedQuantities(null, technology, quantity, calculateMaterialCostsMode);
-    }
-
-    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity entity, final Entity technology,
-            final BigDecimal quantity, final String calculateMaterialCostsMode) {
+    private Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity entity, final Entity technology,
+                                                                           final BigDecimal quantity, final String calculateMaterialCostsMode) {
         Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(entity, technology, quantity,
                 MrpAlgorithm.ONLY_COMPONENTS);
-        Map<Entity, BigDecimal> results = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> results = new HashMap<>();
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
             BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
@@ -138,9 +132,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         return productQuantitiesService.getNeededProductQuantities(technology, quantity, algorithm);
     }
 
-    @Override
-    public Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
-            final String calculateMaterialCostsMode, final Entity order) {
+    private Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity technology, final BigDecimal quantity,
+                                                                           final String calculateMaterialCostsMode, final Entity order) {
         Map<Entity, BigDecimal> results = Maps.newHashMap();
         if (OrderState.PENDING.equals(OrderState.of(order))) {
             Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(technology,
