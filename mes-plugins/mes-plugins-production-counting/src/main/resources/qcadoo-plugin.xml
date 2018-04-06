@@ -87,12 +87,6 @@
                      resource="model/trackingOperationProductInComponent.xml"/>
         <model:model model="trackingOperationProductOutComponent"
                      resource="model/trackingOperationProductOutComponent.xml"/>
-        <model:model model="balanceOperationProductInComponent"
-                     resource="model/balanceOperationProductInComponent.xml"/>
-        <model:model model="balanceOperationProductOutComponent"
-                     resource="model/balanceOperationProductOutComponent.xml"/>
-        <model:model model="operationTimeComponent" resource="model/operationTimeComponent.xml"/>
-        <model:model model="operationPieceworkComponent" resource="model/operationPieceworkComponent.xml"/>
         <model:model model="staffWorkTime" resource="model/staffWorkTime.xml"/>
 
         <model:model model="productionTrackingDto" resource="model/productionTrackingDto.xml"/>
@@ -131,12 +125,6 @@
         <model:model model="anomalyExplanationDto" resource="model/anomalyExplanationDto.xml"/>
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
-
-        <model:model model="technologyOperationProductInComp"
-                     resource="model/technologyOperationProductInComp.xml"/>
-        <model:model model="operationCostComponent" resource="model/operationCostComponent.xml"/>
-        <model:model model="operationPieceworkCostComponent"
-                     resource="model/operationPieceworkCostComponent.xml"/>
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
@@ -190,11 +178,6 @@
             <model:boolean name="allowAnomalyCreationOnAcceptanceRecord"/>
         </model:model-field>
 
-
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="printOperationNormsPB" default="true"/>
-        </model:model-field>
-
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="calculateOperationCostsModePB" values="01hourly,02piecework"
                         required="true" default="01hourly"/>
@@ -208,10 +191,6 @@
             <model:boolean name="includeAdditionalTimePB" default="true"/>
         </model:model-field>
 
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="printCostNormsOfMaterialsPB"
-                           default="true"/>
-        </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="sourceOfMaterialCostsPB"
                         values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
@@ -348,10 +327,6 @@
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
         <model:model-field model="order" plugin="orders">
-            <model:hasMany name="productionBalances" model="productionBalance"
-                           joinField="order" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
-        <model:model-field model="order" plugin="orders">
             <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
@@ -398,12 +373,6 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="anomalyExplanations" plugin="productionCounting" model="anomalyExplanation"
                            joinField="location" cascade="delete"/>
-        </model:model-field>
-
-        <model:model-field model="calculationOperationComponent"
-                           plugin="costNormsForOperation">
-            <model:belongsTo name="productionBalance" model="productionBalance"
-                             plugin="productionCounting"/>
         </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">

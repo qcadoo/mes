@@ -101,12 +101,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         return getProductComponentQuantities(order, operationRuns, onTheFly);
     }
 
-    @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
-            final Map<Long, BigDecimal> operationRuns) {
-        return getProductComponentQuantities(order, operationRuns, false);
-    }
-
     private OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
             final Map<Long, BigDecimal> operationRuns, final boolean onTheFly) {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
@@ -166,12 +160,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         return getNeededProductQuantities(orders, mrpAlgorithm, operationRuns, onTheFly);
-    }
-
-    @Override
-    public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
-            final Map<Long, BigDecimal> operationRuns) {
-        return getNeededProductQuantities(orders, mrpAlgorithm, operationRuns, false);
     }
 
     private Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
@@ -652,19 +640,4 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     public Entity getProduct(final Long productId) {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
     }
-
-    @Override
-    public Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
-            final Map<Long, BigDecimal> operationRunsFromProductionQuantities) {
-        final Map<Entity, BigDecimal> operationRuns = Maps.newHashMap();
-
-        for (Entry<Long, BigDecimal> operationRunsFromProductionQuantity : operationRunsFromProductionQuantities.entrySet()) {
-            Entity technologyOperatonComponent = getTechnologyOperationComponent(operationRunsFromProductionQuantity.getKey());
-
-            operationRuns.put(technologyOperatonComponent, operationRunsFromProductionQuantity.getValue());
-        }
-
-        return operationRuns;
-    }
-
 }

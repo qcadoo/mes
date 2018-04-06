@@ -203,11 +203,6 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public boolean isCalculateOperationCostModeMixed(final String calculateOperationCostMode) {
-        return CalculateOperationCostsMode.MIXED.getStringValue().equals(calculateOperationCostMode);
-    }
-
-    @Override
     public boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
@@ -260,22 +255,6 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
                 }
             } else {
                 componentState.setEnabled(isEnabled);
-            }
-        }
-    }
-
-    @Override
-    public void setComponentsVisibility(final ViewDefinitionState view, final List<String> componentReferenceNames,
-            final boolean isVisible, final boolean requestComponentUpdateState) {
-        for (String componentReferenceName : componentReferenceNames) {
-            ComponentState componnetState = view.getComponentByReference(componentReferenceName);
-
-            if (componnetState == null) {
-                if (LOGGER.isWarnEnabled()) {
-                    LOGGER.warn(String.format("Cannot find component with reference='%s'", componentReferenceName));
-                }
-            } else {
-                componnetState.setVisible(isVisible);
             }
         }
     }
