@@ -23,17 +23,15 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTreeNode;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.commons.collections.MultiMap;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTreeNode;
 
 public interface OrderRealizationTimeService {
 
@@ -102,7 +100,7 @@ public interface OrderRealizationTimeService {
      * @return Max time consumption for workstation of an operation in seconds, including offset caused by waiting for child
      *         operations to finish.
      */
-    @Transactional int estimateMaxOperationTimeConsumptionForWorkstation(EntityTreeNode operationComponent,
+    @Transactional int estimateMaxOperationTimeConsumptionForWorkstation(Entity order, EntityTreeNode operationComponent,
             BigDecimal plannedQuantity, boolean includeTpz, boolean includeAdditionalTime,
             Entity productionLine);
 

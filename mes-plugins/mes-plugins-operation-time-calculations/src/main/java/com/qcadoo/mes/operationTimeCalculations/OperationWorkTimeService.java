@@ -23,20 +23,23 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
+import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
+import com.qcadoo.model.api.Entity;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
-
-import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.model.api.Entity;
 
 public interface OperationWorkTimeService {
 
     BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations);
 
-    OperationWorkTime estimateOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
+    OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved);
+
+    OperationWorkTime estimateOrderOperationWorkTime(final Entity order, Entity operationComponent, BigDecimal neededNumberOfCycles,
+            boolean includeTpz, boolean includeAdditionalTime, Integer workstations, boolean saved);
 
     Map<Entity, OperationWorkTime> estimateOperationsWorkTime(final List<Entity> operationComponents,
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
@@ -57,9 +60,14 @@ public interface OperationWorkTimeService {
             Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved);
 
+    OperationWorkTime estimateTotalWorkTime(Entity order, List<Entity> operationComponents, Map<Long, BigDecimal> operationRuns,
+            boolean includeTpz, boolean includeAdditionalTime, Map<Long, Integer> workstations, boolean saved);
+
     OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Map<Long, Integer> workstations,
             final boolean saved);
+
+    Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent);
 
     OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved);

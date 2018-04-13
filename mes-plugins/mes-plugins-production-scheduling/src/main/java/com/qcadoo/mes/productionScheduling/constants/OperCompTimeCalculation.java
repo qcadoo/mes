@@ -23,20 +23,27 @@
  */
 package com.qcadoo.mes.productionScheduling.constants;
 
-public final class ProductionSchedulingConstants {
+public final class OperCompTimeCalculation {
 
-    private ProductionSchedulingConstants() {
+    private OperCompTimeCalculation() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionScheduling";
+    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
-    public static final String MODEL_OPERATION_COMP_TIME_CALCULATION = "operCompTimeCalculation";
+    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
-    public static final String MODEL_ORDER_TIME_CALCUALTION = "orderTimeCalculation";
+    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
 
-    public static final String VIEW_RIBBON_ACTION_ITEM_GROUP = "orderGantt";
+    public static final String OPERATION_OFF_SET = "operationOffSet";
 
-    public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "operationsGantt";
+    public static final String DURATION = "duration";
 
+    public static final String MACHINE_WORK_TIME = "machineWorkTime";
+
+    public static final String LABOR_WORK_TIME = "laborWorkTime";
+
+    public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 }

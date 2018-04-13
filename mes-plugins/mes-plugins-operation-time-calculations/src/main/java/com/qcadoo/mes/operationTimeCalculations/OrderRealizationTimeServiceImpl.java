@@ -23,7 +23,26 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -37,27 +56,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.ProductionLinesService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.NumberService;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
@@ -76,6 +75,9 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private OperationWorkTimeService operationWorkTimeService;
+
     @Override
     public Object setDateToField(final Date date) {
         return new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, Locale.getDefault()).format(date);
@@ -92,13 +94,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(null, operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, false, productComponentQuantities);
     }
 
     @Override
     @Transactional
-    public int estimateMaxOperationTimeConsumptionForWorkstation(final EntityTreeNode operationComponent,
+    public int estimateMaxOperationTimeConsumptionForWorkstation(final Entity order, final EntityTreeNode operationComponent,
             final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine) {
         Entity technology = operationComponent.getBelongsToField(TECHNOLOGY);
@@ -108,7 +110,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
-        return evaluateOperationTime(operationComponent, includeTpz, includeAdditionalTime,
+        return evaluateOperationTime(order, operationComponent, includeTpz, includeAdditionalTime,
                 operationRunsFromProductionQuantities, productionLine, true, productComponentQuantities);
     }
 
@@ -180,7 +182,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         }
     }
 
-    private int evaluateOperationTime(final Entity operationComponent, final boolean includeTpz,
+    private int evaluateOperationTime(final Entity order, final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
@@ -190,7 +192,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                     .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
                     .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-            return evaluateOperationTime(actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
+            return evaluateOperationTime(order, actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation, productComponentQuantities);
         } else if (TechnologyOperationComponentEntityType.OPERATION.getStringValue().equals(entityType)) {
             int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
@@ -199,7 +201,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
             List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
             for (Entity child : childs) {
-                int childTime = evaluateOperationTime(child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
+                int childTime = evaluateOperationTime(order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
                         maxForWorkstation, productComponentQuantities);
 
                 if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
@@ -218,18 +220,15 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 }
             }
 
-            if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(operationComponent.getDataDefinition()
-                    .getName())) {
-                Entity techOperCompTimeCalculation = operationComponent
-                        .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
 
-                if (techOperCompTimeCalculation != null) {
-                    techOperCompTimeCalculation.setField("operationOffSet", offset);
-                    techOperCompTimeCalculation.setField("effectiveOperationRealizationTime", operationTime);
+                Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operationComponent);
 
-                    techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+                if (operCompTimeCalculation != null) {
+                    operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, offset);
+                    operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, operationTime);
+                    operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
                 }
-            }
+
 
             return offset + operationTime;
         }
