@@ -152,30 +152,40 @@
 					<component type="gridLayout" name="technologyGridLayout"
 						columns="1" rows="1">
 						<layoutElement column="1" row="1">
-							<component type="grid" name="technologyOperationComponents"
-                                    source="#{technology}.operationComponents" reference="technologyOperationComponents">
-								<option type="column" name="nodeNumber" fields="nodeNumber" />
-								<option type="column" name="number" fields="operation"
-									expression="#operation['number']"  />
-								<option type="column" name="name" fields="operation"
-									expression="#operation['name']"  />
-								<option type="column" name="dateFrom" fields="operation" 
-									expression="#techOperCompTimeCalculation['effectiveDateFrom']" />     
-                                <option type="column" name="dateTo" fields="operation" 
-									expression="#techOperCompTimeCalculation['effectiveDateTo']" /> 
- 								<option type="column" name="laborWorkTime"
-									fields="laborWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['laborWorkTime'])"/>
- 								<option type="column" name="machineWorkTime"
-									fields="machineWorkTime" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#techOperCompTimeCalculation['machineWorkTime'])"/>
-								
-								<option type="order" column="number" direction="asc" />
-								
-								<option type="searchable" value="number, name" />
-								<option type="orderable" value="number, name,dateFrom,dateTo" />
+							<component type="grid" name="operCompTimeCalculationsGrid"
+									   model="operCompTimeCalculation" reference="operCompTimeCalculationsGrid">
+								<option type="column" name="nodeNumber" fields="technologyOperationComponent" expression="#technologyOperationComponent['nodeNumber']"
+										link="true"/>
+								<option type="column" name="number" fields="technologyOperationComponent"
+										expression="#technologyOperationComponent.get('operation').get('number')" link="true"/>
+								<option type="column" name="name" fields="technologyOperationComponent"
+										expression="#technologyOperationComponent['operation'].get('name')" link="true"/>
+								<option type="column" name="effectiveDateFrom" fields="effectiveDateFrom"/>
+								<option type="column" name="effectiveDateTo" fields="effectiveDateTo"/>
 
-                                <option type="fixedHeight" value="true" />
-								<option type="fullscreen" value="true" />
-								<option type="multiselect" value="true" />
+								<option type="column" name="laborWorkTime" fields="laborWorkTime"
+										expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+
+								<option type="column" name="machineWorkTime" fields="machineWorkTime"
+										expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+
+								<option type="order" column="effectiveDateFrom" direction="asc"/>
+
+								<option type="searchable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
+								<option type="orderable" value="nodeNumber, number, name, effectiveDateFrom, effectiveDateTo"/>
+
+								<option type="correspondingView"
+										value="technologies/technologyOperationComponentDetails"/>
+								<option type="correspondingComponent" value="form"/>
+
+								<option type="fixedHeight" value="true"/>
+								<option type="fullscreen" value="true"/>
+								<option type="multiselect" value="true"/>
+
+								<criteriaModifier
+										class="com.qcadoo.mes.productionScheduling.criteriaModifiers.OperCompTimeCalculationsCM"
+										method="showEntriesForTechnology"/>
+
 							</component>
 						</layoutElement>
 					</component>

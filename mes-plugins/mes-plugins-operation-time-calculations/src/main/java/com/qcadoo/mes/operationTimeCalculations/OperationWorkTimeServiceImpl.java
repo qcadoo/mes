@@ -23,29 +23,27 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
@@ -102,14 +100,32 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public OperationWorkTime estimateOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Integer workstations, final boolean saved) {
+    public OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent,
+            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Integer workstations, final boolean saved) {
 
+        return estimateOperationWorkTime(null, operationComponent, neededNumberOfCycles, includeTpz, includeAdditionalTime,
+                workstations, saved);
+    }
+
+    @Override
+    public OperationWorkTime estimateOrderOperationWorkTime(final Entity order, final Entity operationComponent,
+            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Integer workstations, final boolean saved) {
+
+        return estimateOperationWorkTime(order, operationComponent, neededNumberOfCycles, includeTpz, includeAdditionalTime,
+                workstations, saved);
+
+    }
+
+    private OperationWorkTime estimateOperationWorkTime(final Entity order, final Entity operationComponent,
+            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Integer workstations, final boolean saved) {
         MathContext mc = numberService.getMathContext();
-        BigDecimal laborUtilization = BigDecimalUtils
-                .convertNullToZero(getValueOfDecimalFiled(operationComponent, "laborUtilization"));
-        BigDecimal machineUtilization = BigDecimalUtils
-                .convertNullToZero(getValueOfDecimalFiled(operationComponent, "machineUtilization"));
+        BigDecimal laborUtilization = BigDecimalUtils.convertNullToZero(getValueOfDecimalFiled(operationComponent,
+                "laborUtilization"));
+        BigDecimal machineUtilization = BigDecimalUtils.convertNullToZero(getValueOfDecimalFiled(operationComponent,
+                "machineUtilization"));
 
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime, workstations);
@@ -123,10 +139,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         operationWorkTime.setMachineWorkTime(machineWorkTime);
 
         if (saved) {
-            savedWorkTime(operationComponent, machineWorkTime, laborWorkTime, duration);
+            savedWorkTime(order, operationComponent, machineWorkTime, laborWorkTime, duration);
         }
-
         return operationWorkTime;
+
     }
 
     @Override
@@ -135,7 +151,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final Map<Entity, Integer> workstations, final boolean saved) {
         Map<Entity, OperationWorkTime> operationsWorkTimes = new HashMap<Entity, OperationWorkTime>();
         for (Entity operationComponent : operationComponents) {
-            OperationWorkTime operationWorkTime = estimateOperationWorkTime(operationComponent,
+            OperationWorkTime operationWorkTime = estimateTechOperationWorkTime(operationComponent,
                     getOperationRuns(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
                     getWorkstationsQuantity(workstations, operationComponent), saved);
             operationsWorkTimes.put(operationComponent.getDataDefinition().get(operationComponent.getId()), operationWorkTime);
@@ -149,11 +165,11 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             Map<Long, Integer> workstations, boolean saved) {
         OperationTimesContainer operationTimesContainer = new OperationTimesContainer();
         for (Entity operationComponent : operationComponents) {
-            OperationWorkTime operationWorkTime = estimateOperationWorkTime(operationComponent,
+            OperationWorkTime operationWorkTime = estimateTechOperationWorkTime(operationComponent,
                     getOperationRunsFromMap(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
                     getWorkstationsQuantityFromMap(workstations, operationComponent), saved);
-            operationTimesContainer.add(operationComponent.getDataDefinition().get(operationComponent.getId()),
-                    operationWorkTime);
+            operationTimesContainer
+                    .add(operationComponent.getDataDefinition().get(operationComponent.getId()), operationWorkTime);
         }
         return operationTimesContainer;
     }
@@ -178,9 +194,9 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
-            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Long, Integer> workstations, final boolean saved) {
+    public OperationWorkTime estimateTotalWorkTime(Entity order, List<Entity> operationComponents,
+            Map<Long, BigDecimal> operationRuns, boolean includeTpz, boolean includeAdditionalTime,
+            Map<Long, Integer> workstations, boolean saved) {
         OperationWorkTime totalWorkTime = new OperationWorkTime();
         Integer totalLaborWorkTime = Integer.valueOf(0);
         Integer totalMachineWorkTime = Integer.valueOf(0);
@@ -188,7 +204,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
         for (Entity operationComponent : operationComponents) {
             Entity operComp = operationComponent;
-            OperationWorkTime abstractOperationWorkTime = estimateOperationWorkTime(operComp,
+            OperationWorkTime abstractOperationWorkTime = estimateOrderOperationWorkTime(order, operComp,
                     getOperationRunsFromMap(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
                     getWorkstationsQuantityFromMap(workstations, operationComponent), saved);
             totalLaborWorkTime += abstractOperationWorkTime.getLaborWorkTime();
@@ -203,29 +219,79 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         return totalWorkTime;
     }
 
-    private void savedWorkTime(final Entity entity, final Integer machineWorkTime, final Integer laborWorkTime,
-            final Integer duration) {
-        String entityType = entity.getDataDefinition().getName();
+    @Override
+    public OperationWorkTime estimateTotalWorkTime(final List<Entity> operationComponents,
+            final Map<Long, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
+            final Map<Long, Integer> workstations, final boolean saved) {
+        OperationWorkTime totalWorkTime = new OperationWorkTime();
+        Integer totalLaborWorkTime = Integer.valueOf(0);
+        Integer totalMachineWorkTime = Integer.valueOf(0);
+        Integer duration = Integer.valueOf(0);
 
-        if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
-            DataDefinition techOperCompTimeCalculationDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
-                    TimeNormsConstants.MODEL_TECH_OPER_COMP_TIME_CALCULATION);
-            Entity techOperCompTimeCalculation = entity
-                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+        for (Entity operationComponent : operationComponents) {
+            Entity operComp = operationComponent;
+            OperationWorkTime abstractOperationWorkTime = estimateTechOperationWorkTime(operComp,
+                    getOperationRunsFromMap(operationRuns, operationComponent), includeTpz, includeAdditionalTime,
+                    getWorkstationsQuantityFromMap(workstations, operationComponent), saved);
+            totalLaborWorkTime += abstractOperationWorkTime.getLaborWorkTime();
+            totalMachineWorkTime += abstractOperationWorkTime.getMachineWorkTime();
+            duration += abstractOperationWorkTime.getDuration();
+        }
 
-            if (techOperCompTimeCalculation != null) {
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, machineWorkTime);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, laborWorkTime);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, duration);
+        totalWorkTime.setLaborWorkTime(totalLaborWorkTime);
+        totalWorkTime.setMachineWorkTime(totalMachineWorkTime);
+        totalWorkTime.setDuration(duration);
 
-                techOperCompTimeCalculationDD.save(techOperCompTimeCalculation);
+        return totalWorkTime;
+    }
+
+    private void savedWorkTime(Entity order, final Entity technologyOperationComponent, final Integer machineWorkTime,
+            final Integer laborWorkTime, final Integer duration) {
+
+        Entity operCompTimeCalculation = createOrGetOperCompTimeCalculation(order, technologyOperationComponent);
+
+        if (operCompTimeCalculation != null) {
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.MACHINE_WORK_TIME, machineWorkTime);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.LABOR_WORK_TIME, laborWorkTime);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.DURATION, duration);
+
+            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+        }
+
+    }
+
+    @Override
+    public Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent) {
+        if (Objects.nonNull(order)) {
+            Entity orderTimeCalculation = dataDefinitionService.get("productionScheduling", "orderTimeCalculation").find()
+                    .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+            if (Objects.isNull(orderTimeCalculation)) {
+                orderTimeCalculation = dataDefinitionService.get("productionScheduling", "orderTimeCalculation").create();
+                orderTimeCalculation.setField("order", order);
+                orderTimeCalculation = orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
             }
+            Entity operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").find()
+                    .add(SearchRestrictions.belongsTo("orderTimeCalculation", orderTimeCalculation))
+                    .add(SearchRestrictions.belongsTo("technologyOperationComponent", technologyOperationComponent))
+                    .setMaxResults(1).uniqueResult();
+            if (Objects.isNull(operCompTimeCalculation)) {
+                operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").create();
+                operCompTimeCalculation.setField("orderTimeCalculation", orderTimeCalculation);
+                operCompTimeCalculation.setField("technologyOperationComponent", technologyOperationComponent);
+                operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+            }
+            return operCompTimeCalculation;
         } else {
-            entity.setField("machineWorkTime", machineWorkTime);
-            entity.setField("laborWorkTime", laborWorkTime);
-            entity.setField("duration", duration);
-
-            entity.getDataDefinition().save(entity);
+            Entity operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").find()
+                    .add(SearchRestrictions.isNull("orderTimeCalculation"))
+                    .add(SearchRestrictions.belongsTo("technologyOperationComponent", technologyOperationComponent))
+                    .setMaxResults(1).uniqueResult();
+            if (Objects.isNull(operCompTimeCalculation)) {
+                operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").create();
+                operCompTimeCalculation.setField("technologyOperationComponent", technologyOperationComponent);
+                operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+            }
+            return operCompTimeCalculation;
         }
     }
 
@@ -240,11 +306,12 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Override
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY)
-                .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
+                TechnologyFields.OPERATION_COMPONENTS);
         Map<Long, Integer> workstations = getWorkstationsMapFromOrder(order);
 
-        return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations, saved);
+        return estimateTotalWorkTime(order, operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
+                saved);
     }
 
     @Override
