@@ -33,6 +33,6 @@ public final class OrderTimeCalculationFields {
 
     public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
-    public static final String ORDER = "effectiveDateTo";
+    public static final String ORDER = "order";
 
 }
