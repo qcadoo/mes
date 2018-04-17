@@ -23,14 +23,18 @@
  */
 package com.qcadoo.mes.ganttForOperations;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
+import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
+import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -38,17 +42,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionScheduling.OrderTimePredictionService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.utils.EntityTreeUtilsService;
-import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
-import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OperationsGanttChartItemResolverImpl implements OperationsGanttChartItemResolver {
@@ -72,13 +73,13 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
     @Autowired
     private EntityTreeUtilsService entityTreeUtilsService;
 
-    @Autowired
-    private OrderTimePredictionService orderTimePredictionService;
-
     private static final Logger LOG = LoggerFactory.getLogger(OperationsGanttChartItemResolverImpl.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OperationWorkTimeService operationWorkTimeService;
 
     @Override
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
@@ -105,11 +106,13 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
             }
 
             if (scale.getIsDatesSet() != null && scale.getIsDatesSet()) {
-                Date orderStartDate = orderTimePredictionService.getDateFromOrdersFromOperation(operations);
-                scale.setDateFrom(orderStartDate);
+                Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
+                        .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+                if (Objects.nonNull(orderTimeCalculation)) {
+                    scale.setDateFrom(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM));
 
-                Date orderEndDate = orderTimePredictionService.getDateToOrdersFromOperation(operations);
-                scale.setDateTo(orderEndDate);
+                    scale.setDateTo(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO));
+                }
             }
             Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
             Map<String, Integer> counters = new HashMap<String, Integer>();
@@ -119,18 +122,17 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
 
             for (Entity operationFromTree : sortedOperationFromTree) {
                 Entity operation = operations.get(operations.indexOf(operationFromTree));
-                Date dateFrom = operation.getBelongsToField(
-                        TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
-                        EFFECTIVE_DATE_FROM_FIELD);
-                Date dateTo = operation
-                        .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION).getDateField(
-                                EFFECTIVE_DATE_TO_FIELD);
+
+                Entity timeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
+
+                Date dateFrom = timeCalculation.getDateField(EFFECTIVE_DATE_FROM_FIELD);
+                Date dateTo = timeCalculation.getDateField(EFFECTIVE_DATE_TO_FIELD);
 
                 if (dateFrom == null || dateTo == null || dateTo.before(scale.getDateFrom())) {
                     continue;
                 }
 
-                StringBuffer operationName = new StringBuffer(getDescriptionForOperarion(operation));
+                StringBuffer operationName = new StringBuffer(getDescriptionForOperation(operation));
 
                 int counter = 0;
 
@@ -158,7 +160,7 @@ public class OperationsGanttChartItemResolverImpl implements OperationsGanttChar
         }
     }
 
-    private String getDescriptionForOperarion(final Entity operation) {
+    private String getDescriptionForOperation(final Entity operation) {
         return operation.getStringField(NODE_NUMBER_FIELD) + " "
                 + operation.getBelongsToField(OPERATION_FIELD).getStringField(NUMBER_FIELD) + " "
                 + operation.getBelongsToField(OPERATION_FIELD).getStringField(NAME_FIELD);

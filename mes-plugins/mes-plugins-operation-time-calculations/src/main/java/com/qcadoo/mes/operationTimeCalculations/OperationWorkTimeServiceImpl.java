@@ -30,6 +30,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -263,32 +264,32 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     @Override
     public Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent) {
         if (Objects.nonNull(order)) {
-            Entity orderTimeCalculation = dataDefinitionService.get("productionScheduling", "orderTimeCalculation").find()
+            Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
                     .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
             if (Objects.isNull(orderTimeCalculation)) {
-                orderTimeCalculation = dataDefinitionService.get("productionScheduling", "orderTimeCalculation").create();
+                orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).create();
                 orderTimeCalculation.setField("order", order);
                 orderTimeCalculation = orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
             }
-            Entity operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").find()
-                    .add(SearchRestrictions.belongsTo("orderTimeCalculation", orderTimeCalculation))
-                    .add(SearchRestrictions.belongsTo("technologyOperationComponent", technologyOperationComponent))
+            Entity operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION).find()
+                    .add(SearchRestrictions.belongsTo(TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION, orderTimeCalculation))
+                    .add(SearchRestrictions.belongsTo(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
                     .setMaxResults(1).uniqueResult();
             if (Objects.isNull(operCompTimeCalculation)) {
-                operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").create();
-                operCompTimeCalculation.setField("orderTimeCalculation", orderTimeCalculation);
-                operCompTimeCalculation.setField("technologyOperationComponent", technologyOperationComponent);
+                operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION).create();
+                operCompTimeCalculation.setField(TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION, orderTimeCalculation);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
                 operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
             }
             return operCompTimeCalculation;
         } else {
-            Entity operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").find()
-                    .add(SearchRestrictions.isNull("orderTimeCalculation"))
-                    .add(SearchRestrictions.belongsTo("technologyOperationComponent", technologyOperationComponent))
+            Entity operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION).find()
+                    .add(SearchRestrictions.isNull(TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION))
+                    .add(SearchRestrictions.belongsTo(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
                     .setMaxResults(1).uniqueResult();
             if (Objects.isNull(operCompTimeCalculation)) {
-                operCompTimeCalculation = dataDefinitionService.get("productionScheduling", "operCompTimeCalculation").create();
-                operCompTimeCalculation.setField("technologyOperationComponent", technologyOperationComponent);
+                operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION).create();
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
                 operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
             }
             return operCompTimeCalculation;

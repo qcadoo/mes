@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-import java.util.Set;
-
 import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 public final class TimeNormsConstants {
 
@@ -34,6 +34,12 @@ public final class TimeNormsConstants {
     }
 
     public static final String PLUGIN_IDENTIFIER = "timeNormsForOperations";
+
+    public static final String PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER = "productionScheduling";
+
+    public static final String MODEL_ORDER_TIME_CALCULATION = "orderTimeCalculation";
+
+    public static final String MODEL_OPER_COMP_TIME_CALCULATION = "operCompTimeCalculation";
 
     // MODEL
     public static final String MODEL_TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
