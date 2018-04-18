@@ -200,6 +200,7 @@
         <security:role identifier="ROLE_TERMINAL_USER"/>
         <security:role identifier="ROLE_TERMINAL_CONFECTION_USER"/>
         <security:role identifier="ROLE_TERMINAL_EXTRUSION_USER"/>
+        <security:role identifier="ROLE_TERMINAL_EXTRUSION_PRINT"/>
         <security:role identifier="ROLE_EXTRUSION_PROTOCOLS_LIST"/>
         <security:role identifier="ROLE_TERMINAL_PALLET_USER"/>
         <security:role identifier="ROLE_PALLET_LIST"/>
