@@ -257,7 +257,7 @@ public class ProductionTrackingDetailsHooks {
         boolean registerQuantityInProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT);
         boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
-        return (isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+        return (registerQuantityInProduct || registerQuantityOutProduct);
     }
 
     private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm,
