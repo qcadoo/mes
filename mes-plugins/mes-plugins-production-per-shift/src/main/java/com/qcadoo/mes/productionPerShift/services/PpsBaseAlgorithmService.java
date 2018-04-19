@@ -10,7 +10,7 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.productionPerShift.DateTimeRange;
+import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.productionPerShift.PpsTimeHelper;
 import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.productionPerShift.domain.*;
