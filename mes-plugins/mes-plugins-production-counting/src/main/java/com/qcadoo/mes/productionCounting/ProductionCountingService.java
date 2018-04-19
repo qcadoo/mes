@@ -186,15 +186,6 @@ public interface ProductionCountingService {
     boolean isCalculateOperationCostModePiecework(final String calculateOperationCostMode);
 
     /**
-     * Is calculate operation cost mode mixed
-     *
-     * @param calculateOperationCostMode
-     *            calculate operation cost mode
-     * @return boolean
-     */
-    boolean isCalculateOperationCostModeMixed(final String calculateOperationCostMode);
-
-    /**
      * Validates order
      *
      * @param productionTrackingReportOrBalanceDD
@@ -219,21 +210,6 @@ public interface ProductionCountingService {
      */
     void setComponentsState(final ViewDefinitionState view, final List<String> componentReferenceNames, final boolean isEnabled,
             final boolean requestComponentUpdateState);
-
-    /**
-     * Sets components visibility
-     *
-     * @param view
-     *            view
-     * @param componentReferenceNames
-     *            component reference names
-     * @param isVisible
-     *            is visible
-     * @param requestComponentUpdateState
-     *            request component update state
-     */
-    void setComponentsVisibility(final ViewDefinitionState view, final List<String> componentReferenceNames,
-            final boolean isVisible, final boolean requestComponentUpdateState);
 
     /**
      * Changes done quantity and amount of produced quantity field state

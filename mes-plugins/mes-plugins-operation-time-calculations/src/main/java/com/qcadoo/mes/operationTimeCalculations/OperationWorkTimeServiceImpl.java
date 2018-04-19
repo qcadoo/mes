@@ -185,17 +185,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     }
 
     @Override
-    public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForOrder(final Entity order,
-            final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Entity productionLine, final boolean saved) {
-        List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
-                TechnologyFields.OPERATION_COMPONENTS);
-        Map<Entity, Integer> workstations = getWorkstationsFromOrder(order);
-        return estimateOperationsWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
-                saved);
-    }
-
-    @Override
     public Map<Entity, OperationWorkTime> estimateOperationsWorkTimeForTechnology(final Entity technology,
             final Map<Entity, BigDecimal> operationRuns, final boolean includeTpz, final boolean includeAdditionalTime,
             final Entity productionLine, final boolean saved) {
@@ -440,14 +429,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
             workstations.put(operComp.getId(),
                     operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
-        }
-        return workstations;
-    }
-
-    private Map<Entity, Integer> getWorkstationsFromOrder(final Entity order) {
-        Map<Entity, Integer> workstations = new HashMap<Entity, Integer>();
-        for (Entity operComp : order.getBelongsToField(L_TECHNOLOGY).getHasManyField("operationComponents")) {
-            workstations.put(operComp, operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
         }
         return workstations;
     }

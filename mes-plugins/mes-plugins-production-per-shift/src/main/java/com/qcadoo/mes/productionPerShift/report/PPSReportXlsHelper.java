@@ -27,21 +27,20 @@ import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionPerShift.constants.*;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
+import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.constants.UnitConversionItemFields;
 import com.qcadoo.security.api.UserService;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -49,15 +48,11 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
 @Service
 public class PPSReportXlsHelper {
@@ -83,7 +78,7 @@ public class PPSReportXlsHelper {
         DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
 
         List<Entity> shifts = getShifts();
-        Shift shiftFirst = new Shift(shifts.get(0));
+        Shift shiftFirst = new Shift(shifts.get(0), dateFrom, false);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(dateFrom.toLocalDate());
         LocalTime startTime = ranges.get(0).getFrom();
         DateTime firstStartShitTime = dateFrom;
@@ -111,7 +106,7 @@ public class PPSReportXlsHelper {
 
     private long getDateToInMills(final Entity goodFoodReport, final List<Entity> shifts) {
         DateTime dateTo = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_TO));
-        Shift shiftEnd = new Shift(shifts.get(shifts.size() - 1));
+        Shift shiftEnd = new Shift(shifts.get(shifts.size() - 1), dateTo, false);
         List<TimeRange> rangesEnd = shiftEnd.findWorkTimeAt(dateTo.toLocalDate());
         LocalTime endTime = rangesEnd.get(0).getTo();
         dateTo = dateTo.plusDays(ONE);

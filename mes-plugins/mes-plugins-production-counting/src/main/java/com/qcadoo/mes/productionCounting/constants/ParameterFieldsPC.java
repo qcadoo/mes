@@ -29,15 +29,11 @@ public final class ParameterFieldsPC {
 
     }
 
-    public static final String PRINT_OPERATION_NORMS_PB = "printOperationNormsPB";
-
     public static final String CALCULATE_OPERATION_COST_MODE_PB = "calculateOperationCostsModePB";
 
     public static final String INCLUDE_TPZ_PB = "includeTPZPB";
 
     public static final String INCLUDE_ADDITIONAL_TIME_PB = "includeAdditionalTimePB";
-
-    public static final String PRINT_COST_NORMS_OF_MATERIALS_PB = "printCostNormsOfMaterialsPB";
 
     public static final String SOURCE_OF_MATERIAL_COSTS_PB = "sourceOfMaterialCostsPB";
 

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.util.List;
 
@@ -41,23 +40,23 @@ public class GenerationOrderResult {
         }
 
         if (!ordersWithoutPps.isEmpty()) {
-            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutPps", ComponentState.MessageType.INFO,
-                    false, String.join(", ", ordersWithoutPps));
+            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutPps", ComponentState.MessageType.INFO, false,
+                    String.join(", ", ordersWithoutPps));
         }
 
         if (!productOrderErrors.isEmpty()) {
             productOrderErrors.forEach(err -> {
                 StringBuilder msg = new StringBuilder();
                 msg.append(translationService.translate(
-                        "masterOrders.masterOrder.generationOrder.productNumbersForNotGeneratedOrders", LocaleContextHolder
-                                .getLocale(), err.getProduct(), err.getMasterOrder(), err.getQuantity().toPlainString()));
+                        "masterOrders.masterOrder.generationOrder.productNumbersForNotGeneratedOrders", view.getLocale(),
+                        err.getProduct(), err.getMasterOrder(), err.getQuantity().toPlainString()));
                 msg.append("</br>");
                 err.getErrorMessages().forEach(
                         errorMessage -> {
-                            msg.append(translationService.translate(errorMessage.getMessage(), LocaleContextHolder.getLocale(),
+                            msg.append(translationService.translate(errorMessage.getMessage(), view.getLocale(),
                                     errorMessage.getVars()));
                         });
-                view.addMessage(msg.toString(), ComponentState.MessageType.INFO, false);
+                view.addTranslatedMessage(msg.toString(), ComponentState.MessageType.INFO, false);
             });
         }
     }
