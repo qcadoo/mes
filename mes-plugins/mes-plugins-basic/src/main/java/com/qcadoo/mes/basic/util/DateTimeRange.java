@@ -21,20 +21,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift;
+package com.qcadoo.mes.basic.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.qcadoo.commons.dateTime.TimeRange;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.qcadoo.commons.dateTime.TimeRange;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 
 public class DateTimeRange implements Comparable<DateTimeRange> {
 
@@ -117,6 +116,10 @@ public class DateTimeRange implements Comparable<DateTimeRange> {
         Interval unionInterval = new Interval(start, end);
 
         return new DateTimeRange(unionInterval);
+    }
+
+    public long durationMillis() {
+        return interval.toDurationMillis();
     }
 
     public long durationInMins() {
