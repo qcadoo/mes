@@ -23,11 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
@@ -38,8 +34,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -49,6 +44,10 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OperationDurationDetailsInOrderDetailsListenersOTFO {
@@ -63,6 +62,9 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
+
+    @Autowired
+    private OperationWorkTimeService operationWorkTimeService;
 
     public void createOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -106,8 +108,7 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
     private void createOperationalTasks(final Entity order, final Entity technologyOperationComponent,
             final boolean isSubcontracting) {
-        Entity techOperCompTimeCalculation = technologyOperationComponent
-                .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+        Entity techOperCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, technologyOperationComponent);
 
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
@@ -122,9 +123,9 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
         if (techOperCompTimeCalculation != null) {
             operationalTask.setField(OperationalTaskFields.START_DATE,
-                    techOperCompTimeCalculation.getField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM));
+                    techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM));
             operationalTask.setField(OperationalTaskFields.FINISH_DATE,
-                    techOperCompTimeCalculation.getField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
+                    techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
         }
 
         operationalTask.setField(OperationalTaskFields.TYPE_TASK,
