@@ -23,39 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import java.util.List;
-import java.util.Map;
-
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface ProductionBalanceService {
-
-    /**
-     * Groups production trackings registered times
-     * 
-     * @param productionBalance
-     *            production balance
-     * @param productionTrackings
-     *            production trackings
-     * 
-     * @return grouped production trackings registered times
-     */
-    Map<Long, Entity> groupProductionTrackingsRegisteredTimes(final Entity productionBalance,
-            final List<Entity> productionTrackings);
-
-    /**
-     * Fills production trackings with planned times
-     * 
-     * @param productionBalance
-     *            production balance
-     * @param productionTrackings
-     *            production trackings
-     * 
-     * @return production trackings with planned times
-     */
-    Map<Long, Map<String, Integer>> fillProductionTrackingsWithPlannedTimes(final Entity productionBalance,
-            final List<Entity> productionTrackings);
 
     /**
      * Disables checkboxes
@@ -65,13 +35,4 @@ public interface ProductionBalanceService {
      */
     void disableCheckboxes(final ViewDefinitionState view);
 
-    /**
-     * Fills fields and grids
-     * 
-     * @param productionBalance
-     *            productionBalance
-     */
-    void fillFieldsAndGrids(final Entity productionBalance);
-
-    void changeTabsVisible(ViewDefinitionState view);
 }

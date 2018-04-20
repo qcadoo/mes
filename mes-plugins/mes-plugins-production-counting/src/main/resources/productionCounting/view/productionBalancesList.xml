@@ -33,70 +33,12 @@
 
         <ribbon>
             <template name="standardGridTemplate"/>
-            <group name="export">
-                <bigButton name="pdf" icon="pdfIcon24.png"
-                           action="#{grid}.fireEvent(printProductionBalance,pdf,0);" state="disabled"
-                           message="qcadooView.message.noRecordSelected"/>
-            </group>
-            <group name="exportWithCosts">
-                <bigButton name="pdfWithCosts" icon="pdfIcon24.png"
-                           action="#{grid}.fireEvent(printProductionBalance,pdf,1);" state="disabled"
-                           message="qcadooView.message.noRecordSelected">
-                    <script>
-                        <![CDATA[
-					var pdfWithCostsRibbonItem = #{window}.getRibbonItem("exportWithCosts.pdfWithCosts");
-
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								pdfWithCostsRibbonItem.disable();
-							} else if (selectedEntitiesArray.length > 1) {
-								pdfWithCostsRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");
-							} else if (selectedEntitiesArray[0].fields.generated == '0') {
-								pdfWithCostsRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");
-							} else {
-								pdfWithCostsRibbonItem.enable();
-							}
-						}
-					}
-					#{grid}.addOnChangeListener(listener);
-				]]>
-                    </script>
-                </bigButton>
-            </group>
         </ribbon>
 
         <component type="grid" name="productionBalancesList"
                    reference="grid">
-
-            <script>
-                <![CDATA[
-					var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
-					
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								pdfRibbonItem.disable();
-							} else if (selectedEntitiesArray.length > 1) {
-								pdfRibbonItem.disable("#{translate(moreThanOneRecordSelected)}");	
-							} else if (selectedEntitiesArray[0].fields.generated == '0') {
-								pdfRibbonItem.disable("#{translate(orders.ribbon.message.recordNotGenerated)}");								
-							} else {
-								pdfRibbonItem.enable();
-							}
-						}
-					}
-					
-					this.addOnChangeListener(listener);
-				]]>
-            </script>
-
             <option type="column" name="number" fields="number" link="true" width="100"/>
             <option type="column" name="name" fields="name" link="true" width="150"/>
-            <option type="column" name="order" fields="order" link="true"
-                    width="200" expression="#order['name']"/>
-            <option type="column" name="product" fields="product" link="true"
-                    width="200" expression="#product['name']"/>
             <option type="column" name="generated" fields="generated"
                     width="75"/>
             <option type="column" name="date" fields="date" width="100"/>
@@ -107,15 +49,11 @@
 
             <option type="order" column="number" direction="desc"/>
 
-            <option type="searchable" value="number,name,order,product,generated,date,worker"/>
-            <option type="orderable" value="number,name,order,product,generated,date,worker"/>
+            <option type="searchable" value="number,name,generated,date,worker"/>
+            <option type="orderable" value="number,name,generated,date,worker"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
-
-            <listener event="printProductionBalance"
-                      class="com.qcadoo.mes.productionCounting.listeners.ProductionBalancesListListeners"
-                      method="printProductionBalance"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

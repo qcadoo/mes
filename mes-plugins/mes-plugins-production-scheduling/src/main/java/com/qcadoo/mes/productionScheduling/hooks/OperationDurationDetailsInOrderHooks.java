@@ -23,22 +23,25 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.view.api.components.CheckBoxComponent;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
+import com.qcadoo.mes.productionScheduling.criteriaModifiers.OperCompTimeCalculationsCM;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
@@ -73,6 +76,16 @@ public class OperationDurationDetailsInOrderHooks {
         }
         fillUnitField(view);
         disableCopyRealizationTimeButton(view);
+        setCriteriaModifierParameters(view);
+    }
+
+    private void setCriteriaModifierParameters(ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long orderId = orderForm.getEntityId();
+        GridComponent grid = (GridComponent) view.getComponentByReference("operCompTimeCalculationsGrid");
+        FilterValueHolder holder = grid.getFilterValue();
+        holder.put(OperCompTimeCalculationsCM.ORDER_PARAMETER, orderId);
+        grid.setFilterValue(holder);
 
     }
 

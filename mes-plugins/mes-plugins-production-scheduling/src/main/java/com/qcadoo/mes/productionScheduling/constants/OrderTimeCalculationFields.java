@@ -21,22 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.constants;
+package com.qcadoo.mes.productionScheduling.constants;
 
-public final class BalanceOperationProductInComponentFields {
+public final class OrderTimeCalculationFields {
 
-    private BalanceOperationProductInComponentFields() {
+    private OrderTimeCalculationFields() {
 
     }
 
-    public static final String PRODUCTION_BALANCE = "productionBalance";
+    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
-    public static final String PRODUCT = "product";
+    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String BALANCE = "balance";
+    public static final String ORDER = "order";
 
 }

@@ -37,8 +37,7 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -163,7 +162,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         order = getActualOrderWithChanges(order);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(
+        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
@@ -246,19 +245,18 @@ public class OperationDurationDetailsInOrderListeners {
 
         Date orderStartDate = order.getDateField(OrderFields.START_DATE);
         for (Entity operation : operations) {
-            Entity techOperCompTimeCalculation = operation
-                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operation);
 
-            if (techOperCompTimeCalculation == null) {
+            if (operCompTimeCalculation == null) {
                 continue;
             }
 
-            Integer offset = techOperCompTimeCalculation.getIntegerField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET);
-            Integer duration = techOperCompTimeCalculation
-                    .getIntegerField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
+            Integer offset = operCompTimeCalculation.getIntegerField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
+            Integer duration = operCompTimeCalculation
+                    .getIntegerField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
 
             if (offset == null || duration == null) {
                 continue;
@@ -278,10 +276,10 @@ public class OperationDurationDetailsInOrderListeners {
                 continue;
             }
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
 
-            techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
     }
 

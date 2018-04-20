@@ -59,16 +59,6 @@ public interface ProductQuantitiesService {
     OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order);
 
     /**
-     * @param order        Order
-     * @param operationRuns Method takes an empty map and puts here info on how many certain operations (operationComponents) have to be
-     *                      run.
-     * @return Map with operationProductComponents (in or out) as the keys and its quantities as the values. Be aware that
-     * products that are the same, but are related to different operations are here as different entries.
-     */
-    OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity order,
-            Map<Long, BigDecimal> operationRuns);
-
-    /**
      * @param orders Given list of orders
      * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
      * aggregated)
@@ -109,17 +99,6 @@ public interface ProductQuantitiesService {
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm mrpAlgorithm,
             final boolean onTheFly);
-
-    /**
-     * @param orders        Given list of orders
-     * @param mrpAlgorithm  MRP Algorithm
-     * @param operationRuns Method takes an empty map and puts here info on how many times certain operation (operationComponent) has to be
-     *                      run.
-     * @return Map of products and their quantities (products that occur in multiple operations or even in multiple orders are
-     * aggregated)
-     */
-    Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, MrpAlgorithm mrpAlgorithm,
-            Map<Long, BigDecimal> operationRuns);
 
     /**
      * @param components   List of components that have order as belongsTo relation
@@ -187,15 +166,6 @@ public interface ProductQuantitiesService {
      * @return product
      */
     Entity getProduct(final Long productId);
-
-    /**
-     * Covers operations runs from product quantities
-     *
-     * @param operationRunsFromProductionQuantities
-     * @return operations runs
-     */
-    Map<Entity, BigDecimal> convertOperationsRunsFromProductQuantities(
-            final Map<Long, BigDecimal> operationRunsFromProductionQuantities);
 
     void traverseProductQuantitiesAndOperationRuns(Entity technology, BigDecimal givenQuantity, Entity operationComponent,
             Entity previousOperationComponent,

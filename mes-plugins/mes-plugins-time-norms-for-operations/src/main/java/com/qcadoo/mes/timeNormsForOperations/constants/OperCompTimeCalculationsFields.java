@@ -21,25 +21,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.print.utils;
+package com.qcadoo.mes.timeNormsForOperations.constants;
 
-import java.io.Serializable;
-import java.util.Comparator;
+public final class OperCompTimeCalculationsFields {
 
-import com.qcadoo.model.api.Entity;
+    private OperCompTimeCalculationsFields() {
 
-public class EntityProductionTrackingOperationComparator implements Comparator<Entity>, Serializable {
-
-    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    private static final String L_NODE_NUMBER = "nodeNumber";
-
-    private static final long serialVersionUID = 5791438668210076731L;
-
-    @Override
-    public final int compare(final Entity o1, final Entity o2) {
-        return o1.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER)
-                .compareTo(o2.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getStringField(L_NODE_NUMBER));
     }
+
+    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
+
+    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
+
+    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
+
+    public static final String OPERATION_OFF_SET = "operationOffSet";
+
+    public static final String DURATION = "duration";
+
+    public static final String MACHINE_WORK_TIME = "machineWorkTime";
+
+    public static final String LABOR_WORK_TIME = "laborWorkTime";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENTS = "technologyOperationComponents";
+
+    public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
 
 }

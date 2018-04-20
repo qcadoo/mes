@@ -33,12 +33,6 @@ public final class ProductionCountingConstants {
 
     // MODEL
 
-    public static final String MODEL_TECHNOLOGY_OPERATION_PRODUCT_IN_COMPONENT = "technologyOperationProductInComp";
-
-    public static final String MODEL_OPERATION_COST_COMPONENT = "operationCostComponent";
-
-    public static final String MODEL_OPERATION_PIECEWORK_COST_COMPONENT = "operationPieceworkCostComponent";
-
     public static final String MODEL_PRODUCTION_TRACKING = "productionTracking";
 
     public static final String MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY = "finalProductAnalysisEntry";
@@ -51,10 +45,6 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_PRODUCTION_TRACKING_REPORT = "productionTrackingReport";
 
-    public static final String MODEL_OPERATION_TIME_COMPONENT = "operationTimeComponent";
-
-    public static final String MODEL_OPERATION_PIECEWORK_COMPONENT = "operationPieceworkComponent";
-
     public static final String MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT = "trackingOperationProductInComponent";
 
     public static final String MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO = "trackingOperationProductInComponentDto";
@@ -63,10 +53,6 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO = "trackingOperationProductOutComponentDto";
 
-    public static final String MODEL_BALANCE_OPERATION_PRODUCT_IN_COMPONENT = "balanceOperationProductInComponent";
-
-    public static final String MODEL_BALANCE_OPERATION_PRODUCT_OUT_COMPONENT = "balanceOperationProductOutComponent";
-
     public static final String MODEL_STAFF_WORK_TIME = "staffWorkTime";
 
     public static final String MODEL_ANOMALY = "anomaly";
@@ -74,22 +60,6 @@ public final class ProductionCountingConstants {
     public static final String MODEL_ANOMALY_EXPLANATION = "anomalyExplanation";
 
     // VIEW
-    public static final String VIEW_PRODUCTION_TRACKINGS_LIST = "productionTrackingsList";
-
-    public static final String VIEW_PRODUCTION_TRACKING_DETAILS = "productionTrackingDetails";
-
-    public static final String VIEW_PRODUCTION_BALANCES_LIST = "productionBalancesList";
-
-    public static final String VIEW_PRODUCTION_BALANCE_DETAILS = "productionBalanceDetails";
-
-    public static final String VIEW_PRODUCTION_TRACKING_REPORTS_LIST = "productionTrackingReportsList";
-
-    public static final String VIEW_PRODUCTION_TRACKING_REPORT_DETAILS = "productionTrackingReportDetails";
-
-    public static final String VIEW_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DETAILS = "trackingOperationProductInComponentDetails";
-
-    public static final String VIEW_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DETAILS = "trackingOperationProductOutComponentDetails";
-
     public static final String MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS = "setTrackingOperationProductInComponents";
 
     public static final String MODEL_SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";

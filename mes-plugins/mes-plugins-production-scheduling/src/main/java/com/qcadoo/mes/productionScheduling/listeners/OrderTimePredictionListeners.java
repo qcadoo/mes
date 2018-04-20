@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
@@ -51,8 +37,7 @@ import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompTimeCalculationsFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -63,6 +48,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderTimePredictionListeners {
@@ -99,20 +97,20 @@ public class OrderTimePredictionListeners {
         List<Entity> technologyOperationsComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity technologyOperationComponent : technologyOperationsComponents) {
-            Entity techOperCompTimeCalculation = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(null,
+                    technologyOperationComponent);
 
-            if (techOperCompTimeCalculation != null) {
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.DURATION, null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME,
+            if (operCompTimeCalculation != null) {
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.DURATION, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME,
                         null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
-                techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
 
-                techOperCompTimeCalculation = techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+                operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
             }
         }
     }
@@ -309,19 +307,18 @@ public class OrderTimePredictionListeners {
                 .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGY, technology)).list().getEntities();
 
         for (Entity operation : operations) {
-            Entity techOperCompTimeCalculation = operation
-                    .getBelongsToField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_TIME_CALCULATION);
+            Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(null, operation);
 
-            if (techOperCompTimeCalculation == null) {
+            if (operCompTimeCalculation == null) {
                 continue;
             }
 
-            Integer offset = (Integer) techOperCompTimeCalculation.getField(TechOperCompTimeCalculationsFields.OPERATION_OFF_SET);
-            Integer duration = (Integer) techOperCompTimeCalculation
-                    .getField(TechOperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
+            Integer offset = (Integer) operCompTimeCalculation.getField(OperCompTimeCalculationsFields.OPERATION_OFF_SET);
+            Integer duration = (Integer) operCompTimeCalculation
+                    .getField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME);
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
 
             if (offset == null || duration == null) {
                 continue;
@@ -340,10 +337,10 @@ public class OrderTimePredictionListeners {
                 continue;
             }
 
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
-            techOperCompTimeCalculation.setField(TechOperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
 
-            techOperCompTimeCalculation.getDataDefinition().save(techOperCompTimeCalculation);
+            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
     }
 
