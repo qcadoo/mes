@@ -56,11 +56,6 @@ public class OrderHooksBPC {
                 || OrderStateStringValues.INTERRUPTED.equals(state)) {
             if (hasPlannedQuantityChanged(order, plannedQuantity)) {
                 basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
-            } else {
-                if (checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(order)) {
-                    basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
-                    basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
-                }
             }
         }
     }

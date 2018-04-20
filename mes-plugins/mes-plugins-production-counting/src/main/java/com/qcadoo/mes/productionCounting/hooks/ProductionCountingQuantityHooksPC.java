@@ -23,20 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantityFieldsPC;
@@ -55,6 +48,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductionCountingQuantityHooksPC {
@@ -66,6 +67,9 @@ public class ProductionCountingQuantityHooksPC {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
@@ -95,23 +99,26 @@ public class ProductionCountingQuantityHooksPC {
     }
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-        String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
+       if(parameterService.getParameter().getBooleanField(ParameterFieldsO.CREATE_SET_ELEMENTS_ON_ACCEPT)) {
+           String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+           String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
 
-        if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
-                && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
+           if (ProductionCountingQuantityRole.USED.getStringValue().equals(role) && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
 
-            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            if (product != null) {
-                Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
-                maybeTechnology.ifPresent(entity -> generateProductionCountingQuantities(productionCountingQuantityDD,
-                        productionCountingQuantity, entity));
-            }
-        }
+               Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+               if (product != null) {
+                   Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
+                   maybeTechnology.ifPresent(entity -> generateProductionCountingQuantities(productionCountingQuantityDD,
+                           productionCountingQuantity, entity));
+               }
+           }
+       }
     }
 
     public void onSave(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        recalculateProductionCountingQuantities(productionCountingQuantity);
+        if(parameterService.getParameter().getBooleanField(ParameterFieldsO.CREATE_SET_ELEMENTS_ON_ACCEPT)) {
+            recalculateProductionCountingQuantities(productionCountingQuantity);
+        }
     }
 
     private void generateProductionCountingQuantities(DataDefinition productionCountingQuantityDD,

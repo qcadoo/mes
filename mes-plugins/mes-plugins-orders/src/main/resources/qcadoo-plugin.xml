@@ -220,6 +220,10 @@
             <model:boolean name="fillOrderDescriptionBasedOnTechnologyDescription" default="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="createSetElementsOnAccept" default="false"/>
+        </model:model-field>
+
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="lockTechnologyTree" default="false"/>

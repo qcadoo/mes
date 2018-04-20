@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.ProductionCountingQuantitySetService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
@@ -40,6 +35,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.model.api.search.SearchOrders.asc;
 
 @Service
 public class ProductionCountingQuantityHooks {
@@ -54,7 +53,7 @@ public class ProductionCountingQuantityHooks {
         fillOrder(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
-        productionCountingQuantitySetService.fillSetField(productionCountingQuantity);
+        //productionCountingQuantitySetService.fillSetField(productionCountingQuantity);
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
