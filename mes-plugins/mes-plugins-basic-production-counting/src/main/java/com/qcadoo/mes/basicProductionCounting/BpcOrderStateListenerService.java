@@ -47,9 +47,7 @@ public class BpcOrderStateListenerService {
         if (technology == null) {
             stateChangeContext.addValidationError("orders.order.technology.isEmpty");
         } else {
-            basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
-            basicProductionCountingService.createBasicProductionCountings(order);
-            basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
+            basicProductionCountingService.createProductionCounting(order);
         }
     }
 

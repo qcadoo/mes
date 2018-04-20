@@ -39,7 +39,7 @@ public class WarehouseStocksListResolver {
         final Set<String> rowStyles = Sets.newHashSet();
 
         if (warehouseStocks.getDecimalField("minimumState") != null
-                || BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState"))) != 0) {
+                && BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState"))) != 0) {
 
             if (BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("minimumState")).compareTo(
                     BigDecimalUtils.convertNullToZero(warehouseStocks.getDecimalField("quantity"))) == 1) {

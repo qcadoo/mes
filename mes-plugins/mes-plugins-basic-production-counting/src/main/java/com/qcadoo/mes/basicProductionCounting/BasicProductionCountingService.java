@@ -23,25 +23,18 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public interface BasicProductionCountingService {
 
-    /**
-     * Creates production counting quantities
-     * 
-     * @param order
-     *            order
-     */
-    void createProductionCountingQuantitiesAndOperationRuns(final Entity order);
 
     /**
      * Creates production counting operation run
@@ -59,27 +52,6 @@ public interface BasicProductionCountingService {
             final BigDecimal runs);
 
     /**
-     * Creates production counting quantity
-     * 
-     * @param order
-     *            order
-     * @param technologyOperationComponent
-     *            technology operation component
-     * @param product
-     *            product
-     * @param role
-     *            role
-     * @param isNonComponent
-     *            is non component
-     * @param plannedQuantity
-     *            planned quantity
-     * 
-     * @return production counting quantity entity
-     */
-    Entity createProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent, final Entity product,
-            final String role, final boolean isNonComponent, final BigDecimal plannedQuantity);
-
-    /**
      * Updates production counting quantities
      * 
      * @param order
@@ -88,12 +60,12 @@ public interface BasicProductionCountingService {
     void updateProductionCountingQuantitiesAndOperationRuns(final Entity order);
 
     /**
-     * Create basic production countings
-     * 
+     * Create production counting
+     *
      * @param order
      *            order
      */
-    void createBasicProductionCountings(final Entity order);
+    void createProductionCounting(final Entity order);
 
     /**
      * Creates basic production counting
@@ -106,14 +78,6 @@ public interface BasicProductionCountingService {
      * @return basic production counting entity
      */
     Entity createBasicProductionCounting(final Entity order, final Entity product);
-
-    /**
-     * Associates production counting quantities with basic production countings
-     * 
-     * @param order
-     *            order
-     */
-    void associateProductionCountingQuantitiesWithBasicProductionCountings(final Entity order);
 
     /**
      * Gets basic production counting

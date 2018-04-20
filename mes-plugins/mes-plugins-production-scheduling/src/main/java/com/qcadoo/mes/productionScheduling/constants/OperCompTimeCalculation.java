@@ -21,33 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionScheduling;
+package com.qcadoo.mes.productionScheduling.constants;
 
-import java.util.Date;
-import java.util.List;
+public final class OperCompTimeCalculation {
 
-import com.qcadoo.model.api.Entity;
+    private OperCompTimeCalculation() {
 
-public interface OrderTimePredictionService {
+    }
 
-    /**
-     * Gets date from orders from operations
-     * 
-     * @param operations
-     *            operations
-     * 
-     * @return date
-     */
-    Date getDateFromOrdersFromOperation(final List<Entity> operations);
+    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
-    /**
-     * Gets date to orders from operations
-     * 
-     * @param operations
-     *            operations
-     * 
-     * @return date
-     */
-    Date getDateToOrdersFromOperation(final List<Entity> operations);
+    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
+    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
+
+    public static final String OPERATION_OFF_SET = "operationOffSet";
+
+    public static final String DURATION = "duration";
+
+    public static final String MACHINE_WORK_TIME = "machineWorkTime";
+
+    public static final String LABOR_WORK_TIME = "laborWorkTime";
+
+    public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 }

@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionCounting.states;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,9 @@ public class TechnologyValidationServicePC {
     @Autowired
     private TechnologyService technologyService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void validateTypeOfProductionRecordingForTechnology(final StateChangeContext stateChangeContext) {
         Entity technology = stateChangeContext.getOwner();
         if (technology != null && !stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
@@ -34,15 +39,17 @@ public class TechnologyValidationServicePC {
     }
 
     public void validateTypeOfProductionRecordingForOrder(final StateChangeContext stateChangeContext) {
-        Entity order = stateChangeContext.getOwner();
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology != null && !stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
-            EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-            Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
-            String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-            if (typeOfProductionRecording != null && mainProduct.getBooleanField(OperationProductOutComponentFields.SET)
-                    && typeOfProductionRecording.equals("03forEach")) {
-                stateChangeContext.addValidationError("technologies.technology.technologyState.error.typeOfProductionRecording");
+        if(parameterService.getParameter().getBooleanField(ParameterFieldsO.CREATE_SET_ELEMENTS_ON_ACCEPT)) {
+            Entity order = stateChangeContext.getOwner();
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            if (technology != null && !stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
+                EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+                Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
+                String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+                if (typeOfProductionRecording != null && mainProduct.getBooleanField(OperationProductOutComponentFields.SET) && typeOfProductionRecording.equals("03forEach")) {
+                    stateChangeContext
+                            .addValidationError("technologies.technology.technologyState.error.typeOfProductionRecording");
+                }
             }
         }
     }

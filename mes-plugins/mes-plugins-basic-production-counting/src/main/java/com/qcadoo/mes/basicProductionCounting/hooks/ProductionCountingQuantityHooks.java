@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.ProductionCountingQuantitySetService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -47,14 +46,10 @@ public class ProductionCountingQuantityHooks {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
-    @Autowired
-    private ProductionCountingQuantitySetService productionCountingQuantitySetService;
-
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillOrder(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
-        productionCountingQuantitySetService.fillSetField(productionCountingQuantity);
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
@@ -90,7 +85,8 @@ public class ProductionCountingQuantityHooks {
 
     private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product,
             final String typeOfMaterial, final String role) {
-        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order) && (checkIfIsUsed(role) || (checkIfIsProduced(role) && checkIfIsWaste(typeOfMaterial))));
+        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order)
+                && (checkIfIsUsed(role) || (checkIfIsProduced(role) && checkIfIsWaste(typeOfMaterial))));
     }
 
     private boolean checkIfBasicProductionCountingIsEmpty(final Entity order) {
@@ -167,6 +163,8 @@ public class ProductionCountingQuantityHooks {
     }
 
     private boolean checkIfItIsLastProductionCountingQuantity(final Entity basicProductionCounting) {
-        return (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES).size() == 1);
+        return (basicProductionCounting.getHasManyField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES)
+                .size() == 1);
     }
+
 }

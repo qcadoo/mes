@@ -24,29 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="basicProductionCounting" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="order" model="order" plugin="orders" />
-		<belongsTo name="product" model="product" plugin="basic" />
-		<decimal name="plannedQuantity" persistent="false"/>
-		<decimal name="usedQuantity">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="producedQuantity">
-			<validatesUnscaledValue max="9" />
-			<validatesScale max="5" />
-		</decimal>
-	
-		<hasMany name="productionCountingQuantities" model="productionCountingQuantity"
-			plugin="basicProductionCounting" joinField="basicProductionCounting" cascade="delete" />
-	</fields>
-	
-	<hooks>
-		<validatesWith
-			class="com.qcadoo.mes.basicProductionCounting.validators.BasicProductionCountingValidators"
-			method="validatesWith" />
-	</hooks>
+<model name="operCompTimeCalculation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="orderTimeCalculation" plugin="productionScheduling" model="orderTimeCalculation"/>
+        <belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent"/>
+        <integer name="operationOffSet" />
+        <integer name="effectiveOperationRealizationTime" />
+        <datetime name="effectiveDateFrom" />
+        <datetime name="effectiveDateTo" />
+        <integer name="duration" default="0" />
+        <integer name="machineWorkTime" default="0" />
+        <integer name="laborWorkTime" default="0" />
+    </fields>
+    <hooks />
 </model>

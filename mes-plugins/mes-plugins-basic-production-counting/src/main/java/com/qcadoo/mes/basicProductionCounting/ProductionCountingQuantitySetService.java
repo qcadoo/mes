@@ -14,9 +14,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductionCountingQuantitySetService {
@@ -56,7 +57,7 @@ public class ProductionCountingQuantitySetService {
 
                 SearchCriteriaBuilder findProductionCountingQuantity = productionCountingQuantity.getDataDefinition().find();
                 List<Entity> entities = findProductionCountingQuantity.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).list().getEntities();
-                markIntermediateInProductionCountingQuantities(entities);
+                markIntermediateInProductionCountingQuantities(entities, true);
             }
 
         } else if (GlobalTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial) && ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
@@ -88,7 +89,7 @@ public class ProductionCountingQuantitySetService {
         return productionCountingQuantity;
     }
 
-    public void markIntermediateInProductionCountingQuantities(List<Entity> productionCountingQuantities) {
+    public void markIntermediateInProductionCountingQuantities(List<Entity> productionCountingQuantities, boolean save) {
         for (Entity productionCountingQuantity : productionCountingQuantities) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
             String set = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.SET);
@@ -112,7 +113,9 @@ public class ProductionCountingQuantitySetService {
                             && "1.".equals(entityTechnologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER))
                             && operation.getId().equals(entityOperation.getId())) {
                         entity.setField(ProductionCountingQuantityFields.SET, ProductionCountingQuantitySet.INTERMEDIATE.getStringValue());
-                        entity = entity.getDataDefinition().save(entity);
+                        if(save) {
+                            entity = entity.getDataDefinition().save(entity);
+                        }
                     }
                 }
             }

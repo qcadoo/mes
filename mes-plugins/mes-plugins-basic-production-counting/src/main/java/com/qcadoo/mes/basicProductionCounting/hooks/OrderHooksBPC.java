@@ -23,18 +23,17 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class OrderHooksBPC {
@@ -52,24 +51,20 @@ public class OrderHooksBPC {
 
         String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
-                || OrderStateStringValues.INTERRUPTED.equals(state)) {
-            if (hasPlannedQuantityChanged(order, plannedQuantity)) {
-                basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
-            } else {
-                if (checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(order)) {
-                    basicProductionCountingService.createProductionCountingQuantitiesAndOperationRuns(order);
-                    basicProductionCountingService.associateProductionCountingQuantitiesWithBasicProductionCountings(order);
-                }
-            }
+        if (checkOrderState(state) && hasPlannedQuantityChanged(order, plannedQuantity)) {
+            basicProductionCountingService.updateProductionCountingQuantitiesAndOperationRuns(order);
         }
+    }
+
+    private boolean checkOrderState(final String state) {
+        return OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
+                || OrderStateStringValues.INTERRUPTED.equals(state);
     }
 
     private void updateProducedQuantity(Entity order) {
         String state = order.getStringField(OrderFields.STATE);
 
-        if (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
-                || OrderStateStringValues.INTERRUPTED.equals(state)) {
+        if (checkOrderState(state)) {
             basicProductionCountingService.updateProducedQuantity(order);
         }
     }
@@ -82,9 +77,11 @@ public class OrderHooksBPC {
         }
 
         BigDecimal existingOrderPlannedQuantity = existingOrder.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
         if (existingOrderPlannedQuantity == null) {
             return true;
         }
+
         return !BigDecimalUtils.valueEquals(existingOrderPlannedQuantity, plannedQuantity);
     }
 
@@ -92,20 +89,16 @@ public class OrderHooksBPC {
         if (order.getId() == null) {
             return null;
         }
+
         StringBuilder query = new StringBuilder();
-        query.append("SELECT ord.id as id, ord.plannedQuantity as plannedQuantity ");
+
+        query.append("SELECT ord.id AS id, ord.plannedQuantity AS plannedQuantity ");
         query.append("FROM #orders_order ord WHERE id = :id");
-        Entity orderDB = order.getDataDefinition().find(query.toString()).setLong("id", order.getId()).setMaxResults(1).uniqueResult();
+
+        Entity orderDB = order.getDataDefinition().find(query.toString()).setLong("id", order.getId()).setMaxResults(1)
+                .uniqueResult();
 
         return orderDB;
-    }
-
-    boolean checkIfProductionCountingQuantitiesAndOperationsRunsAreEmpty(final Entity order) {
-        List<Entity> productionCountingQuantities = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
-        List<Entity> productionCountingOperationRuns = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS);
-
-        return (((productionCountingQuantities == null) || productionCountingQuantities.isEmpty()) && ((productionCountingOperationRuns == null) || productionCountingOperationRuns
-                .isEmpty()));
     }
 
 }
