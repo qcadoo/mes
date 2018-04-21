@@ -25,15 +25,7 @@ package com.qcadoo.mes.productionScheduling.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
-import com.qcadoo.mes.basic.TimetableExceptionService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
-import com.qcadoo.mes.basic.constants.TimetableExceptionType;
-import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
-import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
@@ -41,12 +33,15 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
+import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -58,19 +53,16 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import org.apache.commons.lang3.Validate;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
@@ -83,11 +75,7 @@ public class OperationDurationDetailsInOrderListeners {
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
-    public static final int MAX_LOOPS = 1000;
-
     public static final int MILLS = 1000;
-
-    public static final int ONE_DAY = 1;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -105,10 +93,7 @@ public class OperationDurationDetailsInOrderListeners {
     private OperationWorkTimeService operationWorkTimeService;
 
     @Autowired
-    private ShiftsDataProvider shiftsDataProvider;
-
-    @Autowired
-    private TimetableExceptionService timetableExceptionService;
+    private ProductionSchedulingService productionSchedulingService;
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -210,10 +195,6 @@ public class OperationDurationDetailsInOrderListeners {
 
                     generatedEndDateField.setFieldValue(null);
                 } else {
-                    generatedEndDateField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
-
-                    order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(stopTime));
-
                     scheduleOrder(order.getId());
 
                     isGenerated = true;
@@ -221,14 +202,19 @@ public class OperationDurationDetailsInOrderListeners {
 
                 orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
             }
-
-            order = order.getDataDefinition().save(order);
-            orderForm.setEntity(order);
         }
 
         generatedEndDateField.requestComponentUpdateState();
 
         if (isGenerated) {
+            order = getActualOrderWithChanges(order);
+            Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                    TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
+                    .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+            order.setField(OrderFields.START_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));
+            order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
+            order = order.getDataDefinition().save(order);
+            orderForm.setEntity(order);
             orderForm.addMessage("productionScheduling.info.calculationGenerated", MessageType.SUCCESS);
         }
     }
@@ -262,7 +248,9 @@ public class OperationDurationDetailsInOrderListeners {
             return;
         }
 
-        List<Entity> shifts = getAllShifts();
+        List<Date> operationStartDates = Lists.newArrayList();
+        List<Date> operationEndDates = Lists.newArrayList();
+
         DataDefinition technologyOperationComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -294,18 +282,7 @@ public class OperationDurationDetailsInOrderListeners {
                 duration = duration + 1;
             }
 
-            Date dateFrom = null;
-            if (offset == 0) {
-                Optional<DateTime> maybeDate = findFirstWorkingDate(order, orderStartDate);
-                if (maybeDate.isPresent()) {
-                    dateFrom = maybeDate.get().toDate();
-                }
-            } else {
-                Optional<DateTime> maybeDate = findDateFromDatePlusMilliseconds(order, orderStartDate, offset * MILLS);
-                if (maybeDate.isPresent()) {
-                    dateFrom = maybeDate.get().toDate();
-                }
-            }
+            Date dateFrom = productionSchedulingService.getStartDate(order, orderStartDate, offset);
 
             if (dateFrom == null) {
                 continue;
@@ -313,11 +290,7 @@ public class OperationDurationDetailsInOrderListeners {
 
             long milliseconds = offset * MILLS + duration * MILLS;
 
-            Date dateTo = null;
-            Optional<DateTime> maybeDate = findDateFromDatePlusMilliseconds(order, orderStartDate, milliseconds);
-            if (maybeDate.isPresent()) {
-                dateTo = maybeDate.get().toDate();
-            }
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, milliseconds);
 
             if (dateTo == null) {
                 continue;
@@ -325,185 +298,19 @@ public class OperationDurationDetailsInOrderListeners {
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
-
+            operationStartDates.add(dateFrom);
+            operationEndDates.add(dateTo);
             operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
-    }
-
-    private Optional<DateTime> findDateFromDatePlusMilliseconds(Entity order, Date orderStartDate, long milliseconds) {
-        DateTime orderStartDateDT = new DateTime(orderStartDate, DateTimeZone.getDefault());
-
-        List<Shift> shifts = shiftsDataProvider.findAll();
-        DateTime dateOfDay = new DateTime(orderStartDate);
-        dateOfDay = dateOfDay.minusDays(ONE_DAY);
-        dateOfDay = dateOfDay.toLocalDate().toDateTimeAtStartOfDay();
-        Long leftMilliseconds = milliseconds;
-        int loopCount = 0;
-        while (leftMilliseconds > 0l) {
-            if (loopCount > MAX_LOOPS) {
-                return Optional.empty();
-            }
-            for (Shift shift : shifts) {
-                for (DateTimeRange range : getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift,
-                        dateOfDay, orderStartDate)) {
-                    if (orderStartDate.after(dateOfDay.toDate())) {
-                        range = range.trimBefore(orderStartDateDT);
-                    }
-                    if (range != null) {
-                        if (leftMilliseconds > range.durationMillis()) {
-                            leftMilliseconds = leftMilliseconds - range.durationMillis();
-                        } else {
-                            return Optional.of(range.getFrom().plusMillis(leftMilliseconds.intValue()));
-                        }
-                    }
-                }
-            }
-            loopCount++;
-            dateOfDay = dateOfDay.plusDays(1);
-        }
-
-        return Optional.empty();
-    }
-
-    private Optional<DateTime> findFirstWorkingDate(Entity order, Date orderStartDate) {
-        DateTime orderStartDateDT = new DateTime(orderStartDate, DateTimeZone.getDefault());
-
-        List<Shift> shifts = shiftsDataProvider.findAll();
-        DateTime dateOfDay = new DateTime(orderStartDate);
-        dateOfDay = dateOfDay.minusDays(ONE_DAY);
-        dateOfDay = dateOfDay.toLocalDate().toDateTimeAtStartOfDay();
-        boolean notFound = true;
-        int loopCount = 0;
-        while (notFound) {
-            if (loopCount > MAX_LOOPS) {
-                return Optional.empty();
-            }
-            for (Shift shift : shifts) {
-                for (DateTimeRange range : getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift,
-                        dateOfDay, orderStartDate)) {
-                    if (orderStartDate.after(dateOfDay.toDate())) {
-                        range = range.trimBefore(orderStartDateDT);
-                    }
-                    if (range != null) {
-
-                        return Optional.of(range.getFrom());
-
-                    }
-                }
-            }
-            loopCount++;
-            dateOfDay = dateOfDay.plusDays(1);
-        }
-
-        return Optional.empty();
-    }
-
-    private List<DateTimeRange> getShiftWorkDateTimes(final Entity productionLine, final Shift shift, DateTime dateOfDay,
-            final Date orderStartDate) {
-        DateTime dateOfDayDT = dateOfDay;
-        List<TimeRange> shiftWorkTime = Lists.newArrayList();
-        List<DateTimeRange> shiftWorkDateTime = Lists.newArrayList();
-        if (shift.worksAt(dateOfDay.dayOfWeek().get())) {
-            shiftWorkTime = shift.findWorkTimeAt(dateOfDay.toLocalDate());
-        }
-        for (TimeRange range : shiftWorkTime) {
-            shiftWorkDateTime.add(new DateTimeRange(dateOfDayDT, range));
-        }
-
-        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, productionLine, shift, dateOfDay.toDate());
-
-        return shiftWorkDateTime;
-    }
-
-    public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, final Entity productionLine,
-            final Shift shift, final Date dateOfDay) {
-        Entity shiftEntity = shift.getEntity();
-        Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
-
-        List<Entity> exceptions = timetableExceptionService.findForLineAndShift(productionLine, shiftEntity);
-
-        if (!exceptions.isEmpty()) {
-            for (Entity exception : exceptions) {
-                if (TimetableExceptionType.FREE_TIME.getStringValue().equals(
-                        exception.getStringField(ShiftTimetableExceptionFields.TYPE))
-                        && checkExceptionDates(exception, dateOfDay)) {
-                    shiftWorkDateTime = removeFreeTimeException(shiftWorkDateTime, exception, shiftForDay);
-                }
-            }
-
-            for (Entity exception : exceptions) {
-                if (TimetableExceptionType.WORK_TIME.getStringValue().equals(
-                        exception.getStringField(ShiftTimetableExceptionFields.TYPE))
-                        && checkExceptionDates(exception, dateOfDay)) {
-                    shiftWorkDateTime = addWorkTimeException(shiftWorkDateTime, exception, shiftForDay);
-                }
-            }
-        }
-
-        return shiftWorkDateTime;
-    }
-
-    private boolean checkExceptionDates(final Entity exception, final Date dateOfDay) {
-        return ((new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE)).compareTo(new DateTime(dateOfDay)
-                .toLocalDate()) >= 0) && (new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
-    }
-
-    private List<DateTimeRange> removeFreeTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,
-            final Shift shift) {
-        Optional<DateTimeRange> exceptionRange = getExceptionRange(exception, shift);
-
-        if (exceptionRange.isPresent()) {
-            List<DateTimeRange> result = Lists.newArrayList();
-
-            for (DateTimeRange range : shiftWorkDateTime) {
-                result.addAll(range.remove(exceptionRange.get()));
-            }
-
-            return result;
-        } else {
-            return shiftWorkDateTime;
-        }
-    }
-
-    private List<DateTimeRange> addWorkTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,
-            final Shift shift) {
-        Optional<DateTimeRange> exceptionRange = getExceptionRange(exception, shift);
-
-        if (exceptionRange.isPresent()) {
-            if (shiftWorkDateTime.isEmpty()) {
-                return Lists.newArrayList(exceptionRange.get());
-            }
-
-            List<DateTimeRange> result = Lists.newArrayList();
-
-            for (DateTimeRange range : shiftWorkDateTime) {
-                result.addAll(range.add(exceptionRange.get()));
-            }
-
-            return result;
-        } else {
-            return shiftWorkDateTime;
-        }
-    }
-
-    private Optional<DateTimeRange> getExceptionRange(final Entity exception, final Shift shift) {
-        Date fromDate = exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE);
-        Date toDate = exception.getDateField(ShiftTimetableExceptionFields.TO_DATE);
-
-        if (toDate.before(shift.getShiftStartDate().toDate())) {
-            return Optional.empty();
-        }
-
-        if (fromDate.before(shift.getShiftStartDate().toDate())) {
-            fromDate = shift.getShiftStartDate().toDate();
-        }
-
-        if (toDate.after(shift.getShiftEndDate().toDate())) {
-            toDate = shift.getShiftEndDate().toDate();
-        }
-
-        return Optional.of(new DateTimeRange(fromDate, toDate));
+        Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
+                .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+        orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
+                operationStartDates.stream().min(Comparator.<Date>naturalOrder()).get());
+        orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
+                operationEndDates.stream().max(Comparator.<Date>naturalOrder()).get());
+        orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
+        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation
+                .getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 
     public void copyRealizationTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -513,13 +320,5 @@ public class OperationDurationDetailsInOrderListeners {
         stopTimeField.setFieldValue(generatedEndDateField.getFieldValue());
 
         state.performEvent(view, "save", new String[0]);
-    }
-
-    private List<Entity> getAllShifts() {
-        return getShiftDataDefinition().find().list().getEntities();
-    }
-
-    private DataDefinition getShiftDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
     }
 }
