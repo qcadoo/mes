@@ -97,10 +97,9 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
-                        <component type="inputWithAction" name="number" reference="number"
-                                   field="number">
-                        <option type="enabled" value="false"/>
-                        <option type="alignment" value="right"/>
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2">
