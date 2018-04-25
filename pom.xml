@@ -12,7 +12,7 @@
 
     <groupId>com.qcadoo.mes</groupId>
     <artifactId>mes</artifactId>
-    <version>1.5-SNAPSHOT-DEV</version>
+    <version>1.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Qcadoo MES</name>
