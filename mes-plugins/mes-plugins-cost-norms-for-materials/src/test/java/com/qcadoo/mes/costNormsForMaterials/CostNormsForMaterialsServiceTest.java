@@ -96,7 +96,7 @@ public class CostNormsForMaterialsServiceTest {
 //    public final void shouldThrowExceptionIfCostsCannotBeFound() {
 //        // given
 //        Long productId = 1L;
-//        BigDecimal newQuantity = BigDecimal.valueOf(0L).setScale(20);
+//        BigDecimal newQuantity = BigDecimal.valueOf(0L).setScaleWithDefaultMathContext(20);
 //        BigDecimal costForOrder = BigDecimal.valueOf(100L);
 //        stubOrderMaterialSearchResults(null);
 //

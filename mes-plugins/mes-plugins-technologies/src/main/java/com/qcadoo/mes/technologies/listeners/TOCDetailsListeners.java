@@ -289,7 +289,7 @@ public class TOCDetailsListeners {
 
         operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, technologyOperationComponent);
         operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
-        operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, numberService.setScale(quantity));
+        operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
         operationProductInComponent.setField(OperationProductInComponentFields.ITEM_NUMBER_IN_THE_EXPLODED_VIEW,
                 itemNumberInTheExplodedView);
 

@@ -74,7 +74,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
             result = result.add(productWithCost.getValue(), numberService.getMathContext());
         }
-        entity.setField("totalMaterialCosts", numberService.setScale(result));
+        entity.setField("totalMaterialCosts", numberService.setScaleWithDefaultMathContext(result));
     }
 
     private Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity,

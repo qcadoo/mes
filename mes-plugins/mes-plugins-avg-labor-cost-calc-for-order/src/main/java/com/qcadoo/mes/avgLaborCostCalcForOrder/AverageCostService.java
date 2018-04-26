@@ -132,7 +132,7 @@ public class AverageCostService {
         if (countHours.equals(BigDecimal.ZERO)) {
             return null;
         }
-        return numberService.setScale(averageCost.divide(countHours, numberService.getMathContext()));
+        return numberService.setScaleWithDefaultMathContext(averageCost.divide(countHours, numberService.getMathContext()));
     }
 
     private BigDecimal getWorkedHoursOfWorker(final Entity shift, final DateTime dateOfDay) {

@@ -68,7 +68,7 @@ import java.math.BigDecimal;
                 ValidationResult result = expression.validate();
                 if (result.isValid()) {
                     BigDecimal value = new BigDecimal(expression.evaluate());
-                    value = numberService.setScale(value);
+                    value = numberService.setScaleWithDefaultMathContext(value);
                     opic.setField(OperationProductInComponentFields.GIVEN_QUANTITY, value);
                     Entity product = opic.getBelongsToField(OperationProductInComponentFields.PRODUCT);
                     String givenUnit = opic.getStringField(OperationProductInComponentFields.GIVEN_UNIT);

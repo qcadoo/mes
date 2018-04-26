@@ -223,7 +223,7 @@ public class CostNormsForMaterialsService {
 
                     Optional<BigDecimal> costForOrder = entry.getValue().getCostOpt();
                     orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
-                            numberService.setScale(costForOrder.orElse(BigDecimal.ZERO)));
+                            numberService.setScaleWithDefaultMathContext(costForOrder.orElse(BigDecimal.ZERO)));
                     BigDecimal oldQuantity = orderMaterialCosts
                             .getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
 
@@ -263,7 +263,7 @@ public class CostNormsForMaterialsService {
                 .getDecimalField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST);
         BigDecimal averageCost = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_COST);
 
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER, numberService.setScale(newQuantity));
+        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER, numberService.setScaleWithDefaultMathContext(newQuantity));
         orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST, multiply(nominalCost, factor));
         orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST, multiply(lastPurchaseCost, factor));
         orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST, multiply(averageCost, factor));
@@ -273,7 +273,7 @@ public class CostNormsForMaterialsService {
         if (value == null || factor == null) {
             return BigDecimal.ZERO;
         }
-        return numberService.setScale(value.multiply(factor, numberService.getMathContext()));
+        return numberService.setScaleWithDefaultMathContext(value.multiply(factor, numberService.getMathContext()));
     }
 
     public void updateCosts(final ViewDefinitionState viewDefinitionState, final ComponentState component, final String[] args) {

@@ -385,13 +385,13 @@ public class DeliveryDetailsListeners {
         deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
         if (copyQuantityAndPrice) {
             BigDecimal deliverdQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY, numberService.setScale(deliverdQuantity));
+            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY, numberService.setScaleWithDefaultMathContext(deliverdQuantity));
             deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY,
-                    numberService.setScale(deliverdQuantity.multiply(conversion)));
+                    numberService.setScaleWithDefaultMathContext(deliverdQuantity.multiply(conversion)));
             deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
-                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
+                    numberService.setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
             deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
-                    numberService.setScale(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
+                    numberService.setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             Entity offer = orderedProduct.getBelongsToField(OFFER);
@@ -520,7 +520,7 @@ public class DeliveryDetailsListeners {
         newOrderedProduct.setField(OrderedProductFields.PRODUCT, product);
         newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
-        newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScale(orderedQuantity));
+        newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScaleWithDefaultMathContext(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
         newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,

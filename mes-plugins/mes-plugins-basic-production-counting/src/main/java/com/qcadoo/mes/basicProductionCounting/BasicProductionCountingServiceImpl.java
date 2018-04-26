@@ -138,7 +138,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         productionCountingOperationRun.setField(ProductionCountingOperationRunFields.ORDER, order);
         productionCountingOperationRun.setField(ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT,
                 technologyOperationComponent);
-        productionCountingOperationRun.setField(ProductionCountingOperationRunFields.RUNS, numberService.setScale(runs));
+        productionCountingOperationRun.setField(ProductionCountingOperationRunFields.RUNS, numberService.setScaleWithDefaultMathContext(runs));
 
         productionCountingOperationRun = productionCountingOperationRun.getDataDefinition().save(productionCountingOperationRun);
 
@@ -253,8 +253,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         basicProductionCounting.setField(BasicProductionCountingFields.ORDER, order);
         basicProductionCounting.setField(BasicProductionCountingFields.PRODUCT, product);
         basicProductionCounting
-                .setField(BasicProductionCountingFields.PRODUCED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
-        basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
+                .setField(BasicProductionCountingFields.PRODUCED_QUANTITY, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
+        basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
 
         basicProductionCounting = basicProductionCounting.getDataDefinition().save(basicProductionCounting);
 
@@ -283,7 +283,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 getTypeOfMaterial(order, technologyOperationComponent, product, role, isNonComponent));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.IS_NON_COMPONENT, isNonComponent);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PLANNED_QUANTITY,
-                numberService.setScale(plannedQuantity));
+                numberService.setScaleWithDefaultMathContext(plannedQuantity));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.FLOW_FILLED, Boolean.TRUE);
 
         return productionCountingQuantity;
@@ -436,7 +436,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE, role);
             productionCountingQuantity.setField(ProductionCountingQuantityFields.IS_NON_COMPONENT, isNonComponent);
             productionCountingQuantity.setField(ProductionCountingQuantityFields.PLANNED_QUANTITY,
-                    numberService.setScale(plannedQuantity));
+                    numberService.setScaleWithDefaultMathContext(plannedQuantity));
 
             productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
         }
@@ -448,8 +448,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         basicProductionCounting.setField(BasicProductionCountingFields.ORDER, order);
         basicProductionCounting.setField(BasicProductionCountingFields.PRODUCT, product);
         basicProductionCounting
-                .setField(BasicProductionCountingFields.PRODUCED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
-        basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, numberService.setScale(BigDecimal.ZERO));
+                .setField(BasicProductionCountingFields.PRODUCED_QUANTITY, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
+        basicProductionCounting.setField(BasicProductionCountingFields.USED_QUANTITY, numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));
 
         return basicProductionCounting;
     }
@@ -574,7 +574,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                                 rowCount())).addOrder(SearchOrders.asc(QUANTITIES_SUM_ALIAS)).setMaxResults(1).uniqueResult();
         BigDecimal doneQuantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField(QUANTITIES_SUM_ALIAS));
 
-        return numberService.setScale(doneQuantity);
+        return numberService.setScaleWithDefaultMathContext(doneQuantity);
     }
 
     @Override

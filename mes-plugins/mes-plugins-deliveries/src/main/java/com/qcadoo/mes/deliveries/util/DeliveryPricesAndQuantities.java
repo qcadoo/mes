@@ -82,7 +82,7 @@ public class DeliveryPricesAndQuantities {
 
     private BigDecimal extractSumValueFromResultEntity(final Entity dynamicEntity) {
         BigDecimal sum = dynamicEntity.getDecimalField(L_SUM_RESULT);
-        return numberService.setScale(BigDecimalUtils.convertNullToZero(sum));
+        return numberService.setScaleWithDefaultMathContext(BigDecimalUtils.convertNullToZero(sum));
     }
 
     private BigDecimal executeQueryWithDelivery(final String query) {

@@ -97,7 +97,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(product.getStringField(ProductFields.NUMBER));
             row.createCell(1).setCellValue(product.getStringField(ProductFields.NAME));
-            row.createCell(2).setCellValue(numberService.setScale(neededProductQuantity.getValue()).doubleValue());
+            row.createCell(2).setCellValue(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue()).doubleValue());
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {
                 row.createCell(3).setCellValue("");

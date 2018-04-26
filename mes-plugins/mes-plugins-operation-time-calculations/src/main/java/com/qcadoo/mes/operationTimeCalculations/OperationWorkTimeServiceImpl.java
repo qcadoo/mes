@@ -79,7 +79,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             BigDecimal additionalTime = new BigDecimal(getValueOfIntFiled(operationComponent, "timeNextOperation"));
             abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime, mc);
         }
-        return numberService.setScale(abstractOperationWorkTime);
+        return numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime);
     }
 
     private Integer getValueOfIntFiled(final Entity operationComponent, final String field) {

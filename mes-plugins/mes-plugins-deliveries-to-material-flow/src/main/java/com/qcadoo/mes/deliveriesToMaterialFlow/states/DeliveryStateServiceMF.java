@@ -109,7 +109,7 @@ public class DeliveryStateServiceMF {
                 BigDecimal givenQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
                 BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
 
-                documentBuilder.addPosition(product, positionQuantity, numberService.setScale(givenQuantity), additionalUnit,
+                documentBuilder.addPosition(product, positionQuantity, numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit,
                         conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
                         expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),
                         palletNumber(deliveredProduct), typeOfPallet(deliveredProduct), additionalCode(deliveredProduct),
@@ -151,7 +151,7 @@ public class DeliveryStateServiceMF {
         if (!pricePerUnit.isPresent()) {
             return null;
         }
-        return exRateExists(exRate) ? numberService.setScale(pricePerUnit.get().multiply(exRate, numberService.getMathContext()))
+        return exRateExists(exRate) ? numberService.setScaleWithDefaultMathContext(pricePerUnit.get().multiply(exRate, numberService.getMathContext()))
                 : pricePerUnit.get();
     }
 

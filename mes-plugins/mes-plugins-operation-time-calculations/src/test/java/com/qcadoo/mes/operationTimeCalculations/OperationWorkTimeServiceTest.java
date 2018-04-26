@@ -94,7 +94,7 @@ public class OperationWorkTimeServiceTest {
 
         when(numberService.getMathContext()).thenReturn(mc);
 
-        given(numberService.setScale(Mockito.any(BigDecimal.class))).willAnswer(new Answer<BigDecimal>() {
+        given(numberService.setScaleWithDefaultMathContext(Mockito.any(BigDecimal.class))).willAnswer(new Answer<BigDecimal>() {
 
             @Override
             public BigDecimal answer(InvocationOnMock invocation) throws Throwable {
@@ -203,7 +203,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithoutTpzAndAdditionalTimeForOperComp1() throws Exception {
         // given
         BigDecimal abstractOperationWorkTime = BigDecimal.ZERO;
-        when(numberService.setScale(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
+        when(numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
 
         abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp1, neededNumberOfCycles1,
                 false, false, workstations1);
@@ -216,7 +216,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithoutTpzAndAdditionalTimeForOperComp2() throws Exception {
         // given
         BigDecimal abstractOperationWorkTime = BigDecimal.ZERO;
-        when(numberService.setScale(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
+        when(numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
         // when
         abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp2, neededNumberOfCycles2,
                 false, false, workstations2);

@@ -309,7 +309,7 @@ public class MultitransferListeners {
         transfer.setField(LOCATION_TO, locationTo);
         transfer.setField(STAFF, staff);
         transfer.setField(PRODUCT, product);
-        transfer.setField(QUANTITY, numberService.setScale(quantity));
+        transfer.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
 
         transfer = transferDD.save(transfer);
 

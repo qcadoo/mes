@@ -513,17 +513,17 @@ public class OrderHooks {
             String state = order.getStringField(OrderFields.STATE);
 
             if (OrderState.PENDING.getStringValue().equals(state)) {
-                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, numberService.setScale(plannedQuantity));
+                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(plannedQuantity));
             }
             if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
                     || OrderState.INTERRUPTED.getStringValue().equals(state)) {
-                order.setField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY, numberService.setScale(plannedQuantity));
+                order.setField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY, numberService.setScaleWithDefaultMathContext(plannedQuantity));
             }
         } else {
             if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)) != 0) {
-                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScale(commissionedCorrectedQuantity));
+                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
             } else if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedPlannedQuantity)) != 0) {
-                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScale(commissionedPlannedQuantity));
+                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
             }
         }
 
@@ -536,13 +536,13 @@ public class OrderHooks {
 
         if (StringUtils.isEmpty(typeOfProductionRecording)) {
             if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
-                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScale(doneQuantity));
+                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScaleWithDefaultMathContext(doneQuantity));
             } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
                     BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
-                order.setField(OrderFields.DONE_QUANTITY, numberService.setScale(amountOfProductProduced));
+                order.setField(OrderFields.DONE_QUANTITY, numberService.setScaleWithDefaultMathContext(amountOfProductProduced));
             }
         } else {
-            order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScale(doneQuantity));
+            order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScaleWithDefaultMathContext(doneQuantity));
         }
     }
 
@@ -589,7 +589,7 @@ public class OrderHooks {
         if (quantity != null) {
             if (BigDecimalUtils.tryParse(quantity.toString(), LocaleContextHolder.getLocale()).isRight()) {
                 order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
-                        numberService.setScale(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
+                        numberService.setScaleWithDefaultMathContext(order.getDecimalField(OrderFields.PLANNED_QUANTITY)));
             }
         }
     }

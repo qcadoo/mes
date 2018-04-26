@@ -59,7 +59,7 @@ public class CostCalculationComponentsService {
                         .getTechnologyOperationComponentId());
                 BigDecimal materialCost = BigDecimalUtils.convertNullToZero(cc.getMaterialCost()).add(
                         BigDecimalUtils.convertNullToZero(costForGivenQuantity), mathContext);
-                cc.setMaterialCost(numberService.setScale(materialCost, 2));
+                cc.setMaterialCost(numberService.setScaleWithDefaultMathContext(materialCost, 2));
             }
 
         }
@@ -81,7 +81,7 @@ public class CostCalculationComponentsService {
                         "technologyOperationComponent").getId());
                 BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost).add(
                         BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
-                holder.setLaborCost(numberService.setScale(cost, 2));
+                holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
             }
         }
 
@@ -143,8 +143,8 @@ public class CostCalculationComponentsService {
             BigDecimal sumOfCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
                     BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
             BigDecimal costPerUnit = sumOfCost.divide(quantity, mathContext);
-            component.setSumOfCost(numberService.setScale(sumOfCost, 2));
-            component.setCostPerUnit(numberService.setScale(costPerUnit, 2));
+            component.setSumOfCost(numberService.setScaleWithDefaultMathContext(sumOfCost, 2));
+            component.setCostPerUnit(numberService.setScaleWithDefaultMathContext(costPerUnit, 2));
         }
 
     }
@@ -158,8 +158,8 @@ public class CostCalculationComponentsService {
                     BigDecimalUtils.convertNullToZero(child.getMaterialCost()), mathContext);
             BigDecimal laborCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
                     BigDecimalUtils.convertNullToZero(child.getLaborCost()), mathContext);
-            component.setLaborCost(numberService.setScale(laborCost, 2));
-            component.setMaterialCost(numberService.setScale(materialCost, 2));
+            component.setLaborCost(numberService.setScaleWithDefaultMathContext(laborCost, 2));
+            component.setMaterialCost(numberService.setScaleWithDefaultMathContext(materialCost, 2));
             _component = child;
         }
 

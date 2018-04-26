@@ -159,10 +159,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         resource.setField(LOCATION, locationTo);
         resource.setField(PRODUCT, product);
-        resource.setField(QUANTITY, numberService.setScale(quantity));
+        resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
         resource.setField(TIME, time);
         resource.setField(BATCH, batch);
-        resource.setField(PRICE, (price == null) ? null : numberService.setScale(price));
+        resource.setField(PRICE, (price == null) ? null : numberService.setScaleWithDefaultMathContext(price));
 
         resource.getDataDefinition().save(resource);
     }
@@ -186,7 +186,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
+                    resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 
@@ -220,7 +220,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, numberService.setScale(resourceQuantity));
+                    resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 

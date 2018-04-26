@@ -518,11 +518,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     private String formatWithScale(Object obj, int scale) {
-        return numberService.format(numberService.setScale((BigDecimal) obj, scale));
+        return numberService.format(numberService.setScaleWithDefaultMathContext((BigDecimal) obj, scale));
     }
 
     private void addRightAlignedAmountCell(PdfPTable table, Object reportData) {
-        BigDecimal reportValue = numberService.setScale((BigDecimal) reportData, 2);
+        BigDecimal reportValue = numberService.setScaleWithDefaultMathContext((BigDecimal) reportData, 2);
         PdfPCell cell = new PdfPCell(new Phrase((reportData == null ? "" : format(reportValue)) + " "
                 + currencyService.getCurrencyAlphabeticCode(), FontUtils.getDejavuRegular10Dark()));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);

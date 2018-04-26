@@ -118,7 +118,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             return numberService.formatWithMinimumFractionDigits(resource.getQuantity(), 0);
         } else {
             return numberService.formatWithMinimumFractionDigits(
-                    numberService.setScale(resource.getQuantity(), 1), 1);
+                    numberService.setScaleWithDefaultMathContext(resource.getQuantity(), 1), 1);
         }
     }
 
@@ -129,7 +129,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
             return numberService.formatWithMinimumFractionDigits(resource.getQuantityInAdditionalUnit(), 0);
         } else {
             return numberService.formatWithMinimumFractionDigits(
-                    numberService.setScale(resource.getQuantityInAdditionalUnit(), 1), 1);
+                    numberService.setScaleWithDefaultMathContext(resource.getQuantityInAdditionalUnit(), 1), 1);
         }
     }
 
