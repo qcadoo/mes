@@ -90,7 +90,7 @@ public class ProductionSchedulingService {
                     if (orderStartDate.after(dateOfDay.toDate())) {
                         range = range.trimBefore(orderStartDateDT);
                     }
-                    if (range != null) {
+                    if (range != null && range.durationInMins() > 0l) {
 
                         return Optional.of(range.getFrom());
 
