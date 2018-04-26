@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -43,8 +33,8 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -57,6 +47,17 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -149,7 +150,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         CalculateOperationCostMode calculateOperationCostMode = CalculateOperationCostMode
                 .parseString(costCalculationOrProductionBalance.getStringField(L_CALCULATE_OPERATION_COSTS_MODE));
-        
+
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField(L_TECHNOLOGY);
 
@@ -198,9 +199,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(copyCostCalculationOrProductionBalance,
                     productionLine);
 
-            OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(
-                    calculationOperationComponents, productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ,
-                    includeAdditionalTime, workstations, true);
+            List<Entity> tocs = calculationOperationComponents.stream()
+                    .map(e -> e.getBelongsToField("technologyOperationComponent")).collect(Collectors.toList());
+            OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(tocs,
+                    productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
 
             Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     productionCostMargin, quantity, operationTimes, hourlyCostFromOperation);
@@ -246,7 +248,8 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             }
         }
 
-        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getId());
+        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getBelongsToField(
+                "technologyOperationComponent").getId());
         Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
                 productionCostMargin, hourlyCostFromOperation);
         saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, true, operationTimes.getTimes(), null);
@@ -265,9 +268,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         MathContext mathContext = numberService.getMathContext();
 
-        Entity calculationOperationComponent = operationTimes.getOperation();
-        Entity technologyOperationComponent = calculationOperationComponent
-                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = operationTimes.getOperation();
 
         OperationWorkTime operationWorkTimes = operationTimes.getTimes();
 
@@ -275,14 +276,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal laborHourlyCost = BigDecimal.ZERO;
         if (hourlyCostFromOperation) {
             machineHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
-                .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
+                    .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
             laborHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
-                .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
+                    .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
         } else {
             machineHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
                     "averageMachineHourlyCostPB"));
-            laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter()
-                    .getDecimalField("averageLaborHourlyCostPB"));
+            laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
+                    "averageLaborHourlyCostPB"));
         }
 
         BigDecimal durationMachine = BigDecimal.valueOf(operationWorkTimes.getMachineWorkTime());
