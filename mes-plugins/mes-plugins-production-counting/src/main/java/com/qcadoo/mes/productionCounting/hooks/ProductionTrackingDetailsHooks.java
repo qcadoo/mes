@@ -246,10 +246,6 @@ public class ProductionTrackingDetailsHooks {
             return false;
         }
 
-        String state = productionTracking.getStringField(ProductionTrackingFields.STATE);
-
-        boolean isDraft = (ProductionTrackingStateStringValues.DRAFT.equals(state));
-
         if (order == null) {
             return false;
         }
