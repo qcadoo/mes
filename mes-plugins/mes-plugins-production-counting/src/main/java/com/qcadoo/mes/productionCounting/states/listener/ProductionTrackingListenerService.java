@@ -123,30 +123,38 @@ public final class ProductionTrackingListenerService {
     }
 
     private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
-        if (checkIfUsedQuantitiesWereNotFilled(productionTracking)
-                && checkIfUsedOrWastesQuantitiesWereNotFilled(productionTracking)) {
+        boolean usedNotFilled = checkIfUsedQuantitiesWereNotFilled(productionTracking);
+        boolean producedNotFilled = checkIfUsedOrWastesQuantitiesWereNotFilled(productionTracking);
+
+        if (usedNotFilled && producedNotFilled) {
             productionTracking.addGlobalError(
                     "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
     public boolean checkIfUsedQuantitiesWereNotFilled(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
         final SearchCriteriaBuilder searchBuilder = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
                 .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0;
+        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT)
+                && ((Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0));
     }
 
     public boolean checkIfUsedOrWastesQuantitiesWereNotFilled(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
         final SearchCriteriaBuilder searchBuilder = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
                 .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0;
+        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT)
+                && ((Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0));
     }
 
     private void checkIfExistsFinalRecord(final Entity productionTracking) {
@@ -154,6 +162,7 @@ public final class ProductionTrackingListenerService {
                 && !productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
             return;
         }
+
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         final String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -175,17 +184,23 @@ public final class ProductionTrackingListenerService {
     private void closeOrder(final Entity productionTracking) {
         final Entity order = productionTracking.getBelongsToField(ORDER);
         Entity orderFromDB = order.getDataDefinition().get(order.getId());
+
         if (!orderClosingHelper.orderShouldBeClosed(productionTracking)) {
+
             return;
         }
         if (order.getStringField(STATE).equals(COMPLETED.getStringValue())) {
             productionTracking.addGlobalMessage("productionCounting.order.orderIsAlreadyClosed", false, false);
+
             return;
         }
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
+                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
+
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
+
         if (orderFromDB.getStringField(STATE).equals(COMPLETED.getStringValue())) {
             productionTracking.addGlobalMessage("productionCounting.order.orderClosed", false, false);
 
@@ -233,6 +248,7 @@ public final class ProductionTrackingListenerService {
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
                 .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, mainProduct))
                 .setMaxResults(1).uniqueResult();
+
         if (mainTrackingOperationProductOutComponent != null) {
             order.setField(OrderFields.DONE_QUANTITY,
                     basicProductionCountingService.getProducedQuantityFromBasicProductionCountings(order));
@@ -249,6 +265,7 @@ public final class ProductionTrackingListenerService {
         BigDecimal mainWastesQuantity = mainTrackingOperationProductOutComponent
                 .getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
         BigDecimal orderWastesQuantity = order.getDecimalField(OrderFields.WASTES_QUANTITY);
+
         if (orderWastesQuantity == null) {
             orderWastesQuantity = BigDecimal.ZERO;
         }
@@ -256,6 +273,7 @@ public final class ProductionTrackingListenerService {
 
             return operation.perform(orderWastesQuantity, mainWastesQuantity);
         }
+
         return orderWastesQuantity;
     }
 
@@ -304,24 +322,29 @@ public final class ProductionTrackingListenerService {
     private void checkIfTimesIsSet(final Entity productionTracking) {
         Entity orderEntity = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity parameter = parameterService.getParameter();
+
         if (parameter.getBooleanField(ParameterFieldsPC.VALIDATE_PRODUCTION_RECORD_TIMES)
                 && orderEntity.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)) {
             Integer machineTimie = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
+
             if (machineTimie == null || machineTimie == 0) {
-                productionTracking.addError(productionTracking.getDataDefinition()
-                        .getField(ProductionTrackingFields.MACHINE_TIME), "qcadooView.validate.field.error.missing");
+                productionTracking.addError(
+                        productionTracking.getDataDefinition().getField(ProductionTrackingFields.MACHINE_TIME),
+                        "qcadooView.validate.field.error.missing");
             }
+
             Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);
+
             if (laborTime == null || laborTime == 0) {
                 productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.LABOR_TIME),
                         "qcadooView.validate.field.error.missing");
             }
         }
-
     }
 
     private Entity getBasicProductionCounting(final Entity trackingOperationProductComponent, final Entity order) {
         Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
+
         return order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).find()
                 .add(SearchRestrictions.belongsTo(BasicProductionCountingFields.PRODUCT, product)).setMaxResults(1)
                 .uniqueResult();
@@ -343,6 +366,7 @@ public final class ProductionTrackingListenerService {
         public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal addition) {
             BigDecimal value;
             BigDecimal add;
+
             if (orginalValue == null) {
                 value = BigDecimal.ZERO;
             } else {
@@ -365,6 +389,7 @@ public final class ProductionTrackingListenerService {
         public BigDecimal perform(final BigDecimal orginalValue, final BigDecimal substrahend) {
             BigDecimal value;
             BigDecimal sub;
+
             if (orginalValue == null) {
                 value = BigDecimal.ZERO;
             } else {
@@ -376,6 +401,7 @@ public final class ProductionTrackingListenerService {
             } else {
                 sub = substrahend;
             }
+
             return value.subtract(sub, numberService.getMathContext());
         }
 

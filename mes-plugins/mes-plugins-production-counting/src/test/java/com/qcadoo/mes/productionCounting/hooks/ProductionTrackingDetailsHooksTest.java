@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -38,6 +39,7 @@ import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -46,6 +48,8 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class ProductionTrackingDetailsHooksTest {
 
     private static final String L_FORM = "form";
+
+    private static final String L_PRODUCTS_TAB = "productsTab";
 
     private static final String L_IS_DISABLED = "isDisabled";
 
@@ -65,6 +69,9 @@ public class ProductionTrackingDetailsHooksTest {
 
     @Mock
     private LookupComponent orderLookup;
+
+    @Mock
+    private ComponentState productsTab;
 
     @Mock
     private Entity productionTracking, order;
@@ -105,9 +112,11 @@ public class ProductionTrackingDetailsHooksTest {
         // given
         given(productionTrackingForm.getEntityId()).willReturn(1L);
         given(productionTrackingForm.getEntity()).willReturn(productionTracking);
-        given(productionTracking.getField(ProductionTrackingFields.STATE)).willReturn(
-                ProductionTrackingStateStringValues.ACCEPTED);
+        given(productionTracking.getField(ProductionTrackingFields.STATE))
+                .willReturn(ProductionTrackingStateStringValues.ACCEPTED);
         given(orderLookup.getEntity()).willReturn(order);
+        given(order.getBooleanField(Mockito.anyString())).willReturn(true);
+        given(view.getComponentByReference(L_PRODUCTS_TAB)).willReturn(productsTab);
 
         // when
         productionTrackingDetailsHooks.initializeProductionTrackingDetailsView(view);
