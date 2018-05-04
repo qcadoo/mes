@@ -2156,9 +2156,9 @@ CREATE TABLE basic_log (
     createtime timestamp without time zone,
     user_id bigint,
     message text,
-    item1 character varying(255),
-    item2 character varying(255),
-    item3 character varying(255),
+    item1 character varying(2048),
+    item2 character varying(2048),
+    item3 character varying(2048),
     details text,
     loglevel character varying(255) DEFAULT '01trace'::character varying,
     logtype character varying(255),
@@ -6597,47 +6597,6 @@ ALTER SEQUENCE goodfood_eventlog_id_seq OWNED BY goodfood_eventlog.id;
 
 
 --
--- Name: goodfood_extrusionaddedingrediententry; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE goodfood_extrusionaddedingrediententry (
-    id bigint NOT NULL,
-    extrusionprotocol_id bigint,
-    ingredient_id bigint,
-    batch_id bigint,
-    quantity numeric(12,5),
-    succession integer,
-    partialquantity1 numeric(12,5),
-    partialquantity2 numeric(12,5),
-    partialquantity3 numeric(12,5),
-    partialquantity4 numeric(12,5),
-    partialquantity5 numeric(12,5),
-    partialquantity6 numeric(12,5),
-    entityversion bigint DEFAULT 0,
-    beyondrecipe boolean DEFAULT false
-);
-
-
---
--- Name: goodfood_extrusionaddedingrediententry_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_extrusionaddedingrediententry_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_extrusionaddedingrediententry_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_extrusionaddedingrediententry_id_seq OWNED BY goodfood_extrusionaddedingrediententry.id;
-
-
---
 -- Name: goodfood_extrusionaddedmixentry; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6871,7 +6830,8 @@ CREATE TABLE goodfood_extrusionpouringingredient (
     skip boolean DEFAULT false,
     frommix boolean DEFAULT false,
     requiredquantity numeric(12,5),
-    quantityinmix numeric(12,5)
+    quantityinmix numeric(12,5),
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -11825,18 +11785,15 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
     ordersgroup.remainingquantity,
     ordersgroup.state,
     company.number AS company,
-    first_value(product.unit) OVER (PARTITION BY ordersgroup.id ORDER BY ordersorder.id) AS unit,
     ordersgroup.remainingquantityinorders,
     (COALESCE(ordersgroup.producedquantity, (0)::numeric) + COALESCE(drafrptquantity.sum, (0)::numeric)) AS producedquantitywithdraft,
     (COALESCE(ordersgroup.remainingquantityinorders, (0)::numeric) - COALESCE(drafrptquantity.sum, (0)::numeric)) AS remainingquantityinorderswithdraft,
     tgn.number AS technologygroup
-   FROM ((((((((ordersgroups_ordersgroup ordersgroup
+   FROM ((((((ordersgroups_ordersgroup ordersgroup
      JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
      JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
      JOIN masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
-     LEFT JOIN orders_order ordersorder ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
-     LEFT JOIN basic_product product ON ((ordersorder.product_id = product.id)))
      LEFT JOIN ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
      LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)));
 
@@ -19038,13 +18995,6 @@ ALTER TABLE ONLY goodfood_eventlog ALTER COLUMN id SET DEFAULT nextval('goodfood
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_extrusionaddedingrediententry ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionaddedingrediententry_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionaddedmixentry_id_seq'::regclass);
 
 
@@ -23070,21 +23020,6 @@ SELECT pg_catalog.setval('goodfood_eventlog_id_seq', 1, false);
 
 
 --
--- Data for Name: goodfood_extrusionaddedingrediententry; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY goodfood_extrusionaddedingrediententry (id, extrusionprotocol_id, ingredient_id, batch_id, quantity, succession, partialquantity1, partialquantity2, partialquantity3, partialquantity4, partialquantity5, partialquantity6, entityversion, beyondrecipe) FROM stdin;
-\.
-
-
---
--- Name: goodfood_extrusionaddedingrediententry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('goodfood_extrusionaddedingrediententry_id_seq', 1, false);
-
-
---
 -- Data for Name: goodfood_extrusionaddedmixentry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23185,7 +23120,7 @@ SELECT pg_catalog.setval('goodfood_extrusionpouring_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouringingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix) FROM stdin;
+COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix, beyondrecipe) FROM stdin;
 \.
 
 
@@ -29284,14 +29219,6 @@ ALTER TABLE ONLY goodfood_eventlog
 
 
 --
--- Name: goodfood_extrusionaddedingrediententry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_extrusionaddedingrediententry
-    ADD CONSTRAINT goodfood_extrusionaddedingrediententry_pkey PRIMARY KEY (id);
-
-
---
 -- Name: goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -32567,14 +32494,6 @@ ALTER TABLE ONLY basic_workstationtype
 
 
 --
--- Name: batch_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_extrusionaddedingrediententry
-    ADD CONSTRAINT batch_fk FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
 -- Name: columnfordeliveries_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33570,14 +33489,6 @@ ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
 -- Name: extrusionprotocol_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_extrusionaddedingrediententry
-    ADD CONSTRAINT extrusionprotocol_fk FOREIGN KEY (extrusionprotocol_id) REFERENCES goodfood_extrusionprotocol(id) DEFERRABLE;
-
-
---
--- Name: extrusionprotocol_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry
     ADD CONSTRAINT extrusionprotocol_fk FOREIGN KEY (extrusionprotocol_id) REFERENCES goodfood_extrusionprotocol(id) DEFERRABLE;
 
@@ -34484,14 +34395,6 @@ ALTER TABLE ONLY esilco_importpositionerror
 
 ALTER TABLE ONLY materialflowresources_importstoragelocation
     ADD CONSTRAINT importstoragelocation_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: ingredient_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_extrusionaddedingrediententry
-    ADD CONSTRAINT ingredient_fk FOREIGN KEY (ingredient_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
