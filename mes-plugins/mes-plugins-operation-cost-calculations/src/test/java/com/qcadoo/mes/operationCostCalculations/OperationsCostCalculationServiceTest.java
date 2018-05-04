@@ -85,7 +85,7 @@ public class OperationsCostCalculationServiceTest {
         expectedTotalOperationCost = mock(BigDecimal.class);
         productComponentQuantities.put(techOperComp, new BigDecimal(3));
 
-        when(numberService.setScale(new BigDecimal(15))).thenReturn(expectedTotalOperationCost);
+        when(numberService.setScaleWithDefaultMathContext(new BigDecimal(15))).thenReturn(expectedTotalOperationCost);
 
     }
 

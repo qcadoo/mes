@@ -248,7 +248,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         boolean isInteger = dictionaryService.checkIfUnitIsInteger(unit);
         BigDecimal value = quantity.multiply(conversion, numberService.getMathContext());
         if (isInteger) {
-            return numberService.setScale(value, 0);
+            return numberService.setScaleWithDefaultMathContext(value, 0);
         } else {
             return value;
         }

@@ -169,7 +169,7 @@ public abstract class PpsBaseAlgorithmService {
                 }
 
                 if (shiftEfficiency.compareTo(BigDecimal.ZERO) != 0) {
-                    dailyProgress.setField(DailyProgressFields.QUANTITY, numberService.setScale(shiftEfficiency));
+                    dailyProgress.setField(DailyProgressFields.QUANTITY, numberService.setScaleWithDefaultMathContext(shiftEfficiency));
                     dailyProgress.setField(DailyProgressFields.EFFICIENCY_TIME, time);
                     dailyProgressWithShifts.add(dailyProgress);
                 }

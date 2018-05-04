@@ -361,12 +361,14 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN basic_division d ON d.id = t.division_id ");
         query.append("LEFT JOIN productionlines_productionline pl ON pl.id = o.productionline_id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
-        query.append("JOIN planned_time plt ON plt.order_id = o.id AND plt.toc_id = pt.technologyoperationcomponent_id ");
+        query.append("LEFT JOIN planned_time plt ON plt.order_id = o.id AND plt.toc_id = pt.technologyoperationcomponent_id ");
         query.append("LEFT JOIN productioncounting_staffworktime swt ON pt.id = swt.productionrecord_id ");
         query.append("LEFT JOIN basic_staff stf ON swt.worker_id = stf.id ");
         query.append("LEFT JOIN basic_shift sh ON sh.id = pt.shift_id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
-        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id) ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        appendWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '03forEach') ");
         query.append("ORDER BY orderNumber, operationNumber, staffNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -495,11 +497,13 @@ class ProductionBalanceRepository {
         query.append("AS sumCostsDeviation ");
         query.append("FROM orders_order o ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
-        query.append("JOIN planned_time plt ON plt.order_id = o.id AND plt.toc_id = pt.technologyoperationcomponent_id ");
+        query.append("LEFT JOIN planned_time plt ON plt.order_id = o.id AND plt.toc_id = pt.technologyoperationcomponent_id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN basicproductioncounting_productioncountingoperationrun pcor ON pcor.order_id = o.id AND pcor.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
         query.append("CROSS JOIN basic_parameter bp ");
+        appendWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("GROUP BY orderId, orderNumber, operationNumber) ");
         query.append("ORDER BY orderNumber, operationNumber ");
 
@@ -522,7 +526,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachPlannedMachineCosts(Entity entity, StringBuilder query) {
-        query.append("MIN(plt.machine_time) / 3600 * ");
+        query.append("COALESCE(MIN(plt.machine_time), 0) / 3600 * ");
         appendForEachMachineHourCost(entity, query);
     }
 
@@ -533,7 +537,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachPlannedStaffCosts(Entity entity, StringBuilder query) {
-        query.append("MIN(plt.staff_time) / 3600 * ");
+        query.append("COALESCE(MIN(plt.staff_time), 0) / 3600 * ");
         appendForEachStaffHourCost(entity, query);
     }
 

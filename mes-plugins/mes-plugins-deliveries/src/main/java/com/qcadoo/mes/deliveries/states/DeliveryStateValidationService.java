@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -48,6 +34,20 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_DATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.LOCATION;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Service
 public class DeliveryStateValidationService {
@@ -70,6 +70,10 @@ public class DeliveryStateValidationService {
     }
 
     public void validationOnReceived(final StateChangeContext stateChangeContext) {
+        final List<String> references = Lists.newArrayList(LOCATION);
+
+        checkRequired(references, stateChangeContext);
+
         checkDeliveredQuantity(stateChangeContext);
 
         if(parameterService.getParameter().getBooleanField("positivePurchasePrice")) {

@@ -71,6 +71,13 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
         technologyValidationServicePC.validateTypeOfProductionRecordingForOrder(stateChangeContext);
     }
 
+    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = OrderStateStringValues.PENDING, targetState = OrderStateStringValues.IN_PROGRESS)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnStart(final StateChangeContext stateChangeContext, final int phase) {
+        technologyValidationServicePC.validateTypeOfProductionRecordingForOrder(stateChangeContext);
+    }
+
     @RunInPhase(OrderStateChangePhase.DEFAULT)
     @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)

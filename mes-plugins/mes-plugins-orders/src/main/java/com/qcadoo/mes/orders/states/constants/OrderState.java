@@ -34,7 +34,7 @@ public enum OrderState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState);
+            return ACCEPTED.equals(targetState) || IN_PROGRESS.equals(targetState) || DECLINED.equals(targetState);
         }
     },
     ACCEPTED(OrderStateStringValues.ACCEPTED) {

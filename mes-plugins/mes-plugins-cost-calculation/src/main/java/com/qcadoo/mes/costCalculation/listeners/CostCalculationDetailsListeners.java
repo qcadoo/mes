@@ -56,7 +56,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.json.XMLTokener.entity;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -153,7 +152,7 @@ public class CostCalculationDetailsListeners {
 
         for (String costField : costFields) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);
-            fieldComponent.setFieldValue(numberService.setScale(
+            fieldComponent.setFieldValue(numberService.setScaleWithDefaultMathContext(
                     BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(costField)), 2));
         }
     }
@@ -417,7 +416,7 @@ public class CostCalculationDetailsListeners {
         Entity costsEntity = formComponent.getEntity();
         Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal tkw = costsEntity.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
-        product.setField("nominalCost", numberService.setScale(tkw));
+        product.setField("nominalCost", numberService.setScaleWithDefaultMathContext(tkw));
         Entity savedEntity = product.getDataDefinition().save(product);
         if (!savedEntity.isValid()) {
             view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsFailure",

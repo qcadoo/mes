@@ -56,6 +56,13 @@ public class BpcOrderStateListenerAspect extends AbstractStateListenerAspect {
         listenerService.onAccept(stateChangeContext);
     }
 
+    @RunInPhase(LAST)
+    @RunForStateTransition(sourceState = OrderStateStringValues.PENDING, targetState = OrderStateStringValues.IN_PROGRESS)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onStartFromPending(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.onAccept(stateChangeContext);
+    }
+
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
     }

@@ -143,9 +143,9 @@ public class DeliveredProductHooks {
                         .reduce(BigDecimal.ZERO, BigDecimal::add);
                 additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
             }
-            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScale(deliveredQuantity));
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScaleWithDefaultMathContext(deliveredQuantity));
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                    numberService.setScale(additionalQuantity));
+                    numberService.setScaleWithDefaultMathContext(additionalQuantity));
             orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
 
         });
@@ -177,9 +177,9 @@ public class DeliveredProductHooks {
                         additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
                     }
 
-                    orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScale(deliveredQuantity));
+                    orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScaleWithDefaultMathContext(deliveredQuantity));
                     orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                            numberService.setScale(additionalQuantity));
+                            numberService.setScaleWithDefaultMathContext(additionalQuantity));
                     orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
                 });
             }
@@ -205,9 +205,9 @@ public class DeliveredProductHooks {
                 additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
             }
 
-            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScale(deliveredQuantity));
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY, numberService.setScaleWithDefaultMathContext(deliveredQuantity));
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                    numberService.setScale(additionalQuantity));
+                    numberService.setScaleWithDefaultMathContext(additionalQuantity));
             orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
         });
     }

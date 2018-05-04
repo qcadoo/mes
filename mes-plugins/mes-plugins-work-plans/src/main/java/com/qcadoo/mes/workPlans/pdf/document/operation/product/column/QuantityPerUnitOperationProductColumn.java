@@ -64,7 +64,7 @@ public class QuantityPerUnitOperationProductColumn extends AbstractOperationProd
         if (orders.isEmpty() || quantity == null) {
             return StringUtils.EMPTY;
         }
-        return String.valueOf(numberService.format(numberService.setScale(quantity.divide(
+        return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(quantity.divide(
                 orders.get(0).getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP))));
     }
 

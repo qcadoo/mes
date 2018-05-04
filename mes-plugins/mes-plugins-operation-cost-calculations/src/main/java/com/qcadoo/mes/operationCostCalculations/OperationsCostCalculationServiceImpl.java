@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -43,8 +33,8 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
-import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -57,6 +47,17 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -149,7 +150,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         CalculateOperationCostMode calculateOperationCostMode = CalculateOperationCostMode
                 .parseString(costCalculationOrProductionBalance.getStringField(L_CALCULATE_OPERATION_COSTS_MODE));
-        
+
         if (order != null) {
             Entity technologyFromOrder = order.getBelongsToField(L_TECHNOLOGY);
 
@@ -188,7 +189,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             BigDecimal totalPieceworkCost = estimateCostCalculationForPieceWork(calculationOperationComponents.getRoot(),
                     productionCostMargin, quantity, productQuantitiesAndOperationRuns.getOperationRuns());
 
-            costCalculationOrProductionBalance.setField(L_TOTAL_PIECEWORK_COSTS, numberService.setScale(totalPieceworkCost));
+            costCalculationOrProductionBalance.setField(L_TOTAL_PIECEWORK_COSTS, numberService.setScaleWithDefaultMathContext(totalPieceworkCost));
         } else if (CalculateOperationCostMode.HOURLY.equals(calculateOperationCostMode)) {
             Entity productionLine = costCalculationOrProductionBalance.getBelongsToField(L_PRODUCTION_LINE);
 
@@ -198,17 +199,18 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             Map<Long, Integer> workstations = getWorkstationsMapsForOperationsComponent(copyCostCalculationOrProductionBalance,
                     productionLine);
 
-            OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(
-                    calculationOperationComponents, productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ,
-                    includeAdditionalTime, workstations, true);
+            List<Entity> tocs = calculationOperationComponents.stream()
+                    .map(e -> e.getBelongsToField("technologyOperationComponent")).collect(Collectors.toList());
+            OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(tocs,
+                    productQuantitiesAndOperationRuns.getOperationRuns(), includeTPZ, includeAdditionalTime, workstations, true);
 
             Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                     productionCostMargin, quantity, operationTimes, hourlyCostFromOperation);
 
             costCalculationOrProductionBalance.setField(L_TOTAL_MACHINE_HOURLY_COSTS,
-                    numberService.setScale(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)));
+                    numberService.setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)));
             costCalculationOrProductionBalance.setField(L_TOTAL_LABOR_HOURLY_COSTS,
-                    numberService.setScale(resultsMap.get(CalculationOperationComponentFields.LABOR_HOURLY_COST)));
+                    numberService.setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.LABOR_HOURLY_COST)));
         } else {
             throw new IllegalStateException("Unsupported calculateOperationCostMode");
         }
@@ -242,11 +244,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
             for (String costKey : L_COST_KEYS) {
                 BigDecimal unitCost = costs.get(costKey).add(unitCosts.get(costKey), mathContext);
 
-                costs.put(costKey, numberService.setScale(unitCost));
+                costs.put(costKey, numberService.setScaleWithDefaultMathContext(unitCost));
             }
         }
 
-        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getId());
+        OperationTimes operationTimes = realizationTimes.get(calculationOperationComponent.getBelongsToField(
+                "technologyOperationComponent").getId());
         Map<String, BigDecimal> costsForSingleOperation = estimateHourlyCostCalculationForSingleOperation(operationTimes,
                 productionCostMargin, hourlyCostFromOperation);
         saveGeneratedValues(costsForSingleOperation, calculationOperationComponent, true, operationTimes.getTimes(), null);
@@ -265,9 +268,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         MathContext mathContext = numberService.getMathContext();
 
-        Entity calculationOperationComponent = operationTimes.getOperation();
-        Entity technologyOperationComponent = calculationOperationComponent
-                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = operationTimes.getOperation();
 
         OperationWorkTime operationWorkTimes = operationTimes.getTimes();
 
@@ -275,14 +276,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal laborHourlyCost = BigDecimal.ZERO;
         if (hourlyCostFromOperation) {
             machineHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
-                .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
+                    .getField(TechnologyOperationComponentFieldsCNFO.MACHINE_HOURLY_COST));
             laborHourlyCost = BigDecimalUtils.convertNullToZero(technologyOperationComponent
-                .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
+                    .getField(TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST));
         } else {
             machineHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
                     "averageMachineHourlyCostPB"));
-            laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter()
-                    .getDecimalField("averageLaborHourlyCostPB"));
+            laborHourlyCost = BigDecimalUtils.convertNullToZero(parameterService.getParameter().getDecimalField(
+                    "averageLaborHourlyCostPB"));
         }
 
         BigDecimal durationMachine = BigDecimal.valueOf(operationWorkTimes.getMachineWorkTime());
@@ -306,14 +307,14 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationMarginCost = operationCost.multiply(
                 productionCostMargin.divide(BigDecimal.valueOf(100), mathContext), mathContext);
 
-        costs.put(L_MACHINE_HOURLY_COST, numberService.setScale(machineHourlyCost));
-        costs.put(L_LABOR_HOURLY_COST, numberService.setScale(laborHourlyCost));
-        costs.put(L_OPERATION_MACHINE_COST, numberService.setScale(operationMachineCost));
-        costs.put(L_OPERATION_LABOR_COST, numberService.setScale(operationLaborCost));
-        costs.put(L_OPERATION_COST, numberService.setScale(operationCost));
-        costs.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
-        costs.put(L_TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN, numberService.setScale(totalMachineOperationCostWithMargin));
-        costs.put(L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN, numberService.setScale(totalLaborOperationCostWithMargin));
+        costs.put(L_MACHINE_HOURLY_COST, numberService.setScaleWithDefaultMathContext(machineHourlyCost));
+        costs.put(L_LABOR_HOURLY_COST, numberService.setScaleWithDefaultMathContext(laborHourlyCost));
+        costs.put(L_OPERATION_MACHINE_COST, numberService.setScaleWithDefaultMathContext(operationMachineCost));
+        costs.put(L_OPERATION_LABOR_COST, numberService.setScaleWithDefaultMathContext(operationLaborCost));
+        costs.put(L_OPERATION_COST, numberService.setScaleWithDefaultMathContext(operationCost));
+        costs.put(L_OPERATION_MARGIN_COST, numberService.setScaleWithDefaultMathContext(operationMarginCost));
+        costs.put(L_TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN, numberService.setScaleWithDefaultMathContext(totalMachineOperationCostWithMargin));
+        costs.put(L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN, numberService.setScaleWithDefaultMathContext(totalLaborOperationCostWithMargin));
 
         return costs;
     }
@@ -360,12 +361,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         BigDecimal operationCost = operationRuns.multiply(pieceworkCostPerOperation, numberService.getMathContext());
         BigDecimal operationMarginCost = operationCost.multiply(productionCostMargin.divide(BigDecimal.valueOf(100),
                 numberService.getMathContext()));
-        BigDecimal totalOperationCost = numberService.setScale(operationCost.add(operationMarginCost,
+        BigDecimal totalOperationCost = numberService.setScaleWithDefaultMathContext(operationCost.add(operationMarginCost,
                 numberService.getMathContext()));
 
-        costs.put(L_OPERATION_COST, numberService.setScale(operationCost));
-        costs.put(L_OPERATION_MARGIN_COST, numberService.setScale(operationMarginCost));
-        costs.put(L_PIECES, numberService.setScale(operationRuns));
+        costs.put(L_OPERATION_COST, numberService.setScaleWithDefaultMathContext(operationCost));
+        costs.put(L_OPERATION_MARGIN_COST, numberService.setScaleWithDefaultMathContext(operationMarginCost));
+        costs.put(L_PIECES, numberService.setScaleWithDefaultMathContext(operationRuns));
         costs.put(L_TOTAL_OPERATION_COST, totalOperationCost);
 
         return costs;
@@ -390,18 +391,18 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
                     costs.get(L_TOTAL_LABOR_OPERATION_COST_WITH_MARGIN));
         } else {
             calculationOperationComponent.setField(CalculationOperationComponentFields.PIECES,
-                    numberService.setScale(operationRuns));
+                    numberService.setScaleWithDefaultMathContext(operationRuns));
         }
 
         BigDecimal operationCost = costs.get(L_OPERATION_COST);
         BigDecimal operationMarginCost = costs.get(L_OPERATION_MARGIN_COST);
 
         calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_COST,
-                numberService.setScale(operationCost));
+                numberService.setScaleWithDefaultMathContext(operationCost));
         calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_MARGIN_COST,
-                numberService.setScale(operationMarginCost));
+                numberService.setScaleWithDefaultMathContext(operationMarginCost));
         calculationOperationComponent.setField(CalculationOperationComponentFields.TOTAL_OPERATION_COST,
-                numberService.setScale(operationCost.add(operationMarginCost, numberService.getMathContext())));
+                numberService.setScaleWithDefaultMathContext(operationCost.add(operationMarginCost, numberService.getMathContext())));
 
         calculationOperationComponent.getDataDefinition().save(calculationOperationComponent);
     }

@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.print;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -77,6 +64,18 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
@@ -157,6 +156,14 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
                 public int compare(Position p1, Position p2) {
                     return ComparisonChain.start().compare(p1.getTargetPallet(), p2.getTargetPallet())
                             .compare(p1.getStorageLocation(), p2.getStorageLocation()).result();
+                }
+            });
+        } else {
+            Collections.sort(_positions, new Comparator<Position>() {
+
+                @Override
+                public int compare(Position p1, Position p2) {
+                    return ComparisonChain.start().compare(p1.getStorageLocation(), p2.getStorageLocation()).result();
                 }
             });
         }

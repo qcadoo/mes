@@ -72,7 +72,7 @@ public class TechnologyTreeBuilder<T, P> {
         for (ItemWithQuantity<P> productAndQuantity : productComponents) {
             InternalOperationProductComponent opc = compsFactory.buildOpc(opcType);
             adapter.setOpProductCompCustomFields(opc, productAndQuantity.getItem());
-            opc.setQuantity(numberService.setScale(productAndQuantity.getQuantity()));
+            opc.setQuantity(numberService.setScaleWithDefaultMathContext(productAndQuantity.getQuantity()));
             opc.setProduct(adapter.buildProductEntity(productAndQuantity.getItem()));
             opc.setPriority(productAndQuantity.getPriority());
             operationProductComponents.add(opc);

@@ -115,7 +115,7 @@ public class ResourceDetailsHooks {
             BigDecimal quantity = calculationQuantityService.calculateQuantity(maybeQuantityInAdditionalUnit.getRight().get(),
                     conversion, product.getStringField(ProductFields.UNIT));
 
-            String quantityFormatted = numberService.format(numberService.setScale(quantity));
+            String quantityFormatted = numberService.format(numberService.setScaleWithDefaultMathContext(quantity));
             quantityField.setFieldValue(quantityFormatted);
 
         } else {

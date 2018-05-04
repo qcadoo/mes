@@ -257,14 +257,14 @@ public class ProductionTrackingDetailsListeners {
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponentDto
                     .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
-                    numberService.setScale(plannedQuantity));
+                    numberService.setScaleWithDefaultMathContext(plannedQuantity));
 
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String baseUnit = product.getStringField(ProductFields.UNIT);
 
             if (StringUtils.isEmpty(additionalUnit)) {
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
-                        numberService.setScale(plannedQuantity));
+                        numberService.setScaleWithDefaultMathContext(plannedQuantity));
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, baseUnit);
             } else {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
@@ -276,7 +276,7 @@ public class ProductionTrackingDetailsListeners {
                             convertedQuantity);
                 } else {
                     recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
-                            numberService.setScale(plannedQuantity));
+                            numberService.setScaleWithDefaultMathContext(plannedQuantity));
                 }
 
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, additionalUnit);

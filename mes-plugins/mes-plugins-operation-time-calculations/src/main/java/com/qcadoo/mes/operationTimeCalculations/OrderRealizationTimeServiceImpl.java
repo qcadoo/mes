@@ -318,7 +318,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         BigDecimal cycles = operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, mc).divide(
                 quantityOutputProductProduced, mc);
 
-        return numberService.setScale(cycles);
+        return numberService.setScaleWithDefaultMathContext(cycles);
     }
 
     @Override

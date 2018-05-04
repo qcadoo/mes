@@ -489,7 +489,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     }
                 }
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceAvailableQuantity));
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenResourceAvailableQuantity);
 
@@ -508,7 +508,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         conversion, givenUnit);
 
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
-                resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
+                resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
                 Entity savedResource = resource.getDataDefinition().save(resource);
@@ -517,7 +517,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     throw new InvalidResourceException(savedResource);
                 }
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
 
@@ -655,7 +655,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 Entity newResource = createResource(position, warehouseTo, resource, resourceAvailableQuantity, date);
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(resourceAvailableQuantity));
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceAvailableQuantity));
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenResourceAvailableQuantity);
 
@@ -678,7 +678,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         conversion, givenUnit);
 
                 resource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
-                resource.setField(ResourceFields.QUANTITY, numberService.setScale(resourceQuantity));
+                resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
                 resource.setField(ResourceFields.AVAILABLE_QUANTITY, resourceAvailableQuantity);
 
                 Entity savedResource = resource.getDataDefinition().save(resource);
@@ -689,7 +689,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 Entity newResource = createResource(position, warehouseTo, resource, quantity, date);
 
-                newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+                newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
 
                 newPosition.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
 
@@ -985,7 +985,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
 
     private void setPositionQuantityAndGivenQuantity(BigDecimal quantity, Entity newPosition) {
-        newPosition.setField(PositionFields.QUANTITY, numberService.setScale(quantity));
+        newPosition.setField(PositionFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
 
         BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
                 newPosition.getDecimalField(PositionFields.CONVERSION), newPosition.getStringField(PositionFields.GIVEN_UNIT));

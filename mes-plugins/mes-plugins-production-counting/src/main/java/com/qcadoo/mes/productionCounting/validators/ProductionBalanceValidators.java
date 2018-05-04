@@ -23,21 +23,16 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ProductionBalanceValidators {
-
-    @Autowired
-    private ProductionCountingService productionCountingService;
 
     public boolean validatesWith(final DataDefinition productionBalanceDD, final Entity productionBalance) {
         boolean isValid = checkIfOptionsAreNotNull(productionBalanceDD, productionBalance);

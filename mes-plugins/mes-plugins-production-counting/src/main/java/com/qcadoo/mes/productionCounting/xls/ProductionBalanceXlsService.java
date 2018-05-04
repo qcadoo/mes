@@ -779,7 +779,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
-        cell.setCellValue(numberService.setScale(value, 2).doubleValue());
+        cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
         cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HSSFCellStyle.ALIGN_RIGHT));
         return cell;
     }

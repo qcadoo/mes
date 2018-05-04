@@ -154,9 +154,9 @@ public class TrackingOperationProductOutComponentHooks {
         }
 
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
-                numberService.setScale(usedQuantity));
+                numberService.setScaleWithDefaultMathContext(usedQuantity));
         trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
-                numberService.setScale(givenQuantity.orElse(usedQuantity)));
+                numberService.setScaleWithDefaultMathContext(givenQuantity.orElse(usedQuantity)));
 
         trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
     }

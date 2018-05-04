@@ -21,17 +21,17 @@ public class CalculationQuantityService {
         BigDecimal quantity = additionalQuantity.divide(conversion, NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL,
                 BigDecimal.ROUND_FLOOR);
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
-            return numberService.setScale(quantity, 0);
+            return numberService.setScaleWithDefaultMathContext(quantity, 0);
         }
-        return numberService.setScale(quantity);
+        return numberService.setScaleWithDefaultMathContext(quantity);
     }
 
     public BigDecimal calculateAdditionalQuantity(BigDecimal quantity, BigDecimal conversion, String unit) {
         BigDecimal additionalQuantity = quantity.multiply(conversion, numberService.getMathContext());
         if (dictionaryService.checkIfUnitIsInteger(unit)) {
-            return numberService.setScale(additionalQuantity, 0);
+            return numberService.setScaleWithDefaultMathContext(additionalQuantity, 0);
         }
-        return numberService.setScale(additionalQuantity);
+        return numberService.setScaleWithDefaultMathContext(additionalQuantity);
     }
 
 }

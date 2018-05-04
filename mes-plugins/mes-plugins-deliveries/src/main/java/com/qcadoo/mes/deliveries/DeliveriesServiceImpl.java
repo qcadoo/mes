@@ -388,7 +388,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
         BigDecimal totalPrice = getBigDecimalFromField(totalPriceField, locale);
 
-        BigDecimal pricePerUnit = numberService.setScale(totalPrice.divide(quantity, numberService.getMathContext()));
+        BigDecimal pricePerUnit = numberService.setScaleWithDefaultMathContext(totalPrice.divide(quantity, numberService.getMathContext()));
 
         pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
         pricePerUnitField.requestComponentUpdateState();
@@ -418,7 +418,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         BigDecimal pricePerUnit = getBigDecimalFromField(pricePerUnitField, locale);
         BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
 
-        BigDecimal totalPrice = numberService.setScale(pricePerUnit.multiply(quantity, numberService.getMathContext()));
+        BigDecimal totalPrice = numberService.setScaleWithDefaultMathContext(pricePerUnit.multiply(quantity, numberService.getMathContext()));
 
         totalPriceField.setFieldValue(numberService.format(totalPrice));
         totalPriceField.requestComponentUpdateState();
@@ -486,10 +486,10 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
                 || (pricePerUnit != null && totalPrice == null)) {
-            totalPrice = numberService.setScale(calculateTotalPrice(quantity, pricePerUnit));
+            totalPrice = numberService.setScaleWithDefaultMathContext(calculateTotalPrice(quantity, pricePerUnit));
         } else if ((totalPrice != null && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
                 || (totalPrice != null && pricePerUnit == null)) {
-            pricePerUnit = numberService.setScale(calculatePricePerUnit(quantity, totalPrice));
+            pricePerUnit = numberService.setScaleWithDefaultMathContext(calculatePricePerUnit(quantity, totalPrice));
         } else {
             save = false;
         }
