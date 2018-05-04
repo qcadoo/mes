@@ -33,9 +33,15 @@
         <enum name="logType" values="order" required="true"/>
         <string name="action"/>
         <text name="message"/>
-        <string name="item1"/>
-        <string name="item2"/>
-        <string name="item3"/>
+        <string name="item1">
+            <validatesLength max="2048"/>
+        </string>
+        <string name="item2">
+            <validatesLength max="2048"/>
+        </string>
+        <string name="item3">
+            <validatesLength max="2048"/>
+        </string>
         <text name="details"/>
         <enum name="logLevel" values="01trace,02debug,03info,04warn,05error,06fatal,07activity" default="01trace"
               required="true"/>
