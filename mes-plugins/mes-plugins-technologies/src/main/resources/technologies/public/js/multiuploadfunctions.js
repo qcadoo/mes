@@ -27,7 +27,7 @@ $(function() {
 					{
 						pasteZone: null,
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i,
+						acceptFileTypes : QCDMultiUpload.acceptFileTypes,
 
 						submit : function(e, data) {
 							var locale = window.mainController
