@@ -33,10 +33,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -96,6 +100,9 @@ public class DocumentDetailsListeners {
     @Autowired
     private DocumentErrorsLogger documentErrorsLogger;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -105,8 +112,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -124,8 +131,8 @@ public class DocumentDetailsListeners {
                 documentDb = documentDb.getDataDefinition().save(documentDb);
                 try {
                     dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
-                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState
-                            .getLocale());
+                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"),
+                            componentState.getLocale());
                 } catch (Exception e) {
                     LOGGER.error("Error when generate disposition order", e);
                     throw new IllegalStateException(e.getMessage(), e);
@@ -147,8 +154,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
-                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
+                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -162,15 +169,43 @@ public class DocumentDetailsListeners {
         }
     }
 
-    @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity document = documentForm.getEntity().getDataDefinition().get(documentForm.getEntityId());
+
+        if (document.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
+            documentForm.addMessage("materialFlow.error.document.acceptationInProgress", MessageType.FAILURE);
+
+            return;
+        }
+
+        setAcceptationInProgress(document);
+        createResourcesForDocuments(view, documentForm);
+    }
+
+    private void setAcceptationInProgress(final Entity document) {
+        String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id = :id;";
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("acceptationinprogress", true);
+
+        parameters.put("id", document.getId());
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
+        jdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Transactional
+    private void createResourcesForDocuments(final ViewDefinitionState view, final FormComponent documentForm) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
-
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
+
         LOGGER.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
@@ -179,6 +214,7 @@ public class DocumentDetailsListeners {
         }
 
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
         document = documentDD.save(document);
 
@@ -199,8 +235,8 @@ public class DocumentDetailsListeners {
                 String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
                 String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                         .getStringField(ProductFields.NUMBER);
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                        false, resourceNumber, productNumber);
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
+                        resourceNumber, productNumber);
             }
         } else {
             document.setNotValid();
@@ -221,7 +257,7 @@ public class DocumentDetailsListeners {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
             if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                receiptDocumentForReleaseHelper.tryBuildPz(document, view);
+                receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
             }
 
             LOGGER.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "

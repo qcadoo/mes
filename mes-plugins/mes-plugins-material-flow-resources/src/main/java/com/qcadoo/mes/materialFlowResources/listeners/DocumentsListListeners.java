@@ -64,11 +64,16 @@ public class DocumentsListListeners {
 
         for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
             Entity document = documentDD.get(documentId);
+
             if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
+                continue;
+            } else if (document.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
                 continue;
             }
 
             document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+            document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
+
             document = documentDD.save(document);
 
             if (!document.isValid()) {
@@ -79,6 +84,7 @@ public class DocumentsListListeners {
                 resourceManagementService.createResources(document);
             } else {
                 document.setNotValid();
+
                 gridComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", ComponentState.MessageType.FAILURE);
             }
 
@@ -90,7 +96,7 @@ public class DocumentsListListeners {
                 document.getErrors().values().forEach(gridComponent::addMessage);
             } else {
                 if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                    receiptDocumentForReleaseHelper.tryBuildPz(document, view);
+                    receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
                 }
             }
         }

@@ -53,58 +53,75 @@ public class DocumentValidators {
     @Autowired
     private PositionValidators positionValidators;
 
-    public boolean validate(final DataDefinition dataDefinition, final Entity entity) {
-        boolean hasWarehouses = hasWarehouses(dataDefinition, entity);
+    public boolean validate(final DataDefinition documentDD, final Entity document) {
+        Entity documentFromDB = documentDD.get(document.getId());
+
+        if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+            document.addGlobalError("materialFlow.error.document.alreadyAccepted");
+
+            return false;
+        } 
+
+        boolean hasWarehouses = hasWarehouses(documentDD, document);
 
         if (hasWarehouses) {
-            hasDifferentWarehouses(dataDefinition, entity);
+            hasDifferentWarehouses(documentDD, document);
         }
-        validateWarehouseChanged(dataDefinition, entity);
-        return entity.isValid();
+
+        validateWarehouseChanged(documentDD, document);
+
+        return document.isValid();
     }
 
-    public boolean hasDifferentWarehouses(final DataDefinition dataDefinition, final Entity entity) {
-        DocumentType documentType = DocumentType.of(entity);
+    public boolean hasDifferentWarehouses(final DataDefinition documentDD, final Entity document) {
+        DocumentType documentType = DocumentType.of(document);
+
         if (DocumentType.TRANSFER.equals(documentType)) {
-            Entity locationFrom = entity.getBelongsToField(DocumentFields.LOCATION_FROM);
-            Entity locationTo = entity.getBelongsToField(DocumentFields.LOCATION_TO);
+            Entity locationFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
+            Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
             if (locationFrom == null || locationTo == null) {
                 return true;
             }
             if (locationFrom.getId().equals(locationTo.getId())) {
-                entity.addGlobalError("materialFlow.error.document.warehouse.sameForTransfer");
+                document.addGlobalError("materialFlow.error.document.warehouse.sameForTransfer");
+
                 return false;
             }
         }
         return true;
     }
 
-    public boolean hasWarehouses(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean hasWarehouses(final DataDefinition documentDD, final Entity document) {
+        DocumentType documentType = DocumentType.of(document);
 
-        DocumentType documentType = DocumentType.of(entity);
         if (DocumentType.RECEIPT.equals(documentType) || DocumentType.INTERNAL_INBOUND.equals(documentType)) {
-            return hasWarehouse(dataDefinition, entity, DocumentFields.LOCATION_TO);
+            return hasWarehouse(documentDD, document, DocumentFields.LOCATION_TO);
         } else if (DocumentType.TRANSFER.equals(documentType)) {
-            return hasWarehouse(dataDefinition, entity, DocumentFields.LOCATION_FROM)
-                    && hasWarehouse(dataDefinition, entity, DocumentFields.LOCATION_TO);
+            return hasWarehouse(documentDD, document, DocumentFields.LOCATION_FROM)
+                    && hasWarehouse(documentDD, document, DocumentFields.LOCATION_TO);
         } else if (DocumentType.RELEASE.equals(documentType) || DocumentType.INTERNAL_OUTBOUND.equals(documentType)) {
-            return hasWarehouse(dataDefinition, entity, DocumentFields.LOCATION_FROM);
+            return hasWarehouse(documentDD, document, DocumentFields.LOCATION_FROM);
         } else {
             throw new IllegalStateException("Unknown document type.");
         }
     }
 
-    private boolean hasWarehouse(final DataDefinition dataDefinition, final Entity entity, String warehouseField) {
-        Entity location = entity.getBelongsToField(warehouseField);
+    private boolean hasWarehouse(final DataDefinition documentDD, final Entity document, String warehouseField) {
+        Entity location = document.getBelongsToField(warehouseField);
+
         if (location == null) {
-            entity.addError(dataDefinition.getField(warehouseField), "materialFlow.error.document.warehouse.required");
+            document.addError(documentDD.getField(warehouseField), "materialFlow.error.document.warehouse.required");
+
             return false;
         }
         if (!WAREHOUSE.getStringValue().equals(location.getStringField(TYPE))) {
-            entity.addError(dataDefinition.getField(warehouseField),
+            document.addError(documentDD.getField(warehouseField),
                     "materialFlow.document.validate.global.error.locationIsNotWarehouse");
+
             return false;
         }
+
         return true;
     }
 
@@ -112,26 +129,31 @@ public class DocumentValidators {
         if (document.getId() == null || document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             return true;
         }
+
         Entity documentFromDB = documentDD.get(document.getId());
 
-        if (!document.getBooleanField(DocumentFields.IN_BUFFER) && (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
-                || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO))) {
+        if (!document.getBooleanField(DocumentFields.IN_BUFFER)
+                && (checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_FROM)
+                        || checkIfWarehouseHasChanged(documentFromDB, document, DocumentFields.LOCATION_TO))) {
             document.addGlobalError("materialFlow.document.validate.global.error.warehouseChanged");
+
             return false;
         }
+
         return true;
     }
 
     private boolean checkIfWarehouseHasChanged(final Entity oldDocument, final Entity newDocument, final String warehouseField) {
         Entity oldWarehouse = oldDocument.getBelongsToField(warehouseField);
         Entity newWarehouse = newDocument.getBelongsToField(warehouseField);
+
         if (oldWarehouse == null && newWarehouse == null) {
             return false;
         } else if (oldWarehouse != null && newWarehouse != null) {
             return oldWarehouse.getId().compareTo(newWarehouse.getId()) != 0;
         }
-        return true;
 
+        return true;
     }
 
     public boolean validateAvailableQuantities(final Entity document) {
@@ -143,36 +165,44 @@ public class DocumentValidators {
 
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
+
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
         Map<Long, Entity> groupedPositions = groupProductsInPositions(positions);
+
         for (Entity position : positions) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             BigDecimal availableQuantity = positionValidators.getAvailableQuantity(positionDD, position, document);
+
             if (groupedPositions.get(product.getId()).getDecimalField(PositionFields.QUANTITY).compareTo(availableQuantity) > 0) {
                 document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
+
                 return false;
             }
         }
+
         return true;
     }
 
     private Map<Long, Entity> groupProductsInPositions(final List<Entity> positions) {
         Map<Long, Entity> groupedPositions = Maps.newHashMap();
+
         for (Entity position : positions) {
             Entity product = position.getBelongsToField(PositionFields.PRODUCT);
             List<Entity> reservations = position.getHasManyField(PositionFields.RESERVATIONS);
             BigDecimal reservedQuantity = BigDecimal.ZERO;
+
             if (reservations != null && !reservations.isEmpty()) {
                 Entity reservation = reservations.get(0);
+
                 if (reservation.getId() != null) {
                     reservedQuantity = reservation.getDecimalField(ReservationFields.QUANTITY);
                 }
             }
             if (groupedPositions.containsKey(product.getId())) {
-
                 Entity existingPosition = groupedPositions.get(product.getId());
                 BigDecimal oldQuantity = existingPosition.getDecimalField(PositionFields.QUANTITY);
                 BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
+
                 if (oldQuantity == null) {
                     existingPosition.setField(PositionFields.QUANTITY, newQuantity.subtract(reservedQuantity));
                 } else {
@@ -185,13 +215,17 @@ public class DocumentValidators {
                 Entity newPosition = dataDefinitionService
                         .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
                         .create();
+
                 newPosition.setField(PositionFields.PRODUCT, product);
                 newPosition.setField("id", position.getId());
                 newPosition.setField(PositionFields.QUANTITY,
                         position.getDecimalField(PositionFields.QUANTITY).subtract(reservedQuantity));
+
                 groupedPositions.put(product.getId(), newPosition);
             }
         }
+
         return groupedPositions;
     }
+
 }
