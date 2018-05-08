@@ -164,8 +164,8 @@ public class MasterOrderDetailsHooks {
         if (checkIfShouldInsertNumber(view)) {
             FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
 
-            numberField.setFieldValue(
-                    jdbcTemplate.queryForObject("select generate_master_order_number()", Collections.emptyMap(), String.class));
+            numberField.setFieldValue(jdbcTemplate.queryForObject("select generate_master_order_number()",
+                    Collections.emptyMap(), String.class));
 
             numberField.requestComponentUpdateState();
         }
@@ -225,8 +225,11 @@ public class MasterOrderDetailsHooks {
         defaultTechnology.setFieldValue(defaultTechnologyValue);
         defaultTechnology.requestComponentUpdateState();
 
-        technology.setFieldValue(defaultTechnologyEntity.getId());
-        technology.requestComponentUpdateState();
+        if (technology.getFieldValue() == null) {
+            technology.setFieldValue(defaultTechnologyEntity.getId());
+            technology.requestComponentUpdateState();
+        }
+
     }
 
 }
