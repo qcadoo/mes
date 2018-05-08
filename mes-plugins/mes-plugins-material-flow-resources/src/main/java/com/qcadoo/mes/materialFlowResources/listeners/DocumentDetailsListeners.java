@@ -124,7 +124,8 @@ public class DocumentDetailsListeners {
                 documentDb = documentDb.getDataDefinition().save(documentDb);
                 try {
                     dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
-                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName"), componentState
+                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName", documentDb
+                                    .getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")), componentState
                             .getLocale());
                 } catch (Exception e) {
                     LOGGER.error("Error when generate disposition order", e);
