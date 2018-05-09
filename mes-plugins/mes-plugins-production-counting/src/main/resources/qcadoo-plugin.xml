@@ -113,12 +113,14 @@
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
 
         <model:model model="finalProductAnalysisEntry" resource="model/finalProductAnalysisEntry.xml"/>
-        <model:model model="beforeAdditionalActionsAnalysisEntry" resource="model/beforeAdditionalActionsAnalysisEntry.xml"/>
+        <model:model model="beforeAdditionalActionsAnalysisEntry"
+                     resource="model/beforeAdditionalActionsAnalysisEntry.xml"/>
 
         <model:model model="anomalyReason" resource="model/anomalyReason.xml"/>
         <model:model model="anomaly" resource="model/anomaly.xml"/>
         <model:model model="anomalyDto" resource="model/anomalyDto.xml"/>
-        <model:model model="anomalyProductionTrackingEntryHelper" resource="model/anomalyProductionTrackingEntryHelper.xml"/>
+        <model:model model="anomalyProductionTrackingEntryHelper"
+                     resource="model/anomalyProductionTrackingEntryHelper.xml"/>
         <model:model model="anomalyProductionTrackingHelper" resource="model/anomalyProductionTrackingHelper.xml"/>
         <model:model model="anomalyReasonContainer" resource="model/anomalyReasonContainer.xml"/>
         <model:model model="anomalyExplanation" resource="model/anomalyExplanation.xml"/>
@@ -176,6 +178,10 @@
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="allowAnomalyCreationOnAcceptanceRecord"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeWageGroups"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
@@ -434,7 +440,8 @@
                         view="finalProductAnalysisGenerator" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="beforeAdditionalActionsAnalysis" category="analysis"
-                        view="beforeAdditionalActionsAnalysisGenerator" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+                        view="beforeAdditionalActionsAnalysisGenerator"
+                        defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>

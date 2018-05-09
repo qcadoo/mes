@@ -139,13 +139,15 @@ public class ProductionBalanceDetailsHooks {
         }
     }
 
-    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         checkIfOptionsAreAvailable(viewDefinitionState, state, args);
         FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
         FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
-        if(SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals((String) sourceOfMaterialCosts.getFieldValue())){
+        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
+                (String) sourceOfMaterialCosts.getFieldValue())) {
             calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
         }
 
@@ -160,7 +162,8 @@ public class ProductionBalanceDetailsHooks {
         if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
                 sourceOfMaterialCosts.getFieldValue())
                 && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
-            sourceOfMaterialCosts.addMessage("productionCounting.productionBalance.messages.optionUnavailable", ComponentState.MessageType.FAILURE);
+            sourceOfMaterialCosts.addMessage("productionCounting.productionBalance.messages.optionUnavailable",
+                    ComponentState.MessageType.FAILURE);
         }
     }
 
@@ -202,6 +205,11 @@ public class ProductionBalanceDetailsHooks {
                     .getComponentByReference(ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
             includeAdditionalTime.setFieldValue(parameter.getBooleanField(ParameterFieldsPC.INCLUDE_ADDITIONAL_TIME_PB));
             includeAdditionalTime.requestComponentUpdateState();
+
+            FieldComponent includeWageGroups = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.INCLUDE_WAGE_GROUPS);
+            includeWageGroups.setFieldValue(parameter.getBooleanField(ParameterFieldsPC.INCLUDE_WAGE_GROUPS));
+            includeWageGroups.requestComponentUpdateState();
 
             FieldComponent sourceOfMaterialCosts = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);

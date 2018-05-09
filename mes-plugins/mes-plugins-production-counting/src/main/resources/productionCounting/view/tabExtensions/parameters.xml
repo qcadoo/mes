@@ -147,7 +147,7 @@
                     <layoutElement column="1" row="1" height="3">
                         <component type="borderLayout" name="parametersBorderLayout">
                             <component type="gridLayout" name="parametersGidLayout"
-                                       columns="1" rows="4">
+                                       columns="1" rows="5">
                                 <layoutElement column="1" row="1">
                                     <component type="select" name="calculateOperationsCostsModePB"
                                                field="#{form}.calculateOperationCostsModePB"
@@ -160,7 +160,8 @@
                                 </layoutElement>
                                 <layoutElement column="1" row="2">
                                     <component type="select" name="sourceOfOperationCostsPB"
-                                               reference="sourceOfOperationCostsPB" field="#{form}.sourceOfOperationCostsPB"
+                                               reference="sourceOfOperationCostsPB"
+                                               field="#{form}.sourceOfOperationCostsPB"
                                                hasDescription="true">
                                         <option type="labelWidth" value="40"/>
                                         <listener event="onSelectedEntityChange"
@@ -176,7 +177,16 @@
                                 </layoutElement>
                                 <layoutElement column="1" row="4">
                                     <component type="checkbox" name="includeAdditionalTimePB"
-                                               field="#{form}.includeAdditionalTimePB" reference="includeAdditionalTimePB">
+                                               field="#{form}.includeAdditionalTimePB"
+                                               reference="includeAdditionalTimePB">
+                                        <option type="labelWidth" value="40"/>
+                                    </component>
+                                </layoutElement>
+
+                                <layoutElement column="1" row="5">
+                                    <component type="checkbox" name="includeWageGroups"
+                                               field="#{form}.includeWageGroups" reference="includeWageGroups"
+                                               hasDescription="true">
                                         <option type="labelWidth" value="40"/>
                                     </component>
                                 </layoutElement>
@@ -186,7 +196,8 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
-                        <component type="select" name="priceBasedOn" reference="priceBasedOn" field="#{form}.priceBasedOn">
+                        <component type="select" name="priceBasedOn" reference="priceBasedOn"
+                                   field="#{form}.priceBasedOn">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
@@ -203,7 +214,8 @@
                                        reference="parametersGridLayout" columns="1" rows="2">
                                 <layoutElement column="1" row="1">
                                     <component type="select" name="sourceOfMaterialCostsPB"
-                                               field="#{form}.sourceOfMaterialCostsPB" reference="sourceOfMaterialCostsPB">
+                                               field="#{form}.sourceOfMaterialCostsPB"
+                                               reference="sourceOfMaterialCostsPB">
                                         <option type="labelWidth" value="40"/>
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.productionCounting.hooks.ParameterPBDetailsViewHooks"
@@ -230,7 +242,8 @@
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="5">
                                     <component type="input" name="averageMachineHourlyCostPB"
-                                               field="#{form}.averageMachineHourlyCostPB" reference="averageMachineHourlyCostPB">
+                                               field="#{form}.averageMachineHourlyCostPB"
+                                               reference="averageMachineHourlyCostPB">
                                         <option type="alignment" value="right"/>
                                         <option type="labelWidth" value="40"/>
                                     </component>
@@ -245,7 +258,8 @@
                                 </layoutElement>
                                 <layoutElement column="1" row="2" width="5">
                                     <component type="input" name="averageLaborHourlyCostPB"
-                                               field="#{form}.averageLaborHourlyCostPB" reference="averageLaborHourlyCostPB">
+                                               field="#{form}.averageLaborHourlyCostPB"
+                                               reference="averageLaborHourlyCostPB">
                                         <option type="alignment" value="right"/>
                                         <option type="labelWidth" value="40"/>
                                     </component>
@@ -277,7 +291,8 @@
                                        reference="overheadsGridLayout" columns="4" rows="3" hasBorders="false">
                                 <layoutElement column="1" row="1" width="3">
                                     <component type="input" name="productionCostMarginPB"
-                                               field="#{form}.productionCostMarginPB" reference="productionCostMarginPB">
+                                               field="#{form}.productionCostMarginPB"
+                                               reference="productionCostMarginPB">
                                         <option type="alignment" value="right"/>
                                         <option type="labelWidth" value="40"/>
                                     </component>
