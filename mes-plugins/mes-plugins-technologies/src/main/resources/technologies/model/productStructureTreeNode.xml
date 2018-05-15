@@ -30,16 +30,16 @@
 	<fields>
 		<string name="number" />
 		<belongsTo name="technology" model="technology" />
-		<belongsTo name="product" plugin="basic" model="product" persistent="false"/>
-		<belongsTo name="operation" model="technologyOperationComponent" persistent="false"/>
-		<decimal name="quantity" persistent="false" />
-		<belongsTo name="division" model="division" plugin="basic" persistent="false" />
-		<hasMany name="children" model="productStructureTreeNode" joinField="parent" cascade="delete" />
+		<belongsTo name="mainTechnology" model="technology" />
+		<belongsTo name="product" plugin="basic" model="product"/>
+		<belongsTo name="operation" model="technologyOperationComponent"/>
+		<decimal name="quantity"/>
+		<belongsTo name="division" model="division" plugin="basic"/>
+		<hasMany name="children" model="productStructureTreeNode" joinField="parent" cascade="delete"/>
 		<belongsTo name="parent" model="productStructureTreeNode" />
 		<priority name="priority" scope="parent" />
 		<string name="nodeNumber" />
-		<enum name="entityType" values="finalProduct,intermediate,component,material" default="material"
-			persistent="false" />
+		<enum name="entityType" values="finalProduct,intermediate,component,material" default="material"/>
 
 		<belongsTo name="technologyGroup" plugin="technologies" model="technologyGroup"/>
 		<decimal name="standardPerformanceTechnology">

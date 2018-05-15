@@ -65,7 +65,7 @@
         <hasMany name="technologyAttachments" joinField="technology" model="technologyAttachment" cascade="delete"/>
 
         <tree name="productStructureTree" model="productStructureTreeNode"
-              joinField="technology" cascade="delete" persistent="false"/>
+              joinField="mainTechnology" cascade="delete"/>
 
 
         <decimal name="standardPerformanceTechnology">

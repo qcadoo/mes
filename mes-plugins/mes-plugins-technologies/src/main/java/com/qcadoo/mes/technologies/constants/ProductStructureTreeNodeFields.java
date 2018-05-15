@@ -23,40 +23,34 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class TechnologyFields {
+public final class ProductStructureTreeNodeFields {
 
-    private TechnologyFields() {
+    private ProductStructureTreeNodeFields() {
 
     }
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String MAIN_TECHNOLOGY = "mainTechnology";
+
+    public static final String OPERATION = "operation";
 
     public static final String NUMBER = "number";
 
-    public static final String NAME = "name";
-
     public static final String PRODUCT = "product";
 
-    public static final String MASTER = "master";
+    public static final String QUANTITY = "quantity";
 
-    public static final String DESCRIPTION = "description";
+    public static final String DIVISION = "division";
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
-
-    public static final String STATE = "state";
-
-    public static final String STATE_CHANGES = "stateChanges";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
-
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
-
-    public static final String TEMPLATE = "template";
+    public static final String PARENT = "parent";
 
     public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
 
-    public static final String PRODUCT_STRUCTURE_TREE = "productStructureTree";
+    public static final String ENTITY_TYPE = "entityType";
 
+    public static final String PRIORITY = "priority";
+
+    public static final String CREATE_DATE = "createDate";
 }
