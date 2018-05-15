@@ -55,7 +55,8 @@ public class ProductionBalanceDetailsHooks {
 
     private static final List<String> L_FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.NAME,
             ProductionBalanceFields.DESCRIPTION, ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE,
-            ProductionBalanceFields.INCLUDE_TPZ, ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
+            ProductionBalanceFields.INCLUDE_WAGE_GROUPS, ProductionBalanceFields.INCLUDE_TPZ,
+            ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
     private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
 
