@@ -116,7 +116,8 @@ public class OrdersFromMOProductsGenerationService {
         }
         Entity parameter = parameterService.getParameter();
 
-        generateSubOrders(order);
+
+        generateSubOrders(result, order);
 
         if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             try {
@@ -130,7 +131,7 @@ public class OrdersFromMOProductsGenerationService {
     /*
         override by aspect
      */
-    public void generateSubOrders(Entity order) {
+    public void generateSubOrders(GenerationOrderResult result, Entity order) {
 
     }
 
