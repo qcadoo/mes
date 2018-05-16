@@ -244,7 +244,7 @@ public class ProductStructureTreeService {
     public EntityTree generateProductStructureTree(final ViewDefinitionState view, final Entity technology) {
         Entity technologyFromDB = technology.getDataDefinition().get(technology.getId());
         EntityTree tree = technologyFromDB.getTreeField(TechnologyFields.PRODUCT_STRUCTURE_TREE);
-        if (tree != null) {
+        if (tree.getRoot() != null) {
             Date productStructureCreateDate = tree.getRoot().getDateField(ProductStructureTreeNodeFields.CREATE_DATE);
             Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
             Entity operation = findOperationForProductAndTechnology(product, technology);
