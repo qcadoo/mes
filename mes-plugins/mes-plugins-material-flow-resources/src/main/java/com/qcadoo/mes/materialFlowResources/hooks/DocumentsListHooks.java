@@ -38,10 +38,14 @@ public class DocumentsListHooks {
 
     public Set<String> fillRowStyles(final Entity document) {
         final Set<String> rowStyles = Sets.newHashSet();
+
         String state = document.getStringField(DocumentFields.STATE);
+
         if (DocumentState.DRAFT.getStringValue().equals(state)) {
             rowStyles.add(RowStyle.GREEN_BACKGROUND);
         }
+
         return rowStyles;
     }
+
 }

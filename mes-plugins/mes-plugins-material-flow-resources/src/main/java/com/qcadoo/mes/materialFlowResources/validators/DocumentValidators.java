@@ -54,13 +54,17 @@ public class DocumentValidators {
     private PositionValidators positionValidators;
 
     public boolean validate(final DataDefinition documentDD, final Entity document) {
-        Entity documentFromDB = documentDD.get(document.getId());
+        Long documentId = document.getId();
 
-        if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
-            document.addGlobalError("materialFlow.error.document.alreadyAccepted");
+        if (documentId != null) {
+            Entity documentFromDB = documentDD.get(documentId);
 
-            return false;
-        } 
+            if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+                document.addGlobalError("materialFlow.error.document.alreadyAccepted");
+
+                return false;
+            }
+        }
 
         boolean hasWarehouses = hasWarehouses(documentDD, document);
 

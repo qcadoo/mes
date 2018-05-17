@@ -21,11 +21,20 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -55,22 +64,59 @@ public class DocumentsListListeners {
     @Autowired
     private DocumentErrorsLogger documentErrorsLogger;
 
-    @Transactional
-    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
+    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
 
+        List<Entity> documentsFromDB = Lists.newArrayList();
+
         for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
-            Entity document = documentDD.get(documentId);
+            Entity documentFromDB = documentDD.get(documentId);
 
-            if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
-                continue;
-            } else if (document.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
-                continue;
+            if (documentFromDB != null) {
+                if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+                    continue;
+                }
+
+                if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
+                    continue;
+                }
+
+                documentsFromDB.add(documentFromDB);
             }
+        }
 
+        if (!documentsFromDB.isEmpty()) {
+            setAcceptationInProgress(documentsFromDB, true);
+            createResourcesForDocuments(view, gridComponent, documentDD, documentsFromDB);
+            setAcceptationInProgress(documentsFromDB, false);
+        }
+    }
+
+    private void setAcceptationInProgress(final List<Entity> documents, final boolean acceptationInProgress) {
+        String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id IN (:ids);";
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("acceptationinprogress", acceptationInProgress);
+
+        parameters.put("ids", documents.stream().map(document -> document.getId()).collect(Collectors.toList()));
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
+        jdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Transactional
+    public void createResourcesForDocuments(final ViewDefinitionState view, final GridComponent gridComponent,
+            final DataDefinition documentDD, List<Entity> documents) {
+        for (Entity document : documents) {
             document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
             document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
@@ -85,11 +131,13 @@ public class DocumentsListListeners {
             } else {
                 document.setNotValid();
 
-                gridComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions", ComponentState.MessageType.FAILURE);
+                gridComponent.addMessage("materialFlow.document.validate.global.error.emptyPositions",
+                        ComponentState.MessageType.FAILURE);
             }
 
             if (!document.isValid()) {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+
                 documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
@@ -101,4 +149,5 @@ public class DocumentsListListeners {
             }
         }
     }
+
 }
