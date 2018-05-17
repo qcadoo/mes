@@ -35,4 +35,5 @@ public interface ProductionBalanceService {
      */
     void disableCheckboxes(final ViewDefinitionState view);
 
+    void disableAddAllRelatedOrdersButton(ViewDefinitionState view);
 }

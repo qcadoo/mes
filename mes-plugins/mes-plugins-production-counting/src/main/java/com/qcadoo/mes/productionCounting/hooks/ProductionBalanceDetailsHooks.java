@@ -254,4 +254,7 @@ public class ProductionBalanceDetailsHooks {
         }
     }
 
+    public void disableAddAllRelatedOrdersButton(final ViewDefinitionState view) {
+        productionBalanceService.disableAddAllRelatedOrdersButton(view);
+    }
 }
