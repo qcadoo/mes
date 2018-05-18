@@ -395,7 +395,7 @@ class ProductionBalanceRepository {
         query.append("o.number AS orderNumber, ");
         query.append("NULL AS operationNumber, ");
         query.append("MIN(plt.staff_time) AS plannedStaffTime, ");
-        appendRealStaffTime(query);
+        appendRealStaffTime(entity, query);
         query.append("AS realStaffTime, ");
         query.append("MIN(plt.machine_time) AS plannedMachineTime, ");
         appendRealMachineTime(query);
@@ -459,7 +459,7 @@ class ProductionBalanceRepository {
         query.append("o.number AS orderNumber, ");
         query.append("op.number AS operationNumber, ");
         query.append("MIN(plt.staff_time) AS plannedStaffTime, ");
-        appendRealStaffTime(query);
+        appendRealStaffTime(entity, query);
         query.append("AS realStaffTime, ");
         query.append("MIN(plt.machine_time) AS plannedMachineTime, ");
         appendRealMachineTime(query);
@@ -517,8 +517,8 @@ class ProductionBalanceRepository {
 
     private void appendRealStaffCosts(Entity entity, StringBuilder query, String typeOfProductionRecording) {
         if (includeWageGroups(entity)) {
-            query.append(", real_staff_cost (order_id, productiontracking_id, staff_cost) AS ");
-            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, COALESCE(MIN(swt.labortime),0) / 3600 * COALESCE(MIN(s.laborhourlycost),0) AS staffCost ");
+            query.append(", real_staff_cost (order_id, productiontracking_id, labor_time, staff_cost) AS ");
+            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, min(swt.labortime) AS laborTime, COALESCE(MIN(swt.labortime),0) / 3600 * COALESCE(MIN(s.laborhourlycost),0) AS staffCost ");
             query.append("FROM orders_order o ");
             query.append("JOIN productioncounting_productiontracking pt ON pt.order_id = o.id ");
             query.append("JOIN productioncounting_staffworktime swt ON swt.productionrecord_id = pt.id ");
@@ -547,8 +547,12 @@ class ProductionBalanceRepository {
         query.append("COALESCE(SUM(pt.machinetime), 0) ");
     }
 
-    private void appendRealStaffTime(StringBuilder query) {
-        query.append("COALESCE(SUM(pt.labortime), 0) ");
+    private void appendRealStaffTime(Entity entity, StringBuilder query) {
+        if (includeWageGroups(entity)) {
+            query.append("COALESCE(SUM(rsc.labor_time), 0) ");
+        } else {
+            query.append("COALESCE(SUM(pt.labortime), 0) ");
+        }
     }
 
     private void appendForEachRealMachineCosts(Entity entity, StringBuilder query) {
@@ -566,7 +570,7 @@ class ProductionBalanceRepository {
         if (includeWageGroups(entity)) {
             appendRealStaffCostsFromWageGroups(query);
         } else {
-            appendRealStaffTime(query);
+            appendRealStaffTime(entity, query);
             query.append("::numeric/ 3600 * ");
             appendForEachStaffHourCost(entity, query);
         }
@@ -592,7 +596,7 @@ class ProductionBalanceRepository {
         if (includeWageGroups(entity)) {
             appendRealStaffCostsFromWageGroups(query);
         } else {
-            appendRealStaffTime(query);
+            appendRealStaffTime(entity, query);
             query.append("::numeric/ 3600 * ");
             appendCumulatedStaffHourCost(query);
         }

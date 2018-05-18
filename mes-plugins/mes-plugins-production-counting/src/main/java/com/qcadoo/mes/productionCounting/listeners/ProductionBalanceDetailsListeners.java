@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.listeners;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,6 +33,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
@@ -39,11 +42,14 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.xls.ProductionBalanceXlsService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class ProductionBalanceDetailsListeners {
@@ -131,5 +137,30 @@ public class ProductionBalanceDetailsListeners {
 
     public void disableCheckboxes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         productionBalanceService.disableCheckboxes(view);
+    }
+
+    public void disableAddAllRelatedOrdersButton(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        productionBalanceService.disableAddAllRelatedOrdersButton(view);
+    }
+
+    public final void addAllRelatedOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ProductionBalanceFields.ORDERS);
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity balance = form.getPersistedEntityWithIncludedFormValues();
+        List<Entity> orders = Lists.newArrayList(balance.getHasManyField(ProductionBalanceFields.ORDERS));
+        for (Entity entity : ordersGrid.getSelectedEntities()) {
+            Entity root = entity.getBelongsToField("root");
+            if (root == null) {
+                root = entity;
+            }
+            orders.add(root);
+            List<Entity> children = entity.getDataDefinition().find().add(SearchRestrictions.belongsTo("root",
+                    OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER, root.getId())).list().getEntities();
+            orders.addAll(children);
+        }
+        balance.setField(ProductionBalanceFields.ORDERS, orders);
+        balance = balance.getDataDefinition().save(balance);
+        form.setEntity(balance);
     }
 }

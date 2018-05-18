@@ -184,10 +184,19 @@
                 <listener event="printProductionBalance"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
                           method="printProductionBalance"/>
+                <listener event="addAllRelatedOrders"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"
+                          method="addAllRelatedOrders"/>
             </component>
         </windowTab>
 
         <windowTab name="ordersTab" reference="ordersTab">
+            <ribbon>
+                <group name="ordersTab">
+                    <bigButton name="addAllRelatedOrders" icon="newIcon24.png"
+                               state="disabled" action="#{form}.fireEvent(addAllRelatedOrders);"/>
+                </group>
+            </ribbon>
             <component type="gridLayout" name="ordersGridLayout" columns="1"
                        rows="1">
                 <layoutElement column="1" row="1">
@@ -242,6 +251,8 @@
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="ordersLookup"/>
 
+                        <listener event="select" method="disableAddAllRelatedOrdersButton"
+                                  class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"/>
                     </component>
                 </layoutElement>
             </component>
@@ -378,14 +389,15 @@
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="disableFieldsAndGridsWhenGenerated"/>
-
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="fillCurrencyAndUnitFields"/>
-
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="setTheFieldBasedOnParameters"/>
+        <beforeRender
+                class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
+                  method="disableAddAllRelatedOrdersButton"/>
     </hooks>
 
 </view>
