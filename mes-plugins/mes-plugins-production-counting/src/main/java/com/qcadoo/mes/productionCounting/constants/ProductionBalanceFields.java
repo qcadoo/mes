@@ -67,4 +67,5 @@ public final class ProductionBalanceFields {
 
     public static final String SOURCE_OF_OPERATION_COSTS_PB = "sourceOfOperationCostsPB";
 
+    public static final String INCLUDE_WAGE_GROUPS = "includeWageGroups";
 }

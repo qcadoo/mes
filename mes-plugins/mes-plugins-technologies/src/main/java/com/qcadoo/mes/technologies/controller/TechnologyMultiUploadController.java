@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.technologies.controller;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.Files;
+import com.qcadoo.mes.basic.MultiUploadHelper;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -44,12 +44,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Iterator;
-import java.util.List;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/techologies")
@@ -67,10 +66,6 @@ public class TechnologyMultiUploadController {
     private NumberService numberService;
 
     private static final Integer L_SCALE = 2;
-
-    private static final List<String> EXTS = Lists
-            .newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF", "XLS", "XLSX", "DWG", "IPT",
-                    "IAM", "IDW", "DOC", "DOCX", "TXT", "CSV", "XML", "ODT", "ODS", "TIFF", "TIF");
 
     @ResponseBody
     @RequestMapping(value = "/multiUploadFiles", method = RequestMethod.POST)
@@ -94,7 +89,7 @@ public class TechnologyMultiUploadController {
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
+            if (MultiUploadHelper.EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());

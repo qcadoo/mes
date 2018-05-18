@@ -21,6 +21,8 @@ public class GenerationOrderResult {
 
     private List<String> ordersWithoutPps = Lists.newArrayList();
 
+    private List<String> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
+
     public void addNotGeneratedProductError(MasterOrderProductErrorContainer err) {
         productOrderErrors.add(err);
     }
@@ -33,6 +35,10 @@ public class GenerationOrderResult {
         ordersWithoutPps.add(number);
     }
 
+    public void addOrderWithoutGeneratedSubOrders(String number) {
+        ordersWithoutGeneratedSubOrders.add(number);
+    }
+
     public void showMessage(ViewDefinitionState view) {
         if (!generatedOrderNumbers.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
@@ -42,6 +48,11 @@ public class GenerationOrderResult {
         if (!ordersWithoutPps.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutPps", ComponentState.MessageType.INFO, false,
                     String.join(", ", ordersWithoutPps));
+        }
+
+        if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders", ComponentState.MessageType.INFO, false,
+                    String.join(", ", ordersWithoutGeneratedSubOrders));
         }
 
         if (!productOrderErrors.isEmpty()) {

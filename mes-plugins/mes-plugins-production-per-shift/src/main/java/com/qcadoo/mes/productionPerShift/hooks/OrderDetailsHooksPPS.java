@@ -74,10 +74,13 @@ public class OrderDetailsHooksPPS {
     private PpsTimeHelper ppsTimeHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        Predicate<Entity> predicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE,
+        Predicate<Entity> technologyPredicate = Predicates.and(
                 OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
-        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", predicate,
+        Predicate<Entity> datePredicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE);
+        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", technologyPredicate,
                 Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
+        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", datePredicate,
+                Optional.of("orders.ribbon.message.mustFillPlannedStartDate"));
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         if (form.getEntityId() != null) {
