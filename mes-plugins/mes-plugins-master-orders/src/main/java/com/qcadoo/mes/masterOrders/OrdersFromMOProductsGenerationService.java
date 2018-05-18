@@ -116,10 +116,40 @@ public class OrdersFromMOProductsGenerationService {
         }
         Entity parameter = parameterService.getParameter();
 
-
         generateSubOrders(result, order);
 
         if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+           /* List<Entity> orders = getOrderAndSubOrders(order.getId());
+            Collections.sort(orders,
+                    (o1, o2) -> o1.getStringField(OrderFields.NUMBER).compareTo(o2.getStringField(OrderFields.NUMBER)));
+            for (Entity ord : orders) {
+                Date calculatedOrderStartDate = null;
+                if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
+                    Optional<Entity> maybeOrder = findLastOrder(ord);
+                    if(maybeOrder.isPresent()) {
+
+                    } else {
+                        calculatedOrderStartDate = new DateTime().toDate();
+                    }
+                } else {
+                    Optional<Entity> maybeOrder = findPreviousOrder(ord);
+                    if(maybeOrder.isPresent()) {
+
+                        Integer changeoverDurationInMillis = getChangeoverDurationInMillis(maybeOrder.get(), ord);
+                        List<Entity> shifts = getAllShifts();
+                        Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
+                                new DateTime(maybeOrder.get().getDateField(OrderFields.FINISH_DATE)),
+                                ord.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
+                        if (maybeDate.isPresent()) {
+                            calculatedOrderStartDate =  calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
+                        }
+
+                    } else {
+                        calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                    }
+                }
+            }*/
+
             try {
                 tryGeneratePPS(order);
             } catch (Exception ex) {
@@ -128,8 +158,31 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
+    public Optional<Entity> findLastOrder(final Entity order) {
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity lastOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+                .add(SearchRestrictions.isNotNull(OrderFields.FINISH_DATE))
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
+                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()))
+                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
+        return Optional.ofNullable(lastOrder);
+    }
+
+    public Optional<Entity> findNextOrder(final Entity order) {
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity nextOrder = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .find()
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
+                .add(SearchRestrictions.or(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue()),
+                        SearchRestrictions.eq(OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue()),
+                        SearchRestrictions.eq(OrderFields.STATE, OrderState.ACCEPTED.getStringValue())))
+                .add(SearchRestrictions.gt(OrderFields.START_DATE, order.getDateField(OrderFields.START_DATE)))
+                .addOrder(SearchOrders.asc(OrderFields.START_DATE)).setMaxResults(1).uniqueResult();
+        return Optional.ofNullable(nextOrder);
+    }
     /*
-        override by aspect
+     * override by aspect
      */
     public void generateSubOrders(GenerationOrderResult result, Entity order) {
 
@@ -175,7 +228,8 @@ public class OrdersFromMOProductsGenerationService {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
             List<Entity> shifts = getAllShifts();
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
-                    new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)), order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
+                    new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)),
+                    order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }
@@ -231,7 +285,7 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
         order.setField(OrderFields.PRODUCTION_LINE, getProductionLine(technology));
-        if(!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+        if (!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
             order.setField(OrderFields.DEADLINE, masterOrderDeadline);
@@ -305,6 +359,11 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
+    private List<Entity> getOrderAndSubOrders(final Long orderID) {
+        String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID OR o.id = :orderID";
+        return getOrderDD().find(sql).setLong("orderID", orderID).list().getEntities();
+    }
+
     private Object getDefaultValueForProductionCounting(final Entity technology, final String fieldName) {
         return technology.getField(fieldName);
     }
@@ -314,9 +373,10 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private DataDefinition getMasterOrderProductDtoDD() {
-        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
     }
-    
+
     private List<Entity> getAllShifts() {
         return getShiftDataDefinition().find().list().getEntities();
     }
