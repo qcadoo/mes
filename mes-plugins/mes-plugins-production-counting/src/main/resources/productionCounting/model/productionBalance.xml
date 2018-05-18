@@ -39,7 +39,8 @@
         </string>
 
         <boolean name="generated"/>
-        <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify" copyable="true"/>
+        <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify"
+                    copyable="true"/>
 
         <datetime name="date"/>
         <string name="worker"/>
@@ -93,6 +94,7 @@
 
         <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
+        <boolean name="includeWageGroups" default="false"/>
     </fields>
 
     <hooks>

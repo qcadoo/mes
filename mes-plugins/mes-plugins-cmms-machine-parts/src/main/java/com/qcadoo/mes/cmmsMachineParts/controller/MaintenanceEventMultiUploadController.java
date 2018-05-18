@@ -23,14 +23,15 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.controller;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
+import com.google.common.io.Files;
+import com.qcadoo.mes.basic.MultiUploadHelper;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,19 +44,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.google.common.collect.Lists;
-import com.google.common.io.Files;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyAttachmentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.view.api.crud.CrudService;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Iterator;
+import javax.servlet.http.HttpServletResponse;
 
-@Controller @RequestMapping("/cmmsMachineParts") public class MaintenanceEventMultiUploadController {
+@Controller
+@RequestMapping("/cmmsMachineParts") public class MaintenanceEventMultiUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(MaintenanceEventMultiUploadController.class);
 
@@ -67,11 +63,8 @@ import com.qcadoo.view.api.crud.CrudService;
 
     private static final Integer L_SCALE = 2;
 
-    private static final List<String> EXTS = Lists
-            .newArrayList("GIF", "JPG", "JPEG", "PNG", "PDF", "XLS", "XLSX", "DWG", "IPT",
-                    "IAM", "IDW", "DOC", "DOCX", "TXT", "CSV", "XML", "ODT", "ODS", "TIFF", "TIF");
-
-    @ResponseBody @RequestMapping(value = "/multiUploadFilesForEvent", method = RequestMethod.POST) public void upload(
+    @ResponseBody
+    @RequestMapping(value = "/multiUploadFilesForEvent", method = RequestMethod.POST) public void upload(
             MultipartHttpServletRequest request, HttpServletResponse response) {
         Long eventId = Long.parseLong(request.getParameter("eventId"));
         Entity event = dataDefinitionService
@@ -91,7 +84,7 @@ import com.qcadoo.view.api.crud.CrudService;
             } catch (IOException e) {
                 logger.error("Unable to upload attachment.", e);
             }
-            if (EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
+            if (MultiUploadHelper.EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
                 Entity atchment = attachmentDD.create();
                 atchment.setField(TechnologyAttachmentFields.ATTACHMENT, path);
                 atchment.setField(TechnologyAttachmentFields.NAME, mpf.getOriginalFilename());

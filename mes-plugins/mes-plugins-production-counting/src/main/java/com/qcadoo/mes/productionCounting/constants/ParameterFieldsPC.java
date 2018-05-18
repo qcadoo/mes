@@ -87,4 +87,5 @@ public final class ParameterFieldsPC {
 
     public static final String ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD = "allowAnomalyCreationOnAcceptanceRecord";
 
+    public static final String INCLUDE_WAGE_GROUPS = "includeWageGroups";
 }

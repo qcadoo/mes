@@ -27,7 +27,7 @@ $(function() {
 					{
 						pasteZone: null,
 						dataType : 'json',
-						acceptFileTypes : /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i,
+						acceptFileTypes : QCDMultiUpload.acceptFileTypes,
 
 						submit : function(e, data) {
 							var locale = window.mainController
@@ -74,7 +74,7 @@ $(function() {
 							.getComponentByReferenceName(
 								"technologyMultiUploadLocale")
 									.getValue().content.value;
-							var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
+							var filetype = QCDMultiUpload.acceptFileTypes;
 
 							$.each(data.files, function(index, file) {
 								if (filetype.test(file.name)) {
@@ -111,7 +111,7 @@ $(function() {
 					}).bind(
 					'fileuploadadd',
 					function(e, data) {
-						var filetype = /(\.|\/)(gif|jpe?g|png|pdf|xls|xlsx|dwg|ipt|iam|idw|docx?|txt|csv|xml|odt|ods|tiff?)$/i;
+						var filetype = QCDMultiUpload.acceptFileTypes;
                         var maxUploadFileMessage = $('#maxUploadFileMessage').text();
 						var locale = window.mainController
 						.getComponentByReferenceName(

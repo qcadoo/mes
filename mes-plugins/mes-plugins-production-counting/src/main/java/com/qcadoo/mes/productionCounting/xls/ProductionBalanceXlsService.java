@@ -124,11 +124,11 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 0, producedQuantity.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, producedQuantity.getProductNumber());
             createRegularCell(stylesContainer, row, 2, producedQuantity.getProductName());
-            createNumericCell(stylesContainer, row, 3, producedQuantity.getPlannedQuantity());
-            createNumericCell(stylesContainer, row, 4, producedQuantity.getProducedQuantity());
-            createNumericCell(stylesContainer, row, 5, producedQuantity.getWastesQuantity());
-            createNumericCell(stylesContainer, row, 6, producedQuantity.getProducedWastes());
-            createNumericCell(stylesContainer, row, 7, producedQuantity.getDeviation());
+            createNumericCell(stylesContainer, row, 3, producedQuantity.getPlannedQuantity(), false);
+            createNumericCell(stylesContainer, row, 4, producedQuantity.getProducedQuantity(), true);
+            createNumericCell(stylesContainer, row, 5, producedQuantity.getWastesQuantity(), false);
+            createNumericCell(stylesContainer, row, 6, producedQuantity.getProducedWastes(), false);
+            createNumericCell(stylesContainer, row, 7, producedQuantity.getDeviation(), false);
             createRegularCell(stylesContainer, row, 8, producedQuantity.getProductUnit());
             rowIndex++;
         }
@@ -201,14 +201,14 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, materialCost.getOperationNumber());
             createRegularCell(stylesContainer, row, 2, materialCost.getProductNumber());
             createRegularCell(stylesContainer, row, 3, materialCost.getProductName());
-            createNumericCell(stylesContainer, row, 4, materialCost.getPlannedQuantity());
-            createNumericCell(stylesContainer, row, 5, materialCost.getUsedQuantity());
-            createNumericCell(stylesContainer, row, 6, materialCost.getQuantitativeDeviation());
+            createNumericCell(stylesContainer, row, 4, materialCost.getPlannedQuantity(), false);
+            createNumericCell(stylesContainer, row, 5, materialCost.getUsedQuantity(), true);
+            createNumericCell(stylesContainer, row, 6, materialCost.getQuantitativeDeviation(), false);
             createRegularCell(stylesContainer, row, 7, materialCost.getProductUnit());
-            createNumericCell(stylesContainer, row, 8, materialCost.getPlannedCost());
-            createNumericCell(stylesContainer, row, 9, materialCost.getRealCost());
-            createNumericCell(stylesContainer, row, 10, materialCost.getValueDeviation());
-            createNumericCell(stylesContainer, row, 11, materialCost.getUsedWasteQuantity());
+            createNumericCell(stylesContainer, row, 8, materialCost.getPlannedCost(), false);
+            createNumericCell(stylesContainer, row, 9, materialCost.getRealCost(), true);
+            createNumericCell(stylesContainer, row, 10, materialCost.getValueDeviation(), false);
+            createNumericCell(stylesContainer, row, 11, materialCost.getUsedWasteQuantity(), false);
             createRegularCell(stylesContainer, row, 12, materialCost.getUsedWasteUnit());
             rowCounter++;
         }
@@ -236,7 +236,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             row = sheet.createRow(rowOffset + rowCounter);
             createRegularCell(stylesContainer, row, 0, pieceworkDetails.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, pieceworkDetails.getOperationNumber());
-            createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles());
+            createNumericCell(stylesContainer, row, 2, pieceworkDetails.getTotalExecutedOperationCycles(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 2; i++) {
@@ -271,7 +271,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 2, laborTime.getStaffNumber());
             createRegularCell(stylesContainer, row, 3, laborTime.getStaffName());
             createRegularCell(stylesContainer, row, 4, laborTime.getStaffSurname());
-            createTimeCell(stylesContainer, row, 5, laborTime.getLaborTime());
+            createTimeCell(stylesContainer, row, 5, laborTime.getLaborTime(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 5; i++) {
@@ -403,8 +403,8 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createDateTimeCell(stylesContainer, row, 7, laborTimeDetails.getEffectiveDateTo());
             createRegularCell(stylesContainer, row, 8, laborTimeDetails.getProductNumber());
             createRegularCell(stylesContainer, row, 9, laborTimeDetails.getOrderName());
-            createNumericCell(stylesContainer, row, 10, laborTimeDetails.getPlannedQuantity());
-            createNumericCell(stylesContainer, row, 11, laborTimeDetails.getAmountOfProductProduced());
+            createNumericCell(stylesContainer, row, 10, laborTimeDetails.getPlannedQuantity(), false);
+            createNumericCell(stylesContainer, row, 11, laborTimeDetails.getAmountOfProductProduced(), false);
             createRegularCell(stylesContainer, row, 12, laborTimeDetails.getStaffNumber());
             createRegularCell(stylesContainer, row, 13, laborTimeDetails.getStaffName());
             createRegularCell(stylesContainer, row, 14, laborTimeDetails.getStaffSurname());
@@ -413,12 +413,12 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createDateTimeCell(stylesContainer, row, 17, laborTimeDetails.getTimeRangeTo());
             createRegularCell(stylesContainer, row, 18, laborTimeDetails.getShiftName());
             createDateTimeCell(stylesContainer, row, 19, laborTimeDetails.getCreateDate());
-            createTimeCell(stylesContainer, row, 20, laborTimeDetails.getLaborTime());
-            createTimeCell(stylesContainer, row, 21, laborTimeDetails.getPlannedLaborTime());
-            createTimeCell(stylesContainer, row, 22, laborTimeDetails.getLaborTimeDeviation());
-            createTimeCell(stylesContainer, row, 23, laborTimeDetails.getMachineTime());
-            createTimeCell(stylesContainer, row, 24, laborTimeDetails.getPlannedMachineTime());
-            createTimeCell(stylesContainer, row, 25, laborTimeDetails.getMachineTimeDeviation());
+            createTimeCell(stylesContainer, row, 20, laborTimeDetails.getLaborTime(), false);
+            createTimeCell(stylesContainer, row, 21, laborTimeDetails.getPlannedLaborTime(), false);
+            createTimeCell(stylesContainer, row, 22, laborTimeDetails.getLaborTimeDeviation(), false);
+            createTimeCell(stylesContainer, row, 23, laborTimeDetails.getMachineTime(), false);
+            createTimeCell(stylesContainer, row, 24, laborTimeDetails.getPlannedMachineTime(), false);
+            createTimeCell(stylesContainer, row, 25, laborTimeDetails.getMachineTimeDeviation(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 25; i++) {
@@ -441,63 +441,63 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 1, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedStaffTime", locale),
-                2, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService
-                        .translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.realStaffTime", locale),
-                3, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedMachineTime", locale),
-                4, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realMachineTime", locale),
-                5, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedStaffCosts", locale),
-                6, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realStaffCosts", locale),
-                7, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.staffCostsDeviation", locale),
-                8, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedMachineCosts", locale),
-                9, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realMachineCosts", locale),
-                10, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.machineCostsDeviation", locale),
-                11, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedPieceworkCosts", locale),
-                12, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
-                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realPieceworkCosts", locale),
-                13, CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row,
-                translationService.translate(
                         "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedCostsSum", locale),
-                14, CellStyle.ALIGN_LEFT);
+                2, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer,
                 row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.realCostsSum", locale),
-                15, CellStyle.ALIGN_LEFT);
+                3, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
                         "productionCounting.productionBalance.report.xls.sheet.productionCosts.sumCostsDeviation", locale),
+                4, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedStaffTime", locale),
+                5, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.productionCosts.realStaffTime", locale),
+                6, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedMachineTime", locale),
+                7, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realMachineTime", locale),
+                8, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedStaffCosts", locale),
+                9, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realStaffCosts", locale),
+                10, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.staffCostsDeviation", locale),
+                11, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedMachineCosts", locale),
+                12, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realMachineCosts", locale),
+                13, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.machineCostsDeviation", locale),
+                14, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.plannedPieceworkCosts", locale),
+                15, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.productionCosts.realPieceworkCosts", locale),
                 16, CellStyle.ALIGN_LEFT);
 
         int rowCounter = 0;
@@ -505,21 +505,21 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             row = sheet.createRow(rowOffset + rowCounter);
             createRegularCell(stylesContainer, row, 0, productionCost.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, productionCost.getOperationNumber());
-            createTimeCell(stylesContainer, row, 2, productionCost.getPlannedStaffTime());
-            createTimeCell(stylesContainer, row, 3, productionCost.getRealStaffTime());
-            createTimeCell(stylesContainer, row, 4, productionCost.getPlannedMachineTime());
-            createTimeCell(stylesContainer, row, 5, productionCost.getRealMachineTime());
-            createNumericCell(stylesContainer, row, 6, productionCost.getPlannedStaffCosts());
-            createNumericCell(stylesContainer, row, 7, productionCost.getRealStaffCosts());
-            createNumericCell(stylesContainer, row, 8, productionCost.getStaffCostsDeviation());
-            createNumericCell(stylesContainer, row, 9, productionCost.getPlannedMachineCosts());
-            createNumericCell(stylesContainer, row, 10, productionCost.getRealMachineCosts());
-            createNumericCell(stylesContainer, row, 11, productionCost.getMachineCostsDeviation());
-            createNumericCell(stylesContainer, row, 12, productionCost.getPlannedPieceworkCosts());
-            createNumericCell(stylesContainer, row, 13, productionCost.getRealPieceworkCosts());
-            createNumericCell(stylesContainer, row, 14, productionCost.getPlannedCostsSum());
-            createNumericCell(stylesContainer, row, 15, productionCost.getRealCostsSum());
-            createNumericCell(stylesContainer, row, 16, productionCost.getSumCostsDeviation());
+            createNumericCell(stylesContainer, row, 2, productionCost.getPlannedCostsSum(), false);
+            createNumericCell(stylesContainer, row, 3, productionCost.getRealCostsSum(), false);
+            createNumericCell(stylesContainer, row, 4, productionCost.getSumCostsDeviation(), false);
+            createTimeCell(stylesContainer, row, 5, productionCost.getPlannedStaffTime(), false);
+            createTimeCell(stylesContainer, row, 6, productionCost.getRealStaffTime(), true);
+            createTimeCell(stylesContainer, row, 7, productionCost.getPlannedMachineTime(), false);
+            createTimeCell(stylesContainer, row, 8, productionCost.getRealMachineTime(), true);
+            createNumericCell(stylesContainer, row, 9, productionCost.getPlannedStaffCosts(), false);
+            createNumericCell(stylesContainer, row, 10, productionCost.getRealStaffCosts(), false);
+            createNumericCell(stylesContainer, row, 11, productionCost.getStaffCostsDeviation(), false);
+            createNumericCell(stylesContainer, row, 12, productionCost.getPlannedMachineCosts(), false);
+            createNumericCell(stylesContainer, row, 13, productionCost.getRealMachineCosts(), false);
+            createNumericCell(stylesContainer, row, 14, productionCost.getMachineCostsDeviation(), false);
+            createNumericCell(stylesContainer, row, 15, productionCost.getPlannedPieceworkCosts(), false);
+            createNumericCell(stylesContainer, row, 16, productionCost.getRealPieceworkCosts(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 16; i++) {
@@ -626,24 +626,24 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 0, orderBalance.getOrderNumber());
             createRegularCell(stylesContainer, row, 1, orderBalance.getProductNumber());
             createRegularCell(stylesContainer, row, 2, orderBalance.getProductName());
-            createNumericCell(stylesContainer, row, 3, orderBalance.getProducedQuantity());
-            createNumericCell(stylesContainer, row, 4, orderBalance.getMaterialCosts());
-            createNumericCell(stylesContainer, row, 5, orderBalance.getProductionCosts());
-            createNumericCell(stylesContainer, row, 6, orderBalance.getTechnicalProductionCosts());
-            createNumericCell(stylesContainer, row, 7, orderBalance.getMaterialCostMargin());
-            createNumericCell(stylesContainer, row, 8, orderBalance.getMaterialCostMarginValue());
-            createNumericCell(stylesContainer, row, 9, orderBalance.getProductionCostMargin());
-            createNumericCell(stylesContainer, row, 10, orderBalance.getProductionCostMarginValue());
-            createNumericCell(stylesContainer, row, 11, orderBalance.getAdditionalOverhead());
-            createNumericCell(stylesContainer, row, 12, orderBalance.getDirectAdditionalCost());
-            createNumericCell(stylesContainer, row, 13, orderBalance.getTotalCosts());
-            createNumericCell(stylesContainer, row, 14, orderBalance.getRegistrationPrice());
-            createNumericCell(stylesContainer, row, 15, orderBalance.getRegistrationPriceOverhead());
-            createNumericCell(stylesContainer, row, 16, orderBalance.getRegistrationPriceOverheadValue());
-            createNumericCell(stylesContainer, row, 17, orderBalance.getRealProductionCosts());
-            createNumericCell(stylesContainer, row, 18, orderBalance.getProfit());
-            createNumericCell(stylesContainer, row, 19, orderBalance.getProfitValue());
-            createNumericCell(stylesContainer, row, 20, orderBalance.getSellPrice());
+            createNumericCell(stylesContainer, row, 3, orderBalance.getProducedQuantity(), true);
+            createNumericCell(stylesContainer, row, 4, orderBalance.getMaterialCosts(), false);
+            createNumericCell(stylesContainer, row, 5, orderBalance.getProductionCosts(), false);
+            createNumericCell(stylesContainer, row, 6, orderBalance.getTechnicalProductionCosts(), true);
+            createNumericCell(stylesContainer, row, 7, orderBalance.getMaterialCostMargin(), false);
+            createNumericCell(stylesContainer, row, 8, orderBalance.getMaterialCostMarginValue(), false);
+            createNumericCell(stylesContainer, row, 9, orderBalance.getProductionCostMargin(), false);
+            createNumericCell(stylesContainer, row, 10, orderBalance.getProductionCostMarginValue(), false);
+            createNumericCell(stylesContainer, row, 11, orderBalance.getAdditionalOverhead(), false);
+            createNumericCell(stylesContainer, row, 12, orderBalance.getDirectAdditionalCost(), false);
+            createNumericCell(stylesContainer, row, 13, orderBalance.getTotalCosts(), true);
+            createNumericCell(stylesContainer, row, 14, orderBalance.getRegistrationPrice(), false);
+            createNumericCell(stylesContainer, row, 15, orderBalance.getRegistrationPriceOverhead(), false);
+            createNumericCell(stylesContainer, row, 16, orderBalance.getRegistrationPriceOverheadValue(), false);
+            createNumericCell(stylesContainer, row, 17, orderBalance.getRealProductionCosts(), false);
+            createNumericCell(stylesContainer, row, 18, orderBalance.getProfit(), false);
+            createNumericCell(stylesContainer, row, 19, orderBalance.getProfitValue(), false);
+            createNumericCell(stylesContainer, row, 20, orderBalance.getSellPrice(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 20; i++) {
@@ -745,24 +745,24 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             row = sheet.createRow(rowOffset + rowCounter);
             createRegularCell(stylesContainer, row, 0, orderBalance.getProductNumber());
             createRegularCell(stylesContainer, row, 1, orderBalance.getProductName());
-            createNumericCell(stylesContainer, row, 2, orderBalance.getProducedQuantity());
-            createNumericCell(stylesContainer, row, 3, orderBalance.getMaterialCosts());
-            createNumericCell(stylesContainer, row, 4, orderBalance.getProductionCosts());
-            createNumericCell(stylesContainer, row, 5, orderBalance.getTechnicalProductionCosts());
-            createNumericCell(stylesContainer, row, 6, orderBalance.getMaterialCostMargin());
-            createNumericCell(stylesContainer, row, 7, orderBalance.getMaterialCostMarginValue());
-            createNumericCell(stylesContainer, row, 8, orderBalance.getProductionCostMargin());
-            createNumericCell(stylesContainer, row, 9, orderBalance.getProductionCostMarginValue());
-            createNumericCell(stylesContainer, row, 10, orderBalance.getAdditionalOverhead());
-            createNumericCell(stylesContainer, row, 11, orderBalance.getDirectAdditionalCost());
-            createNumericCell(stylesContainer, row, 12, orderBalance.getTotalCosts());
-            createNumericCell(stylesContainer, row, 13, orderBalance.getRegistrationPrice());
-            createNumericCell(stylesContainer, row, 14, orderBalance.getRegistrationPriceOverhead());
-            createNumericCell(stylesContainer, row, 15, orderBalance.getRegistrationPriceOverheadValue());
-            createNumericCell(stylesContainer, row, 16, orderBalance.getRealProductionCosts());
-            createNumericCell(stylesContainer, row, 17, orderBalance.getProfit());
-            createNumericCell(stylesContainer, row, 18, orderBalance.getProfitValue());
-            createNumericCell(stylesContainer, row, 19, orderBalance.getSellPrice());
+            createNumericCell(stylesContainer, row, 2, orderBalance.getProducedQuantity(), true);
+            createNumericCell(stylesContainer, row, 3, orderBalance.getMaterialCosts(), false);
+            createNumericCell(stylesContainer, row, 4, orderBalance.getProductionCosts(), false);
+            createNumericCell(stylesContainer, row, 5, orderBalance.getTechnicalProductionCosts(), true);
+            createNumericCell(stylesContainer, row, 6, orderBalance.getMaterialCostMargin(), false);
+            createNumericCell(stylesContainer, row, 7, orderBalance.getMaterialCostMarginValue(), false);
+            createNumericCell(stylesContainer, row, 8, orderBalance.getProductionCostMargin(), false);
+            createNumericCell(stylesContainer, row, 9, orderBalance.getProductionCostMarginValue(), false);
+            createNumericCell(stylesContainer, row, 10, orderBalance.getAdditionalOverhead(), false);
+            createNumericCell(stylesContainer, row, 11, orderBalance.getDirectAdditionalCost(), false);
+            createNumericCell(stylesContainer, row, 12, orderBalance.getTotalCosts(), true);
+            createNumericCell(stylesContainer, row, 13, orderBalance.getRegistrationPrice(), false);
+            createNumericCell(stylesContainer, row, 14, orderBalance.getRegistrationPriceOverhead(), false);
+            createNumericCell(stylesContainer, row, 15, orderBalance.getRegistrationPriceOverheadValue(), false);
+            createNumericCell(stylesContainer, row, 16, orderBalance.getRealProductionCosts(), false);
+            createNumericCell(stylesContainer, row, 17, orderBalance.getProfit(), false);
+            createNumericCell(stylesContainer, row, 18, orderBalance.getProfitValue(), false);
+            createNumericCell(stylesContainer, row, 19, orderBalance.getSellPrice(), false);
             rowCounter++;
         }
         for (int i = 0; i <= 19; i++) {
@@ -777,21 +777,29 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
         return cell;
     }
 
-    private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
+    private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value, boolean bold) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
         cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HSSFCellStyle.ALIGN_RIGHT));
+        if (bold) {
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberBoldStyle, HSSFCellStyle.ALIGN_RIGHT));
+        } else {
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HSSFCellStyle.ALIGN_RIGHT));
+        }
         return cell;
     }
 
-    private HSSFCell createTimeCell(StylesContainer stylesContainer, HSSFRow row, int column, Integer value) {
+    private HSSFCell createTimeCell(StylesContainer stylesContainer, HSSFRow row, int column, Integer value, boolean bold) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
         if (value == null) {
             value = 0;
         }
         cell.setCellValue(Math.abs(value) / 86400d);
         if (value >= 0) {
-            cell.setCellStyle(StylesContainer.aligned(stylesContainer.timeStyle, HSSFCellStyle.ALIGN_RIGHT));
+            if (bold) {
+                cell.setCellStyle(StylesContainer.aligned(stylesContainer.timeBoldStyle, HSSFCellStyle.ALIGN_RIGHT));
+            } else {
+                cell.setCellStyle(StylesContainer.aligned(stylesContainer.timeStyle, HSSFCellStyle.ALIGN_RIGHT));
+            }
         } else {
             cell.setCellStyle(StylesContainer.aligned(stylesContainer.negativeTimeStyle, HSSFCellStyle.ALIGN_RIGHT));
         }
@@ -822,9 +830,13 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
         private final HSSFCellStyle timeStyle;
 
+        private final HSSFCellStyle timeBoldStyle;
+
         private final HSSFCellStyle negativeTimeStyle;
 
         private final HSSFCellStyle numberStyle;
+
+        private final HSSFCellStyle numberBoldStyle;
 
         private final HSSFCellStyle dateTimeStyle;
 
@@ -833,7 +845,7 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             regularStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
 
             headerStyle = workbook.createCellStyle();
-            headerStyle.setFont(fontsContainer.headerFont);
+            headerStyle.setFont(fontsContainer.boldFont);
             headerStyle.setFillPattern(XSSFCellStyle.SOLID_FOREGROUND);
             headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             headerStyle.setBorderBottom(XSSFCellStyle.BORDER_MEDIUM);
@@ -842,11 +854,19 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             timeStyle = workbook.createCellStyle();
             timeStyle.setDataFormat(workbook.createDataFormat().getFormat("[HH]:MM:SS"));
 
+            timeBoldStyle = workbook.createCellStyle();
+            timeBoldStyle.setDataFormat(workbook.createDataFormat().getFormat("[HH]:MM:SS"));
+            timeBoldStyle.setFont(fontsContainer.boldFont);
+
             negativeTimeStyle = workbook.createCellStyle();
             negativeTimeStyle.setDataFormat(workbook.createDataFormat().getFormat("-[HH]:MM:SS"));
 
             numberStyle = workbook.createCellStyle();
             numberStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00###"));
+
+            numberBoldStyle = workbook.createCellStyle();
+            numberBoldStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00###"));
+            numberBoldStyle.setFont(fontsContainer.boldFont);
 
             dateTimeStyle = workbook.createCellStyle();
             dateTimeStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd hh:mm"));
@@ -861,12 +881,11 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     private static class FontsContainer {
 
-        private final Font headerFont;
+        private final Font boldFont;
 
         FontsContainer(HSSFWorkbook workbook) {
-
-            headerFont = workbook.createFont();
-            headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            boldFont = workbook.createFont();
+            boldFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
         }
     }
 }

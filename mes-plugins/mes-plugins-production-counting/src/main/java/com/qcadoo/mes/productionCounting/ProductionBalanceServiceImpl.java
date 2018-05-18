@@ -28,7 +28,12 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.WindowTabComponent;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class ProductionBalanceServiceImpl implements ProductionBalanceService {
@@ -62,5 +67,24 @@ public class ProductionBalanceServiceImpl implements ProductionBalanceService {
             includeAdditionalTime.setEnabled(true);
             includeAdditionalTime.requestComponentUpdateState();
         }
+    }
+
+    @Override
+    public void disableAddAllRelatedOrdersButton(final ViewDefinitionState view) {
+        GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ProductionBalanceFields.ORDERS);
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(ProductionBalanceFields.GENERATED);
+
+        WindowTabComponent windowTab = (WindowTabComponent) view.getComponentByReference("ordersTab");
+        RibbonGroup ribbonGroup = windowTab.getRibbon().getGroupByName("ordersTab");
+        RibbonActionItem addAllRelatedOrders = ribbonGroup.getItemByName("addAllRelatedOrders");
+
+        int sizeOfSelectedEntitiesGrid = ordersGrid.getSelectedEntities().size();
+        if (sizeOfSelectedEntitiesGrid == 1 && !generatedCheckBox.isChecked()) {
+            addAllRelatedOrders.setEnabled(true);
+        } else {
+            addAllRelatedOrders.setEnabled(false);
+        }
+
+        addAllRelatedOrders.requestUpdate(true);
     }
 }

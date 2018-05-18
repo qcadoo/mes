@@ -397,7 +397,9 @@
                         fields="leftToRelease" width="60"/>
 
                 <option type="column" name="producedOrderQuantity"
-                        fields="producedOrderQuantity" width="60"/>
+                        fields="producedOrderQuantity" width="60"
+                        classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
+                        classesCls="green-cell"/>
 
                 <option type="column" name="unit" fields="unit"
                          width="60"/>
