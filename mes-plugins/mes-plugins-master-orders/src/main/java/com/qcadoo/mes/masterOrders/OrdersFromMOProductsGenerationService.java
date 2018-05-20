@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -119,42 +120,46 @@ public class OrdersFromMOProductsGenerationService {
         generateSubOrders(result, order);
 
         if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
-           /* List<Entity> orders = getOrderAndSubOrders(order.getId());
-            Collections.sort(orders,
-                    (o1, o2) -> o1.getStringField(OrderFields.NUMBER).compareTo(o2.getStringField(OrderFields.NUMBER)));
+           List<Entity> orders = getOrderAndSubOrders(order.getId());
+            Collections.reverse(orders);
+            Integer lastLevel = null;
+            Date lastDate = null;
             for (Entity ord : orders) {
+                if(Objects.isNull(lastLevel)) {
+
+                }
                 Date calculatedOrderStartDate = null;
                 if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
                     Optional<Entity> maybeOrder = findLastOrder(ord);
                     if(maybeOrder.isPresent()) {
-
+                        calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                     } else {
                         calculatedOrderStartDate = new DateTime().toDate();
                     }
                 } else {
                     Optional<Entity> maybeOrder = findPreviousOrder(ord);
                     if(maybeOrder.isPresent()) {
-
-                        Integer changeoverDurationInMillis = getChangeoverDurationInMillis(maybeOrder.get(), ord);
-                        List<Entity> shifts = getAllShifts();
-                        Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
-                                new DateTime(maybeOrder.get().getDateField(OrderFields.FINISH_DATE)),
-                                ord.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
-                        if (maybeDate.isPresent()) {
-                            calculatedOrderStartDate =  calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
-                        }
+                        calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
                     } else {
                         calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                     }
                 }
-            }*/
 
-            try {
-                tryGeneratePPS(order);
-            } catch (Exception ex) {
-                result.addOrderWithoutPps(order.getStringField(OrderFields.NUMBER));
+                try {
+                    Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
+                    if(Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
+                        lastDate = finishDate;
+                    } else if(Objects.isNull(lastDate)) {
+                        lastDate = finishDate;
+                    }
+                } catch (Exception ex) {
+                    result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
+                    break;
+                }
+
             }
+
         }
     }
 
@@ -201,6 +206,20 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private Date tryGeneratePPS(final Entity order, Date date) {
+        Date startDate = findStartDate(order, date);
+        generateEmptyPpsForOrder(order);
+        order.setField("generatePPS", true);
+        order.setField(OrderFields.START_DATE, startDate);
+        order.setField(OrderFields.FINISH_DATE, new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(1).toDate());
+        Entity storedOrder = order.getDataDefinition().save(order);
+        if (!storedOrder.isValid()) {
+            throw new EntityRuntimeException(storedOrder);
+        }
+        return order.getDateField(OrderFields.FINISH_DATE);
+    }
+
     private void generateEmptyPpsForOrder(Entity order) {
         Entity productionPerShift = dataDefinitionService.get("productionPerShift", "productionPerShift").find()
                 .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
@@ -229,6 +248,26 @@ public class OrdersFromMOProductsGenerationService {
             List<Entity> shifts = getAllShifts();
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
                     new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)),
+                    order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
+            if (maybeDate.isPresent()) {
+                return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
+            }
+        }
+
+        return DateTime.now().toDate();
+    }
+
+    private Date findStartDate(final Entity order, Date startDate) {
+        if (Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
+            return order.getDateField(OrderFields.START_DATE);
+        }
+
+        Optional<Entity> previousOrder = findPreviousOrder(order);
+        if (previousOrder.isPresent()) {
+            Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
+            List<Entity> shifts = getAllShifts();
+            Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
+                    new DateTime(startDate),
                     order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
