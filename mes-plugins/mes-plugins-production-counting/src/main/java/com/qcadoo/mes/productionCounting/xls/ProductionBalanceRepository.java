@@ -458,7 +458,7 @@ class ProductionBalanceRepository {
         appendRealStaffCostsJoin(entity, query);
         query.append("CROSS JOIN basic_parameter bp ");
         query.append("GROUP BY orderId, orderNumber) ");
-        query.append("UNION ");
+        query.append("UNION ALL ");
         query.append("(WITH planned_time (order_id, toc_id, staff_time, machine_time) AS (SELECT o.id AS orderId, toc.id AS tocId, ");
         appendPlannedStaffTime(entity, query);
         query.append("AS plannedStaffTime, ");
@@ -526,7 +526,7 @@ class ProductionBalanceRepository {
         query.append("CROSS JOIN basic_parameter bp ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
-        query.append("GROUP BY orderId, orderNumber, operationNumber) ");
+        query.append("GROUP BY orderId, orderNumber, toc.id, operationNumber) ");
         query.append("ORDER BY orderNumber, operationNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -536,13 +536,14 @@ class ProductionBalanceRepository {
     private void appendRealStaffCosts(Entity entity, StringBuilder query, String typeOfProductionRecording) {
         if (includeWageGroups(entity)) {
             query.append(", real_staff_cost (order_id, productiontracking_id, labor_time, staff_cost) AS ");
-            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, min(swt.labortime) AS laborTime, COALESCE(MIN(swt.labortime),0) / 3600 * COALESCE(MIN(s.laborhourlycost),0) AS staffCost ");
+            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, MIN(swt.labortime) AS laborTime, ");
+            query.append("COALESCE(MIN(swt.labortime), 0) / 3600 * COALESCE(MIN(s.laborhourlycost), 0) AS staffCost ");
             query.append("FROM orders_order o ");
             query.append("JOIN productioncounting_productiontracking pt ON pt.order_id = o.id ");
             query.append("JOIN productioncounting_staffworktime swt ON swt.productionrecord_id = pt.id ");
             query.append("JOIN basic_staff s ON swt.worker_id = s.id ");
             appendWhereClause(query);
-            query.append(" AND pt.state = '02accepted' AND o.typeofproductionrecording = ").append(typeOfProductionRecording);
+            query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = ").append(typeOfProductionRecording);
             query.append("GROUP BY o.id, swt.id, pt.id) ");
         }
     }
@@ -554,7 +555,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendRealStaffCostsFromWageGroups(StringBuilder query) {
-        query.append("COALESCE(SUM(rsc.staff_cost),0) ");
+        query.append("COALESCE(SUM(rsc.staff_cost), 0) ");
     }
 
     private boolean includeWageGroups(Entity entity) {
