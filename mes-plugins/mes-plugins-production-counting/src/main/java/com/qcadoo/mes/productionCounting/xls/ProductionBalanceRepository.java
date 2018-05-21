@@ -94,11 +94,12 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, operation_id, product_id, quantity) AS (SELECT ");
+        query.append("(WITH planned_quantity (order_id, operation_id, product_id, quantity, childsQuantity) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("toc.operation_id AS operationId, ");
         query.append("p.id AS productId, ");
-        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("0 AS childsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
@@ -112,10 +113,11 @@ class ProductionBalanceRepository {
     }
 
     private void appendCumulatedPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, product_id, quantity) AS (SELECT ");
+        query.append("(WITH planned_quantity (order_id, product_id, quantity, childsQuantity) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
-        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("0 AS childsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
@@ -128,7 +130,8 @@ class ProductionBalanceRepository {
         query.append("SELECT ");
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
-        query.append("COALESCE(SUM(pcq.plannedquantity) - SUM(och.plannedquantity), 0) AS plannedQuantity ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("COALESCE(SUM(och.plannedquantity), 0) AS childsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
@@ -137,7 +140,7 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NOT NULL ");
-        query.append("GROUP BY o.id, p.id HAVING COALESCE(SUM(pcq.plannedquantity) - SUM(och.plannedquantity), 0) > 0) ");
+        query.append("GROUP BY o.id, p.id HAVING COALESCE(SUM(pcq.plannedquantity), 0) - COALESCE(SUM(och.plannedquantity), 0) > 0) ");
     }
 
     private void appendMaterialCostsSelectionClause(StringBuilder query, Entity entity) {
@@ -230,11 +233,11 @@ class ProductionBalanceRepository {
     }
 
     private void appendPlannedQuantity(StringBuilder query) {
-        query.append("MIN(q.quantity) ");
+        query.append("MIN(q.quantity - q.childsQuantity) ");
     }
 
     private void appendUsedQuantity(StringBuilder query) {
-        query.append("COALESCE(SUM(topic.usedquantity), 0) ");
+        query.append("(COALESCE(SUM(topic.usedquantity), 0) - MIN(q.childsQuantity)) ");
     }
 
     List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
