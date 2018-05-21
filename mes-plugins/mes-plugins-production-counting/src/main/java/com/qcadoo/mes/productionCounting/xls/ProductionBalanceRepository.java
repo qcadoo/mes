@@ -106,7 +106,8 @@ class ProductionBalanceRepository {
         query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
-        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL ");
+        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND (t.id IS NULL ");
+        query.append("OR t.id IS NOT NULL) ");
         query.append("GROUP BY o.id, toc.operation_id, p.id) ");
     }
 
@@ -122,7 +123,21 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL ");
-        query.append("GROUP BY o.id, p.id) ");
+        query.append("GROUP BY o.id, p.id ");
+        query.append("UNION ");
+        query.append("SELECT ");
+        query.append("o.id AS orderId, ");
+        query.append("p.id AS productId, ");
+        query.append("COALESCE(SUM(pcq.plannedquantity) - SUM(och.plannedquantity), 0) AS plannedQuantity ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
+        query.append("LEFT JOIN orders_order och ON och.product_id = p.id AND och.parent_id = o.id ");
+        appendWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '02cumulated' ");
+        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NOT NULL ");
+        query.append("GROUP BY o.id, p.id HAVING COALESCE(SUM(pcq.plannedquantity) - SUM(och.plannedquantity), 0) > 0) ");
     }
 
     private void appendMaterialCostsSelectionClause(StringBuilder query, Entity entity) {
