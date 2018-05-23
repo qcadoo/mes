@@ -73,6 +73,7 @@
         <model:model model="operationProductOutComponent"
                      resource="model/operationProductOutComponent.xml"/>
         <model:model model="operationProductInComponent" resource="model/operationProductInComponent.xml"/>
+        <model:model model="operationProductInComponentDto" resource="model/operationProductInComponentDto.xml"/>
 
         <model:model model="technology" resource="model/technology.xml"/>
         <model:model model="technologyDto" resource="model/technologyDto.xml"/>
