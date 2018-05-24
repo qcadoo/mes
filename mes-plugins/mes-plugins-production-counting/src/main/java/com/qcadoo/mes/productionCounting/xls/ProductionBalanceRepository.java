@@ -267,6 +267,8 @@ class ProductionBalanceRepository {
         query.append("stf.number AS staffNumber, ");
         query.append("stf.name AS staffName, ");
         query.append("stf.surname AS staffSurname, ");
+        query.append("COALESCE(stf.laborhourlycost, 0) AS staffLaborHourlyCost, ");
+        query.append("wg.name AS wageGroupName, ");
         query.append("COALESCE(SUM(swt.labortime), 0) AS laborTime ");
         query.append("FROM orders_order o ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
@@ -274,8 +276,9 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN basic_staff stf ON swt.worker_id = stf.id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("LEFT JOIN wagegroups_wagegroup wg ON stf.wagegroup_id = wg.id ");
         appendWhereClause(query);
-        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname ");
+        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname, staffLaborHourlyCost, wageGroupName ");
         query.append("ORDER BY orderNumber, operationNumber, staffNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),

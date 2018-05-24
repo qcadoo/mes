@@ -259,7 +259,11 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.STAFF_SURNAME, locale), 4,
                 CellStyle.ALIGN_LEFT);
-        createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.LABOR_TIME, locale), 5,
+        createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.WAGE_GROUP_NAME, locale), 5,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.STAFF_LABOR_HOURLY_COST, locale), 6,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row, translationService.translate(LaborTimeSheetConstants.LABOR_TIME, locale), 7,
                 CellStyle.ALIGN_LEFT);
 
         List<LaborTime> laborTimeList = productionBalanceRepository.getLaborTime(ordersIds);
@@ -271,10 +275,12 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 2, laborTime.getStaffNumber());
             createRegularCell(stylesContainer, row, 3, laborTime.getStaffName());
             createRegularCell(stylesContainer, row, 4, laborTime.getStaffSurname());
-            createTimeCell(stylesContainer, row, 5, laborTime.getLaborTime(), false);
+            createRegularCell(stylesContainer, row, 5, laborTime.getWageGroupName());
+            createNumericCell(stylesContainer, row, 6, laborTime.getStaffLaborHourlyCost(), false);
+            createTimeCell(stylesContainer, row, 7, laborTime.getLaborTime(), false);
             rowCounter++;
         }
-        for (int i = 0; i <= 5; i++) {
+        for (int i = 0; i <= 7; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }

@@ -1,5 +1,7 @@
 package com.qcadoo.mes.productionCounting.xls.dto;
 
+import java.math.BigDecimal;
+
 public class LaborTime {
 
     private String orderNumber;
@@ -13,6 +15,10 @@ public class LaborTime {
     private String staffSurname;
 
     private Integer laborTime;
+
+    private BigDecimal staffLaborHourlyCost;
+
+    private String wageGroupName;
 
     public String getOrderNumber() {
         return orderNumber;
@@ -60,5 +66,21 @@ public class LaborTime {
 
     public void setLaborTime(Integer laborTime) {
         this.laborTime = laborTime;
+    }
+
+    public BigDecimal getStaffLaborHourlyCost() {
+        return staffLaborHourlyCost;
+    }
+
+    public void setStaffLaborHourlyCost(BigDecimal staffLaborHourlyCost) {
+        this.staffLaborHourlyCost = staffLaborHourlyCost;
+    }
+
+    public String getWageGroupName() {
+        return wageGroupName;
+    }
+
+    public void setWageGroupName(String wageGroupName) {
+        this.wageGroupName = wageGroupName;
     }
 }
