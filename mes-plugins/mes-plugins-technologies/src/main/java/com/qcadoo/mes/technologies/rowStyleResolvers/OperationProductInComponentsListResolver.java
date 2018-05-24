@@ -14,9 +14,6 @@ import com.qcadoo.view.constants.RowStyle;
 @Service
 public class OperationProductInComponentsListResolver {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     public Set<String> fillRowStyles(final Entity entity) {
         final Set<String> rowStyles = Sets.newHashSet();
         if (entity.getBooleanField(OperationProductInComponentDtoFields.HAS_ACCEPTED_TECHNOLOGY)) {
