@@ -2,12 +2,10 @@ package com.qcadoo.mes.technologies.rowStyleResolvers;
 
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentDtoFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.constants.RowStyle;
 
