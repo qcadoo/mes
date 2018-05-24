@@ -85,7 +85,7 @@
                     width="140" link="true"/>
             <option type="column" name="name" fields="name" width="140" link="true"/>
             <option type="column" name="deadline" fields="deadline"
-                    width="80" classesCls="wrap-date"/>
+                    width="80" classesNames="wrap-date"/>
             <option type="column" name="companyName" fields="companyName"
                     width="55"/>
             <option type="column" name="companyPayer" fields="companyPayer"
@@ -108,7 +108,7 @@
             <option type="column" name="cumulatedMasterOrderQuantity" fields="cumulatedMasterOrderQuantity" width="45"/>
             <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="45"
                     classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
-                    classesCls="green-cell"/>
+                    classesNames="green-cell"/>
             <option type="column" name="leftToRelease" fields="leftToRelease" width="45"/>
             <option type="column" name="unit" fields="unit"
                     width="35"/>

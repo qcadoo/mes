@@ -399,7 +399,7 @@
                 <option type="column" name="producedOrderQuantity"
                         fields="producedOrderQuantity" width="60"
                         classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
-                        classesCls="green-cell"/>
+                        classesNames="green-cell"/>
 
                 <option type="column" name="unit" fields="unit"
                          width="60"/>
