@@ -134,6 +134,7 @@
                                     #{form}.performEvent({
                                         name : 'validateColumnsWidthForOrder'
                                     });
+                                    #{form}.performSave();
                                     #{form}.performEvent({
                                         name : 'printOrderReport',
                                         args : ['pdf']
@@ -152,6 +153,7 @@
                                     #{form}.performEvent({
                                         name : 'validateColumnsWidthForDelivery'
                                     });
+                                    #{form}.performSave();
                                     #{form}.performEvent({
                                         name : 'printDeliveryReport',
                                         args : ['pdf']
@@ -298,9 +300,6 @@
 						var saveNewBtn = #{window}.getRibbonItem("actions.saveNew");
 						var cancelBtn = #{window}.getRibbonItem("actions.cancel");
 						var deleteBtn = #{window}.getRibbonItem("actions.delete");
-						
-						var generateOrderBtn =  #{window}.getRibbonItem("generate.generateOrder");
-						var generateDeliveryBtn =  #{window}.getRibbonItem("generate.generateDelivery");
 						
 						var acceptBtn = #{window}.getRibbonItem("status.accept");
 						var declineDeliveryBtn = #{window}.getRibbonItem("status.declineDelivery");
