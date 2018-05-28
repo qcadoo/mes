@@ -156,9 +156,7 @@ public class DeliveryDetailsListeners {
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
-            if (!state.isHasError()) {
-                view.redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
-            }
+            view.redirectTo("/deliveries/deliveryReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         } else {
             state.addMessage("deliveries.delivery.report.componentFormError", MessageType.FAILURE);
         }
@@ -166,9 +164,7 @@ public class DeliveryDetailsListeners {
 
     public final void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (state instanceof FormComponent) {
-            if (!state.isHasError()) {
-                view.redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
-            }
+            view.redirectTo("/deliveries/orderReport." + args[0] + "?id=" + state.getFieldValue(), true, false);
         } else {
             state.addMessage("deliveries.order.report.componentFormError", MessageType.FAILURE);
         }

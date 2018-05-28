@@ -131,14 +131,15 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{form}.performEvent({
-                                        name : 'validateColumnsWidthForOrder'
-                                    });
-                                    #{form}.performSave();
-                                    #{form}.performEvent({
-                                        name : 'printOrderReport',
-                                        args : ['pdf']
-                                    });
+                                    if (window.canClose()) {
+                                        #{form}.performEvent({
+                                            name : 'validateColumnsWidthForOrder'
+                                        });
+                                        #{form}.performEvent({
+                                            name : 'printOrderReport',
+                                            args : ['pdf']
+                                        });
+                                    }
                                 }
                             });
                         ]]>
@@ -150,14 +151,15 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{form}.performEvent({
-                                        name : 'validateColumnsWidthForDelivery'
-                                    });
-                                    #{form}.performSave();
-                                    #{form}.performEvent({
-                                        name : 'printDeliveryReport',
-                                        args : ['pdf']
-                                    });
+                                    if (window.canClose()) {
+                                        #{form}.performEvent({
+                                            name : 'validateColumnsWidthForDelivery'
+                                        });
+                                        #{form}.performEvent({
+                                            name : 'printDeliveryReport',
+                                            args : ['pdf']
+                                        });
+                                    }
                                 }
                             });
                         ]]>
