@@ -94,11 +94,12 @@ class ProductionBalanceRepository {
     }
 
     private void appendForEachPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, operation_id, product_id, quantity) AS (SELECT ");
+        query.append("(WITH planned_quantity (order_id, operation_id, product_id, quantity, childsQuantity) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("toc.operation_id AS operationId, ");
         query.append("p.id AS productId, ");
-        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("0 AS childsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
@@ -106,15 +107,17 @@ class ProductionBalanceRepository {
         query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
-        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL ");
+        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND (t.id IS NULL ");
+        query.append("OR t.id IS NOT NULL) ");
         query.append("GROUP BY o.id, toc.operation_id, p.id) ");
     }
 
     private void appendCumulatedPlannedQuantities(StringBuilder query) {
-        query.append("(WITH planned_quantity (order_id, product_id, quantity) AS (SELECT ");
+        query.append("(WITH planned_quantity (order_id, product_id, quantity, childsQuantity) AS (SELECT ");
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
-        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("0 AS childsQuantity ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
@@ -122,7 +125,22 @@ class ProductionBalanceRepository {
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL ");
-        query.append("GROUP BY o.id, p.id) ");
+        query.append("GROUP BY o.id, p.id ");
+        query.append("UNION ");
+        query.append("SELECT ");
+        query.append("o.id AS orderId, ");
+        query.append("p.id AS productId, ");
+        query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
+        query.append("COALESCE(SUM(och.plannedquantity), 0) AS childsQuantity ");
+        query.append("FROM orders_order o ");
+        query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("JOIN basic_product p ON pcq.product_id = p.id ");
+        query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
+        query.append("LEFT JOIN orders_order och ON och.product_id = p.id AND och.parent_id = o.id ");
+        appendWhereClause(query);
+        query.append("AND o.typeofproductionrecording = '02cumulated' ");
+        query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NOT NULL ");
+        query.append("GROUP BY o.id, p.id HAVING COALESCE(SUM(pcq.plannedquantity), 0) - COALESCE(SUM(och.plannedquantity), 0) > 0) ");
     }
 
     private void appendMaterialCostsSelectionClause(StringBuilder query, Entity entity) {
@@ -215,11 +233,11 @@ class ProductionBalanceRepository {
     }
 
     private void appendPlannedQuantity(StringBuilder query) {
-        query.append("MIN(q.quantity) ");
+        query.append("MIN(q.quantity - q.childsQuantity) ");
     }
 
     private void appendUsedQuantity(StringBuilder query) {
-        query.append("COALESCE(SUM(topic.usedquantity), 0) ");
+        query.append("(COALESCE(SUM(topic.usedquantity), 0) - MIN(q.childsQuantity)) ");
     }
 
     List<PieceworkDetails> getPieceworkDetails(List<Long> ordersIds) {
@@ -249,6 +267,8 @@ class ProductionBalanceRepository {
         query.append("stf.number AS staffNumber, ");
         query.append("stf.name AS staffName, ");
         query.append("stf.surname AS staffSurname, ");
+        query.append("COALESCE(stf.laborhourlycost, 0) AS staffLaborHourlyCost, ");
+        query.append("wg.name AS wageGroupName, ");
         query.append("COALESCE(SUM(swt.labortime), 0) AS laborTime ");
         query.append("FROM orders_order o ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON o.id = pt.order_id AND pt.state = '02accepted' ");
@@ -256,8 +276,9 @@ class ProductionBalanceRepository {
         query.append("LEFT JOIN basic_staff stf ON swt.worker_id = stf.id ");
         query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON pt.technologyoperationcomponent_id = toc.id ");
         query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("LEFT JOIN wagegroups_wagegroup wg ON stf.wagegroup_id = wg.id ");
         appendWhereClause(query);
-        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname ");
+        query.append("GROUP BY orderNumber, operationNumber, staffNumber, staffName, staffSurname, staffLaborHourlyCost, wageGroupName ");
         query.append("ORDER BY orderNumber, operationNumber, staffNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -440,7 +461,7 @@ class ProductionBalanceRepository {
         appendRealStaffCostsJoin(entity, query);
         query.append("CROSS JOIN basic_parameter bp ");
         query.append("GROUP BY orderId, orderNumber) ");
-        query.append("UNION ");
+        query.append("UNION ALL ");
         query.append("(WITH planned_time (order_id, toc_id, staff_time, machine_time) AS (SELECT o.id AS orderId, toc.id AS tocId, ");
         appendPlannedStaffTime(entity, query);
         query.append("AS plannedStaffTime, ");
@@ -508,7 +529,7 @@ class ProductionBalanceRepository {
         query.append("CROSS JOIN basic_parameter bp ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '03forEach' ");
-        query.append("GROUP BY orderId, orderNumber, operationNumber) ");
+        query.append("GROUP BY orderId, orderNumber, toc.id, operationNumber) ");
         query.append("ORDER BY orderNumber, operationNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -518,13 +539,14 @@ class ProductionBalanceRepository {
     private void appendRealStaffCosts(Entity entity, StringBuilder query, String typeOfProductionRecording) {
         if (includeWageGroups(entity)) {
             query.append(", real_staff_cost (order_id, productiontracking_id, labor_time, staff_cost) AS ");
-            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, min(swt.labortime) AS laborTime, COALESCE(MIN(swt.labortime),0) / 3600 * COALESCE(MIN(s.laborhourlycost),0) AS staffCost ");
+            query.append("(SELECT o.id AS orderId, pt.id AS productionTrackingId, MIN(swt.labortime) AS laborTime, ");
+            query.append("COALESCE(MIN(swt.labortime), 0) / 3600 * COALESCE(MIN(s.laborhourlycost), 0) AS staffCost ");
             query.append("FROM orders_order o ");
             query.append("JOIN productioncounting_productiontracking pt ON pt.order_id = o.id ");
             query.append("JOIN productioncounting_staffworktime swt ON swt.productionrecord_id = pt.id ");
             query.append("JOIN basic_staff s ON swt.worker_id = s.id ");
             appendWhereClause(query);
-            query.append(" AND pt.state = '02accepted' AND o.typeofproductionrecording = ").append(typeOfProductionRecording);
+            query.append("AND pt.state = '02accepted' AND o.typeofproductionrecording = ").append(typeOfProductionRecording);
             query.append("GROUP BY o.id, swt.id, pt.id) ");
         }
     }
@@ -536,7 +558,7 @@ class ProductionBalanceRepository {
     }
 
     private void appendRealStaffCostsFromWageGroups(StringBuilder query) {
-        query.append("COALESCE(SUM(rsc.staff_cost),0) ");
+        query.append("COALESCE(SUM(rsc.staff_cost), 0) ");
     }
 
     private boolean includeWageGroups(Entity entity) {

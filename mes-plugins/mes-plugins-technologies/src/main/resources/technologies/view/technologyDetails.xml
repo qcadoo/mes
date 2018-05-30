@@ -398,16 +398,18 @@
                 </layoutElement>
                 <layoutElement column="2" row="4" minHeight="3">
                     <component type="grid" name="inProducts" reference="inProducts"
-                               source="#{technologyTree}.operationProductInComponents"
+                               useDto="true"
+                               source="#{technologyTree}.operationProductInComponentDtos"
+                               model="operationProductInComponentDto"
                                defaultEnabled="false">
-                        <option type="column" name="number" fields="product"
-                                expression="#product['number']" link="true" width="100"/>
-                        <option type="column" name="name" fields="product"
-                                expression="#product['name']" link="true" width="200"/>
+                        <option type="column" name="number" fields="productNumber"
+                                link="true" width="100"/>
+                        <option type="column" name="name" fields="productName"
+                                width="200"/>
                         <option type="column" name="quantity" fields="quantity"
                                 width="100"/>
-                        <option type="column" name="unit" fields="product"
-                                expression="#product['unit']" link="false" width="70"/>
+                        <option type="column" name="unit" fields="productUnit"
+                                link="false" width="70"/>
 
                         <option type="order" column="priority" direction="asc"/>
 
@@ -426,6 +428,9 @@
                         <option type="multiselect" value="true"/>
 
                         <option type="filtersDefaultVisible" value="false"/>
+                        <rowStyleResolver
+                                class="com.qcadoo.mes.technologies.rowStyleResolvers.OperationProductInComponentsListResolver"
+                                method="fillRowStyles"/>
                     </component>
                 </layoutElement>
             </component>

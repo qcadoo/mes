@@ -14,5 +14,9 @@ final class LaborTimeSheetConstants {
 
     static final String STAFF_SURNAME = "productionCounting.productionBalance.report.xls.sheet.laborTime.staffSurname";
 
+    static final String WAGE_GROUP_NAME = "productionCounting.productionBalance.report.xls.sheet.laborTime.wageGroupName";
+
+    static final String STAFF_LABOR_HOURLY_COST = "productionCounting.productionBalance.report.xls.sheet.laborTime.staffLaborHourlyCost";
+
     static final String LABOR_TIME = "productionCounting.productionBalance.report.xls.sheet.laborTime.laborTime";
 }

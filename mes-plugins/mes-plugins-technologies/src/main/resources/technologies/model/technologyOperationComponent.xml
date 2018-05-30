@@ -50,6 +50,9 @@
 
         <hasMany name="operationProductInComponents" model="operationProductInComponent"
                  joinField="operationComponent" cascade="delete" copyable="true"/>
+        <hasMany name="operationProductInComponentDtos"
+                 joinField="operationComponent" model="operationProductInComponentDto"
+                 cascade="nullify" persistent="false"/>
         <hasMany name="operationProductOutComponents" model="operationProductOutComponent"
                  joinField="operationComponent" cascade="delete" copyable="true"/>
 
