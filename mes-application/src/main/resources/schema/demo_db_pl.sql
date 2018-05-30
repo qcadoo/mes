@@ -6790,12 +6790,14 @@ CREATE TABLE goodfood_extrusionpouring (
     id bigint NOT NULL,
     extrusionprotocol_id bigint,
     mixid character varying(255),
-    requiredscalequantity numeric(12,5),
-    finaladdedquantity numeric(12,5),
-    addedquantity numeric(12,5),
-    scalequantity numeric(12,5),
+    requiredscalequantity numeric(9,2),
+    finaladdedquantity numeric(9,2),
+    addedquantity numeric(9,2),
+    scalequantity numeric(9,2),
     totalmixquantity numeric(12,5),
-    addedquantitymanual boolean DEFAULT false
+    addedquantitymanual boolean DEFAULT false,
+    addedquantityrelatesto character varying(255) DEFAULT '01mix'::character varying,
+    mixwaterquantity numeric(12,5)
 );
 
 
@@ -6827,12 +6829,12 @@ CREATE TABLE goodfood_extrusionpouringingredient (
     extrusionpouring_id bigint,
     product_id bigint,
     batch_id bigint,
-    quantity numeric(12,5),
+    quantity numeric(9,2),
     ratio numeric(12,5),
     manual boolean DEFAULT false,
     skip boolean DEFAULT false,
     frommix boolean DEFAULT false,
-    requiredquantity numeric(12,5),
+    requiredquantity numeric(9,2),
     quantityinmix numeric(12,5),
     beyondrecipe boolean DEFAULT false,
     addedbyuser boolean DEFAULT false
@@ -11647,6 +11649,41 @@ ALTER SEQUENCE orders_typeofcorrectioncauses_id_seq OWNED BY orders_typeofcorrec
 
 
 --
+-- Name: ordersforsubproductsgeneration_relatedorderdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW ordersforsubproductsgeneration_relatedorderdto AS
+ SELECT o.id,
+    o.number,
+    o.name,
+    p.number AS productnumber,
+    o.plannedquantity,
+    COALESCE(o.amountofproductproduced, (0)::numeric) AS producedquantity,
+    o.datefrom,
+    o.dateto,
+    pl.number AS productionlinenumber,
+    o.state,
+    (o.root_id)::integer AS rootid,
+    COALESCE(o.level, 0) AS level,
+    NULL::bigint AS order_id
+   FROM ((orders_order o
+     JOIN basic_product p ON ((p.id = o.product_id)))
+     JOIN productionlines_productionline pl ON ((pl.id = o.productionline_id)));
+
+
+--
+-- Name: ordersforsubproductsgeneration_relatedorderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE ordersforsubproductsgeneration_relatedorderdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: ordersforsubproductsgeneration_suborders; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11976,6 +12013,37 @@ CREATE SEQUENCE ordersupplies_coverageorderhelper_id_seq
 --
 
 ALTER SEQUENCE ordersupplies_coverageorderhelper_id_seq OWNED BY ordersupplies_coverageorderhelper.id;
+
+
+--
+-- Name: ordersupplies_coverageorderstate; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE ordersupplies_coverageorderstate (
+    id bigint NOT NULL,
+    materialrequirementcoverage_id bigint,
+    parameter_id bigint,
+    state character varying(255)
+);
+
+
+--
+-- Name: ordersupplies_coverageorderstate_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE ordersupplies_coverageorderstate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ordersupplies_coverageorderstate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE ordersupplies_coverageorderstate_id_seq OWNED BY ordersupplies_coverageorderstate.id;
 
 
 --
@@ -16904,6 +16972,39 @@ ALTER SEQUENCE technologies_operationproductincomponent_id_seq OWNED BY technolo
 
 
 --
+-- Name: technologies_operationproductincomponentdto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_operationproductincomponentdto (
+    id bigint,
+    operationcomponentid integer,
+    productnumber character varying(255),
+    productname character varying(1024),
+    productunit character varying(255),
+    quantity numeric(14,5),
+    priority integer,
+    itemnumberintheexplodedview character varying(255),
+    value numeric(14,5),
+    hasacceptedtechnology boolean,
+    hascheckedtechnology boolean
+);
+
+ALTER TABLE ONLY technologies_operationproductincomponentdto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: technologies_operationproductincomponentdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_operationproductincomponentdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: technologies_operationproductoutcomponent; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -19629,6 +19730,13 @@ ALTER TABLE ONLY ordersupplies_coveragelocation ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY ordersupplies_coverageorderhelper ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageorderhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersupplies_coverageorderstate ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageorderstate_id_seq'::regclass);
 
 
 --
@@ -23059,7 +23167,7 @@ SELECT pg_catalog.setval('goodfood_extrusionmixingredient_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouring; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual) FROM stdin;
+COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity) FROM stdin;
 \.
 
 
@@ -24980,6 +25088,13 @@ SELECT pg_catalog.setval('orders_typeofcorrectioncauses_id_seq', 1, false);
 
 
 --
+-- Name: ordersforsubproductsgeneration_relatedorderdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('ordersforsubproductsgeneration_relatedorderdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: ordersforsubproductsgeneration_suborders; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -25100,6 +25215,21 @@ COPY ordersupplies_coverageorderhelper (id, materialrequirementcoverage_id, enti
 --
 
 SELECT pg_catalog.setval('ordersupplies_coverageorderhelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: ordersupplies_coverageorderstate; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY ordersupplies_coverageorderstate (id, materialrequirementcoverage_id, parameter_id, state) FROM stdin;
+\.
+
+
+--
+-- Name: ordersupplies_coverageorderstate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('ordersupplies_coverageorderstate_id_seq', 1, false);
 
 
 --
@@ -27604,6 +27734,13 @@ COPY technologies_operationproductincomponent (id, operationcomponent_id, produc
 --
 
 SELECT pg_catalog.setval('technologies_operationproductincomponent_id_seq', 1, false);
+
+
+--
+-- Name: technologies_operationproductincomponentdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_operationproductincomponentdto_id_seq', 1, false);
 
 
 --
@@ -30285,6 +30422,14 @@ ALTER TABLE ONLY ordersupplies_coverageorderhelper
 
 
 --
+-- Name: ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersupplies_coverageorderstate
+    ADD CONSTRAINT ordersupplies_coverageorderstate_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -31703,6 +31848,30 @@ CREATE RULE "_RETURN" AS
 
 
 --
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_operationproductincomponentdto DO INSTEAD  SELECT opic.id,
+    (toc.id)::integer AS operationcomponentid,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    opic.quantity,
+    opic.priority,
+    opic.itemnumberintheexplodedview,
+    opic.value,
+    (count(at.id) > 0) AS hasacceptedtechnology,
+    (count(ct.id) > 0) AS hascheckedtechnology
+   FROM ((((technologies_operationproductincomponent opic
+     LEFT JOIN technologies_technologyoperationcomponent toc ON ((toc.id = opic.operationcomponent_id)))
+     LEFT JOIN basic_product product ON ((product.id = opic.product_id)))
+     LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
+     LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
+  GROUP BY opic.id, toc.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview;
+
+
+--
 -- Name: assignmenttoshift_assignmenttoshift_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -32765,6 +32934,22 @@ ALTER TABLE ONLY ordersupplies_coveragelocation
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
     ADD CONSTRAINT coveragelocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
+
+
+--
+-- Name: coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersupplies_coverageorderstate
+    ADD CONSTRAINT coverageorderstate_materialrequirementcoverage_fkey FOREIGN KEY (materialrequirementcoverage_id) REFERENCES ordersupplies_materialrequirementcoverage(id) DEFERRABLE;
+
+
+--
+-- Name: coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersupplies_coverageorderstate
+    ADD CONSTRAINT coverageorderstate_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
 
 
 --
