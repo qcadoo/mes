@@ -53,6 +53,8 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
+                            <listener event="onSelectedEntityChange" method="clearTechnologyOnProductChange"
+                                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners"/>
                             <listener event="onSelectedEntityChange" method="fillDefaultTechnology"
                                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners"/>
                             <listener event="onSelectedEntityChange" method="fillUnitField"
