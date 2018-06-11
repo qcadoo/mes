@@ -241,7 +241,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         if (Objects.isNull(productionLine)) {
             _exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
         } else {
-            _exceptions = timetableExceptionService.findForLineAndShift(productionLine, shift.getEntity());
+            _exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
         }
 
         Shift shiftForDay = new Shift(shift.getEntity(), currentDate, false);
@@ -380,7 +380,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         if (Objects.isNull(productionLine)) {
             exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
         } else {
-            exceptions = timetableExceptionService.findForLineAndShift(productionLine, shift.getEntity());
+            exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
         }
 
         return exceptions.stream()
