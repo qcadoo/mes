@@ -24,7 +24,6 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +32,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -67,7 +70,7 @@ public class DocumentDetailsListeners {
 
     private static final String L_FORM = "form";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentDetailsListeners.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -96,6 +99,9 @@ public class DocumentDetailsListeners {
     @Autowired
     private DocumentErrorsLogger documentErrorsLogger;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -105,8 +111,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -119,19 +125,24 @@ public class DocumentDetailsListeners {
 
         if (documentForm.isValid()) {
             Entity documentDb = documentForm.getEntity().getDataDefinition().get(documentForm.getEntityId());
+
             if (StringUtils.isBlank(documentDb.getStringField(DocumentFields.FILE_NAME))) {
                 documentDb.setField(DocumentFields.GENERATION_DATE, new Date());
+
                 documentDb = documentDb.getDataDefinition().save(documentDb);
+
                 try {
                     dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
                             DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName", documentDb
                                     .getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")), componentState
                             .getLocale());
                 } catch (Exception e) {
-                    LOGGER.error("Error when generate disposition order", e);
+                    LOG.error("Error when generate disposition order", e);
+
                     throw new IllegalStateException(e.getMessage(), e);
                 }
             }
+
             reportService.printGeneratedReport(view, componentState, new String[] { args[0],
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT });
         }
@@ -148,8 +159,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
-                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
+                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -163,23 +174,58 @@ public class DocumentDetailsListeners {
         }
     }
 
-    @Transactional
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long documentId = documentForm.getEntityId();
 
-        Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
-        LOGGER.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
+        Entity documentFromDB = documentDD.get(documentId);
+
+        if (documentFromDB != null) {
+            if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+                documentForm.addMessage("materialFlow.error.document.alreadyAccepted", MessageType.FAILURE);
+
+                return;
+            }
+
+            if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
+                documentForm.addMessage("materialFlow.error.document.acceptationInProgress", MessageType.FAILURE);
+
+                return;
+            }
+
+            setAcceptationInProgress(documentFromDB, true);
+            createResourcesForDocuments(view, documentForm, documentDD, documentFromDB);
+            setAcceptationInProgress(documentFromDB, false);
+        }
+    }
+
+    private void setAcceptationInProgress(final Entity document, final boolean acceptationInProgress) {
+        String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id = :id;";
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("acceptationinprogress", acceptationInProgress);
+
+        parameters.put("id", document.getId());
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
+        jdbcTemplate.update(sql, namedParameters);
+    }
+
+    @Transactional
+    private void createResourcesForDocuments(final ViewDefinitionState view, final FormComponent documentForm,
+            final DataDefinition documentDD, Entity document) {
+        LOG.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
                 + document.getStringField(DocumentFields.NUMBER));
 
-        if (!DocumentState.DRAFT.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
-            return;
-        }
-
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
+        document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
         document = documentDD.save(document);
 
@@ -187,7 +233,8 @@ public class DocumentDetailsListeners {
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(document);
-            LOGGER.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+
+            LOG.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
             return;
         }
@@ -197,11 +244,13 @@ public class DocumentDetailsListeners {
                 resourceManagementService.createResources(document);
             } catch (InvalidResourceException ire) {
                 document.setNotValid();
+
                 String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
                 String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                         .getStringField(ProductFields.NUMBER);
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                        false, resourceNumber, productNumber);
+
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
+                        resourceNumber, productNumber);
             }
         } else {
             document.setNotValid();
@@ -216,16 +265,16 @@ public class DocumentDetailsListeners {
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
-            LOGGER.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
+            LOG.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
             if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                receiptDocumentForReleaseHelper.tryBuildPz(document, view);
+                receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
             }
 
-            LOGGER.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
+            LOG.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
                     + document.getStringField(DocumentFields.NUMBER));
         }
 
@@ -255,18 +304,24 @@ public class DocumentDetailsListeners {
     public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
+
         try {
             resourceManagementService.fillResourcesInDocument(view, document);
+
             document = form.getPersistedEntityWithIncludedFormValues();
+
             form.setEntity(document);
+
             view.performEvent(view, "reset");
         } catch (IllegalStateException e) {
-            LOGGER.warn("Fill resources: " + e.getMessage());
-            LOGGER.warn(document.toString());
+            LOG.warn("Fill resources: " + e.getMessage());
+            LOG.warn(document.toString());
+
             view.addMessage("materialFlow.document.fillResources.global.error.documentNotValid", MessageType.FAILURE, false);
         } catch (LockAcquisitionException e) {
-            LOGGER.warn("Fill resources: " + e.getMessage());
-            LOGGER.warn(document.toString());
+            LOG.warn("Fill resources: " + e.getMessage());
+            LOG.warn(document.toString());
+
             view.addMessage("materialFlow.document.fillResources.global.error.concurrentModify", MessageType.FAILURE, false);
         }
     }
@@ -276,9 +331,11 @@ public class DocumentDetailsListeners {
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
         resourceStockService.checkResourcesStock(document);
+
         if (document.getGlobalErrors().isEmpty()) {
             view.addMessage("materialFlow.document.checkResourcesStock.global.message.success", MessageType.SUCCESS, true);
         }
+
         formComponent.setEntity(document);
     }
 
@@ -286,13 +343,19 @@ public class DocumentDetailsListeners {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-        final Map<String, Object> parameters = new HashMap<>();
+
+        final Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("documentId", document.getId());
+
         if (warehouseFrom != null) {
             parameters.put("warehouseId", warehouseFrom.getId());
         }
+
         JSONObject context = new JSONObject(parameters);
+
         StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html");
+
         url.append("?context=");
         url.append(context.toString());
 

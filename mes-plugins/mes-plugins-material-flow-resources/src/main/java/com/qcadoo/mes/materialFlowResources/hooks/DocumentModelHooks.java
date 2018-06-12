@@ -56,10 +56,10 @@ public class DocumentModelHooks {
     public void onCreate(final DataDefinition documentDD, final Entity document) {
         setInitialDocumentNumber(document);
         setInitialDocumentInBuffer(document);
+
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
             documentValidators.validateAvailableQuantities(document);
         }
-
     }
 
     public void onCopy(final DataDefinition documentDD, final Entity document) {
@@ -81,6 +81,7 @@ public class DocumentModelHooks {
 
     private void cleanPositionsResource(final Entity document) {
         List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
+
         positions.forEach(pos -> {
             pos.setField(PositionFields.RESOURCE, null);
             pos.getDataDefinition().save(pos);
@@ -91,6 +92,7 @@ public class DocumentModelHooks {
         if (document.getId() == null) {
             return false;
         }
+
         Entity documentDB = document.getDataDefinition().get(document.getId());
         String documentType = document.getStringField(DocumentFields.TYPE);
 
@@ -103,11 +105,13 @@ public class DocumentModelHooks {
                 || DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(documentType)) {
             return checkWarehouse(document, documentDB, true, false);
         }
+
         return false;
     }
 
     private boolean checkWarehouse(final Entity document, final Entity documentDB, boolean from, boolean to) {
         boolean changed = false;
+
         if (from) {
             if (!documentDB.getBelongsToField(DocumentFields.LOCATION_FROM).getId()
                     .equals(document.getBelongsToField(DocumentFields.LOCATION_FROM).getId())) {
@@ -119,6 +123,7 @@ public class DocumentModelHooks {
                 changed = true;
             }
         }
+
         return changed;
     }
 
