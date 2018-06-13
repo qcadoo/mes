@@ -53,6 +53,7 @@
         <string name="fileName" copyable="false"/>
         <boolean name="acceptationInProgress" default="false"/>
     </fields>
+
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCreate"/>
         <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCopy"/>

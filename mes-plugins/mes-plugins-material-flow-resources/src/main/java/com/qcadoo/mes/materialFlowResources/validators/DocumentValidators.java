@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class DocumentValidators {
         if (documentId != null) {
             Entity documentFromDB = documentDD.get(documentId);
 
-            if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+            if (!checkIfItIsReportGeneration(document, documentFromDB) && DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
                 document.addGlobalError("materialFlow.error.document.alreadyAccepted");
 
                 return false;
@@ -75,6 +76,13 @@ public class DocumentValidators {
         validateWarehouseChanged(documentDD, document);
 
         return document.isValid();
+    }
+
+    private boolean checkIfItIsReportGeneration(final Entity document, final Entity documentFromDB) {
+        return (((document.getDateField(DocumentFields.GENERATION_DATE) != null)
+                && (documentFromDB.getDateField(DocumentFields.GENERATION_DATE) == null))
+                || (StringUtils.isNotEmpty(document.getStringField(DocumentFields.FILE_NAME))
+                        && StringUtils.isEmpty(documentFromDB.getStringField(DocumentFields.FILE_NAME))));
     }
 
     public boolean hasDifferentWarehouses(final DataDefinition documentDD, final Entity document) {

@@ -56,9 +56,28 @@ public class DocumentModelHooks {
     public void onCreate(final DataDefinition documentDD, final Entity document) {
         setInitialDocumentNumber(document);
         setInitialDocumentInBuffer(document);
+        setInitialDocumentAcceptationInProgress(document);
 
         if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
             documentValidators.validateAvailableQuantities(document);
+        }
+    }
+
+    private void setInitialDocumentNumber(final Entity document) {
+        String translatedType = getTranslatedType(document);
+
+        document.setField(DocumentFields.NUMBER, translatedType);
+    }
+
+    private void setInitialDocumentInBuffer(final Entity document) {
+        if (document.getField(DocumentFields.IN_BUFFER) == null) {
+            document.setField(DocumentFields.IN_BUFFER, false);
+        }
+    }
+
+    private void setInitialDocumentAcceptationInProgress(final Entity document) {
+        if (document.getField(DocumentFields.ACCEPTATION_IN_PROGRESS) == null) {
+            document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
         }
     }
 
@@ -127,23 +146,12 @@ public class DocumentModelHooks {
         return changed;
     }
 
-    private String getTranslatedType(Entity document) {
+    private String getTranslatedType(final Entity document) {
         /**
          * number is generated in database trigger from translated type *
          */
         return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE),
                 LocaleContextHolder.getLocale());
-    }
-
-    private void setInitialDocumentNumber(Entity document) {
-        String translatedType = getTranslatedType(document);
-        document.setField(DocumentFields.NUMBER, translatedType);
-    }
-
-    private void setInitialDocumentInBuffer(Entity document) {
-        if (null == document.getField(DocumentFields.IN_BUFFER)) {
-            document.setField(DocumentFields.IN_BUFFER, false);
-        }
     }
 
 }

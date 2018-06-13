@@ -65,11 +65,19 @@ public class DocumentDTO {
     }
 
     public Boolean getAcceptationInProgress() {
-        return acceptationInProgress;
+        if (acceptationInProgress == null) {
+            return Boolean.FALSE;
+        } else {
+            return acceptationInProgress;
+        }
     }
 
     public void setAcceptationInProgress(final Boolean acceptationInProgress) {
-        this.acceptationInProgress = acceptationInProgress;
+        if (acceptationInProgress == null) {
+            this.acceptationInProgress = Boolean.FALSE;
+        } else {
+            this.acceptationInProgress = acceptationInProgress;
+        }
     }
 
     @Override
