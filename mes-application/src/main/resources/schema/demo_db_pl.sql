@@ -2412,7 +2412,8 @@ CREATE TABLE basic_parameter (
     createsetelementsonaccept boolean DEFAULT false,
     includewagegroups boolean DEFAULT false,
     ordersgeneratedbycoverage boolean DEFAULT false,
-    automaticallygenerateordersforcomponents boolean DEFAULT false
+    automaticallygenerateordersforcomponents boolean DEFAULT false,
+    seteffectivedatefromoninprogress boolean DEFAULT false
 );
 
 
@@ -5571,6 +5572,13 @@ CREATE TABLE supplynegotiations_negotiation (
 --
 
 CREATE VIEW deliveries_orderedproductdto AS
+ WITH product_attachments AS (
+         SELECT product_1.id AS productid,
+            (count(attachment.id) <> 0) AS hasattachments
+           FROM (basic_product product_1
+             LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product_1.id)))
+          GROUP BY product_1.id
+        )
  SELECT orderedproduct.id,
     orderedproduct.succession,
     orderedproduct.orderedquantity,
@@ -5609,8 +5617,9 @@ CREATE VIEW deliveries_orderedproductdto AS
     orderedproduct.deliveredquantity,
     orderedproduct.additionaldeliveredquantity,
     (orderedproduct.orderedquantity - orderedproduct.deliveredquantity) AS lefttoreceivequantity,
-    (orderedproduct.additionalquantity - orderedproduct.additionaldeliveredquantity) AS additionallefttoreceivequantity
-   FROM ((((((((deliveries_orderedproduct orderedproduct
+    (orderedproduct.additionalquantity - orderedproduct.additionaldeliveredquantity) AS additionallefttoreceivequantity,
+    attachments.hasattachments
+   FROM (((((((((deliveries_orderedproduct orderedproduct
      LEFT JOIN deliveries_delivery delivery ON ((orderedproduct.delivery_id = delivery.id)))
      LEFT JOIN basic_currency currency ON ((delivery.currency_id = currency.id)))
      LEFT JOIN basic_company supplier ON ((delivery.supplier_id = supplier.id)))
@@ -5618,7 +5627,8 @@ CREATE VIEW deliveries_orderedproductdto AS
      LEFT JOIN supplynegotiations_offer offer ON ((orderedproduct.offer_id = offer.id)))
      LEFT JOIN supplynegotiations_negotiation negotiation ON ((offer.negotiation_id = negotiation.id)))
      LEFT JOIN technologies_operation operation ON ((orderedproduct.operation_id = operation.id)))
-     LEFT JOIN basic_additionalcode addcode ON ((orderedproduct.additionalcode_id = addcode.id)));
+     LEFT JOIN basic_additionalcode addcode ON ((orderedproduct.additionalcode_id = addcode.id)))
+     LEFT JOIN product_attachments attachments ON ((attachments.productid = product.id)));
 
 
 --
@@ -6606,7 +6616,7 @@ ALTER SEQUENCE goodfood_eventlog_id_seq OWNED BY goodfood_eventlog.id;
 CREATE TABLE goodfood_extrusionaddedmixentry (
     id bigint NOT NULL,
     extrusionprotocol_id bigint,
-    quantity numeric(12,5),
+    quantity numeric(9,2),
     entityversion bigint DEFAULT 0,
     extrusionmix_id bigint
 );
@@ -6641,7 +6651,8 @@ CREATE TABLE goodfood_extrusionaddedmixingredient (
     extrusionmixingredient_id bigint,
     product_id bigint,
     batch_id bigint,
-    quantity numeric(12,5)
+    quantity numeric(9,2),
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -6712,7 +6723,7 @@ CREATE TABLE goodfood_extrusionmix (
     productionline_id bigint,
     takenoffdate timestamp without time zone,
     shift_id bigint,
-    quantity numeric(12,5),
+    quantity numeric(9,2),
     operator_id bigint,
     comment text,
     active boolean DEFAULT true
@@ -6759,7 +6770,8 @@ CREATE TABLE goodfood_extrusionmixingredient (
     extrusionmix_id bigint,
     product_id bigint,
     batch_id bigint,
-    quantity numeric(12,5)
+    quantity numeric(9,2),
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -7043,7 +7055,7 @@ ALTER SEQUENCE goodfood_extrusionsouse_id_seq OWNED BY goodfood_extrusionsouse.i
 CREATE TABLE goodfood_extrusiontakenoffmixentry (
     id bigint NOT NULL,
     extrusionprotocol_id bigint,
-    quantity numeric(12,5),
+    quantity numeric(9,2),
     entityversion bigint DEFAULT 0,
     extrusionmix_id bigint
 );
@@ -7078,7 +7090,8 @@ CREATE TABLE goodfood_extrusiontakenoffmixingredient (
     extrusionmixingredient_id bigint,
     product_id bigint,
     batch_id bigint,
-    quantity numeric(12,5)
+    quantity numeric(9,2),
+    beyondrecipe boolean DEFAULT false
 );
 
 
@@ -21662,8 +21675,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f
 \.
 
 
@@ -23100,7 +23113,7 @@ SELECT pg_catalog.setval('goodfood_extrusionaddedmixentry_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionaddedmixingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionaddedmixingredient (id, extrusionaddedmixentry_id, extrusionmixingredient_id, product_id, batch_id, quantity) FROM stdin;
+COPY goodfood_extrusionaddedmixingredient (id, extrusionaddedmixentry_id, extrusionmixingredient_id, product_id, batch_id, quantity, beyondrecipe) FROM stdin;
 \.
 
 
@@ -23152,7 +23165,7 @@ SELECT pg_catalog.setval('goodfood_extrusionmix_number_seq', 1, false);
 -- Data for Name: goodfood_extrusionmixingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionmixingredient (id, extrusionmix_id, product_id, batch_id, quantity) FROM stdin;
+COPY goodfood_extrusionmixingredient (id, extrusionmix_id, product_id, batch_id, quantity, beyondrecipe) FROM stdin;
 \.
 
 
@@ -23279,7 +23292,7 @@ SELECT pg_catalog.setval('goodfood_extrusiontakenoffmixentry_id_seq', 1, false);
 -- Data for Name: goodfood_extrusiontakenoffmixingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusiontakenoffmixingredient (id, extrusiontakenoffmixentry_id, extrusionmixingredient_id, product_id, batch_id, quantity) FROM stdin;
+COPY goodfood_extrusiontakenoffmixingredient (id, extrusiontakenoffmixentry_id, extrusionmixingredient_id, product_id, batch_id, quantity, beyondrecipe) FROM stdin;
 \.
 
 
