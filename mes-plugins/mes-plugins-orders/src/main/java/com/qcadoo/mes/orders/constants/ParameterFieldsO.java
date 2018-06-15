@@ -69,4 +69,5 @@ public final class ParameterFieldsO {
 
     public static final String CREATE_SET_ELEMENTS_ON_ACCEPT = "createSetElementsOnAccept";
 
+    public static final String SET_EFFECTIVE_DATE_FROM_ON_IN_PROGRESS = "setEffectiveDateFromOnInProgress";
 }

@@ -117,6 +117,14 @@
                             <option type="label" value="orderValuesLockLabel"/>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="2" row="1">
+                        <component type="checkbox" name="setEffectiveDateFromOnInProgress"
+                                   field="#{form}.setEffectiveDateFromOnInProgress"
+                                   reference="setEffectiveDateFromOnInProgress" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"
