@@ -126,7 +126,7 @@ public class ProductionSchedulingService {
         Entity shiftEntity = shift.getEntity();
         Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
 
-        List<Entity> exceptions = timetableExceptionService.findForLineAndShift(productionLine, shiftEntity);
+        List<Entity> exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shiftEntity);
 
         if (!exceptions.isEmpty()) {
             for (Entity exception : exceptions) {

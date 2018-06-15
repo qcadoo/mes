@@ -91,6 +91,7 @@
         <boolean name="deliveryActive"/>
 
         <string name="mergedProductNumberAndAdditionalCode"/>
+        <boolean name="hasAttachments"/>
 
     </fields>
     <masterModel plugin="deliveries" model="orderedProduct"/>

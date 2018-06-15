@@ -24,6 +24,7 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
@@ -31,8 +32,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
@@ -51,11 +54,17 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     @Autowired
     private OrderStateService orderStateService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(sourceState = OrderStateStringValues.ACCEPTED, targetState = OrderStateStringValues.IN_PROGRESS)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterStartProgress(final StateChangeContext stateChangeContext, final int phase) {
         stateChangeContext.getOwner().setField(OrderFields.DONE_QUANTITY, BigDecimal.ZERO);
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.SET_EFFECTIVE_DATE_FROM_ON_IN_PROGRESS)) {
+            stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_FROM, new Date());
+        }
         orderStateService.checkOrderDates(stateChangeContext);
     }
 

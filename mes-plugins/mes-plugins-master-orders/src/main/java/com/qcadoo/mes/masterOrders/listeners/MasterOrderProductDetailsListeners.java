@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class MasterOrderProductDetailsListeners {
@@ -45,6 +46,13 @@ public class MasterOrderProductDetailsListeners {
 
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         masterOrderProductDetailsHooks.fillDefaultTechnology(view);
+    }
+
+    public void clearTechnologyOnProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+
+        technology.setFieldValue(null);
+        technology.requestComponentUpdateState();
     }
 
 }

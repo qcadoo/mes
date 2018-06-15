@@ -97,7 +97,7 @@ public class PpsTimeHelper {
         Entity shiftEntity = shift.getEntity();
         Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
 
-        List<Entity> exceptions = timetableExceptionService.findForLineAndShift(productionLine, shiftEntity);
+        List<Entity> exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shiftEntity);
 
         if (!exceptions.isEmpty()) {
             for (Entity exception : exceptions) {
@@ -105,9 +105,7 @@ public class PpsTimeHelper {
                         exception.getStringField(ShiftTimetableExceptionFields.TYPE)) && checkExceptionDates(exception, dateOfDay)) {
                     shiftWorkDateTime = removeFreeTimeException(shiftWorkDateTime, exception, shiftForDay);
                 }
-            }
 
-            for (Entity exception : exceptions) {
                 if (TimetableExceptionType.WORK_TIME.getStringValue().equals(
                         exception.getStringField(ShiftTimetableExceptionFields.TYPE)) && checkExceptionDates(exception, dateOfDay)) {
                     shiftWorkDateTime = addWorkTimeException(shiftWorkDateTime, exception, shiftForDay);
