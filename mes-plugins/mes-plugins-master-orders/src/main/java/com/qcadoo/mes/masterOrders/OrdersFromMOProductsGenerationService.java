@@ -1,5 +1,22 @@
 package com.qcadoo.mes.masterOrders;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -28,22 +45,6 @@ import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class OrdersFromMOProductsGenerationService {
@@ -245,10 +246,9 @@ public class OrdersFromMOProductsGenerationService {
         Optional<Entity> previousOrder = findPreviousOrder(order);
         if (previousOrder.isPresent()) {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
-            List<Entity> shifts = getAllShifts();
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
                     new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)),
-                    order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
+                    order.getBelongsToField(OrderFields.PRODUCTION_LINE));
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }
@@ -265,10 +265,8 @@ public class OrdersFromMOProductsGenerationService {
         Optional<Entity> previousOrder = findPreviousOrder(order);
         if (previousOrder.isPresent()) {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
-            List<Entity> shifts = getAllShifts();
-            Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
-                    new DateTime(startDate),
-                    order.getBelongsToField(OrderFields.PRODUCTION_LINE), shifts);
+            Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(new DateTime(startDate),
+                    order.getBelongsToField(OrderFields.PRODUCTION_LINE));
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }
@@ -414,13 +412,5 @@ public class OrdersFromMOProductsGenerationService {
     private DataDefinition getMasterOrderProductDtoDD() {
         return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
-    }
-
-    private List<Entity> getAllShifts() {
-        return getShiftDataDefinition().find().list().getEntities();
-    }
-
-    private DataDefinition getShiftDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
     }
 }
