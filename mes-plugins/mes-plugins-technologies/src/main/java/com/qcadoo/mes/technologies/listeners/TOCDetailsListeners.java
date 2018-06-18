@@ -23,35 +23,36 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchResult;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.hooks.TOCDetailsHooks;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Map;
 import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.hooks.TOCDetailsHooks;
+import com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class TOCDetailsListeners {
@@ -102,6 +103,17 @@ public class TOCDetailsListeners {
 
     @Autowired
     private TOCDetailsHooks tOCDetailsHooks;
+
+    @Autowired
+    private TechnologyOperationComponentHooks technologyOperationComponentHooks;
+
+    public void copyWorkstationsSettingsFromOperation(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity toc = formComponent.getEntity();
+        technologyOperationComponentHooks.copyWorkstationsSettingsFromOperation(toc);
+        formComponent.setEntity(toc);
+    }
 
     public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         tOCDetailsHooks.setProductionLineLookup(view);
@@ -203,9 +215,8 @@ public class TOCDetailsListeners {
             String operationProductInComponentQuantity = StringUtils.strip(operationProductInComponentSource[1]);
 
             String operationProductInComponentItemNumberInTheExplodedView = StringUtils.EMPTY;
-            if(operationProductInComponentSource.length == EXTEND_IMPORT_POSITIONS_LENGTH) {
-                operationProductInComponentItemNumberInTheExplodedView = StringUtils
-                        .strip(operationProductInComponentSource[2]);
+            if (operationProductInComponentSource.length == EXTEND_IMPORT_POSITIONS_LENGTH) {
+                operationProductInComponentItemNumberInTheExplodedView = StringUtils.strip(operationProductInComponentSource[2]);
             }
 
             if (StringUtils.isNotEmpty(operationProductInComponentNumber)
@@ -275,8 +286,8 @@ public class TOCDetailsListeners {
         SearchResult searchResult = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                 .find()
-                .add(SearchRestrictions
-                        .belongsTo(OperationProductInComponentFields.OPERATION_COMPONENT, technologyOperationComponent))
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.OPERATION_COMPONENT,
+                        technologyOperationComponent))
                 .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).list();
 
         return !searchResult.getEntities().isEmpty();
@@ -289,7 +300,8 @@ public class TOCDetailsListeners {
 
         operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, technologyOperationComponent);
         operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
-        operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
+        operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
+                numberService.setScaleWithDefaultMathContext(quantity));
         operationProductInComponent.setField(OperationProductInComponentFields.ITEM_NUMBER_IN_THE_EXPLODED_VIEW,
                 itemNumberInTheExplodedView);
 
@@ -339,12 +351,11 @@ public class TOCDetailsListeners {
                         args.append(errorMessageArg);
                     }
 
-                    technologyOperationComponentForm.addMessage(errorMessageType.getStringValue(), ComponentState.MessageType.FAILURE,
-                            args.toString());
+                    technologyOperationComponentForm.addMessage(errorMessageType.getStringValue(),
+                            ComponentState.MessageType.FAILURE, args.toString());
                 }
             }
         }
     }
-
 
 }

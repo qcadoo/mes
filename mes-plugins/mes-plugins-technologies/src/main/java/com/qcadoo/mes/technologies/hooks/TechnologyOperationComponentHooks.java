@@ -67,7 +67,7 @@ public class TechnologyOperationComponentHooks {
         copyWorkstationsSettingsFromOperation(technologyOperationComponent);
     }
 
-    private void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
+    public void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
         Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
         if (operation != null) {
@@ -110,10 +110,10 @@ public class TechnologyOperationComponentHooks {
     }
 
     private void setOperationOutProduct(Entity technologyOperationComponent) {
-        if (Objects.nonNull(
-                technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
-                && technologyOperationComponent
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
+        if (Objects.nonNull(technologyOperationComponent
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
+                && technologyOperationComponent.getHasManyField(
+                        TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
             Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
             DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -131,7 +131,8 @@ public class TechnologyOperationComponentHooks {
                     Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
                     if (Objects.nonNull(product)) {
                         opoc.setField(OperationProductOutComponentFields.PRODUCT, product);
-                        technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                        technologyOperationComponent.setField(
+                                TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
                                 Collections.singletonList(opoc));
                     }
                 }
@@ -141,14 +142,14 @@ public class TechnologyOperationComponentHooks {
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY
-                .equals(technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))
+        if (!TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(technologyOperationComponent
+                .getField(TechnologyOperationComponentFields.ENTITY_TYPE))
                 && (technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY) == null)) {
             return;
         }
 
-        boolean isCopy = TechnologyOperationComponentReferenceMode.COPY.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.REFERENCE_MODE));
+        boolean isCopy = TechnologyOperationComponentReferenceMode.COPY.getStringValue().equals(
+                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.REFERENCE_MODE));
 
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         Entity referencedTechnology = technologyOperationComponent
@@ -219,8 +220,7 @@ public class TechnologyOperationComponentHooks {
         return copy;
     }
 
-    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology,
-            final boolean copy) {
+    private boolean checkForCyclicReferences(final Set<Long> technologies, final Entity referencedTechnology, final boolean copy) {
         if (!copy && technologies.contains(referencedTechnology.getId())) {
             return true;
         }
@@ -228,8 +228,8 @@ public class TechnologyOperationComponentHooks {
         technologies.add(referencedTechnology.getId());
 
         for (Entity technologyOperationComponent : referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
-            if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue()
-                    .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
+                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
                 boolean isCyclic = checkForCyclicReferences(technologies,
                         technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
                         false);
