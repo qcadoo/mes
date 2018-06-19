@@ -43,6 +43,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -108,26 +109,12 @@ public class ProductStructureTreeService {
     private Entity findTechnologyForProduct(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        List<Entity> technologiesForProduct = technologyDD.find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.and(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product),
-                        SearchRestrictions.or(SearchRestrictions.eq("state", "02accepted"),
-                                SearchRestrictions.eq("state", "05checked"))))
-                .list().getEntities();
-        Entity result = null;
-        for (Entity technology : technologiesForProduct) {
-            boolean isMaster = technology.getBooleanField("master");
-            if (isMaster) {
-                return technology;
-            } else if (result != null) {
-                if (result.getStringField(ProductStructureTreeNodeFields.NUMBER)
-                        .compareTo(technology.getStringField(ProductStructureTreeNodeFields.NUMBER)) < 0) {
-                    result = technology;
-                }
-            } else {
-                result = technology;
-            }
-        }
-        return result;
+        return technologyDD.find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product))
+                .add(SearchRestrictions.or(SearchRestrictions.eq("state", "02accepted"),
+                        SearchRestrictions.eq("state", "05checked")))
+                .addOrder(SearchOrders.desc(TechnologyFields.MASTER)).addOrder(SearchOrders.asc(TechnologyFields.NUMBER))
+                .setMaxResults(1).uniqueResult();
     }
 
     private BigDecimal findQuantityOfProductInOperation(final Entity product, final Entity operation) {
@@ -248,10 +235,10 @@ public class ProductStructureTreeService {
             Date productStructureCreateDate = tree.getRoot().getDateField(ProductStructureTreeNodeFields.CREATE_DATE);
             Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
             Entity operation = findOperationForProductAndTechnology(product, technology);
-            if (checkIfSubTechnologiesChanged(operation, productStructureCreateDate)) {
-                for (Entity entity : tree.find().list().getEntities()) {
-                    entity.getDataDefinition().delete(entity.getId());
-                }
+            List<Entity> treeEntities = tree.find().list().getEntities();
+            if (checkSubTechnologiesSubstitution(treeEntities)
+                    || checkIfSubTechnologiesChanged(operation, productStructureCreateDate)) {
+                deleteProductStructureTree(treeEntities);
             } else {
                 return tree;
             }
@@ -285,6 +272,33 @@ public class ProductStructureTreeService {
         return EntityTreeUtilsService.getDetachedEntityTree(productStructureList);
     }
 
+    private void deleteProductStructureTree(List<Entity> treeEntities) {
+        for (Entity entity : treeEntities) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
+    }
+
+    private boolean checkSubTechnologiesSubstitution(List<Entity> treeEntities) {
+        for (Entity entity : treeEntities) {
+            String entityType = entity.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE);
+            if (entityType.equals(L_INTERMEDIATE) || entityType.equals(L_FINAL_PRODUCT)) {
+                continue;
+            }
+            Entity product = entity.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT);
+            Entity newTechnology = findTechnologyForProduct(product);
+            if (entityType.equals(L_MATERIAL) && newTechnology != null) {
+                return true;
+            } else if (entityType.equals(L_COMPONENT)) {
+                Entity oldTechnology = entity.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY);
+                if (oldTechnology != null && newTechnology == null
+                        || oldTechnology != null && !oldTechnology.getId().equals(newTechnology.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean checkIfSubTechnologiesChanged(Entity operation, Date productStructureCreateDate) {
         for (Entity productInComp : operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
@@ -294,19 +308,28 @@ public class ProductStructureTreeService {
 
             if (subTechnology != null) {
                 Entity technologyStateChange = subTechnology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
-                        .add(SearchRestrictions.eq("status", StateChangeStatus.SUCCESSFUL.getStringValue())).list().getEntities()
-                        .get(0);
+                        .add(SearchRestrictions.eq("status", StateChangeStatus.SUCCESSFUL.getStringValue()))
+                        .addOrder(SearchOrders.desc("dateAndTime")).setMaxResults(1).uniqueResult();
                 if (productStructureCreateDate.before(technologyStateChange.getDateField("dateAndTime"))) {
                     return true;
                 }
                 if (subOperation == null) {
                     Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
-                    checkIfSubTechnologiesChanged(operationForTechnology, productStructureCreateDate);
+                    boolean changed = checkIfSubTechnologiesChanged(operationForTechnology, productStructureCreateDate);
+                    if (changed) {
+                        return true;
+                    }
                 } else {
-                    checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+                    boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+                    if (changed) {
+                        return true;
+                    }
                 }
             } else if (subOperation != null) {
-                checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+                boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+                if (changed) {
+                    return true;
+                }
             }
         }
         return false;
