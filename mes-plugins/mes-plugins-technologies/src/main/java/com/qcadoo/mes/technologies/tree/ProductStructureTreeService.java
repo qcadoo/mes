@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -43,6 +44,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
@@ -77,33 +79,31 @@ public class ProductStructureTreeService {
     }
 
     private Entity findOperationForProductAndTechnology(final Entity product, final Entity technology) {
-        DataDefinition operationComponentsDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
-        List<Entity> operations = operationComponentsDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, technology)).list()
-                .getEntities();
-        for (Entity operation : operations) {
-            Entity isResult = operation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)
-                    .find().add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product)).setMaxResults(1)
-                    .uniqueResult();
-            if (isResult != null) {
-                return operation;
-            }
+        Entity operationProductOutComponent = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).find()
+                .createAlias(OperationProductOutComponentFields.OPERATION_COMPONENT, "c", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("c." + TechnologyOperationComponentFields.TECHNOLOGY, technology))
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).setMaxResults(1)
+                .uniqueResult();
+        if (operationProductOutComponent != null) {
+            return operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
+        } else {
+            return null;
         }
-        return null;
     }
 
     private Entity findOperationForProductWithinChildren(final Entity product, final Entity toc) {
-        List<Entity> operations = toc.getHasManyField(TechnologyOperationComponentFields.CHILDREN);
-        for (Entity operation : operations) {
-            Entity isResult = operation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)
-                    .find().add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product)).setMaxResults(1)
-                    .uniqueResult();
-            if (isResult != null) {
-                return operation;
-            }
+        Entity operationProductOutComponent = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).find()
+                .createAlias(OperationProductOutComponentFields.OPERATION_COMPONENT, "c", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("c." + TechnologyOperationComponentFields.PARENT, toc))
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).setMaxResults(1)
+                .uniqueResult();
+        if (operationProductOutComponent != null) {
+            return operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
+        } else {
+            return null;
         }
-        return null;
     }
 
     private Entity findTechnologyForProduct(final Entity product) {
