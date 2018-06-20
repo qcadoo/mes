@@ -236,7 +236,9 @@ public class ProductStructureTreeService {
             Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
             Entity operation = findOperationForProductAndTechnology(product, technology);
             List<Entity> treeEntities = tree.find().list().getEntities();
-            if (checkSubTechnologiesSubstitution(treeEntities)
+            Entity technologyStateChange = getLastTechnologyStateChange(technologyFromDB);
+            if (productStructureCreateDate.before(technologyStateChange.getDateField("dateAndTime"))
+                    || checkSubTechnologiesSubstitution(treeEntities)
                     || checkIfSubTechnologiesChanged(operation, productStructureCreateDate)) {
                 deleteProductStructureTree(treeEntities);
             } else {
@@ -298,7 +300,9 @@ public class ProductStructureTreeService {
         }
         return false;
     }
-
+    /*
+        We don't support cycles in here
+     */
     private boolean checkIfSubTechnologiesChanged(Entity operation, Date productStructureCreateDate) {
         for (Entity productInComp : operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
@@ -307,9 +311,7 @@ public class ProductStructureTreeService {
             Entity subTechnology = findTechnologyForProduct(product);
 
             if (subTechnology != null) {
-                Entity technologyStateChange = subTechnology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
-                        .add(SearchRestrictions.eq("status", StateChangeStatus.SUCCESSFUL.getStringValue()))
-                        .addOrder(SearchOrders.desc("dateAndTime")).setMaxResults(1).uniqueResult();
+                Entity technologyStateChange = getLastTechnologyStateChange(subTechnology);
                 if (productStructureCreateDate.before(technologyStateChange.getDateField("dateAndTime"))) {
                     return true;
                 }
@@ -333,6 +335,12 @@ public class ProductStructureTreeService {
             }
         }
         return false;
+    }
+
+    private Entity getLastTechnologyStateChange(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                            .add(SearchRestrictions.eq("status", StateChangeStatus.SUCCESSFUL.getStringValue()))
+                            .addOrder(SearchOrders.desc("dateAndTime")).setMaxResults(1).uniqueResult();
     }
 
     public EntityTree getOperationComponentsFromTechnology(final Entity technology) {
