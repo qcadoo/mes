@@ -100,7 +100,7 @@ public class ReceiptDocumentForReleaseHelper {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void tryBuildPz(Entity documentToCreateResourcesFor, ViewDefinitionState view) {
+    public void tryBuildPZ(Entity documentToCreateResourcesFor, ViewDefinitionState view) {
         boolean created = tryBuildConnectedPZDocument(documentToCreateResourcesFor, true);
         if (created) {
             view.addMessage("materialFlow.document.info.createdConnectedPZ", ComponentState.MessageType.INFO);
