@@ -65,6 +65,14 @@
 			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
 		</layout>
 	</appender>
+	<appender name="activity-log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="${QCADOO_LOG}/activity.log" />
+		<param name="MaxFileSize" value="100MB" />
+		<param name="MaxBackupIndex" value="1" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n" />
+		</layout>
+	</appender>
 	<appender name="warn-log" class="org.apache.log4j.RollingFileAppender">
 		<param name="file" value="${QCADOO_LOG}/warn.log" />
 		<param name="MaxFileSize" value="100MB" />
@@ -138,6 +146,11 @@
         <level value="debug" />
         <appender-ref ref="connector-log" />
     </logger>
+
+	<logger name="com.qcadoo.mes.basic.activityStream.model.ActivityDto" additivity="false">
+		<level value="debug" />
+		<appender-ref ref="activity-log" />
+	</logger>
 	
 	<logger name="com.qcadoo.model">
 		<level value="info" />
