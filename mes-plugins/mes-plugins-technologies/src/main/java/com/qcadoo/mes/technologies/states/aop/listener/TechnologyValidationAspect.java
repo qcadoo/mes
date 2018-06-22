@@ -76,6 +76,7 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
+        technologyValidationService.checkTechnologyCycles(stateChangeContext);
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
             technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
         }

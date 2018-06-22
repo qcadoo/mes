@@ -24,15 +24,24 @@
 package com.qcadoo.mes.technologies.states.listener;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.*;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -42,8 +51,13 @@ import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
@@ -64,6 +78,9 @@ public class TechnologyValidationService {
 
     @Autowired
     private ProductQuantitiesService productQuantitiyService;
+
+    @Autowired
+    private ProductStructureTreeService productStructureTreeService;
 
     public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateContext) {
         final Entity technology = stateContext.getOwner();
@@ -369,6 +386,56 @@ public class TechnologyValidationService {
         if (operations.isEmpty()) {
             stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
             return false;
+        }
+        return true;
+    }
+
+    public boolean checkTechnologyCycles(StateChangeContext stateChangeContext) {
+        final Entity technology = stateChangeContext.getOwner();
+        List<Long> usedTechnologies = new ArrayList<>();
+        usedTechnologies.add(technology.getId());
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        Entity operation = productStructureTreeService.findOperationForProductAndTechnology(product, technology);
+        return checkCycleForSubProducts(stateChangeContext, operation, usedTechnologies);
+    }
+
+    private boolean checkCycleForSubProducts(final StateChangeContext stateChangeContext, final Entity operation,
+            final List<Long> usedTechnologies) {
+        EntityList productInComponents = operation
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+        for (Entity productInComp : productInComponents) {
+            Entity product = productInComp.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+            Entity subOperation = productStructureTreeService.findOperationForProductWithinChildren(product, operation);
+            Entity subTechnology = productStructureTreeService.findTechnologyForProduct(product);
+            if (subTechnology != null) {
+                if (usedTechnologies.contains(subTechnology.getId())) {
+                    stateChangeContext.addValidationError(
+                            "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                            product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
+                    return false;
+                } else {
+                    if (subOperation == null) {
+                        Entity operationForTechnology = productStructureTreeService.findOperationForProductAndTechnology(product,
+                                subTechnology);
+                        usedTechnologies.add(subTechnology.getId());
+                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, operationForTechnology,
+                                usedTechnologies);
+                        if (!hasNotCycle) {
+                            return false;
+                        }
+                    } else {
+                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, usedTechnologies);
+                        if (!hasNotCycle) {
+                            return false;
+                        }
+                    }
+                }
+            } else if (subOperation != null) {
+                boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, usedTechnologies);
+                if (!hasNotCycle) {
+                    return false;
+                }
+            }
         }
         return true;
     }
