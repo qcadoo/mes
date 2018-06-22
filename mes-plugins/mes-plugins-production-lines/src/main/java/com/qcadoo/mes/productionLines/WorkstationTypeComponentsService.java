@@ -1,5 +1,8 @@
 package com.qcadoo.mes.productionLines;
 
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +28,8 @@ public class WorkstationTypeComponentsService {
 
     private static final String COUNT_ALIAS = "count";
 
+    private static final String SUM_ALIAS = "sumOfQuantities";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -46,6 +51,22 @@ public class WorkstationTypeComponentsService {
         Entity projectionResult = scb.setMaxResults(1).uniqueResult();
         Long countValue = (Long) projectionResult.getField(COUNT_ALIAS);
         return countValue > 0;
+    }
+
+    public boolean isWorkstationTypeComponentsQuantityGreaterThanZero(final Entity productionLine, final Entity workstationType) {
+        Long sum = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_WORKSTATION_TYPE_COMPONENT).find()
+                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.PRODUCTIONLINE, productionLine))
+                .add(SearchRestrictions.belongsTo(WorkstationTypeComponentFields.WORKSTATIONTYPE, workstationType))
+                .setProjection(list()
+                        .add(SearchProjections.alias(SearchProjections.sum(WorkstationTypeComponentFields.QUANTITY), SUM_ALIAS))
+                        .add(rowCount()))
+                .addOrder(SearchOrders.desc(SUM_ALIAS)).setMaxResults(1).uniqueResult().getLongField(SUM_ALIAS);
+        if (sum == null) {
+            return false;
+        } else {
+            return sum > 0;
+        }
     }
 
     private List<WorkstationTypeComponentQuantity> calculateWorkstationTypeComponentQuantity(final List<Entity> componentsEntity,
