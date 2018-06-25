@@ -23,10 +23,20 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -35,12 +45,9 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class TOCDetailsHooks {
@@ -63,10 +70,36 @@ public class TOCDetailsHooks {
             TechnologyOperationComponentFields.PRODUCTION_LINE, TechnologyOperationComponentFields.DIVISION,
             TechnologyOperationComponentFields.WORKSTATION_TYPE);
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
         setWorkstationsCriteriaModifiers(view);
         updateRibbonState(view);
+        disableViewForState(view);
+    }
+
+    private void disableViewForState(final ViewDefinitionState view) {
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity toc = form.getEntity();
+        if (toc.getId() == null) {
+            return;
+        }
+        toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(toc.getId());
+        Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+        if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
+            WindowComponent windowComponent = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            Ribbon ribbon = windowComponent.getRibbon();
+            ribbon.getGroups().stream().filter(group -> !group.getName().equals("navigation"))
+                    .forEach(group -> group.getItems().forEach(item -> {
+                        item.setEnabled(false);
+                        item.requestUpdate(true);
+                    }));
+            form.setFormEnabled(false);
+        }
+
     }
 
     public void setProductionLineLookup(final ViewDefinitionState view) {
