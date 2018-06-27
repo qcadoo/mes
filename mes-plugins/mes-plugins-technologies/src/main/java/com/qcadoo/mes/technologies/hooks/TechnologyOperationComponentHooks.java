@@ -247,6 +247,7 @@ public class TechnologyOperationComponentHooks {
         clearField(technologyOperationComponent);
 
         if (technologyOperationComponent.getId() != null) {
+            copyWorkstations(technologyOperationComponentDD, technologyOperationComponent);
             DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
             List<Entity> opocs = technologyOperationComponent
@@ -254,6 +255,17 @@ public class TechnologyOperationComponentHooks {
             for (Entity opoc : opocs) {
                 clearSet(opocDD, opoc, technologyOperationComponent);
             }
+        }
+    }
+
+    private void copyWorkstations(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        Entity oldToc = technologyOperationComponentDD.get(technologyOperationComponent.getId());
+        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+        if (operation != null
+                && !operation.getId().equals(oldToc.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getId())) {
+
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
+                    operation.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS));
         }
     }
 

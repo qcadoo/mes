@@ -38,7 +38,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -53,6 +55,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class TOCDetailsListeners {
@@ -107,12 +110,23 @@ public class TOCDetailsListeners {
     @Autowired
     private TechnologyOperationComponentHooks technologyOperationComponentHooks;
 
+    @Autowired
+    private TechnologyService technologyService;
+
     public void copyWorkstationsSettingsFromOperation(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity toc = formComponent.getEntity();
-        technologyOperationComponentHooks.copyWorkstationsSettingsFromOperation(toc);
-        formComponent.setEntity(toc);
+        Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+        if (operation != null) {
+            GridComponent workstationsGrid = (GridComponent) view
+                    .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
+            technologyOperationComponentHooks.copyWorkstationsSettingsFromOperation(toc);
+            technologyService.copyCommentAndAttachmentFromLowerInstance(toc, TechnologyOperationComponentFields.OPERATION);
+            toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
+            workstationsGrid.setEntities(operation.getManyToManyField(OperationFields.WORKSTATIONS));
+            formComponent.setEntity(toc);
+        }
     }
 
     public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
