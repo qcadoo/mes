@@ -59,4 +59,6 @@ public final class TechnologyFields {
 
     public static final String PRODUCT_STRUCTURE_TREE = "productStructureTree";
 
+    public static final String ACTIVE = "active";
+
 }

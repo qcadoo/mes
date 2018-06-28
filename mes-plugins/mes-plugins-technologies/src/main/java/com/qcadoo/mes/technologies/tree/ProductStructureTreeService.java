@@ -61,7 +61,7 @@ public class ProductStructureTreeService {
 
     private static final String L_COMPONENT = "component";
 
-    private static final String L_MATERIAL = "material";
+    public static final String L_MATERIAL = "material";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -337,7 +337,7 @@ public class ProductStructureTreeService {
         return false;
     }
 
-    private Entity getLastTechnologyStateChange(Entity technology) {
+    public Entity getLastTechnologyStateChange(Entity technology) {
         return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
                             .add(SearchRestrictions.eq("status", StateChangeStatus.SUCCESSFUL.getStringValue()))
                             .addOrder(SearchOrders.desc("dateAndTime")).setMaxResults(1).uniqueResult();

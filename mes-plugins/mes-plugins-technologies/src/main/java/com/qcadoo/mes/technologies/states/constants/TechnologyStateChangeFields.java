@@ -48,4 +48,6 @@ public final class TechnologyStateChangeFields {
 
     public static final String REASON_TYPE = "reasonType";
 
+    public static final String DATE_AND_TIME = "dateAndTime";
+
 }

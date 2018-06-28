@@ -183,7 +183,7 @@
 	</logger>
 
 	<logger name="org.hibernate.SQL" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="sql-log" />
 	</logger>
 
