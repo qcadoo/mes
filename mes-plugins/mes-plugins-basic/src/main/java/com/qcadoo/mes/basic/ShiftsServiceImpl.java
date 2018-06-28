@@ -33,13 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Interval;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -251,17 +249,15 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, Entity productionLine, final Shift shift,
             final DateTime currentDate, final DateTime baseDate) {
-        List<Entity> _exceptions;
+        List<Entity> exceptions;
 
         if (Objects.isNull(productionLine)) {
-            _exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+            exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
         } else {
-            _exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
+            exceptions = timetableExceptionService.findFor(productionLine, shift.getEntity(), currentDate.toDate());
         }
 
         Shift shiftForDay = new Shift(shift.getEntity(), currentDate, false);
-
-        List<Entity> exceptions = filterExceptionsForCurrentDate(_exceptions, currentDate);
 
         List<Interval> updatedWorkTimes = Lists.newArrayList(shiftWorkTimes);
 
@@ -278,28 +274,19 @@ public class ShiftsServiceImpl implements ShiftsService {
         return finalWorkTimes;
     }
 
-    private List<Entity> filterExceptionsForCurrentDate(final List<Entity> exceptions, final DateTime currentDate) {
-        return exceptions.stream()
-                .filter(exception -> new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
-                        .compareTo(currentDate.toLocalDate()) >= 0
-                        && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                        .compareTo(currentDate.toLocalDate()) <= 0)
-                .collect(Collectors.toList());
-    }
-
     private void manageExceptionsForTypeWorkTime(Shift shift, final Entity exception, final DateTime baseDate,
             final List<Interval> updatedWorkTimes) {
         DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
         DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
 
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
+        if (dateFrom.isBefore(shift.getShiftStartDate())) {
             return;
         }
 
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
+        if (dateFrom.isBefore(shift.getShiftStartDate())) {
             dateFrom = shift.getShiftStartDate();
         }
-        if(dateTo.isAfter(shift.getShiftEndDate())) {
+        if (dateTo.isAfter(shift.getShiftEndDate())) {
             dateTo = shift.getShiftEndDate();
         }
         if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
@@ -322,13 +309,13 @@ public class ShiftsServiceImpl implements ShiftsService {
             final List<Interval> finalWorkTimes) {
         DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
         DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
+        if (dateFrom.isBefore(shift.getShiftStartDate())) {
             return;
         }
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
+        if (dateFrom.isBefore(shift.getShiftStartDate())) {
             dateFrom = shift.getShiftStartDate();
         }
-        if(dateTo.isAfter(shift.getShiftEndDate())) {
+        if (dateTo.isAfter(shift.getShiftEndDate())) {
             dateTo = shift.getShiftEndDate();
         }
         if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
@@ -395,13 +382,11 @@ public class ShiftsServiceImpl implements ShiftsService {
         if (Objects.isNull(productionLine)) {
             exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
         } else {
-            exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
+            exceptions = timetableExceptionService.findFor(productionLine, shift.getEntity(), date.toDate(),
+                    TimetableExceptionType.WORK_TIME.getStringValue());
         }
 
-        return exceptions.stream()
-                .anyMatch(exception -> exception.getStringField(ShiftTimetableExceptionFields.TYPE)
-                        .equals(TimetableExceptionType.WORK_TIME.getStringValue())
-                        && exception.getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(date.toDate()) >= 0);
+        return !exceptions.isEmpty();
     }
 
     private DateTime convertToDateTime(final DateTime currentDate, final LocalTime time) {
@@ -691,7 +676,6 @@ public class ShiftsServiceImpl implements ShiftsService {
                     hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
                     hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
 
-                    continue;
                 }
             }
 

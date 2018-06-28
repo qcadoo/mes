@@ -23,33 +23,31 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.qcadoo.commons.dateTime.TimeRange;
-import com.qcadoo.mes.basic.TimetableExceptionService;
-import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
-import com.qcadoo.mes.basic.constants.TimetableExceptionType;
-import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.basic.util.DateTimeRange;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.mes.basic.ShiftExceptionService;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
+import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class PpsTimeHelper {
 
     @Autowired
-    private TimetableExceptionService timetableExceptionService;
+    private ShiftExceptionService shiftExceptionService;
 
     public Date findFinishDate(final Entity dailyProgress, final Date dateOfDay, final Entity order) {
         DateTime endDate = null;
@@ -76,8 +74,8 @@ public class PpsTimeHelper {
             }
         }
 
-        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift,
-                dateOfDay);
+        shiftWorkDateTime = shiftExceptionService.manageExceptions(shiftWorkDateTime,
+                order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift, dateOfDay);
 
         for (DateTimeRange range : shiftWorkDateTime) {
             if (range.durationInMins() >= time && time > 0) {
@@ -90,93 +88,6 @@ public class PpsTimeHelper {
         }
 
         return endDate != null ? endDate.toDate() : null;
-    }
-
-    public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, final Entity productionLine, final Shift shift,
-            final Date dateOfDay) {
-        Entity shiftEntity = shift.getEntity();
-        Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
-
-        List<Entity> exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shiftEntity);
-
-        if (!exceptions.isEmpty()) {
-            for (Entity exception : exceptions) {
-                if (TimetableExceptionType.FREE_TIME.getStringValue().equals(
-                        exception.getStringField(ShiftTimetableExceptionFields.TYPE)) && checkExceptionDates(exception, dateOfDay)) {
-                    shiftWorkDateTime = removeFreeTimeException(shiftWorkDateTime, exception, shiftForDay);
-                }
-
-                if (TimetableExceptionType.WORK_TIME.getStringValue().equals(
-                        exception.getStringField(ShiftTimetableExceptionFields.TYPE)) && checkExceptionDates(exception, dateOfDay)) {
-                    shiftWorkDateTime = addWorkTimeException(shiftWorkDateTime, exception, shiftForDay);
-                }
-            }
-        }
-
-        return shiftWorkDateTime;
-    }
-
-    private boolean checkExceptionDates(final Entity exception, final Date dateOfDay) {
-        return ((new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
-                .compareTo(new DateTime(dateOfDay).toLocalDate()) >= 0)
-                && (new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                .compareTo(new DateTime(dateOfDay).toLocalDate()) <= 0));
-    }
-
-    private List<DateTimeRange> removeFreeTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception,
-            final Shift shift) {
-        Optional<DateTimeRange> exceptionRange = getExceptionRange(exception, shift);
-
-        if (exceptionRange.isPresent()) {
-            List<DateTimeRange> result = Lists.newArrayList();
-
-            for (DateTimeRange range : shiftWorkDateTime) {
-                result.addAll(range.remove(exceptionRange.get()));
-            }
-
-            return result;
-        } else {
-            return shiftWorkDateTime;
-        }
-    }
-
-    private List<DateTimeRange> addWorkTimeException(final List<DateTimeRange> shiftWorkDateTime, final Entity exception, final Shift shift) {
-        Optional<DateTimeRange> exceptionRange = getExceptionRange(exception, shift);
-
-        if (exceptionRange.isPresent()) {
-            if (shiftWorkDateTime.isEmpty()) {
-                return Lists.newArrayList(exceptionRange.get());
-            }
-
-            List<DateTimeRange> result = Lists.newArrayList();
-
-            for (DateTimeRange range : shiftWorkDateTime) {
-                result.addAll(range.add(exceptionRange.get()));
-            }
-
-            return result;
-        } else {
-            return shiftWorkDateTime;
-        }
-    }
-
-    private Optional<DateTimeRange> getExceptionRange(final Entity exception, final Shift shift) {
-        Date fromDate = exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE);
-        Date toDate = exception.getDateField(ShiftTimetableExceptionFields.TO_DATE);
-
-        if (toDate.before(shift.getShiftStartDate().toDate()) || shift.getShiftEndDate().toDate().before(fromDate)) {
-            return Optional.empty();
-        }
-
-        if (fromDate.before(shift.getShiftStartDate().toDate())) {
-            fromDate = shift.getShiftStartDate().toDate();
-        }
-
-        if (toDate.after(shift.getShiftEndDate().toDate())) {
-            toDate = shift.getShiftEndDate().toDate();
-        }
-
-        return Optional.of(new DateTimeRange(fromDate, toDate));
     }
 
     public Date calculateOrderFinishDate(final Entity order, final List<Entity> progressForDays) {
@@ -204,5 +115,4 @@ public class PpsTimeHelper {
 
         return order.getDateField(OrderFields.FINISH_DATE);
     }
-
 }
