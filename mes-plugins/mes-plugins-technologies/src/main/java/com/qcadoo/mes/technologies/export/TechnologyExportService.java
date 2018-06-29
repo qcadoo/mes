@@ -61,7 +61,7 @@ public class TechnologyExportService {
     @Value("${ftp.server}")
     private String server;
 
-    @Value("${ftp.port}")
+    @Value("${ftp.port:21}")
     private int port;
 
     @Value("${ftp.user}")
