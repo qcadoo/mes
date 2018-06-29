@@ -42,6 +42,8 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class TechnologyExportService {
@@ -61,7 +63,7 @@ public class TechnologyExportService {
     @Value("${ftp.server}")
     private String server;
 
-    @Value("${ftp.port:21}")
+    @Value("#{'${ftp.port:21}' == '' ? 21 : '${ftp.port:21}'}")
     private int port;
 
     @Value("${ftp.user}")
@@ -96,6 +98,10 @@ public class TechnologyExportService {
                 }
             }
         });
+    }
+
+    public void exportTechnologies(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        LOG.info("Port: " + port);
     }
 
     private void exportTechnologies() {

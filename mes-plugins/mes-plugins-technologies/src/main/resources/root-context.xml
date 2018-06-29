@@ -39,7 +39,7 @@
 
 	<bean id="exportTechnologiesTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
 		<property name="jobDetail" ref="exportTechnologies"/>
-		<property name="cronExpression" value="0 0 2 * * 0"/>
+		<property name="cronExpression" value="0 0 2 ? * 1"/>
 	</bean>
 
 	<bean id="exportTechnologies"
