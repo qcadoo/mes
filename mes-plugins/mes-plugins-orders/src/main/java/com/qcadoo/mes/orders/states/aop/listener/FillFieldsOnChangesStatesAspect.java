@@ -72,6 +72,9 @@ public class FillFieldsOnChangesStatesAspect extends AbstractStateListenerAspect
     @RunForStateTransition(targetState = OrderStateStringValues.COMPLETED)
     @After(PHASE_EXECUTION_POINTCUT)
     public void afterComplete(final StateChangeContext stateChangeContext, final int phase) {
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.SET_EFFECTIVE_DATE_TO_ON_COMPLETED)) {
+            stateChangeContext.getOwner().setField(OrderFields.EFFECTIVE_DATE_TO, new Date());
+        }
     }
 
     @RunInPhase(OrderStateChangePhase.LAST)

@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -109,7 +111,7 @@ public class TechnologyDetailsListeners {
         Entity productTechnology = technology.copy();
         EntityTree generatedTree = productStructureTreeService.generateProductStructureTree(view, technology);
 
-        productTechnology.setField("productStructureTree", generatedTree);
+        productTechnology.setField(PRODUCT_STRUCTURE_TREE, generatedTree);
         productStructureForm.setEntity(productTechnology);
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
         window.setActiveTab("productStructure");

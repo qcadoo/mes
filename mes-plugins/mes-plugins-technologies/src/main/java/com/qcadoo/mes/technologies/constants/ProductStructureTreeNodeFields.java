@@ -21,33 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.states.constants;
+package com.qcadoo.mes.technologies.constants;
 
-public final class TechnologyStateChangeFields {
+public final class ProductStructureTreeNodeFields {
 
-    private TechnologyStateChangeFields() {
+    private ProductStructureTreeNodeFields() {
+
     }
-
-    public static final String SHIFT = "shift";
-
-    public static final String WORKER = "worker";
-
-    public static final String STATUS = "status";
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
     public static final String TECHNOLOGY = "technology";
 
-    public static final String TARGET_STATE = "targetState";
+    public static final String MAIN_TECHNOLOGY = "mainTechnology";
 
-    public static final String SOURCE_STATE = "sourceState";
+    public static final String OPERATION = "operation";
 
-    public static final String MESSAGES = "messages";
+    public static final String NUMBER = "number";
 
-    public static final String ADDITIONAL_INFO = "additionalInformation";
+    public static final String PRODUCT = "product";
 
-    public static final String REASON_REQUIRED = "reasonRequired";
+    public static final String QUANTITY = "quantity";
 
-    public static final String REASON_TYPE = "reasonType";
+    public static final String DIVISION = "division";
 
-    public static final String DATE_AND_TIME = "dateAndTime";
+    public static final String PARENT = "parent";
 
+    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+
+    public static final String ENTITY_TYPE = "entityType";
+
+    public static final String PRIORITY = "priority";
+
+    public static final String CREATE_DATE = "createDate";
 }

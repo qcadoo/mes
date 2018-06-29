@@ -103,6 +103,10 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="setEffectiveDateToOnCompleted" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="enablePkt" default="true"/>
         </model:model-field>
 

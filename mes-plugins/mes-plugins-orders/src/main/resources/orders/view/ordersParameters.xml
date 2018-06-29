@@ -125,6 +125,14 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="2" row="2">
+                        <component type="checkbox" name="setEffectiveDateToOnCompleted"
+                                   field="#{form}.setEffectiveDateToOnCompleted"
+                                   reference="setEffectiveDateToOnCompleted" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"

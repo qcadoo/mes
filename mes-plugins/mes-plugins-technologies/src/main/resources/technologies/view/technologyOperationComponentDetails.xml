@@ -78,6 +78,9 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <option type="required" value="true"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.technologies.listeners.TOCDetailsListeners"
+                                      method="copyWorkstationsSettingsFromOperation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2">
@@ -216,8 +219,8 @@
 
     </component>
     <hooks>
-        <beforeRender class="com.qcadoo.mes.technologies.TechnologyService"
-                      method="setLookupDisableInTechnologyOperationComponent"/>
+        <!--<beforeRender class="com.qcadoo.mes.technologies.TechnologyService"-->
+        <!--method="setLookupDisableInTechnologyOperationComponent"/>-->
         <beforeRender class="com.qcadoo.mes.technologies.hooks.TOCDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>

@@ -1,21 +1,26 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.util.Objects;
-
 public class DocumentDTO {
 
     private Long id;
+
     private String state;
+
     private String type;
+
     private Long locationTo_id;
+
     private Long locationFrom_id;
+
     private Boolean inBuffer;
+
+    private Boolean acceptationInProgress;
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(final Long id) {
         this.id = id;
     }
 
@@ -23,7 +28,7 @@ public class DocumentDTO {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(final String state) {
         this.state = state;
     }
 
@@ -31,7 +36,7 @@ public class DocumentDTO {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(final String type) {
         this.type = type;
     }
 
@@ -39,7 +44,7 @@ public class DocumentDTO {
         return locationTo_id;
     }
 
-    public void setLocationTo_id(Long locationTo_id) {
+    public void setLocationTo_id(final Long locationTo_id) {
         this.locationTo_id = locationTo_id;
     }
 
@@ -47,7 +52,7 @@ public class DocumentDTO {
         return locationFrom_id;
     }
 
-    public void setLocationFrom_id(Long locationFrom_id) {
+    public void setLocationFrom_id(final Long locationFrom_id) {
         this.locationFrom_id = locationFrom_id;
     }
 
@@ -55,58 +60,56 @@ public class DocumentDTO {
         return inBuffer;
     }
 
-    public void setInBuffer(Boolean inBuffer) {
+    public void setInBuffer(final Boolean inBuffer) {
         this.inBuffer = inBuffer;
     }
-    
-    
+
+    public Boolean getAcceptationInProgress() {
+        if (acceptationInProgress == null) {
+            return Boolean.FALSE;
+        } else {
+            return acceptationInProgress;
+        }
+    }
+
+    public void setAcceptationInProgress(final Boolean acceptationInProgress) {
+        if (acceptationInProgress == null) {
+            this.acceptationInProgress = Boolean.FALSE;
+        } else {
+            this.acceptationInProgress = acceptationInProgress;
+        }
+    }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + Objects.hashCode(this.id);
-        hash = 83 * hash + Objects.hashCode(this.state);
-        hash = 83 * hash + Objects.hashCode(this.type);
-        hash = 83 * hash + Objects.hashCode(this.locationTo_id);
-        hash = 83 * hash + Objects.hashCode(this.locationFrom_id);
-        hash = 83 * hash + Objects.hashCode(this.inBuffer);
-        return hash;
+        return com.google.common.base.Objects.hashCode(id, state, type, locationTo_id, locationFrom_id, inBuffer,
+                acceptationInProgress);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final DocumentDTO other = (DocumentDTO) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.state, other.state)) {
-            return false;
-        }
-        if (!Objects.equals(this.type, other.type)) {
-            return false;
-        }
-        if (!Objects.equals(this.locationTo_id, other.locationTo_id)) {
-            return false;
-        }
-        if (!Objects.equals(this.locationFrom_id, other.locationFrom_id)) {
-            return false;
-        }
-        if (!Objects.equals(this.inBuffer, other.inBuffer)) {
-            return false;
-        }
-        return true;
+
+        DocumentDTO that = (DocumentDTO) o;
+
+        return com.google.common.base.Objects.equal(id, that.id) && com.google.common.base.Objects.equal(state, that.state)
+                && com.google.common.base.Objects.equal(type, that.type)
+                && com.google.common.base.Objects.equal(locationTo_id, that.locationTo_id)
+                && com.google.common.base.Objects.equal(locationFrom_id, that.locationFrom_id)
+                && com.google.common.base.Objects.equal(inBuffer, that.inBuffer)
+                && com.google.common.base.Objects.equal(acceptationInProgress, that.acceptationInProgress);
     }
 
     @Override
     public String toString() {
-        return "DocumentDTO{" + "id=" + id + ", state=" + state + ", type=" + type + ", locationTo_id=" + locationTo_id + ", locationFrom_id=" + locationFrom_id + '}';
+        return "DocumentDTO {" + "id = " + id + ", state = " + state + ", type = " + type + ", locationTo_id = " + locationTo_id
+                + ", locationFrom_id = " + locationFrom_id + '}';
     }
-
 
 }

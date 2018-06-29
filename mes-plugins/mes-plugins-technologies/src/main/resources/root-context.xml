@@ -37,4 +37,15 @@
 			expression="org.springframework.stereotype.Controller" />
 	</context:component-scan>
 
+	<bean id="exportTechnologiesTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="exportTechnologies"/>
+		<property name="cronExpression" value="0 0 2 ? * 1"/>
+	</bean>
+
+	<bean id="exportTechnologies"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="technologyExportService"/>
+		<property name="targetMethod" value="exportTechnologiesTrigger"/>
+	</bean>
+
 </beans>

@@ -65,4 +65,6 @@ public final class DocumentFields {
 
     public static final String FILE_NAME = "fileName";
 
+    public static final String ACCEPTATION_IN_PROGRESS = "acceptationInProgress";
+
 }

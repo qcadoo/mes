@@ -523,27 +523,18 @@ public class TechnologyService {
     }
 
     public List<Entity> findComponentsForTechnology(final Long technologyId) {
-        String query = "select DISTINCT opic.id as opicId, "
-                + "opic.product as product, "
-                + "(select count(*) from "
-                + "#technologies_operationProductOutComponent opoc "
-                + "left join opoc.operationComponent oc  "
-                + "left join oc.technology as tech "
-                + "left join oc.parent par  "
-                + "where "
+        String query = "select DISTINCT opic.id as opicId, " + "opic.product as product, " + "(select count(*) from "
+                + "#technologies_operationProductOutComponent opoc " + "left join opoc.operationComponent oc  "
+                + "left join oc.technology as tech " + "left join oc.parent par  " + "where "
                 + "opoc.product = inputProd and par.id = toc.id ) as isIntermediate "
-                + "from #technologies_operationProductInComponent opic "
-                + "left join opic.product as inputProd "
-                + "left join opic.operationComponent toc "
-                + "left join toc.technology tech "
-                + "where tech.id = :technologyId ";
+                + "from #technologies_operationProductInComponent opic " + "left join opic.product as inputProd "
+                + "left join opic.operationComponent toc " + "left join toc.technology tech " + "where tech.id = :technologyId ";
         List<Entity> allProducts = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                .find(query)
-                .setLong("technologyId", technologyId).list().getEntities();
+                .find(query).setLong("technologyId", technologyId).list().getEntities();
 
-        List<Entity> components = allProducts.stream().filter(p -> (Long) p.getField("isIntermediate") == 0l).map(cmp -> cmp.getBelongsToField("product"))
-                .collect(Collectors.toList());
+        List<Entity> components = allProducts.stream().filter(p -> (Long) p.getField("isIntermediate") == 0l)
+                .map(cmp -> cmp.getBelongsToField("product")).collect(Collectors.toList());
         return components;
     }
 }
