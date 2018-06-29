@@ -42,8 +42,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class TechnologyExportService {
@@ -98,10 +96,6 @@ public class TechnologyExportService {
                 }
             }
         });
-    }
-
-    public void exportTechnologies(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        LOG.info("Port: " + port);
     }
 
     private void exportTechnologies() {
