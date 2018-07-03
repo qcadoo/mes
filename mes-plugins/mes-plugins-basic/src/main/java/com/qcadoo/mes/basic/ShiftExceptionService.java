@@ -2,6 +2,7 @@ package com.qcadoo.mes.basic;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.joda.time.DateTime;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.mes.basic.shift.Shift;
@@ -24,10 +26,16 @@ public class ShiftExceptionService {
 
     public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, final Entity productionLine,
             final Shift shift, final Date dateOfDay) {
+        List<Entity> exceptions;
         Entity shiftEntity = shift.getEntity();
-        Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
 
-        List<Entity> exceptions = timetableExceptionService.findFor(productionLine, shiftEntity, dateOfDay);
+        if (Objects.isNull(productionLine)) {
+            exceptions = shiftEntity.getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
+        } else {
+            exceptions = timetableExceptionService.findFor(productionLine, shiftEntity, dateOfDay);
+        }
+
+        Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
 
         for (Entity exception : exceptions) {
             if (TimetableExceptionType.FREE_TIME.getStringValue()
