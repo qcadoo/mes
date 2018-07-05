@@ -28,7 +28,6 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_C
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -392,7 +391,7 @@ public class TechnologyValidationService {
 
     public boolean checkTechnologyCycles(StateChangeContext stateChangeContext) {
         final Entity technology = stateChangeContext.getOwner();
-        List<Long> usedTechnologies = new ArrayList<>();
+        Set<Long> usedTechnologies = new HashSet<>();
         usedTechnologies.add(technology.getId());
         Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
         Entity operation = productStructureTreeService.findOperationForProductAndTechnology(product, technology);
@@ -400,15 +399,20 @@ public class TechnologyValidationService {
     }
 
     private boolean checkCycleForSubProducts(final StateChangeContext stateChangeContext, final Entity operation,
-            final List<Long> usedTechnologies) {
+            final Set<Long> usedTechnologies) {
         EntityList productInComponents = operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
         for (Entity productInComp : productInComponents) {
+            Set<Long> copyUsedTechnologies = new HashSet<>(usedTechnologies);
             Entity product = productInComp.getBelongsToField(OperationProductInComponentFields.PRODUCT);
             Entity subOperation = productStructureTreeService.findOperationForProductWithinChildren(product, operation);
             Entity subTechnology = productStructureTreeService.findTechnologyForProduct(product);
+            if (subTechnology == null && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId()
+                    .equals(product.getId())) {
+                subTechnology = stateChangeContext.getOwner();
+            }
             if (subTechnology != null) {
-                if (usedTechnologies.contains(subTechnology.getId())) {
+                if (copyUsedTechnologies.contains(subTechnology.getId())) {
                     stateChangeContext.addValidationError(
                             "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
                             product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
@@ -417,21 +421,21 @@ public class TechnologyValidationService {
                     if (subOperation == null) {
                         Entity operationForTechnology = productStructureTreeService.findOperationForProductAndTechnology(product,
                                 subTechnology);
-                        usedTechnologies.add(subTechnology.getId());
+                        copyUsedTechnologies.add(subTechnology.getId());
                         boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, operationForTechnology,
-                                usedTechnologies);
+                                copyUsedTechnologies);
                         if (!hasNotCycle) {
                             return false;
                         }
                     } else {
-                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, usedTechnologies);
+                        boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies);
                         if (!hasNotCycle) {
                             return false;
                         }
                     }
                 }
             } else if (subOperation != null) {
-                boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, usedTechnologies);
+                boolean hasNotCycle = checkCycleForSubProducts(stateChangeContext, subOperation, copyUsedTechnologies);
                 if (!hasNotCycle) {
                     return false;
                 }
