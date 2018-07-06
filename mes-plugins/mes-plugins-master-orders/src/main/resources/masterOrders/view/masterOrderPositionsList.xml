@@ -88,6 +88,8 @@
                     width="80" classesNames="wrap-date"/>
             <option type="column" name="companyName" fields="companyName"
                     width="55"/>
+            <option type="column" name="description" fields="description" width="80"/>
+
             <option type="column" name="companyPayer" fields="companyPayer"
                     width="55"/>
             <option type="column" name="masterOrderStatus" fields="masterOrderStatus"
@@ -116,9 +118,9 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>

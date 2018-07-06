@@ -79,6 +79,11 @@
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="sameOrderNumber" default="false"/>
         </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="copyDescription" default="false"/>
+        </model:model-field>
+
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="ordersGenerationNotCompleteDates" default="false"/>
         </model:model-field>

@@ -30,6 +30,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -121,25 +122,25 @@ public class OrdersFromMOProductsGenerationService {
         generateSubOrders(result, order);
 
         if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
-           List<Entity> orders = getOrderAndSubOrders(order.getId());
+            List<Entity> orders = getOrderAndSubOrders(order.getId());
             Collections.reverse(orders);
             Integer lastLevel = null;
             Date lastDate = null;
             for (Entity ord : orders) {
-                if(Objects.isNull(lastLevel)) {
+                if (Objects.isNull(lastLevel)) {
 
                 }
                 Date calculatedOrderStartDate = null;
                 if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
                     Optional<Entity> maybeOrder = findLastOrder(ord);
-                    if(maybeOrder.isPresent()) {
+                    if (maybeOrder.isPresent()) {
                         calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                     } else {
                         calculatedOrderStartDate = new DateTime().toDate();
                     }
                 } else {
                     Optional<Entity> maybeOrder = findPreviousOrder(ord);
-                    if(maybeOrder.isPresent()) {
+                    if (maybeOrder.isPresent()) {
                         calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
                     } else {
@@ -149,9 +150,9 @@ public class OrdersFromMOProductsGenerationService {
 
                 try {
                     Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
-                    if(Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
+                    if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
                         lastDate = finishDate;
-                    } else if(Objects.isNull(lastDate)) {
+                    } else if (Objects.isNull(lastDate)) {
                         lastDate = finishDate;
                     }
                 } catch (Exception ex) {
@@ -187,6 +188,7 @@ public class OrdersFromMOProductsGenerationService {
                 .addOrder(SearchOrders.asc(OrderFields.START_DATE)).setMaxResults(1).uniqueResult();
         return Optional.ofNullable(nextOrder);
     }
+
     /*
      * override by aspect
      */
@@ -339,9 +341,12 @@ public class OrdersFromMOProductsGenerationService {
         boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
                 .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
-
-        String orderDescription = orderService.buildOrderDescription(masterOrder, technology,
-                fillOrderDescriptionBasedOnTechnology);
+        String orderDescription;
+        if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
+            orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
+        } else {
+            orderDescription = orderService.buildOrderDescription(masterOrder, technology, fillOrderDescriptionBasedOnTechnology);
+        }
         order.setField(OrderFields.DESCRIPTION, orderDescription);
         return order;
     }
