@@ -407,10 +407,7 @@ public class TechnologyValidationService {
             Entity product = productInComp.getBelongsToField(OperationProductInComponentFields.PRODUCT);
             Entity subOperation = productStructureTreeService.findOperationForProductWithinChildren(product, operation);
             Entity subTechnology = productStructureTreeService.findTechnologyForProduct(product);
-            if (subTechnology == null && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId()
-                    .equals(product.getId())) {
-                subTechnology = stateChangeContext.getOwner();
-            }
+            subTechnology = useChangingTechnologyInCheckingCycle(stateChangeContext, product, subTechnology);
             if (subTechnology != null) {
                 if (copyUsedTechnologies.contains(subTechnology.getId())) {
                     stateChangeContext.addValidationError(
@@ -442,5 +439,14 @@ public class TechnologyValidationService {
             }
         }
         return true;
+    }
+
+    private Entity useChangingTechnologyInCheckingCycle(StateChangeContext stateChangeContext, Entity product,
+            Entity subTechnology) {
+        if (subTechnology == null
+                && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
+            subTechnology = stateChangeContext.getOwner();
+        }
+        return subTechnology;
     }
 }
