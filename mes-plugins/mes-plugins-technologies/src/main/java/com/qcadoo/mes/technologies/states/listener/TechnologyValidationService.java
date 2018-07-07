@@ -445,7 +445,7 @@ public class TechnologyValidationService {
             Entity subTechnology) {
         if (subTechnology == null
                 && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
-            subTechnology = stateChangeContext.getOwner();
+            return stateChangeContext.getOwner();
         }
         return subTechnology;
     }
