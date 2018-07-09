@@ -45,6 +45,7 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -80,6 +81,20 @@ public class TechnologyValidationService {
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
+
+    public void checkIfEveryOperationHasInComponents(final StateChangeContext stateContext) {
+        Entity technology = stateContext.getOwner();
+        final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
+        final EntityTree operations = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        for (Entity toc : operations) {
+            if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS).isEmpty()) {
+                stateContext.addValidationError("technologies.technology.validate.global.error.noInputComponents", toc
+                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(OperationFields.NUMBER),
+                        toc.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                return;
+            }
+        }
+    }
 
     public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateContext) {
         final Entity technology = stateContext.getOwner();
@@ -400,8 +415,12 @@ public class TechnologyValidationService {
 
     private boolean checkCycleForSubProducts(final StateChangeContext stateChangeContext, final Entity operation,
             final Set<Long> usedTechnologies) {
+        if (operation == null) {
+            return true;
+        }
         EntityList productInComponents = operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+
         for (Entity productInComp : productInComponents) {
             Set<Long> copyUsedTechnologies = new HashSet<>(usedTechnologies);
             Entity product = productInComp.getBelongsToField(OperationProductInComponentFields.PRODUCT);
@@ -410,9 +429,11 @@ public class TechnologyValidationService {
             subTechnology = useChangingTechnologyInCheckingCycle(stateChangeContext, product, subTechnology);
             if (subTechnology != null) {
                 if (copyUsedTechnologies.contains(subTechnology.getId())) {
-                    stateChangeContext.addValidationError(
-                            "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
-                            product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
+                    stateChangeContext
+                            .addValidationError(
+                                    "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                                    product.getStringField(ProductFields.NUMBER) + " "
+                                            + product.getStringField(ProductFields.NAME));
                     return false;
                 } else {
                     if (subOperation == null) {

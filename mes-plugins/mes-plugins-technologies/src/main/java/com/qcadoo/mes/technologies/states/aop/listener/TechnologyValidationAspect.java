@@ -67,6 +67,7 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         if (!technologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext)) {
             return;
         }
+        technologyValidationService.checkIfEveryOperationHasInComponents(stateChangeContext);
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
         Entity technology = stateChangeContext.getOwner();
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
