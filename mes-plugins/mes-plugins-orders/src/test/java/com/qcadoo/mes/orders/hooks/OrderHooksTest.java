@@ -23,18 +23,14 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
@@ -46,18 +42,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
-import com.google.common.collect.ImmutableList;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDatesService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -250,7 +241,6 @@ public class OrderHooksTest {
     @Test
     public final void shouldNotSetCopyOfTechnology() {
         // given
-        given(orderService.isPktEnabled()).willReturn(true);
         stubBelongsToField(order, OrderFields.TECHNOLOGY, null);
 
         // when
@@ -258,37 +248,5 @@ public class OrderHooksTest {
 
         // then
         verify(order, never()).setField(eq(OrderFields.TECHNOLOGY), notNull());
-    }
-
-    @Test
-    public final void shouldSetCopyOfTechnology() {
-        // given
-        final String generatedNumber = "NEWLY GENERATED NUM";
-        given(technologyServiceO.generateNumberForTechnologyInOrder(eq(order), any(Entity.class))).willReturn(generatedNumber);
-        given(orderService.isPktEnabled()).willReturn(true);
-
-        DataDefinition technologyDD = mock(DataDefinition.class);
-        Entity technology = mockEntity(technologyDD);
-        Entity technologyCopy = mockEntity(technologyDD);
-
-        given(technologyDD.copy(any(Long[].class))).willReturn(ImmutableList.of(technologyCopy));
-        given(technologyDD.save(any(Entity.class))).willAnswer(new Answer<Entity>() {
-
-            @Override
-            public Entity answer(final InvocationOnMock invocation) throws Throwable {
-                return (Entity) invocation.getArguments()[0];
-            }
-        });
-
-        stubBelongsToField(order, OrderFields.TECHNOLOGY, technology);
-        stubStringField(order, OrderFields.ORDER_TYPE, OrderType.WITH_OWN_TECHNOLOGY.getStringValue());
-
-        // when
-        orderHooks.setCopyOfTechnology(order);
-
-        // then
-        verify(order).setField(OrderFields.TECHNOLOGY, technologyCopy);
-        verify(order, never()).setField(OrderFields.TECHNOLOGY, technology);
-        verify(technologyCopy).setField(TechnologyFields.NUMBER, generatedNumber);
     }
 }

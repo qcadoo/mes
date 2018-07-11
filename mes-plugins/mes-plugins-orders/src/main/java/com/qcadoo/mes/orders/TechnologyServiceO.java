@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.orders;
 
+import java.util.Date;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -38,17 +45,15 @@ import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Date;
-import java.util.Objects;
 
 @Service
 public class TechnologyServiceO {
@@ -82,31 +87,14 @@ public class TechnologyServiceO {
         OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (orderService.isPktEnabled()) {
-            if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
-                order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
-            }
-
-            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-                if (technologyPrototype == null) {
-                    removeTechnologyFromOrder(order);
-                } else {
-                    createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype, true);
-                }
-            } else if (orderType == OrderType.WITH_OWN_TECHNOLOGY) {
-                createOrUpdateForOwnTechnology(order, technologyPrototype);
-            }
-
-        } else {
-            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-                if (technologyPrototype == null) {
-                    removeTechnologyFromOrder(order);
-                } else {
-                    createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype, false);
-                }
+        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
+            if (technologyPrototype == null) {
+                removeTechnologyFromOrder(order);
             } else {
-                throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
+                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype, false);
             }
+        } else {
+            throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
         }
     }
 
@@ -115,7 +103,7 @@ public class TechnologyServiceO {
         OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (!orderService.isPktEnabled() && !isTechnologyCopied(order)) {
+        if (!isTechnologyCopied(order)) {
             if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
                 order = createTechnologyForWithPatternTechnology(order, technologyPrototype, false);
                 order = order.getDataDefinition().save(order);
@@ -134,12 +122,14 @@ public class TechnologyServiceO {
         order.setField(OrderFields.TECHNOLOGY, null);
     }
 
-    private Entity createTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype, boolean changeTechnologyStateToChecked) {
+    private Entity createTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype,
+            boolean changeTechnologyStateToChecked) {
         order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
         return order;
     }
 
-    private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype, boolean changeTechnologyStateToChecked) {
+    private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype,
+            boolean changeTechnologyStateToChecked) {
         Entity existingOrder = getExistingOrder(order);
 
         if (isTechnologyCopied(order)) {
@@ -156,20 +146,11 @@ public class TechnologyServiceO {
 
                 deleteTechnology(technology);
 
-                if (orderService.isPktEnabled()) {
-                    order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype, changeTechnologyStateToChecked));
-                } else {
-                    order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
-                }
+                order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
                 barcodeOperationComponentService.removeBarcode(order);
             }
         } else {
-                if (orderService.isPktEnabled()) {
-                    order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype,
-                            changeTechnologyStateToChecked));
-                } else {
-                    order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
-                }
+            order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
         }
     }
 
@@ -362,9 +343,9 @@ public class TechnologyServiceO {
         }
 
         // BTW-154
-//        if (orderService.isPktEnabled()) {
-//            technology.getDataDefinition().delete(technology.getId());
-//        }
+        // if (orderService.isPktEnabled()) {
+        // technology.getDataDefinition().delete(technology.getId());
+        // }
     }
 
     public DataDefinition getTechnologyDD() {
@@ -403,8 +384,8 @@ public class TechnologyServiceO {
     }
 
     public void changeTechnologyState(final Entity technology, final String targetState) {
-        final StateChangeContext stateChangeContextT = stateChangeContextBuilder
-                .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology, targetState);
+        final StateChangeContext stateChangeContextT = stateChangeContextBuilder.build(
+                technologyStateChangeAspect.getChangeEntityDescriber(), technology, targetState);
 
         stateChangeContextT.setStatus(StateChangeStatus.IN_PROGRESS);
         technologyStateChangeAspect.changeState(stateChangeContextT);
@@ -428,7 +409,7 @@ public class TechnologyServiceO {
         technologyStateChange.setField(technologyStateChangeAspect.getChangeEntityDescriber().getWorkerFieldName(),
                 securityService.getCurrentUserName());
 
-       technologyStateChangeDD.fastSave(technologyStateChange);
+        technologyStateChangeDD.fastSave(technologyStateChange);
     }
 
     public void changeTechnologyStateToAccepted(Entity technology) {
