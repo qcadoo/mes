@@ -97,7 +97,7 @@ public class OrderDetailsListeners {
         Entity technology = technologyLookup.getEntity();
         Entity defaultProductionLine = orderService.getDefaultProductionLine();
         if (technology != null) {
-           orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+            orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
         }
     }
 
@@ -265,17 +265,14 @@ public class OrderDetailsListeners {
                 Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
 
                 if (defaultTechnologyEntity != null) {
-                    String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
-                            view.getLocale());
+                    String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity,
+                            "#number + ' - ' + #name", view.getLocale());
 
                     defaultTechnologyField.setFieldValue(defaultTechnologyValue);
                     technologyLookup.setFieldValue(defaultTechnologyEntity.getId());
                 }
             }
         }
-
-        LookupComponent recipeLookup = (LookupComponent) view.getComponentByReference(OrderFields.RECIPE);
-        recipeLookup.setFieldValue(null);
 
     }
 
