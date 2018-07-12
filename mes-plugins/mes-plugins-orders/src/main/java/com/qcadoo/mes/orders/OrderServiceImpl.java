@@ -228,10 +228,6 @@ public class OrderServiceImpl implements OrderService {
         return true;
     }
 
-    @Override
-    public boolean isPktEnabled() {
-        return parameterService.getParameter().getBooleanField(ParameterFieldsO.ENABLE_PKT);
-    }
 
     @Override
     public String buildOrderDescription(Entity masterOrder, Entity technology, boolean fillOrderDescriptionBasedOnTechnology) {

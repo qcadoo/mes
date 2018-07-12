@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -53,17 +65,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
 @Service
 public class OrderHooks {
@@ -164,10 +165,6 @@ public class OrderHooks {
         order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfProductToProduce);
     }
 
-    public void onDelete(final DataDefinition orderDD, final Entity order) {
-        backupTechnology(order);
-    }
-
     public boolean setDateChanged(final DataDefinition dataDefinition, final FieldDefinition fieldDefinition, final Entity order,
             final Object fieldOldValue, final Object fieldNewValue) {
         OrderState orderState = OrderState.of(order);
@@ -237,18 +234,6 @@ public class OrderHooks {
             }
         }
         return null;
-    }
-
-    private void backupTechnology(final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology != null && orderService.isPktEnabled()) {
-            String bNumber = BACKUP_TECHNOLOGY_PREFIX + new Date().getTime() + "_"
-                    + technology.getStringField(TechnologyFields.NUMBER);
-            bNumber = bNumber.substring(0, Math.min(bNumber.length(), 255));
-            technology.setField(TechnologyFields.NUMBER, bNumber);
-            technology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, null);
-            technology.getDataDefinition().save(technology);
-        }
     }
 
     public void setInitialState(final DataDefinition orderDD, final Entity order) {
@@ -513,17 +498,21 @@ public class OrderHooks {
             String state = order.getStringField(OrderFields.STATE);
 
             if (OrderState.PENDING.getStringValue().equals(state)) {
-                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(plannedQuantity));
+                order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY,
+                        numberService.setScaleWithDefaultMathContext(plannedQuantity));
             }
             if (OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
                     || OrderState.INTERRUPTED.getStringValue().equals(state)) {
-                order.setField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY, numberService.setScaleWithDefaultMathContext(plannedQuantity));
+                order.setField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY,
+                        numberService.setScaleWithDefaultMathContext(plannedQuantity));
             }
         } else {
             if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)) != 0) {
-                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
+                order.setField(OrderFields.PLANNED_QUANTITY,
+                        numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
             } else if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedPlannedQuantity)) != 0) {
-                order.setField(OrderFields.PLANNED_QUANTITY, numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
+                order.setField(OrderFields.PLANNED_QUANTITY,
+                        numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
             }
         }
 
@@ -625,16 +614,13 @@ public class OrderHooks {
     }
 
     void setCopyOfTechnology(final Entity order) {
-        if (orderService.isPktEnabled()) {
-            order.setField(OrderFields.TECHNOLOGY, copyTechnology(order).orNull());
+
+        Entity prototypeTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        if (prototypeTechnology != null && TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
+            order.setField(OrderFields.TECHNOLOGY, prototypeTechnology);
         } else {
-            Entity prototypeTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            if (prototypeTechnology != null && TechnologyState.of(prototypeTechnology).compareTo(TechnologyState.ACCEPTED) == 0) {
-                order.setField(OrderFields.TECHNOLOGY, prototypeTechnology);
-            } else {
-                order.setField(OrderFields.TECHNOLOGY, null);
-                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
-            }
+            order.setField(OrderFields.TECHNOLOGY, null);
+            order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
         }
     }
 
