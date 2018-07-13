@@ -2386,7 +2386,6 @@ CREATE TABLE basic_parameter (
     ppsisautomatic boolean,
     ppsproducedamountrecalculateplan boolean,
     ppsalgorithm character varying(255),
-    enablepkt boolean,
     baselinkerparameters_id bigint,
     technologiesgeneratorcopyproductsize boolean,
     cartonlabelsbtpath character varying,
@@ -2414,7 +2413,9 @@ CREATE TABLE basic_parameter (
     ordersgeneratedbycoverage boolean DEFAULT false,
     automaticallygenerateordersforcomponents boolean DEFAULT false,
     seteffectivedatefromoninprogress boolean DEFAULT false,
-    seteffectivedatetooncompleted boolean DEFAULT false
+    seteffectivedatetooncompleted boolean DEFAULT false,
+    copydescription boolean DEFAULT false,
+    exporttopdfonlyvisiblecolumns boolean DEFAULT false
 );
 
 
@@ -6838,7 +6839,8 @@ CREATE TABLE goodfood_extrusionpouring (
     totalmixquantity numeric(12,5),
     addedquantitymanual boolean DEFAULT false,
     addedquantityrelatesto character varying(255) DEFAULT '01mix'::character varying,
-    mixwaterquantity numeric(12,5)
+    mixwaterquantity numeric(12,5),
+    scalequantitymanual boolean DEFAULT false
 );
 
 
@@ -7290,7 +7292,8 @@ CREATE TABLE masterorders_masterorder (
     asanataskcommentadded boolean DEFAULT false,
     sendagaintoasana boolean DEFAULT false,
     sendagaintoasanatries integer DEFAULT 0,
-    asanastatecompleteddate timestamp without time zone
+    asanastatecompleteddate timestamp without time zone,
+    colourral character varying(255)
 );
 
 
@@ -8591,7 +8594,8 @@ CREATE TABLE masterorders_masterorderposition_manyproducts (
     active boolean,
     companypayer character varying(255),
     assortmentname character varying(255),
-    state character varying(255)
+    state character varying(255),
+    description character varying(2048)
 );
 
 ALTER TABLE ONLY masterorders_masterorderposition_manyproducts REPLICA IDENTITY NOTHING;
@@ -8625,7 +8629,8 @@ CREATE VIEW masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.active,
     masterorders_masterorderposition_manyproducts.companypayer,
     masterorders_masterorderposition_manyproducts.assortmentname,
-    masterorders_masterorderposition_manyproducts.state
+    masterorders_masterorderposition_manyproducts.state,
+    masterorders_masterorderposition_manyproducts.description
    FROM masterorders_masterorderposition_manyproducts;
 
 
@@ -8649,7 +8654,8 @@ CREATE VIEW masterorders_masterorderdto AS
     masterorder.pipedriveupdate,
     masterorder.state,
     masterorder.externalnumber,
-    masterorder.asanataskid
+    masterorder.asanataskid,
+    masterorder.description
    FROM (((((masterorders_masterorder masterorder
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
@@ -21706,8 +21712,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f
 \.
 
 
@@ -23218,7 +23224,7 @@ SELECT pg_catalog.setval('goodfood_extrusionmixingredient_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouring; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity) FROM stdin;
+COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity, scalequantitymanual) FROM stdin;
 \.
 
 
@@ -23985,7 +23991,7 @@ SELECT pg_catalog.setval('linechangeovernorms_ordersnormview_id_seq', 1, false);
 -- Data for Name: masterorders_masterorder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate) FROM stdin;
+COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral) FROM stdin;
 \.
 
 
@@ -26339,6 +26345,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 16	masterOrderState	masterOrders	t	0
 17	occupationType	assignmentToShift	t	0
 18	productionLinePlacesForSCADA	productionLines	t	0
+19	coloursRal	ziepiwowarski	t	0
 \.
 
 
@@ -26346,7 +26353,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 18, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 19, true);
 
 
 --
@@ -31772,7 +31779,8 @@ CREATE RULE "_RETURN" AS
     masterorder.active,
     companypayer.name AS companypayer,
     assortment.name AS assortmentname,
-    masterorder.state
+    masterorder.state,
+    masterorder.description
    FROM ((((((((masterorders_masterorderproduct masterorderproduct
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
