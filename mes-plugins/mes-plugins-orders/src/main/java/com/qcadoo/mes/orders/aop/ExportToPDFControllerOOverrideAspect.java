@@ -45,7 +45,7 @@ public class ExportToPDFControllerOOverrideAspect {
     @Autowired
     private ExportToPDFControllerOOverrideUtil exportToPDFControllerOOverrideUtil;
 
-    @Pointcut("execution(private void com.qcadoo.plugins.qcadooExport.internal.ExportToPDFController.addPdfTableCells(..)) "
+    @Pointcut("execution(private void com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController.addPdfTableCells(..)) "
             + "&& args(pdfTable, rows, columns, viewName)")
     public void addPdfTableCells(final PdfPTable pdfTable, final List<Map<String, String>> rows, final List<String> columns, final String viewName) {
 

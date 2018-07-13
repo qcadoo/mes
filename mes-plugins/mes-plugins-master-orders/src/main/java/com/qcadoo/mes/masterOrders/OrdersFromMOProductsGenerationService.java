@@ -1,22 +1,5 @@
 package com.qcadoo.mes.masterOrders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -30,6 +13,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
+import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -45,6 +29,22 @@ import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class OrdersFromMOProductsGenerationService {
@@ -121,25 +121,23 @@ public class OrdersFromMOProductsGenerationService {
         generateSubOrders(result, order);
 
         if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
-           List<Entity> orders = getOrderAndSubOrders(order.getId());
+            List<Entity> orders = getOrderAndSubOrders(order.getId());
             Collections.reverse(orders);
             Integer lastLevel = null;
             Date lastDate = null;
             for (Entity ord : orders) {
-                if(Objects.isNull(lastLevel)) {
 
-                }
                 Date calculatedOrderStartDate = null;
                 if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
                     Optional<Entity> maybeOrder = findLastOrder(ord);
-                    if(maybeOrder.isPresent()) {
+                    if (maybeOrder.isPresent()) {
                         calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                     } else {
                         calculatedOrderStartDate = new DateTime().toDate();
                     }
                 } else {
                     Optional<Entity> maybeOrder = findPreviousOrder(ord);
-                    if(maybeOrder.isPresent()) {
+                    if (maybeOrder.isPresent()) {
                         calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
                     } else {
@@ -147,17 +145,24 @@ public class OrdersFromMOProductsGenerationService {
                     }
                 }
 
+                if (Objects.nonNull(lastLevel) && !Objects.equals(lastLevel, ord.getIntegerField("level"))) {
+                    if (Objects.nonNull(lastDate) && calculatedOrderStartDate.before(lastDate)) {
+                        calculatedOrderStartDate = lastDate;
+                    }
+                }
+
                 try {
                     Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
-                    if(Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
+                    if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
                         lastDate = finishDate;
-                    } else if(Objects.isNull(lastDate)) {
+                    } else if (Objects.isNull(lastDate)) {
                         lastDate = finishDate;
                     }
                 } catch (Exception ex) {
                     result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
                     break;
                 }
+                lastLevel = ord.getIntegerField("level");
 
             }
 
@@ -187,6 +192,7 @@ public class OrdersFromMOProductsGenerationService {
                 .addOrder(SearchOrders.asc(OrderFields.START_DATE)).setMaxResults(1).uniqueResult();
         return Optional.ofNullable(nextOrder);
     }
+
     /*
      * override by aspect
      */
@@ -258,9 +264,6 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private Date findStartDate(final Entity order, Date startDate) {
-        if (Objects.nonNull(order.getDateField(OrderFields.START_DATE))) {
-            return order.getDateField(OrderFields.START_DATE);
-        }
 
         Optional<Entity> previousOrder = findPreviousOrder(order);
         if (previousOrder.isPresent()) {
@@ -272,7 +275,7 @@ public class OrdersFromMOProductsGenerationService {
             }
         }
 
-        return DateTime.now().toDate();
+        return startDate;
     }
 
     private Date calculateOrderStartDate(Date finishDate, Integer changeoverDurationInMillis) {
@@ -339,9 +342,12 @@ public class OrdersFromMOProductsGenerationService {
         boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
                 .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
-
-        String orderDescription = orderService.buildOrderDescription(masterOrder, technology,
-                fillOrderDescriptionBasedOnTechnology);
+        String orderDescription;
+        if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
+            orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
+        } else {
+            orderDescription = orderService.buildOrderDescription(masterOrder, technology, fillOrderDescriptionBasedOnTechnology);
+        }
         order.setField(OrderFields.DESCRIPTION, orderDescription);
         return order;
     }

@@ -309,13 +309,6 @@
                 </layoutElement>
             </component>
         </windowTab>
-        <windowTab name="pktTab" reference="pktTab">
-            <component type="gridLayout" name="pktLayout" columns="2" rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="checkbox" name="enablePkt" field="#{form}.enablePkt" reference="enablePkt"/>
-                </layoutElement>
-            </component>
-        </windowTab>
 
 
     </component>

@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -67,15 +76,6 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
 
 @Service
 public class OrderDetailsHooks {
@@ -283,12 +283,10 @@ public class OrderDetailsHooks {
     }
 
     private void checkIfLockTechnologyTree(final ViewDefinitionState view) {
-        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE)
-                || !orderService.isPktEnabled()) {
-            FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
-            orderType.setEnabled(false);
-            orderType.requestComponentUpdateState();
-        }
+
+        FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+        orderType.setEnabled(false);
+        orderType.requestComponentUpdateState();
 
     }
 
@@ -322,9 +320,11 @@ public class OrderDetailsHooks {
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
                     OrderFields.DATE_FROM, OrderFields.DATE_TO);
-            Boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField("canChangeProdLineForAcceptedOrders");
-            if(canChangeProdLineForAcceptedOrders) {
-                LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+            Boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField(
+                    "canChangeProdLineForAcceptedOrders");
+            if (canChangeProdLineForAcceptedOrders) {
+                LookupComponent productionLineLookup = (LookupComponent) view
+                        .getComponentByReference(OrderFields.PRODUCTION_LINE);
                 productionLineLookup.setEnabled(true);
             }
             changedEnabledFields(view, references, true);
@@ -685,15 +685,16 @@ public class OrderDetailsHooks {
         return expectedVariable.compareTo(currentVariable) == 0;
     }
 
-
-    public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view){
-        LookupComponent technologyLookup = (LookupComponent)view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-        FieldComponent descriptionField = (FieldComponent)view.getComponentByReference(OrderFields.DESCRIPTION);
+    public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view) {
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-        LookupComponent masterOrderLookup = (LookupComponent)view.getComponentByReference("masterOrder");
-        FieldComponent oldTechnologyField = (FieldComponent)view.getComponentByReference("oldTechnologyId");
+        LookupComponent masterOrderLookup = (LookupComponent) view.getComponentByReference("masterOrder");
+        FieldComponent oldTechnologyField = (FieldComponent) view.getComponentByReference("oldTechnologyId");
 
-        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult().getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
+                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
         boolean technologyChanged = false;
 
         Entity masterOrder = masterOrderLookup.getEntity();
@@ -701,37 +702,39 @@ public class OrderDetailsHooks {
         Entity order = orderForm.getEntity();
         Entity oldTechnology = null;
 
-        if(!((String)oldTechnologyField.getFieldValue()).isEmpty()) {
-            Long oldTechnologyId = Long.parseLong((String)oldTechnologyField.getFieldValue());
-            oldTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(oldTechnologyId);
+        if (!((String) oldTechnologyField.getFieldValue()).isEmpty()) {
+            Long oldTechnologyId = Long.parseLong((String) oldTechnologyField.getFieldValue());
+            oldTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(oldTechnologyId);
         }
 
-        if(technology != null){
+        if (technology != null) {
             oldTechnologyField.setFieldValue(technology.getId());
             oldTechnologyField.requestComponentUpdateState();
-            if(oldTechnology !=null){
-                if(!oldTechnology.getId().equals(technology.getId())){
-                    technologyChanged =  true;
+            if (oldTechnology != null) {
+                if (!oldTechnology.getId().equals(technology.getId())) {
+                    technologyChanged = true;
                 }
             }
-        }else{
-            if(oldTechnology != null){
+        } else {
+            if (oldTechnology != null) {
                 technologyChanged = true;
             }
         }
 
-        String orderDescription = orderService.buildOrderDescription(masterOrder,technology,fillOrderDescriptionBasedOnTechnology);
+        String orderDescription = orderService.buildOrderDescription(masterOrder, technology,
+                fillOrderDescriptionBasedOnTechnology);
 
         String currentDescription = order.getStringField(OrderFields.DESCRIPTION);
         descriptionField.setFieldValue("");
         descriptionField.requestComponentUpdateState();
-        if(technologyChanged){
-            if(fillOrderDescriptionBasedOnTechnology) {
+        if (technologyChanged) {
+            if (fillOrderDescriptionBasedOnTechnology) {
                 descriptionField.setFieldValue(orderDescription);
-            }else{
+            } else {
                 descriptionField.setFieldValue(currentDescription);
             }
-        }else {
+        } else {
             if (currentDescription != null && !currentDescription.isEmpty()) {
                 descriptionField.setFieldValue(currentDescription);
             } else {

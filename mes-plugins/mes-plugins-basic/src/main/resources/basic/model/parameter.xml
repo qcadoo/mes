@@ -38,6 +38,7 @@
 		<belongsTo name="company" plugin="basic" model="company" />
 		<hasMany name="reportColumnWidths" joinField="parameter"
 			model="reportColumnWidth" cascade="delete" copyable="true" />
+		<boolean name="exportToPdfOnlyVisibleColumns" default="false" />
 	</fields>
 
 	<hooks>

@@ -1,11 +1,11 @@
 package com.qcadoo.mes.masterOrders;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.util.List;
 
 public class GenerationOrderResult {
 
@@ -23,6 +23,8 @@ public class GenerationOrderResult {
 
     private List<String> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
 
+    private List<String> productsWithoutAcceptedTechnologies = Lists.newArrayList();
+
     public void addNotGeneratedProductError(MasterOrderProductErrorContainer err) {
         productOrderErrors.add(err);
     }
@@ -39,6 +41,10 @@ public class GenerationOrderResult {
         ordersWithoutGeneratedSubOrders.add(number);
     }
 
+    public void addProductWithoutAcceptedTechnology(String number) {
+        productsWithoutAcceptedTechnologies.add(number);
+    }
+
     public void showMessage(ViewDefinitionState view) {
         if (!generatedOrderNumbers.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
@@ -51,8 +57,8 @@ public class GenerationOrderResult {
         }
 
         if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
-            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders", ComponentState.MessageType.INFO, false,
-                    String.join(", ", ordersWithoutGeneratedSubOrders));
+            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
+                    ComponentState.MessageType.INFO, false, String.join(", ", ordersWithoutGeneratedSubOrders));
         }
 
         if (!productOrderErrors.isEmpty()) {
@@ -69,6 +75,11 @@ public class GenerationOrderResult {
                         });
                 view.addTranslatedMessage(msg.toString(), ComponentState.MessageType.INFO, false);
             });
+        }
+
+        if (!productsWithoutAcceptedTechnologies.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.productsWithoutAcceptedTechnologies",
+                    ComponentState.MessageType.INFO, false, String.join(", ", productsWithoutAcceptedTechnologies));
         }
     }
 }

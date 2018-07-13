@@ -202,9 +202,13 @@ public class OrderDetailsHooksMO {
                 technologyPrototypeLookup.requestComponentUpdateState();
                 technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
             }
-
-            String orderDescription = orderService.buildOrderDescription(masterOrder, masterOrderTechnology,
-                    fillOrderDescriptionBasedOnTechnology);
+            String orderDescription;
+            if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
+                orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
+            } else {
+                orderDescription = orderService.buildOrderDescription(masterOrder, masterOrderTechnology,
+                        fillOrderDescriptionBasedOnTechnology);
+            }
 
             if ((Strings.nullToEmpty((String) descriptionField.getFieldValue())).isEmpty()) {
                 descriptionField.setFieldValue("");
