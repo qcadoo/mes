@@ -37,7 +37,7 @@ import org.junit.Test;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.plugins.qcadooExport.internal.ExportToPDFController;
+import com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController;
 
 public class ExportToPDFControllerOOverrideAspectTest {
 
@@ -51,7 +51,7 @@ public class ExportToPDFControllerOOverrideAspectTest {
     public final void checkPointcutIntegrity() throws SecurityException, NoSuchMethodException {
         Class<?> clazz = ExportToPDFController.class;
 
-        assertEquals(clazz.getCanonicalName(), "com.qcadoo.plugins.qcadooExport.internal.ExportToPDFController");
+        assertEquals(clazz.getCanonicalName(), "com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController");
 
         Method putMethod = clazz.getDeclaredMethod("addPdfTableCells", PdfPTable.class, List.class, List.class, String.class);
 
