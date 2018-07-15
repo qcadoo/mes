@@ -52,6 +52,8 @@ public class TechnologyExportService {
 
     private static final String NEWLINE = "\n";
 
+    private static final String SEMICOLON = ";";
+
     @Autowired
     private FileService fileService;
 
@@ -101,7 +103,7 @@ public class TechnologyExportService {
 
     private void exportTechnologies() {
         Date exportDate = new Date();
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", LocaleContextHolder.getLocale());
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss", LocaleContextHolder.getLocale());
         String dateWithTime = dateFormat.format(exportDate);
         String date = DateFormat.getDateInstance().format(exportDate);
 
@@ -167,15 +169,16 @@ public class TechnologyExportService {
             EntityTree productStructureTree = productStructureTreeService.generateProductStructureTree(null, technology);
             String technologyNumber = normalizeString(technology.getStringField(TechnologyFields.NUMBER));
             String technologyName = normalizeString(technology.getStringField(TechnologyFields.NAME));
-            String technologyStandardPerformance = numberService
-                    .format(technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
-            String technologyStateChange = DateFormat.getDateInstance().format(productStructureTreeService
-                    .getLastTechnologyStateChange(technology).getDateField(TechnologyStateChangeFields.DATE_AND_TIME));
-            String technologyProduct = normalizeString(
-                    technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            String technologyStandardPerformance = numberService.format(technology
+                    .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
+            String technologyStateChange = DateFormat.getDateInstance().format(
+                    productStructureTreeService.getLastTechnologyStateChange(technology).getDateField(
+                            TechnologyStateChangeFields.DATE_AND_TIME));
+            String technologyProduct = normalizeString(technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(
+                    ProductFields.NUMBER));
             for (Entity productNode : productStructureTree) {
-                if (ProductStructureTreeService.L_MATERIAL
-                        .equals(productNode.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE))) {
+                if (ProductStructureTreeService.L_MATERIAL.equals(productNode
+                        .getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE))) {
                     bufferedWriter.append(BACKSLASH).append(technologyNumber).append(BACKSLASH);
                     bufferedWriter.append(exportedCsvSeparator);
                     bufferedWriter.append(BACKSLASH).append(technologyName).append(BACKSLASH);
@@ -210,54 +213,56 @@ public class TechnologyExportService {
 
     private void createHeader(BufferedWriter bufferedWriter) throws IOException {
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.technology.number", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.technology.number",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.technology.name", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.technology.name",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
-        bufferedWriter.append(BACKSLASH)
+        bufferedWriter
+                .append(BACKSLASH)
                 .append(normalizeString(translationService.translate(
                         "technologies.exportTechnologies.csv.technology.standardPerformance", LocaleContextHolder.getLocale())))
                 .append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
-        bufferedWriter.append(BACKSLASH)
+        bufferedWriter
+                .append(BACKSLASH)
                 .append(normalizeString(translationService.translate(
                         "technologies.exportTechnologies.csv.technology.lastStateChangeDate", LocaleContextHolder.getLocale())))
                 .append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.technology.product", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.technology.product",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.product.number", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.product.number",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.product.name", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.product.name",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.product.quantity", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.product.quantity",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.product.unit", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.product.unit",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
-                .append(BACKSLASH).append(normalizeString(translationService
-                        .translate("technologies.exportTechnologies.csv.export.date", LocaleContextHolder.getLocale())))
-                .append(BACKSLASH);
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.export.date",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
 
         bufferedWriter.append(NEWLINE);
     }
@@ -298,7 +303,7 @@ public class TechnologyExportService {
 
     private String normalizeString(final String string) {
         if (StringUtils.hasText(string)) {
-            return string.replaceAll(BACKSLASH, "\\\"").replaceAll(NEWLINE, " ");
+            return string.replaceAll(BACKSLASH, "\\\"").replaceAll(NEWLINE, " ").replace(SEMICOLON, " ");
         } else {
             return "";
         }
