@@ -72,6 +72,8 @@ public class DocumentDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
+    public static final String L_NUMBER = " number = ";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -193,7 +195,6 @@ public class DocumentDetailsListeners {
             }
 
             if (getAcceptationInProgress(documentId)) {
-                // if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
                 documentForm.addMessage("materialFlow.error.document.acceptationInProgress", MessageType.FAILURE);
 
                 return;
@@ -218,7 +219,6 @@ public class DocumentDetailsListeners {
         Map<String, Object> parameters = Maps.newHashMap();
 
         parameters.put("id", documentId);
-        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
 
         return jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
     }
@@ -233,28 +233,29 @@ public class DocumentDetailsListeners {
         parameters.put("id", document.getId());
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-        LOG.info("DOCUMENT SET ACCEPTATION IN PROGRESS = " + acceptationInProgress + " id =" + document.getId() + " number = "
-                + document.getStringField(DocumentFields.NUMBER));
+        String message = "DOCUMENT SET ACCEPTATION IN PROGRESS = " + acceptationInProgress + " id =" + document.getId()
+                + L_NUMBER + document.getStringField(DocumentFields.NUMBER);
+        LOG.info(message);
         jdbcTemplate.update(sql, namedParameters);
     }
 
     @Transactional
     private void createResourcesForDocuments(final ViewDefinitionState view, final FormComponent documentForm,
             final DataDefinition documentDD, Entity document) {
-        LOG.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + " number = "
-                + document.getStringField(DocumentFields.NUMBER));
+        LOG.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + L_NUMBER + document.getStringField(DocumentFields.NUMBER));
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
         document = documentDD.save(document);
 
+        String failedMessage = "DOCUMENT ACCEPT FAILED: id =" + document.getId() + L_NUMBER
+                + document.getStringField(DocumentFields.NUMBER);
         if (!document.isValid()) {
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(document);
 
-            LOG.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
-                    + document.getStringField(DocumentFields.NUMBER));
+            LOG.info(failedMessage);
             return;
         }
 
@@ -284,8 +285,7 @@ public class DocumentDetailsListeners {
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
-            LOG.info("DOCUMENT ACCEPT FAILED: id =" + document.getId() + " number = "
-                    + document.getStringField(DocumentFields.NUMBER));
+            LOG.info(failedMessage);
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
@@ -293,8 +293,9 @@ public class DocumentDetailsListeners {
                 receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
             }
 
-            LOG.info("DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + " number = "
-                    + document.getStringField(DocumentFields.NUMBER));
+            String successMessage = "DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + L_NUMBER
+                    + document.getStringField(DocumentFields.NUMBER);
+            LOG.info(successMessage);
         }
 
         documentForm.setEntity(document);
