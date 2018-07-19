@@ -233,8 +233,8 @@ public class DocumentDetailsListeners {
         parameters.put("id", document.getId());
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-        String message = "DOCUMENT SET ACCEPTATION IN PROGRESS = " + acceptationInProgress + " id =" + document.getId()
-                + L_NUMBER + document.getStringField(DocumentFields.NUMBER);
+        String message = String.format("DOCUMENT SET ACCEPTATION IN PROGRESS = %b  id = %d number = %s", acceptationInProgress,
+                document.getId(), document.getStringField(DocumentFields.NUMBER));
         LOG.info(message);
         jdbcTemplate.update(sql, namedParameters);
     }
@@ -242,14 +242,16 @@ public class DocumentDetailsListeners {
     @Transactional
     private void createResourcesForDocuments(final ViewDefinitionState view, final FormComponent documentForm,
             final DataDefinition documentDD, Entity document) {
-        LOG.info("DOCUMENT ACCEPT STARTED: id =" + document.getId() + L_NUMBER + document.getStringField(DocumentFields.NUMBER));
+        String message = String.format("DOCUMENT ACCEPT STARTED: id = %d number = %s", document.getId(),
+                document.getStringField(DocumentFields.NUMBER));
+        LOG.info(message);
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
         document = documentDD.save(document);
 
-        String failedMessage = "DOCUMENT ACCEPT FAILED: id =" + document.getId() + L_NUMBER
-                + document.getStringField(DocumentFields.NUMBER);
+        String failedMessage = String.format("DOCUMENT ACCEPT FAILED: id = %d number = %s", document.getId(),
+                document.getStringField(DocumentFields.NUMBER));
         if (!document.isValid()) {
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
@@ -293,8 +295,8 @@ public class DocumentDetailsListeners {
                 receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
             }
 
-            String successMessage = "DOCUMENT ACCEPT SUCCESS: id =" + document.getId() + L_NUMBER
-                    + document.getStringField(DocumentFields.NUMBER);
+            String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
+                    document.getStringField(DocumentFields.NUMBER));
             LOG.info(successMessage);
         }
 
