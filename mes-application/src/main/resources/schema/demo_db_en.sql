@@ -6831,16 +6831,12 @@ ALTER SEQUENCE goodfood_extrusionmixingredient_id_seq OWNED BY goodfood_extrusio
 CREATE TABLE goodfood_extrusionpouring (
     id bigint NOT NULL,
     extrusionprotocol_id bigint,
-    mixid character varying(255),
-    requiredscalequantity numeric(9,2),
     finaladdedquantity numeric(9,2),
     addedquantity numeric(9,2),
-    scalequantity numeric(9,2),
     totalmixquantity numeric(12,5),
     addedquantitymanual boolean DEFAULT false,
     addedquantityrelatesto character varying(255) DEFAULT '01mix'::character varying,
-    mixwaterquantity numeric(12,5),
-    scalequantitymanual boolean DEFAULT false
+    mixwaterquantity numeric(12,5)
 );
 
 
@@ -6880,7 +6876,8 @@ CREATE TABLE goodfood_extrusionpouringingredient (
     requiredquantity numeric(9,2),
     quantityinmix numeric(12,5),
     beyondrecipe boolean DEFAULT false,
-    addedbyuser boolean DEFAULT false
+    addedbyuser boolean DEFAULT false,
+    extrusionpouringmix_id bigint
 );
 
 
@@ -6901,6 +6898,41 @@ CREATE SEQUENCE goodfood_extrusionpouringingredient_id_seq
 --
 
 ALTER SEQUENCE goodfood_extrusionpouringingredient_id_seq OWNED BY goodfood_extrusionpouringingredient.id;
+
+
+--
+-- Name: goodfood_extrusionpouringmix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_extrusionpouringmix (
+    id bigint NOT NULL,
+    extrusionpouring_id bigint,
+    mixid character varying(255),
+    requiredscalequantity numeric(9,2),
+    scalequantity numeric(9,2),
+    scalequantitymanual boolean DEFAULT false,
+    totalmixquantity numeric(12,5),
+    mixwaterquantity numeric(12,5)
+);
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_extrusionpouringmix_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_extrusionpouringmix_id_seq OWNED BY goodfood_extrusionpouringmix.id;
 
 
 --
@@ -19156,6 +19188,13 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient ALTER COLUMN id SET DEFAULT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY goodfood_extrusionpouringmix ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionpouringmix_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY goodfood_extrusionprotocol ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocol_id_seq'::regclass);
 
 
@@ -23224,7 +23263,7 @@ SELECT pg_catalog.setval('goodfood_extrusionmixingredient_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouring; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity, scalequantitymanual) FROM stdin;
+COPY goodfood_extrusionpouring (id, extrusionprotocol_id, finaladdedquantity, addedquantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity) FROM stdin;
 \.
 
 
@@ -23239,7 +23278,7 @@ SELECT pg_catalog.setval('goodfood_extrusionpouring_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouringingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix, beyondrecipe, addedbyuser) FROM stdin;
+COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix, beyondrecipe, addedbyuser, extrusionpouringmix_id) FROM stdin;
 \.
 
 
@@ -23248,6 +23287,21 @@ COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, b
 --
 
 SELECT pg_catalog.setval('goodfood_extrusionpouringingredient_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_extrusionpouringmix; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_extrusionpouringmix (id, extrusionpouring_id, mixid, requiredscalequantity, scalequantity, scalequantitymanual, totalmixquantity, mixwaterquantity) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_extrusionpouringmix_id_seq', 1, false);
 
 
 --
@@ -29408,6 +29462,14 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
+-- Name: goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringmix
+    ADD CONSTRAINT goodfood_extrusionpouringmix_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33683,11 +33745,27 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
+-- Name: extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringingredient
+    ADD CONSTRAINT extrusionpouringingredient_extrusionpouringmix_fkey FOREIGN KEY (extrusionpouringmix_id) REFERENCES goodfood_extrusionpouringmix(id) DEFERRABLE;
+
+
+--
 -- Name: extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
     ADD CONSTRAINT extrusionpouringingredient_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringmix
+    ADD CONSTRAINT extrusionpouringmix_extrusionpouring_fkey FOREIGN KEY (extrusionpouring_id) REFERENCES goodfood_extrusionpouring(id) DEFERRABLE;
 
 
 --
