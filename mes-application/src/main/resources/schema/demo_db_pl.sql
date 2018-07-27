@@ -26399,7 +26399,6 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 16	masterOrderState	masterOrders	t	0
 17	occupationType	assignmentToShift	t	0
 18	productionLinePlacesForSCADA	productionLines	t	0
-19	coloursRal	ziepiwowarski	t	0
 \.
 
 
