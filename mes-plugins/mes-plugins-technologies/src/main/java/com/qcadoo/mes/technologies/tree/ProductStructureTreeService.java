@@ -112,7 +112,9 @@ public class ProductStructureTreeService {
     public Entity findTechnologyForProduct(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        return technologyDD.find().add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+        return technologyDD
+                .find()
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
                 .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product))
                 .add(SearchRestrictions.or(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED),
                         SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.CHECKED)))
@@ -180,10 +182,15 @@ public class ProductStructureTreeService {
                     child = addChild(tree, child, parent, L_INTERMEDIATE);
                     if (view != null) {
                         FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
-                        productStructureForm.addMessage(
-                                "technologies.technologyDetails.window.productStructure.productStructureForm.technologyAndOperationExists",
-                                MessageType.INFO, false,
-                                product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
+                        if (productStructureForm != null) {
+                            productStructureForm
+                                    .addMessage(
+                                            "technologies.technologyDetails.window.productStructure.productStructureForm.technologyAndOperationExists",
+                                            MessageType.INFO,
+                                            false,
+                                            product.getStringField(ProductFields.NUMBER) + " "
+                                                    + product.getStringField(ProductFields.NAME));
+                        }
                     }
                     generateTreeForSubproducts(subOperation, technology, tree, child, view, mainTechnology);
                 }
@@ -275,8 +282,8 @@ public class ProductStructureTreeService {
                 return true;
             } else if (entityType.equals(L_COMPONENT)) {
                 Entity oldTechnology = entity.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY);
-                if (oldTechnology != null && newTechnology == null
-                        || oldTechnology != null && !oldTechnology.getId().equals(newTechnology.getId())) {
+                if (oldTechnology != null && newTechnology == null || oldTechnology != null
+                        && !oldTechnology.getId().equals(newTechnology.getId())) {
                     return true;
                 }
             }
@@ -285,16 +292,15 @@ public class ProductStructureTreeService {
     }
 
     private boolean checkIfSubTechnologiesChanged(Entity operation, Date productStructureCreateDate) {
-        for (Entity productInComp : operation
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
+        for (Entity productInComp : operation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
             Entity product = productInComp.getBelongsToField(OperationProductInComponentFields.PRODUCT);
             Entity subOperation = findOperationForProductWithinChildren(product, operation);
             Entity subTechnology = findTechnologyForProduct(product);
 
             if (subTechnology != null) {
                 Entity technologyStateChange = getLastTechnologyStateChange(subTechnology);
-                if (productStructureCreateDate
-                        .before(technologyStateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME))) {
+                if (productStructureCreateDate.before(technologyStateChange
+                        .getDateField(TechnologyStateChangeFields.DATE_AND_TIME))) {
                     return true;
                 }
                 if (subOperation == null) {
@@ -344,10 +350,10 @@ public class ProductStructureTreeService {
             if (!entityType.equals(L_MATERIAL) && !entityType.equals(L_FINAL_PRODUCT)) {
                 Long tocId = node.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
                 Entity toc = tocDD.get(tocId);
-                Long parentId = node.getBelongsToField(ProductStructureTreeNodeFields.PARENT) != null
-                        ? node.getBelongsToField(ProductStructureTreeNodeFields.PARENT)
-                                .getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId()
-                        : node.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
+                Long parentId = node.getBelongsToField(ProductStructureTreeNodeFields.PARENT) != null ? node
+                        .getBelongsToField(ProductStructureTreeNodeFields.PARENT)
+                        .getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId() : node.getBelongsToField(
+                        ProductStructureTreeNodeFields.OPERATION).getId();
                 parent = getEntityById(tocTree, parentId);
                 addChildTOC(tocTree, toc, parent, node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT), entityType);
             }
@@ -364,8 +370,7 @@ public class ProductStructureTreeService {
         return null;
     }
 
-    private void addChildTOC(final List<Entity> tree, final Entity child, final Entity parent, final Entity product,
-            String type) {
+    private void addChildTOC(final List<Entity> tree, final Entity child, final Entity parent, final Entity product, String type) {
         child.setField(TechnologyOperationComponentFields.PARENT, parent);
         child.setField(TechnologyOperationComponentFields.PRIORITY, 1);
         child.setField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE, type);

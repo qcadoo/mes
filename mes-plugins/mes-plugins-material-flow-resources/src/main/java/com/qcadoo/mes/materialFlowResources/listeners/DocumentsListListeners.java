@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -49,6 +51,8 @@ import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class DocumentsListListeners {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentsListListeners.class);
 
     private static final String L_GRID = "grid";
 
@@ -84,7 +88,8 @@ public class DocumentsListListeners {
                     continue;
                 }
 
-                if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
+                if (getAcceptationInProgress(documentId)) {
+                    // if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
                     continue;
                 }
 
@@ -94,22 +99,41 @@ public class DocumentsListListeners {
 
         if (!documentsFromDB.isEmpty()) {
             setAcceptationInProgress(documentsFromDB, true);
-            createResourcesForDocuments(view, gridComponent, documentDD, documentsFromDB);
-            setAcceptationInProgress(documentsFromDB, false);
+            try {
+                createResourcesForDocuments(view, gridComponent, documentDD, documentsFromDB);
+            } catch (Exception e) {
+                gridComponent.addMessage("materialFlow.error.document.acceptError", ComponentState.MessageType.FAILURE);
+                LOG.error("Error in createResourcesForDocuments ", e);
+                throw new IllegalStateException(e.getMessage(), e);
+            } finally {
+                setAcceptationInProgress(documentsFromDB, false);
+            }
         }
+    }
+
+    private boolean getAcceptationInProgress(final Long documentId) {
+        String sql = "SELECT acceptationinprogress FROM materialflowresources_document WHERE id = :id;";
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("id", documentId);
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
+        return jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
     }
 
     private void setAcceptationInProgress(final List<Entity> documents, final boolean acceptationInProgress) {
         String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id IN (:ids);";
 
+        List<Long> ids = documents.stream().map(document -> document.getId()).collect(Collectors.toList());
         Map<String, Object> parameters = Maps.newHashMap();
 
         parameters.put("acceptationinprogress", acceptationInProgress);
 
-        parameters.put("ids", documents.stream().map(document -> document.getId()).collect(Collectors.toList()));
+        parameters.put("ids", ids);
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-
+        LOG.info("DOCUMENT SET ACCEPTATION IN PROGRESS = " + acceptationInProgress + " ids ="
+                + ids.stream().map(Object::toString).collect(Collectors.joining(", ")));
         jdbcTemplate.update(sql, namedParameters);
     }
 
