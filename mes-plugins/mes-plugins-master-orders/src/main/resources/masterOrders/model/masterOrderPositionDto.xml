@@ -56,7 +56,7 @@
         <integer name="masterOrderProductId"/>
 
         <enum name="state" values="01new,02inExecution,03completed,04declined"/>
-
+        <string name="description"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrderProduct"/>

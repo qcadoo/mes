@@ -67,6 +67,7 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         if (!technologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext)) {
             return;
         }
+        technologyValidationService.checkIfEveryOperationHasInComponents(stateChangeContext);
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
         Entity technology = stateChangeContext.getOwner();
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
@@ -76,6 +77,7 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
+        technologyValidationService.checkTechnologyCycles(stateChangeContext);
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
             technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);
         }

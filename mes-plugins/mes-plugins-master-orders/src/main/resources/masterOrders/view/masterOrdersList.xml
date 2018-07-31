@@ -159,6 +159,8 @@
 
             <option type="column" name="companyPayer" fields="companyPayer" width="150"/>
 
+            <option type="column" name="description" fields="description" width="150"/>
+
             <option type="column" name="masterOrderState" fields="masterOrderState" width="100"/>
 
             <option type="column" name="state" fields="state" width="70"/>
@@ -172,9 +174,9 @@
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,state"/>
+                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,description,companyPayer,masterOrderState,orderedPositionQuantity,commissionedPositionQuantity,quantityForCommission,state"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,companyPayer,masterOrderState,state"/>
+                    value="masterOrderDefinitionNumber,number,name,externalNumber,deadline,company,description,companyPayer,masterOrderState,state"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"

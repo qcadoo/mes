@@ -40,6 +40,9 @@
                     <option type="orderable" value="number,name,deadline"/>
                     <option type="expression" value="#number"/>
                     <option type="fieldCode" value="number"/>
+                    <listener event="onSelectedEntityChange"
+                              class="com.qcadoo.mes.masterOrders.listeners.OrderDetailsListenersMO"
+                              method="updateDescription"/>
                 </component>
             </layoutElement>
             <layoutElement column="1" row="2">

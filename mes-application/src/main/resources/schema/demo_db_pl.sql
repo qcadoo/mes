@@ -2386,7 +2386,6 @@ CREATE TABLE basic_parameter (
     ppsisautomatic boolean,
     ppsproducedamountrecalculateplan boolean,
     ppsalgorithm character varying(255),
-    enablepkt boolean,
     baselinkerparameters_id bigint,
     technologiesgeneratorcopyproductsize boolean,
     cartonlabelsbtpath character varying,
@@ -2413,7 +2412,10 @@ CREATE TABLE basic_parameter (
     includewagegroups boolean DEFAULT false,
     ordersgeneratedbycoverage boolean DEFAULT false,
     automaticallygenerateordersforcomponents boolean DEFAULT false,
-    seteffectivedatefromoninprogress boolean DEFAULT false
+    seteffectivedatefromoninprogress boolean DEFAULT false,
+    seteffectivedatetooncompleted boolean DEFAULT false,
+    copydescription boolean DEFAULT false,
+    exporttopdfonlyvisiblecolumns boolean DEFAULT false
 );
 
 
@@ -6676,6 +6678,34 @@ ALTER SEQUENCE goodfood_extrusionaddedmixingredient_id_seq OWNED BY goodfood_ext
 
 
 --
+-- Name: goodfood_extrusionbatchingredientdto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_extrusionbatchingredientdto (
+    id bigint,
+    extrusionprotocol_id bigint,
+    productnumber character varying(255),
+    unit character varying(255),
+    batchnumber character varying(255),
+    quantity numeric
+);
+
+ALTER TABLE ONLY goodfood_extrusionbatchingredientdto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: goodfood_extrusionbatchingredientdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_extrusionbatchingredientdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: goodfood_extrusioncontext; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6801,11 +6831,8 @@ ALTER SEQUENCE goodfood_extrusionmixingredient_id_seq OWNED BY goodfood_extrusio
 CREATE TABLE goodfood_extrusionpouring (
     id bigint NOT NULL,
     extrusionprotocol_id bigint,
-    mixid character varying(255),
-    requiredscalequantity numeric(9,2),
     finaladdedquantity numeric(9,2),
     addedquantity numeric(9,2),
-    scalequantity numeric(9,2),
     totalmixquantity numeric(12,5),
     addedquantitymanual boolean DEFAULT false,
     addedquantityrelatesto character varying(255) DEFAULT '01mix'::character varying,
@@ -6849,7 +6876,8 @@ CREATE TABLE goodfood_extrusionpouringingredient (
     requiredquantity numeric(9,2),
     quantityinmix numeric(12,5),
     beyondrecipe boolean DEFAULT false,
-    addedbyuser boolean DEFAULT false
+    addedbyuser boolean DEFAULT false,
+    extrusionpouringmix_id bigint
 );
 
 
@@ -6870,6 +6898,41 @@ CREATE SEQUENCE goodfood_extrusionpouringingredient_id_seq
 --
 
 ALTER SEQUENCE goodfood_extrusionpouringingredient_id_seq OWNED BY goodfood_extrusionpouringingredient.id;
+
+
+--
+-- Name: goodfood_extrusionpouringmix; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_extrusionpouringmix (
+    id bigint NOT NULL,
+    extrusionpouring_id bigint,
+    mixid character varying(255),
+    requiredscalequantity numeric(9,2),
+    scalequantity numeric(9,2),
+    scalequantitymanual boolean DEFAULT false,
+    totalmixquantity numeric(12,5),
+    mixwaterquantity numeric(12,5)
+);
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_extrusionpouringmix_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_extrusionpouringmix_id_seq OWNED BY goodfood_extrusionpouringmix.id;
 
 
 --
@@ -7261,7 +7324,8 @@ CREATE TABLE masterorders_masterorder (
     asanataskcommentadded boolean DEFAULT false,
     sendagaintoasana boolean DEFAULT false,
     sendagaintoasanatries integer DEFAULT 0,
-    asanastatecompleteddate timestamp without time zone
+    asanastatecompleteddate timestamp without time zone,
+    colourral character varying(255)
 );
 
 
@@ -7832,6 +7896,37 @@ CREATE SEQUENCE integrationbaselinker_statusesformasterorder_id_seq
 --
 
 ALTER SEQUENCE integrationbaselinker_statusesformasterorder_id_seq OWNED BY integrationbaselinker_statusesformasterorder.id;
+
+
+--
+-- Name: integrationscales_productionlineforscale; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE integrationscales_productionlineforscale (
+    id bigint NOT NULL,
+    productionline_id bigint,
+    master boolean DEFAULT false,
+    scale_id bigint
+);
+
+
+--
+-- Name: integrationscales_productionlineforscale_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE integrationscales_productionlineforscale_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: integrationscales_productionlineforscale_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE integrationscales_productionlineforscale_id_seq OWNED BY integrationscales_productionlineforscale.id;
 
 
 --
@@ -8531,7 +8626,8 @@ CREATE TABLE masterorders_masterorderposition_manyproducts (
     active boolean,
     companypayer character varying(255),
     assortmentname character varying(255),
-    state character varying(255)
+    state character varying(255),
+    description character varying(2048)
 );
 
 ALTER TABLE ONLY masterorders_masterorderposition_manyproducts REPLICA IDENTITY NOTHING;
@@ -8565,7 +8661,8 @@ CREATE VIEW masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.active,
     masterorders_masterorderposition_manyproducts.companypayer,
     masterorders_masterorderposition_manyproducts.assortmentname,
-    masterorders_masterorderposition_manyproducts.state
+    masterorders_masterorderposition_manyproducts.state,
+    masterorders_masterorderposition_manyproducts.description
    FROM masterorders_masterorderposition_manyproducts;
 
 
@@ -8589,7 +8686,8 @@ CREATE VIEW masterorders_masterorderdto AS
     masterorder.pipedriveupdate,
     masterorder.state,
     masterorder.externalnumber,
-    masterorder.asanataskid
+    masterorder.asanataskid,
+    masterorder.description
    FROM (((((masterorders_masterorder masterorder
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
@@ -9083,7 +9181,8 @@ CREATE TABLE materialflowresources_document (
     positionsfile character varying,
     printed boolean DEFAULT false,
     generationdate timestamp without time zone,
-    filename character varying(255)
+    filename character varying(255),
+    acceptationinprogress boolean DEFAULT false
 );
 
 
@@ -11996,36 +12095,6 @@ CREATE SEQUENCE ordersupplies_coveragelocation_id_seq
 --
 
 ALTER SEQUENCE ordersupplies_coveragelocation_id_seq OWNED BY ordersupplies_coveragelocation.id;
-
-
---
--- Name: ordersupplies_coverageorderhelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ordersupplies_coverageorderhelper (
-    id bigint NOT NULL,
-    materialrequirementcoverage_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ordersupplies_coverageorderhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ordersupplies_coverageorderhelper_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ordersupplies_coverageorderhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ordersupplies_coverageorderhelper_id_seq OWNED BY ordersupplies_coverageorderhelper.id;
 
 
 --
@@ -19119,6 +19188,13 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient ALTER COLUMN id SET DEFAULT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY goodfood_extrusionpouringmix ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionpouringmix_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY goodfood_extrusionprotocol ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocol_id_seq'::regclass);
 
 
@@ -19246,6 +19322,13 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument ALTER COLUMN id SET D
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder ALTER COLUMN id SET DEFAULT nextval('integrationbaselinker_statusesformasterorder_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_productionlineforscale ALTER COLUMN id SET DEFAULT nextval('integrationscales_productionlineforscale_id_seq'::regclass);
 
 
 --
@@ -19736,13 +19819,6 @@ ALTER TABLE ONLY ordersupplies_columnforcoverages ALTER COLUMN id SET DEFAULT ne
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coveragelocation_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ordersupplies_coverageorderhelper ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageorderhelper_id_seq'::regclass);
 
 
 --
@@ -21675,8 +21751,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, enablepkt, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f
 \.
 
 
@@ -23125,6 +23201,13 @@ SELECT pg_catalog.setval('goodfood_extrusionaddedmixingredient_id_seq', 1, false
 
 
 --
+-- Name: goodfood_extrusionbatchingredientdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_extrusionbatchingredientdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: goodfood_extrusioncontext; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23180,7 +23263,7 @@ SELECT pg_catalog.setval('goodfood_extrusionmixingredient_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouring; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouring (id, extrusionprotocol_id, mixid, requiredscalequantity, finaladdedquantity, addedquantity, scalequantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity) FROM stdin;
+COPY goodfood_extrusionpouring (id, extrusionprotocol_id, finaladdedquantity, addedquantity, totalmixquantity, addedquantitymanual, addedquantityrelatesto, mixwaterquantity) FROM stdin;
 \.
 
 
@@ -23195,7 +23278,7 @@ SELECT pg_catalog.setval('goodfood_extrusionpouring_id_seq', 1, false);
 -- Data for Name: goodfood_extrusionpouringingredient; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix, beyondrecipe, addedbyuser) FROM stdin;
+COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, batch_id, quantity, ratio, manual, skip, frommix, requiredquantity, quantityinmix, beyondrecipe, addedbyuser, extrusionpouringmix_id) FROM stdin;
 \.
 
 
@@ -23204,6 +23287,21 @@ COPY goodfood_extrusionpouringingredient (id, extrusionpouring_id, product_id, b
 --
 
 SELECT pg_catalog.setval('goodfood_extrusionpouringingredient_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_extrusionpouringmix; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_extrusionpouringmix (id, extrusionpouring_id, mixid, requiredscalequantity, scalequantity, scalequantitymanual, totalmixquantity, mixwaterquantity) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_extrusionpouringmix_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_extrusionpouringmix_id_seq', 1, false);
 
 
 --
@@ -23531,6 +23629,21 @@ COPY integrationbaselinker_statusesformasterorder (id, baselinkerparameters_id, 
 --
 
 SELECT pg_catalog.setval('integrationbaselinker_statusesformasterorder_id_seq', 1, false);
+
+
+--
+-- Data for Name: integrationscales_productionlineforscale; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY integrationscales_productionlineforscale (id, productionline_id, master, scale_id) FROM stdin;
+\.
+
+
+--
+-- Name: integrationscales_productionlineforscale_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('integrationscales_productionlineforscale_id_seq', 1, false);
 
 
 --
@@ -23932,7 +24045,7 @@ SELECT pg_catalog.setval('linechangeovernorms_ordersnormview_id_seq', 1, false);
 -- Data for Name: masterorders_masterorder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate) FROM stdin;
+COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral) FROM stdin;
 \.
 
 
@@ -24170,7 +24283,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress) FROM stdin;
 \.
 
 
@@ -25213,21 +25326,6 @@ COPY ordersupplies_coveragelocation (id, materialrequirementcoverage_id, locatio
 --
 
 SELECT pg_catalog.setval('ordersupplies_coveragelocation_id_seq', 1, false);
-
-
---
--- Data for Name: ordersupplies_coverageorderhelper; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ordersupplies_coverageorderhelper (id, materialrequirementcoverage_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ordersupplies_coverageorderhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ordersupplies_coverageorderhelper_id_seq', 1, false);
 
 
 --
@@ -26308,7 +26406,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 18, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 19, true);
 
 
 --
@@ -29363,6 +29461,14 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
+-- Name: goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringmix
+    ADD CONSTRAINT goodfood_extrusionpouringmix_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -29528,6 +29634,14 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
     ADD CONSTRAINT integrationbaselinker_statusesformasterorder_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: integrationscales_productionlineforscale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_productionlineforscale
+    ADD CONSTRAINT integrationscales_productionlineforscale_pkey PRIMARY KEY (id);
 
 
 --
@@ -30424,14 +30538,6 @@ ALTER TABLE ONLY ordersupplies_columnforcoverages
 
 ALTER TABLE ONLY ordersupplies_coveragelocation
     ADD CONSTRAINT ordersupplies_coveragelocation_pkey PRIMARY KEY (id);
-
-
---
--- Name: ordersupplies_coverageorderhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ordersupplies_coverageorderhelper
-    ADD CONSTRAINT ordersupplies_coverageorderhelper_pkey PRIMARY KEY (id);
 
 
 --
@@ -31734,7 +31840,8 @@ CREATE RULE "_RETURN" AS
     masterorder.active,
     companypayer.name AS companypayer,
     assortment.name AS assortmentname,
-    masterorder.state
+    masterorder.state,
+    masterorder.description
    FROM ((((((((masterorders_masterorderproduct masterorderproduct
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
@@ -31789,23 +31896,6 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
      LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
   GROUP BY product.id, parent.name, assortment.name;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
-    ON SELECT TO integrationscales_scaledto DO INSTEAD  SELECT scale.id,
-    scale.name,
-    scale.comment,
-    scale.type,
-    concat_ws(':'::text, scale.ip, scale.port) AS ip,
-    string_agg((pl.number)::text, ', '::text) AS productionlines
-   FROM ((integrationscales_scale scale
-     LEFT JOIN jointable_productionline_scale jps ON ((jps.scale_id = scale.id)))
-     LEFT JOIN productionlines_productionline pl ON ((jps.productionline_id = pl.id)))
-  GROUP BY scale.id;
 
 
 --
@@ -31882,6 +31972,62 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
      LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
   GROUP BY opic.id, toc.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO goodfood_extrusionbatchingredientdto DO INSTEAD  WITH ingredients AS (
+         SELECT e.extrusionprotocol_id,
+            i_1.product_id,
+            i_1.batch_id,
+            i_1.quantity
+           FROM (goodfood_extrusionaddedmixingredient i_1
+             JOIN goodfood_extrusionaddedmixentry e ON ((i_1.extrusionaddedmixentry_id = e.id)))
+        UNION ALL
+         SELECT e.extrusionprotocol_id,
+            i_1.product_id,
+            i_1.batch_id,
+            (- i_1.quantity)
+           FROM (goodfood_extrusiontakenoffmixingredient i_1
+             JOIN goodfood_extrusiontakenoffmixentry e ON ((i_1.extrusiontakenoffmixentry_id = e.id)))
+        UNION ALL
+         SELECT e.extrusionprotocol_id,
+            i_1.product_id,
+            i_1.batch_id,
+            i_1.quantity
+           FROM (goodfood_extrusionpouringingredient i_1
+             JOIN goodfood_extrusionpouring e ON ((i_1.extrusionpouring_id = e.id)))
+        )
+ SELECT row_number() OVER () AS id,
+    i.extrusionprotocol_id,
+    p.number AS productnumber,
+    p.unit,
+    b.number AS batchnumber,
+    sum(COALESCE(i.quantity, (0)::numeric)) AS quantity
+   FROM ((ingredients i
+     JOIN basic_product p ON ((p.id = i.product_id)))
+     LEFT JOIN advancedgenealogy_batch b ON ((b.id = i.batch_id)))
+  GROUP BY i.extrusionprotocol_id, p.id, b.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO integrationscales_scaledto DO INSTEAD  SELECT scale.id,
+    scale.name,
+    scale.comment,
+    scale.type,
+    concat_ws(':'::text, scale.ip, scale.port) AS ip,
+    string_agg((pl.number)::text, ', '::text) AS productionlines
+   FROM ((integrationscales_scale scale
+     LEFT JOIN integrationscales_productionlineforscale ps ON ((ps.scale_id = scale.id)))
+     LEFT JOIN productionlines_productionline pl ON ((ps.productionline_id = pl.id)))
+  GROUP BY scale.id;
 
 
 --
@@ -33598,11 +33744,27 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
+-- Name: extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringingredient
+    ADD CONSTRAINT extrusionpouringingredient_extrusionpouringmix_fkey FOREIGN KEY (extrusionpouringmix_id) REFERENCES goodfood_extrusionpouringmix(id) DEFERRABLE;
+
+
+--
 -- Name: extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
     ADD CONSTRAINT extrusionpouringingredient_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_extrusionpouringmix
+    ADD CONSTRAINT extrusionpouringmix_extrusionpouring_fkey FOREIGN KEY (extrusionpouring_id) REFERENCES goodfood_extrusionpouring(id) DEFERRABLE;
 
 
 --
@@ -33987,14 +34149,6 @@ ALTER TABLE ONLY materialflow_transfer
 
 ALTER TABLE ONLY qcadoomodel_dictionaryitem
     ADD CONSTRAINT fk9b37ca9470d83278 FOREIGN KEY (dictionary_id) REFERENCES qcadoomodel_dictionary(id) DEFERRABLE;
-
-
---
--- Name: fk9ec19a902bfae6ae; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ordersupplies_coverageorderhelper
-    ADD CONSTRAINT fk9ec19a902bfae6ae FOREIGN KEY (materialrequirementcoverage_id) REFERENCES ordersupplies_materialrequirementcoverage(id);
 
 
 --
@@ -37051,6 +37205,22 @@ ALTER TABLE ONLY jointable_productionline_shifttimetableexception
 
 ALTER TABLE ONLY jointable_productionline_shifttimetableexception
     ADD CONSTRAINT productionline_shifttimetableexception_shifttimetableexception_ FOREIGN KEY (shifttimetableexception_id) REFERENCES basic_shifttimetableexception(id) DEFERRABLE;
+
+
+--
+-- Name: productionlineforscale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_productionlineforscale
+    ADD CONSTRAINT productionlineforscale_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: productionlineforscale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationscales_productionlineforscale
+    ADD CONSTRAINT productionlineforscale_scale_fkey FOREIGN KEY (scale_id) REFERENCES integrationscales_scale(id) DEFERRABLE;
 
 
 --
