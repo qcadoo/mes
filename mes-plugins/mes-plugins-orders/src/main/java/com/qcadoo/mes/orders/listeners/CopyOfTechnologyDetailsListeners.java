@@ -66,6 +66,7 @@ public class CopyOfTechnologyDetailsListeners {
     @Transactional
     public void changePatternTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FormComponent technologyForm = (FormComponent) state;
+
         LookupComponent technologyPrototypeLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFields.TECHNOLOGY_PROTOTYPE);
 
@@ -123,6 +124,7 @@ public class CopyOfTechnologyDetailsListeners {
 
             if (!Objects.equal(technology1.getId(), technology2.getId())) {
                 Map<String, Object> parameters = Maps.newHashMap();
+
                 parameters.put("form.id", technology2.getId());
                 parameters.put("form.orderId", order.getId());
 
@@ -157,25 +159,25 @@ public class CopyOfTechnologyDetailsListeners {
             Entity order = getOrderWithTechnology(view);
 
             Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
             if (technologyPrototype != null && technologyId.equals(technologyPrototype.getId())) {
-                return;
-            }
-            Entity newTechnology = createTechnology(order);
+                Entity newTechnology = createTechnology(order);
 
-            if (newTechnology.isValid()) {
-                order.setField(OrderFields.TECHNOLOGY, null);
-                order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
+                if (newTechnology.isValid()) {
+                    order.setField(OrderFields.TECHNOLOGY, null);
+                    order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
 
-                order = order.getDataDefinition().save(order);
+                    order = order.getDataDefinition().save(order);
 
-                deleteTechnology(technology);
+                    deleteTechnology(technology);
 
-                order.setField(OrderFields.TECHNOLOGY, newTechnology);
+                    order.setField(OrderFields.TECHNOLOGY, newTechnology);
 
-                order.getDataDefinition().save(order);
+                    order.getDataDefinition().save(order);
 
-                state.setFieldValue(newTechnology.getId());
-                technologyForm.setEntity(newTechnology);
+                    state.setFieldValue(newTechnology.getId());
+                    technologyForm.setEntity(newTechnology);
+                }
             }
         }
     }
@@ -188,32 +190,38 @@ public class CopyOfTechnologyDetailsListeners {
         Entity order = getOrderWithTechnology(view);
 
         Entity orderTechnologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
         if (orderTechnologyPrototype != null && technology.getId().equals(orderTechnologyPrototype.getId())) {
-            return;
-        }
-        Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
-        if (copyOfTechnology.isValid()) {
+            Entity copyOfTechnology = copyTechnology(orderTechnologyPrototype, order);
 
-            order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
-            order.getDataDefinition().save(order);
-            state.setFieldValue(copyOfTechnology.getId());
-            technologyForm.setEntity(copyOfTechnology);
-        } else {
-            technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.validationError",
-                    ComponentState.MessageType.FAILURE);
-            return;
-        }
-        EntityOpResult deleteResult = deleteTechnology(technology);
-        if (!deleteResult.isSuccessfull()) {
-            technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.deletePrevented",
-                    ComponentState.MessageType.FAILURE);
-        }
+            if (copyOfTechnology.isValid()) {
+                order.setField(OrderFields.TECHNOLOGY, copyOfTechnology);
 
+                order.getDataDefinition().save(order);
+
+                state.setFieldValue(copyOfTechnology.getId());
+                technologyForm.setEntity(copyOfTechnology);
+            } else {
+                technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.validationError",
+                        ComponentState.MessageType.FAILURE);
+
+                return;
+            }
+
+            EntityOpResult deleteResult = deleteTechnology(technology);
+
+            if (!deleteResult.isSuccessfull()) {
+                technologyForm.addMessage("orders.copyOfTechnology.reloadFromPattern.failure.deletePrevented",
+                        ComponentState.MessageType.FAILURE);
+            }
+        }
     }
 
     private Entity getOrderWithTechnology(final ViewDefinitionState view) {
         DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+
         String orderId = null;
+
         try {
             orderId = view.getJsonContext().getString("window.mainTab.technology.orderId");
         } catch (JSONException ex) {
@@ -224,6 +232,7 @@ public class CopyOfTechnologyDetailsListeners {
                 orderId = String.valueOf(entities.get(0).getId());
             }
         }
+
         return orderDD.get(Long.valueOf(orderId));
     }
 
