@@ -123,8 +123,6 @@ public final class OrderFields {
 
     public static final String SOURCE_FINISH_DATE = "sourceFinishDate";
 
-    public static final String RECIPE = "recipe";
-
     public static final String BATCH_NUMBER = "batchNumber";
 
     public static final String WORKER_TO_CHANGE = "workerToChange";

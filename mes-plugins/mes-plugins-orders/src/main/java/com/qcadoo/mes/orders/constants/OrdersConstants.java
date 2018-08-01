@@ -51,14 +51,6 @@ public final class OrdersConstants {
 
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 
-    public static final String MODEL_RECIPE = "recipe";
-
-    public static final String MODEL_MATERIAL = "material";
-
-    public static final String MODEL_MBR_STATE_CHANGE = "mbrStateChange";
-
-    public static final String MODEL_FORMULA = "formula";
-
     public static final String MODEL_ORDER_CATEGORY_COLOR = "orderCategoryColor";
 
     // VIEW
@@ -70,8 +62,6 @@ public final class OrdersConstants {
     public static final String FIELD_FORM = "form";
 
     public static final String FIELD_GRID = "grid";
-
-    public static final String MODEL_INSTRUCTION = "instruction";
 
     public static String orderDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id

@@ -155,10 +155,6 @@ public class OrderDetailsHooks {
 
     }
 
-    public void fillRecipeFilterValue(final ViewDefinitionState view) {
-
-    }
-
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
