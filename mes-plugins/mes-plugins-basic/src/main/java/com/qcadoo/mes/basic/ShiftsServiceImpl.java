@@ -23,6 +23,31 @@
  */
 package com.qcadoo.mes.basic;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ShiftFields;
+import com.qcadoo.mes.basic.constants.TimetableExceptionType;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.IllegalFieldValueException;
+import org.joda.time.Interval;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
@@ -34,35 +59,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.commons.dateTime.TimeRange;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ShiftFields;
-import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
-import com.qcadoo.mes.basic.constants.TimetableExceptionType;
-import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -104,6 +100,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Autowired
     private TimetableExceptionService timetableExceptionService;
+
+    @Autowired
+    private ShiftExceptionService shiftExceptionService;
 
     private static final String[] WEEK_DAYS = { L_MONDAY, L_TUESDAY, L_WENSDAY, L_THURSDAY, L_FRIDAY, L_SATURDAY, L_SUNDAY };
 
@@ -154,11 +153,11 @@ public class ShiftsServiceImpl implements ShiftsService {
     @Override
     public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine, List<Entity> shiftsEntities) {
         List<Shift> shifts = transformEntitiesToShifts(shiftsEntities);
-        List<Interval> finalShiftWorkTimes = Lists.newArrayList();
+        List<DateTimeRange> finalShiftWorkTimes = Lists.newArrayList();
 
         DateTime currentDate = dateFrom.minusDays(1);
 
-        if (!shifts.stream().anyMatch(shift -> checkShiftWorkingAfterDate(dateFrom, productionLine, shift))) {
+        if (shifts.stream().noneMatch(shift -> checkShiftWorkingAfterDate(dateFrom, productionLine, shift))) {
             return Optional.empty();
         }
 
@@ -170,8 +169,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             currentDate = currentDate.plusDays(1);
         }
 
-        DateTime result = finalShiftWorkTimes.stream().sorted((a, b) -> a.getStart().compareTo(b.getStart())).findFirst().get()
-                .getStart();
+        DateTime result = finalShiftWorkTimes.stream().min((a, b) -> a.getFrom().compareTo(b.getFrom())).get().getFrom();
 
         if (result.compareTo(dateFrom) <= 0) {
             return Optional.of(dateFrom);
@@ -181,21 +179,21 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     private void getNearestWorkingDateForShift(final Shift shift, final Entity productionLine, final DateTime dateFrom,
-            final DateTime currentDate, final List<Interval> finalShiftWorkTimes) {
-        List<Interval> workTimes = Lists.newArrayList();
+            final DateTime currentDate, final List<DateTimeRange> finalShiftWorkTimes) {
+        List<DateTimeRange> workTimes = Lists.newArrayList();
         List<TimeRange> shiftWorkTimes = shift.findWorkTimeAt(currentDate.toLocalDate());
 
         for (TimeRange shiftWorkTime : shiftWorkTimes) {
             getNearestWorkingDateForShiftWorkTime(shiftWorkTime, dateFrom, currentDate, workTimes);
         }
 
-        workTimes = manageExceptions(workTimes, productionLine, shift, currentDate, dateFrom);
+        workTimes = shiftExceptionService.manageExceptions(workTimes, productionLine, shift, currentDate.toDate());
 
         finalShiftWorkTimes.addAll(workTimes);
     }
 
     private void getNearestWorkingDateForShiftWorkTime(final TimeRange shiftWorkTime, final DateTime dateFrom,
-            final DateTime currentDate, final List<Interval> workTimes) {
+            final DateTime currentDate, final List<DateTimeRange> workTimes) {
         LocalTime currentTime = currentDate.toLocalTime();
         LocalTime timeTo = shiftWorkTime.getTo();
         LocalTime timeFrom = shiftWorkTime.getFrom();
@@ -205,179 +203,33 @@ public class ShiftsServiceImpl implements ShiftsService {
                 if (currentTime.compareTo(LocalTime.MIDNIGHT) >= 0 && currentTime.compareTo(timeTo) <= 0) {
                     Optional<Interval> interval = createInterval(currentDate.plusDays(1), currentTime, timeTo);
 
-                    if (interval.isPresent()) {
-                        workTimes.add(interval.get());
-                    }
+                    interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                 }
             } else {
                 if (currentDate.equals(dateFrom)) {
                     if (timeFrom.compareTo(currentTime) < 0 && timeTo.compareTo(currentTime) > 0) {
                         Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
 
-                        if (interval.isPresent()) {
-                            workTimes.add(interval.get());
-                        }
+                        interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                     } else if (timeFrom.isAfter(timeTo)) {
                         if (timeFrom.compareTo(currentTime) < 0) {
                             Optional<Interval> interval = createInterval(currentDate, currentTime, timeTo);
 
-                            if (interval.isPresent()) {
-                                workTimes.add(interval.get());
-                            }
+                            interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                         } else {
                             Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
 
-                            if (interval.isPresent()) {
-                                workTimes.add(interval.get());
-                            }
+                            interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                         }
                     } else if (timeFrom.compareTo(currentTime) >= 0) {
                         Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
 
-                        if (interval.isPresent()) {
-                            workTimes.add(interval.get());
-                        }
+                        interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                     }
                 } else {
                     Optional<Interval> interval = createInterval(currentDate, timeFrom, timeTo);
 
-                    if (interval.isPresent()) {
-                        workTimes.add(interval.get());
-                    }
-                }
-            }
-        }
-    }
-
-    private List<Interval> manageExceptions(List<Interval> shiftWorkTimes, Entity productionLine, final Shift shift,
-            final DateTime currentDate, final DateTime baseDate) {
-        List<Entity> _exceptions;
-
-        if (Objects.isNull(productionLine)) {
-            _exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
-        } else {
-            _exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
-        }
-
-        Shift shiftForDay = new Shift(shift.getEntity(), currentDate, false);
-
-        List<Entity> exceptions = filterExceptionsForCurrentDate(_exceptions, currentDate);
-
-        List<Interval> updatedWorkTimes = Lists.newArrayList(shiftWorkTimes);
-
-        for (Entity exception : exceptions) {
-            manageExceptionsForTypeWorkTime(shiftForDay, exception, baseDate, updatedWorkTimes);
-        }
-
-        List<Interval> finalWorkTimes = Lists.newArrayList(updatedWorkTimes);
-
-        for (Entity exception : exceptions) {
-            manageExceptionsForTypeFreeTime(shiftForDay, exception, updatedWorkTimes, finalWorkTimes);
-        }
-
-        return finalWorkTimes;
-    }
-
-    private List<Entity> filterExceptionsForCurrentDate(final List<Entity> exceptions, final DateTime currentDate) {
-        return exceptions.stream()
-                .filter(exception -> new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE))
-                        .compareTo(currentDate.toLocalDate()) >= 0
-                        && new LocalDate(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE))
-                        .compareTo(currentDate.toLocalDate()) <= 0)
-                .collect(Collectors.toList());
-    }
-
-    private void manageExceptionsForTypeWorkTime(Shift shift, final Entity exception, final DateTime baseDate,
-            final List<Interval> updatedWorkTimes) {
-        DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
-        DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
-
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
-            return;
-        }
-
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
-            dateFrom = shift.getShiftStartDate();
-        }
-        if(dateTo.isAfter(shift.getShiftEndDate())) {
-            dateTo = shift.getShiftEndDate();
-        }
-        if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
-                .equals(TimetableExceptionType.WORK_TIME.getStringValue())) {
-            if (dateFrom.isBefore(baseDate)) {
-                dateFrom = baseDate;
-            }
-            if (dateFrom.isBefore(dateTo)) {
-                Optional<Interval> exceptionWorkTime = createInterval(dateFrom, dateFrom.toLocalTime(), dateTo,
-                        dateTo.toLocalTime());
-
-                if (exceptionWorkTime.isPresent()) {
-                    updatedWorkTimes.add(exceptionWorkTime.get());
-                }
-            }
-        }
-    }
-
-    private void manageExceptionsForTypeFreeTime(Shift shift, final Entity exception, final List<Interval> updatedWorkTimes,
-            final List<Interval> finalWorkTimes) {
-        DateTime dateFrom = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
-        DateTime dateTo = new DateTime(exception.getDateField(ShiftTimetableExceptionFields.TO_DATE));
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
-            return;
-        }
-        if(dateFrom.isBefore(shift.getShiftStartDate())) {
-            dateFrom = shift.getShiftStartDate();
-        }
-        if(dateTo.isAfter(shift.getShiftEndDate())) {
-            dateTo = shift.getShiftEndDate();
-        }
-        if (exception.getStringField(ShiftTimetableExceptionFields.TYPE)
-                .equals(TimetableExceptionType.FREE_TIME.getStringValue())) {
-
-            for (Interval workTime : updatedWorkTimes) {
-                DateTime workTimeFrom = workTime.getStart();
-                DateTime workTimeTo = workTime.getEnd();
-                // exception contains whole work time
-                if (dateFrom.compareTo(workTimeFrom) <= 0 && dateTo.compareTo(workTimeTo) >= 0) {
-                    finalWorkTimes.remove(workTime);
-                }
-                // exception starts before work time and ends in the middle
-                else if (dateFrom.compareTo(workTimeFrom) <= 0 && dateTo.compareTo(workTimeTo) <= 0
-                        && dateTo.compareTo(workTimeFrom) >= 0) {
-                    finalWorkTimes.remove(workTime);
-                    Optional<Interval> interval = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
-                            workTimeTo.toLocalTime());
-
-                    if (interval.isPresent()) {
-                        finalWorkTimes.add(interval.get());
-                    }
-                }
-                // exception starts in the middle of work time and ends after
-                else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateFrom.compareTo(workTimeTo) <= 0
-                        && dateTo.compareTo(workTimeTo) >= 0) {
-                    finalWorkTimes.remove(workTime);
-                    Optional<Interval> interval = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
-                            dateFrom.toLocalTime());
-
-                    if (interval.isPresent()) {
-                        finalWorkTimes.add(interval.get());
-                    }
-                }
-                // exception is between work time's start and end
-                else if (dateFrom.compareTo(workTimeFrom) >= 0 && dateTo.compareTo(workTimeTo) <= 0) {
-                    finalWorkTimes.remove(workTime);
-                    Optional<Interval> first = createInterval(workTimeFrom, workTimeFrom.toLocalTime(), dateFrom,
-                            dateFrom.toLocalTime());
-
-                    if (first.isPresent()) {
-                        finalWorkTimes.add(first.get());
-                    }
-                    Optional<Interval> second = createInterval(dateTo, dateTo.toLocalTime(), workTimeTo,
-                            workTimeTo.toLocalTime());
-
-                    if (second.isPresent()) {
-                        finalWorkTimes.add(second.get());
-                    }
+                    interval.ifPresent(i -> workTimes.add(new DateTimeRange(i)));
                 }
             }
         }
@@ -395,13 +247,11 @@ public class ShiftsServiceImpl implements ShiftsService {
         if (Objects.isNull(productionLine)) {
             exceptions = shift.getEntity().getHasManyField(ShiftFields.TIMETABLE_EXCEPTIONS);
         } else {
-            exceptions = timetableExceptionService.findForProductionLineAndShift(productionLine, shift.getEntity());
+            exceptions = timetableExceptionService.findFor(productionLine, shift.getEntity(), date.toDate(),
+                    TimetableExceptionType.WORK_TIME.getStringValue());
         }
 
-        return exceptions.stream()
-                .anyMatch(exception -> exception.getStringField(ShiftTimetableExceptionFields.TYPE)
-                        .equals(TimetableExceptionType.WORK_TIME.getStringValue())
-                        && exception.getDateField(ShiftTimetableExceptionFields.TO_DATE).compareTo(date.toDate()) >= 0);
+        return !exceptions.isEmpty();
     }
 
     private DateTime convertToDateTime(final DateTime currentDate, final LocalTime time) {
@@ -430,15 +280,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private List<Shift> transformEntitiesToShifts(List<Entity> shiftsEntities) {
         List<Entity> shifts = Lists.newArrayList(shiftsEntities);
-        Collections.sort(shifts, (p1, p2) -> p1.getId().compareTo(p2.getId()));
+        shifts.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
 
-        return FluentIterable.from(shifts).transform(new Function<Entity, Shift>() {
-
-            @Override
-            public Shift apply(final Entity shiftEntity) {
-                return new Shift(shiftEntity);
-            }
-        }).toList();
+        return shifts.stream().map(Shift::new).collect(Collectors.toList());
     }
 
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
@@ -453,36 +297,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
 
         return true;
-    }
-
-    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        updateDayFieldsState(viewDefinitionState);
-    }
-
-    public void setHourFieldsState(final ViewDefinitionState viewDefinitionState) {
-        updateDayFieldsState(viewDefinitionState);
-    }
-
-    public void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
-        Entity shift = form.getEntity();
-
-        for (String day : WEEK_DAYS) {
-            updateDayFieldState(day, viewDefinitionState, shift);
-        }
-    }
-
-    public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState, final Entity shift) {
-        FieldComponent dayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
-
-        if (!shift.getBooleanField(day + WORKING_LITERAL)) {
-            dayHours.setEnabled(false);
-            dayHours.setRequired(false);
-        } else {
-            dayHours.setEnabled(true);
-            dayHours.setRequired(true);
-        }
     }
 
     public boolean validateShiftHoursField(final DataDefinition dataDefinition, final Entity entity) {
@@ -534,9 +348,9 @@ public class ShiftsServiceImpl implements ShiftsService {
         long remaining = seconds;
 
         while (remaining >= 0) {
-            List<ShiftsServiceImpl.ShiftHour> hours = getHoursForAllShifts(new Date(start), new Date(start + STEP));
+            List<ShiftHour> hours = getHoursForAllShifts(new Date(start), new Date(start + STEP));
 
-            for (ShiftsServiceImpl.ShiftHour hour : hours) {
+            for (ShiftHour hour : hours) {
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
 
                 if (diff >= remaining) {
@@ -567,10 +381,10 @@ public class ShiftsServiceImpl implements ShiftsService {
         long remaining = seconds;
 
         while (remaining >= 0) {
-            List<ShiftsServiceImpl.ShiftHour> hours = getHoursForAllShifts(new Date(stop - STEP), new Date(stop));
+            List<ShiftHour> hours = getHoursForAllShifts(new Date(stop - STEP), new Date(stop));
 
             for (int i = hours.size() - 1; i >= 0; i--) {
-                ShiftsServiceImpl.ShiftHour hour = hours.get(i);
+                ShiftHour hour = hours.get(i);
 
                 long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
 
@@ -602,7 +416,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             hours.addAll(getHoursForShift(shift, dateFrom, dateTo));
         }
 
-        Collections.sort(hours, new ShiftHoursComparator());
+        hours.sort(new ShiftHoursComparator());
 
         return mergeOverlappedHours(hours);
     }
@@ -629,7 +443,36 @@ public class ShiftsServiceImpl implements ShiftsService {
         return removeHoursOutOfRange(mergeOverlappedHours(hours), dateFrom, dateTo);
     }
 
-    public List<ShiftHour> removeHoursOutOfRange(final List<ShiftHour> hours, final Date dateFrom, final Date dateTo) {
+    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
+        updateDayFieldsState(viewDefinitionState);
+    }
+
+    public void setHourFieldsState(final ViewDefinitionState viewDefinitionState) {
+        updateDayFieldsState(viewDefinitionState);
+    }
+
+    public void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        Entity shift = form.getEntity();
+
+        for (String day : WEEK_DAYS) {
+            updateDayFieldState(day, viewDefinitionState, shift);
+        }
+    }
+
+    public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState, final Entity shift) {
+        FieldComponent dayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
+
+        if (!shift.getBooleanField(day + WORKING_LITERAL)) {
+            dayHours.setEnabled(false);
+            dayHours.setRequired(false);
+        } else {
+            dayHours.setEnabled(true);
+            dayHours.setRequired(true);
+        }
+    }
+    private List<ShiftHour> removeHoursOutOfRange(final List<ShiftHour> hours, final Date dateFrom, final Date dateTo) {
         List<ShiftHour> list = Lists.newArrayList();
 
         for (ShiftHour hour : hours) {
@@ -650,7 +493,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return list;
     }
 
-    public void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
+    private void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
         for (Entity exception : exceptions) {
             if (!"01freeTime".equals(exception.getStringField(TYPE_FIELD))) {
                 continue;
@@ -691,7 +534,6 @@ public class ShiftsServiceImpl implements ShiftsService {
                     hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
                     hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
 
-                    continue;
                 }
             }
 
@@ -700,7 +542,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
     }
 
-    public void addWorkTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
+    private void addWorkTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
         for (Entity exception : exceptions) {
             if (!"02workTime".equals(exception.getStringField(TYPE_FIELD))) {
                 continue;
@@ -713,7 +555,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
     }
 
-    public List<ShiftHour> mergeOverlappedHours(final List<ShiftHour> hours) {
+    private List<ShiftHour> mergeOverlappedHours(final List<ShiftHour> hours) {
         if (hours.size() < 2) {
             return hours;
         }
@@ -736,7 +578,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return mergedHours;
     }
 
-    public Collection<ShiftHour> getHourForDay(final Entity shift, final Date dateFrom, final Date dateTo, final String day,
+    private Collection<ShiftHour> getHourForDay(final Entity shift, final Date dateFrom, final Date dateTo, final String day,
             final int offset) {
         if ((Boolean) shift.getField(day + WORKING_LITERAL) && StringUtils.hasText(shift.getStringField(day + HOURS_LITERAL))) {
             List<ShiftHour> hours = Lists.newArrayList();
@@ -786,7 +628,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return hours;
     }
 
-    public LocalTime[] convertRangeHoursToInt(final String string) {
+    private LocalTime[] convertRangeHoursToInt(final String string) {
         String[] parts = string.trim().split("-");
 
         if (parts.length != 2) {
@@ -801,7 +643,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return range;
     }
 
-    public LocalTime convertHoursToInt(final String string) {
+    private LocalTime convertHoursToInt(final String string) {
         String[] parts = string.trim().split(":");
 
         if (parts.length != 2) {
