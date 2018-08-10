@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.basic.util;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
-import com.qcadoo.commons.dateTime.TimeRange;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.qcadoo.commons.dateTime.TimeRange;
 
 public class DateTimeRange implements Comparable<DateTimeRange> {
 
@@ -91,16 +92,6 @@ public class DateTimeRange implements Comparable<DateTimeRange> {
         }
     }
 
-    public DateTimeRange trimAfter(final DateTime date) {
-        if (contains(date)) {
-            return new DateTimeRange(interval.getStart(), date);
-        } else if (interval.getStart().isAfter(date)) {
-            return null;
-        } else {
-            return this;
-        }
-    }
-
     public DateTime getFrom() {
         return interval.getStart();
     }
@@ -109,7 +100,7 @@ public class DateTimeRange implements Comparable<DateTimeRange> {
         return interval.getEnd();
     }
 
-    public DateTimeRange unionWith(DateTimeRange other) {
+    private DateTimeRange unionWith(DateTimeRange other) {
         Interval otherInterval = other.interval;
         DateTime start = interval.getStart().isBefore(otherInterval.getStart()) ? interval.getStart() : otherInterval.getStart();
         DateTime end = interval.getEnd().isAfter(otherInterval.getEnd()) ? interval.getEnd() : otherInterval.getEnd();

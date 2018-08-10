@@ -3282,7 +3282,6 @@ CREATE TABLE orders_order (
     sourcecorrecteddateto timestamp without time zone,
     sourcestartdate timestamp without time zone,
     sourcefinishdate timestamp without time zone,
-    recipe_id bigint,
     batchnumber character varying(255),
     root_id bigint,
     includeordersforcomponent boolean,
@@ -5766,310 +5765,6 @@ ALTER SEQUENCE deliveries_parameterdeliveryordercolumn_id_seq OWNED BY deliverie
 
 
 --
--- Name: ebr_ebr; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ebr_ebr (
-    id bigint NOT NULL,
-    startdate timestamp without time zone,
-    batchnumber character varying(255),
-    company_id bigint,
-    recipe_id bigint,
-    order_id bigint,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ebr_ebr_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ebr_ebr_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ebr_ebr_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ebr_ebr_id_seq OWNED BY ebr_ebr.id;
-
-
---
--- Name: ebr_ebrstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ebr_ebrstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    worker character varying(255),
-    ebr_id bigint,
-    shift_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ebr_ebrstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ebr_ebrstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ebr_ebrstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ebr_ebrstatechange_id_seq OWNED BY ebr_ebrstatechange.id;
-
-
---
--- Name: ebr_formula; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ebr_formula (
-    id bigint NOT NULL,
-    value numeric(19,5),
-    instruction_id bigint,
-    choseninstruction_id bigint,
-    operator character varying(255),
-    prefix character varying(255),
-    suffix character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ebr_formula_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ebr_formula_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ebr_formula_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ebr_formula_id_seq OWNED BY ebr_formula.id;
-
-
---
--- Name: ebr_instruction; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ebr_instruction (
-    id bigint NOT NULL,
-    orderid integer,
-    description character varying(1024),
-    rangefrom numeric(19,5),
-    rangeto numeric(19,5),
-    rangeunit character varying(255),
-    targetvalue numeric(19,5),
-    verificationrequired boolean,
-    ebr_id bigint,
-    result character varying(255),
-    value numeric(19,5),
-    comments character varying(255),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    instruction_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ebr_instruction_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ebr_instruction_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ebr_instruction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ebr_instruction_id_seq OWNED BY ebr_instruction.id;
-
-
---
--- Name: ebr_instructionstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE ebr_instructionstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    worker character varying(255),
-    instruction_id bigint,
-    shift_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: ebr_instructionstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE ebr_instructionstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ebr_instructionstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ebr_instructionstatechange_id_seq OWNED BY ebr_instructionstatechange.id;
-
-
---
--- Name: efcsimple_enovaimportedorder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE efcsimple_enovaimportedorder (
-    id bigint NOT NULL,
-    number character varying(255),
-    clientname character varying(255),
-    clientaddress character varying(255),
-    state character varying(255),
-    drawdate date,
-    realizationdate date,
-    converted boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: efcsimple_enovaimportedorder_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE efcsimple_enovaimportedorder_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: efcsimple_enovaimportedorder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE efcsimple_enovaimportedorder_id_seq OWNED BY efcsimple_enovaimportedorder.id;
-
-
---
--- Name: efcsimple_enovaimportedorderproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE efcsimple_enovaimportedorderproduct (
-    id bigint NOT NULL,
-    order_id bigint,
-    product_id bigint,
-    ordernumber integer,
-    quantity numeric(12,5),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: efcsimple_enovaimportedorderproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE efcsimple_enovaimportedorderproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: efcsimple_enovaimportedorderproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE efcsimple_enovaimportedorderproduct_id_seq OWNED BY efcsimple_enovaimportedorderproduct.id;
-
-
---
--- Name: efcsimple_enovaimportedproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE efcsimple_enovaimportedproduct (
-    id bigint NOT NULL,
-    type character varying(255),
-    identificationcode character varying(255),
-    ean character varying(255),
-    name character varying(255),
-    description character varying(255),
-    unit character varying(255),
-    converted boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: efcsimple_enovaimportedproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE efcsimple_enovaimportedproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: efcsimple_enovaimportedproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE efcsimple_enovaimportedproduct_id_seq OWNED BY efcsimple_enovaimportedproduct.id;
-
-
---
 -- Name: emailnotifications_staffnotification; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8131,16 +7826,6 @@ CREATE TABLE jointable_group_role (
 
 
 --
--- Name: jointable_instruction_workstation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_instruction_workstation (
-    workstation_id bigint NOT NULL,
-    instruction_id bigint NOT NULL
-);
-
-
---
 -- Name: jointable_issue_productstoissuehelper; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8327,16 +8012,6 @@ CREATE TABLE jointable_productionline_technology (
 CREATE TABLE jointable_productionline_technologygroup (
     technologygroup_id bigint NOT NULL,
     productionline_id bigint NOT NULL
-);
-
-
---
--- Name: jointable_recipe_workstation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_recipe_workstation (
-    recipe_id bigint NOT NULL,
-    workstation_id bigint NOT NULL
 );
 
 
@@ -11040,196 +10715,6 @@ ALTER SEQUENCE operationaltasksfororders_techopercompoperationaltask_id_seq OWNE
 
 
 --
--- Name: orders_formula; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_formula (
-    id bigint NOT NULL,
-    value numeric(19,5),
-    instruction_id bigint,
-    choseninstruction_id bigint,
-    operator character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    prefix character varying(255),
-    suffix character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_formula_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_formula_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_formula_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_formula_id_seq OWNED BY orders_formula.id;
-
-
---
--- Name: orders_instruction; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_instruction (
-    id bigint NOT NULL,
-    orderid integer,
-    description character varying(1024),
-    rangefrom numeric(19,5),
-    rangeto numeric(19,5),
-    rangeunit character varying(255),
-    targetvalue numeric(19,5),
-    verificationrequired boolean,
-    recipe_id bigint,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    result character varying(255),
-    comments character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_instruction_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_instruction_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_instruction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_instruction_id_seq OWNED BY orders_instruction.id;
-
-
---
--- Name: orders_material; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_material (
-    id bigint NOT NULL,
-    number character varying(255),
-    product_id bigint,
-    quantity numeric(12,5),
-    recipe_id bigint,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    materials_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_material_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_material_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_material_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_material_id_seq OWNED BY orders_material.id;
-
-
---
--- Name: orders_materialforinstruction; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_materialforinstruction (
-    id bigint NOT NULL,
-    material_id bigint,
-    quantity numeric(12,5),
-    instruction_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_materialforinstruction_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_materialforinstruction_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_materialforinstruction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_materialforinstruction_id_seq OWNED BY orders_materialforinstruction.id;
-
-
---
--- Name: orders_mbrstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_mbrstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    worker character varying(255),
-    recipe_id bigint,
-    shift_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_mbrstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_mbrstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_mbrstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_mbrstatechange_id_seq OWNED BY orders_mbrstatechange.id;
-
-
---
 -- Name: orders_order_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11682,50 +11167,6 @@ CREATE SEQUENCE orders_reasontypeofchangingorderstate_id_seq
 --
 
 ALTER SEQUENCE orders_reasontypeofchangingorderstate_id_seq OWNED BY orders_reasontypeofchangingorderstate.id;
-
-
---
--- Name: orders_recipe; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_recipe (
-    id bigint NOT NULL,
-    product_id bigint,
-    name character varying(1024),
-    version character varying(255),
-    isdefault boolean,
-    strenght character varying(255),
-    batchquantity numeric(19,5),
-    batchsize character varying(255),
-    description character varying(2048),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    strength character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: orders_recipe_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_recipe_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_recipe_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_recipe_id_seq OWNED BY orders_recipe.id;
 
 
 --
@@ -15773,110 +15214,6 @@ ALTER SEQUENCE repairs_repairorderworktime_id_seq OWNED BY repairs_repairorderwo
 
 
 --
--- Name: sfcsimple_subiektimportedorder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE sfcsimple_subiektimportedorder (
-    id bigint NOT NULL,
-    number character varying(255),
-    clientname character varying(255),
-    clientaddress character varying(255),
-    drawdate date,
-    realizationdate date,
-    converted boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: sfcsimple_subiektimportedorder_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE sfcsimple_subiektimportedorder_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sfcsimple_subiektimportedorder_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE sfcsimple_subiektimportedorder_id_seq OWNED BY sfcsimple_subiektimportedorder.id;
-
-
---
--- Name: sfcsimple_subiektimportedorderproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE sfcsimple_subiektimportedorderproduct (
-    id bigint NOT NULL,
-    order_id bigint,
-    product_id bigint,
-    ordernumber integer,
-    quantity numeric(12,5),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: sfcsimple_subiektimportedorderproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE sfcsimple_subiektimportedorderproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sfcsimple_subiektimportedorderproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE sfcsimple_subiektimportedorderproduct_id_seq OWNED BY sfcsimple_subiektimportedorderproduct.id;
-
-
---
--- Name: sfcsimple_subiektimportedproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE sfcsimple_subiektimportedproduct (
-    id bigint NOT NULL,
-    type character varying(255),
-    identificationcode character varying(255),
-    ean character varying(255),
-    name character varying(255),
-    description character varying(255),
-    unit character varying(255),
-    converted boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: sfcsimple_subiektimportedproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE sfcsimple_subiektimportedproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: sfcsimple_subiektimportedproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE sfcsimple_subiektimportedproduct_id_seq OWNED BY sfcsimple_subiektimportedproduct.id;
-
-
---
 -- Name: simplematerialbalance_simplematerialbalance; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -15998,9 +15335,6 @@ CREATE TABLE states_message (
     offerstatechange_id bigint,
     negotiationstatechange_id bigint,
     warehouseissuestatechange_id bigint,
-    mbrstatechange_id bigint,
-    instructionstatechange_id bigint,
-    ebrstatechange_id bigint,
     labelstatechange_id bigint,
     maintenanceeventstatechange_id bigint,
     entityversion bigint DEFAULT 0,
@@ -18985,62 +18319,6 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn ALTER COLUMN id SET DEF
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY ebr_ebr ALTER COLUMN id SET DEFAULT nextval('ebr_ebr_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebrstatechange ALTER COLUMN id SET DEFAULT nextval('ebr_ebrstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_formula ALTER COLUMN id SET DEFAULT nextval('ebr_formula_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instruction ALTER COLUMN id SET DEFAULT nextval('ebr_instruction_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instructionstatechange ALTER COLUMN id SET DEFAULT nextval('ebr_instructionstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorder ALTER COLUMN id SET DEFAULT nextval('efcsimple_enovaimportedorder_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct ALTER COLUMN id SET DEFAULT nextval('efcsimple_enovaimportedorderproduct_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedproduct ALTER COLUMN id SET DEFAULT nextval('efcsimple_enovaimportedproduct_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY emailnotifications_staffnotification ALTER COLUMN id SET DEFAULT nextval('emailnotifications_staffnotification_id_seq'::regclass);
 
 
@@ -19685,41 +18963,6 @@ ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask ALTER COL
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY orders_formula ALTER COLUMN id SET DEFAULT nextval('orders_formula_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_instruction ALTER COLUMN id SET DEFAULT nextval('orders_instruction_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_material ALTER COLUMN id SET DEFAULT nextval('orders_material_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_materialforinstruction ALTER COLUMN id SET DEFAULT nextval('orders_materialforinstruction_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_mbrstatechange ALTER COLUMN id SET DEFAULT nextval('orders_mbrstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_id_seq'::regclass);
 
 
@@ -19770,13 +19013,6 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectivestart ALTER COLUMN id SET DE
 --
 
 ALTER TABLE ONLY orders_reasontypeofchangingorderstate ALTER COLUMN id SET DEFAULT nextval('orders_reasontypeofchangingorderstate_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_recipe ALTER COLUMN id SET DEFAULT nextval('orders_recipe_id_seq'::regclass);
 
 
 --
@@ -20351,27 +19587,6 @@ ALTER TABLE ONLY repairs_repairorderstatechange ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY repairs_repairorderworktime ALTER COLUMN id SET DEFAULT nextval('repairs_repairorderworktime_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorder ALTER COLUMN id SET DEFAULT nextval('sfcsimple_subiektimportedorder_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct ALTER COLUMN id SET DEFAULT nextval('sfcsimple_subiektimportedorderproduct_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedproduct ALTER COLUMN id SET DEFAULT nextval('sfcsimple_subiektimportedproduct_id_seq'::regclass);
 
 
 --
@@ -22834,126 +22049,6 @@ SELECT pg_catalog.setval('deliveries_parameterdeliveryordercolumn_id_seq', 12, t
 
 
 --
--- Data for Name: ebr_ebr; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ebr_ebr (id, startdate, batchnumber, company_id, recipe_id, order_id, state, active, createdate, updatedate, createuser, updateuser, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ebr_ebr_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ebr_ebr_id_seq', 1, false);
-
-
---
--- Data for Name: ebr_ebrstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ebr_ebrstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, ebr_id, shift_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ebr_ebrstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ebr_ebrstatechange_id_seq', 1, false);
-
-
---
--- Data for Name: ebr_formula; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ebr_formula (id, value, instruction_id, choseninstruction_id, operator, prefix, suffix, createdate, updatedate, createuser, updateuser, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ebr_formula_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ebr_formula_id_seq', 1, false);
-
-
---
--- Data for Name: ebr_instruction; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ebr_instruction (id, orderid, description, rangefrom, rangeto, rangeunit, targetvalue, verificationrequired, ebr_id, result, value, comments, state, createdate, updatedate, createuser, updateuser, instruction_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ebr_instruction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ebr_instruction_id_seq', 1, false);
-
-
---
--- Data for Name: ebr_instructionstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY ebr_instructionstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, instruction_id, shift_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: ebr_instructionstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('ebr_instructionstatechange_id_seq', 1, false);
-
-
---
--- Data for Name: efcsimple_enovaimportedorder; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY efcsimple_enovaimportedorder (id, number, clientname, clientaddress, state, drawdate, realizationdate, converted, entityversion) FROM stdin;
-\.
-
-
---
--- Name: efcsimple_enovaimportedorder_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('efcsimple_enovaimportedorder_id_seq', 1, false);
-
-
---
--- Data for Name: efcsimple_enovaimportedorderproduct; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY efcsimple_enovaimportedorderproduct (id, order_id, product_id, ordernumber, quantity, entityversion) FROM stdin;
-\.
-
-
---
--- Name: efcsimple_enovaimportedorderproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('efcsimple_enovaimportedorderproduct_id_seq', 1, false);
-
-
---
--- Data for Name: efcsimple_enovaimportedproduct; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY efcsimple_enovaimportedproduct (id, type, identificationcode, ean, name, description, unit, converted, entityversion) FROM stdin;
-\.
-
-
---
--- Name: efcsimple_enovaimportedproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('efcsimple_enovaimportedproduct_id_seq', 1, false);
-
-
---
 -- Data for Name: emailnotifications_staffnotification; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23790,14 +22885,6 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 
 
 --
--- Data for Name: jointable_instruction_workstation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY jointable_instruction_workstation (workstation_id, instruction_id) FROM stdin;
-\.
-
-
---
 -- Data for Name: jointable_issue_productstoissuehelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -23954,14 +23041,6 @@ COPY jointable_productionline_technology (technology_id, productionline_id) FROM
 --
 
 COPY jointable_productionline_technologygroup (technologygroup_id, productionline_id) FROM stdin;
-\.
-
-
---
--- Data for Name: jointable_recipe_workstation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY jointable_recipe_workstation (recipe_id, workstation_id) FROM stdin;
 \.
 
 
@@ -24968,85 +24047,10 @@ SELECT pg_catalog.setval('operationaltasksfororders_techopercompoperationaltask_
 
 
 --
--- Data for Name: orders_formula; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_formula (id, value, instruction_id, choseninstruction_id, operator, createdate, updatedate, createuser, updateuser, prefix, suffix, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_formula_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_formula_id_seq', 1, false);
-
-
---
--- Data for Name: orders_instruction; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_instruction (id, orderid, description, rangefrom, rangeto, rangeunit, targetvalue, verificationrequired, recipe_id, state, result, comments, createdate, updatedate, createuser, updateuser, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_instruction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_instruction_id_seq', 1, false);
-
-
---
--- Data for Name: orders_material; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_material (id, number, product_id, quantity, recipe_id, createdate, updatedate, createuser, updateuser, materials_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_material_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_material_id_seq', 1, false);
-
-
---
--- Data for Name: orders_materialforinstruction; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_materialforinstruction (id, material_id, quantity, instruction_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_materialforinstruction_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_materialforinstruction_id_seq', 1, false);
-
-
---
--- Data for Name: orders_mbrstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_mbrstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, recipe_id, shift_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_mbrstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_mbrstatechange_id_seq', 1, false);
-
-
---
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, recipe_id, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription) FROM stdin;
 \.
 
 
@@ -25181,21 +24185,6 @@ COPY orders_reasontypeofchangingorderstate (id, orderstatechange_id, reasontypeo
 --
 
 SELECT pg_catalog.setval('orders_reasontypeofchangingorderstate_id_seq', 1, false);
-
-
---
--- Data for Name: orders_recipe; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_recipe (id, product_id, name, version, isdefault, strenght, batchquantity, batchsize, description, state, active, createdate, updatedate, createuser, updateuser, strength, entityversion) FROM stdin;
-\.
-
-
---
--- Name: orders_recipe_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_recipe_id_seq', 1, false);
 
 
 --
@@ -26503,30 +25492,23 @@ SELECT pg_catalog.setval('qcadoomodel_unitconversionitem_id_seq', 9, true);
 --
 
 COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversion, groupname, license) FROM stdin;
-1	efcSimple	1.5.0	DISABLED	f	0	other	Commercial
 2	ercWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 3	urcMasterOrders	1.5.0	DISABLED	f	0	\N	Commercial
-4	ercFull	1.5.0	DISABLED	f	0	pluginPacks	Commercial
-5	srcFull	1.5.0	DISABLED	f	0	pluginPacks	Commercial
 6	integrationBarTender	1.5.0	DISABLED	f	0	other	Commercial
 7	productData	1.5.0	DISABLED	f	0	other	Commercial
 8	urcDeliveriesToWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 9	orcWalusiak	1.5.0	DISABLED	f	0	other	Commercial
 10	nblsport	1.5.0	DISABLED	f	0	other	Commercial
-11	orcOrderSupplies	1.5.0	DISABLED	f	0	supplies	Commercial
 12	srcWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
-13	ercTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 14	integration	1.5.0	DISABLED	f	0	other	Commercial
 15	cdnrcGoodFood	1.5.0	DISABLED	f	0	other	Commercial
 16	integrationScada	1.5.0	DISABLED	f	0	other	Commercial
-17	ebr	1.5.0	DISABLED	f	0	technologies	Commercial
 18	ozgohome	1.5.0	DISABLED	f	0	other	Commercial
 19	productCharacteristics	1.5.0	DISABLED	f	0	other	Commercial
 20	urcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 78	nutritionFacts	1.5.0	DISABLED	f	0	framework	Commercial
 79	walusiak	1.5.0	DISABLED	f	0	other	Commercial
 80	zmbak	1.5.0	DISABLED	f	0	other	Commercial
-81	orcFull	1.5.0	DISABLED	f	0	pluginPacks	Commercial
 22	qcadooModel	1.5.0	ENABLED	t	0	framework	AGPL
 23	qcadooSecurity	1.5.0	ENABLED	t	0	framework	AGPL
 24	qcadooView	1.5.0	ENABLED	t	0	framework	AGPL
@@ -26578,27 +25560,15 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	Commercial
 73	subcontractorPortal	1.5.0	ENABLED	f	0	other	Commercial
 74	goodFoodGantt	1.5.0	ENABLED	f	0	\N	Commercial
-75	openSource	1.5.0	ENABLED	f	0	other	AGPL
 76	urcProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
 77	samples	1.5.0	ENABLED	f	0	other	AGPL
-82	srcBasic	1.5.0	DISABLED	f	0	basic	Commercial
 83	urcCostNormsForProduct	1.5.0	DISABLED	f	0	basic	Commercial
-84	orcOrders	1.5.0	DISABLED	f	0	planning	Commercial
-85	orcBasic	1.5.0	DISABLED	f	0	basic	Commercial
 86	urcAdvGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
-87	srcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 88	urcCostNormsForMaterials	1.5.0	DISABLED	f	0	planning	Commercial
-89	sfcSimple	1.5.0	DISABLED	f	0	other	Commercial
-90	ercBasic	1.5.0	DISABLED	f	0	basic	Commercial
-91	orcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
-92	ercOrders	1.5.0	DISABLED	f	0	planning	Commercial
 93	goodFood	1.5.0	DISABLED	f	0	other	Commercial
 94	urcMaterialFlowResources	1.5.0	DISABLED	f	0	supplies	Commercial
-95	mbr	1.5.0	DISABLED	f	0	technologies	Commercial
-96	orcWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 97	cfcSimple	1.5.0	DISABLED	f	0	other	Commercial
 98	urcMaterialAvailability	1.5.0	DISABLED	f	0	planning	Commercial
-99	srcOrders	1.5.0	DISABLED	f	0	planning	Commercial
 100	srcAdvGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
 101	pantone	1.5.0	DISABLED	f	0	other	Commercial
 102	esilco	1.5.0	DISABLED	f	0	\N	\N
@@ -27267,51 +26237,6 @@ SELECT pg_catalog.setval('repairs_repairorderworktime_id_seq', 1, false);
 
 
 --
--- Data for Name: sfcsimple_subiektimportedorder; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY sfcsimple_subiektimportedorder (id, number, clientname, clientaddress, drawdate, realizationdate, converted, entityversion) FROM stdin;
-\.
-
-
---
--- Name: sfcsimple_subiektimportedorder_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('sfcsimple_subiektimportedorder_id_seq', 1, false);
-
-
---
--- Data for Name: sfcsimple_subiektimportedorderproduct; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY sfcsimple_subiektimportedorderproduct (id, order_id, product_id, ordernumber, quantity, entityversion) FROM stdin;
-\.
-
-
---
--- Name: sfcsimple_subiektimportedorderproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('sfcsimple_subiektimportedorderproduct_id_seq', 1, false);
-
-
---
--- Data for Name: sfcsimple_subiektimportedproduct; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY sfcsimple_subiektimportedproduct (id, type, identificationcode, ean, name, description, unit, converted, entityversion) FROM stdin;
-\.
-
-
---
--- Name: sfcsimple_subiektimportedproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('sfcsimple_subiektimportedproduct_id_seq', 1, false);
-
-
---
 -- Data for Name: simplematerialbalance_simplematerialbalance; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -27360,7 +26285,7 @@ SELECT pg_catalog.setval('simplematerialbalance_simplematerialbalanceorderscompo
 -- Data for Name: states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, mbrstatechange_id, instructionstatechange_id, ebrstatechange_id, labelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id) FROM stdin;
+COPY states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, labelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id) FROM stdin;
 \.
 
 
@@ -29221,75 +28146,11 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: ebr_ebr_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebr
-    ADD CONSTRAINT ebr_ebr_pkey PRIMARY KEY (id);
-
-
---
--- Name: ebr_ebrstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebrstatechange
-    ADD CONSTRAINT ebr_ebrstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: ebr_formula_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_formula
-    ADD CONSTRAINT ebr_formula_pkey PRIMARY KEY (id);
-
-
---
--- Name: ebr_instruction_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instruction
-    ADD CONSTRAINT ebr_instruction_pkey PRIMARY KEY (id);
-
-
---
--- Name: ebr_instructionstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instructionstatechange
-    ADD CONSTRAINT ebr_instructionstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: emailnotifications_staffnotification_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY emailnotifications_staffnotification
     ADD CONSTRAINT emailnotifications_staffnotification_pkey PRIMARY KEY (id);
-
-
---
--- Name: enovafileconnector_enovaimportedorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorder
-    ADD CONSTRAINT enovafileconnector_enovaimportedorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: enovafileconnector_enovaimportedorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT enovafileconnector_enovaimportedorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: enovafileconnector_enovaimportedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedproduct
-    ADD CONSTRAINT enovafileconnector_enovaimportedproduct_pkey PRIMARY KEY (id);
 
 
 --
@@ -29765,14 +28626,6 @@ ALTER TABLE ONLY jointable_group_role
 
 
 --
--- Name: jointable_instruction_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_instruction_workstation
-    ADD CONSTRAINT jointable_instruction_workstation_pkey PRIMARY KEY (instruction_id, workstation_id);
-
-
---
 -- Name: jointable_issue_productstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -29930,14 +28783,6 @@ ALTER TABLE ONLY jointable_productionline_technology
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
     ADD CONSTRAINT jointable_productionline_technologygroup_pkey PRIMARY KEY (productionline_id, technologygroup_id);
-
-
---
--- Name: jointable_recipe_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_recipe_workstation
-    ADD CONSTRAINT jointable_recipe_workstation_pkey PRIMARY KEY (workstation_id, recipe_id);
 
 
 --
@@ -30373,46 +29218,6 @@ ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
 
 
 --
--- Name: orders_formula_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_formula
-    ADD CONSTRAINT orders_formula_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_instruction_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_instruction
-    ADD CONSTRAINT orders_instruction_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_material_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_material
-    ADD CONSTRAINT orders_material_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_materialforinstruction_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_materialforinstruction
-    ADD CONSTRAINT orders_materialforinstruction_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_mbrstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_mbrstatechange
-    ADD CONSTRAINT orders_mbrstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -30474,14 +29279,6 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectivestart
 
 ALTER TABLE ONLY orders_reasontypeofchangingorderstate
     ADD CONSTRAINT orders_reasontypeofchangingorderstate_pkey PRIMARY KEY (id);
-
-
---
--- Name: orders_recipe_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_recipe
-    ADD CONSTRAINT orders_recipe_pkey PRIMARY KEY (id);
 
 
 --
@@ -31317,30 +30114,6 @@ ALTER TABLE ONLY subcontractorportal_subordertmp
 
 
 --
--- Name: subiektfileconnector_subiektimportedorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorder
-    ADD CONSTRAINT subiektfileconnector_subiektimportedorder_pkey PRIMARY KEY (id);
-
-
---
--- Name: subiektfileconnector_subiektimportedorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT subiektfileconnector_subiektimportedorderproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: subiektfileconnector_subiektimportedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedproduct
-    ADD CONSTRAINT subiektfileconnector_subiektimportedproduct_pkey PRIMARY KEY (id);
-
-
---
 -- Name: supplynegotiations_columnforoffers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -32010,7 +30783,7 @@ CREATE RULE "_RETURN" AS
    FROM ((ingredients i
      JOIN basic_product p ON ((p.id = i.product_id)))
      LEFT JOIN advancedgenealogy_batch b ON ((b.id = i.batch_id)))
-  GROUP BY i.extrusionprotocol_id, p.id, b.id;
+  GROUP BY i.extrusionprotocol_id, p.id, b.number, b.product_id;
 
 
 --
@@ -32595,24 +31368,8 @@ ALTER TABLE ONLY basic_product
 -- Name: basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT basic_product_pkey FOREIGN KEY (product_id) REFERENCES efcsimple_enovaimportedproduct(id) DEFERRABLE;
-
-
---
--- Name: basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY materialflowmultitransfers_productquantity
     ADD CONSTRAINT basic_product_pkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT basic_product_pkey FOREIGN KEY (product_id) REFERENCES sfcsimple_subiektimportedproduct(id) DEFERRABLE;
 
 
 --
@@ -33600,62 +32357,6 @@ ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
 
 
 --
--- Name: ebr_ebr_basic_company; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebr
-    ADD CONSTRAINT ebr_ebr_basic_company FOREIGN KEY (company_id) REFERENCES basic_company(id) DEFERRABLE;
-
-
---
--- Name: ebr_ebr_orders_order_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebr
-    ADD CONSTRAINT ebr_ebr_orders_order_id FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
-
-
---
--- Name: ebr_ebr_orders_order_recipe_id; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebr
-    ADD CONSTRAINT ebr_ebr_orders_order_recipe_id FOREIGN KEY (recipe_id) REFERENCES orders_order(id) DEFERRABLE;
-
-
---
--- Name: ebr_ebr_orders_recipe; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebr
-    ADD CONSTRAINT ebr_ebr_orders_recipe FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
-
-
---
--- Name: ebr_ebrstatechange_basic_shift; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebrstatechange
-    ADD CONSTRAINT ebr_ebrstatechange_basic_shift FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
-
-
---
--- Name: ebr_ebrstatechange_ebr_ebr; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_ebrstatechange
-    ADD CONSTRAINT ebr_ebrstatechange_ebr_ebr FOREIGN KEY (ebr_id) REFERENCES ebr_ebr(id) DEFERRABLE;
-
-
---
--- Name: ebr_instructionstatechange_basic_shift; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instructionstatechange
-    ADD CONSTRAINT ebr_instructionstatechange_basic_shift FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
-
-
---
 -- Name: eventattachment_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -34440,38 +33141,6 @@ ALTER TABLE ONLY productcharacteristics_forms
 
 
 --
--- Name: formula_choseninstruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_formula
-    ADD CONSTRAINT formula_choseninstruction_fkey FOREIGN KEY (choseninstruction_id) REFERENCES orders_instruction(id) DEFERRABLE;
-
-
---
--- Name: formula_choseninstruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_formula
-    ADD CONSTRAINT formula_choseninstruction_fkey FOREIGN KEY (choseninstruction_id) REFERENCES ebr_instruction(id) DEFERRABLE;
-
-
---
--- Name: formula_instruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_formula
-    ADD CONSTRAINT formula_instruction_fkey FOREIGN KEY (instruction_id) REFERENCES orders_instruction(id) DEFERRABLE;
-
-
---
--- Name: formula_instruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_formula
-    ADD CONSTRAINT formula_instruction_fkey FOREIGN KEY (instruction_id) REFERENCES ebr_instruction(id) DEFERRABLE;
-
-
---
 -- Name: genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -34664,30 +33333,6 @@ ALTER TABLE ONLY materialflowresources_importstoragelocation
 
 
 --
--- Name: instrucion_ebr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instruction
-    ADD CONSTRAINT instrucion_ebr_fkey FOREIGN KEY (ebr_id) REFERENCES ebr_ebr(id) DEFERRABLE;
-
-
---
--- Name: instruction_instruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instruction
-    ADD CONSTRAINT instruction_instruction_fkey FOREIGN KEY (instruction_id) REFERENCES orders_instruction(id) DEFERRABLE;
-
-
---
--- Name: instructionstatechange_instruction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ebr_instructionstatechange
-    ADD CONSTRAINT instructionstatechange_instruction_fkey FOREIGN KEY (instruction_id) REFERENCES ebr_instruction(id) DEFERRABLE;
-
-
---
 -- Name: issue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -34824,22 +33469,6 @@ ALTER TABLE ONLY jointable_faulttype_workstationtype
 
 
 --
--- Name: jointable_instruction_workstation_basic_workstation; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_instruction_workstation
-    ADD CONSTRAINT jointable_instruction_workstation_basic_workstation FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
-
-
---
--- Name: jointable_instruction_workstation_orders_instruction; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_instruction_workstation
-    ADD CONSTRAINT jointable_instruction_workstation_orders_instruction FOREIGN KEY (instruction_id) REFERENCES orders_instruction(id) DEFERRABLE;
-
-
---
 -- Name: jointable_label_printlabelshelper_bt_print; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -34901,22 +33530,6 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
     ADD CONSTRAINT jointable_pl_techgroup_technologygroup_fkey FOREIGN KEY (technologygroup_id) REFERENCES technologies_technologygroup(id) DEFERRABLE;
-
-
---
--- Name: jointable_recipe_workstation_basic_workstation; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_recipe_workstation
-    ADD CONSTRAINT jointable_recipe_workstation_basic_workstation FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
-
-
---
--- Name: jointable_recipe_workstation_orders_recipe; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_recipe_workstation
-    ADD CONSTRAINT jointable_recipe_workstation_orders_recipe FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
 
 
 --
@@ -35312,22 +33925,6 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
--- Name: materialforinstruction_instruction; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_materialforinstruction
-    ADD CONSTRAINT materialforinstruction_instruction FOREIGN KEY (instruction_id) REFERENCES orders_instruction(id) DEFERRABLE;
-
-
---
--- Name: materialforinstruction_material; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_materialforinstruction
-    ADD CONSTRAINT materialforinstruction_material FOREIGN KEY (material_id) REFERENCES orders_material(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -35416,22 +34013,6 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_ebrstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY states_message
-    ADD CONSTRAINT message_ebrstatechange_fkey FOREIGN KEY (ebrstatechange_id) REFERENCES ebr_ebrstatechange(id) DEFERRABLE;
-
-
---
--- Name: message_instructionstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY states_message
-    ADD CONSTRAINT message_instructionstatechange_fkey FOREIGN KEY (instructionstatechange_id) REFERENCES ebr_instructionstatechange(id) DEFERRABLE;
-
-
---
 -- Name: message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -35445,14 +34026,6 @@ ALTER TABLE ONLY states_message
 
 ALTER TABLE ONLY states_message
     ADD CONSTRAINT message_maintenanceeventstatechange_fkey FOREIGN KEY (maintenanceeventstatechange_id) REFERENCES cmmsmachineparts_maintenanceeventstatechange(id) DEFERRABLE;
-
-
---
--- Name: message_mbrstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY states_message
-    ADD CONSTRAINT message_mbrstatechange_fkey FOREIGN KEY (mbrstatechange_id) REFERENCES orders_mbrstatechange(id) DEFERRABLE;
 
 
 --
@@ -35896,14 +34469,6 @@ ALTER TABLE ONLY jointable_order_productionbalance
 
 
 --
--- Name: order_recipe_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_order
-    ADD CONSTRAINT order_recipe_fkey FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
-
-
---
 -- Name: order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -35976,54 +34541,6 @@ ALTER TABLE ONLY deliveries_orderedproductreservation
 
 
 --
--- Name: orders_instruction_orders_recipe; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_instruction
-    ADD CONSTRAINT orders_instruction_orders_recipe FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
-
-
---
--- Name: orders_material_basic_product; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_material
-    ADD CONSTRAINT orders_material_basic_product FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: orders_material_basic_product_material; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_material
-    ADD CONSTRAINT orders_material_basic_product_material FOREIGN KEY (materials_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: orders_material_orders_recipe; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_material
-    ADD CONSTRAINT orders_material_orders_recipe FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
-
-
---
--- Name: orders_mbrstatechange_basic_shift; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_mbrstatechange
-    ADD CONSTRAINT orders_mbrstatechange_basic_shift FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
-
-
---
--- Name: orders_mbrstatechange_orders_recipe; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_mbrstatechange
-    ADD CONSTRAINT orders_mbrstatechange_orders_recipe FOREIGN KEY (recipe_id) REFERENCES orders_recipe(id) DEFERRABLE;
-
-
---
 -- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -36056,22 +34573,6 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 
 --
--- Name: orders_order_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY efcsimple_enovaimportedorderproduct
-    ADD CONSTRAINT orders_order_pkey FOREIGN KEY (order_id) REFERENCES efcsimple_enovaimportedorder(id) DEFERRABLE;
-
-
---
--- Name: orders_order_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY sfcsimple_subiektimportedorderproduct
-    ADD CONSTRAINT orders_order_pkey FOREIGN KEY (order_id) REFERENCES sfcsimple_subiektimportedorder(id) DEFERRABLE;
-
-
---
 -- Name: orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -36085,14 +34586,6 @@ ALTER TABLE ONLY orders_order
 
 ALTER TABLE ONLY orders_order
     ADD CONSTRAINT orders_order_root_fkey FOREIGN KEY (root_id) REFERENCES orders_order(id) DEFERRABLE;
-
-
---
--- Name: orders_recipe_basic_product; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_recipe
-    ADD CONSTRAINT orders_recipe_basic_product FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --

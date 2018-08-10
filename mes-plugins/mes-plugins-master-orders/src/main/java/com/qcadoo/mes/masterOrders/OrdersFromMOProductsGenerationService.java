@@ -145,6 +145,10 @@ public class OrdersFromMOProductsGenerationService {
                     }
                 }
 
+                if(Objects.isNull(calculatedOrderStartDate)) {
+                    calculatedOrderStartDate = new DateTime().toDate();
+                }
+
                 if (Objects.nonNull(lastLevel) && !Objects.equals(lastLevel, ord.getIntegerField("level"))) {
                     if (Objects.nonNull(lastDate) && calculatedOrderStartDate.before(lastDate)) {
                         calculatedOrderStartDate = lastDate;

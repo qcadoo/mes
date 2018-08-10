@@ -16,20 +16,20 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 
 @Service
-public class TimetableExceptionService {
+class TimetableExceptionService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public List<Entity> findForProductionLineAndShift(final Entity productionLine, final Entity shift) {
-        return findFor(Lists.newArrayList(productionLine.getId()), Lists.newArrayList(shift.getId()), null, null);
-    }
-
-    public List<Entity> findForProductionLineShiftAndDate(final Entity productionLine, final Entity shift, final Date date) {
+    List<Entity> findFor(final Entity productionLine, final Entity shift, final Date date) {
         return findFor(Lists.newArrayList(productionLine.getId()), Lists.newArrayList(shift.getId()), date, null);
     }
 
-    public List<Entity> findFor(final List<Long> productionLineIds, final List<Long> shiftIds, final Date date,
+    List<Entity> findFor(final Entity productionLine, final Entity shift, final Date date, final String type) {
+        return findFor(Lists.newArrayList(productionLine.getId()), Lists.newArrayList(shift.getId()), date, type);
+    }
+
+    private List<Entity> findFor(final List<Long> productionLineIds, final List<Long> shiftIds, final Date date,
             final String type) {
         List<Entity> shiftTimetableExceptions = Lists.newArrayList();
 
