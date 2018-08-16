@@ -52,6 +52,8 @@ public final class MaterialFlowResourcesConstants {
 
     public static final String MODEL_POSITION = "position";
 
+    public static final String MODEL_POSITION_DTO = "positionDto";
+
     public static final String MODEL_RESOURCE_CORRECTION = "resourceCorrection";
 
     public static final String MODEL_STORAGE_LOCATION = "storageLocation";

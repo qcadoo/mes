@@ -52,6 +52,7 @@
         <date name="expirationDate"/>
         <priority name="number" scope="document"/>
         <belongsTo name="resource" model="resource"/>
+        <string name="resourceNumber"/>
 
         <belongsTo name="storageLocation" model="storageLocation"/>
 
@@ -65,7 +66,6 @@
         <string name="resourceReceiptDocument"/>
 
         <boolean name="waste" default="false"/>
-        <string name="resourceNumber"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>
