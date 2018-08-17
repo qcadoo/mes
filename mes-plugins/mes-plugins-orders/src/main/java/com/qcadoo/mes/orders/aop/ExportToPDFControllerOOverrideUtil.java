@@ -53,6 +53,8 @@ public class ExportToPDFControllerOOverrideUtil {
 
     private static final String L_ORDERS_PLANNING_LIST = "ordersPlanningList";
 
+    private static final String L_ORDERS_LIST = "ordersList";
+
     private static final String L_COLOR = "color";
 
     private static final String L_HEX_COLOR_PATTERN = "^#(?:[0-9a-fA-F]{3}){1,2}$";
@@ -64,12 +66,12 @@ public class ExportToPDFControllerOOverrideUtil {
     private ParameterService parameterService;
 
     public boolean shouldOverride(final String viewName) {
-        return L_ORDERS_PLANNING_LIST.equals(viewName);
+        return L_ORDERS_PLANNING_LIST.equals(viewName) || L_ORDERS_LIST.equals(viewName);
     }
 
     public void addPdfTableCells(final PdfPTable pdfTable, final List<Map<String, String>> rows, final List<String> columns,
             final String viewName) {
-        if (L_ORDERS_PLANNING_LIST.equals(viewName)) {
+        if (L_ORDERS_PLANNING_LIST.equals(viewName) || L_ORDERS_LIST.equals(viewName)) {
             rows.forEach(row -> {
                 columns.forEach(column -> {
                     String value = row.get(column);
