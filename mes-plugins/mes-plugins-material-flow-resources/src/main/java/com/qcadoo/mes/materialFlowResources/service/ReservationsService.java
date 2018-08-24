@@ -99,23 +99,26 @@ public class ReservationsService {
      */
     public void createReservationFromDocumentPosition(final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
-            return;
-        }
-        if (!reservationsEnabledForDocumentPositions(document)) {
-            return;
-        }
-        Entity reservation = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
 
-        reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
-        reservation.setField(ReservationFields.POSITION, position);
-        reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
-        reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
-        reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
-        reservation = reservation.getDataDefinition().save(reservation);
-        
-        position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
+        if (document != null) {
+            if (DocumentState.of(document).equals(DocumentState.ACCEPTED)) {
+                return;
+            }
+            if (!reservationsEnabledForDocumentPositions(document)) {
+                return;
+            }
+            Entity reservation = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESERVATION).create();
+
+            reservation.setField(ReservationFields.LOCATION, document.getBelongsToField(DocumentFields.LOCATION_FROM));
+            reservation.setField(ReservationFields.POSITION, position);
+            reservation.setField(ReservationFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
+            reservation.setField(ReservationFields.QUANTITY, position.getDecimalField(PositionFields.QUANTITY));
+            reservation.setField(ReservationFields.RESOURCE, position.getBelongsToField(PositionFields.RESOURCE));
+            reservation = reservation.getDataDefinition().save(reservation);
+
+            position.setField(PositionFields.RESERVATIONS, Lists.newArrayList(reservation));
+        }
     }
 
     /**
@@ -190,22 +193,29 @@ public class ReservationsService {
      * @see ReservationsService#updateReservationFromDocumentPosition(Map)
      */
     public void updateReservationFromDocumentPosition(final Entity position) {
-        if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))){
-            return;
-        }
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-        Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
-        Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
-        BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
 
-        Entity existingReservation = getReservationForPosition(position);
+        if (document != null) {
 
-        if (existingReservation != null) {
-            existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
-            existingReservation.setField(ReservationFields.PRODUCT, product);
-            existingReservation.setField(ReservationFields.LOCATION, location);
-            existingReservation.setField(ReservationFields.RESOURCE, resource);
-            existingReservation.getDataDefinition().save(existingReservation);
+            if (!reservationsEnabledForDocumentPositions(position.getBelongsToField(PositionFields.DOCUMENT))) {
+                return;
+            }
+
+            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+            Entity location = position.getBelongsToField(PositionFields.DOCUMENT).getBelongsToField(DocumentFields.LOCATION_FROM);
+            Entity resource = position.getBelongsToField(PositionFields.RESOURCE);
+            BigDecimal newQuantity = position.getDecimalField(PositionFields.QUANTITY);
+
+            Entity existingReservation = getReservationForPosition(position);
+
+            if (existingReservation != null) {
+                existingReservation.setField(ReservationFields.QUANTITY, newQuantity);
+                existingReservation.setField(ReservationFields.PRODUCT, product);
+                existingReservation.setField(ReservationFields.LOCATION, location);
+                existingReservation.setField(ReservationFields.RESOURCE, resource);
+
+                existingReservation.getDataDefinition().save(existingReservation);
+            }
         }
     }
 
