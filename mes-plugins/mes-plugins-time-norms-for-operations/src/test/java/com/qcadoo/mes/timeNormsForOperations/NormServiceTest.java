@@ -74,8 +74,6 @@ public class NormServiceTest {
         normService = new NormService();
 
         ReflectionTestUtils.setField(normService, "technologyService", technologyService);
-
-        given(operComp1.getStringField("entityType")).willReturn("operation");
     }
 
     @Test

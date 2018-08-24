@@ -38,7 +38,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.print.ColumnFiller;
@@ -83,7 +82,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
 
     @Override
     public Map<Entity, Map<String, String>> getValues(final List<Entity> orders) {
-        Map<Entity, Map<String, String>> values = new HashMap<Entity, Map<String, String>>();
+        Map<Entity, Map<String, String>> values = new HashMap<>();
 
         for (Entity order : orders) {
             OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
@@ -97,9 +96,7 @@ public class WorkPlansColumnFiller implements ColumnFiller {
     }
 
     private void initMap(final Map<Entity, Map<String, String>> valuesMap, final Entity order) {
-        if (valuesMap.get(order) == null) {
-            valuesMap.put(order, new HashMap<String, String>());
-        }
+        valuesMap.computeIfAbsent(order, k -> new HashMap<>());
     }
 
     private void fillOrderNames(final Entity order, final Map<Entity, Map<String, String>> valuesMap) {
@@ -154,16 +151,6 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
-            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                    operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                Entity referenceTechnology = operationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-
-                fillProductNames(referenceTechnology, valuesMap);
-
-                continue;
-            }
-
             EntityList operationProductInComponents = operationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
             EntityList operationProductOutComponents = operationComponent
@@ -191,16 +178,6 @@ public class WorkPlansColumnFiller implements ColumnFiller {
         EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
-            if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                    operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                Entity referenceTechnology = operationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-
-                fillPlannedQuantities(referenceTechnology, productQuantities, valuesMap);
-
-                continue;
-            }
-
             EntityList operationProductInComponents = operationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
             EntityList operationProductOutComponents = operationComponent

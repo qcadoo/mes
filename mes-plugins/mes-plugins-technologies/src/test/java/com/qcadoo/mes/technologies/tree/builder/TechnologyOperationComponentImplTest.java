@@ -36,7 +36,6 @@ import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -83,19 +82,6 @@ public class TechnologyOperationComponentImplTest {
 
         // then
         verify(wrappedEntity).setField(TechnologyOperationComponentFields.OPERATION, operation);
-    }
-
-    @Test
-    public final void shouldCreateOperationComponentWithEntityTypeSetToOperation() {
-        // given
-        stubOperation(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION);
-
-        // when
-        Entity wrappedEntity = toc.getWrappedEntity();
-
-        // then
-        verify(wrappedEntity).setField(TechnologyOperationComponentFields.ENTITY_TYPE,
-                TechnologyOperationComponentType.OPERATION.getStringValue());
     }
 
     private void stubOperation(final String pluginId, final String modelName) {

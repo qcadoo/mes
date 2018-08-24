@@ -76,6 +76,4 @@ public final class TechnologiesConstants {
 
     public static final String VIEW_TECHNOLOGY_OPERATION_COMPONENT_DETAILS = "technologyOperationComponentDetails";
 
-    public static final String VIEW_TECHNOLOGY_REFERENCE_TECHNOLOGY_COMPONENT_DETAILS = "technologyReferenceTechnologyComponentDetails";
-
 }

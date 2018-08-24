@@ -26,9 +26,7 @@ package com.qcadoo.mes.technologies.states.listener;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +48,6 @@ import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.TechnologyTreeValidationService;
 import com.qcadoo.model.api.DataDefinition;
@@ -62,8 +59,6 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 
 @Service
 public class TechnologyValidationService {
-
-    private static final String L_OPERATION = "operation";
 
     private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
@@ -77,7 +72,7 @@ public class TechnologyValidationService {
     private TranslationService translationService;
 
     @Autowired
-    private ProductQuantitiesService productQuantitiyService;
+    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
@@ -139,39 +134,11 @@ public class TechnologyValidationService {
         Entity technology = stateContext.getOwner();
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operations = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        if (operations != null && !operations.isEmpty()) {
-            for (Entity operation : operations) {
-                if (L_OPERATION.equals(operation.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                    return true;
-                }
-            }
+        if (!operations.isEmpty()) {
+            return true;
         }
         stateContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
         return false;
-    }
-
-    // TODO DEV_TEAM when we fixed problem with referenced technology
-    public boolean checkIfAllReferenceTechnologiesAreAceepted(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
-        final DataDefinition technologyDD = technology.getDataDefinition();
-        final Entity savedTechnology = technologyDD.get(technology.getId());
-        final EntityTree operations = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        for (Entity operation : operations) {
-            if (L_OPERATION.equals(operation.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                continue;
-            }
-            final Entity referenceTechnology = operation
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-            if (referenceTechnology != null
-                    && !TechnologyState.ACCEPTED.getStringValue().equals(referenceTechnology.getStringField(STATE))) {
-                stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
-                        "technologies.technology.validate.global.error.treeIsNotValid");
-                stateContext.addMessage("technologies.technology.validate.global.error.unacceptedReferenceTechnology",
-                        StateMessageType.FAILURE, false);
-                return false;
-            }
-        }
-        return true;
     }
 
     public boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateContext) {
@@ -212,66 +179,40 @@ public class TechnologyValidationService {
     }
 
     private Set<Entity> checkIfConsumesSubOpsProds(final EntityTree technologyOperations) {
-        Set<Entity> operations = new HashSet<Entity>();
+        Set<Entity> operations = new HashSet<>();
 
         for (Entity technologyOperation : technologyOperations) {
             final Entity parent = technologyOperation.getBelongsToField(TechnologyOperationComponentFields.PARENT);
-            if (parent == null
-                    || TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY.equals(parent
-                            .getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
+            if (parent == null) {
                 continue;
             }
             final EntityList prodsIn = parent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
-            if (L_OPERATION.equals(technologyOperation.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                final EntityList prodsOut = technologyOperation
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            final EntityList prodsOut = technologyOperation
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
-                if (prodsIn == null) {
-                    operations.add(parent);
-                    continue;
-                }
+            if (prodsIn == null) {
+                operations.add(parent);
+                continue;
+            }
 
-                if (prodsIn.isEmpty()) {
-                    operations.add(parent);
-                    continue;
-                }
+            if (prodsIn.isEmpty()) {
+                operations.add(parent);
+                continue;
+            }
 
-                if (prodsOut == null) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
+            if (prodsOut == null) {
+                operations.add(technologyOperation);
+                continue;
+            }
 
-                if (prodsOut.isEmpty()) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
+            if (prodsOut.isEmpty()) {
+                operations.add(technologyOperation);
+                continue;
+            }
 
-                if (!checkIfAtLeastOneCommonElement(prodsOut, prodsIn)) {
-                    operations.add(technologyOperation);
-                }
-            } else {
-                final Entity prodOut = technologyOperation
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-
-                if (prodOut == null) {
-                    operations.add(parent);
-                    continue;
-                }
-
-                if (prodsIn == null) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (prodsIn.isEmpty()) {
-                    operations.add(technologyOperation);
-                    continue;
-                }
-
-                if (!checkIfAtLeastOneCommonElement(Arrays.asList(prodOut), prodsIn)) {
-                    operations.add(technologyOperation);
-                }
+            if (!checkIfAtLeastOneCommonElement(prodsOut, prodsIn)) {
+                operations.add(technologyOperation);
             }
         }
 
@@ -381,7 +322,7 @@ public class TechnologyValidationService {
             return true;
         }
 
-        final Entity outputProduct = productQuantitiyService
+        final Entity outputProduct = productQuantitiesService
                 .getOutputProductsFromOperationComponent(technologyOperationComponent);
         if (outputProduct != null) {
             final String outputProductionUnit = outputProduct.getBelongsToField(PRODUCT).getStringField(UNIT);

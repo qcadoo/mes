@@ -25,8 +25,6 @@ package com.qcadoo.mes.technologies;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -38,19 +36,16 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -59,9 +54,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -149,69 +142,6 @@ public class TechnologyService {
 
     private enum ProductDirection {
         IN, OUT;
-    }
-
-    public void loadProductsForReferencedTechnology(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        if (!(state instanceof TreeComponent)) {
-            return;
-        }
-
-        TreeComponent tree = (TreeComponent) state;
-
-        if (tree.getSelectedEntityId() == null) {
-            return;
-        }
-
-        Entity technologyOperationComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(tree.getSelectedEntityId());
-
-        GridComponent outProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("outProducts");
-        GridComponent inProductsGrid = (GridComponent) viewDefinitionState.getComponentByReference("inProducts");
-
-        if (!TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-            inProductsGrid.setEditable(true);
-            outProductsGrid.setEditable(true);
-
-            return;
-        }
-
-        Entity technology = technologyOperationComponent
-                .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-
-        EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        Entity rootOperation = operations.getRoot();
-
-        if (rootOperation != null) {
-            outProductsGrid.setEntities(rootOperation
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
-        }
-
-        List<Entity> operationProductInComponents = Lists.newArrayList();
-
-        Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology, BigDecimal.ONE,
-                MrpAlgorithm.ALL_PRODUCTS_IN);
-
-        for (Entry<Long, BigDecimal> productQuantity : productQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
-
-            Entity operationProductInComponent = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
-
-            operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, rootOperation);
-            operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT, product);
-            operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, productQuantity.getValue());
-
-            operationProductInComponents.add(operationProductInComponent);
-        }
-
-        inProductsGrid.setEntities(operationProductInComponents);
-
-        inProductsGrid.setEnabled(false);
-        inProductsGrid.setEditable(false);
-        outProductsGrid.setEnabled(false);
-        outProductsGrid.setEditable(false);
     }
 
     public void generateTechnologyGroupNumber(final ViewDefinitionState viewDefinitionState) {
@@ -325,20 +255,6 @@ public class TechnologyService {
         return L_00_UNRELATED;
     }
 
-    public void addOperationsFromSubtechnologiesToList(final EntityTree entityTree,
-            final List<Entity> technologyOperationComponents) {
-        for (Entity technologyOperationComponent : entityTree) {
-            if (TechnologyOperationComponentType.OPERATION.getStringValue().equals(
-                    technologyOperationComponent.getField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-                technologyOperationComponents.add(technologyOperationComponent);
-            } else {
-                addOperationsFromSubtechnologiesToList(
-                        technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                                .getTreeField(TechnologyFields.OPERATION_COMPONENTS), technologyOperationComponents);
-            }
-        }
-    }
-
     public boolean invalidateIfAllreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
             final Entity operationProductComponent) {
 
@@ -410,13 +326,6 @@ public class TechnologyService {
      */
     // TODO dev_team introduce MainTocOutputProductProvider
     public Entity getMainOutputProductComponent(Entity technologyOperationComponent) {
-        if (TechnologyOperationComponentType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE))) {
-            technologyOperationComponent = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-        }
-
         Entity parentTechnologyOperationComponent = technologyOperationComponent
                 .getBelongsToField(TechnologyOperationComponentFields.PARENT);
 

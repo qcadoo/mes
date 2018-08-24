@@ -30,7 +30,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalTechnologyOperationComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.OperationProductComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
@@ -49,8 +48,6 @@ public class TechnologyOperationCompImpl implements InternalTechnologyOperationC
 
     public TechnologyOperationCompImpl(final DataDefinition tocDataDef) {
         this.entity = tocDataDef.create();
-        entity.setField(TechnologyOperationComponentFields.ENTITY_TYPE,
-                TechnologyOperationComponentType.OPERATION.getStringValue());
         this.inputPoducts = Lists.newArrayList();
         this.outputPoducts = Lists.newArrayList();
         this.subOperations = Lists.newArrayList();

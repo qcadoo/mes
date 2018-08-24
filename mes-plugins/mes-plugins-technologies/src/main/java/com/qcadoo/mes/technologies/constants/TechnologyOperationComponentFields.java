@@ -37,13 +37,9 @@ public final class TechnologyOperationComponentFields {
 
     public static final String CHILDREN = "children";
 
-    public static final String ENTITY_TYPE = "entityType";
-
     public static final String PRIORITY = "priority";
 
     public static final String REFERENCE_TECHNOLOGY = "referenceTechnology";
-
-    public static final String REFERENCE_MODE = "referenceMode";
 
     public static final String NODE_NUMBER = "nodeNumber";
 

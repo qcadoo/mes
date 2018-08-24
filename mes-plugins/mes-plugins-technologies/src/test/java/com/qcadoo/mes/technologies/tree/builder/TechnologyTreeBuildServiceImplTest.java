@@ -50,7 +50,6 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentType;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalOperationProductComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalTechnologyOperationComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.ItemWithQuantity;
@@ -255,8 +254,6 @@ public class TechnologyTreeBuildServiceImplTest {
         EntityTreeNode root = tree.getRoot();
         assertNotNull(root);
         Entity toc1 = extractEntity(root);
-        verify(toc1).setField(TechnologyOperationComponentFields.ENTITY_TYPE,
-                TechnologyOperationComponentType.OPERATION.getStringValue());
         verify(toc1).setField(TechnologyOperationComponentFields.OPERATION, toc1op);
 
         verify(toc1).setField(Mockito.eq(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS),
@@ -281,8 +278,6 @@ public class TechnologyTreeBuildServiceImplTest {
 
         Entity toc2 = toc1children.iterator().next();
 
-        verify(toc2).setField(TechnologyOperationComponentFields.ENTITY_TYPE,
-                TechnologyOperationComponentType.OPERATION.getStringValue());
         verify(toc2).setField(TechnologyOperationComponentFields.OPERATION, toc2op);
 
         verify(toc2).setField(Mockito.eq(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS),

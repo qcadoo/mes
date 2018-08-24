@@ -23,26 +23,7 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.ProductionLinesService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.NumberService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -56,7 +37,26 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.TECHNOLOGY;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductionLinesService;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
@@ -155,85 +155,62 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
 
         for (Entity operationComponent : operationComponents) {
-            evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operationComponent, includeTpz,
+            evaluateTimes(operationDurations, operationComponent, includeTpz,
                     includeAdditionalTime, operationRunsFromProductionQuantities, productionLine, maxForWorkstation);
         }
 
         return operationDurations;
     }
 
-    private void evaluateTimesConsideringOperationCanBeReferencedTechnology(final Map<Entity, Integer> operationDurations,
+    private void evaluateTimes(final Map<Entity, Integer> operationDurations,
             final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
             final Map<Long, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
-        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
 
-        if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
-            for (Entity operComp : operationComponent.getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS)) {
-                evaluateTimesConsideringOperationCanBeReferencedTechnology(operationDurations, operComp, includeTpz,
-                        includeAdditionalTime, operationRuns, productionLine, maxForWorkstation);
-            }
-        } else {
             int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
                     productionLine, maxForWorkstation);
 
             operationDurations.put(operationComponent, duration);
 
-        }
     }
 
     private int evaluateOperationTime(final Entity order, final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
-        String entityType = operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE);
 
-        if (TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(entityType)) {
-            EntityTreeNode actualOperationComponent = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY)
-                    .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+        int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
+                productionLine, maxForWorkstation);
+        int offset = 0;
 
-            return evaluateOperationTime(order, actualOperationComponent, includeTpz, includeAdditionalTime, operationRuns,
-                    productionLine, maxForWorkstation, productComponentQuantities);
-        } else if (TechnologyOperationComponentEntityType.OPERATION.getStringValue().equals(entityType)) {
-            int operationTime = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
-                    productionLine, maxForWorkstation);
-            int offset = 0;
+        List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
+        for (Entity child : childs) {
+            int childTime = evaluateOperationTime(order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
+                    maxForWorkstation, productComponentQuantities);
 
-            List<Entity> childs = Lists.newArrayList(operationComponent.getHasManyField("children"));
-            for (Entity child : childs) {
-                int childTime = evaluateOperationTime(order, child, includeTpz, includeAdditionalTime, operationRuns, productionLine,
-                        maxForWorkstation, productComponentQuantities);
+            if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
 
-                if ("02specified".equals(child.getStringField("nextOperationAfterProducedType"))) {
+                int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
+                        productionLine, true);
+                int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
+                        includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
 
-                    int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
-                            productionLine, true);
-                    int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
-                            includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
-
-                    int difference = childTimeTotal - childTimeForQuantity;
-                    childTime -= difference;
-                }
-
-                if (childTime > offset) {
-                    offset = childTime;
-                }
+                int difference = childTimeTotal - childTimeForQuantity;
+                childTime -= difference;
             }
 
-
-                Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operationComponent);
-
-                if (operCompTimeCalculation != null) {
-                    operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, offset);
-                    operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, operationTime);
-                    operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
-                }
-
-
-            return offset + operationTime;
+            if (childTime > offset) {
+                offset = childTime;
+            }
         }
 
-        throw new IllegalStateException("entityType has to be either operation or referenceTechnology");
+        Entity operCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, operationComponent);
+
+        if (operCompTimeCalculation != null) {
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, offset);
+            operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, operationTime);
+            operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
+        }
+
+        return offset + operationTime;
     }
 
     private Integer retrieveWorkstationTypesCount(final Entity operationComponent, final Entity productionLine) {

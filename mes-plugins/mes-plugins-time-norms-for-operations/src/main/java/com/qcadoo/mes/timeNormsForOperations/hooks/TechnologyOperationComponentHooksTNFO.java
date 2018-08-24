@@ -70,9 +70,6 @@ public class TechnologyOperationComponentHooksTNFO {
     }
 
     public void copyTimeNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
-        if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
-            return;
-        }
         if (technologyOperationComponent.getBelongsToField(OPERATION) == null) {
             return;
         }
