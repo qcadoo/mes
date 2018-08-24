@@ -51,24 +51,29 @@ public class PositionValidators {
     public boolean checkAttributesRequirement(final DataDefinition dataDefinition, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
 
-        DocumentType documentType = DocumentType.of(document);
-        DocumentState documentState = DocumentState.of(document);
+        if (document != null) {
+            DocumentType documentType = DocumentType.of(document);
+            DocumentState documentState = DocumentState.of(document);
 
-        if (documentState == DocumentState.ACCEPTED
-                && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
-            Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
-            return validatePositionAttributes(dataDefinition, position,
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
-                    warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+            if (documentState == DocumentState.ACCEPTED
+                    && (documentType == DocumentType.RECEIPT || documentType == DocumentType.INTERNAL_INBOUND)) {
+                Entity warehouseTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
+                return validatePositionAttributes(dataDefinition, position,
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                        warehouseTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+            }
         }
+
         return true;
     }
 
     public boolean validatePositionAttributes(DataDefinition dataDefinition, Entity position, boolean requirePrice,
             boolean requireBatch, boolean requireProductionDate, boolean requireExpirationDate) {
         boolean result = true;
+
         if (requirePrice && position.getField(PositionFields.PRICE) == null) {
             position.addError(dataDefinition.getField(PositionFields.PRICE), "materialFlow.error.position.price.required");
             result = false;
@@ -94,28 +99,69 @@ public class PositionValidators {
 
     public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-        String state = document.getStringField(DocumentFields.STATE);
 
-        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
-            return true;
-        }
+        return validateAvailableQuantity(dataDefinition, position, document);
+    }
 
-        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
-            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-            if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
-                position.addError(dataDefinition.getField(PositionFields.QUANTITY),
-                        "documentGrid.error.position.quantity.notEnoughResources");
-                return false;
+    public boolean validateAvailableQuantityWithoutPreviousQuantities(final DataDefinition dataDefinition, final Entity position,
+            final Entity document) {
+        if (document != null) {
+            String state = document.getStringField(DocumentFields.STATE);
+
+            if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
+                return true;
+            }
+
+            if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
+                BigDecimal availableQuantity = getAvailableQuantityWithoutOldQuantities(position, document);
+                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+                if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
+                    position.addError(dataDefinition.getField(PositionFields.QUANTITY),
+                            "documentGrid.error.position.quantity.notEnoughResources");
+
+                    return false;
+                }
             }
         }
+
         return true;
+    }
+
+    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position, final Entity document) {
+        if (document != null) {
+            String state = document.getStringField(DocumentFields.STATE);
+
+            if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
+                return true;
+            }
+
+            if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
+                BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
+                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+
+                if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
+                    position.addError(dataDefinition.getField(PositionFields.QUANTITY),
+                            "documentGrid.error.position.quantity.notEnoughResources");
+
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private BigDecimal getAvailableQuantityWithoutOldQuantities(final Entity position, final Entity document) {
+        return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
+                document.getBelongsToField(DocumentFields.LOCATION_FROM));
     }
 
     public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
         BigDecimal oldQuantity = BigDecimal.ZERO;
+
         if (position.getId() != null) {
             Entity positionFromDB = positionDD.get(position.getId());
+
             if (positionFromDB != null) {
                 oldQuantity = positionFromDB.getDecimalField(PositionFields.QUANTITY);
             }
@@ -128,12 +174,15 @@ public class PositionValidators {
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {
         Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
         Date expirationDate = position.getDateField(PositionFields.EXPIRATION_DATE);
+
         if (productionDate != null && expirationDate != null && expirationDate.compareTo(productionDate) < 0) {
             position.addError(dataDefinition.getField(PositionFields.EXPIRATION_DATE),
                     "materialFlow.error.position.expirationDate.lessThenProductionDate");
+
             return false;
         }
 
         return true;
     }
+
 }

@@ -23,6 +23,27 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.IllegalFieldValueException;
+import org.joda.time.Interval;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.commons.dateTime.TimeRange;
@@ -39,26 +60,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.IllegalFieldValueException;
-import org.joda.time.Interval;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -189,6 +190,8 @@ public class ShiftsServiceImpl implements ShiftsService {
 
         workTimes = shiftExceptionService.manageExceptions(workTimes, productionLine, shift, currentDate.toDate());
 
+        workTimes = workTimes.stream().filter(workTime -> workTime.contains(dateFrom) || workTime.isAfter(dateFrom))
+                .collect(Collectors.toList());
         finalShiftWorkTimes.addAll(workTimes);
     }
 
@@ -443,8 +446,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return removeHoursOutOfRange(mergeOverlappedHours(hours), dateFrom, dateTo);
     }
 
-    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
+    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
         updateDayFieldsState(viewDefinitionState);
     }
 
@@ -472,6 +474,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             dayHours.setRequired(true);
         }
     }
+
     private List<ShiftHour> removeHoursOutOfRange(final List<ShiftHour> hours, final Date dateFrom, final Date dateTo) {
         List<ShiftHour> list = Lists.newArrayList();
 
@@ -596,11 +599,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
             while (current.compareTo(to) <= 0) {
                 for (LocalTime[] dayHour : dayHours) {
-                    hours.add(new ShiftHour(
-                            current.withHourOfDay(dayHour[0].getHourOfDay()).withMinuteOfHour(dayHour[0].getMinuteOfHour())
-                                    .toDate(),
-                            current.withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour())
-                                    .toDate()));
+                    hours.add(new ShiftHour(current.withHourOfDay(dayHour[0].getHourOfDay())
+                            .withMinuteOfHour(dayHour[0].getMinuteOfHour()).toDate(), current
+                            .withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour()).toDate()));
                 }
                 current = current.plusDays(7);
             }

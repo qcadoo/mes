@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import com.qcadoo.mes.orders.TechnologyServiceO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
@@ -60,13 +60,20 @@ public class OrdersListListeners {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
         for (Long orderId : gridComponent.getSelectedEntitiesIds()) {
             Entity order = getOrderDD().get(orderId);
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            if (TechnologyStateStringValues.DRAFT.equals(technology.getStringField(TechnologyFields.STATE))) {
-                technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED, technology);
-            } else if (TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
-                technologyServiceO.changeTechnologyStateToAccepted(technology);
+            order = getOrderDD().save(order);
+            if (order.isValid()) {
+                Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+                if (TechnologyStateStringValues.DRAFT.equals(technology.getStringField(TechnologyFields.STATE))) {
+                    technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
+                            TechnologyStateStringValues.ACCEPTED, technology);
+                } else if (TechnologyStateStringValues.CHECKED.equals(technology.getStringField(TechnologyFields.STATE))) {
+                    technologyServiceO.changeTechnologyStateToAccepted(technology);
+                }
+                orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0], order);
+            } else {
+                view.addMessage("orders.ordersList.changeState.validationErrors", ComponentState.MessageType.FAILURE, false,
+                        order.getStringField(OrderFields.NUMBER));
             }
-            orderStateChangeViewClient.changeState(new ViewContextHolder(view, state), args[0], order);
         }
     }
 

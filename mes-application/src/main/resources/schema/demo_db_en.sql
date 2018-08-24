@@ -8857,7 +8857,8 @@ CREATE TABLE materialflowresources_document (
     printed boolean DEFAULT false,
     generationdate timestamp without time zone,
     filename character varying(255),
-    acceptationinprogress boolean DEFAULT false
+    acceptationinprogress boolean DEFAULT false,
+    externalnumber character varying(255)
 );
 
 
@@ -9328,7 +9329,9 @@ CREATE TABLE materialflowresources_position (
     waste boolean DEFAULT false,
     resourcereceiptdocument character varying,
     lastresource boolean DEFAULT false,
-    resourcenumber character varying(255)
+    resourcenumber character varying(255),
+    externaldocumentnumber character varying(255),
+    orderid bigint
 );
 
 
@@ -9385,8 +9388,8 @@ ALTER SEQUENCE materialflowresources_positionaddmultihelper_id_seq OWNED BY mate
 
 CREATE VIEW materialflowresources_positiondto AS
  SELECT "position".id,
-    locfrom.number AS locationfrom,
-    locto.number AS locationto,
+    locationfrom.number AS locationfrom,
+    locationto.number AS locationto,
     product.number AS productnumber,
     product.name AS productname,
     "position".quantity,
@@ -9395,9 +9398,15 @@ CREATE VIEW materialflowresources_positiondto AS
     document."time" AS documentdate,
     ("position".expirationdate)::timestamp without time zone AS expirationdate,
     ("position".productiondate)::timestamp without time zone AS productiondate,
-    document.type AS documenttype,
+        CASE
+            WHEN ("position".externaldocumentnumber IS NULL) THEN document.type
+            ELSE '03internalOutbound'::character varying(255)
+        END AS documenttype,
     document.state,
-    document.number AS documentnumber,
+        CASE
+            WHEN ("position".externaldocumentnumber IS NULL) THEN document.number
+            ELSE "position".externaldocumentnumber
+        END AS documentnumber,
     document.name AS documentname,
     company.name AS companyname,
         CASE
@@ -9405,39 +9414,42 @@ CREATE VIEW materialflowresources_positiondto AS
             ELSE (((address.number)::text || ' - '::text) || (address.name)::text)
         END AS documentaddress,
     "position".batch,
-    storageloc.number AS storagelocation,
+    storagelocation.number AS storagelocation,
     "position".waste,
     delivery.number AS deliverynumber,
     plannedevent.number AS plannedeventnumber,
     maintenanceevent.number AS maintenanceeventnumber,
     suborder.number AS subordernumber,
-    ord.number AS ordernumber,
+    ordersorder.number AS ordernumber,
     "position".typeofpallet AS pallettype,
     palletnumber.number AS palletnumber,
-    (locfrom.id)::integer AS locationfrom_id,
-    (locto.id)::integer AS locationto_id,
+    (locationfrom.id)::integer AS locationfrom_id,
+    (locationto.id)::integer AS locationto_id,
     "position".givenquantity,
     "position".givenunit,
     "position".conversion,
     (document.id)::integer AS documentid,
     document.inbuffer,
-    (document.order_id)::integer AS orderid,
+        CASE
+            WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
+            ELSE ("position".orderid)::integer
+        END AS orderid,
     ("position".price * "position".quantity) AS value,
     "position".resourcenumber,
     additionalcode.code AS additionalcode
    FROM ((((((((((((((materialflowresources_position "position"
-     JOIN materialflowresources_document document ON (("position".document_id = document.id)))
-     LEFT JOIN materialflow_location locfrom ON ((document.locationfrom_id = locfrom.id)))
-     LEFT JOIN materialflow_location locto ON ((document.locationto_id = locto.id)))
-     JOIN basic_product product ON (("position".product_id = product.id)))
-     LEFT JOIN basic_company company ON ((document.company_id = company.id)))
-     LEFT JOIN basic_address address ON ((document.address_id = address.id)))
-     LEFT JOIN materialflowresources_storagelocation storageloc ON (("position".storagelocation_id = storageloc.id)))
-     LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON ((document.maintenanceevent_id = maintenanceevent.id)))
-     LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON ((document.plannedevent_id = plannedevent.id)))
-     LEFT JOIN deliveries_delivery delivery ON ((document.delivery_id = delivery.id)))
-     LEFT JOIN subcontractorportal_suborder suborder ON ((document.suborder_id = suborder.id)))
-     LEFT JOIN orders_order ord ON ((document.order_id = ord.id)))
+     LEFT JOIN materialflowresources_document document ON ((document.id = "position".document_id)))
+     LEFT JOIN materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
+     LEFT JOIN materialflow_location locationto ON ((locationto.id = document.locationto_id)))
+     JOIN basic_product product ON ((product.id = "position".product_id)))
+     LEFT JOIN basic_company company ON ((company.id = document.company_id)))
+     LEFT JOIN basic_address address ON ((address.id = document.address_id)))
+     LEFT JOIN materialflowresources_storagelocation storagelocation ON ((storagelocation.id = "position".storagelocation_id)))
+     LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON ((maintenanceevent.id = document.maintenanceevent_id)))
+     LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON ((plannedevent.id = document.plannedevent_id)))
+     LEFT JOIN deliveries_delivery delivery ON ((delivery.id = document.delivery_id)))
+     LEFT JOIN subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
+     LEFT JOIN orders_order ordersorder ON (((ordersorder.id = document.order_id) OR (ordersorder.id = "position".orderid))))
      LEFT JOIN basic_palletnumber palletnumber ON ((palletnumber.id = "position".palletnumber_id)))
      LEFT JOIN basic_additionalcode additionalcode ON ((additionalcode.id = "position".additionalcode_id)));
 
@@ -10882,7 +10894,8 @@ CREATE VIEW orders_orderlistdto AS
             ELSE false
         END AS existsrepairorders,
     (masterorder.id)::integer AS masterorderid,
-    ordersgroup.number AS ordersgroupnumber
+    ordersgroup.number AS ordersgroupnumber,
+    ''::character varying(255) AS annotation
    FROM (((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -10939,7 +10952,8 @@ CREATE VIEW orders_orderplanninglistdto AS
     COALESCE(product.additionalunit, product.unit) AS unitforadditionalunit,
     company.number AS company,
     ordersorder.description,
-    product.name AS productname
+    product.name AS productname,
+    ''::character varying(255) AS annotation
    FROM ((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -11365,6 +11379,11 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
              JOIN technologies_technologygroup tg ON ((t.technologygroup_id = tg.id)))
           WHERE (o.ordersgroup_id IS NOT NULL)
           GROUP BY o.ordersgroup_id
+        ), performance AS (
+         SELECT o.ordersgroup_id,
+            first_value(t.standardperformancetechnology) OVER (PARTITION BY o.ordersgroup_id ORDER BY o.id) AS performancenorm
+           FROM (orders_order o
+             JOIN technologies_technology t ON ((o.technology_id = t.id)))
         )
  SELECT DISTINCT ordersgroup.id,
     ordersgroup.active,
@@ -11382,14 +11401,17 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
     ordersgroup.remainingquantityinorders,
     (COALESCE(ordersgroup.producedquantity, (0)::numeric) + COALESCE(drafrptquantity.sum, (0)::numeric)) AS producedquantitywithdraft,
     (COALESCE(ordersgroup.remainingquantityinorders, (0)::numeric) - COALESCE(drafrptquantity.sum, (0)::numeric)) AS remainingquantityinorderswithdraft,
-    tgn.number AS technologygroup
-   FROM ((((((ordersgroups_ordersgroup ordersgroup
+    tgn.number AS technologygroup,
+    p.performancenorm,
+    (masterorder.deadline)::date AS clientdate
+   FROM (((((((ordersgroups_ordersgroup ordersgroup
      JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
      JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
      JOIN masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
-     LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)));
+     LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)))
+     LEFT JOIN performance p ON ((p.ordersgroup_id = ordersgroup.id)));
 
 
 --
@@ -23362,7 +23384,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber) FROM stdin;
 \.
 
 
@@ -23529,7 +23551,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, batch, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, batch, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid) FROM stdin;
 \.
 
 

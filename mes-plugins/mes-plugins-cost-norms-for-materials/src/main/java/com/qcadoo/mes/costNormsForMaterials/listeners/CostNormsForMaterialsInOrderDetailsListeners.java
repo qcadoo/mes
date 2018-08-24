@@ -19,7 +19,6 @@ public class CostNormsForMaterialsInOrderDetailsListeners {
     private static final String DOCUMENT_TYPE = "documentType";
 
     public void showPositionsForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-
         if (filterValue.has(PRODUCT_NUMBER) && filterValue.has(ORDER_ID)) {
             scb.add(SearchRestrictions.eq(PRODUCT_NUMBER, filterValue.getString(PRODUCT_NUMBER)));
             scb.add(SearchRestrictions.eq(ORDER_ID, filterValue.getInteger(ORDER_ID)));
@@ -28,4 +27,5 @@ public class CostNormsForMaterialsInOrderDetailsListeners {
             scb.add(SearchRestrictions.eq(DOCUMENT_ID, 0L));
         }
     }
+
 }
