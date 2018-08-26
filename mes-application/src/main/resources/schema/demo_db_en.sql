@@ -9331,7 +9331,7 @@ CREATE TABLE materialflowresources_position (
     lastresource boolean DEFAULT false,
     resourcenumber character varying(255),
     externaldocumentnumber character varying(255),
-    orderid bigint
+    orderid integer
 );
 
 
@@ -37815,4 +37815,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
-
