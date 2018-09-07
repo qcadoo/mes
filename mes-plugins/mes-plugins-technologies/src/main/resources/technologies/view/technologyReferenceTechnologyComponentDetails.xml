@@ -37,7 +37,7 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="1"
-				rows="2">
+				rows="1">
 				<layoutElement column="1" row="1">
 					<component type="lookup" name="technology" reference="technology"
 						field="referenceTechnology">
@@ -57,12 +57,6 @@
 							method="disabledSaveBackButton" />
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2">
-					<component type="select" name="referenceMode" field="referenceMode"
-						reference="referenceMode" defaultEnabled="false">
-						<option type="required" value="true" />
-					</component>
-				</layoutElement>
 			</component>
 
 			<option type="header" value="true" />
@@ -72,8 +66,6 @@
 	</component>
 
 	<hooks>
-		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyReferenceTechnologyComponentDetailsHooks"
-			method="hideReferenceMode" />
 		<beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologyReferenceTechnologyComponentDetailsHooks"
 			method="disabledSaveBackButton" />
 	</hooks>

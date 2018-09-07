@@ -50,7 +50,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.DataDefinition;
@@ -152,8 +151,6 @@ public class WorkPlansColumnFillerTest {
         EntityTree operComps2 = mockEntityTree(asList(operationComponent));
         given(technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS)).willReturn(operComps, operComps2);
 
-        given(operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE)).willReturn(
-                TechnologyOperationComponentEntityType.OPERATION.getStringValue());
         given(operationComponent.getId()).willReturn(1L);
         EntityList prodInComps = mockEntityList(asList(operationProductComponent));
         EntityList prodInComps2 = mockEntityList(asList(operationProductComponent));

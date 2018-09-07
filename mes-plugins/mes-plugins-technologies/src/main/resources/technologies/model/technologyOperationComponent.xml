@@ -33,13 +33,11 @@
         <belongsTo name="parent" model="technologyOperationComponent"/>
         <hasMany name="children" model="technologyOperationComponent"
                  joinField="parent" cascade="delete" copyable="true"/>
-        <enum name="entityType" values="operation,referenceTechnology"
+        <enum name="entityType" values="operation,referenceTechnology" default="operation"
               required="true"/>
         <priority name="priority" scope="parent"/>
         <string name="nodeNumber"/>
-        <belongsTo name="referenceTechnology" model="technology"/>
-        <enum name="referenceMode" values="01reference,02copy" default="02copy"
-              persistent="false"/>
+        <belongsTo name="referenceTechnology" model="technology" persistent="false"/>
 
         <string name="comment">
             <validatesLength max="2048"/>
@@ -59,12 +57,8 @@
         <manyToMany name="workstations" plugin="basic" model="workstation"
                     joinField="operationComponents" cascade="nullify" copyable="true"/>
 
-        <!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
-            joinField="operations" />-->
-
         <enum name="assignedToOperation" values="01workstations,02workstationTypes"
               default="01workstations" required="true" copyable="true"/>
-
 
         <belongsTo name="workstationType" plugin="basic" model="workstationType"/>
 
@@ -88,11 +82,5 @@
         <onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
                   method="onCreate"/>
         <onSave class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onSave"/>
-
-        <!-- 		TODO DEV_TEAM when we add reference -->
-        <!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyOperationComponentValidators" -->
-        <!-- 			method="validateEntityTypeOfTechnologyOperationComponent" /> -->
-        <!-- 		<validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators" -->
-        <!-- 			method="invalidateIfBelongsToAcceptedTechnology" /> -->
     </hooks>
 </model>

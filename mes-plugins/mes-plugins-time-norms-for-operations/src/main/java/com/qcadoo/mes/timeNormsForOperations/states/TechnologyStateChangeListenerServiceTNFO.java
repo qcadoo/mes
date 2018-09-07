@@ -68,7 +68,7 @@ public class TechnologyStateChangeListenerServiceTNFO {
         EntityTree operationComponents = savedTechnology.getTreeField("operationComponents");
         boolean isValid = true;
         for (Entity operationComponent : operationComponents) {
-            if ("operation".equals(operationComponent.getField("entityType")) && !checkIfTJSet(operationComponent)) {
+            if (!checkIfTJSet(operationComponent)) {
                 isValid = false;
                 errors.append(" ");
                 StringBuilder fieldName = new StringBuilder();
@@ -88,11 +88,7 @@ public class TechnologyStateChangeListenerServiceTNFO {
     }
 
     private boolean checkIfTJSet(final Entity operationComponent) {
-        if (operationComponent.getField("tj") == null) {
-            return false;
-        }
-
-        return true;
+        return operationComponent.getField("tj") != null;
     }
 
 }

@@ -107,14 +107,7 @@ public class OperationCostCalculationTreeBuilder {
         calculationOperationComponent.setField("parent", parent);
         calculationOperationComponent.setField(parentEntity.getDataDefinition().getName(), parentEntity);
 
-        // FIXME MAKU ask ALBR about strategy for reference technology pointers.
-        if (L_OPERATION.equals(sourceTreeNode.getField(L_ENTITY_TYPE))) {
-            createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponent, parentEntity);
-        } else {
-            Entity referenceTechnology = sourceTreeNode.getBelongsToField("referenceTechnology");
-            createOrCopyCalculationOperationComponent(referenceTechnology.getTreeField("operationComponents").getRoot(),
-                    calculationOperationComponent, parentEntity);
-        }
+        createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponent, parentEntity);
 
         return calculationOperationComponent;
     }
@@ -141,7 +134,7 @@ public class OperationCostCalculationTreeBuilder {
         calculationOperationComponent.setField(L_TECHNOLOGY_OPERATION_COMPONENT, operationComponent);
 
         calculationOperationComponent.setField(L_ENTITY_TYPE, L_OPERATION);
-        List<Entity> newTechnologyInstanceOperationComponents = new ArrayList<Entity>();
+        List<Entity> newTechnologyInstanceOperationComponents = new ArrayList<>();
 
         for (EntityTreeNode child : operationComponent.getChildren()) {
             newTechnologyInstanceOperationComponents.add(createCalculationOperationComponent(child,

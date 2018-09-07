@@ -268,7 +268,7 @@
                         </dataType>
                         <dataType name="referenceTechnology">
                             <option type="nodeLabelExpression"
-                                    value="#nodeNumber + ' &lt;span class=&quot;grey&quot;&gt;' + #referenceTechnology['number'] + '&lt;/span&gt; ' + #referenceTechnology['name']"/>
+                                    value="#nodeNumber"/>
                             <option type="correspondingView"
                                     value="technologies/technologyReferenceTechnologyComponentDetails"/>
                             <option type="correspondingComponent" value="form"/>
@@ -284,9 +284,6 @@
                         <option type="hasCustomActionButton" value="true"/>
                         <option type="customActionIcon" value="clearIcon16_dis.png"/>
 
-                        <listener event="select"
-                                  class="com.qcadoo.mes.technologies.TechnologyService"
-                                  method="loadProductsForReferencedTechnology"/>
                         <listener event="select"
                                   class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                                   method="setGridEditable"/>

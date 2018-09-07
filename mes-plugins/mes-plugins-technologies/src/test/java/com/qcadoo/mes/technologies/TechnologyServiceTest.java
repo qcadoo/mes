@@ -40,7 +40,6 @@ import org.mockito.MockitoAnnotations;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 
 public class TechnologyServiceTest {
@@ -136,24 +135,6 @@ public class TechnologyServiceTest {
         when(dataDefinition.getName()).thenReturn("technologyInstanceOperationComponent");
         when(opComp2.getBelongsToField("technologyOperationComponent")).thenReturn(opComp2);
         when(opComp1.getBelongsToField("technologyOperationComponent")).thenReturn(opComp1);
-
-        // when
-        BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);
-
-        // then
-        assertEquals(new BigDecimal(10), count);
-    }
-
-    @Test
-    public void shouldReturnOutputProductCountForOperationComponentAlsoForReferenceTechnology() {
-        // given
-        when(opComp2.getStringField("entityType")).thenReturn("referenceTechnology");
-        Entity refTech = mock(Entity.class);
-        when(opComp2.getBelongsToField("referenceTechnology")).thenReturn(refTech);
-
-        EntityTree tree = mock(EntityTree.class);
-        when(refTech.getTreeField("operationComponents")).thenReturn(tree);
-        when(tree.getRoot()).thenReturn(opComp2);
 
         // when
         BigDecimal count = technologyService.getProductCountForOperationComponent(opComp2);

@@ -100,9 +100,6 @@ public class CostNormsForOperationService {
     /* ******* MODEL HOOKS ******* */
 
     public void copyCostNormsToTechnologyOperationComponent(final DataDefinition dd, final Entity technologyOperationComponent) {
-        if ("referenceTechnology".equals(technologyOperationComponent.getField("entityType"))) {
-            return;
-        }
         if (technologyOperationComponent.getBelongsToField(OPERATION_FIELD) == null) {
             return;
         }

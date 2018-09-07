@@ -279,34 +279,6 @@ public class ProductQuantitiesServiceImplTest {
     }
 
     @Test
-    public void shouldTraverseAlsoThroughReferencedTechnologies() {
-        // given
-        Entity refTech = mock(Entity.class);
-        Entity someOpComp = mock(Entity.class);
-
-        EntityList child = mockEntityListIterator(asList(someOpComp));
-        when(operationComponent2.getHasManyField("children")).thenReturn(child);
-
-        when(someOpComp.getStringField("entityType")).thenReturn("referenceTechnology");
-        when(someOpComp.getBelongsToField("referenceTechnology")).thenReturn(refTech);
-
-        EntityTree refTree = mockEntityTreeIterator(asList((Entity) operationComponent1));
-        when(refTree.getRoot()).thenReturn(operationComponent1);
-        when(refTech.getTreeField("operationComponents")).thenReturn(refTree);
-
-        // when
-        OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesService
-                .getProductComponentQuantities(order);
-
-        // then
-        assertEquals(new BigDecimal(50), productQuantities.get(productInComponent1));
-        assertEquals(new BigDecimal(10), productQuantities.get(productInComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productInComponent3));
-        assertEquals(new BigDecimal(10), productQuantities.get(productOutComponent2));
-        assertEquals(new BigDecimal(5), productQuantities.get(productOutComponent4));
-    }
-
-    @Test
     public void shouldNotRoundToTheIntegerOperationRunsIfOperationComponentHasDivisableProductQuantities() {
         // given
         when(operationComponent1.getBooleanField("areProductQuantitiesDivisible")).thenReturn(true);

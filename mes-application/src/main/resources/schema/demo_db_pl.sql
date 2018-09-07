@@ -3577,7 +3577,6 @@ CREATE TABLE technologies_technologyoperationcomponent (
     entitytype character varying(255),
     priority integer,
     nodenumber character varying(255),
-    referencetechnology_id bigint,
     comment character varying(2048),
     attachment character varying(255),
     areproductquantitiesdivisible boolean DEFAULT false,
@@ -9432,7 +9431,7 @@ CREATE VIEW materialflowresources_positiondto AS
     document.inbuffer,
         CASE
             WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
-            ELSE ("position".orderid)::integer
+            ELSE "position".orderid
         END AS orderid,
     ("position".price * "position".quantity) AS value,
     "position".resourcenumber,
@@ -26902,7 +26901,7 @@ SELECT pg_catalog.setval('technologies_technologygroup_id_seq', 1, false);
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, referencetechnology_id, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion) FROM stdin;
+COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion) FROM stdin;
 \.
 
 
@@ -32632,14 +32631,6 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 ALTER TABLE ONLY masterorders_masterorderproduct
     ADD CONSTRAINT fk215b549b4a728bc8 FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
-
-
---
--- Name: fk2337e2f7574cfe41; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponent
-    ADD CONSTRAINT fk2337e2f7574cfe41 FOREIGN KEY (referencetechnology_id) REFERENCES technologies_technology(id) DEFERRABLE;
 
 
 --

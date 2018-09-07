@@ -43,7 +43,6 @@ import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentEntityType;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
@@ -269,17 +268,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             final Map<Long, BigDecimal> operationRuns) {
         for (Entity operationComponent : operationComponents) {
-            if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
-                Entity referenceTechnology = operationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-                EntityTree referenceOperationComponents = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-
-                preloadProductQuantitiesAndOperationRuns(referenceOperationComponents,
-                        operationProductComponentWithQuantityContainer, operationRuns);
-
-                continue;
-            }
-
             preloadOperationProductComponentQuantity(
                     operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS),
                     operationProductComponentWithQuantityContainer);
@@ -306,17 +294,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final Entity operationComponent, final Entity previousOperationComponent,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
-        if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
-            Entity referenceTechnology = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-            EntityTree referenceOperationComponent = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-
-            traverseProductQuantitiesAndOperationRuns(referenceTechnology, givenQuantity, referenceOperationComponent.getRoot(),
-                    previousOperationComponent, operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
-
-            return;
-        }
-
         if (previousOperationComponent == null) {
             Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
@@ -373,17 +350,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final BigDecimal givenQuantity, final Entity operationComponent, final Entity previousOperationComponent,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer,
             final Set<OperationProductComponentHolder> nonComponents, final Map<Long, BigDecimal> operationRuns) {
-        if (isTechnologyOperationComponentEntityTypeReferenceTechnology(operationComponent)) {
-            Entity referenceTechnology = operationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY);
-            EntityTree referenceOperationComponent = referenceTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-
-            traverseProductQuantitiesAndOperationRuns(referenceTechnology, givenQuantity, referenceOperationComponent.getRoot(),
-                    previousOperationComponent, operationProductComponentWithQuantityContainer, nonComponents, operationRuns);
-
-            return;
-        }
-
         if (previousOperationComponent == null) {
             Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
@@ -473,11 +439,6 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             operationProductComponentWithQuantityContainer.put(operationProductComponent,
                     quantity.setScale(5, RoundingMode.CEILING));
         }
-    }
-
-    private boolean isTechnologyOperationComponentEntityTypeReferenceTechnology(final Entity operationComponent) {
-        return TechnologyOperationComponentEntityType.REFERENCE_TECHNOLOGY.getStringValue().equals(
-                operationComponent.getStringField(TechnologyOperationComponentFields.ENTITY_TYPE));
     }
 
     @Override

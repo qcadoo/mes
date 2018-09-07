@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.technologies.validators;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
+
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -36,15 +46,6 @@ import com.qcadoo.model.api.EntityTree;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
 @Component
 public class TechnologyTreeValidators {
@@ -137,9 +138,7 @@ public class TechnologyTreeValidators {
             }
             if (entity.getId() != null) {
                 final Entity existingEntity = dataDefinition.get(entity.getId());
-                if (entity.equals(existingEntity)) {
-                    return false;
-                }
+                return !entity.equals(existingEntity);
             }
             return true;
         }

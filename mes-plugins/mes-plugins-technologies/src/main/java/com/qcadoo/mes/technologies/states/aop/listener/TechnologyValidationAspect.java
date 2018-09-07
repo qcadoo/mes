@@ -73,8 +73,6 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
                 true);
         technologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext);
-        // TODO DEV_TEAM when we fixed problem with referenced technology
-        // technologyValidationService.checkIfAllReferenceTechnologiesAreAceepted(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
         technologyValidationService.checkTechnologyCycles(stateChangeContext);
