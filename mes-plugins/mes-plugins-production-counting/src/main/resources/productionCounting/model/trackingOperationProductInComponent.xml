@@ -48,9 +48,6 @@
             <validatesScale max="5"/>
         </decimal>
         <dictionary name="givenUnit" dictionary="units"/>
-		<hasMany name="setTechnologyInComponents"
-                 joinField="trackingOperationProductInComponent" model="setTechnologyInComponents"
-                 cascade="delete"/>
 
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
               default="01component" />
@@ -70,9 +67,6 @@
     </fields>
 
     <hooks>
-        <onSave
-                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
-                method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
                        method="validatesWith"/>
     </hooks>

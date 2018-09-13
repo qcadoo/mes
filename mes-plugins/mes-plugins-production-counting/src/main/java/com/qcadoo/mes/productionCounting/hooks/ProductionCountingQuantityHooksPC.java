@@ -23,39 +23,20 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantityFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingQuantitySetComponentFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductionCountingQuantityHooksPC {
@@ -63,13 +44,7 @@ public class ProductionCountingQuantityHooksPC {
     private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
 
     @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ParameterService parameterService;
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
@@ -98,134 +73,4 @@ public class ProductionCountingQuantityHooksPC {
                 .setMaxResults(1).uniqueResult();
     }
 
-    public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-       if(parameterService.getParameter().getBooleanField(ParameterFieldsO.CREATE_SET_ELEMENTS_ON_ACCEPT)) {
-           String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-           String role = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.ROLE);
-
-           if (ProductionCountingQuantityRole.USED.getStringValue().equals(role) && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(typeOfMaterial)) {
-
-               Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-               if (product != null) {
-                   Optional<Entity> maybeTechnology = setTechnologyInComponentsService.getSetProductTechnology(product);
-                   maybeTechnology.ifPresent(entity -> generateProductionCountingQuantities(productionCountingQuantityDD,
-                           productionCountingQuantity, entity));
-               }
-           }
-       }
-    }
-
-    public void onSave(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        if(parameterService.getParameter().getBooleanField(ParameterFieldsO.CREATE_SET_ELEMENTS_ON_ACCEPT)) {
-            recalculateProductionCountingQuantities(productionCountingQuantity);
-        }
-    }
-
-    private void generateProductionCountingQuantities(DataDefinition productionCountingQuantityDD,
-            Entity productionCountingQuantity, Entity technology) {
-        List<Entity> productionCountingQuantitySetComponents = new ArrayList<>();
-
-        EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        List<EntityTreeNode> children = operationComponents.getRoot().getChildren();
-
-        Entity productOutComponent = operationComponents.getRoot()
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
-        BigDecimal outQuantity = productOutComponent.getDecimalField(OperationProductOutComponentFields.QUANTITY);
-
-        BigDecimal plannedQuantity = productionCountingQuantity
-                .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
-
-        for (Entity technologyOperationComponent : children) {
-            Entity operationProductOutComponent = technologyOperationComponent
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).get(0);
-
-            Entity productFromComponent = operationProductOutComponent
-                    .getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-            GlobalTypeOfMaterial productGlobalTypeOfMaterial = GlobalTypeOfMaterial
-                    .parseString(productFromComponent.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
-
-            if (productGlobalTypeOfMaterial == GlobalTypeOfMaterial.INTERMEDIATE) {
-                Entity productionCountingQuantitySetComponent = getProductionCountingQuantitySetComponentsDD().create();
-
-                Optional<Entity> operationProductInComponent = getInComponentFromParent(technologyOperationComponent,
-                        productFromComponent);
-                BigDecimal plannedQuantityFromProduct;
-                if (operationProductInComponent.isPresent()) {
-                    plannedQuantityFromProduct = operationProductInComponent.get()
-                            .getDecimalField(OperationProductInComponentFields.QUANTITY);
-                } else {
-                    plannedQuantityFromProduct = operationProductOutComponent
-                            .getDecimalField(OperationProductOutComponentFields.QUANTITY);
-                }
-
-                BigDecimal quantityFromSets = plannedQuantityFromProduct.multiply(plannedQuantity).divide(outQuantity,
-                        RoundingMode.HALF_UP);
-                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.QUANTITY_FROM_SETS,
-                        quantityFromSets);
-                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.PRODUCT,
-                        productFromComponent);
-                productionCountingQuantitySetComponent.setField(
-                        ProductionCountingQuantitySetComponentFields.PRODUCTION_COUNTING_QUANTITY, productionCountingQuantity);
-                productionCountingQuantitySetComponent.setField(
-                        ProductionCountingQuantitySetComponentFields.PLANNED_QUANTITY_FROM_PRODUCT, plannedQuantityFromProduct);
-                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.OUT_QUANTITY,
-                        outQuantity);
-
-                productionCountingQuantitySetComponents.add(productionCountingQuantitySetComponent);
-            }
-        }
-        productionCountingQuantity.setField(ProductionCountingQuantityFieldsPC.PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS,
-                productionCountingQuantitySetComponents);
-    }
-
-    private Optional<Entity> getInComponentFromParent(final Entity toc, final Entity product) {
-        Optional<Entity> opicForProduct = Optional.empty();
-        Entity parent = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .get(toc.getId()).getBelongsToField(TechnologyOperationComponentFields.PARENT);
-        if (parent != null) {
-            List<Entity> opics = parent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-            opicForProduct = opics.stream().filter(
-                    opic -> opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId().equals(product.getId()))
-                    .findFirst();
-            if (opicForProduct.isPresent()) {
-                return opicForProduct;
-            }
-        }
-        return opicForProduct;
-    }
-
-    private void recalculateProductionCountingQuantities(Entity productionCountingQuantity) {
-        List<Entity> productionCountingQuantitySetComponents = productionCountingQuantity
-                .getHasManyField(ProductionCountingQuantityFieldsPC.PRODUCTION_COUNTING_QUANTITY_SET_COMPONENTS);
-
-        if (productionCountingQuantitySetComponents == null) {
-            return;
-        }
-
-        BigDecimal plannedQuantity = productionCountingQuantity
-                .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
-
-        for (Entity productionCountingQuantitySetComponent : productionCountingQuantitySetComponents) {
-
-            BigDecimal plannedQuantityFromProduct = productionCountingQuantitySetComponent
-                    .getDecimalField(ProductionCountingQuantitySetComponentFields.PLANNED_QUANTITY_FROM_PRODUCT);
-            BigDecimal outQuantity = productionCountingQuantitySetComponent
-                    .getDecimalField(ProductionCountingQuantitySetComponentFields.OUT_QUANTITY);
-
-            if (plannedQuantityFromProduct != null && outQuantity != null) {
-                BigDecimal quantityFromSets = plannedQuantityFromProduct.multiply(plannedQuantity).divide(outQuantity,
-                        RoundingMode.HALF_UP);
-                productionCountingQuantitySetComponent.setField(ProductionCountingQuantitySetComponentFields.QUANTITY_FROM_SETS,
-                        quantityFromSets);
-
-                productionCountingQuantitySetComponent.getDataDefinition().save(productionCountingQuantitySetComponent);
-            }
-        }
-    }
-
-    private DataDefinition getProductionCountingQuantitySetComponentsDD() {
-        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY_SET_COMPONENT);
-    }
 }

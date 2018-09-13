@@ -1,27 +1,27 @@
 package com.qcadoo.mes.costCalculation.print;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
-import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
-import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
+import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
+import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class CostCalculationComponentsService {
@@ -99,28 +99,13 @@ public class CostCalculationComponentsService {
 
     public List<ComponentsCalculationHolder> fillBasicComponents(final EntityTree operationComponents) {
         List<ComponentsCalculationHolder> basicComponents = Lists.newArrayList();
-        Map<Long, Entity> componentsById = operationComponents.stream().collect(Collectors.toMap(x -> x.getId(), x -> x));
         List<Entity> tocs = operationComponents.stream()
                 .filter(pc -> L_COMPONENT.equals(pc.getStringField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE)))
                 .collect(Collectors.toList());
         for (Entity toc : tocs) {
-            if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).stream()
-                    .filter(op -> op.getBooleanField(OperationProductOutComponentFields.SET)).findAny().isPresent()) {
-                List<Entity> setOperations = toc.getHasManyField(TechnologyOperationComponentFields.CHILDREN);
-                for (Entity setOperation : setOperations) {
-                    Entity op = componentsById.get(setOperation.getId());
-                    if (!L_COMPONENT.equals(op.getStringField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE))) {
-                        ComponentsCalculationHolder component = new ComponentsCalculationHolder(op,
-                                op.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE));
-                        basicComponents.add(component);
-                    }
-                }
-            } else {
-                ComponentsCalculationHolder component = new ComponentsCalculationHolder(toc,
-                        toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE));
-                basicComponents.add(component);
-            }
-
+            ComponentsCalculationHolder component = new ComponentsCalculationHolder(toc,
+                    toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE));
+            basicComponents.add(component);
         }
         return basicComponents;
     }

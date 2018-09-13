@@ -48,7 +48,6 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -106,9 +105,6 @@ public class ProductionTrackingDetailsListeners {
     private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
 
     @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -158,7 +154,8 @@ public class ProductionTrackingDetailsListeners {
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
-        if (maybeForm.isPresent() && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
+        if (maybeForm.isPresent()
+                && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
             Entity productionTracking = productionTrackingForm.getEntity();
             productionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
@@ -175,7 +172,6 @@ public class ProductionTrackingDetailsListeners {
 
             List<Entity> recordInProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-            recordInProducts = recordInProducts.stream().filter(rp -> !setTechnologyInComponentsService.isSet(rp)).collect(Collectors.toList());
             Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
                     recordInProducts, technology);
 
@@ -184,16 +180,20 @@ public class ProductionTrackingDetailsListeners {
 
             List<Long> productIds = productionTrackingDocumentsHelper.findProductsWithInsufficientQuantity(productionTracking,
                     groupedRecordInProducts, recordOutProducts);
-            if(productIds.isEmpty()){
+            if (productIds.isEmpty()) {
                 stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
             } else {
                 String url = "/productionCounting/anomalyProductionTrackingDetails.html";
                 Long productionTrackingId = productionTrackingForm.getEntityId();
                 Map<String, Object> parameters = Maps.newHashMap();
                 parameters.put("form.productionTrackingId", productionTrackingId);
-                parameters.put("form.selectedTOPICs", recordInProducts.stream().filter(ip -> productIds
-                        .contains(ip.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()))
-                        .map(ip -> ip.getId()).map(String::valueOf).collect(Collectors.joining(",")));
+                parameters.put(
+                        "form.selectedTOPICs",
+                        recordInProducts
+                                .stream()
+                                .filter(ip -> productIds.contains(ip.getBelongsToField(
+                                        TrackingOperationProductInComponentFields.PRODUCT).getId())).map(ip -> ip.getId())
+                                .map(String::valueOf).collect(Collectors.joining(",")));
                 parameters.put("form.performAndAccept", Boolean.TRUE);
                 view.openModal(url, parameters);
             }
@@ -242,17 +242,15 @@ public class ProductionTrackingDetailsListeners {
             Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
             Entity recordOperationProductComponentDto;
-            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
-                    .equals(recordOperationProductComponent.getDataDefinition().getName())) {
-                recordOperationProductComponentDto = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                        .get(recordOperationProductComponent.getId());
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(recordOperationProductComponent
+                    .getDataDefinition().getName())) {
+                recordOperationProductComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(
+                        recordOperationProductComponent.getId());
             } else {
-                recordOperationProductComponentDto = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
-                        .get(recordOperationProductComponent.getId());
+                recordOperationProductComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
+                        recordOperationProductComponent.getId());
             }
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponentDto
                     .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));

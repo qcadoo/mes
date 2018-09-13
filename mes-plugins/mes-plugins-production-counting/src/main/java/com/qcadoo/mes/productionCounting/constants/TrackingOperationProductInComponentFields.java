@@ -41,8 +41,6 @@ public final class TrackingOperationProductInComponentFields {
 
     public static final String GIVEN_UNIT = "givenUnit";
 
-    public static final String SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
-
     public static final String WASTE_UNIT = "wasteUnit";
 
     public static final String WASTE_USED = "wasteUsed";

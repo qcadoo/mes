@@ -35,10 +35,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -48,7 +45,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class TrackingOperationProductComponentDetailsListeners {
@@ -66,12 +62,6 @@ public class TrackingOperationProductComponentDetailsListeners {
     private static final String L_NAME = "name";
 
     private static final String L_NUMBER = "number";
-
-    @Autowired
-    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
-
-    @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         Entity productEntity = getFormEntity(view).getBelongsToField(L_PRODUCT);
@@ -110,12 +100,10 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     public void givenQuantityChanged(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         calculateQuantity(view, componentState, args);
-        calculateQuantityFromSets(view);
     }
 
     public void givenQuantityChangedIn(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         calculateQuantity(view, componentState, args);
-        calculateQuantityFromSetsIn(view);
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -131,8 +119,8 @@ public class TrackingOperationProductComponentDetailsListeners {
             return;
         }
 
-        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
-                .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
+                (String) givenQuantityField.getFieldValue(), view.getLocale());
         if (maybeQuantity.isRight()) {
             if (maybeQuantity.getRight().isPresent()) {
                 BigDecimal givenQuantity = maybeQuantity.getRight().get();
@@ -141,15 +129,15 @@ public class TrackingOperationProductComponentDetailsListeners {
                     productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, givenQuantity);
                 } else {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder
-                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                    UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(baseUnit)) {
                         BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit, BigDecimal.ROUND_FLOOR);
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
-                                productComponent.getDataDefinition()
-                                        .getField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
+                                productComponent.getDataDefinition().getField(
+                                        TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
                                 "technologies.operationProductInComponent.validate.error.missingUnitConversion");
                         productComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, null);
                     }
@@ -165,8 +153,7 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     }
 
-    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
         FormComponent form = (FormComponent) view.getComponentByReference("form");
         Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
@@ -193,15 +180,15 @@ public class TrackingOperationProductComponentDetailsListeners {
                     productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, quantity);
                 } else {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder
-                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                    UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(givenUnit)) {
                         BigDecimal convertedQuantity = unitConversions.convertTo(quantity, givenUnit, BigDecimal.ROUND_FLOOR);
                         productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, convertedQuantity);
                     } else {
                         productComponent.addError(
-                                productComponent.getDataDefinition()
-                                        .getField(TrackingOperationProductInComponentFields.USED_QUANTITY),
+                                productComponent.getDataDefinition().getField(
+                                        TrackingOperationProductInComponentFields.USED_QUANTITY),
                                 "technologies.operationProductInComponent.validate.error.missingUnitConversion");
                         productComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, null);
                     }
@@ -215,46 +202,6 @@ public class TrackingOperationProductComponentDetailsListeners {
         }
         form.setEntity(productComponent);
 
-    }
-
-    private void calculateQuantityFromSets(ViewDefinitionState view) {
-        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-
-        Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils
-                .tryParse((String) usedQuantityField.getFieldValue(), view.getLocale());
-
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
-
-        trackingOperationProductOutComponent = setTrackingOperationProductsComponents
-                .recalculateTrackingOperationProductOutComponent(
-                        trackingOperationProductOutComponent.getBelongsToField("productionTracking"),
-                        trackingOperationProductOutComponent, usedQuantity.getRight().or(BigDecimal.ZERO));
-
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTrackingOperationProductsInComponents");
-        gridComponent.setEntities(trackingOperationProductOutComponent
-                .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS));
-    }
-
-    private void calculateQuantityFromSetsIn(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity trackingOperationProductOutComponent = form.getPersistedEntityWithIncludedFormValues();
-        if (setTechnologyInComponentsService.isSet(trackingOperationProductOutComponent)) {
-            FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
-
-            Either<Exception, Optional<BigDecimal>> usedQuantity = BigDecimalUtils
-                    .tryParse((String) usedQuantityField.getFieldValue(), view.getLocale());
-
-            Entity productionTracking = trackingOperationProductOutComponent
-                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-
-            trackingOperationProductOutComponent = setTechnologyInComponentsService.fillTrackingOperationProductOutComponent(
-                    trackingOperationProductOutComponent, productionTracking, usedQuantity.getRight().or(BigDecimal.ZERO));
-
-            GridComponent gridComponent = (GridComponent) view.getComponentByReference("setTechnologyInComponents");
-            gridComponent.setEntities(trackingOperationProductOutComponent
-                    .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS));
-        }
     }
 
 }

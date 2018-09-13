@@ -34,7 +34,6 @@ import com.qcadoo.mes.orders.states.constants.OrderStateChangePhase;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.states.ProductionCountingOrderStatesListenerService;
-import com.qcadoo.mes.productionCounting.states.TechnologyValidationServicePC;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
@@ -45,9 +44,6 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Configurable
 @RunIfEnabled(ProductionCountingConstants.PLUGIN_IDENTIFIER)
 public class ProductionCountingOrderStatesListenerAspect extends AbstractStateListenerAspect {
-
-    @Autowired
-    private TechnologyValidationServicePC technologyValidationServicePC;
 
     @Autowired
     private ProductionCountingOrderStatesListenerService productionCountingOrderStatesListenerService;
@@ -62,20 +58,6 @@ public class ProductionCountingOrderStatesListenerAspect extends AbstractStateLi
     @Before(PHASE_EXECUTION_POINTCUT)
     public void validationOnCompleted(final StateChangeContext stateChangeContext, final int phase) {
         productionCountingOrderStatesListenerService.validationOnComplete(stateChangeContext);
-    }
-
-    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = OrderStateStringValues.WILDCARD_STATE, targetState = OrderStateStringValues.ACCEPTED)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void validationOnAccepted(final StateChangeContext stateChangeContext, final int phase) {
-        technologyValidationServicePC.validateTypeOfProductionRecordingForOrder(stateChangeContext);
-    }
-
-    @RunInPhase(OrderStateChangePhase.PRE_VALIDATION)
-    @RunForStateTransition(sourceState = OrderStateStringValues.PENDING, targetState = OrderStateStringValues.IN_PROGRESS)
-    @Before(PHASE_EXECUTION_POINTCUT)
-    public void validationOnStart(final StateChangeContext stateChangeContext, final int phase) {
-        technologyValidationServicePC.validateTypeOfProductionRecordingForOrder(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)

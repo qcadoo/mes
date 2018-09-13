@@ -183,10 +183,6 @@
             <model:boolean name="fillOrderDescriptionBasedOnTechnologyDescription" default="false"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="createSetElementsOnAccept" default="false"/>
-        </model:model-field>
-
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="lockTechnologyTree" default="false"/>
@@ -260,11 +256,6 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
                         method="updateRibbonState"/>
-
-        <view:view-hook plugin="technologies" view="operationProductOutComponentDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.orders.hooks.OPOCDetailsHooksO"
-                        method="toggleSetField"/>
 
         <!--<report:report-template name="order"-->
         <!--resource="report/order.jrxml" />-->

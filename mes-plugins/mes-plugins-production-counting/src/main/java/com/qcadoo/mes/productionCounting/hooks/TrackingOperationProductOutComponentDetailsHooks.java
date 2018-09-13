@@ -26,10 +26,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentDtoFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,13 +40,8 @@ public class TrackingOperationProductOutComponentDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    private static final String L_SET_TAB = "setTab";
-
     @Autowired
     private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
-
-    @Autowired
-    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -61,12 +54,9 @@ public class TrackingOperationProductOutComponentDetailsHooks {
         Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm
                 .getPersistedEntityWithIncludedFormValues();
 
-        hideOrShowSetTab(view, trackingOperationProductOutComponent);
-
-        Entity trackingOperationProductInComponentDto = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
-                .get(trackingOperationProductOutComponentForm.getEntityId());
+        Entity trackingOperationProductInComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
+                trackingOperationProductOutComponentForm.getEntityId());
         FieldComponent plannedQuantity = (FieldComponent) view
                 .getComponentByReference(TrackingOperationProductOutComponentDtoFields.PLANNED_QUANTITY);
         plannedQuantity.setFieldValue(trackingOperationProductInComponentDto
@@ -83,14 +73,6 @@ public class TrackingOperationProductOutComponentDetailsHooks {
                 .getComponentByReference(TrackingOperationProductOutComponentDtoFields.WASTES_SUM);
         wastesSum.setFieldValue(trackingOperationProductInComponentDto
                 .getDecimalField(TrackingOperationProductOutComponentDtoFields.WASTES_SUM));
-    }
-
-    private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductOutComponent) {
-        view.getComponentByReference(L_SET_TAB)
-                .setVisible(setTrackingOperationProductsComponents.isSet(
-                        trackingOperationProductOutComponent
-                                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING),
-                        trackingOperationProductOutComponent));
     }
 
 }
