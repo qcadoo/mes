@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="technologiesGenerator" xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:view="http://schema.qcadoo.org/modules/view" xmlns:model="http://schema.qcadoo.org/modules/model"
+        group="other"
+        version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+    <information>
+        <name>MES - Technologies Generator</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>This plugin aims to aid process of creating concrete technologies, based on template ones.</description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>technologies</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales" />
+
+        <menu:menu-item name="technologiesGenerator" category="technology"
+                        view="recentlyGeneratedTechnologiesList" />
+
+        <view:view resource="view/generator.xml" />
+        <view:view resource="view/recentlyGeneratedTechnologiesList.xml" />
+
+        <model:model model="generatorContext" resource="model/generatorContext.xml" />
+        <model:model model="generatorTreeNode" resource="model/generatorTreeNode.xml" />
+        <model:model model="generatorTechnologiesForProduct" resource="model/generatorTechnologiesForProduct.xml" />
+
+        <!-- HM fields for each introduced BT field. Added to prevent from violating DB constraints -->
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="generatorTechnologiesForProducts" joinField="product" model="generatorTechnologiesForProduct"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="generatorTechnologiesForProducts" joinField="technology" model="generatorTechnologiesForProduct"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="generatorTreeNodes" joinField="product" model="generatorTreeNode"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="generatorTreeNodesProd" joinField="productTechnology" model="generatorTreeNode"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="generatorTreeNodesOrig" joinField="originalTechnology" model="generatorTreeNode"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+        <model:model-field plugin="technologies" model="operation">
+            <model:hasMany name="generatorTreeNodes" joinField="operation" model="generatorTreeNode"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:belongsTo name="generatorContext" plugin="technologiesGenerator" model="generatorContext"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="generatorContext" plugin="technologiesGenerator" model="generatorContext"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:boolean name="fromGenerator" default="false"/>
+        </model:model-field>
+                
+                
+        <view:view-ribbon-group resource="view/ribbonExtensions/technologyParameters.xml" />
+        <view:view resource="view/technologiesGeneratorParameters.xml"/>        
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
+        </model:model-field>
+        <view:view-listener plugin="basic" view="parameters"
+            component="form" event="redirectToTechnologyParameters"
+            class="com.qcadoo.mes.technologiesGenerator.listeners.ParameterListenersTG"
+            method="redirectToTechnologyParameters" />
+
+        <view:view-grid-column view="technologiesList" component="grid" plugin="technologies">
+            <view:column name="generatorName" fields="generatorName" orderable="true" searchable="true" width="55"/>
+        </view:view-grid-column>
+
+    </modules>
+
+    <features>
+        <end-user />
+    </features>
+
+</plugin>

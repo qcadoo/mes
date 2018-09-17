@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="ordersForSubproductsGeneration" group="other" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd
+		http://schema.qcadoo.org/modules/model
+		http://schema.qcadoo.org/modules/model.xsd
+		http://schema.qcadoo.org/modules/view
+		http://schema.qcadoo.org/modules/view.xsd
+		http://schema.qcadoo.org/modules/localization
+		http://schema.qcadoo.org/modules/localization.xsd">
+
+
+    <information>
+        <name>MES - Orders For Subproducts Generation</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Provides functionality for orders subproducts generation.</description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>materialRequirementCoverageForOrder</plugin>
+            <version>[1.3.0</version>
+        </dependency>
+        <dependency>
+            <plugin>productionScheduling</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>masterOrders</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/generateMaterialRequirementCoverageForOrder.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/generateMaterialRequirementCoverageForOrder.xml"/>
+
+        <model:model model="subOrders" resource="model/subOrders.xml"/>
+        <model:model model="relatedOrderDto" resource="model/relatedOrderDto.xml"/>
+
+        <model:model-field plugin="orders" model="order">
+            <model:belongsTo name="root" model="order" copyable="false"/>
+        </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:belongsTo name="parent" model="order" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:integer name="level" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="relatedOrders" joinField="order" model="relatedOrderDto"
+                           plugin="ordersForSubproductsGeneration"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialRequirementCoverageForOrder" model="coverageForOrder">
+            <model:boolean name="generatedOrders"/>
+        </model:model-field>
+
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="children" model="order"
+                           joinField="parent" cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field model="costCalculation" plugin="costCalculation">
+            <model:boolean name="includeComponents" default="true"/>
+        </model:model-field>
+
+        <view:view-hook plugin="orderSupplies"
+                        view="generateMaterialRequirementCoverage"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.MRCForOrderDetailsHooksOFSPG"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="orders" view="orderDetails" type="beforeRender"
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.OrderDetailsHooksOFSPG"
+                        method="onBeforeRender"/>
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onSave
+                    class="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.hooks.OrderHooksPS"
+                    method="onSave"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onDelete
+                    class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.OrderHooksOFSPG"
+                    method="onDelete"/>
+        </model:model-hook>
+
+        <view:view-listener plugin="orderSupplies"
+                            view="generateMaterialRequirementCoverage"
+                            component="form" event="generateOrdersForSubProducts"
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.listeners.OrdersForSubproductsGenerationListeners"
+                            method="generateOrdersForSubProducts"/>
+
+
+        <view:view-listener plugin="productionScheduling" view="operationDurationDetailsInOrder"
+                            component="form" event="saveDatesInSubOrders"
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.listeners.OperationDurationDetailsInOrderListenerOFSPG"
+                            method="saveDatesInSubOrders"/>
+
+
+        <view:view-listener plugin="costCalculation"
+                            view="costCalculationDetails"
+                            component="form" event="saveComponentsNominalCosts"
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.costCalculation.CostCalculationDetailsListenersOFSPG"
+                            method="saveComponentsNominalCosts"/>
+
+        <model:model-field plugin="orders" model="order">
+            <model:boolean name="includeOrdersForComponent"/>
+        </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:datetime name="plannedStartAllOrders" copyable="false"/>
+        </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:datetime name="plannedFinishAllOrders" copyable="false"/>
+        </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:datetime name="calculatedFinishAllOrders" copyable="false"/>
+        </model:model-field>
+        <model:model-field plugin="orders" model="order">
+            <model:datetime name="calculatedStartAllOrders" copyable="false"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeComponents" default="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="automaticallyGenerateOrdersForComponents" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="ordersGeneratedByCoverage" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="subOrders" joinField="order" model="subOrders"
+                           plugin="ordersForSubproductsGeneration"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="ordersGroups" model="ordersGroup">
+            <model:hasMany name="subOrders" joinField="ordersGroup" model="subOrders"
+                           plugin="ordersForSubproductsGeneration"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+
+        <view:view resource="view/ordersForSubproducts.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/operationDurationDetailsInOrder.xml"/>
+        <view:view-tab resource="view/tabExtensions/costCalculationDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+
+        <view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.hooks.OperationDurationInOrderDetailsHooksOFSPG"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="costCalculation" view="costCalculationDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.CostCalculationDetailsHooksOFSPG"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.ParametersHooksOFSPG"
+                        method="onBeforeRender"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="redirectToOrdersForSubproducts"
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.listeners.OrderDetailsListenersOFSPG"
+                            method="redirectToOrdersForSubproducts"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/costCalculationDetails.xml"/>
+
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+
+</plugin>

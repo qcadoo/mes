@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="advancedGenealogy" group="genealogy" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+
+
+		http://schema.qcadoo.org/modules/menu 
+		http://schema.qcadoo.org/modules/menu.xsd
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
+
+    <information>
+        <name>MES - Advanced Genealogy</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Trace from which batches did you produce a specified product batch and vice versa.</description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>orders</plugin>
+            <version>[0.4.0</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <model:model model="batch" resource="model/batch.xml"/>
+        <model:model model="batchStateChange" resource="model/batchStateChange.xml"/>
+        <model:model model="trackingRecord" resource="model/trackingRecord.xml"/>
+        <model:model model="trackingRecordStateChange" resource="model/trackingRecordStateChange.xml"/>
+        <model:model model="usedBatchSimple" resource="model/usedBatchSimple.xml"/>
+        <model:model model="genealogyReport" resource="model/genealogyReport.xml"/>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="batchStateChange" plugin="advancedGenealogy"
+                             model="batchStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="trackingRecordStateChange"
+                             plugin="advancedGenealogy" model="trackingRecordStateChange"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="batchStateChanges" plugin="advancedGenealogy"
+                           model="batchStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="trackingRecordStateChanges" plugin="advancedGenealogy"
+                           model="trackingRecordStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="batchNumberUniqueness" values="01globally,02supplier,03supplierAndProduct"
+                        default="01globally" required="true"/>
+        </model:model-field>
+
+        <model:model-hook model="parameter" plugin="basic">
+            <model:validatesWith
+                    class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterValidatorsAG"
+                    method="checkIfBatchNumberUniquenessIsSelected"/>
+        </model:model-hook>
+
+        <model:model-hook model="parameter" plugin="basic">
+            <model:onCreate
+                    class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterHooksAG"
+                    method="addFieldsForParameter"/>
+        </model:model-hook>
+
+        <menu:menu-category name="advancedGenealogy" defaultAuthorizationRole="ROLE_GENEALOGY"/>
+
+        <menu:menu-item name="batches" category="advancedGenealogy"
+                        view="batchesList" defaultAuthorizationRole="ROLE_BATCHES"/>
+
+        <menu:menu-item name="trackingRecordsSimple" category="advancedGenealogy"
+                        view="trackingRecordsSimpleList" defaultAuthorizationRole="ROLE_ADVANCED_GENEALOGY"/>
+
+        <menu:menu-item view="genealogyTablesList" name="genealogyTables"
+                        category="advancedGenealogy" defaultAuthorizationRole="ROLE_ADVANCED_GENEALOGY"/>
+
+        <menu:menu-item name="tree" category="advancedGenealogy"
+                        view="genealogyTree" defaultAuthorizationRole="ROLE_ADVANCED_GENEALOGY"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
+
+        <view:view resource="view/batchesList.xml"/>
+        <view:view resource="view/batchDetails.xml"/>
+        <view:view resource="view/trackingRecordsSimpleList.xml"/>
+        <view:view resource="view/trackingRecordSimpleDetails.xml"/>
+        <view:view resource="view/genealogyTablesList.xml"/>
+        <view:view resource="view/genealogyTableDetails.xml"/>
+
+        <view:view resource="view/batchesList.xml"/>
+        <view:view resource="view/batchDetails.xml"/>
+        <view:view resource="view/trackingRecordsSimpleList.xml"/>
+        <view:view resource="view/trackingRecordSimpleDetails.xml"/>
+        <view:view resource="view/usedBatchSimpleDetails.xml"/>
+        <view:view resource="view/genealogyTree.xml"/>
+        <view:view resource="view/advancedGenealogyParameters.xml"/>
+
+        <view:resource uri="public/**/*"/>
+
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToAdvancedGenealogyParameters"
+                            class="com.qcadoo.mes.advancedGenealogy.listeners.ParametersListenersAGFO"
+                            method="redirectToAdvancedGenealogyParameters"/>
+
+        <custom:custom
+                class="com.qcadoo.mes.advancedGenealogy.states.module.BatchStateServiceRegisterModule"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+
+</plugin>
