@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="productionScheduling" view="operationDurationDetailsInOrder">
+
+    <windowTab name="ordersForComponetTab">
+        <component type="flowGridLayout" name="locationsGridLayout"
+                   columns="3" rows="6">
+            <layoutElement column="1" row="1" height="1">
+                <component type="checkbox" name="includeOrdersForComponent"
+                           reference="includeOrdersForComponent" field="#{form}.includeOrdersForComponent" hasDescription="true">
+                    <option type="labelWidth" value="45" />
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2" height="1">
+                <component type="calendar" name="calculatedStartAllOrders" reference="calculatedStartAllOrders"
+                           field="#{form}.calculatedStartAllOrders" defaultEnabled="false">
+                    <option type="withTimePicker" value="true"/>
+                    <option type="labelWidth" value="45" />
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3" height="1">
+                <component type="calendar" name="calculatedFinishAllOrders" reference="calculatedFinishAllOrders"
+                           field="#{form}.calculatedFinishAllOrders" defaultEnabled="false">
+                    <option type="withTimePicker" value="true"/>
+                    <option type="labelWidth" value="45" />
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="1" width="2" minHeight="6">
+                <component type="grid" name="orderTimeCalculationsGrid"
+                           model="orderTimeCalculation" reference="orderTimeCalculationsGrid">
+
+                    <option type="column" name="orderId" fields="order" expression="#order['id']"
+                            hidden="true"/>
+
+                    <option type="column" name="number" fields="order" expression="#order['number']"
+                            link="true"  width="100"
+                            correspondingView="productionScheduling/operationDurationDetailsInOrder"
+                            correspondingField="orderId"/>
+
+                    <option type="column" name="name" fields="order" expression="#order['name']"
+                            link="true"  width="200"
+                            correspondingView="productionScheduling/operationDurationDetailsInOrder"
+                            correspondingField="orderId"/>
+
+                    <option type="column" name="effectiveDateFrom" fields="effectiveDateFrom" width="60"/>
+                    <option type="column" name="effectiveDateTo" fields="effectiveDateTo" width="60"/>
+
+
+                    <option type="order" column="effectiveDateFrom" direction="asc"/>
+
+                    <option type="searchable" value="number, name,effectiveDateFrom,effectiveDateTo"/>
+                    <option type="orderable" value="number, name,effectiveDateFrom,effectiveDateTo"/>
+
+
+                    <option type="fixedHeight" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
+
+                    <criteriaModifier
+                            class="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.criteriaModifiers.OrderTimeCalculationCM"
+                            method="forOrderAndSubOrders"/>
+
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+
+</windowTabExtension>

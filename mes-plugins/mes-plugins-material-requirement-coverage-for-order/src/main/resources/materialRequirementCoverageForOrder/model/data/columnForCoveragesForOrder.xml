@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<column>
+	<row IDENTIFIER="productNumber" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productNumber" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productNumber" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="productName" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productName" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productName" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="state" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.state" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.state" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="lackFromDate" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.lackFromDate" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.lackFromDate" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="demandQuantity" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.demandQuantity" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.demandQuantity" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="coveredQuantity" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.coveredQuantity" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.coveredQuantity" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="reserveMissingQuantity" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.reserveMissingQuantity" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.reserveMissingQuantity" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="productUnit" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.productUnit" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="locationsQuantity" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.locationsQuantity" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.locationsQuantity" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="deliveredQuantity" NAME="materialRequirementCoverageForOrder.columnForCoveragesForOrder.name.value.deliveredQuantity" DESCRIPTION="materialRequirementCoverageForOrder.columnForCoveragesForOrder.description.value.deliveredQuantity" COLUMNFILLER="com.qcadoo.mes.materialRequirementCoverageForOrder.columnExtension.MaterialRequirementCoverageForOrderColumnFiller" ALIGNMENT="02right" />
+</column>

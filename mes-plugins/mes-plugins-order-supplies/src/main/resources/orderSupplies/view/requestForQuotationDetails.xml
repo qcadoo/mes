@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="requestForQuotationDetails" modelPlugin="supplyNegotiations" modelName="requestForQuotation">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="generate">
+                <bigButton name="generateRequestForQuotation" icon="pdfIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent({
+											name : 'validateColumnsWidthForRequest'
+										});
+										#{form}.performEvent({
+											name : 'printRequestForQuotationReport',
+											args : ['pdf']
+										});
+									}
+								});
+							]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="status">
+                <smallButton name="accept" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(supplyNegotiations.requestForQuotationDetails.window.ribbon.status.accept.confirm)}")) {
+										#{form}.performEvent('changeState', ["02accepted"]);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="cancel" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(supplyNegotiations.requestForQuotationDetails.window.ribbon.status.cancel.confirm)}")) {
+										#{form}.performEvent('changeState', ["03declined"]);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="offers">
+                <bigButton name="createOffer" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('createOffer', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showOffersForGivenRequestForQuotation"
+                           icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('showOffersForGivenRequestForQuotation', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="form"
+                       reference="form">
+                <script>
+                    <![CDATA[
+						var deleteBtn = #{window}.getRibbonItem("actions.delete");
+
+						var acceptBtn = #{window}.getRibbonItem("status.accept");
+	    			    var cancelBtn = #{window}.getRibbonItem("status.cancel");
+
+						var generateRequestForQuotationBtn = #{window}.getRibbonItem("generate.generateRequestForQuotation");
+
+						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"];
+						var buttonsStatus = ["status.accept", "status.cancel"];
+
+				        var listener = {
+					    	onSetValue: function() {
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+
+								if (isSaved) {
+									generateRequestForQuotationBtn.enable();
+
+						     		var state = #{state}.getValue().content.value;
+
+									if (state == "01draft") {
+										enableButtons(buttonsStandard);
+										deleteBtn.enable();
+										acceptBtn.enable();
+										cancelBtn.enable();
+									} else if (state == "02accepted") {
+										disableButtons(buttonsStandard, "#{translate(supplyNegotiations.requestForQuotationDetails.window.ribbon.message.isAccepted)}");
+										deleteBtn.disable("#{translate(supplyNegotiations.requestForQuotationDetails.window.ribbon.message.isAccepted)}");
+										acceptBtn.disable();
+										cancelBtn.enable();
+									} else if (state == "03declined"){
+										disableButtons(buttonsStandard, "#{translate(supplyNegotiations.requestForQuotationDetails.window.ribbon.message.isDeclined)}");
+										deleteBtn.enable();
+										acceptBtn.disable();
+										cancelBtn.disable();
+									}
+								} else {
+									generateRequestForQuotationBtn.disable();
+
+									enableButtons(buttonsStandard);
+									disableButtons(buttonsStatus);
+								}
+							}
+						};
+
+						function disableButtons(buttonNames, message) {
+							for (var buttonName in buttonNames) {
+								if (message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+								}
+							}
+						}
+
+						function enableButtons(buttonNames, message) {
+							for (var buttonName in buttonNames) {
+								if (message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
+								}
+							}
+						}
+
+						#{form}.addOnChangeListener(listener);
+					]]>
+                     
+                </script>
+                <component type="gridLayout" name="mainTabGridLayout"
+                           columns="3" rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number" defaultEnabled="true">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name" defaultEnabled="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="3">
+                        <component type="textarea" reference="description" name="description" field="description"
+                                   defaultEnabled="true"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
+                        <component type="lookup" name="supplier" reference="supplier"
+                                   field="supplier">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                                      method="fillBufferForSupplier"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="2" height="2">
+                        <component type="borderLayout" name="desiredTimeOfDeliveryBorderLayout">
+                            <option type="label" value="desiredTimeOfDeliveryTab"/>
+                            <component type="gridLayout" name="desiredTimeOfDeliveryGridLayout"
+                                       columns="1" rows="2">
+                                <layoutElement column="1" row="1">
+                                    <component type="calendar" name="desiredDate" field="desiredDate"
+                                               reference="desiredDate" defaultEnabled="true">
+                                        <option type="withTimePicker" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="input" name="workingDaysAfterOrder"
+                                               field="workingDaysAfterOrder" reference="workingDaysAfterOrder"
+                                               defaultEnabled="true">
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="lookup" name="negotiation" reference="negotiation"
+                                   field="negotiation" defaultEnabled="true">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener
+                                    class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                                    method="fillNegotiationDateField"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultEnabled="never">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="2">
+                        <component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
+                                   hasBorders="false" columns="4" rows="1">
+                            <layoutElement column="1" row="1" width="3">
+                                <component type="input" name="deliveryDateBuffer"
+                                           reference="deliveryDateBuffer" defaultEnabled="never">
+                                    <option type="labelWidth" value="40"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="1">
+                                <component type="label" name="deliveryDateBufferDays"
+                                           reference="deliveryDateBufferDays" required="false">
+                                    <option type="labelStyle" value="label"/>
+                                </component>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="4">
+                        <component type="calendar" name="negotiationDate"
+                                   defaultEnabled="never" hasDescription="true" reference="negotiationDate">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="printRequestForQuotationReport"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                          method="printRequestForQuotationReport"/>
+                <listener event="createOffer"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                          method="createOffer"/>
+                <listener event="showOffersForGivenRequestForQuotation"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                          method="showOffersForGivenRequestForQuotation"/>
+
+                <listener event="changeState"
+                          class="com.qcadoo.mes.supplyNegotiations.states.client.RequestForQuotationViewClient"
+                          method="changeState"/>
+
+                <listener event="validateColumnsWidthForRequest"
+                          class="com.qcadoo.mes.supplyNegotiations.listeners.RequestForQuotationDetailsListeners"
+                          method="validateColumnsWidthForRequest"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="productsTab">
+            <component type="gridLayout" name="productsGridLayout"
+                       columns="1" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="requestForQuotationProducts"
+                               reference="requestForQuotationProducts" source="#{form}.requestForQuotationProducts"
+                               defaultEnabled="false">
+                        <option type="column" name="succession" fields="succession"
+                                width="30"/>
+                        <option type="column" name="number" fields="product"
+                                expression="#product['number']" link="true"/>
+                        <option type="column" name="name" fields="product"
+                                expression="#product['name']" link="true"/>
+                        <option type="column" name="orderedQuantity" fields="orderedQuantity"/>
+                        <option type="column" name="annualVolume" fields="annualVolume"/>
+                        <option type="column" name="unit" fields="product"
+                                expression="#product['unit']" width="70"/>
+                        <option type="column" name="operationNumber" fields="operation"
+                                expression="#operation['number']"/>
+                        <option type="column" name="productCatalogNumber" fields="productCatalogNumber"
+                                expression="#productCatalogNumber['catalogNumber']"/>
+
+                        <option type="order" column="succession" direction="asc"/>
+
+                        <option type="searchable"
+                                value="number,name,orderedQuantity,annualVolume,unit,operationNumber,productCatalogNumber"/>
+                        <option type="orderable"
+                                value="succession,number,name,orderedQuantity,annualVolume,unit,operationNumber,productCatalogNumber"/>
+
+                        <option type="correspondingView"
+                                value="supplyNegotiations/requestForQuotationProductDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="historyTab">
+            <component type="gridLayout" name="loggingsGridLayout"
+                       columns="2" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="loggingsGrid" reference="loggingsGrid"
+                               source="#{form}.stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="worker" fields="worker"/>
+
+                        <option type="order" column="dateAndTime" direction="asc"/>
+
+                        <option type="searchable" value="dateAndTime,targetState,worker"/>
+                        <option type="orderable" value="dateAndTime,targetState,worker"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks"
+                method="fillBufferForSupplier"/>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks"
+                method="fillNegotiationDateField"/>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks"
+                method="updateRibbonState"/>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks"
+                method="changeFieldsEnabledDependOnState"/>
+        <beforeRender
+                class="com.qcadoo.mes.supplyNegotiations.hooks.RequestForQuotationDetailsHooks"
+                method="filterStateChangeHistory"/>
+    </hooks>
+
+</view>

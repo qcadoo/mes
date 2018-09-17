@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="materialRequirementCoverageForOrderDetails" modelName="coverageForOrder"
+	menuAccessible="true">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back,actions.delete" />
+			<group name="coverage">
+				<bigButton name="printMaterialRequirementCoverage" icon="pdfIcon24.png"
+					action="#{form}.fireEvent(printMaterialRequirementCoverageForOrder,pdf);"
+					state="disabled" />
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab">
+			<component type="form" name="materialRequirementCoverageForm"
+				reference="form">
+				<component type="gridLayout" name="mainTabGridLayout"
+					columns="3" rows="8">
+					<layoutElement column="1" row="1">
+						<component type="hidden" name="generated" reference="generated"
+							field="generated" defaultVisible="true" />
+						<component type="hidden" name="saved" reference="saved"
+							field="saved" defaultVisible="true" />
+						<component type="calendar" name="actualDate" field="actualDate"
+							reference="actualDate">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2">
+						<component type="calendar" name="coverageToDate" field="coverageToDate"
+							reference="coverageToDate">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3" height="5">
+						<component type="borderLayout" name="locationBorderLayout">
+							<component type="awesomeDynamicList" name="coverageLocations"
+								source="#{form}.coverageLocations" reference="coverageLocations">
+								<components>
+									<component type="gridLayout" name="productLayout"
+										columns="4" rows="1">
+										<layoutElement column="2" row="1" width="2">
+											<component type="lookup" name="location" field="location"
+												reference="location" hasLabel="false">
+												<option type="column" fields="name" name="name" link="true" />
+
+												<option type="searchable" value="number,name" />
+												<option type="orderable" value="number,name" />
+
+												<option type="expression" value="#number + ' - ' + #name" />
+												<option type="fieldCode" value="number" />
+
+												<criteriaModifier
+													class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+													method="showWarehousesOnly" />
+													
+											</component>
+										</layoutElement>
+									</component>
+								</components>
+
+								<option type="hasBorder" value="false" />
+								<option type="hasButtons" value="true" />
+							</component>
+
+							<option type="label" value="locationForCoveragesLabel" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="input" name="number" field="number"
+							reference="number" />
+					</layoutElement>
+					<layoutElement column="2" row="2">
+						<component type="calendar" name="generatedDate" field="generatedDate"
+							reference="generatedDate" defaultEnabled="never">
+							<option type="withTimePicker" value="true" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="3">
+						<component type="input" name="generatedBy" field="generatedBy"
+							reference="generatedBy" defaultEnabled="never" />
+					</layoutElement>
+					<layoutElement column="2" row="4" height="3">
+						<component type="borderLayout" name="onlyProductsInCoverageBorderLayout"
+							reference="onlyProductsInCoverageBorderLayout">
+							<option type="label" value="onlyProductsInCoverageLabel" />
+							<component type="gridLayout" name="onlyProductsInCoverageGridLayout"
+								columns="1" rows="3">
+								<layoutElement column="1" row="1">
+									<component type="select" name="productExtracted"
+										field="productExtracted" reference="productExtracted" />
+								</layoutElement>
+								<layoutElement column="1" row="2">
+									<component type="lookup" name="belongsToFamily"
+										field="belongsToFamily" reference="belongsToFamily">
+										<option type="column" fields="name" name="name" link="true" />
+										<option type="column" fields="entityType" name="entityType" />
+
+										<option type="searchable" value="number,name,entityType" />
+										<option type="orderable" value="number,name,entityType" />
+
+										<option type="expression" value="#number + ' - ' + #name" />
+										<option type="fieldCode" value="number" />
+
+										<criteriaModifier
+											class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+											method="showProductFamilyOnly" />
+									</component>
+								</layoutElement>
+								<layoutElement column="1" row="3">
+									<component type="select" name="coverageType" field="coverageType"
+										reference="coverageType" />
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="7">
+						<component type="borderLayout" name="includedInCoverageBorderLayout"
+							reference="includedInCoverageBorderLayout">
+							<option type="label" value="includedInCoverageLabel" />
+							<component type="gridLayout" name="includedInCoverageGridLayout"
+								columns="1" rows="1">
+								<layoutElement column="1" row="1">
+									<component type="checkbox" name="includeDraftDeliveries"
+										field="includeDraftDeliveries" reference="includeDraftDeliveries" />
+								</layoutElement>
+							</component>
+						</component>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="true" />
+				<option type="expression" value="#number" />
+
+				<listener event="printMaterialRequirementCoverageForOrder"
+					class="com.qcadoo.mes.materialRequirementCoverageForOrder.listeners.GenerateMRCForOrderListeners"
+					method="printMaterialRequirementCoverageForOrder" />
+			</component>
+		</windowTab>
+
+		<windowTab name="coverageProductsTab">
+			<component type="grid" name="coverageProducts" source="#{form}.coverageProducts"
+				reference="coverageProducts">
+				<option type="column" name="productNumber" fields="product"
+					expression="#product['number']" width="50" link="true" />
+				<option type="column" name="productName" fields="product"
+					expression="#product['name']" width="75" link="true" />
+				<option type="column" name="state" fields="state" width="40" />
+				<option type="column" name="lackFromDate" fields="lackFromDate"
+					width="35" />
+				<option type="column" name="demandQuantity" fields="demandQuantity"
+					width="35" />
+				<option type="column" name="coveredQuantity" fields="coveredQuantity"
+					width="35" />
+				<option type="column" name="reserveMissingQuantity" fields="reserveMissingQuantity"
+					width="35" />
+				<option type="column" name="productUnit" fields="product"
+					expression="#product['unit']" width="30" />
+				<option type="column" name="locationsQuantity" fields="locationsQuantity"
+					width="35" />
+				<option type="column" name="deliveredQuantity" fields="deliveredQuantity"
+					width="35" />
+
+				<option type="order" column="state" direction="desc" />
+
+				<option type="searchable"
+					value="productNumber,productName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity" />
+				<option type="orderable"
+					value="productNumber,productName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity" />
+
+				<option type="correspondingView" value="materialRequirementCoverageForOrder/coverageProductLoggingDetails" />
+				<option type="correspondingComponent" value="form" />
+
+				<option type="fullscreen" value="true" />
+				<option type="multiselect" value="true" />
+				<option type="fixedHeight" value="true" />
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.materialRequirementCoverageForOrder.hooks.MRCForOrderDetailsHooks"
+			method="onBeforeRender" />
+	</hooks>
+
+</view>

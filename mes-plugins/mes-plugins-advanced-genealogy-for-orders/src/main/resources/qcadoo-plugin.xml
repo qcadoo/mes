@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="advancedGenealogyForOrders" group="genealogy" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
+	xsi:schemaLocation="
+		http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd 
+		http://schema.qcadoo.org/modules/model 
+		http://schema.qcadoo.org/modules/model.xsd 
+		http://schema.qcadoo.org/modules/view 
+		http://schema.qcadoo.org/modules/view.xsd 
+		http://schema.qcadoo.org/modules/localization 
+		http://schema.qcadoo.org/modules/localization.xsd 
+		http://schema.qcadoo.org/modules/menu
+		http://schema.qcadoo.org/modules/menu.xsd 
+		http://schema.qcadoo.org/modules/custom 
+		http://schema.qcadoo.org/modules/custom.xsd">
+
+	<information>
+		<name>MES - Advanced Genealogy For Orders</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+		<description>Integrates genealogy tracking with production orders.</description>
+		<license>AGPL</license>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>advancedGenealogy</plugin>
+			<version>[0.4.10</version>
+		</dependency>
+		<dependency>
+			<plugin>workPlans</plugin>
+			<version>[0.4.0</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model model="genealogyProductInBatch" resource="model/genealogyProductInBatch.xml" />
+		<model:model model="genealogyProductInComponent" resource="model/genealogyProductInComponent.xml" />
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:enum name="trackingRecordForOrderTreatment"
+				values="01duringProduction,02unchangablePlanAfterOrderAccept,03unchangablePlanAfterOrderStart"
+				default="01duringProduction" required="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="batchNumberRequiredProducts" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="batchNumberRequiredInputProducts"
+				default="false" />
+		</model:model-field>
+
+		<model:model-field plugin="orders" model="order">
+			<model:enum name="trackingRecordTreatment"
+				values="01duringProduction,02unchangablePlanAfterOrderAccept,03unchangablePlanAfterOrderStart"
+				required="true" />
+		</model:model-field>
+
+		<model:model-field plugin="advancedGenealogy" model="trackingRecord">
+			<model:belongsTo name="order" plugin="orders" model="order" />
+		</model:model-field>
+		<model:model-field plugin="orders" model="order">
+			<model:hasMany name="trackingRecords" plugin="advancedGenealogy"
+				model="trackingRecord" joinField="order" cascade="delete" />
+		</model:model-field>
+		<model:model-field plugin="advancedGenealogy" model="trackingRecord">
+			<model:hasMany name="genealogyProductInComponents"
+				plugin="advancedGenealogyForOrders" model="genealogyProductInComponent"
+				joinField="trackingRecord" cascade="delete" copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="technologies" model="technology">
+			<model:boolean name="technologyBatchRequired" />
+		</model:model-field>
+
+		<model:model-field plugin="technologies"
+			model="operationProductInComponent">
+			<model:boolean name="productBatchRequired" />
+		</model:model-field>
+
+		<model:model-field model="technologyOperationComponent"
+			plugin="technologies">
+			<model:hasMany name="genealogyProductInComponents"
+				joinField="technologyOperationComponent" model="genealogyProductInComponent"
+				plugin="advancedGenealogyForOrders" cascade="delete" />
+		</model:model-field>
+
+		<model:model-hook model="parameter" plugin="basic">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParameterValidatorsAGFO"
+				method="checkIfTrackingRecordForOrderTreatmentIsSelected" />
+		</model:model-hook>
+		<model:model-hook model="parameter" plugin="basic">
+			<model:onCreate
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParameterHooksAGFO"
+				method="addFieldsForParameter" />
+		</model:model-hook>
+
+		<model:model-hook model="order" plugin="orders">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OrderModelValidators"
+				method="checkSelectedTrackingRecordForOrderTreatment" />
+		</model:model-hook>
+		<model:model-hook model="order" plugin="orders">
+			<model:onSave
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OrderModelHooksAGFO"
+				method="checkIfTrackingRecordTreatmentIsEmpty" />
+		</model:model-hook>
+		<model:model-hook model="order" plugin="orders">
+			<model:onSave
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OrderModelHooksAGFO"
+				method="deleteOrderFromTrackingRecord" />
+		</model:model-hook>
+
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkRequiredFields" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkChoosenOrderState" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkRequiredBatchesForInputProducts" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkIfProductInBatchBatchIsNotBlocked" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkIfProductInBatchBatchIsAlreadyUsed" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkIfProducedBatchProductIsFinalProduct" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkIfProductInBatchBatchProductIsProductInComponentProduct" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelValidators"
+				method="checkIfProductInBatchTrackingRecordContainsNoProducedBatch" />
+		</model:model-hook>
+		<model:model-hook model="trackingRecord" plugin="advancedGenealogy">
+			<model:onCreate
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersModelHooks"
+				method="addProductInComponents" />
+		</model:model-hook>
+		<model:model-hook model="technology" plugin="technologies">
+			<model:onSave
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TechnologyModelHooksAGFO"
+				method="setDefaultValueForTechnologyBatchRequiredField" />
+		</model:model-hook>
+
+		<menu:menu-item name="trackingRecordsForOrders"
+			category="advancedGenealogy" view="trackingRecordsForOrdersList" defaultAuthorizationRole="ROLE_BATCHES"/>
+
+		<menu:menu-item name="trackingRecords" category="ordersTracking"
+			view="trackingRecordsForOrdersList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+
+		<view:view resource="view/trackingRecordsForOrdersList.xml" />
+		<view:view resource="view/trackingRecordForOrdersDetails.xml" />
+		<view:view resource="view/trackingRecordForSpecifiedOrderList.xml" />
+		<view:view resource="view/trackingRecordForSpecifiedOrderDetails.xml" />
+
+		<view:view-tab resource="view/tabExtensions/technologyDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml" />
+		<view:view-tab
+			resource="view/tabExtensions/operationProductInComponentDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/advancedGenealogyParameters.xml" />
+
+		<view:view-ribbon-group
+			resource="view/ribbonExtensions/orderDetails.xml" />
+
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="showTrackingRecordsDetails"
+			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OrderListener"
+			method="showTrackingRecordsDetails" />
+
+		<view:view-hook plugin="orders" view="orderDetails"
+			type="beforeRender" class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OrderViewHooks"
+			method="onBeforeRender" />
+
+		<view:view-hook plugin="technologies" view="technologyDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TechnologyViewHooks"
+			method="setTechnologyDefaultValues" />
+
+		<view:view-hook plugin="orders" view="copyOfTechnologyDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TechnologyViewHooks"
+			method="setTechnologyDefaultValues" />
+
+		<view:view-hook plugin="technologies"
+			view="operationProductInComponentDetails" type="beforeRender"
+			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OperationProductInComponentViewHooks"
+			method="setDefaultProductBatchRequired" />
+
+		<view:resource uri="public/**/*" />
+
+		<custom:custom
+			class="com.qcadoo.mes.advancedGenealogyForOrders.AdvancedGenealogyForOrdersOnStartupService" />
+	</modules>
+
+	<features>
+		<end-user />
+		<internal-integration />
+	</features>
+
+</plugin>

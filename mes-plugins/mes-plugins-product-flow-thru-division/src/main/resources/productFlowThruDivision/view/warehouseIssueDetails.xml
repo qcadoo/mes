@@ -1,0 +1,526 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="warehouseIssueDetails" modelName="warehouseIssue">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+
+            <group name="issue">
+                <bigButton name="productsToIssue"
+                           icon="copyIcon24.png" state="disabled"
+                           action="#{form}.fireEvent(fillProductsToIssue);"/>
+            </group>
+            <group name="copyissue">
+                <bigButton name="copyProductsToIssue" icon="copyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(copyProductsToIssue);"/>
+            </group>
+            <group name="status">
+                <smallButton name="confirmIssue" icon="startIcon16.png" state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productFlowThruDivision.warehouseIssueDetails.window.ribbon.status.confirmIssue.confirm)}")) {
+										#{form}.performEvent('changeState', ['02inProgress']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="refuseIssue" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productFlowThruDivision.warehouseIssueDetails.window.ribbon.status.refuseIssue.confirm)}")) {
+										#{form}.performEvent('changeState', ['03discard']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="completeIssue" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productFlowThruDivision.warehouseIssueDetails.window.ribbon.status.completedIssue.confirm)}")) {
+										#{form}.performEvent('changeState', ['04completed']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="warehouseIssue" reference="form">
+                <listener event="changeState"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.client.WarehouseIssueStateChangeViewClient"
+                          method="changeState"/>
+                <listener event="fillProductsToIssue"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
+                          method="fillProductsToIssue"/>
+
+                <listener event="copyProductsToIssue"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
+                          method="copyProductsToIssue"/>
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								var state = #{state}.getValue().content.value;
+								var copyIssue = #{window}.getRibbonItem("copyissue.copyProductsToIssue");
+								var issue = #{window}.getRibbonItem("issue.productsToIssue");
+								var confirmIssue = #{window}.getRibbonItem("status.confirmIssue");
+								var refuseIssue = #{window}.getRibbonItem("status.refuseIssue");
+								var completeIssue = #{window}.getRibbonItem("status.completeIssue");
+
+								if (!value || (value.content && ! value.content.entityId)) {
+								    copyIssue.disable();
+								    issue.disable();
+								    confirmIssue.disable();
+								    refuseIssue.disable();
+								    completeIssue.disable();
+								    updateRibbon(state);
+								    return;
+
+								}
+                                if (!state) {
+								    return;
+							    }
+								updateRibbon(state);
+								if (state == "01draft") {
+									issue.enable();
+									confirmIssue.enable();
+								    refuseIssue.enable();
+								    completeIssue.disable();
+								} else if (state == "02inProgress") {
+                                    confirmIssue.enable();
+								    refuseIssue.disable();
+								    completeIssue.enable();
+								}else if (state == "03discard") {
+								    confirmIssue.disable();
+								    refuseIssue.disable();
+								    completeIssue.disable();
+								    copyIssue.disable();
+								    issue.disable();
+								}else if (state == "04completed") {
+								    confirmIssue.disable();
+								    refuseIssue.disable();
+								    completeIssue.disable();
+								    copyIssue.disable();
+								    issue.disable();
+								}
+
+							}
+						});
+
+						function toggleEditable(enabled) {
+							var toggleRibbonItems = [
+									"actions.save",
+									"actions.saveBack",
+									"actions.saveNew",
+									"actions.cancel",
+									"actions.delete"
+								],
+								toggleRibbonItemsLen = toggleRibbonItems.length,
+								elementIndex = 0,
+								ribbonItemName = "",
+								ribbonItem = null;
+
+							for (elementIndex = 0; elementIndex < toggleRibbonItemsLen; elementIndex++) {
+								ribbonItemName = toggleRibbonItems[elementIndex];
+								ribbonItem = #{window}.getRibbonItem(ribbonItemName);
+
+								if (!ribbonItem) {
+									QCD.error("Can not find ribbon element: " + ribbonItemName + " - omitting.");
+									continue;
+								}
+
+								if (enabled) {
+									ribbonItem.enable();
+								} else {
+									ribbonItem.disable();
+								}
+							}
+						}
+
+						function updateRibbon(state) {
+							if (state == "01draft") {
+								toggleEditable(true);
+							} else {
+								toggleEditable(false);
+							}
+						}
+				]]>
+                </script>
+                <component type="select" name="state" field="state"
+                           reference="state" hasLabel="false" defaultVisible="false"/>
+                <component type="gridLayout" name="gridsLayout" columns="3" rows="8" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+
+                        <component type="lookup" name="order" reference="order"
+                                   field="order">
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="state" fields="state"/>
+
+                            <option type="required" value="true"/>
+
+                            <option type="searchable" value="name,number,state"/>
+                            <option type="orderable" value="name,number,state"/>
+
+                            <option type="order" column="number" direction="desc"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
+                                      method="onOrderChange"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.OrderCriteriaModifiersPFTD"
+                                    method="showAcceptedInProgressInterrupted"/>
+                        </component>
+
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="calendar" name="orderStartDate" field="orderStartDate"
+                                   reference="orderStartDate" defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="input" name="orderProductionLineNumber" field="orderProductionLineNumber"
+                                   reference="orderProductionLineNumber" defaultEnabled="never">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="placeOfIssue" reference="placeOfIssue"
+                                   field="placeOfIssue">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                    method="showWarehousesOnly"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6" height="2">
+                        <component type="textarea" name="description" field="description"
+                                   reference="description"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="calendar" name="dateOfIssued" field="dateOfIssued"
+                                   reference="dateOfIssued" defaultEnabled="never">
+                            <option type="labelWidth" value="50"/>
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+
+
+                    <layoutElement column="2" row="1" height="2">
+                        <component type="borderLayout" name="warehouseIssueWorkers"
+                                   reference="warehouseIssueWorkers">
+                            <component type="gridLayout" name="workersGridLayout"
+                                       columns="1" rows="2" reference="workersGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1">
+                                    <component type="lookup" name="workerWhoIssued" reference="workerWhoIssued"
+                                               field="workerWhoIssued">
+
+                                        <option type="column" name="surname" fields="surname"/>
+                                        <option type="searchable" value="name, surame"/>
+                                        <option type="orderable" value="name, surame"/>
+                                        <option type="expression"
+                                                value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
+                                        <option type="fieldCode" value="name"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="lookup" name="workerWhoCollected" reference="workerWhoCollected"
+                                               field="workerWhoCollected">
+
+                                        <option type="column" name="surname" fields="surname"/>
+                                        <option type="searchable" value="name, surame"/>
+                                        <option type="orderable" value="name, surame"/>
+                                        <option type="expression"
+                                                value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
+                                        <option type="fieldCode" value="name"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+
+
+                            <option type="label" value="warehouseIssueWorkersLabel"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
+                        <component type="select" name="collectionProducts" field="collectionProducts"
+                                   reference="collectionProducts">
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
+                                      method="onCollectionProductsChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="lookup" name="technologyOperationComponent"
+                                   field="technologyOperationComponent" reference="technologyOperationComponent"
+                                   defaultVisible="false" defaultEnabled="true">
+                            <option type="column" name="name" fields="operation"
+                                    expression="#operation['name']" link="true"/>
+
+                            <option type="searchable" value="name,nodeNumber"/>
+                            <option type="orderable" value="name,nodeNumber"/>
+
+                            <option type="expression" value="#nodeNumber + '  ' + #operation['name']"/>
+                            <option type="fieldCode" value="nodeNumber"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.TOCCriteriaModifiersPFTD"
+                                    method="restrictTechnologyOperationComponentsToOrderTechnology"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="5">
+                        <component type="lookup" name="division" field="division"
+                                   reference="division" defaultVisible="false" defaultEnabled="true">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.DivisionCriteriaModifiersPFTD"
+                                    method="showDivisionsUsedInTechnology"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
+                        <component type="select" name="productsToIssueMode" field="productsToIssueMode"
+                                   reference="productsToIssueMode">
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value="#number + ' - ' + '@productFlowThruDivision.warehouseIssue.state.value.' + #state"/>
+
+            </component>
+
+
+        </windowTab>
+
+        <windowTab name="productsToIssuedTab">
+            <component type="grid" name="productsToIssues" source="#{form}.productsToIssues"
+                       reference="productsToIssues">
+                <script>
+                    <![CDATA[
+					var copyIssue = #{window}.getRibbonItem("copyissue.copyProductsToIssue");
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+						    var state = #{state}.getValue().content.value;
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								copyIssue.disable("#{translate(productFlowThruDivision.issue.productsToissueNoSelected)}");
+							} else {
+								copyIssue.enable();
+  							    if (state == "03discard") {
+								    copyIssue.disable();
+								} else if (state == "04completed") {
+								    copyIssue.disable();
+								}
+							}
+						}
+					}
+
+					this.addOnChangeListener(listener);
+				]]>
+                </script>
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']" width="50" link="true"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']" width="75" link="true"/>
+                <option type="column" name="additionalCode" fields="additionalCode"
+                        expression="#additionalCode['code']" width="40"/>
+                <option type="column" name="demandQuantity" fields="demandQuantity"
+                        width="40"/>
+                <option type="column" name="additionalDemandQuantity" fields="additionalDemandQuantity"
+                        width="40"/>
+                <option type="column" name="correction" fields="correction" width="30"/>
+                <option type="column" name="conversion" fields="conversion"
+                        width="30"/>
+                <option type="column" name="locationsQuantity" fields="locationsQuantity"
+                        width="35"/>
+                <option type="column" name="issueQuantity" fields="issueQuantity"
+                        width="35"/>
+                <option type="column" name="productUnit" fields="product"
+                        expression="#product['unit']" width="30"/>
+                <option type="column" name="location" fields="location"
+                        expression="#location['name']" width="50"/>
+                <option type="column" name="storageLocation" fields="storageLocation"
+                        expression="#storageLocation['number']" width="50"/>
+                <option type="column" name="placeOfIssueQuantity" fields="placeOfIssueQuantity"
+                        width="35"/>
+
+                <option type="order" column="productNumber" direction="desc"/>
+
+                <option type="searchable"
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                <option type="orderable"
+                        value="productNumber,productName,demandQuantity,correction,locationsQuantity,issueQuantity,productUnit,location,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+
+                <option type="correspondingView" value="productFlowThruDivision/productToIssueDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+            </component>
+        </windowTab>
+
+        <windowTab name="issuedTab">
+            <component type="grid" name="issues" source="#{form}.issues"
+                       reference="issues">
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']" width="50" link="true"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']" width="75" link="true"/>
+                <option type="column" name="additionalCode" fields="additionalCode"
+                        expression="#additionalCode['code']" width="50"/>
+                <option type="column" name="demandQuantity" fields="demandQuantity"
+                        width="35"/>
+                <option type="column" name="additionalDemandQuantity" fields="additionalDemandQuantity"
+                        width="35"/>
+                <option type="column" name="conversion" fields="conversion"
+                        width="35"/>
+                <option type="column" name="locationsQuantity" fields="locationsQuantity"
+                        width="35"/>
+                <option type="column" name="issueQuantity" fields="issueQuantity"
+                        width="35"/>
+                <option type="column" name="productUnit" fields="product"
+                        expression="#product['unit']" width="30"/>
+                <option type="column" name="location" fields="location"
+                        expression="#location['name']" width="50"/>
+                <option type="column" name="storageLocation" fields="storageLocation"
+                        expression="#storageLocation['number']" width="50"/>
+                <option type="column" name="issued" fields="issued" width="30"/>
+
+                <option type="order" column="productNumber" direction="desc"/>
+
+                <option type="searchable"
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+                <option type="orderable"
+                        value="productNumber,productName,demandQuantity,locationsQuantity,issueQuantity,productUnit,location,issued,storageLocation,additionalCode,additionalDemandQuantity,conversion"/>
+
+                <option type="correspondingView" value="productFlowThruDivision/issueDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+                <rowStyleResolver
+                        class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueDetailHooks"
+                        method="fillRowStyles"/>
+
+            </component>
+        </windowTab>
+
+
+        <windowTab name="correctTab">
+            <component type="grid" name="corrections" source="#{form}.corrections"
+                       reference="corrections">
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']" width="50"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product['name']" width="75" />
+                <option type="column" name="additionalCode" fields="additionalCode"
+                        expression="#additionalCode['code']" width="50"/>
+                <option type="column" name="location" fields="location"
+                        expression="#location['number']" width="35"/>
+                <option type="column" name="correctionQuantity" fields="correctionQuantity"
+                        width="35"/>
+                <option type="column" name="createDate" fields="createDate"
+                        width="35"/>
+                <option type="column" name="description" fields="description"
+                        width="50"/>
+
+                <option type="order" column="productNumber" direction="desc"/>
+
+                <option type="searchable"
+                        value="productNumber,productName,additionalCode,location,correctionQuantity,createDate,description"/>
+                <option type="orderable"
+                        value="productNumber,productName,additionalCode,location,correctionQuantity,createDate,description"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueDetailHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

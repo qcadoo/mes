@@ -1,0 +1,203 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="trackingRecordForOrdersDetails"
+	modelPlugin="advancedGenealogy" 
+	modelName="trackingRecord">
+	
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="status">
+				<smallButton name="accept" icon="startIcon16.png" state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(advancedGenealogy.trackingRecordSimpleDetails.window.ribbon.status.accept.confirm)}")) {
+										#{form}.performEvent('changeTrackingRecordState', ["02accepted"]);
+									};
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+				<smallButton name="decline" icon="deleteIcon16.png" state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(advancedGenealogy.trackingRecordSimpleDetails.window.ribbon.status.decline.confirm)}")) {
+										#{form}.performEvent('changeTrackingRecordState', ["03declined"]);
+									};
+								}
+							});
+							]]>
+					</script>
+				</smallButton>
+			</group>
+		</ribbon>
+		
+		<windowTab name="mainTab" reference="mainTab">
+			
+			<component type="form" name="trackingRecordForOrdersDetailsForm" reference="form">
+				<script>
+					<![CDATA[
+						var accept = #{window}.getRibbonItem("status.accept");
+	    			    var decline = #{window}.getRibbonItem("status.decline");
+	
+				        var listener = {
+					    	onSetValue: function() {
+					     		var state = #{state}.getValue().content.value;
+					      
+								if (state == "01draft") {
+									accept.enable();
+									decline.enable();
+								} else if (state == "02accepted") { 
+									accept.disable();
+									decline.enable();
+								} else if (state == "03declined") { 
+									accept.disable();
+									decline.disable();
+								}
+							}
+						};
+						
+						#{form}.addOnChangeListener(listener);
+					]]>	 
+				</script>
+				<component type="gridLayout" name="trackingRecordForOrdersGridLayout" columns="2" rows="1" hasBorders="false" reference="producedBatchGridLayout">
+					<layoutElement column="1" row="1">
+						<component type="lookup" name="order" field="#{form}.order" reference="orderLookup" >
+									<option type="column" name="name" fields="name" />
+									<option type="orderable" value="number,name" />
+									<option type="expression" value="#number + ' - ' + #name" />
+									<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+					<layoutElement column="2" row="1">
+						<component type="lookup" name="producedBatch" field="#{form}.producedBatch" reference="producedBatchLookup" >
+									<option type="column" name="productNumber" fields="product" expression="#product['number']" />
+									<option type="column" name="productName" fields="product" expression="#product['name']" />
+									<option type="column" name="supplierName" fields="supplier" expression="#supplier['name']"  />
+									<option type="orderable" value="number,productNumber,productName,supplierName" />
+									<option type="expression" value="#number + ' - ' + #product['name'] + ' (' + #product['number'] +') - ' + #supplier['name']" />
+									<option type="fieldCode" value="number" />
+						</component>
+					</layoutElement>
+				</component>
+				<component type="select" name="state" field="state" reference="state" defaultVisible="false" />
+				<component type="borderLayout" name="usedBatchesForOrdersListBorderLayout" reference="usedBatchesForOrdersListBorderLayout">
+					<option type="label" value="fromBatchesLabel" />
+					
+					<component type="awesomeDynamicList" name="genealogyProductInComponentsList"
+						source="#{form}.genealogyProductInComponents" reference="genealogyProductInComponentsList">
+						<option type="hasBorder" value="false" />
+						<option type="hasButtons" value="false" />
+						<components>
+							<component type="gridLayout" name="orderOperationGrid" columns="7" rows="1" hasBorders="false">
+								
+								<layoutElement column="1" row="1">
+									<component type="lookup" name="operationInfo"
+										field="technologyOperationComponent" hasLabel="false" defaultEnabled="false" persistent="false">
+										<option type="expression"
+											value="#nodeNumber + ' ' + #operation['name'] + ' (' + #operation['number'] + ')'" />
+										<option type="fieldCode" value="nodeNumber" />
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								
+								<layoutElement column="2" row="1" width="2">
+									<component type="lookup" name="productInfo"
+										field="productInComponent" hasLabel="false" defaultEnabled="false" persistent="false">
+										<option type="expression"
+											value="#product['name'] + ' (' + #product['number'] + ')'" />
+										<option type="fieldCode" value="product" />
+										<option type="textRepresentationOnDisabled" value="true" />
+									</component>
+								</layoutElement>
+								
+								<layoutElement column="4" row="1" width="4">
+									<component type="awesomeDynamicList" name="productInBatches" 
+										source="productInBatches" reference="productInBatches">
+										<option type="hasBorder" value="false" />
+										<option type="hasButtons" value="true" />
+										<components>
+											<component type="gridLayout" name="inputProductBatchesGrid" columns="2" rows="1" hasBorders="true">
+												<layoutElement column="1" row="1">
+													<component type="lookup" name="inputProductBatchLookup"
+														field="batch">
+														<option type="expression"
+															value="#number + ' - ' + #product['name'] + ' (' + #product['number'] + ')'" />
+														<option type="fieldCode" value="number" />
+													</component>
+												</layoutElement>
+												<layoutElement column="2" row="1">
+													<component type="input" name="inputProductBatchEnteredBy"
+														field="worker" defaultEnabled="false">
+														<option type="textRepresentationOnDisabled" value="true" />
+													</component>
+												</layoutElement>
+											</component>
+										</components>
+									</component>
+								</layoutElement>
+								
+							</component>
+						</components>
+					</component>
+					
+				</component> 
+				
+				<component type="select" name="entityType" field="entityType" reference="entityType" hasLabel="false" defaultVisible="false" />
+				<option type="header" value="true" />
+				<option type="expression" value="#producedBatch.get('number') + ' - ' + #producedBatch.get('product').get('name') + ' (' + #producedBatch.get('product').get('number') + ') ' + #producedBatch.get('supplier').get('name')" />
+				<listener event="changeTrackingRecordState"
+					class="com.qcadoo.mes.advancedGenealogy.states.client.TrackingRecordStateChangeViewClient"
+					method="changeTrackingRecordState" />
+			</component>
+		</windowTab>	
+		
+		<windowTab name="historyTab">
+			<component type="grid" name="loggingsGrid" source="#{form}.loggings">
+				<option type="column" name="dateAndTime" fields="dateAndTime" />
+				<option type="column" name="currentState" fields="currentState" expression="'@advancedGenealogyForOrder.trackingRecord.state.value.' + #currentState" />
+				<option type="column" name="worker" fields="worker" />
+				
+				<option type="order" column="dateAndTime" direction="desc" />
+				
+				<option type="searchable" value="dateAndTime,currentState,worker" />
+				<option type="orderable" value="dateAndTime,currentState,worker" />
+			</component>
+		</windowTab>
+			
+	</component>	
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersViewHooks" method="setEntityTypeToForOrder" />
+		<beforeRender class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.TrackingForOrdersViewHooks" method="toggleComponentsVisibility" />
+	</hooks>
+</view>

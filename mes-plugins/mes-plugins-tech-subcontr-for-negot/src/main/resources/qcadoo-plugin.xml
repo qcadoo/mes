@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="techSubcontrForNegot" group="supplies" version="${qcadoo.plugin.version}"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+		xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+		xmlns:localization="http://schema.qcadoo.org/modules/localization"
+		xmlns:custom="http://schema.qcadoo.org/modules/custom"
+		xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+
+
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+	<information>
+		<name>MES - Technology subcontracting for negotiations</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+		<description>Integrates technology subcontracting with supply negotiations.</description>
+		<license>AGPL</license>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>techSubcontrForDeliveries</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+		<dependency>
+			<plugin>supplyNegotiations</plugin>
+			<version>[1.1.8</version>
+		</dependency>			
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model-field plugin="supplyNegotiations"
+			model="requestForQuotationProduct">
+			<model:belongsTo name="operation" model="operation"
+				plugin="technologies" />
+		</model:model-field>
+
+		<model:model-field plugin="supplyNegotiations"
+			model="offerProduct">
+			<model:belongsTo name="operation" model="operation"
+				plugin="technologies" />
+		</model:model-field>
+
+		<model:model-field plugin="supplyNegotiations"
+			model="negotiationProduct">
+			<model:belongsTo name="operation" model="operation"
+				plugin="technologies" />
+		</model:model-field>
+
+		<view:view-tab
+			resource="view/tabExtensions/requestForQuotationProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/offerProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/negotiationProductDetails.xml" />
+
+		<view:view-grid-column plugin="supplyNegotiations"
+			view="requestForQuotationDetails" component="requestForQuotationProducts">
+			<view:column name="operationNumber" fields="operation"
+				expression="#operation['number']" orderable="true" searchable="true" />
+		</view:view-grid-column>
+
+		<view:view-grid-column plugin="supplyNegotiations"
+			view="offerDetails" component="offerProducts">
+			<view:column name="operationNumber" fields="operation"
+				expression="#operation['number']" orderable="true" searchable="true" />
+		</view:view-grid-column>
+		
+		<view:view-grid-column plugin="supplyNegotiations"
+			view="offersItems" component="grid">
+			<view:column name="operationNumber" fields="operation"
+				expression="#operation['number']" orderable="true" searchable="true"  />
+		</view:view-grid-column>
+		
+		<view:view-grid-column plugin="supplyNegotiations"
+			view="negotiationDetails" component="negotiationProducts">
+			<view:column name="operationNumber" fields="operation"
+				expression="#operation['number']" orderable="true" searchable="true" />
+		</view:view-grid-column>
+
+		<custom:custom
+			class="com.qcadoo.mes.techSubcontrForNegot.TechSubcontrForNegotOnStartupService" />
+	</modules>
+	
+	<features>
+		<end-user />
+		<internal-integration />
+	</features>
+
+</plugin>
