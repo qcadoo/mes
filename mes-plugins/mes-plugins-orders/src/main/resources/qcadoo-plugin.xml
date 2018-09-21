@@ -79,6 +79,8 @@
 
         <model:model model="orderCategoryColor" resource="model/orderCategoryColor.xml"/>
 
+        <model:model model="changeDatesHelper" resource="model/changeDatesHelper.xml"/>
+
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -237,6 +239,7 @@
         <view:view resource="view/orderStateChangeReasonDialog.xml"/>
 
         <view:view resource="view/copyOfTechnologyDetails.xml"/>
+        <view:view resource="view/changeDatesDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
