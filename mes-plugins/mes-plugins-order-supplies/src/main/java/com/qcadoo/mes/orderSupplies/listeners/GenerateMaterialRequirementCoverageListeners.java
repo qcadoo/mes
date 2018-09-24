@@ -23,6 +23,26 @@
  */
 package com.qcadoo.mes.orderSupplies.listeners;
 
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.CURRENCY;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -58,25 +78,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.CURRENCY;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 @Service
 public class GenerateMaterialRequirementCoverageListeners {
@@ -161,16 +162,21 @@ public class GenerateMaterialRequirementCoverageListeners {
                     .getMaterialRequirementCoverage(materialRequirementCoverageId);
 
             materialRequirementCoverage.setField(MaterialRequirementCoverageFields.GENERATED, true);
-            materialRequirementCoverage.setField(MaterialRequirementCoverageFields.GENERATED_DATE,
-                    new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale()).format(new Date()));
-            materialRequirementCoverage.setField(MaterialRequirementCoverageFields.GENERATED_BY, securityService.getCurrentUserName());
+            materialRequirementCoverage.setField(MaterialRequirementCoverageFields.GENERATED_DATE, new SimpleDateFormat(
+                    DateUtils.L_DATE_TIME_FORMAT, LocaleContextHolder.getLocale()).format(new Date()));
+            materialRequirementCoverage.setField(MaterialRequirementCoverageFields.GENERATED_BY,
+                    securityService.getCurrentUserName());
 
             materialRequirementCoverageService.estimateProductCoverageInTime(materialRequirementCoverage);
 
             state.performEvent(view, "reset", new String[0]);
 
-            state.addMessage("orderSupplies.materialRequirementCoverage.report.generatedMessage", MessageType.SUCCESS);
-
+            if (materialRequirementCoverage.getGlobalMessages().isEmpty()) {
+                state.addMessage("orderSupplies.materialRequirementCoverage.report.generatedMessage", MessageType.SUCCESS);
+            } else {
+                materialRequirementCoverage.getGlobalMessages().forEach(
+                        message -> view.addMessage(message.getMessage(), MessageType.INFO, false));
+            }
             if (materialRequirementCoverage.getBooleanField(MaterialRequirementCoverageFields.AUTOMATIC_SAVE_COVERAGE)) {
                 saveMaterialRequirementCoverage(view, state, args);
             }
@@ -360,25 +366,26 @@ public class GenerateMaterialRequirementCoverageListeners {
 
             Entity saved = deliveriesService.getDeliveryDD().save(delivery);
 
-            entry.getValue().forEach(coverageProduct -> {
-                Entity product = coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT);
-                BigDecimal reserveMissingQuantity = coverageProduct
-                        .getDecimalField(CoverageProductFields.RESERVE_MISSING_QUANTITY);
+            entry.getValue().forEach(
+                    coverageProduct -> {
+                        Entity product = coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT);
+                        BigDecimal reserveMissingQuantity = coverageProduct
+                                .getDecimalField(CoverageProductFields.RESERVE_MISSING_QUANTITY);
 
-                BigDecimal orderedQuantity = reserveMissingQuantity.min(BigDecimal.ZERO).abs();
-                BigDecimal conversion = getConversion(product);
+                        BigDecimal orderedQuantity = reserveMissingQuantity.min(BigDecimal.ZERO).abs();
+                        BigDecimal conversion = getConversion(product);
 
-                Entity orderedProduct = orderedProductDataDefinition.create();
-                orderedProduct.setField("delivery", saved);
-                orderedProduct.setField("product", product);
-                orderedProduct.setField("orderedQuantity", reserveMissingQuantity.min(BigDecimal.ZERO).abs());
+                        Entity orderedProduct = orderedProductDataDefinition.create();
+                        orderedProduct.setField("delivery", saved);
+                        orderedProduct.setField("product", product);
+                        orderedProduct.setField("orderedQuantity", reserveMissingQuantity.min(BigDecimal.ZERO).abs());
 
-                orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-                orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
-                        orderedQuantity.multiply(conversion, numberService.getMathContext()));
+                        orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+                        orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
+                                orderedQuantity.multiply(conversion, numberService.getMathContext()));
 
-                orderedProductDataDefinition.save(orderedProduct);
-            });
+                        orderedProductDataDefinition.save(orderedProduct);
+                    });
         }
         state.addMessage("orderSupplies.materialRequirementCoverage.deliveries.created", MessageType.SUCCESS, false,
                 deliveryNumbers.toString());
@@ -391,8 +398,8 @@ public class GenerateMaterialRequirementCoverageListeners {
             return BigDecimal.ONE;
         }
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
