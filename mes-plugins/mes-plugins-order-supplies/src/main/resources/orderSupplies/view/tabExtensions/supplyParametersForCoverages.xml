@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="deliveries" view="supplyParameters">
+
+    <windowTab name="coverageTab" reference="coverageTab">
+        <component type="gridLayout" name="coverageParametersGridLayout"
+                   columns="3" rows="5">
+            <layoutElement column="1" row="1">
+                <component type="gridLayout" name="gridLayoutDefaultCoverageFromDays"
+                           hasBorders="false" columns="4" rows="1">
+                    <layoutElement column="1" row="1" width="3">
+                        <component type="input" name="defaultCoverageFromDays"
+                                   field="#{form}.defaultCoverageFromDays" reference="defaultCoverageFromDays"/>
+                    </layoutElement>
+                    <layoutElement column="4" row="1">
+                        <component type="input" name="defaultCoverageDays"
+                                   defaultEnabled="never" hasLabel="true" reference="defaultCoverageDays">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="borderLayout" name="locationBorderLayout">
+                    <component type="awesomeDynamicList" name="coverageLocations"
+                               source="#{form}.coverageLocations" reference="coverageLocations">
+                        <components>
+                            <component type="gridLayout" name="productLayout"
+                                       columns="4" rows="1">
+                                <layoutElement column="2" row="1" width="2">
+                                    <component type="lookup" name="location" field="location"
+                                               reference="location" hasLabel="false">
+                                        <option type="column" fields="name" name="name" link="true"/>
+
+                                        <option type="searchable" value="number,name"/>
+                                        <option type="orderable" value="number,name"/>
+
+                                        <option type="expression" value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+
+                                        <criteriaModifier
+                                                class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                                method="showWarehousesOnly"/>
+
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.orderSupplies.listeners.ParametersListenersOS"
+                                                  method="checkIfCoverageLocationsAreWarehouses"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </components>
+
+                        <option type="hasBorder" value="false"/>
+                        <option type="hasButtons" value="true"/>
+                    </component>
+
+                    <option type="label" value="locationForCoveragesLabel"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="1" height="3">
+                <component type="borderLayout" name="onlyProductsInCoverageBorderLayout"
+                           reference="onlyProductsInCoverageBorderLayout">
+                    <component type="gridLayout" name="onlyProductsInCoverageGridLayout"
+                               columns="1" rows="3">
+                        <layoutElement column="1" row="1">
+                            <component type="select" name="productExtracted"
+                                       field="#{form}.productExtracted" reference="productExtracted"/>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="lookup" name="belongsToFamily" field="#{form}.belongsToFamily"
+                                       reference="belongsToFamily">
+                                <option type="column" fields="name" name="name" link="true"/>
+                                <option type="column" fields="entityType" name="entityType"/>
+
+                                <option type="searchable" value="number,name,entityType"/>
+                                <option type="orderable" value="number,name,entityType"/>
+
+                                <option type="expression" value="#number + ' '+ #name"/>
+                                <option type="fieldCode" value="number"/>
+
+                                <criteriaModifier
+                                        class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                        method="showProductFamilyOnly"/>
+
+                                <listener event="onSelectedEntityChange"
+                                          class="com.qcadoo.mes.orderSupplies.listeners.ParametersListenersOS"
+                                          method="checkIfBelongsToFamilyIsProductsFamily"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="3">
+                            <component type="select" name="coverageType" field="#{form}.coverageType"
+                                       reference="coverageType"/>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="onlyProductsInCoverageLabel"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="4">
+                <component type="borderLayout" name="includedInCoverageBorderLayout"
+                           reference="includedInCoverageBorderLayout">
+                    <option type="label" value="includedInCoverageLabel"/>
+                    <component type="gridLayout" name="includedInCoverageGridLayout"
+                               columns="1" rows="1">
+                        <layoutElement column="1" row="1">
+                            <component type="checkbox" name="includeDraftDeliveries"
+                                       field="#{form}.includeDraftDeliveries" reference="includeDraftDeliveries"/>
+                        </layoutElement>
+                    </component>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="5">
+                <component type="checkbox" name="automaticSaveCoverage"
+                           field="#{form}.automaticSaveCoverage" reference="automaticSaveCoverage"/>
+            </layoutElement>
+            <layoutElement column="3" row="1" height="3">
+                <component type="borderLayout" name="orderStatesBorderLayout">
+                    <component type="awesomeDynamicList" name="coverageOrderStates"
+                               source="#{form}.coverageOrderStates" reference="coverageOrderStates">
+                        <components>
+                            <component type="gridLayout" name="orderStateLayout"
+                                       columns="1" rows="1">
+                                <layoutElement column="1" row="1">
+                                    <component type="select" name="state" field="state"
+                                               reference="state" hasLabel="false"/>
+                                </layoutElement>
+                            </component>
+                        </components>
+
+                        <option type="hasBorder" value="false"/>
+                        <option type="hasButtons" value="true"/>
+                    </component>
+
+                    <option type="label" value="orderStatesLabel"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+
+</windowTabExtension>

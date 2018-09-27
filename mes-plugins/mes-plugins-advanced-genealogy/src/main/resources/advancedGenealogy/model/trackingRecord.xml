@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="trackingRecord" activable="true" auditable="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<enum name="entityType" values="01simple,02forOrder" required="true" />
+		<enum name="state" values="01draft,02accepted,03declined"
+			default="01draft" required="true" />
+		<decimal name="quantity">
+			<validatesRange from="0" exclusively="true" />
+			<validatesUnscaledValue max="7" />
+			<validatesScale max="5" />
+		</decimal>
+		<belongsTo name="producedBatch" model="batch" lazy="false" />
+		<hasMany name="usedBatchesSimple" model="usedBatchSimple"
+			joinField="trackingRecord" cascade="delete" />
+		<hasMany name="stateChanges" model="trackingRecordStateChange"
+			joinField="trackingRecord" cascade="delete" />
+
+		<tree name="genealogyTree" cascade="delete" persistent="false"
+			model="batch" joinField="trackingRecordTree" />
+		<enum name="treeType" persistent="false" values="01producedFrom,02usedToProduce"
+			default="01producedFrom" />
+		<string name="number" unique="true" required="true" />
+		<string name="externalNumber" unique="true"/>
+	</fields>
+	<hooks>
+		<onCreate 
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelHooks" 
+			method="setInitialState"/>
+		<onCopy 
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelHooks" 
+			method="setInitialState"/>
+		<onCopy
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelHooks"
+			method="clearExternalIdOnCopy" />
+		<validatesWith
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelValidators"
+			method="checkIfProducedBatchIsNotBlocked" />
+		<validatesWith
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelValidators"
+			method="checkIfItHasAnyBlockedBatches" />
+		<validatesWith
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelValidators"
+			method="checkIfUsedBatchTrackingRecordContainsNoProducedBatch" />
+		<validatesWith
+			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordModelValidators"
+			method="checkIfTheresOrderTechnologyAndProducedBatchIsNotNull" />
+	</hooks>
+	<identifier expression="#number" />
+</model>

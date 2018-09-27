@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="ordersForSubproducts" modelName="subOrders">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+
+            <group name="orders">
+                <bigButton name="generateOrders" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                     this.addOnChangeListener({
+                        onClick : function () {
+                            #{form}.performEvent('generateSimpleOrdersForSubProducts', []);
+                        }
+                     });
+                 ]]>
+                    </script>
+                </bigButton>
+            </group>
+
+        </ribbon>
+
+        <windowTab name="inOrdersTab">
+            <component type="form" name="form" reference="form">
+                <component type="flowGridLayout" name="inDataTabGridLayout"
+                           columns="1" rows="4">
+
+                    <layoutElement column="1" row="1" minHeight="4">
+                        <component type="grid" name="orders" plugin="orders"
+                                   model="order" reference="orders">
+
+                            <option type="column" name="number" fields="number"/>
+                            <option type="column" name="productNumber" fields="product"
+                                    expression="#product['number']"/>
+                            <option type="column" name="state" fields="state"/>
+                            <option type="order" column="number" direction="asc"/>
+                            <option type="paginable" value="true"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.ordersForSubproductsGeneration.criteriaModifiers.OrdersForSPCriteriaModifiers"
+                                    method="showEntryData"/>
+
+                        </component>
+                    </layoutElement>
+
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression"
+                        value=""/>
+                <listener event="generateSimpleOrdersForSubProducts" method="generateSimpleOrdersForSubProducts"
+                          class="com.qcadoo.mes.ordersForSubproductsGeneration.listeners.OrdersForSubproductsGenerationListeners"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="subOrdersTab">
+            <component type="grid" name="generatedOrders"
+                       plugin="orders" model="order" reference="generatedOrders">
+                <option type="column" name="number" fields="number" link="true"/>
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product['number']"/>
+                <option type="column" name="technologyNumber" fields="technology"
+                        expression="#technology['number']"/>
+
+                <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
+
+                <option type="column" name="dateFrom" fields="startDate" width="50"/>
+                <option type="column" name="dateTo" fields="finishDate" width="50"/>
+                <option type="column" name="state" fields="state" width="35"/>
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="searchable" value="number,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo,state"/>
+
+                <option type="correspondingView" value="orders/orderDetails"/>
+                <option type="correspondingComponent" value="form"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+
+                <criteriaModifier
+                        class="com.qcadoo.mes.ordersForSubproductsGeneration.criteriaModifiers.CoverageForOrderCriteriaModifiersOFSPG"
+                        method="showGeneratedOrders"/>
+
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.OrdersForSubproductsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

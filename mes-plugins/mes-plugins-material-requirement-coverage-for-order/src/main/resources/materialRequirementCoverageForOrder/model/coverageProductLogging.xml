@@ -1,0 +1,47 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="coverageProductLogging" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://schema.qcadoo.org/model"
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+	<fields>
+		<belongsTo name="coverageProduct" model="coverageProduct"
+			required="true" />
+
+		<datetime name="date" />
+
+		<belongsTo name="delivery" model="delivery" plugin="deliveries" />
+		<belongsTo name="order" model="order" plugin="orders" />
+		<belongsTo name="operation" model="operation" plugin="technologies" />
+
+		<decimal name="reserveMissingQuantity" />
+		<decimal name="changes" />
+
+		<enum name="eventType"
+			values="01warehouseState,02delivery,03operationInput,04orderInput" />
+		<enum name="state" values="01covered,02lack" />
+	</fields>
+	<hooks />
+</model>
