@@ -24,16 +24,22 @@
     ***************************************************************************
 
 -->
-<model name="reasonTypeCorrectionDateTo"
+<model name="changeDatesHelper"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="order" model="order" required="true" />
-		<dictionary name="reasonTypeOfChangingOrderState" dictionary="reasonTypeOfChangingOrderState" required="true" />
-		<datetime name="date" />
-		<belongsTo name="changeDatesHelper" model="changeDatesHelper"/>
-	</fields>
-	<hooks>
-		<onSave class="com.qcadoo.mes.orders.hooks.ReasonTypeCorrectionDateToHooks" method="onSave" />
-	</hooks>
+
+    <fields>
+
+        <datetime name="dateFrom"/>
+        <datetime name="dateTo"/>
+        <hasMany name="reasonTypesCorrectionDateFrom" model="reasonTypeCorrectionDateFrom"
+                 joinField="changeDatesHelper" cascade="delete"/>
+        <hasMany name="reasonTypesCorrectionDateTo" model="reasonTypeCorrectionDateTo"
+                 joinField="changeDatesHelper" cascade="delete"/>
+
+        <string name="commentReasonTypeCorrectionDateFrom"/>
+        <string name="commentReasonTypeCorrectionDateTo"/>
+        <string name="orderIds"/>
+    </fields>
+<hooks/>
 </model>
