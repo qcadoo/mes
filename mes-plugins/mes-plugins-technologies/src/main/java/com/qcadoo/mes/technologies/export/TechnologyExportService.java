@@ -280,6 +280,8 @@ public class TechnologyExportService {
 
                 LOG.info("Start uploading file: " + remoteFileName);
                 done = ftpClient.storeFile(remoteFileName, inputStream);
+                LOG.info("FTP reply code: " + ftpClient.getReplyCode());
+                LOG.info("FTP reply message: " + ftpClient.getReplyString());
                 inputStream.close();
                 if (done) {
                     LOG.info("The file is uploaded successfully.");
