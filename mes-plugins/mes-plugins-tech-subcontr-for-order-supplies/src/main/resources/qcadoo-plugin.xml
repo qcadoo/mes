@@ -50,7 +50,7 @@
         </vendor>
         <description>Integrates order supplies coverage calculating with technology subcontracting. Currently not used.
         </description>
-        <license>Commercial</license>
+        <license>AGPL</license>
     </information>
 
     <dependencies>

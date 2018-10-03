@@ -49,7 +49,7 @@
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com</url>
         </vendor>
-        <license>Commercial</license>
+        <license>AGPL</license>
         <description>Warehouse minimal state</description>
     </information>
 

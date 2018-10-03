@@ -50,7 +50,7 @@
 			<url>http://www.qcadoo.com/</url>
 		</vendor>
 		<description>Modifies the way negotiation rounds are created for subcontracted deliveries.</description>
-		<license>Commercial</license>
+		<license>AGPL</license>
 	</information>
 
 	<dependencies>
