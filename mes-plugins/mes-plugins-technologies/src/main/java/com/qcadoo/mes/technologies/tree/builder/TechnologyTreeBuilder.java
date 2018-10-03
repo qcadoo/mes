@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.tree.builder;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalOperationProductComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.InternalTechnologyOperationComponent;
 import com.qcadoo.mes.technologies.tree.builder.api.ItemWithQuantity;
@@ -36,6 +37,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
 public class TechnologyTreeBuilder<T, P> {
+
+    private static final String L_OPERATION = "operation";
 
     private final TechnologyTreeAdapter<T, P> adapter;
 
@@ -54,6 +57,7 @@ public class TechnologyTreeBuilder<T, P> {
     private TechnologyOperationComponent buildOp(final T from, final NumberService numberService) {
         InternalTechnologyOperationComponent toc = compsFactory.buildToc();
         adapter.setOpCompCustomFields(toc, from);
+        toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
         toc.addInputProducts(getProductComponents(OperationProductComponent.OperationCompType.INPUT,
                 adapter.extractInputProducts(from), numberService));
         toc.addOutputProducts(getProductComponents(OperationProductComponent.OperationCompType.OUTPUT,
