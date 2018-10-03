@@ -33,7 +33,7 @@
 
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
             </group>
             <group name="actions">
                 <bigButton name="saveBack" icon="saveBackIcon24.png" state="enabled"

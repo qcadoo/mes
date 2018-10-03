@@ -1,12 +1,5 @@
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.ChangeDatesHelperFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -18,6 +11,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChangeDatesDetailsListeners {
@@ -44,6 +43,7 @@ public class ChangeDatesDetailsListeners {
             return;
         }
         List<String> notValidOrders = Lists.newArrayList();
+        List<String> validOrders = Lists.newArrayList();
         for (Long id : ids) {
             Entity order = orderDD.get(id);
             if (validateDates(order, dateFrom, dateTo)) {
@@ -52,6 +52,8 @@ public class ChangeDatesDetailsListeners {
                 Entity saved = orderDD.save(order);
                 if (!saved.isValid()) {
                     notValidOrders.add(order.getStringField(OrderFields.NUMBER));
+                } else {
+                    validOrders.add(order.getStringField(OrderFields.NUMBER));
                 }
             } else {
                 notValidOrders.add(order.getStringField(OrderFields.NUMBER));
@@ -61,43 +63,43 @@ public class ChangeDatesDetailsListeners {
             view.addMessage("orders.changeDatesHelper.error.validationErrors", ComponentState.MessageType.INFO,
                     String.join(", ", notValidOrders));
         }
+
+        if (!validOrders.isEmpty()) {
+            view.addMessage("orders.changeDatesHelper.info.changeOrders", ComponentState.MessageType.INFO,
+                    String.join(", ", validOrders));
+        }
     }
 
     private void copyFieldsToOrder(Date dateFrom, Date dateTo, String commentDateFrom, String commentDateTo,
             List<Entity> reasonsDateFrom, List<Entity> reasonsDateTo, Entity order) {
+        String orderState = order.getStringField(OrderFields.STATE);
         if (dateFrom != null) {
             order.setField(OrderFields.START_DATE, dateFrom);
+            if (OrderState.ACCEPTED.getStringValue().equals(orderState)) {
+                fillCommentAndReasons(commentDateFrom, reasonsDateFrom, order,
+                        OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_FROM);
+            } else if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+                fillCommentAndReasons(commentDateFrom, reasonsDateFrom, order,
+                        OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_START,
+                        OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START);
+            }
         }
         if (dateTo != null) {
             order.setField(OrderFields.FINISH_DATE, dateTo);
+            if (OrderState.ACCEPTED.getStringValue().equals(orderState)
+                    || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+                fillCommentAndReasons(commentDateTo, reasonsDateTo, order, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
+                        OrderFields.REASON_TYPES_CORRECTION_DATE_TO);
+            }
         }
-        String orderState = order.getStringField(OrderFields.STATE);
 
-        if (OrderState.ACCEPTED.getStringValue().equals(orderState)) {
-            fillCommentAndReasons(commentDateFrom, reasonsDateFrom, order, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
-                    OrderFields.REASON_TYPES_CORRECTION_DATE_FROM);
-        } else if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
-            fillCommentAndReasons(commentDateFrom, reasonsDateFrom, order, OrderFields.COMMENT_REASON_DEVIATION_EFFECTIVE_START,
-                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START);
-        }
-        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
-            fillCommentAndReasons(commentDateTo, reasonsDateTo, order, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
-                    OrderFields.REASON_TYPES_CORRECTION_DATE_TO);
-        }
     }
 
     private void fillCommentAndReasons(String commentDateFrom, List<Entity> reasonsDateFrom, Entity order,
             String commentReasonTypeCorrectionDateFrom, String reasonTypesCorrectionDateFrom) {
         order.setField(commentReasonTypeCorrectionDateFrom, commentDateFrom);
         if (!reasonsDateFrom.isEmpty()) {
-            List<Entity> existingReasons = order.getHasManyField(reasonTypesCorrectionDateFrom);
-            if (existingReasons == null) {
-                order.setField(reasonTypesCorrectionDateFrom, reasonsDateFrom);
-            } else {
-                existingReasons = Lists.newArrayList(existingReasons);
-                existingReasons.addAll(reasonsDateFrom);
-                order.setField(reasonTypesCorrectionDateFrom, existingReasons);
-            }
+            order.setField(reasonTypesCorrectionDateFrom, reasonsDateFrom);
         }
     }
 

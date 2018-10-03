@@ -212,6 +212,13 @@
 										break;	
 									}
 								}
+
+								for (var i in selectedEntitiesArray) {
+									var state = selectedEntitiesArray[i].fields.state;
+									if(state =="06interrupted") {
+										changeDates.disable();
+									}
+								}
 								if (deleteButton) {
                                     if (canNotDelete) {
                                         deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
