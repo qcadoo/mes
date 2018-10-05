@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="orderSupplies" group="supplies" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+    <information>
+        <name>MES - Order supplies</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Lets you calculate the coverage or material requirements of orders in warehouse states and
+            scheduled
+            deliveries.
+        </description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>operationalTasksForOrders</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>productionCounting</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>materialFlowResources</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>deliveries</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>materialRequirements</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>productCatalogNumbers</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>warehouseMinimalState</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+        <dependency>
+            <plugin>techSubcontrForNegot</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+        <dependency>
+            <plugin>catNumbersInNegot</plugin>
+            <version>[1.1.8</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <menu:menu-item name="generateMaterialRequirementCoverage"
+                        category="requirements" view="generateMaterialRequirementCoverage"
+                        defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+
+        <menu:menu-item name="coverageRegistryList"
+                        category="requirements" view="coverageRegistryList" defaultAuthorizationRole="ROLE_SUPERADMIN"/>
+
+        <model:model model="columnForCoverages" resource="model/columnForCoverages.xml"/>
+        <!-- DTO -->
+        <model:model model="materialRequirementCoverageDTO" resource="model/materialRequirementCoverageDTO.xml"/>
+
+        <model:model model="materialRequirementCoverage" resource="model/materialRequirementCoverage.xml"/>
+        <model:model model="coverageProduct" resource="model/coverageProduct.xml"/>
+        <model:model model="coverageProductGenerated" resource="model/coverageProductGenerated.xml"/>
+        <model:model model="coverageProductSelected" resource="model/coverageProductSelected.xml"/>
+        <model:model model="coverageProductLogging" resource="model/coverageProductLogging.xml"/>
+        <model:model model="coverageLocation" resource="model/coverageLocation.xml"/>
+        <model:model model="coverageRegister" resource="model/coverageRegister.xml"/>
+        <model:model model="coverageOrderState" resource="model/coverageOrderState.xml"/>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="defaultCoverageFromDays"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="coverageLocations" joinField="parameter" model="coverageLocation"
+                           plugin="orderSupplies"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="belongsToFamily" model="product"
+                             plugin="basic"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="includeDraftDeliveries"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="automaticSaveCoverage"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum values="01all,02fromDeliverers,03fromSubcontractors"
+                        name="productExtracted" default="01all"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum
+                    values="01all,02withoutProductsFromWarehouse,03onlyShorcomingsAndDelays"
+                    name="coverageType" default="01all"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="ordersIncludePeriod">
+                <model:validatesRange from="1"/>
+            </model:integer>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="includeRequirements"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="coverageOrderStates" model="coverageOrderState" plugin="orderSupplies"
+                           joinField="parameter" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:manyToMany name="materialRequirementCoverages" model="materialRequirementCoverage"
+                              joinField="coverageOrders" plugin="orderSupplies" cascade="nullify"/>
+        </model:model-field>
+
+
+        <model:model-field plugin="orders" model="order">
+            <model:boolean name="registerFilled"/>
+        </model:model-field>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.orderSupplies.validators.ParameterValidatorsOS"
+                    method="validatesWith"/>
+        </model:model-hook>
+
+        <view:view resource="view/generateMaterialRequirementCoverage.xml"/>
+        <view:view resource="view/materialRequirementCoverageDetails.xml"/>
+        <view:view resource="view/materialRequirementCoveragesList.xml"/>
+        <view:view resource="view/coverageProductLoggingDetails.xml"/>
+        <view:view resource="view/deliveryDetails.xml"/>
+        <view:view resource="view/requestForQuotationDetails.xml"/>
+        <view:view resource="view/supplierModalRequestForQuotation.xml"/>
+        <view:view resource="view/supplierModalDelivery.xml"/>
+        <view:view resource="view/coverageRegistryList.xml"/>
+
+        <view:view-tab resource="view/tabExtensions/supplyParametersForCoverages.xml"/>
+        <view:view-tab resource="view/tabExtensions/supplyParametersForMinimalStates.xml"/>
+
+
+        <!--
+            Register section
+        -->
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="coverageRegisters"
+                           model="coverageRegister" plugin="orderSupplies" joinField="order"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field model="technologyOperationComponent" plugin="technologies">
+            <model:hasMany name="coverageRegisters"
+                           model="coverageRegister" plugin="orderSupplies" joinField="technologyOperationComponent"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="coverageProductLoggings"
+                           model="coverageProductLogging" plugin="orderSupplies" joinField="order"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onSave
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onSaveOrder"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onDelete
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onDeleteOrder"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onSave
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onChangeTechnologyInOrder"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basicProductionCounting" model="basicProductionCounting">
+            <model:onSave
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onBasicProductionCounting"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:onDelete
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onDeleteProductionCountingQuantity"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:onSave
+                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
+                    method="onSaveProductionCountingQuantity"/>
+        </model:model-hook>
+
+        <view:view-hook plugin="deliveries" view="supplyParameters"
+                        type="beforeRender" class="com.qcadoo.mes.orderSupplies.hooks.SupplyParametersHooksOS"
+                        method="onBeforeRender"/>
+        <custom:custom
+                class="com.qcadoo.mes.orderSupplies.OrderSuppliesOnStartupService"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+
+</plugin>

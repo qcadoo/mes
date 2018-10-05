@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<column>
+	<row IDENTIFIER="productNumber" NAME="orderSupplies.columnForCoverages.name.value.productNumber" DESCRIPTION="orderSupplies.columnForCoverages.description.value.productNumber" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="productName" NAME="orderSupplies.columnForCoverages.name.value.productName" DESCRIPTION="orderSupplies.columnForCoverages.description.value.productName" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="state" NAME="orderSupplies.columnForCoverages.name.value.state" DESCRIPTION="orderSupplies.columnForCoverages.description.value.state" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="lackFromDate" NAME="orderSupplies.columnForCoverages.name.value.lackFromDate" DESCRIPTION="orderSupplies.columnForCoverages.description.value.lackFromDate" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="01left" />
+	<row IDENTIFIER="demandQuantity" NAME="orderSupplies.columnForCoverages.name.value.demandQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.demandQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="coveredQuantity" NAME="orderSupplies.columnForCoverages.name.value.coveredQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.coveredQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="reserveMissingQuantity" NAME="orderSupplies.columnForCoverages.name.value.reserveMissingQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.reserveMissingQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="productUnit" NAME="orderSupplies.columnForCoverages.name.value.productUnit" DESCRIPTION="orderSupplies.columnForCoverages.description.value.productUnit" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="locationsQuantity" NAME="orderSupplies.columnForCoverages.name.value.locationsQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.locationsQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+	<row IDENTIFIER="deliveredQuantity" NAME="orderSupplies.columnForCoverages.name.value.deliveredQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.deliveredQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+    <row IDENTIFIER="produceQuantity" NAME="orderSupplies.columnForCoverages.name.value.produceQuantity" DESCRIPTION="orderSupplies.columnForCoverages.description.value.produceQuantity" COLUMNFILLER="com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnFiller" ALIGNMENT="02right" />
+</column>

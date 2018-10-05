@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.qcadoo.mes</groupId>
+        <artifactId>mes-plugins</artifactId>
+        <version>1.5-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mes-plugins-deliveries-min-state</artifactId>
+    <packaging>qcadoo-plugin</packaging>
+
+    <name>Qcadoo MES :: Plugins :: Deliveries Min State</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-deliveries</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-warehouse-minimal-state</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-cost-norms-for-product</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-email-notifications</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.qcadoo</groupId>
+                <artifactId>qcadoo-maven-plugin</artifactId>
+                <version>${qcadoo.maven.plugin.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

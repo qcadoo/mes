@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="techSubcontrForOrderSupplies" group="supplies" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+
+
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+
+
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+    <information>
+        <name>MES - Technology subcontracting for order supplies</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Integrates order supplies coverage calculating with technology subcontracting. Currently not used.
+        </description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>techSubcontrForDeliveries</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+        <dependency>
+            <plugin>techSubcontrForOperTasks</plugin>
+            <version>[1.1.7</version>
+        </dependency>
+        <dependency>
+            <plugin>orderSupplies</plugin>
+            <version>[1.2.0</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <model:model-enum-value plugin="orderSupplies" model="materialRequirementCoverage"
+                                enum="productExtracted" value="02fromDeliverers"/>
+
+        <model:model-enum-value plugin="orderSupplies" model="materialRequirementCoverage"
+                                enum="productExtracted" value="03fromSubcontractors"/>
+
+        <model:model-field plugin="orderSupplies" model="coverageProduct">
+            <model:boolean name="isSubcontracted" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orderSupplies" model="coverageProduct">
+            <model:boolean name="isPurchased" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orderSupplies" model="coverageProductLogging">
+            <model:belongsTo name="subcontractedOperation" model="operation"
+                             plugin="technologies"/>
+        </model:model-field>
+        <!--
+        <view:view-grid-column plugin="orderSupplies"
+            view="generateMaterialRequirementCoverage" component="coverageProducts">
+            <view:column name="isSubcontracted" fields="isSubcontracted"
+                orderable="false" searchable="true" width="35" />
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+            view="generateMaterialRequirementCoverage" component="coverageProducts">
+            <view:column name="isPurchased" fields="isPurchased"
+                orderable="false" searchable="true" width="35" />
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+            view="materialRequirementCoverageDetails" component="coverageProducts">
+            <view:column name="isSubcontracted" fields="isSubcontracted"
+                orderable="true" searchable="true" width="35" />
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+            view="materialRequirementCoverageDetails" component="coverageProducts">
+            <view:column name="isPurchased" fields="isPurchased"
+                orderable="true" searchable="true" width="35" />
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+            view="coverageProductLoggingDetails" component="coverageProductLoggings">
+            <view:column name="subcontractedOperationNumber" fields="subcontractedOperation"
+                expression="#subcontractedOperation['number']" orderable="false"
+                searchable="false" width="35" />
+        </view:view-grid-column>
+    -->
+        <custom:custom
+                class="com.qcadoo.mes.techSubcontrForOrderSupplies.TechSubcontrForOrderSuppliesOnStartupService"/>
+    </modules>
+
+    <features>
+        <end-user/>
+        <internal-integration/>
+    </features>
+
+</plugin>

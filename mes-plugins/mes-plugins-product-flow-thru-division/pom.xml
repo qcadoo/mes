@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.qcadoo.mes</groupId>
+        <artifactId>mes-plugins</artifactId>
+        <version>1.5-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mes-plugins-product-flow-thru-division</artifactId>
+    <packaging>qcadoo-plugin</packaging>
+
+    <name>Qcadoo MES :: Plugins :: Product Flow Thru Division</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-production-counting</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-material-flow-resources</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-cost-norms-for-materials</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-orders</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-deliveries</artifactId>
+            <version>1.5-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.qcadoo</groupId>
+                <artifactId>qcadoo-maven-plugin</artifactId>
+                <version>${qcadoo.maven.plugin.version}</version>
+                <extensions>true</extensions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

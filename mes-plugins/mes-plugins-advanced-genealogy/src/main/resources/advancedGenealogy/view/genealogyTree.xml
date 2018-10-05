@@ -1,0 +1,106 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_ADVANCED_GENEALOGY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="genealogyTree"
+	modelName="trackingRecord"
+	menuAccessible="true">
+
+	<component name="window" type="window" reference="window">
+		<ribbon>
+			<group name="generate">
+				<bigButton name="generate" icon="generateIcon24.png" state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('generateTree', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="genealogyTreeForm" reference="form">
+				<component type="gridLayout" name="genealogyTreeGridLayout" columns="3" rows="8" hasBorders="false">
+
+					<layoutElement column="1" row="1" >
+						<component type="lookup" name="producedBatch" field="#{form}.producedBatch" reference="batchLookup" persistent="false">
+							<option type="column" name="productName" fields="product" expression="#product.get('name')" />
+							<option type="column" name="productNumber" fields="product" expression="#product.get('number')" />
+							<option type="column" name="supplierName" fields="supplier" expression="(#supplier == null) ? '' : #supplier.get('name')"  />
+							<option type="orderable" value="number,productNumber,productName,supplierName" />
+							<option type="searchable" value="producedBatch, productNumber, productName, supplierName" />
+							<option type="expression" value="(#supplier == null ) ? #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +')' :  #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +') - ' + #supplier.get('name')" />
+							<option type="fieldCode" value="number" />
+							<option type="alignment" value="right" />
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="2">
+					 	<component type="select" name="treeType" field="treeType" reference="treeType">
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="3">
+						<component type="checkbox" name="includeDrafts" reference="includeDrafts" >
+							<option type="labelWidth" value="75" />
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="4" width="3" height="5">
+						<component type="borderLayout" name="treeBorder">
+							<component type="tree" name="genealogyTree" reference="genealogyTree" field="genealogyTree" defaultEnabled="false">
+								<dataType name="batch">
+									<option type="nodeLabelExpression" value="(#supplier == null) ? '&lt;strong&gt;' + #number + ' &lt;/strong&gt;' + ' - ' + #product.get('name') + ' (' + #product.get('number') + ')' : '&lt;strong&gt;' + #number + ' &lt;/strong&gt;' + ' - ' + #product.get('name') + ' (' + #product.get('number') + ') - ' + #supplier.get('name')" />
+									<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
+									<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
+								</dataType>
+								<option type="hasNewButtons" value="false" />
+								<option type="hasDeleteButton" value="false" />
+								<option type="hasEditButton" value="false" />
+								<option type="hasMoveButton" value="false" />
+							</component>
+
+							<option type="label" value="treeLabel" />
+						</component>
+					</layoutElement>
+				</component>
+				<option type="header" value="false" />
+				<option type="expression" value="#number" />
+				<listener event="generateTree" class="com.qcadoo.mes.advancedGenealogy.tree.AdvancedGenealogyTreeViewListeners"
+					method="generateTree" />
+			</component>
+		</windowTab>
+		<option type="header" value="false" />
+	</component>
+
+	<hooks>
+	</hooks>
+</view>

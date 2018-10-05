@@ -1,0 +1,214 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_BATCHES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	  xmlns="http://schema.qcadoo.org/view"
+	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	  name="batchDetails" modelName="batch">
+
+	<component name="window" type="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate"/>
+			<group name="status">
+				<smallButton name="unblockBatch" icon="enableIcon16.png" state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(advancedGenealogy.batchDetails.window.ribbon.status.unblockBatch.confirm)}")) {
+										#{form}.performEvent('changeBatchState', ["01tracked"]);
+									};
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+				<smallButton name="blockBatch" icon="disableIcon16.png" state="enabled">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(advancedGenealogy.batchDetails.window.ribbon.status.blockBatch.confirm)}")) {
+										#{form}.performEvent('changeBatchState', ["02blocked"]);
+									};
+								}
+							});
+						]]>
+					</script>
+				</smallButton>
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab" reference="mainTab">
+			<component type="form" name="batchDetailsForm" reference="form">
+				<script>
+					<![CDATA[
+						var buttonsStandard = ["actions.save", "actions.saveBack", "actions.saveNew", "actions.cancel"];
+						var buttonsStatus = ["status.blockBatch", "status.unblockBatch"];
+						
+						var deleteButton = #{window}.getRibbonItem("actions.delete");
+						
+						var blockBatchButton = #{window}.getRibbonItem("status.blockBatch");
+	    			    var unblockBatchButton = #{window}.getRibbonItem("status.unblockBatch");
+						
+				        var listener = {
+					    	onSetValue: function() {
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								
+								var externalNumber = #{externalNumber}.getValue().content.value;
+								var isExternal = (externalNumber != undefined && externalNumber != '');
+								
+								if (isSaved) { 
+						     		var state = #{state}.getValue().content.value;
+						      		
+									var isTracked = (state == "01tracked");
+									var isBlocked = (state == "02blocked");
+									
+									if (isTracked) {
+										enableButtons(buttonsStandard);
+										deleteButton.enable();
+										blockBatchButton.enable();
+										unblockBatchButton.disable();
+									} else if (isBlocked) { 
+										disableButtons(buttonsStandard, "#{translate(advancedGenealogy.batchDetails.window.ribbon.message.canNotModifyBatch)}");
+										deleteButton.disable("#{translate(advancedGenealogy.batchDetails.window.ribbon.message.canNotDeleteBatch)}");
+										blockBatchButton.disable();
+										unblockBatchButton.enable();
+									}
+								} else {
+									enableButtons(buttonsStandard);	
+									deleteButton.enable();
+									disableButtons(buttonsStatus);
+								}
+								
+								if (isExternal) {
+									disableButtons(buttonsStandard, "#{translate(advGenealogy.batch.ribbon.message.batchIsExternal)}");
+									deleteButton.disable("#{translate(advGenealogy.batch.ribbon.message.batchIsExternal)}");
+								}
+							}
+						};
+						
+						function disableButtons(buttonNames, message) { 
+							for (var buttonName in buttonNames) { 
+								if ( message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).disable(message);
+								}
+							} 
+						} 
+						
+						function enableButtons(buttonNames, message) { 
+							for (var buttonName in buttonNames) { 	
+								if ( message == '') {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable();
+								} else {
+									#{window}.getRibbonItem(buttonNames[buttonName]).enable(message);
+								}
+							} 
+						} 
+						
+						#{form}.addOnChangeListener(listener);
+					]]>     
+				</script>
+				<component type="gridLayout" name="batchGridLayout" columns="3" rows="4" hasBorders="false">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" field="number" reference="number">
+							<option type="alignment" value="right"/>
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="2">
+						<component type="lookup" name="product" field="product" reference="product">
+							<option type="column" name="name" fields="name" link="true" width="200"/>
+							<option type="column" name="ean" fields="ean"/>
+							<option type="searchable" value="name,ean"/>
+							<option type="orderable" value="name,ean"/>
+							<option type="expression" value="#number + ' - ' + #name"/>
+							<option type="fieldCode" value="number"/>
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="3">
+						<component type="lookup" name="supplier" field="supplier" reference="supplier">
+							<option type="column" name="name" fields="name" link="true" width="200"/>
+							<option type="searchable" value="number,name"/>
+							<option type="orderable" value="number,name"/>
+							<option type="expression" value="#number + ' - ' + #name"/>
+							<option type="fieldCode" value="number"/>
+						</component>
+					</layoutElement>
+
+					<layoutElement column="1" row="4">
+						<component type="select" name="state" field="state" reference="state" defaultVisible="false"/>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="true"/>
+				<option type="expression" value="#number"/>
+
+				<listener event="changeBatchState"
+						  class="com.qcadoo.mes.advancedGenealogy.states.client.BatchStateChangeViewClient"
+						  method="changeState"/>
+			</component>
+		</windowTab>
+		 
+		<windowTab name="integrationTab">
+			<component type="gridLayout" name="gridLayout" columns="3"
+					   rows="1">
+				<layoutElement column="1" row="1">
+					<component type="input" name="externalNumber" field="#{form}.externalNumber"
+							   reference="externalNumber" defaultEnabled="never"/>
+				</layoutElement>
+			</component>
+		</windowTab>
+
+		<windowTab name="historyTab">
+			<component type="gridLayout" name="loggingsGridLayout" columns="2" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="grid" name="loggingsGrid" reference="loggingsGrid" source="#{form}.stateChanges">
+						<option type="column" name="dateAndTime" fields="dateAndTime"/>
+						<option type="column" name="currentState" fields="targetState"/>
+						<option type="column" name="worker" fields="worker"/>
+
+						<option type="order" column="dateAndTime" direction="asc"/>
+
+						<option type="searchable" value="dateAndTime,targetState,worker"/>
+						<option type="orderable" value="dateAndTime,targetState,worker"/>
+					</component>
+				</layoutElement>
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender
+				class="com.qcadoo.mes.advancedGenealogy.hooks.BatchViewHooks"
+				method="onBeforeRender"/>
+	</hooks>
+
+</view>

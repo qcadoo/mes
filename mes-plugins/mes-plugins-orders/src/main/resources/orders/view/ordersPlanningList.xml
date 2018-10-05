@@ -108,6 +108,10 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="dates">
+                <bigButton name="changeDates" icon="calendarIcon24.png" state="disabled"
+                           action="#{grid}.fireEvent(changeDates)"/>
+            </group>
         </ribbon>
         <component type="grid" name="orders" reference="grid">
             <script>
@@ -117,6 +121,7 @@
 					var acceptOrder = #{window}.getRibbonItem("status.acceptOrder");
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
+					var changeDates = #{window}.getRibbonItem("dates.changeDates");
 					
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
@@ -126,6 +131,7 @@
 								interruptOrder.disable();
 								if (deleteButton) deleteButton.disable();
 								if (copyButton) copyButton.disable();
+								changeDates.disable();
 							} else {
 								var noDifferentStates = true;
  								if(selectedEntitiesArray.length > 1)
@@ -138,7 +144,8 @@
 											break;
 										}
 									}
-								} 
+								}
+								changeDates.enable();
 								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
 									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;									
@@ -203,6 +210,13 @@
 									} else if (selectedEntitiesArray[0].fields.externalSynchronized == '0' || (selectedEntitiesArray[i].fields.externalNumber != '' && selectedEntitiesArray[i].fields.externalNumber != undefined)) {
 										hasExternal = true;
 										break;	
+									}
+								}
+
+								for (var i in selectedEntitiesArray) {
+									var state = selectedEntitiesArray[i].fields.state;
+									if(state =="06interrupted") {
+										changeDates.disable();
 									}
 								}
 								if (deleteButton) {
@@ -301,6 +315,9 @@
 
             <listener event="changeState"
                       class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState"/>
+
+            <listener event="changeDates"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners" method="changeDates"/>
 
         </component>
         <option type="fixedHeight" value="true"/>

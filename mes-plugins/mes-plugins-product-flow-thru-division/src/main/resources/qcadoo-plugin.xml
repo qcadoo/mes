@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="productFlowThruDivision" group="other"
+        version="${qcadoo.plugin.version}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://schema.qcadoo.org/plugin" xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+    <information>
+        <name>MES - Product Flow Thru Division</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Product Flow Thru Division</description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>productionCounting</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>materialFlowResources</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>costNormsForMaterials</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>deliveries</plugin>
+            <version>[1.4.0</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+        <localization:translation path="locales"/>
+
+        <model:model-field plugin="materialFlowResources" model="reservation">
+            <model:belongsTo name="productsToIssue" model="productsToIssue"
+                             plugin="productFlowThruDivision"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="componentsLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="componentsOutputLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="componentsLocationDivisions"
+                           model="division" plugin="basic" joinField="componentsLocation"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="componentsOutputLocationDivisions"
+                           model="division" plugin="basic" joinField="componentsOutputLocation"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="productsInputLocationDivisions"
+                           model="division" plugin="basic" joinField="productsInputLocation"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="productsFlowLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="productsFlowLocations"
+                           model="division" plugin="basic" joinField="productsFlowLocation"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:boolean name="automaticMoveForIntermediate" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:boolean name="automaticMoveForFinal" default="false"/>
+        </model:model-field>
+
+        <!-- Range -->
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:enum name="range" values="01oneDivision,02manyDivisions"
+                        default="01oneDivision"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="division" plugin="basic"
+                             model="division"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="productionLine" plugin="productionLines"
+                             model="productionLine"/>
+        </model:model-field>
+
+        <!-- Flow -->
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="componentsLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="componentsOutputLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionOutputLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionInputLocation"/>
+        </model:model-field>
+
+        <!-- operationProductInComponent -->
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:belongsTo name="componentsLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:boolean name="isDivisionLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:boolean name="isDivisionLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:belongsTo name="componentsOutputLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:boolean name="isDivisionOutputLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:boolean name="isDivisionOutputLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:enum name="flowTypeInComponent" values="01withinTheProcess,02getFromThePlace"
+                        default="01withinTheProcess"/>
+        </model:model-field>
+
+        <!-- operationProductOutComponent -->
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:boolean name="isDivisionInputLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:boolean name="isDivisionInputLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:enum name="flowTypeOutComponent" values="01withinTheProcess,02acceptThePlace"
+                        default="01withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="operationProductInComponent">
+            <model:boolean name="isDivisionLocationChangeOPIC"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="operationProductOutComponent">
+            <model:boolean name="isDivisionLocationChangeOPOC"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionLocationChange"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionInputLocationChange"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:boolean name="isDivisionOutputLocationChange"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="document">
+            <model:belongsTo name="order" model="order" plugin="orders"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:integer name="order_id"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="documentDto">
+            <model:string name="orderNumber"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="documents" model="document" plugin="materialFlowResources" joinField="order"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="warehouseIssues" model="warehouseIssue" plugin="productFlowThruDivision"
+                           joinField="order"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:boolean name="ignoreMissingComponents" default="true"/>
+        </model:model-field>
+
+        <!-- parameters -->
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="productsToIssue" values="01allInputProducts,02onlyMaterials"
+                        default="01allInputProducts" required="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="warehouseIssueProductsSource" values="01order,02manual"
+                        default="01order" required="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="generateWarehouseIssuesToDeliveries" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="ignoreMissingComponents" default="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="generateWarehouseIssuesToOrders" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:integer name="daysBeforeOrderStart">
+                <model:validatesRange from="0"/>
+            </model:integer>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="issueLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="drawnDocuments" values="01transfer,02receiptRelease"
+                        default="01transfer" required="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="documentsStatus" values="01accepted,02draft"
+                        default="01accepted" required="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="warehouseIssuesReserveStates" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="issuedQuantityUpToNeed" default="false"/>
+        </model:model-field>
+
+        <!-- productionCountingQuantity in -->
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:belongsTo name="productsFlowLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:belongsTo name="componentsLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:belongsTo name="componentsOutputLocation"
+                             model="location" plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionOutputLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionOutputLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:enum name="flowTypeInComponent" values="01withinTheProcess,02getFromThePlace"
+                        default="01withinTheProcess"/>
+        </model:model-field>
+
+        <!-- productionCountingQuantity out -->
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionInputLocation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionInputLocationModified"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:enum name="flowTypeOutComponent" values="01withinTheProcess,02acceptThePlace"
+                        default="01withinTheProcess"/>
+        </model:model-field>
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionLocationChangeOPIC"
+                           persistent="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basicProductionCounting"
+                           model="productionCountingQuantity">
+            <model:boolean name="isDivisionLocationChangeOPOC"
+                           persistent="false"/>
+        </model:model-field>
+
+        <!-- hooks -->
+
+        <model:model-hook plugin="technologies" model="technology">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.TechnologyValidatorsPFTD"
+                    method="checkRequiredFields"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="division">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.DivisionValidatorsPFTD"
+                    method="checkIfWarehousesAreDifferent"/>
+        </model:model-hook>
+        <model:model-hook plugin="technologies" model="operationProductInComponent">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="checkRequiredFields"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductInComponent">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.OPICValidatorsPFTD"
+                    method="checkComponentsWarehouses"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductOutComponent">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="checkRequiredFields"/>
+        </model:model-hook>
+
+
+        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
+                    method="checkRequiredFields"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
+                    method="checkComponentsWarehouses"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
+            <model:validatesWith
+                    class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
+                    method="validateProductionFlowForSet"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD"
+                    method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onCopy
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD"
+                    method="fillProductionFlow"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductInComponent">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="fillProductionFlow"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductOutComponent">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="fillProductionFlow"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductInComponent">
+            <model:onCopy
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="fillProductionFlow"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="technologies" model="operationProductOutComponent">
+            <model:onCopy
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
+                    method="fillProductionFlow"/>
+        </model:model-hook>
+
+
+        <model:model-hook plugin="technologies" model="technology">
+            <model:onSave
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD"
+                    method="onSave"/>
+        </model:model-hook>
+
+        <model:model model="materialAvailability" resource="model/materialAvailability.xml"/>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="materialAvailability" plugin="productFlowThruDivision"
+                           model="materialAvailability" joinField="order" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="materialAvailability" plugin="productFlowThruDivision"
+                           model="materialAvailability" joinField="product" cascade="delete"/>
+        </model:model-field>
+
+
+        <model:model-hook plugin="basicProductionCounting"
+                          model="productionCountingQuantity">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityHooksBPC"
+                    method="onCreate"/>
+        </model:model-hook>
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.ParameterHooksPFTD"
+                    method="onCreate"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onSave
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.ParameterHooksPFTD"
+                    method="onSave"/>
+        </model:model-hook>
+
+        <!-- view -->
+
+        <view:view-tab resource="view/tabExtensions/divisionDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/copyOfTechnologyDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/orderMaterialAvailability.xml"/>
+        <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
+
+        <view:view-hook plugin="basic" view="divisionDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.DivisionDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="deliveries" view="supplyParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.SupplyParametersHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="materialFlow" view="locationDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.LocationDetailsPFTD"
+                        method="setCriteriaModifierParameters"/>
+
+        <view:view-hook plugin="materialFlowResources" view="documentsList"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.DocumentsListPFTD"
+                        method="setCriteriaModifierParameters"/>
+
+        <view:view-hook plugin="materialFlow" view="locationDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.LocationDetailsPFTD"
+                        method="changeDivisionsTabAndGridVisibility"/>
+
+        <view:view-hook plugin="orders" view="copyOfTechnologyDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="technologies" view="technologyDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="orders" view="orderDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook plugin="productionCounting" view="productionTrackingDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionTrackingDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
+        <view:view-hook view="productionCountingQuantityAdvancedDetails" type="beforeRender"
+                        plugin="basicProductionCounting"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityAdvancedDetailsHooksBPC"
+                        method="setFlowTabState"/>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentsList" component="grid">
+            <view:column name="orderNumber" fields="orderNumber" orderable="true"
+                         searchable="true" width="100"/>
+        </view:view-grid-column>
+
+        <model:model-field plugin="materialFlowResources" model="positionDto">
+            <model:string name="orderNumber"/>
+        </model:model-field>
+
+        <view:view-grid-column plugin="materialFlowResources"
+                               view="documentPositionsList" component="grid">
+            <view:column name="orderNumber" fields="orderNumber" orderable="true"
+                         searchable="true" width="45"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column view="ordersList" component="grid" plugin="orders">
+            <view:column name="divisionName" fields="divisionName" orderable="true" searchable="true" width="55"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column view="ordersPlanningList" component="grid" plugin="orders">
+            <view:column name="divisionNumber" fields="divisionNumber" orderable="true" searchable="true" width="20"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="materialFlowResources" view="reservationsList" component="grid">
+            <view:column name="warehouseIssueNumber" fields="productsToIssue"
+                         width="50" expression="#productsToIssue?.get('warehouseIssue')?.get('number')" orderable="true"
+                         searchable="true"/>
+
+        </view:view-grid-column>
+        <custom:custom class="com.qcadoo.mes.productFlowThruDivision.ProductFlowThruDivisionOnStartupService"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/copyOfTechnologyDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/productionTrackingDetails.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/costNormsForMaterialsInOrderList.xml"/>
+
+        <view:view resource="view/orderWithMaterialAvailabilityList.xml"/>
+        <view:view resource="view/materialAvailabilityList.xml"/>
+
+        <view:view-listener plugin="costNormsForMaterials" view="costNormsForMaterialsInOrderList"
+                            component="form" event="calculateRealProductionCost"
+                            class="com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService"
+                            method="calculateRealProductionCost"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="showMaterialAvailabilityForOrder"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
+                            method="showMaterialAvailabilityForOrder"/>
+
+        <view:view-listener plugin="productionCounting" view="productionTrackingDetails"
+                            component="form" event="showMaterialAvailabilityForProductionTracking"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
+                            method="showMaterialAvailabilityForProductionTracking"/>
+
+        <view:view-listener plugin="technologies" view="technologyDetails"
+                            component="form" event="fillLocationsInComponents"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
+                            method="fillLocationsInComponents"/>
+
+        <view:view-listener plugin="orders" view="copyOfTechnologyDetails"
+                            component="form" event="fillLocationsInComponents"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
+                            method="fillLocationsInComponents"/>
+
+        <view:view-listener plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
+                            component="role" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
+                            method="setFlowTabState"/>
+
+        <view:view-listener plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
+                            component="typeOfMaterial" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
+                            method="setFlowTabState"/>
+
+        <view:view-listener plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
+                            component="technologyOperationComponent" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
+                            method="onChangeTOC"/>
+
+        <view:view resource="view/operationComponentDetails.xml"/>
+
+        <model:model-field plugin="technologies"
+                           model="technology">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess" required="true"/>
+        </model:model-field>
+        <model:model-field plugin="technologies"
+                           model="technology">
+            <model:belongsTo name="productsFlowLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="technology">
+            <model:boolean name="automaticMoveForIntermediate" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="technology">
+            <model:boolean name="automaticMoveForFinal" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:belongsTo name="productsFlowLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:belongsTo name="productsFlowLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:belongsTo name="productsShiftingLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductInComponent">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies"
+                           model="operationProductOutComponent">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="operationProductOutComponent">
+            <model:boolean name="automaticMove" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technologyOperationComponent">
+            <model:boolean name="productionLineChange" default="false"/>
+        </model:model-field>
+
+        <view:view resource="view/productsComponentDetails.xml"/>
+        <view:view resource="view/productsIntermediateInDetails.xml"/>
+        <view:view resource="view/productsIntermediateOutDetails.xml"/>
+        <view:view resource="view/productsFinalDetails.xml"/>
+        <view:view resource="view/productToIssueDetails.xml"/>
+        <view:view resource="view/issueList.xml"/>
+
+
+        <!--  warehouseIssue -->
+
+        <model:model-field plugin="states" model="message">
+            <model:belongsTo name="warehouseIssueStateChange"
+                             plugin="productFlowThruDivision" model="warehouseIssueStateChange"/>
+        </model:model-field>
+
+        <model:model model="warehouseIssue" resource="model/warehouseIssue.xml"/>
+        <model:model model="productsToIssue" resource="model/productsToIssue.xml"/>
+        <model:model model="productToIssueDto" resource="model/productToIssueDto.xml"/>
+        <model:model model="issue" resource="model/issue.xml"/>
+        <model:model model="issueDto" resource="model/issueDto.xml"/>
+        <model:model model="warehouseIssueStateChange" resource="model/warehouseIssueStateChange.xml"/>
+        <model:model model="productsToIssueHelper" resource="model/productsToIssueHelper.xml"/>
+        <model:model model="productToIssueCorrection" resource="model/productToIssueCorrection.xml"/>
+        <model:model model="productToIssueCorrectionHelper" resource="model/productToIssueCorrectionHelper.xml"/>
+        <model:model model="productAndQuantityHelper" resource="model/productAndQuantityHelper.xml"/>
+
+        <menu:menu-category name="requirements"/>
+
+        <view:view resource="view/warehouseIssueDetails.xml"/>
+        <view:view resource="view/productsToIssueList.xml"/>
+
+        <view:view resource="view/warehouseIssueList.xml"/>
+        <view:view resource="view/issueDetails.xml"/>
+
+        <view:view resource="view/productsToIssueHelperDetails.xml"/>
+        <view:view resource="view/productToIssueCorrectionHelperDetails.xml"/>
+
+        <menu:menu-item name="warehouseIssue" category="requirements"
+                        view="warehouseIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+
+        <menu:menu-item name="productsToIssue" category="requirements"
+                        view="productsToIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+        <menu:menu-item name="issueList" category="requirements"
+                        view="issueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="showWarehouseIssuesForOrder"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
+                            method="showWarehouseIssuesForOrder"/>
+
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+</plugin>

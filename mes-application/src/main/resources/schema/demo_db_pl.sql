@@ -10726,6 +10726,40 @@ ALTER SEQUENCE operationaltasksfororders_techopercompoperationaltask_id_seq OWNE
 
 
 --
+-- Name: orders_changedateshelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_changedateshelper (
+    id bigint NOT NULL,
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
+    commentreasontypecorrectiondatefrom character varying(255),
+    commentreasontypecorrectiondateto character varying(255),
+    ids character varying(255),
+    orderids character varying(255)
+);
+
+
+--
+-- Name: orders_changedateshelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_changedateshelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_changedateshelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_changedateshelper_id_seq OWNED BY orders_changedateshelper.id;
+
+
+--
 -- Name: orders_order_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -11032,7 +11066,8 @@ CREATE TABLE orders_reasontypecorrectiondatefrom (
     order_id bigint,
     reasontypeofchangingorderstate character varying(255),
     date timestamp without time zone,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    changedateshelper_id bigint
 );
 
 
@@ -11064,7 +11099,8 @@ CREATE TABLE orders_reasontypecorrectiondateto (
     order_id bigint,
     reasontypeofchangingorderstate character varying(255),
     date timestamp without time zone,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    changedateshelper_id bigint
 );
 
 
@@ -18984,6 +19020,13 @@ ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask ALTER COL
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY orders_changedateshelper ALTER COLUMN id SET DEFAULT nextval('orders_changedateshelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_id_seq'::regclass);
 
 
@@ -24068,6 +24111,21 @@ SELECT pg_catalog.setval('operationaltasksfororders_techopercompoperationaltask_
 
 
 --
+-- Data for Name: orders_changedateshelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_changedateshelper (id, datefrom, dateto, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, ids, orderids) FROM stdin;
+\.
+
+
+--
+-- Name: orders_changedateshelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_changedateshelper_id_seq', 1, false);
+
+
+--
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -24137,7 +24195,7 @@ SELECT pg_catalog.setval('orders_orderstatechange_id_seq', 1, false);
 -- Data for Name: orders_reasontypecorrectiondatefrom; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_reasontypecorrectiondatefrom (id, order_id, reasontypeofchangingorderstate, date, entityversion) FROM stdin;
+COPY orders_reasontypecorrectiondatefrom (id, order_id, reasontypeofchangingorderstate, date, entityversion, changedateshelper_id) FROM stdin;
 \.
 
 
@@ -24152,7 +24210,7 @@ SELECT pg_catalog.setval('orders_reasontypecorrectiondatefrom_id_seq', 1, false)
 -- Data for Name: orders_reasontypecorrectiondateto; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_reasontypecorrectiondateto (id, order_id, reasontypeofchangingorderstate, date, entityversion) FROM stdin;
+COPY orders_reasontypecorrectiondateto (id, order_id, reasontypeofchangingorderstate, date, entityversion, changedateshelper_id) FROM stdin;
 \.
 
 
@@ -25525,7 +25583,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 15	cdnrcGoodFood	1.5.0	DISABLED	f	0	other	Commercial
 16	integrationScada	1.5.0	DISABLED	f	0	other	Commercial
 18	ozgohome	1.5.0	DISABLED	f	0	other	Commercial
-19	productCharacteristics	1.5.0	DISABLED	f	0	other	Commercial
 20	urcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 78	nutritionFacts	1.5.0	DISABLED	f	0	framework	Commercial
 79	walusiak	1.5.0	DISABLED	f	0	other	Commercial
@@ -25546,23 +25603,19 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 35	ganttForShifts	1.5.0	ENABLED	f	0	basic	AGPL
 36	productionLines	1.5.0	ENABLED	f	0	basic	AGPL
 37	urcBasic	1.5.0	ENABLED	f	0	basic	Commercial
-38	emailNotifications	1.5.0	ENABLED	f	0	basic	Commercial
 39	productCatalogNumbers	1.5.0	ENABLED	f	0	basic	AGPL
 40	costNormsForOperation	1.5.0	ENABLED	f	0	technologies	AGPL
-41	technologiesGenerator	1.5.0	ENABLED	f	0	other	Commercial
 42	orders	1.5.0	ENABLED	f	0	planning	AGPL
 45	costNormsForOperationInOrder	1.5.0	ENABLED	f	0	planning	AGPL
 46	simpleMaterialBalance	1.5.0	ENABLED	f	0	supplies	AGPL
 47	deliveries	1.5.0	ENABLED	f	0	supplies	AGPL
 48	stoppage	1.5.0	ENABLED	f	0	other	AGPL
-49	supplyNegotiations	1.5.0	ENABLED	f	0	supplies	Commercial
 50	materialFlowResources	1.5.0	ENABLED	f	0	flow	AGPL
 51	masterOrders	1.5.0	ENABLED	f	0	planning	AGPL
 52	basicProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
 53	warehouseMinimalState	1.5.0	ENABLED	f	0	other	Commercial
 54	cmmsMachineParts	1.5.0	ENABLED	f	0	other	AGPL
 55	urcOrders	1.5.0	ENABLED	f	0	planning	Commercial
-56	timeGapsPreview	1.5.0	ENABLED	f	0	other	Commercial
 57	techSubcontracting	1.5.0	ENABLED	f	0	technologies	AGPL
 58	deliveriesToMaterialFlow	1.5.0	ENABLED	f	0	supplies	AGPL
 59	techSubcontrForDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
@@ -25572,13 +25625,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 63	avgLaborCostCalcForOrder	1.5.0	ENABLED	f	0	planning	AGPL
 64	productionCountingWithCosts	1.5.0	ENABLED	f	0	tracking	AGPL
 65	productionPerShift	1.5.0	ENABLED	f	0	planning	AGPL
-66	orderSupplies	1.5.0	ENABLED	f	0	supplies	Commercial
-67	catNumbersInNegot	1.5.0	ENABLED	f	0	supplies	Commercial
-68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
 69	urcBasicProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
-70	negotForOrderSupplies	1.5.0	ENABLED	f	0	supplies	Commercial
-71	techSubcontrForOrderSupplies	1.5.0	ENABLED	f	0	supplies	Commercial
-72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	Commercial
 73	subcontractorPortal	1.5.0	ENABLED	f	0	other	Commercial
 74	goodFoodGantt	1.5.0	ENABLED	f	0	\N	Commercial
 76	urcProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
@@ -25608,12 +25655,10 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 114	materialFlow	1.5.0	ENABLED	f	0	flow	AGPL
 115	operationalTasks	1.5.0	ENABLED	f	0	planning	AGPL
 116	materialRequirements	1.5.0	ENABLED	f	0	calculations	AGPL
-117	subOrders	1.4.0	ENABLED	f	0	planning	Commercial
 118	operationTimeCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
 119	minimalAffordableQuantity	1.5.0	ENABLED	f	0	technologies	AGPL
 44	lineChangeoverNorms	1.5.0	ENABLED	f	0	technologies	AGPL
 120	operationCostCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
-121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	Commercial
 122	costNormsForMaterials	1.5.0	ENABLED	f	0	basic	AGPL
 123	qualityControls	1.5.0	ENABLED	f	0	quality	AGPL
 124	qualityControlsForOperation	1.5.0	ENABLED	f	0	quality	AGPL
@@ -25623,25 +25668,38 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 128	materialFlowMultitransfers	1.5.0	ENABLED	f	0	flow	AGPL
 129	operationalTasksForOrders	1.5.0	ENABLED	f	0	planning	AGPL
 130	catNumbersInDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
-131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	Commercial
 132	techSubcontrForOperTasks	1.5.0	ENABLED	f	0	planning	AGPL
 133	ganttForOperations	1.5.0	ENABLED	f	0	planning	AGPL
 149	integrationBaseLinker	1.5.0	ENABLED	f	0	other	Commercial
-134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	Commercial
 135	urcMaterialRequirements	1.5.0	ENABLED	f	0	planning	Commercial
 136	techSubcontrForProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
 137	ordersProgressGanttChart	1.5.0	ENABLED	f	0	other	Commercial
 138	cmmsScheduler	1.5.0	ENABLED	f	0	other	Commercial
 139	deviationCausesReporting	1.5.0	ENABLED	f	0	planning	AGPL
-140	productionBalancePerShift	1.5.0	ENABLED	f	0	other	Commercial
-141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	Commercial
-142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	Commercial
 143	repairs	1.5.0	ENABLED	f	0	other	Commercial
-144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	Commercial
 146	ordersGroups	1.5.0	ENABLED	f	0	other	Commercial
 145	ordersGantt	1.5.0	ENABLED	f	0	other	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	\N
 151	integrationScales	1.5.0	DISABLED	f	0	\N	\N
+19	productCharacteristics	1.5.0	DISABLED	f	0	other	AGPL
+38	emailNotifications	1.5.0	ENABLED	f	0	basic	AGPL
+41	technologiesGenerator	1.5.0	ENABLED	f	0	other	AGPL
+49	supplyNegotiations	1.5.0	ENABLED	f	0	supplies	AGPL
+56	timeGapsPreview	1.5.0	ENABLED	f	0	other	AGPL
+66	orderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
+67	catNumbersInNegot	1.5.0	ENABLED	f	0	supplies	AGPL
+68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	AGPL
+70	negotForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
+71	techSubcontrForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
+72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	AGPL
+117	subOrders	1.4.0	ENABLED	f	0	planning	AGPL
+121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	AGPL
+131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	AGPL
+134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	AGPL
+140	productionBalancePerShift	1.5.0	ENABLED	f	0	other	AGPL
+141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
+142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
+144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	AGPL
 \.
 
 
@@ -29236,6 +29294,14 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
     ADD CONSTRAINT operationaltasksfororders_techopercompoperationaltask_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_changedateshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_changedateshelper
+    ADD CONSTRAINT orders_changedateshelper_pkey PRIMARY KEY (id);
 
 
 --
@@ -36074,11 +36140,27 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 
 --
+-- Name: reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
+    ADD CONSTRAINT reasontypecorrectiondatefrom_changedateshelper_fkey FOREIGN KEY (changedateshelper_id) REFERENCES orders_changedateshelper(id) DEFERRABLE;
+
+
+--
 -- Name: reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
     ADD CONSTRAINT reasontypecorrectiondatefrom_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_reasontypecorrectiondateto
+    ADD CONSTRAINT reasontypecorrectiondateto_changedateshelper_fkey FOREIGN KEY (changedateshelper_id) REFERENCES orders_changedateshelper(id) DEFERRABLE;
 
 
 --

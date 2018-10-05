@@ -119,9 +119,17 @@ public class DateTimeRange implements Comparable<DateTimeRange> {
 
     public Collection<? extends DateTimeRange> remove(final DateTimeRange range) {
         Interval other = range.interval;
-        if (interval.contains(other)) {
-            return Lists.newArrayList(new DateTimeRange(interval.getStart(), other.getStart()), new DateTimeRange(other.getEnd(),
-                    interval.getEnd()));
+        if (interval.isEqual(other)) {
+            return Collections.EMPTY_LIST;
+        } else if (interval.contains(other)) {
+            if (interval.getStart().isEqual(other.getStart())) {
+                return Lists.newArrayList(new DateTimeRange(other.getEnd(), interval.getEnd()));
+            } else if (interval.getEnd().isEqual(other.getEnd())) {
+                return Lists.newArrayList(new DateTimeRange(interval.getStart(), other.getStart()));
+            } else {
+                return Lists.newArrayList(new DateTimeRange(interval.getStart(), other.getStart()),
+                        new DateTimeRange(other.getEnd(), interval.getEnd()));
+            }
         } else if (other.contains(interval)) {
             return Collections.EMPTY_LIST;
         } else if (interval.overlaps(other)) {
@@ -169,4 +177,3 @@ public class DateTimeRange implements Comparable<DateTimeRange> {
     }
 
 }
-
