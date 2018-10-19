@@ -23,14 +23,18 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.hooks;
 
+import com.google.common.base.Joiner;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.ordersForSubproductsGeneration.OrdersForSubproductsGenerationService;
+import com.qcadoo.mes.ordersForSubproductsGeneration.criteriaModifiers.CoverageForOrderCriteriaModifiersOFSPG;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import org.slf4j.Logger;
@@ -61,6 +65,8 @@ public class MRCForOrderDetailsHooksOFSPG {
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         updateRibbonState(view);
+        setCriteriaModifierParameters(view);
+
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
@@ -92,6 +98,26 @@ public class MRCForOrderDetailsHooksOFSPG {
         updateButtonState(generateOrders, isEnabled);
     }
 
+    private void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        FormComponent coverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity coverageEntity = coverageForm.getPersistedEntityWithIncludedFormValues();
+        Entity order = coverageEntity.getBelongsToField(CoverageForOrderFields.ORDER);
+        List<Entity> coverageOrders = coverageEntity.getHasManyField(MaterialRequirementCoverageFields.COVERAGE_ORDERS);
+        GridComponent gridGeneratedOrders = (GridComponent) view.getComponentByReference(GENERATED_ORDERS_GRID);
+
+        FilterValueHolder gridGeneratedOrdersHolder = gridGeneratedOrders.getFilterValue();
+        if (order != null) {
+            gridGeneratedOrdersHolder.put(CoverageForOrderCriteriaModifiersOFSPG.ORDER_PARAMETER, order.getId());
+        } else if (!coverageOrders.isEmpty()) {
+
+            String list = Joiner.on(",").join(getOrdersIds(coverageEntity));
+            gridGeneratedOrdersHolder.put(CoverageForOrderCriteriaModifiersOFSPG.ORDERS_PARAMETER, list);
+        }
+
+        gridGeneratedOrders.setFilterValue(gridGeneratedOrdersHolder);
+
+    }
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
         ribbonActionItem.setEnabled(isEnabled);
         ribbonActionItem.requestUpdate(true);
