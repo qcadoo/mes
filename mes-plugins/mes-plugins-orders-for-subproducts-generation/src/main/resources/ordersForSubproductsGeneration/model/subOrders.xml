@@ -29,7 +29,6 @@
 
     <fields>
         <belongsTo name="order" plugin="orders" model="order"/>
-        <belongsTo name="ordersGroup" plugin="ordersGroups" model="ordersGroup"/>
         <boolean name="ordersGroupsGenerated" default="false"/>
         <boolean name="generatedOrders" default="false"/>
         <boolean name="orderGenerationInProgress" default="false"/>

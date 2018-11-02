@@ -177,13 +177,6 @@
                            cascade="delete" copyable="false"/>
         </model:model-field>
 
-        <model:model-field plugin="ordersGroups" model="ordersGroup">
-            <model:hasMany name="subOrders" joinField="ordersGroup" model="subOrders"
-                           plugin="ordersForSubproductsGeneration"
-                           cascade="delete" copyable="false"/>
-        </model:model-field>
-
-
         <view:view resource="view/ordersForSubproducts.xml"/>
 
         <view:view-tab resource="view/tabExtensions/operationDurationDetailsInOrder.xml"/>

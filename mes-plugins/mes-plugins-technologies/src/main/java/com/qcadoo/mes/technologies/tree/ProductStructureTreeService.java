@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.technologies.tree;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -54,6 +46,13 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class ProductStructureTreeService {
@@ -344,8 +343,13 @@ public class ProductStructureTreeService {
         Long rootTocID = root.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
         addChildTOC(tocTree, tocDD.get(rootTocID), null, root.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT),
                 L_FINAL_PRODUCT);
+        addTocChildes(tocTree, tocDD, root);
+        return EntityTreeUtilsService.getDetachedEntityTree(tocTree);
+    }
+
+    private void addTocChildes(List<Entity> tocTree, DataDefinition tocDD, Entity root) {
         Entity parent;
-        for (Entity node : productStructureTree) {
+        for (Entity node : root.getHasManyField(TechnologyOperationComponentFields.CHILDREN)) {
             String entityType = node.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE);
             if (!entityType.equals(L_MATERIAL) && !entityType.equals(L_FINAL_PRODUCT)) {
                 Long tocId = node.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
@@ -355,10 +359,13 @@ public class ProductStructureTreeService {
                         .getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId() : node.getBelongsToField(
                         ProductStructureTreeNodeFields.OPERATION).getId();
                 parent = getEntityById(tocTree, parentId);
+                if(parent == null) {
+                    parent.getId();
+                }
                 addChildTOC(tocTree, toc, parent, node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT), entityType);
             }
+            addTocChildes(tocTree, tocDD, node);
         }
-        return EntityTreeUtilsService.getDetachedEntityTree(tocTree);
     }
 
     private Entity getEntityById(final List<Entity> tree, final Long id) {
