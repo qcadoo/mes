@@ -39,9 +39,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.mes.productionCounting.constants.CalculateOperationCostsMode;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingReportFields;
@@ -193,16 +191,6 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public boolean isCalculateOperationCostModeHourly(final String calculateOperationCostMode) {
-        return CalculateOperationCostsMode.HOURLY.getStringValue().equals(calculateOperationCostMode);
-    }
-
-    @Override
-    public boolean isCalculateOperationCostModePiecework(final String calculateOperationCostMode) {
-        return CalculateOperationCostsMode.PIECEWORK.getStringValue().equals(calculateOperationCostMode);
-    }
-
-    @Override
     public boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD,
             final Entity productionTrackingReportOrBalance) {
         Entity order = productionTrackingReportOrBalance.getBelongsToField(L_ORDER);
@@ -210,23 +198,6 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
         if ((order == null) || isTypeOfProductionRecordingBasic(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
                     "productionCounting.productionBalance.report.error.orderWithoutRecordingType");
-
-            return false;
-        }
-
-        String calculateOperationCostMode = productionTrackingReportOrBalance
-                .getStringField(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
-
-        if (!order.getBooleanField(OrderFieldsPC.REGISTER_PRODUCTION_TIME)
-                && isCalculateOperationCostModeHourly(calculateOperationCostMode)) {
-            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
-                    "productionCounting.productionBalance.report.error.orderWithoutRegisterProductionTime");
-
-            return false;
-        } else if (!order.getBooleanField(OrderFieldsPC.REGISTER_PIECEWORK)
-                && isCalculateOperationCostModePiecework(calculateOperationCostMode)) {
-            productionTrackingReportOrBalance.addError(productionTrackingReportOrBalanceDD.getField(L_ORDER),
-                    "productionCounting.productionBalance.report.error.orderWithoutRegisterPiecework");
 
             return false;
         }

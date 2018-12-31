@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -30,16 +39,18 @@ import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
-import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -48,14 +59,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Set;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -222,7 +225,7 @@ public class CostCalculationDetailsListeners {
         if (cameFromOrder) {
             componentsMap.get(CostCalculationFields.ORDER).setFieldValue(order.getId());
             componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
-            if(order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE) != null){
+            if (order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE) != null) {
                 componentsMap.get(CostCalculationFields.PRODUCTION_LINE).setFieldValue(
                         order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE).getId());
             }
@@ -396,22 +399,7 @@ public class CostCalculationDetailsListeners {
         }
     }
 
-    public void disableCheckboxIfPieceworkIsSelected(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        costCalculationDetailsHooks.disableCheckboxIfPieceworkIsSelected(viewDefinitionState);
-    }
-
-    public void sourceOfOperationCostsChanged(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        String source = (String) state.getFieldValue();
-        FieldComponent calculateOperationCostsModeComponent = (FieldComponent) viewDefinitionState
-                .getComponentByReference("calculateOperationCostsMode");
-        if (SourceOfOperationCosts.PARAMETERS.getStringValue().equals(source)) {
-            calculateOperationCostsModeComponent.setFieldValue(CalculateOperationCostMode.HOURLY.getStringValue());
-        }
-    }
-
-    public void saveNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args){
+    public void saveNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity costsEntity = formComponent.getEntity();
         Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
@@ -423,10 +411,8 @@ public class CostCalculationDetailsListeners {
                     MessageType.FAILURE);
         }
 
-        view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess",
-                MessageType.SUCCESS);
+        view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess", MessageType.SUCCESS);
 
     }
-
 
 }
