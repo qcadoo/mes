@@ -241,8 +241,6 @@
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="ordersLookup"/>
 
-                        <listener event="select" method="disableAddAllRelatedOrdersButton"
-                                  class="com.qcadoo.mes.productionCounting.listeners.ProductionBalanceDetailsListeners"/>
                     </component>
                 </layoutElement>
             </component>
@@ -382,9 +380,7 @@
         <beforeRender
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
                 method="setTheFieldBasedOnParameters"/>
-        <beforeRender
-                class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceDetailsHooks"
-                  method="disableAddAllRelatedOrdersButton"/>
+
     </hooks>
 
 </view>
