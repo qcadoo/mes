@@ -49,9 +49,6 @@
             <validatesLength max="1024"/>
         </string>
 
-        <enum name="calculateOperationCostsMode" values="01hourly,02piecework,03mixed"
-              required="true" default="01hourly"/>
-
         <enum name="sourceOfOperationCostsPB"
               values="01technologyOperation,02parameters"
               required="true" default="01technologyOperation"/>
