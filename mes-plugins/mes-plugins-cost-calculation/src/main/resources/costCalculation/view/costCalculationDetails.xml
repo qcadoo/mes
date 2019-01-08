@@ -75,18 +75,6 @@
                     <![CDATA[
 							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
 
-							jQuery(document).ready(function() {
-								var json = JSON.parse(context);
-								var orderId = json['window.mainTab.orderId'];
-								var technologyId = json['window.mainTab.technologyId'];
-
-								if (orderId != null) {
-									#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
-								} else if (technologyId != null) {
-									#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]);
-								}
-							});
-
 							var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
@@ -281,9 +269,6 @@
                 <listener event="generateCostCalculation"
                           class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
                           method="generateCostCalculation"/>
-                <listener event="requestCopyFieldValues"
-                          class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
-                          method="copyFieldValues"/>
                 <listener event="printCostCalculation"
                           class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
                           method="printCostCalculationReport"/>

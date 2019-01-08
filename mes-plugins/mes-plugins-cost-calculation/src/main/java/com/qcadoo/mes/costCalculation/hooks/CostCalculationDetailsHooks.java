@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -42,9 +34,14 @@ import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -54,6 +51,16 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationDetailsHooks {
@@ -80,6 +87,8 @@ public class CostCalculationDetailsHooks {
 
     private static final String L_TOTAL_PIECEWORK_COSTS_CURRENCY = "totalPieceworkCostsCurrency";
 
+    private static final String L_MINIMAL_QUANTITY = "minimalQuantity";
+
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
@@ -91,6 +100,9 @@ public class CostCalculationDetailsHooks {
 
     @Autowired
     private NumberService numbersService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.ORDER);
@@ -131,7 +143,23 @@ public class CostCalculationDetailsHooks {
         technologyLookup.setFilterValue(filterValueHolder);
     }
 
-    public void onBeforeRender(final ViewDefinitionState view) {
+    public void onBeforeRender(final ViewDefinitionState view) throws JSONException {
+        if (view.isViewAfterRedirect()) {
+            JSONObject json = view.getJsonContext();
+            Entity technology = null;
+            Entity order = null;
+            if (json.has("window.mainTab.technologyId")) {
+                Long techId = json.getLong("window.mainTab.technologyId");
+                technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
+            } else if (json.has("window.mainTab.orderId")) {
+                Long orderId = json.getLong("window.mainTab.orderId");
+                order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+
+                technology = getTechnologyFromOrder(order);
+            }
+            applyValuesToFields(view, technology, order);
+        }
         setCriteriaModifierParameters(view);
         setFieldsEnabled(view);
         generateNumber(view);
@@ -309,5 +337,82 @@ public class CostCalculationDetailsHooks {
             saveNominalCosts.setEnabled(true);
             saveNominalCosts.requestUpdate(true);
         }
+    }
+
+    private Entity getTechnologyFromOrder(final Entity order) {
+        Entity technology = null;
+
+        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
+
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        } else {
+            technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        }
+
+        return technology;
+    }
+
+    public void applyValuesToFields(final ViewDefinitionState view, final Entity technology, final Entity order) {
+        if (technology == null) {
+            clearFieldValues(view);
+
+            return;
+        }
+
+        Boolean cameFromOrder = false;
+        Boolean cameFromTechnology = false;
+
+        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.PRODUCTION_LINE,
+                CostCalculationFields.DEFAULT_TECHNOLOGY, CostCalculationFields.PRODUCT, CostCalculationFields.ORDER,
+                CostCalculationFields.QUANTITY, CostCalculationFields.TECHNOLOGY);
+
+        Map<String, FieldComponent> componentsMap = Maps.newHashMap();
+
+        for (String referenceName : referenceNames) {
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
+            componentsMap.put(referenceName, fieldComponent);
+        }
+
+        if (order == null) {
+            cameFromTechnology = true;
+        } else {
+            cameFromOrder = true;
+        }
+
+        if (cameFromOrder) {
+            componentsMap.get(CostCalculationFields.ORDER).setFieldValue(order.getId());
+            componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
+            if (order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE) != null) {
+                componentsMap.get(CostCalculationFields.PRODUCTION_LINE).setFieldValue(
+                        order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE).getId());
+            }
+            componentsMap.get(CostCalculationFields.QUANTITY).setFieldValue(
+                    numbersService.format(order.getField(OrderFields.PLANNED_QUANTITY)));
+        } else {
+            componentsMap.get(CostCalculationFields.ORDER).setFieldValue(null);
+            componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
+            componentsMap.get(CostCalculationFields.QUANTITY).setFieldValue(
+                    numbersService.format(technology.getField(L_MINIMAL_QUANTITY)));
+        }
+
+        componentsMap.get(CostCalculationFields.ORDER).setEnabled(cameFromOrder);
+        componentsMap.get(CostCalculationFields.TECHNOLOGY).setFieldValue(technology.getId());
+        componentsMap.get(CostCalculationFields.TECHNOLOGY).setEnabled(cameFromTechnology);
+        componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setFieldValue(technology.getId());
+        componentsMap.get(CostCalculationFields.QUANTITY).setEnabled(!cameFromOrder);
+        componentsMap.get(CostCalculationFields.PRODUCT).setFieldValue(
+                technology.getBelongsToField(TechnologyFields.PRODUCT).getId());
+        componentsMap.get(CostCalculationFields.PRODUCT).setEnabled(false);
+    }
+
+    private void clearFieldValues(final ViewDefinitionState view) {
+        view.getComponentByReference(CostCalculationFields.ORDER).addMessage("costCalculation.messages.lackOfTechnology",
+                ComponentState.MessageType.FAILURE);
+        view.getComponentByReference(CostCalculationFields.DEFAULT_TECHNOLOGY).setFieldValue(null);
+        view.getComponentByReference(CostCalculationFields.TECHNOLOGY).setFieldValue(null);
+        view.getComponentByReference(CostCalculationFields.QUANTITY).setFieldValue(null);
+        view.getComponentByReference(CostCalculationFields.PRODUCT).setFieldValue(null);
+        view.getComponentByReference(CostCalculationFields.PRODUCTION_LINE).setFieldValue(null);
     }
 }
