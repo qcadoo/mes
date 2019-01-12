@@ -185,11 +185,6 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:enum name="calculateOperationCostsModePB" values="01hourly,02piecework"
-                        required="true" default="01hourly"/>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="includeTPZPB" default="true"/>
         </model:model-field>
 

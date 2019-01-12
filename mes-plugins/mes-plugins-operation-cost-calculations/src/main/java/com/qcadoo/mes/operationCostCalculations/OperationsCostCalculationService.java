@@ -59,21 +59,4 @@ public interface OperationsCostCalculationService {
     Map<String, BigDecimal> estimateCostCalculationForHourly(final EntityTreeNode calculationOperationComponent,
             final BigDecimal productionCostMargin, final BigDecimal quantity, final OperationTimesContainer operationTimes,
             final boolean hourlyCostFromOperation);
-
-    /**
-     * 
-     * @param calculationOperationComponent
-     *            calculation operation component
-     * @param productionCostMargin
-     *            production cost margin
-     * @param quantity
-     *            quantity
-     * @param operationRuns
-     *            operation runs
-     * 
-     * @return cost
-     */
-    BigDecimal estimateCostCalculationForPieceWork(final EntityTreeNode calculationOperationComponent,
-            final BigDecimal productionCostMargin, final BigDecimal quantity, final Map<Long, BigDecimal> operationRuns);
-
 }

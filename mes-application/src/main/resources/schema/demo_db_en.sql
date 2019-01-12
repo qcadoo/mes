@@ -2312,7 +2312,6 @@ CREATE TABLE basic_parameter (
     averagelaborhourlycostpb numeric(12,5),
     calculatematerialcostsmodepb character varying(255) DEFAULT '01nominal'::character varying,
     additionaloverheadpb numeric(12,5) DEFAULT (0)::numeric,
-    calculateoperationcostsmodepb character varying(255) DEFAULT '01hourly'::character varying,
     materialcostmarginpb numeric(12,5) DEFAULT (0)::numeric,
     includetpzpb boolean DEFAULT true,
     productioncostmarginpb numeric(12,5) DEFAULT (0)::numeric,
@@ -5952,25 +5951,6 @@ CREATE TABLE goodfood_confectionfilmproduct (
 
 
 --
--- Name: goodfood_confectionfilmproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_confectionfilmproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_confectionfilmproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_confectionfilmproduct_id_seq OWNED BY goodfood_confectionfilmproduct.id;
-
-
---
 -- Name: goodfood_confectionfilmproductentry; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5983,25 +5963,6 @@ CREATE TABLE goodfood_confectionfilmproductentry (
     cullquantity numeric(12,5),
     effectivequantity numeric(12,5)
 );
-
-
---
--- Name: goodfood_confectionfilmproductentry_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_confectionfilmproductentry_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_confectionfilmproductentry_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_confectionfilmproductentry_id_seq OWNED BY goodfood_confectionfilmproductentry.id;
 
 
 --
@@ -6019,25 +5980,6 @@ CREATE TABLE goodfood_confectioninputproduct (
     effectivequantity numeric(12,5),
     entityversion bigint DEFAULT 0
 );
-
-
---
--- Name: goodfood_confectioninputproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_confectioninputproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_confectioninputproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_confectioninputproduct_id_seq OWNED BY goodfood_confectioninputproduct.id;
 
 
 --
@@ -6086,6 +6028,137 @@ CREATE TABLE goodfood_confectionprotocol (
     plannextorderinfoargs character varying(8192),
     plannextorderstatechangeinfo character varying
 );
+
+
+--
+-- Name: goodfood_confectionfilmprepare; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_confectionfilmprepare AS
+ SELECT confectionprotocol.number AS protocolnumber,
+    confectionprotocol.dayofshiftstart,
+    confectionprotocol.state AS confectionprotocolstate,
+    ordersorder.number AS ordernumber,
+    productionline.number AS productionlinenumber,
+    product.number AS productnumber,
+    confectionfilmproductentry.cullquantity
+   FROM (((((goodfood_confectionprotocol confectionprotocol
+     JOIN productionlines_productionline productionline ON ((productionline.id = confectionprotocol.productionline_id)))
+     JOIN orders_order ordersorder ON ((ordersorder.id = confectionprotocol.order_id)))
+     JOIN goodfood_confectionfilmproduct confectionfilmproduct ON ((confectionfilmproduct.confectionprotocol_id = confectionprotocol.id)))
+     LEFT JOIN goodfood_confectionfilmproductentry confectionfilmproductentry ON ((confectionfilmproduct.id = confectionfilmproductentry.confectionfilmproduct_id)))
+     JOIN basic_product product ON ((product.id = confectionfilmproduct.filmproduct_id)))
+UNION
+ SELECT confectionprotocol.number AS protocolnumber,
+    confectionprotocol.dayofshiftstart,
+    confectionprotocol.state AS confectionprotocolstate,
+    ordersorder.number AS ordernumber,
+    productionline.number AS productionlinenumber,
+    product.number AS productnumber,
+    confectioninputproduct.cullquantity
+   FROM ((((goodfood_confectionprotocol confectionprotocol
+     JOIN productionlines_productionline productionline ON ((productionline.id = confectionprotocol.productionline_id)))
+     JOIN orders_order ordersorder ON ((ordersorder.id = confectionprotocol.order_id)))
+     JOIN goodfood_confectioninputproduct confectioninputproduct ON ((confectioninputproduct.confectionprotocol_id = confectionprotocol.id)))
+     JOIN basic_product product ON ((product.id = confectioninputproduct.product_id)))
+UNION
+ SELECT confectionprotocol.number AS protocolnumber,
+    confectionprotocol.dayofshiftstart,
+    confectionprotocol.state AS confectionprotocolstate,
+    ordersorder.number AS ordernumber,
+    productionline.number AS productionlinenumber,
+    product.number AS productnumber,
+    confectioninputproduct.cullquantity
+   FROM ((((goodfood_confectionprotocol confectionprotocol
+     JOIN productionlines_productionline productionline ON ((productionline.id = confectionprotocol.productionline_id)))
+     JOIN orders_order ordersorder ON ((ordersorder.id = confectionprotocol.order_id)))
+     JOIN goodfood_confectionadditionalinputproduct confectioninputproduct ON ((confectioninputproduct.confectionprotocol_id = confectionprotocol.id)))
+     JOIN basic_product product ON ((product.id = confectioninputproduct.product_id)));
+
+
+--
+-- Name: goodfood_confectionfilm; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_confectionfilm AS
+ SELECT row_number() OVER () AS id,
+    cf.protocolnumber,
+    cf.dayofshiftstart,
+    cf.confectionprotocolstate,
+    cf.ordernumber,
+    cf.productionlinenumber,
+    cf.productnumber,
+    cf.cullquantity
+   FROM goodfood_confectionfilmprepare cf;
+
+
+--
+-- Name: goodfood_confectionfilm_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_confectionfilm_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_confectionfilmproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_confectionfilmproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_confectionfilmproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_confectionfilmproduct_id_seq OWNED BY goodfood_confectionfilmproduct.id;
+
+
+--
+-- Name: goodfood_confectionfilmproductentry_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_confectionfilmproductentry_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_confectionfilmproductentry_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_confectionfilmproductentry_id_seq OWNED BY goodfood_confectionfilmproductentry.id;
+
+
+--
+-- Name: goodfood_confectioninputproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_confectioninputproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_confectioninputproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_confectioninputproduct_id_seq OWNED BY goodfood_confectioninputproduct.id;
 
 
 --
@@ -21023,8 +21096,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, calculateoperationcostsmodepb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns) FROM stdin;
-1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns) FROM stdin;
+1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f
 \.
 
 
@@ -22178,6 +22251,13 @@ COPY goodfood_confectioncontext (id, day, generated, confirmed, place, productio
 --
 
 SELECT pg_catalog.setval('goodfood_confectioncontext_id_seq', 1, false);
+
+
+--
+-- Name: goodfood_confectionfilm_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_confectionfilm_id_seq', 1, false);
 
 
 --

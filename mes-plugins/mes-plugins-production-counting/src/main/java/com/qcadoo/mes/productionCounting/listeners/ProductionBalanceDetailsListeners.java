@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -65,9 +64,6 @@ public class ProductionBalanceDetailsListeners {
 
     @Autowired
     private ProductionCountingService productionCountingService;
-
-    @Autowired
-    private ProductionBalanceService productionBalanceService;
 
     @Autowired
     private ProductionBalanceXlsService productionBalanceXlsService;
@@ -133,15 +129,6 @@ public class ProductionBalanceDetailsListeners {
     public void printProductionBalance(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE });
-    }
-
-    public void disableCheckboxes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productionBalanceService.disableCheckboxes(view);
-    }
-
-    public void disableAddAllRelatedOrdersButton(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        productionBalanceService.disableAddAllRelatedOrdersButton(view);
     }
 
     public final void addAllRelatedOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {

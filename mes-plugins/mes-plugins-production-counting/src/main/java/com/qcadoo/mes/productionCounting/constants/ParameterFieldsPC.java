@@ -29,8 +29,6 @@ public final class ParameterFieldsPC {
 
     }
 
-    public static final String CALCULATE_OPERATION_COST_MODE_PB = "calculateOperationCostsModePB";
-
     public static final String INCLUDE_TPZ_PB = "includeTPZPB";
 
     public static final String INCLUDE_ADDITIONAL_TIME_PB = "includeAdditionalTimePB";

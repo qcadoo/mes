@@ -35,7 +35,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.productionCounting.ProductionBalanceService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
@@ -54,7 +53,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 public class ProductionBalanceDetailsHooks {
 
     private static final List<String> L_FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.NAME,
-            ProductionBalanceFields.DESCRIPTION, ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE,
+            ProductionBalanceFields.DESCRIPTION,
             ProductionBalanceFields.INCLUDE_WAGE_GROUPS, ProductionBalanceFields.INCLUDE_TPZ,
             ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
@@ -83,18 +82,11 @@ public class ProductionBalanceDetailsHooks {
     private ProductionCountingService productionCountingService;
 
     @Autowired
-    private ProductionBalanceService productionBalanceService;
-
-    @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void generateOrderNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, L_FORM, ProductionBalanceFields.NUMBER);
-    }
-
-    public void disableCheckboxes(final ViewDefinitionState view) {
-        productionBalanceService.disableCheckboxes(view);
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState view) {
@@ -178,13 +170,6 @@ public class ProductionBalanceDetailsHooks {
             }
             Entity parameter = parameterService.getParameter();
 
-            FieldComponent calculateOperationsCostsMode = (FieldComponent) view
-                    .getComponentByReference(ProductionBalanceFields.CALCULATE_OPERATION_COST_MODE);
-            if (parameter.getField(ParameterFieldsPC.CALCULATE_OPERATION_COST_MODE_PB) != null) {
-                calculateOperationsCostsMode
-                        .setFieldValue(parameter.getField(ParameterFieldsPC.CALCULATE_OPERATION_COST_MODE_PB));
-                calculateOperationsCostsMode.requestComponentUpdateState();
-            }
             FieldComponent sourceOfOperationCostsPB = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB);
             if (parameter.getField(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB) != null) {
@@ -252,9 +237,5 @@ public class ProductionBalanceDetailsHooks {
             isSetFieldsFromParameter.setFieldValue(true);
             isSetFieldsFromParameter.requestComponentUpdateState();
         }
-    }
-
-    public void disableAddAllRelatedOrdersButton(final ViewDefinitionState view) {
-        productionBalanceService.disableAddAllRelatedOrdersButton(view);
     }
 }
