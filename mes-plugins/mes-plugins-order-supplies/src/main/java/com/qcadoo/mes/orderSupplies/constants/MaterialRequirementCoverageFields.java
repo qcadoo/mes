@@ -39,6 +39,8 @@ public final class MaterialRequirementCoverageFields {
 
     public static final String GENERATED_BY = "generatedBy";
 
+    public static final String ORDER_GENERATION_IN_PROGRESS = "orderGenerationInProgress";
+
     public static final String GENERATED = "generated";
 
     public static final String SAVED = "saved";
