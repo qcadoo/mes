@@ -25708,7 +25708,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 65	productionPerShift	1.5.0	ENABLED	f	0	planning	AGPL
 69	urcBasicProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
 73	subcontractorPortal	1.5.0	ENABLED	f	0	other	Commercial
-74	goodFoodGantt	1.5.0	ENABLED	f	0	\N	Commercial
 76	urcProductionCounting	1.5.0	ENABLED	f	0	tracking	Commercial
 77	samples	1.5.0	ENABLED	f	0	other	AGPL
 83	urcCostNormsForProduct	1.5.0	DISABLED	f	0	basic	Commercial
@@ -25751,7 +25750,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 130	catNumbersInDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
 132	techSubcontrForOperTasks	1.5.0	ENABLED	f	0	planning	AGPL
 133	ganttForOperations	1.5.0	ENABLED	f	0	planning	AGPL
-149	integrationBaseLinker	1.5.0	ENABLED	f	0	other	Commercial
 135	urcMaterialRequirements	1.5.0	ENABLED	f	0	planning	Commercial
 136	techSubcontrForProductionCounting	1.5.0	ENABLED	f	0	tracking	AGPL
 137	ordersProgressGanttChart	1.5.0	ENABLED	f	0	other	Commercial
@@ -25781,6 +25779,9 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
 142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
 144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	AGPL
+74	goodFoodGantt	1.5.0	DISABLED	f	0	\N	Commercial
+149	integrationBaseLinker	1.5.0	DISABLED	f	0	other	Commercial
+152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -25788,7 +25789,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 151, true);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 152, true);
 
 
 --
