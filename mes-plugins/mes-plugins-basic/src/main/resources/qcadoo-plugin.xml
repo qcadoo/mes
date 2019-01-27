@@ -101,7 +101,6 @@
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
 
-
         <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
 
@@ -210,6 +209,7 @@
         <security:role identifier="ROLE_TERMINAL_CARTON_LABELS"/>
         <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
         <security:role identifier="ROLE_PALLET_DETAILS_FIX_STATE"/>
+        <security:role identifier="ROLE_PRINTED_LABEL_DETAILS_REPRINT"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
@@ -342,7 +342,6 @@
 
         <menu:menu-item name="logsList" category="administration"
                         view="logsList" defaultAuthorizationRole="ROLE_LOGS"/>
-
 
         <menu:menu-item name="attachmentsList" category="basic"
                         view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
