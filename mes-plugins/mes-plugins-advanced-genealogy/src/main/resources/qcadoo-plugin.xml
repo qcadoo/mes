@@ -97,13 +97,13 @@
                         default="01globally" required="true"/>
         </model:model-field>
 
-        <model:model-hook model="parameter" plugin="basic">
+        <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
                     class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterValidatorsAG"
                     method="checkIfBatchNumberUniquenessIsSelected"/>
         </model:model-hook>
 
-        <model:model-hook model="parameter" plugin="basic">
+        <model:model-hook plugin="basic" model="parameter">
             <model:onCreate
                     class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterHooksAG"
                     method="addFieldsForParameter"/>
