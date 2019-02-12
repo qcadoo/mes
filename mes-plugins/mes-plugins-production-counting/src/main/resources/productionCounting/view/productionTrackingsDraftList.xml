@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="productionTrackingsDraftList"
+      modelName="productionTrackingDraftDto"
+      menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="acceptTracking" icon="startIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.acceptTracking.confirm)}")) {
+										#{grid}.performEvent('changeState', ['02accepted']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="cancelTracking" icon="deleteIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.confirm("#{translate(productionCounting.productionTrackingsList.window.ribbon.status.declineTracking.confirm)}")) {
+										#{grid}.performEvent('changeState', ['03declined']);
+									};
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+            </group>
+        </ribbon>
+
+        <component type="grid" name="productionTrackingsList"
+                   reference="grid">
+            <script>
+                <![CDATA[
+					var deleteButton = #{window}.getRibbonItem("actions.delete");
+					var copyButton = #{window}.getRibbonItem("actions.copy");
+					var acceptTracking = #{window}.getRibbonItem("status.acceptTracking");
+					var cancelTracking = #{window}.getRibbonItem("status.cancelTracking");
+
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							var deleteable = true;
+							var copyable = true;
+
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+								deleteButton.disable();
+								copyButton.disable();
+								acceptTracking.disable();
+								cancelTracking.disable();
+							} else {
+								var noDifferentStates = true;
+
+								if (selectedEntitiesArray.length > 1){
+									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
+											noDifferentStates = false;
+
+											break;
+										}
+									}
+								}
+
+								if (selectedEntitiesArray.length == 1 || noDifferentStates) {
+									var state = selectedEntitiesArray[0].fields.state;
+
+									if (state == "01draft") {
+										acceptTracking.enable();
+										cancelTracking.enable();
+									} else if (state == "02accepted") {
+										acceptTracking.disable();
+										deleteButton.disable();
+										cancelTracking.disable();
+									} else if (state == "03declined") {
+										acceptTracking.disable();
+										cancelTracking.disable();
+
+										deleteButton.enable();
+									} else if (state == "04corrected") {
+										acceptTracking.disable();
+										cancelTracking.disable();
+										deleteButton.disable();
+									} else{
+										acceptTracking.disable();
+										cancelTracking.disable();
+									}
+								} else {
+									acceptTracking.disable("#{translate(productionCounting.productionTrackingsList.ribbon.message.productionTrackingWithDifferentStatesSelected)}");
+									cancelTracking.disable("#{translate(productionCounting.productionTrackingsList.ribbon.message.productionTrackingWithDifferentStatesSelected)}");
+								}
+
+								for (var i in selectedEntitiesArray) {
+									if (selectedEntitiesArray[i].fields.state == "02accepted" || selectedEntitiesArray[i].fields.state == "04corrected") {
+										deleteable = false;
+
+										break;
+									}
+								}
+
+								for (var i in selectedEntitiesArray) {;
+									if (selectedEntitiesArray[i].fields.orderState != "03inProgress") {
+										copyable = false;
+
+										break;
+									}
+								}
+
+								if (deleteable == false) {
+									deleteButton.disable("#{translate(productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.delete)}");
+								} else {
+									deleteButton.enable();
+								}
+
+								if (copyable == false) {
+									copyButton.disable("#{translate(productionCounting.productionTrackingsList.window.mainTab.productionTrackingsList.grid.error.copy)}");
+								} else {
+									copyButton.enable();
+								}
+							}
+						}
+					}
+
+					this.addOnChangeListener(listener);
+				]]>
+            </script>
+
+            <option type="column" name="number" fields="number" link="true"
+                    width="120"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                    width="200"/>
+            <option type="column" name="technologyOperationComponentNumber"
+                    fields="technologyOperationComponentNumber" width="120"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
+            <option type="column" name="outProductNumber" fields="outProductNumber"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity"/>
+            <option type="column" name="productUnit" fields="productUnit" width="40"/>
+            <option type="column" name="shiftName" fields="shiftName"
+                    width="80"/>
+            <option type="column" name="staffName" fields="staffName"
+                    width="100"/>
+            <option type="column" name="divisionNumber" fields="divisionNumber"
+                    width="80"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                    width="80"/>
+            <option type="column" name="state" fields="state"
+                    width="90"/>
+            <option type="column" name="createDate" fields="createDate"
+                    width="100"/>
+            <option type="column" name="lastTracking" fields="lastTracking"
+                    expression="#lastTracking" width="40"/>
+            <option type="column" name="timeRangeFrom" fields="timeRangeFrom"
+                    width="100"/>
+            <option type="column" name="timeRangeTo" fields="timeRangeTo"
+                    width="100"/>
+            <option type="column" name="correctionNumber" fields="correctionNumber"
+                    width="120"/>
+            <option type="column" name="orderState" fields="orderState" hidden="true"/>
+
+            <option type="column" name="companyNumber" fields="companyNumber"/>
+
+            <option type="order" column="number" direction="desc"/>
+
+            <option type="searchable"
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+            <option type="multiSearch"
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+            <option type="orderable"
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="usedQuantity"/>
+
+            <option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+
+            <option type="suppressSelectEvent" value="true" />
+
+            <listener event="changeState"
+                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                      method="changeTrackingState"/>
+
+
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingsDraftListHooks" method="onBeforeRender"/>
+    </hooks>
+</view>
