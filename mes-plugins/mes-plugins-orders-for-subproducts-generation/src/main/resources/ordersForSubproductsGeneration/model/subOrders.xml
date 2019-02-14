@@ -32,10 +32,8 @@
         <boolean name="ordersGroupsGenerated" default="false"/>
         <boolean name="generatedOrders" default="false"/>
         <boolean name="orderGenerationInProgress" default="false"/>
-
     </fields>
 
-    <hooks>
-    </hooks>
+    <hooks />
 
 </model>
