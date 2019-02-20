@@ -46,13 +46,14 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductStructureTreeService {
@@ -326,6 +327,20 @@ public class ProductStructureTreeService {
 
     public Entity getLastTechnologyStateChange(Entity technology) {
         return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
+                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getTechnologyAcceptStateChange(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
+                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getTechnologyOutdatedStateChange(Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.OUTDATED))
                 .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
                 .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
     }
