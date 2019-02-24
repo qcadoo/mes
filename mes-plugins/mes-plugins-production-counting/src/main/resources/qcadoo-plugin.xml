@@ -128,6 +128,8 @@
 
         <model:model model="productionAnalysisDto" resource="model/productionAnalysisDto.xml"/>
 
+        <model:model model="productionTrackingDraftDto" resource="model/productionTrackingDraftDto.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -440,6 +442,10 @@
 
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
+        <menu:menu-item name="productionTrackingsDraftList" category="ordersTracking"
+                        view="productionTrackingsDraftList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+
         <menu:menu-item name="productionBalance" category="ordersTracking"
                         view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
         <menu:menu-item name="productionTrackingReports"
@@ -492,6 +498,8 @@
         <view:view resource="view/anomalyExplanationDetails.xml"/>
 
         <view:view resource="view/trackingOperationProductInComponentAdditionalInformationReport.xml"/>
+
+        <view:view resource="view/productionTrackingsDraftList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

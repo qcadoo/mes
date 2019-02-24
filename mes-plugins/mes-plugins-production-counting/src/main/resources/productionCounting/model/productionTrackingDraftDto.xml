@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="productionTrackingDraftDto" activable="true" auditable="false" deletable="false" insertable="false"
+       updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="number"/>
+        <enum name="state" values="01draft,02accepted,03declined,04corrected,05pending"/>
+        <datetime name="createDate"/>
+        <boolean name="lastTracking"/>
+        <datetime name="timeRangeFrom"/>
+        <datetime name="timeRangeTo"/>
+
+        <integer name="order_id"/>
+        <string name="orderNumber"/>
+        <string name="productNumber"/>
+        <string name="outProductNumber"/>
+        <string name="productUnit"/>
+
+        <string name="companyNumber"/>
+
+
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <integer name="productionline_id"/>
+        <string name="productionLineNumber"/>
+
+        <enum name="orderState"
+              values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
+
+        <integer name="technologyOperationComponent_id"/>
+        <string name="technologyOperationComponentNumber"/>
+
+        <integer name="operation_id"/>
+
+        <integer name="shift_id"/>
+        <string name="shiftName"/>
+
+        <integer name="staff_id"/>
+        <string name="staffName"/>
+
+        <integer name="division_id"/>
+        <string name="divisionNumber"/>
+
+        <string name="correctionNumber"/>
+    </fields>
+
+    <masterModel plugin="productionCounting" model="productionTracking"/>
+
+</model>

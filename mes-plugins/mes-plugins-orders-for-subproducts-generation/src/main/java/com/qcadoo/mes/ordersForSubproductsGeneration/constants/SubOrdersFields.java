@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.constants;
 
-public final class OrdersForSubproductsGenerationConstans {
+public final class SubOrdersFields {
 
-    private OrdersForSubproductsGenerationConstans() {
+    private SubOrdersFields() {}
 
-    }
+    public static final String GENERATED_ORDERS = "generatedOrders";
 
-    public static final String PLUGIN_IDENTIFIER = "ordersForSubproductsGeneration";
+    public static final String ORDER = "order";
 
-    public static final String MODEL_SUB_ORDERS =  "subOrders";
+    public static final String ORDER_GENERATION_IN_PROGRESS = "orderGenerationInProgress";
 
-    public static final String MODEL_RELATED_ORDER_DTO = "relatedOrderDto";
+    public static final String ORDERS_GROUPS_GENERATED = "ordersGroupsGenerated";
 
 }

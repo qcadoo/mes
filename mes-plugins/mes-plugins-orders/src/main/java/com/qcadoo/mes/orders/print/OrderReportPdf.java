@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -79,25 +80,49 @@ public class OrderReportPdf extends ReportPdfView {
 
     private Entity orderEntity;
 
+	@Override
+	protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
+			throws DocumentException {
+		super.prepareWriter(model, writer, request);
+
+		Long orderId = Long.valueOf(model.get("id").toString());
+
+		orderEntity = getOrderEntity(orderId);
+	}
+
+	private Entity getOrderEntity(final Long orderId) {
+		return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+	}
+
     @Override
-    protected String addContent(Document document, Map<String, Object> model, Locale locale, PdfWriter writer)
+    protected void addTitle(final Document document, final Locale locale) {
+        document.addTitle(translationService.translate("orders.order.report.order", locale, orderEntity.getStringField(OrderFields.NUMBER)));
+    }
+
+    @Override
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale, final PdfWriter writer)
             throws DocumentException, IOException {
         pdfHelper.addDocumentHeader(document, "", translationService.translate("orders.order.report.order", locale, orderEntity.getStringField(OrderFields.NUMBER)), "", new Date());
 
-        addHeaderTable(document, orderEntity, locale);
-        addPlannedDateTable(document, orderEntity, locale);
-        addProductQuantityTable(document, orderEntity, locale);
-        addOwnTechnologyTable(document, orderEntity, locale);
-        addTechnologyTable(document, orderEntity, locale);
-        addMasterOrderTable(document, orderEntity, locale);
+		Long orderId = Long.valueOf(model.get("id").toString());
 
-        return translationService.translate("orders.order.report.fileName", locale, orderEntity.getStringField(OrderFields.NUMBER));
+		Entity order = getOrderEntity(orderId);
+
+        addHeaderTable(document, order, locale);
+        addPlannedDateTable(document, order, locale);
+        addProductQuantityTable(document, order, locale);
+        addOwnTechnologyTable(document, order, locale);
+        addTechnologyTable(document, order, locale);
+        addMasterOrderTable(document, order, locale);
+
+        return translationService.translate("orders.order.report.fileName", locale, order.getStringField(OrderFields.NUMBER));
     }
 
-    private void addHeaderTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
+
+    private void addHeaderTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
         PdfPTable table = pdfHelper.createPanelTable(3);
 
-        List<HeaderPair> headerValues = getDocumentHeaderTableContent(orderEntity, locale);
+        List<HeaderPair> headerValues = getDocumentHeaderTableContent(locale);
 
         for (HeaderPair pair : headerValues) {
             if (pair.getValue() != null && !pair.getValue().isEmpty()) {
@@ -112,71 +137,93 @@ public class OrderReportPdf extends ReportPdfView {
         document.add(table);
     }
 
-    private void addPlannedDateTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
+	private List<HeaderPair> getDocumentHeaderTableContent(final Locale locale) {
+		List<HeaderPair> headerValues = Lists.newLinkedList();
+
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NUMBER), locale), orderEntity.getStringField(OrderFields.NUMBER)));
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NAME), locale), orderEntity.getStringField(OrderFields.NAME)));
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.STATE), locale), translationService.translate("orders.order.state.value." + orderEntity.getStringField(OrderFields.STATE), locale)));
+
+		Entity productEntity = orderEntity.getBelongsToField(OrderFields.PRODUCT);
+
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.PRODUCT), locale), productEntity == null ? "" : productEntity.getStringField(ProductFields.NUMBER)));
+
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.DATE_FROM), locale), DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_FROM))));
+		headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.DATE_TO), locale), DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_TO))));
+
+		return headerValues;
+	}
+
+	private void addPlannedDateTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+		Map<String, String> values = Maps.newLinkedHashMap();
+
+		values.put("plannedDateFrom", DateUtils.toDateTimeString(order.getDateField(OrderFields.DATE_FROM)));
+		values.put("plannedDateTo", DateUtils.toDateTimeString(order.getDateField(OrderFields.DATE_TO)));
+
+		addTableToDocument(document, locale, "orders.order.report.date.label", values);
+	}
+
+	private void addProductQuantityTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+		Map<String, String> values = Maps.newLinkedHashMap();
+
+		String unit = order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
+		String plannedQuantity = order.getField(OrderFields.PLANNED_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.PLANNED_QUANTITY)) + " " + unit;
+		String doneQuantity = order.getField(OrderFields.DONE_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.DONE_QUANTITY)) + " " + unit;
+
+		values.put("plannedQuantity", plannedQuantity);
+		values.put("doneQuantity", doneQuantity);
+
+		addTableToDocument(document, locale, "orders.order.report.productQuantity.label", values);
+	}
+
+    private void addOwnTechnologyTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
         Map<String, String> values = Maps.newLinkedHashMap();
 
-        values.put("plannedDateFrom", DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_FROM)));
-        values.put("plannedDateTo", DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_TO)));
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        addTableToDocument(document, orderEntity, locale, "orders.order.report.date.label", values);
+        if (!Objects.isNull(technology)) {
+			values.put("technologyNumber", technology.getStringField(TechnologyFields.NUMBER));
+			values.put("technologyName", technology.getStringField(TechnologyFields.NAME));
+
+			String tableLabelKey = "orders.order.report.technology.own";
+
+			if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
+				tableLabelKey = "orders.order.report.technology.label";
+			}
+
+			addTableToDocument(document, locale, tableLabelKey, values);
+		}
     }
 
-    private void addProductQuantityTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Map<String, String> values = Maps.newLinkedHashMap();
-
-        String unit = orderEntity.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
-        String plannedQuantity = orderEntity.getField(OrderFields.PLANNED_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.PLANNED_QUANTITY)) + " " + unit;
-        String doneQuantity = orderEntity.getField(OrderFields.DONE_QUANTITY) == null ? " - " : numberService.format(orderEntity.getDecimalField(OrderFields.DONE_QUANTITY)) + " " + unit;
-
-        values.put("plannedQuantity", plannedQuantity);
-        values.put("doneQuantity", doneQuantity);
-
-        addTableToDocument(document, orderEntity, locale, "orders.order.report.productQuantity.label", values);
-    }
-
-    private void addOwnTechnologyTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Map<String, String> values = Maps.newLinkedHashMap();
-
-        Entity technologyEntity = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY);
-        values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
-        values.put("technologyName", technologyEntity.getStringField(TechnologyFields.NAME));
-
-        String tableLabelKey = "orders.order.report.technology.own";
-
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
-            tableLabelKey = "orders.order.report.technology.label";
-        }
-
-        addTableToDocument(document, orderEntity, locale, tableLabelKey, values);
-    }
-
-    private void addTechnologyTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
+    private void addTechnologyTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
             Map<String, String> values = Maps.newLinkedHashMap();
 
-            Entity technologyEntity = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-            values.put("technologyNumber", technologyEntity.getStringField(TechnologyFields.NUMBER));
-            values.put("technologyName", technologyEntity.getStringField(TechnologyFields.NAME));
+            if (!Objects.isNull(technology)) {
+				values.put("technologyNumber", technology.getStringField(TechnologyFields.NUMBER));
+				values.put("technologyName", technology.getStringField(TechnologyFields.NAME));
 
-            addTableToDocument(document, orderEntity, locale, "orders.order.report.technologyPrototype.label", values);
+				addTableToDocument(document, locale, "orders.order.report.technologyPrototype.label", values);
+			}
         }
     }
 
-    private void addMasterOrderTable(Document document, Entity orderEntity, Locale locale) throws DocumentException {
-        Entity masterOrderEntity = orderEntity.getBelongsToField("masterOrder");
+    private void addMasterOrderTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
+        Entity masterOrderEntity = order.getBelongsToField("masterOrder");
 
-        if (masterOrderEntity != null) {
+        if (!Objects.isNull(masterOrderEntity)) {
             Map<String, String> values = Maps.newLinkedHashMap();
 
             values.put("masterOrderNumber", masterOrderEntity.getStringField(OrderFields.NUMBER));
             values.put("masterOrderName", masterOrderEntity.getStringField(OrderFields.NAME));
 
-            addTableToDocument(document, orderEntity, locale, "orders.order.report.masterOrder.label", values);
+            addTableToDocument(document, locale, "orders.order.report.masterOrder.label", values);
         }
     }
 
-    private void addTableToDocument(Document document, Entity orderEntity, Locale locale, String headerKey, Map<String, String> values) throws DocumentException {
+    private void addTableToDocument(final Document document, final Locale locale, final String headerKey, final Map<String, String> values) throws DocumentException {
         document.add(new Paragraph(translationService.translate(headerKey, locale), FontUtils.getDejavuBold10Dark()));
 
         Map<String, HeaderAlignment> headerValues = Maps.newLinkedHashMap();
@@ -186,6 +233,7 @@ public class OrderReportPdf extends ReportPdfView {
         }
 
         PdfPTable table = pdfHelper.createTableWithHeader(values.size(), Lists.newArrayList(headerValues.keySet()), false, headerValues);
+
         table.getDefaultCell().disableBorderSide(PdfPCell.RIGHT);
         table.getDefaultCell().disableBorderSide(PdfPCell.LEFT);
         table.setHeaderRows(1);
@@ -199,7 +247,7 @@ public class OrderReportPdf extends ReportPdfView {
         document.add(table);
     }
 
-    private PdfPCell createCell(String content, int alignment) {
+    private PdfPCell createCell(final String content, final int alignment) {
         PdfPCell cell = new PdfPCell();
 
         float border = 0.2f;
@@ -212,44 +260,6 @@ public class OrderReportPdf extends ReportPdfView {
         cell.setPadding(5);
 
         return cell;
-    }
-
-    private Entity getOrderEntity(Long orderId) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-    }
-
-    @Override
-    protected void prepareWriter(final Map<String, Object> model, final PdfWriter writer, final HttpServletRequest request)
-            throws DocumentException {
-        super.prepareWriter(model, writer, request);
-
-        Long orderId = Long.valueOf(model.get("id").toString());
-
-        orderEntity = getOrderEntity(orderId);
-    }
-
-
-
-    @Override
-    protected void addTitle(Document document, Locale locale) {
-        document.addTitle(translationService.translate("orders.order.report.order", locale, orderEntity.getStringField(OrderFields.NUMBER)));
-    }
-
-    private List<HeaderPair> getDocumentHeaderTableContent(final Entity orderEntity, final Locale locale) {
-        List<HeaderPair> headerValues = Lists.newLinkedList();
-
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NUMBER), locale), orderEntity.getStringField(OrderFields.NUMBER)));
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.NAME), locale), orderEntity.getStringField(OrderFields.NAME)));
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.STATE), locale), translationService.translate("orders.order.state.value." + orderEntity.getStringField(OrderFields.STATE), locale)));
-
-        Entity productEntity = orderEntity.getBelongsToField(OrderFields.PRODUCT);
-
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.PRODUCT), locale), productEntity == null ? "" : productEntity.getStringField(ProductFields.NUMBER)));
-
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.DATE_FROM), locale), DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_FROM))));
-        headerValues.add(new HeaderPair(translationService.translate(String.format(L_TRANSLATION_PATH, OrderFields.DATE_TO), locale), DateUtils.toDateTimeString(orderEntity.getDateField(OrderFields.DATE_TO))));
-
-        return headerValues;
     }
 
 }

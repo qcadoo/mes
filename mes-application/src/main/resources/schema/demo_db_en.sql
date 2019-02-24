@@ -1371,6 +1371,34 @@ CREATE FUNCTION prepare_superadmin() RETURNS void
 
 
 --
+-- Name: refreshmaterializedviewforarchive(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION refreshmaterializedviewforarchive() RETURNS void
+    LANGUAGE plpgsql
+    AS $$
+	DECLARE
+
+	BEGIN
+		RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderpositiondto';
+		EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderpositiondto;';
+		RAISE NOTICE '-- refresh materialized view arch_mv_masterorders_masterorderdto';
+		EXECUTE 'refresh materialized view arch_mv_masterorders_masterorderdto;';
+		RAISE NOTICE '-- refresh materialized view arch_mv_orders_orderlistdto';
+		EXECUTE 'refresh materialized view arch_mv_orders_orderlistdto;';
+		RAISE NOTICE '-- refresh materialized view arch_mv_ordersgroups_mordersgroupdto';
+		EXECUTE 'refresh materialized view arch_mv_ordersgroups_mordersgroupdto;';
+		RAISE NOTICE '-- refresh materialized view arch_mv_productioncounting_productiontrackingdto';
+		EXECUTE 'refresh materialized view arch_mv_productioncounting_productiontrackingdto;';
+		RAISE NOTICE '-- refresh materialized view arch_mv_materialflowresources_positiondto';
+		EXECUTE 'refresh materialized view arch_mv_materialflowresources_positiondto;';
+		RAISE NOTICE '-- refresh materialized view mv_arch_materialflowresources_documentdto';
+		EXECUTE 'refresh materialized view arch_mv_materialflowresources_documentdto;';
+	END;
+    $$;
+
+
+--
 -- Name: remove_archived_data(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -3816,6 +3844,254 @@ ALTER SEQUENCE arch_masterorders_masterorder_id_seq OWNED BY arch_masterorders_m
 
 
 --
+-- Name: arch_masterorders_masterorderposition_manyproducts; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_masterorders_masterorderposition_manyproducts (
+    id bigint,
+    masterorderdefinitionnumber character varying(255),
+    masterorderid integer,
+    productid integer,
+    masterorderproductid integer,
+    name character varying(1024),
+    number character varying(255),
+    deadline timestamp without time zone,
+    masterorderstatus character varying(255),
+    masterorderpositionstatus character varying(255),
+    masterorderquantity numeric,
+    cumulatedmasterorderquantity numeric,
+    producedorderquantity numeric,
+    lefttorelease numeric,
+    comments text,
+    productnumber character varying(255),
+    productname character varying(1024),
+    unit character varying(255),
+    technologyname character varying(255),
+    companyname character varying(255),
+    active boolean,
+    companypayer character varying(255),
+    assortmentname character varying(255),
+    state character varying(255),
+    description character varying(2048)
+);
+
+ALTER TABLE ONLY arch_masterorders_masterorderposition_manyproducts REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: arch_mv_masterorders_masterorderpositiondto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_masterorders_masterorderpositiondto AS
+ SELECT masterorders_masterorderposition_manyproducts.id,
+    masterorders_masterorderposition_manyproducts.masterorderdefinitionnumber,
+    masterorders_masterorderposition_manyproducts.masterorderid,
+    masterorders_masterorderposition_manyproducts.productid,
+    masterorders_masterorderposition_manyproducts.masterorderproductid,
+    masterorders_masterorderposition_manyproducts.name,
+    masterorders_masterorderposition_manyproducts.number,
+    masterorders_masterorderposition_manyproducts.deadline,
+    masterorders_masterorderposition_manyproducts.masterorderstatus,
+    masterorders_masterorderposition_manyproducts.masterorderpositionstatus,
+    masterorders_masterorderposition_manyproducts.masterorderquantity,
+    masterorders_masterorderposition_manyproducts.cumulatedmasterorderquantity,
+    masterorders_masterorderposition_manyproducts.producedorderquantity,
+    masterorders_masterorderposition_manyproducts.lefttorelease,
+    masterorders_masterorderposition_manyproducts.comments,
+    masterorders_masterorderposition_manyproducts.productnumber,
+    masterorders_masterorderposition_manyproducts.productname,
+    masterorders_masterorderposition_manyproducts.unit,
+    masterorders_masterorderposition_manyproducts.technologyname,
+    masterorders_masterorderposition_manyproducts.companyname,
+    masterorders_masterorderposition_manyproducts.active,
+    masterorders_masterorderposition_manyproducts.companypayer,
+    masterorders_masterorderposition_manyproducts.assortmentname,
+    masterorders_masterorderposition_manyproducts.state,
+    masterorders_masterorderposition_manyproducts.description
+   FROM arch_masterorders_masterorderposition_manyproducts masterorders_masterorderposition_manyproducts
+  WITH NO DATA;
+
+
+--
+-- Name: arch_masterorders_masterorderpositiondto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_masterorders_masterorderpositiondto AS
+ SELECT arch_mv_masterorders_masterorderpositiondto.id,
+    arch_mv_masterorders_masterorderpositiondto.masterorderdefinitionnumber,
+    arch_mv_masterorders_masterorderpositiondto.masterorderid,
+    arch_mv_masterorders_masterorderpositiondto.productid,
+    arch_mv_masterorders_masterorderpositiondto.masterorderproductid,
+    arch_mv_masterorders_masterorderpositiondto.name,
+    arch_mv_masterorders_masterorderpositiondto.number,
+    arch_mv_masterorders_masterorderpositiondto.deadline,
+    arch_mv_masterorders_masterorderpositiondto.masterorderstatus,
+    arch_mv_masterorders_masterorderpositiondto.masterorderpositionstatus,
+    arch_mv_masterorders_masterorderpositiondto.masterorderquantity,
+    arch_mv_masterorders_masterorderpositiondto.cumulatedmasterorderquantity,
+    arch_mv_masterorders_masterorderpositiondto.producedorderquantity,
+    arch_mv_masterorders_masterorderpositiondto.lefttorelease,
+    arch_mv_masterorders_masterorderpositiondto.comments,
+    arch_mv_masterorders_masterorderpositiondto.productnumber,
+    arch_mv_masterorders_masterorderpositiondto.productname,
+    arch_mv_masterorders_masterorderpositiondto.unit,
+    arch_mv_masterorders_masterorderpositiondto.technologyname,
+    arch_mv_masterorders_masterorderpositiondto.companyname,
+    arch_mv_masterorders_masterorderpositiondto.active,
+    arch_mv_masterorders_masterorderpositiondto.companypayer,
+    arch_mv_masterorders_masterorderpositiondto.assortmentname,
+    arch_mv_masterorders_masterorderpositiondto.state,
+    arch_mv_masterorders_masterorderpositiondto.description
+   FROM arch_mv_masterorders_masterorderpositiondto;
+
+
+--
+-- Name: basic_company; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_company (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255) DEFAULT 'Company'::character varying,
+    taxcountrycode_id bigint,
+    tax character varying(255),
+    street character varying(255),
+    house character varying(30),
+    flat character varying(30),
+    zipcode character varying(255),
+    city character varying(255),
+    state character varying(255),
+    country_id bigint,
+    email character varying(255),
+    website character varying(255),
+    phone character varying(255),
+    externalnumber character varying(255),
+    buffer integer,
+    active boolean DEFAULT true,
+    paymentform character varying(255),
+    country character varying(255),
+    entityversion bigint DEFAULT 0,
+    contactperson character varying(255),
+    issupplier boolean DEFAULT false,
+    isreceiver boolean DEFAULT false,
+    logoimage character varying(255)
+);
+
+
+--
+-- Name: masterorders_masterorderdefinition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_masterorderdefinition (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    parameter_id bigint,
+    active boolean DEFAULT true,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: arch_mv_masterorders_masterorderdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_masterorders_masterorderdto AS
+ SELECT masterorder.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    masterorder.number,
+    masterorder.name,
+    masterorder.deadline,
+    company.number AS company,
+    companypayer.number AS companypayer,
+    COALESCE((orderedpositions.count)::integer, 0) AS orderedpositionquantity,
+    COALESCE((cumulatedpositions.count)::integer, 0) AS commissionedpositionquantity,
+    (COALESCE((orderedpositions.count)::integer, 0) - COALESCE((cumulatedpositions.count)::integer, 0)) AS quantityforcommission,
+    masterorder.masterorderstate,
+    masterorder.active,
+    masterorder.pipedriveupdate,
+    masterorder.state,
+    masterorder.externalnumber,
+    masterorder.asanataskid,
+    masterorder.description
+   FROM (((((arch_masterorders_masterorder masterorder
+     LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN ( SELECT arch_masterorders_masterorderpositiondto.masterorderid,
+            count(*) AS count
+           FROM arch_masterorders_masterorderpositiondto
+          GROUP BY arch_masterorders_masterorderpositiondto.masterorderid) orderedpositions ON ((orderedpositions.masterorderid = masterorder.id)))
+     LEFT JOIN ( SELECT arch_masterorders_masterorderpositiondto.masterorderid,
+            count(*) AS count
+           FROM arch_masterorders_masterorderpositiondto
+          WHERE (arch_masterorders_masterorderpositiondto.cumulatedmasterorderquantity > (0)::numeric)
+          GROUP BY arch_masterorders_masterorderpositiondto.masterorderid) cumulatedpositions ON ((cumulatedpositions.masterorderid = masterorder.id)))
+  WITH NO DATA;
+
+
+--
+-- Name: arch_masterorders_masterorderdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_masterorders_masterorderdto AS
+ SELECT arch_mv_masterorders_masterorderdto.id,
+    arch_mv_masterorders_masterorderdto.masterorderdefinitionnumber,
+    arch_mv_masterorders_masterorderdto.number,
+    arch_mv_masterorders_masterorderdto.name,
+    arch_mv_masterorders_masterorderdto.deadline,
+    arch_mv_masterorders_masterorderdto.company,
+    arch_mv_masterorders_masterorderdto.companypayer,
+    arch_mv_masterorders_masterorderdto.orderedpositionquantity,
+    arch_mv_masterorders_masterorderdto.commissionedpositionquantity,
+    arch_mv_masterorders_masterorderdto.quantityforcommission,
+    arch_mv_masterorders_masterorderdto.masterorderstate,
+    arch_mv_masterorders_masterorderdto.active,
+    arch_mv_masterorders_masterorderdto.pipedriveupdate,
+    arch_mv_masterorders_masterorderdto.state,
+    arch_mv_masterorders_masterorderdto.externalnumber,
+    arch_mv_masterorders_masterorderdto.asanataskid,
+    arch_mv_masterorders_masterorderdto.description
+   FROM arch_mv_masterorders_masterorderdto;
+
+
+--
+-- Name: arch_masterorders_masterorderdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_masterorders_masterorderdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_masterorders_masterorderposition_manyproducts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_masterorders_masterorderposition_manyproducts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: arch_masterorders_masterorderpositiondto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_masterorders_masterorderpositiondto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: arch_masterorders_masterorderproduct; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3916,6 +4192,404 @@ ALTER SEQUENCE arch_materialflowresources_document_id_seq OWNED BY arch_material
 
 
 --
+-- Name: arch_orders_order; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_orders_order (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    commentreasontypecorrectiondatefrom character varying(255),
+    commentreasontypecorrectiondateto character varying(255),
+    commentreasondeviationeffectivestart character varying(255),
+    commentreasondeviationeffectiveend character varying(255),
+    externalnumber character varying(255),
+    commentreasontypedeviationsquantity character varying(255),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
+    effectivedatefrom timestamp without time zone,
+    effectivedateto timestamp without time zone,
+    deadline timestamp without time zone,
+    correcteddatefrom timestamp without time zone,
+    correcteddateto timestamp without time zone,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    state character varying(255),
+    company_id bigint,
+    product_id bigint,
+    technology_id bigint,
+    productionline_id bigint,
+    plannedquantity numeric(12,5),
+    donequantity numeric(12,5),
+    externalsynchronized boolean DEFAULT true,
+    commissionedplannedquantity numeric(12,5),
+    commissionedcorrectedquantity numeric(12,5),
+    amountofproductproduced numeric(12,5),
+    remainingamountofproducttoproduce numeric(12,5),
+    ownlinechangeoverduration integer,
+    registerproductiontime boolean,
+    justone boolean,
+    registerquantityinproduct boolean,
+    laborworktime integer,
+    includetpz boolean,
+    inputproductsrequiredfortype character varying(255),
+    registerpiecework boolean,
+    generatedenddate timestamp without time zone,
+    machineworktime integer,
+    ownlinechangeover boolean DEFAULT false,
+    autocloseorder boolean,
+    registerquantityoutproduct boolean,
+    operationdurationquantityunit character varying(255),
+    realizationtime integer,
+    calculate boolean,
+    includeadditionaltime boolean,
+    allowtoclose boolean,
+    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
+    masterorder_id bigint,
+    active boolean DEFAULT true,
+    productpriceperunit numeric(19,5),
+    trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying,
+    failuresyncmessage character varying(255),
+    targetstate character varying(255),
+    ignorerequiredcomponents boolean,
+    automaticallymoveoverusage boolean DEFAULT false,
+    updatecomponentsavailability boolean,
+    ordertype character varying(255) DEFAULT '01withPatternTechnology'::character varying,
+    technologyprototype_id bigint,
+    level integer,
+    parent_id bigint,
+    ignoremissingcomponents boolean DEFAULT false,
+    masterorderproduct_id bigint,
+    dateschanged boolean DEFAULT false,
+    sourcecorrecteddatefrom timestamp without time zone,
+    sourcecorrecteddateto timestamp without time zone,
+    sourcestartdate timestamp without time zone,
+    sourcefinishdate timestamp without time zone,
+    batchnumber character varying(255),
+    root_id bigint,
+    includeordersforcomponent boolean,
+    plannedfinishallorders timestamp without time zone,
+    plannedstartallorders timestamp without time zone,
+    calculatedfinishallorders timestamp without time zone,
+    issubcontracted boolean DEFAULT false,
+    registerfilled boolean,
+    workplandelivered boolean DEFAULT false,
+    calculatedstartallorders timestamp without time zone,
+    scadacreatedorupdatestate character varying(255),
+    entityversion bigint DEFAULT 0,
+    workertochange character varying(255),
+    masterorderproductcomponent_id bigint,
+    wastesquantity numeric(12,5),
+    existsrepairorders boolean DEFAULT false,
+    ordercategory character varying(255),
+    address_id bigint,
+    finalproductiontracking boolean DEFAULT false,
+    updatefinishdate boolean DEFAULT false,
+    ordersgroup_id bigint,
+    plannedquantityforadditionalunit numeric,
+    directadditionalcost numeric,
+    directadditionalcostdescription character varying,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: basic_address; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_address (
+    id bigint NOT NULL,
+    company_id bigint,
+    addresstype character varying(255),
+    number character varying(255),
+    name character varying(255),
+    phone character varying(255),
+    email character varying(255),
+    website character varying(255),
+    street character varying(255),
+    house character varying(30),
+    flat character varying(30),
+    zipcode character varying(255),
+    city character varying(255),
+    state character varying(255),
+    country_id bigint,
+    contactperson character varying(255),
+    canbedeleted boolean DEFAULT false,
+    active boolean DEFAULT true,
+    externalnumber character varying(255)
+);
+
+
+--
+-- Name: cmmsmachineparts_maintenanceevent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_maintenanceevent (
+    id bigint NOT NULL,
+    number character varying(255) NOT NULL,
+    type character varying(255) DEFAULT '01failure'::character varying,
+    description character varying(600),
+    personreceiving_id bigint,
+    personreceivingname character varying(255),
+    state character varying(255) DEFAULT '01new'::character varying,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    factory_id bigint,
+    division_id bigint,
+    productionline_id bigint,
+    workstation_id bigint,
+    subassembly_id bigint,
+    faulttype_id bigint,
+    solutiondescription text,
+    maintenanceeventcontext_id bigint,
+    entityversion bigint DEFAULT 0,
+    sourcecost_id bigint,
+    soundnotifications boolean DEFAULT false
+);
+
+
+--
+-- Name: cmmsmachineparts_plannedevent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cmmsmachineparts_plannedevent (
+    id bigint NOT NULL,
+    number character varying(255),
+    type character varying(255) DEFAULT '01review'::character varying,
+    description character varying(600),
+    owner_id bigint,
+    ownername character varying(255),
+    state character varying(255) DEFAULT '01new'::character varying,
+    factory_id bigint,
+    division_id bigint,
+    productionline_id bigint,
+    workstation_id bigint,
+    subassembly_id bigint,
+    plannedeventcontext_id bigint,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    plannedseparately boolean DEFAULT false,
+    afterreview boolean DEFAULT false,
+    requiresshutdown boolean DEFAULT false,
+    company_id bigint,
+    basedon character varying(255) DEFAULT '01date'::character varying,
+    date date,
+    counter numeric(14,5),
+    countertolerance numeric(14,5),
+    duration integer DEFAULT 0,
+    effectiveduration integer DEFAULT 0,
+    effectivecounter numeric(14,5),
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    isdeadline boolean,
+    solutiondescription text,
+    entityversion bigint DEFAULT 0,
+    maintenanceevent_id bigint,
+    sourcecost_id bigint,
+    recurringevent_id bigint
+);
+
+
+--
+-- Name: deliveries_delivery; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE deliveries_delivery (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    supplier_id bigint,
+    deliverydate timestamp without time zone,
+    deliveryaddress character varying(2048),
+    relateddelivery_id bigint,
+    currency_id bigint,
+    externalnumber character varying(255),
+    externalsynchronized boolean DEFAULT true,
+    state character varying(255),
+    location_id bigint,
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    synchronizationstatus character varying(255),
+    entityversion bigint DEFAULT 0,
+    positionsfile character varying(255)
+);
+
+
+--
+-- Name: materialflow_location; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflow_location (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    type character varying(255) DEFAULT '01controlPoint'::character varying,
+    externalnumber character varying(255),
+    algorithm character varying(255) DEFAULT '01fifo'::character varying,
+    requireprice boolean,
+    requirebatch boolean,
+    requireproductiondate boolean,
+    requireexpirationdate boolean,
+    entityversion bigint DEFAULT 0,
+    warehousenumberinoptima character varying(255),
+    draftmakesreservation boolean DEFAULT false
+);
+
+
+--
+-- Name: qcadoosecurity_user; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qcadoosecurity_user (
+    id bigint NOT NULL,
+    username character varying(255),
+    email character varying(255),
+    firstname character varying(255),
+    lastname character varying(255),
+    enabled boolean DEFAULT true,
+    description character varying(255),
+    password character varying(255),
+    lastactivity timestamp without time zone,
+    staff_id bigint,
+    group_id bigint,
+    entityversion bigint DEFAULT 0,
+    factory_id bigint,
+    ipaddress character varying
+);
+
+
+--
+-- Name: subcontractorportal_suborder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE subcontractorportal_suborder (
+    id bigint NOT NULL,
+    number character varying(255),
+    ordernumber character varying(255),
+    description text,
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
+    planneddatefrom timestamp without time zone,
+    planneddateto timestamp without time zone,
+    status character varying(255),
+    company_id bigint,
+    active boolean DEFAULT true,
+    changedby_id bigint,
+    hasoperations boolean DEFAULT false,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: arch_mv_materialflowresources_documentdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_materialflowresources_documentdto AS
+ SELECT document.inbuffer,
+    document.id,
+    document.number,
+    document.description,
+    document.name,
+    document.type,
+    document."time",
+    document.state,
+    document.active,
+    (locationfrom.id)::integer AS locationfrom_id,
+    locationfrom.number AS locationfromnumber,
+    (locationto.id)::integer AS locationto_id,
+    locationto.number AS locationtonumber,
+    (company.id)::integer AS company_id,
+    company.name AS companyname,
+        CASE
+            WHEN (address.name IS NULL) THEN (address.number)::text
+            ELSE (((address.number)::text || ' - '::text) || (address.name)::text)
+        END AS documentaddress,
+    (securityuser.id)::integer AS user_id,
+    (((securityuser.firstname)::text || ' '::text) || (securityuser.lastname)::text) AS username,
+    (maintenanceevent.id)::integer AS maintenanceevent_id,
+    maintenanceevent.number AS maintenanceeventnumber,
+    (plannedevent.id)::integer AS plannedevent_id,
+    plannedevent.number AS plannedeventnumber,
+    (delivery.id)::integer AS delivery_id,
+    delivery.number AS deliverynumber,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    (suborder.id)::integer AS suborder_id,
+    suborder.number AS subordernumber,
+    document.printed
+   FROM ((((((((((arch_materialflowresources_document document
+     LEFT JOIN materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
+     LEFT JOIN materialflow_location locationto ON ((locationto.id = document.locationto_id)))
+     LEFT JOIN basic_company company ON ((company.id = document.company_id)))
+     LEFT JOIN basic_address address ON ((address.id = document.address_id)))
+     LEFT JOIN qcadoosecurity_user securityuser ON ((securityuser.id = document.user_id)))
+     LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON ((maintenanceevent.id = document.maintenanceevent_id)))
+     LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON ((plannedevent.id = document.plannedevent_id)))
+     LEFT JOIN deliveries_delivery delivery ON ((delivery.id = document.delivery_id)))
+     LEFT JOIN arch_orders_order ordersorder ON ((ordersorder.id = document.order_id)))
+     LEFT JOIN subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
+  WITH NO DATA;
+
+
+--
+-- Name: arch_materialflowresources_documentdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_materialflowresources_documentdto AS
+ SELECT arch_mv_materialflowresources_documentdto.inbuffer,
+    arch_mv_materialflowresources_documentdto.id,
+    arch_mv_materialflowresources_documentdto.number,
+    arch_mv_materialflowresources_documentdto.description,
+    arch_mv_materialflowresources_documentdto.name,
+    arch_mv_materialflowresources_documentdto.type,
+    arch_mv_materialflowresources_documentdto."time",
+    arch_mv_materialflowresources_documentdto.state,
+    arch_mv_materialflowresources_documentdto.active,
+    arch_mv_materialflowresources_documentdto.locationfrom_id,
+    arch_mv_materialflowresources_documentdto.locationfromnumber,
+    arch_mv_materialflowresources_documentdto.locationto_id,
+    arch_mv_materialflowresources_documentdto.locationtonumber,
+    arch_mv_materialflowresources_documentdto.company_id,
+    arch_mv_materialflowresources_documentdto.companyname,
+    arch_mv_materialflowresources_documentdto.documentaddress,
+    arch_mv_materialflowresources_documentdto.user_id,
+    arch_mv_materialflowresources_documentdto.username,
+    arch_mv_materialflowresources_documentdto.maintenanceevent_id,
+    arch_mv_materialflowresources_documentdto.maintenanceeventnumber,
+    arch_mv_materialflowresources_documentdto.plannedevent_id,
+    arch_mv_materialflowresources_documentdto.plannedeventnumber,
+    arch_mv_materialflowresources_documentdto.delivery_id,
+    arch_mv_materialflowresources_documentdto.deliverynumber,
+    arch_mv_materialflowresources_documentdto.order_id,
+    arch_mv_materialflowresources_documentdto.ordernumber,
+    arch_mv_materialflowresources_documentdto.suborder_id,
+    arch_mv_materialflowresources_documentdto.subordernumber,
+    arch_mv_materialflowresources_documentdto.printed
+   FROM arch_mv_materialflowresources_documentdto;
+
+
+--
+-- Name: arch_materialflowresources_documentdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_materialflowresources_documentdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: arch_materialflowresources_position; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -3965,6 +4639,268 @@ CREATE SEQUENCE arch_materialflowresources_position_id_seq
 --
 
 ALTER SEQUENCE arch_materialflowresources_position_id_seq OWNED BY arch_materialflowresources_position.id;
+
+
+--
+-- Name: basic_additionalcode; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_additionalcode (
+    id bigint NOT NULL,
+    code character varying(255),
+    product_id bigint
+);
+
+
+--
+-- Name: basic_palletnumber; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_palletnumber (
+    id bigint NOT NULL,
+    number character varying(6),
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    issuedatetime timestamp without time zone
+);
+
+
+--
+-- Name: basic_product; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_product (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    globaltypeofmaterial character varying(255),
+    ean character varying(255),
+    category character varying(255),
+    unit character varying(255),
+    externalnumber character varying(255),
+    description character varying(255),
+    parent_id bigint,
+    nodenumber character varying(255),
+    entitytype character varying(255) DEFAULT '01particularProduct'::character varying,
+    durabilityinmonths integer,
+    averageoffercost numeric(12,5) DEFAULT (0)::numeric,
+    costfornumber numeric(12,5) DEFAULT (1)::numeric,
+    lastpurchasecost numeric(12,5) DEFAULT (0)::numeric,
+    lastoffercost numeric(12,5) DEFAULT (0)::numeric,
+    isglutenproduct boolean,
+    symbol character varying(255),
+    averagecost numeric(12,5) DEFAULT (0)::numeric,
+    goodsgroup character varying(255),
+    nominalcost numeric(12,5) DEFAULT (0)::numeric,
+    bio character varying(255),
+    isdoublepallet boolean,
+    technologygroup_id bigint,
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    quantityofextrusioningredient integer DEFAULT 1,
+    norm character varying(255),
+    actualversion character varying(255),
+    hasnutritionelements boolean DEFAULT false,
+    quantityfornutritions numeric(12,0),
+    quantityfornutritionsunit character varying(255),
+    showinproductdata boolean DEFAULT false,
+    doublequantityfordoublepallet boolean,
+    size character varying(255),
+    uppershelf character varying(255),
+    lowershelf character varying(255),
+    upperform character varying(255),
+    lowerform character varying(255),
+    usedquantitycontrol boolean DEFAULT false,
+    automaticusedquantity boolean DEFAULT false,
+    nominalweight numeric(12,5),
+    countusedquantityforfullpallets boolean DEFAULT false,
+    quantityinpackage integer,
+    synchronize boolean,
+    capacitynormfortwodimensionalmachines numeric(12,5),
+    downform_id bigint,
+    upform_id bigint,
+    downshelve_id bigint,
+    upshelve_id bigint,
+    costnormsgenerator_id bigint,
+    producer_id bigint,
+    machinepart boolean,
+    drawingnumber character varying(255),
+    catalognumber character varying(255),
+    isproductiondate boolean DEFAULT false,
+    fabric boolean,
+    fabricgrammage numeric(14,5),
+    entityversion bigint DEFAULT 0,
+    ispallet boolean DEFAULT false,
+    additionalunit character varying(255),
+    fromgenerator boolean DEFAULT false,
+    generatorcontext_id bigint,
+    dateformatinqcp5code character varying(255),
+    assortment_id bigint,
+    isoil boolean,
+    isaroma boolean,
+    capacitynormforthreedimensionalmachines numeric(12,5),
+    recommendednumofheadsfortwodimensionalmachines integer,
+    recommendednumofheadsforthreedimensionalmachines integer,
+    iscartonlabel boolean
+);
+
+
+--
+-- Name: materialflowresources_storagelocation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflowresources_storagelocation (
+    id bigint NOT NULL,
+    number character varying(1024),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    location_id bigint,
+    product_id bigint,
+    placestoragelocation boolean DEFAULT false,
+    maximumnumberofpallets numeric(12,5),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true,
+    highstoragelocation boolean
+);
+
+
+--
+-- Name: arch_mv_materialflowresources_positiondto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_materialflowresources_positiondto AS
+ SELECT "position".id,
+    locationfrom.number AS locationfrom,
+    locationto.number AS locationto,
+    product.number AS productnumber,
+    product.name AS productname,
+    "position".quantity,
+    "position".price,
+    product.unit AS productunit,
+    document."time" AS documentdate,
+    ("position".expirationdate)::timestamp without time zone AS expirationdate,
+    ("position".productiondate)::timestamp without time zone AS productiondate,
+        CASE
+            WHEN ("position".externaldocumentnumber IS NULL) THEN document.type
+            ELSE '03internalOutbound'::character varying(255)
+        END AS documenttype,
+    document.state,
+        CASE
+            WHEN ("position".externaldocumentnumber IS NULL) THEN document.number
+            ELSE "position".externaldocumentnumber
+        END AS documentnumber,
+    document.name AS documentname,
+    company.name AS companyname,
+        CASE
+            WHEN (address.name IS NULL) THEN (address.number)::text
+            ELSE (((address.number)::text || ' - '::text) || (address.name)::text)
+        END AS documentaddress,
+    "position".batch,
+    storagelocation.number AS storagelocation,
+    "position".waste,
+    delivery.number AS deliverynumber,
+    plannedevent.number AS plannedeventnumber,
+    maintenanceevent.number AS maintenanceeventnumber,
+    suborder.number AS subordernumber,
+    ordersorder.number AS ordernumber,
+    "position".typeofpallet AS pallettype,
+    palletnumber.number AS palletnumber,
+    (locationfrom.id)::integer AS locationfrom_id,
+    (locationto.id)::integer AS locationto_id,
+    "position".givenquantity,
+    "position".givenunit,
+    "position".conversion,
+    (document.id)::integer AS documentid,
+    document.inbuffer,
+        CASE
+            WHEN ("position".orderid IS NULL) THEN (document.order_id)::integer
+            ELSE "position".orderid
+        END AS orderid,
+    ("position".price * "position".quantity) AS value,
+    "position".resourcenumber,
+    additionalcode.code AS additionalcode
+   FROM ((((((((((((((arch_materialflowresources_position "position"
+     LEFT JOIN arch_materialflowresources_document document ON ((document.id = "position".document_id)))
+     LEFT JOIN materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
+     LEFT JOIN materialflow_location locationto ON ((locationto.id = document.locationto_id)))
+     JOIN basic_product product ON ((product.id = "position".product_id)))
+     LEFT JOIN basic_company company ON ((company.id = document.company_id)))
+     LEFT JOIN basic_address address ON ((address.id = document.address_id)))
+     LEFT JOIN materialflowresources_storagelocation storagelocation ON ((storagelocation.id = "position".storagelocation_id)))
+     LEFT JOIN cmmsmachineparts_maintenanceevent maintenanceevent ON ((maintenanceevent.id = document.maintenanceevent_id)))
+     LEFT JOIN cmmsmachineparts_plannedevent plannedevent ON ((plannedevent.id = document.plannedevent_id)))
+     LEFT JOIN deliveries_delivery delivery ON ((delivery.id = document.delivery_id)))
+     LEFT JOIN subcontractorportal_suborder suborder ON ((suborder.id = document.suborder_id)))
+     LEFT JOIN arch_orders_order ordersorder ON (((ordersorder.id = document.order_id) OR (ordersorder.id = "position".orderid))))
+     LEFT JOIN basic_palletnumber palletnumber ON ((palletnumber.id = "position".palletnumber_id)))
+     LEFT JOIN basic_additionalcode additionalcode ON ((additionalcode.id = "position".additionalcode_id)))
+  WITH NO DATA;
+
+
+--
+-- Name: arch_materialflowresources_positiondto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_materialflowresources_positiondto AS
+ SELECT arch_mv_materialflowresources_positiondto.id,
+    arch_mv_materialflowresources_positiondto.locationfrom,
+    arch_mv_materialflowresources_positiondto.locationto,
+    arch_mv_materialflowresources_positiondto.productnumber,
+    arch_mv_materialflowresources_positiondto.productname,
+    arch_mv_materialflowresources_positiondto.quantity,
+    arch_mv_materialflowresources_positiondto.price,
+    arch_mv_materialflowresources_positiondto.productunit,
+    arch_mv_materialflowresources_positiondto.documentdate,
+    arch_mv_materialflowresources_positiondto.expirationdate,
+    arch_mv_materialflowresources_positiondto.productiondate,
+    arch_mv_materialflowresources_positiondto.documenttype,
+    arch_mv_materialflowresources_positiondto.state,
+    arch_mv_materialflowresources_positiondto.documentnumber,
+    arch_mv_materialflowresources_positiondto.documentname,
+    arch_mv_materialflowresources_positiondto.companyname,
+    arch_mv_materialflowresources_positiondto.documentaddress,
+    arch_mv_materialflowresources_positiondto.batch,
+    arch_mv_materialflowresources_positiondto.storagelocation,
+    arch_mv_materialflowresources_positiondto.waste,
+    arch_mv_materialflowresources_positiondto.deliverynumber,
+    arch_mv_materialflowresources_positiondto.plannedeventnumber,
+    arch_mv_materialflowresources_positiondto.maintenanceeventnumber,
+    arch_mv_materialflowresources_positiondto.subordernumber,
+    arch_mv_materialflowresources_positiondto.ordernumber,
+    arch_mv_materialflowresources_positiondto.pallettype,
+    arch_mv_materialflowresources_positiondto.palletnumber,
+    arch_mv_materialflowresources_positiondto.locationfrom_id,
+    arch_mv_materialflowresources_positiondto.locationto_id,
+    arch_mv_materialflowresources_positiondto.givenquantity,
+    arch_mv_materialflowresources_positiondto.givenunit,
+    arch_mv_materialflowresources_positiondto.conversion,
+    arch_mv_materialflowresources_positiondto.documentid,
+    arch_mv_materialflowresources_positiondto.inbuffer,
+    arch_mv_materialflowresources_positiondto.orderid,
+    arch_mv_materialflowresources_positiondto.value,
+    arch_mv_materialflowresources_positiondto.resourcenumber,
+    arch_mv_materialflowresources_positiondto.additionalcode
+   FROM arch_mv_materialflowresources_positiondto;
+
+
+--
+-- Name: arch_materialflowresources_positiondto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_materialflowresources_positiondto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -4188,6 +5124,600 @@ CREATE TABLE arch_materialrequirementcoveragefororder_coverageproductlogging (
 
 
 --
+-- Name: arch_ordersgroups_ordersgroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_ordersgroups_ordersgroup (
+    id bigint NOT NULL,
+    number character varying(255),
+    assortment_id bigint,
+    productionline_id bigint,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    deadline timestamp without time zone,
+    quantity numeric(12,5),
+    producedquantity numeric(12,5),
+    remainingquantity numeric(12,5),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    active boolean DEFAULT true,
+    masterorder_id bigint,
+    parent_id bigint,
+    remainingquantityinorders numeric,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: basic_division; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_division (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    supervisor_id bigint,
+    componentslocation_id bigint,
+    componentsoutputlocation_id bigint,
+    productsinputlocation_id bigint,
+    productionline_id bigint,
+    parameter_id bigint,
+    productsflowlocation_id bigint,
+    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
+    automaticmoveforintermediate boolean DEFAULT false,
+    automaticmoveforfinal boolean DEFAULT false,
+    factory_id bigint,
+    active boolean DEFAULT true,
+    comment character varying(2048),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: repairs_repairorder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE repairs_repairorder (
+    id bigint NOT NULL,
+    number character varying(255) NOT NULL,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    order_id bigint,
+    division_id bigint,
+    createdate timestamp without time zone,
+    shift_id bigint,
+    startdate timestamp without time zone,
+    enddate timestamp without time zone,
+    staff_id bigint,
+    product_id bigint,
+    faulttype_id bigint,
+    description character varying(2048),
+    quantitytorepair numeric(12,5),
+    quantityrepaired numeric(12,5),
+    lack numeric(12,5),
+    active boolean DEFAULT true,
+    orderdto_id bigint,
+    entityversion bigint DEFAULT 0,
+    productiontracking_id bigint,
+    labortime integer DEFAULT 0,
+    machinetime integer DEFAULT 0,
+    repairorderproduct_id bigint
+);
+
+
+--
+-- Name: technologies_technology; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technology (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    product_id bigint,
+    technologygroup_id bigint,
+    externalsynchronized boolean DEFAULT true,
+    master boolean DEFAULT false,
+    description character varying(2048),
+    state character varying(255) DEFAULT '01draft'::character varying,
+    recipeimportstatus character varying(255),
+    recipeimportmsg character varying(1024),
+    formula character varying(255),
+    minimalquantity numeric(10,5),
+    active boolean DEFAULT true,
+    technologybatchrequired boolean,
+    isstandardgoodfoodtechnology boolean DEFAULT true,
+    range character varying(255) DEFAULT '01oneDivision'::character varying,
+    division_id bigint,
+    componentslocation_id bigint,
+    componentsoutputlocation_id bigint,
+    productsinputlocation_id bigint,
+    isdivisionlocation boolean,
+    isdivisioninputlocation boolean,
+    isdivisionoutputlocation boolean,
+    technologytype character varying(255),
+    technologyprototype_id bigint,
+    productionline_id bigint,
+    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
+    productsflowlocation_id bigint,
+    automaticmoveforintermediate boolean DEFAULT false,
+    automaticmoveforfinal boolean DEFAULT false,
+    graphicsaccepted boolean,
+    constructionandtechnologyaccepted boolean,
+    typeofproductionrecording character varying(255),
+    justone boolean,
+    allowtoclose boolean,
+    registerquantityoutproduct boolean,
+    autocloseorder boolean,
+    registerpiecework boolean,
+    registerquantityinproduct boolean,
+    registerproductiontime boolean,
+    entityversion bigint DEFAULT 0,
+    standardperformancetechnology numeric(12,5),
+    template boolean DEFAULT false,
+    additionalactions boolean DEFAULT false,
+    generatorcontext_id bigint
+);
+
+
+--
+-- Name: arch_mv_orders_orderlistdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_orders_orderlistdto AS
+ SELECT ordersorder.id,
+    ordersorder.active,
+    ordersorder.number,
+    ordersorder.name,
+    ordersorder.datefrom,
+    ordersorder.dateto,
+    ordersorder.startdate,
+    ordersorder.finishdate,
+    ordersorder.state,
+    ordersorder.externalnumber,
+    ordersorder.externalsynchronized,
+    ordersorder.issubcontracted,
+    ordersorder.plannedquantity,
+    ordersorder.donequantity,
+    ordersorder.workplandelivered,
+    ordersorder.deadline,
+    ordersorder.ordercategory,
+    COALESCE(ordersorder.plannedquantityforadditionalunit, ordersorder.plannedquantity) AS plannedquantityforadditionalunit,
+    COALESCE(product.additionalunit, product.unit) AS unitforadditionalunit,
+    product.number AS productnumber,
+    technology.number AS technologynumber,
+    product.unit,
+    masterorder.number AS masterordernumber,
+    division.name AS divisionname,
+    company.number AS companyname,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+        CASE
+            WHEN (EXISTS ( SELECT repairoder.id
+               FROM repairs_repairorder repairoder
+              WHERE (repairoder.order_id = ordersorder.id))) THEN true
+            ELSE false
+        END AS existsrepairorders,
+    (masterorder.id)::integer AS masterorderid,
+    ordersgroup.number AS ordersgroupnumber,
+    ''::character varying(255) AS annotation
+   FROM (((((((arch_orders_order ordersorder
+     JOIN basic_product product ON ((product.id = ordersorder.product_id)))
+     LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
+     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
+     LEFT JOIN arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN arch_ordersgroups_ordersgroup ordersgroup ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
+     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
+  WITH NO DATA;
+
+
+--
+-- Name: arch_ordersgroups_drafrptquantitydto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_ordersgroups_drafrptquantitydto (
+    id bigint,
+    number character varying(255),
+    sum numeric
+);
+
+ALTER TABLE ONLY arch_ordersgroups_drafrptquantitydto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: basic_assortment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_assortment (
+    id bigint NOT NULL,
+    name character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: productionlines_productionline; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionlines_productionline (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    division_id bigint,
+    place character varying(255),
+    description character varying(2048),
+    supportsalltechnologies boolean DEFAULT true,
+    documentation character varying(255),
+    supportsothertechnologiesworkstationtypes boolean DEFAULT true,
+    quantityforotherworkstationtypes integer DEFAULT 1,
+    active boolean DEFAULT true,
+    eurocodsymbol character varying(3),
+    availabilityindicator numeric(12,5),
+    production boolean DEFAULT false,
+    entityversion bigint DEFAULT 0,
+    placeinscada character varying(255)
+);
+
+
+--
+-- Name: technologies_technologygroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologygroup (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    active boolean DEFAULT true,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: arch_mv_ordersgroups_ordersgroupdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_ordersgroups_ordersgroupdto AS
+ WITH technology_group_numbers AS (
+         SELECT o.ordersgroup_id,
+            string_agg(DISTINCT (tg.number)::text, ', '::text) AS number
+           FROM ((arch_orders_order o
+             JOIN technologies_technology t ON ((o.technology_id = t.id)))
+             JOIN technologies_technologygroup tg ON ((t.technologygroup_id = tg.id)))
+          WHERE (o.ordersgroup_id IS NOT NULL)
+          GROUP BY o.ordersgroup_id
+        ), performance AS (
+         SELECT o.ordersgroup_id,
+            first_value(t.standardperformancetechnology) OVER (PARTITION BY o.ordersgroup_id ORDER BY o.id) AS performancenorm
+           FROM (arch_orders_order o
+             JOIN technologies_technology t ON ((o.technology_id = t.id)))
+        )
+ SELECT DISTINCT ordersgroup.id,
+    ordersgroup.active,
+    ordersgroup.number,
+    assortment.name AS assortmentname,
+    productionline.number AS productionlinenumber,
+    ordersgroup.startdate,
+    ordersgroup.finishdate,
+    ordersgroup.deadline,
+    ordersgroup.quantity,
+    ordersgroup.producedquantity,
+    ordersgroup.remainingquantity,
+    ordersgroup.state,
+    company.number AS company,
+    ordersgroup.remainingquantityinorders,
+    (COALESCE(ordersgroup.producedquantity, (0)::numeric) + COALESCE(drafrptquantity.sum, (0)::numeric)) AS producedquantitywithdraft,
+    (COALESCE(ordersgroup.remainingquantityinorders, (0)::numeric) - COALESCE(drafrptquantity.sum, (0)::numeric)) AS remainingquantityinorderswithdraft,
+    tgn.number AS technologygroup,
+    p.performancenorm,
+    (masterorder.deadline)::date AS clientdate
+   FROM (((((((arch_ordersgroups_ordersgroup ordersgroup
+     JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
+     JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
+     JOIN arch_masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN arch_ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
+     LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)))
+     LEFT JOIN performance p ON ((p.ordersgroup_id = ordersgroup.id)))
+  WITH NO DATA;
+
+
+--
+-- Name: arch_productioncounting_productiontracking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_productioncounting_productiontracking (
+    id bigint NOT NULL,
+    number character varying(255),
+    order_id bigint,
+    technologyinstanceoperationcomponent_id bigint,
+    shift_id bigint,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    lasttracking boolean,
+    machinetime integer,
+    labortime integer,
+    executedoperationcycles numeric(12,5),
+    staff_id bigint,
+    workstationtype_id bigint,
+    division_id bigint,
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    laststatechangefails boolean DEFAULT false,
+    laststatechangefailcause character varying(255),
+    isexternalsynchronized boolean DEFAULT true,
+    timerangefrom timestamp without time zone,
+    timerangeto timestamp without time zone,
+    shiftstartday date,
+    changeovertime integer,
+    subcontractor_id bigint,
+    technologyoperationcomponent_id bigint,
+    entityversion bigint DEFAULT 0,
+    repairorder_id bigint,
+    correction_id bigint,
+    iscorrection boolean DEFAULT false,
+    planforordercompleted boolean DEFAULT false,
+    workstation_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_productioncounting_trackingoperationproductoutcomponent (
+    id bigint NOT NULL,
+    productiontracking_id bigint,
+    product_id bigint,
+    usedquantity numeric(14,5),
+    balance numeric(14,5),
+    batch_id bigint,
+    wastedquantity numeric(14,5),
+    givenunit character varying(255),
+    givenquantity numeric(14,5),
+    entityversion bigint DEFAULT 0,
+    wastesquantity numeric(14,5),
+    typeofmaterial character varying(255) DEFAULT '01component'::character varying,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: arch_repairs_repairorder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE arch_repairs_repairorder (
+    id bigint NOT NULL,
+    number character varying(255) NOT NULL,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    order_id bigint,
+    division_id bigint,
+    createdate timestamp without time zone,
+    shift_id bigint,
+    startdate timestamp without time zone,
+    enddate timestamp without time zone,
+    staff_id bigint,
+    product_id bigint,
+    faulttype_id bigint,
+    description character varying(2048),
+    quantitytorepair numeric(12,5),
+    quantityrepaired numeric(12,5),
+    lack numeric(12,5),
+    active boolean DEFAULT true,
+    orderdto_id bigint,
+    entityversion bigint DEFAULT 0,
+    productiontracking_id bigint,
+    labortime integer DEFAULT 0,
+    machinetime integer DEFAULT 0,
+    repairorderproduct_id bigint,
+    archived boolean DEFAULT false
+);
+
+
+--
+-- Name: basic_shift; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_shift (
+    id bigint NOT NULL,
+    name character varying(1024),
+    mondayworking boolean DEFAULT true,
+    mondayhours character varying(255),
+    tuesdayworking boolean DEFAULT true,
+    tuesdayhours character varying(255),
+    wensdayworking boolean DEFAULT true,
+    wensdayhours character varying(255),
+    thursdayworking boolean DEFAULT true,
+    thursdayhours character varying(255),
+    fridayworking boolean DEFAULT true,
+    fridayhours character varying(255),
+    saturdayworking boolean DEFAULT false,
+    saturdayhours character varying(255),
+    sundayworking boolean DEFAULT false,
+    sundayhours character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: basic_staff; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_staff (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    surname character varying(255),
+    email character varying(255),
+    phone character varying(255),
+    workfor_id bigint,
+    post character varying(255),
+    shift_id bigint,
+    division_id bigint,
+    individuallaborcost numeric(12,5),
+    determinedindividual boolean,
+    laborhourlycost numeric(12,5),
+    wagegroup_id bigint,
+    active boolean DEFAULT true,
+    parameter_id bigint,
+    "position" character varying(255),
+    entityversion bigint DEFAULT 0,
+    crew_id bigint
+);
+
+
+--
+-- Name: technologies_operation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_operation (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    comment character varying(2048),
+    workstationtype_id bigint,
+    attachment character varying(255),
+    areproductquantitiesdivisible boolean DEFAULT false,
+    istjdivisible boolean DEFAULT false,
+    operationgroup_id bigint,
+    imageurlinworkplan character varying(255),
+    pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
+    productioninonecycle numeric(12,5) DEFAULT (1)::numeric,
+    laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
+    numberofoperations integer DEFAULT 1,
+    laborutilization numeric(8,5) DEFAULT 1.0,
+    nextoperationafterproducedtype character varying(255) DEFAULT '01all'::character varying,
+    nextoperationafterproducedquantityunit character varying(255),
+    machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
+    tj integer DEFAULT 0,
+    nextoperationafterproducedquantity numeric(12,5) DEFAULT (0)::numeric,
+    machineutilization numeric(8,5) DEFAULT 1.0,
+    timenextoperation integer DEFAULT 0,
+    tpz integer DEFAULT 0,
+    productioninonecycleunit character varying(255),
+    active boolean DEFAULT true,
+    issubcontracting boolean DEFAULT false,
+    assignedtooperation character varying(255) DEFAULT '02workstationTypes'::character varying,
+    quantityofworkstations integer DEFAULT 1,
+    division_id bigint,
+    showinproductdata boolean DEFAULT false,
+    productdatanumber numeric(12,5) DEFAULT (0)::numeric,
+    productionline_id bigint,
+    entityversion bigint DEFAULT 0,
+    product_id bigint
+);
+
+
+--
+-- Name: technologies_technologyoperationcomponent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologyoperationcomponent (
+    id bigint NOT NULL,
+    technology_id bigint,
+    operation_id bigint,
+    parent_id bigint,
+    entitytype character varying(255),
+    priority integer,
+    nodenumber character varying(255),
+    comment character varying(2048),
+    attachment character varying(255),
+    areproductquantitiesdivisible boolean DEFAULT false,
+    istjdivisible boolean DEFAULT false,
+    tpz integer DEFAULT 0,
+    laborworktime integer DEFAULT 0,
+    productioninonecycleunit character varying(255),
+    nextoperationafterproducedquantityunit character varying(255),
+    nextoperationafterproducedquantity numeric(12,5) DEFAULT (0)::numeric,
+    nextoperationafterproducedtype character varying(255) DEFAULT '01all'::character varying,
+    machineutilization numeric(8,5) DEFAULT 1.0,
+    timenextoperation integer DEFAULT 0,
+    pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
+    machineworktime integer DEFAULT 0,
+    productioninonecycle numeric(12,5) DEFAULT (1)::numeric,
+    laborutilization numeric(8,5) DEFAULT 1.0,
+    duration integer DEFAULT 0,
+    numberofoperations integer DEFAULT 1,
+    tj integer DEFAULT 0,
+    machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
+    laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
+    issubcontracting boolean DEFAULT false,
+    assignedtooperation character varying(255) DEFAULT '02workstationTypes'::character varying,
+    workstationtype_id bigint,
+    quantityofworkstations integer DEFAULT 1,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    techopercomptimecalculation_id bigint,
+    hascorrections boolean,
+    division_id bigint,
+    showinproductdata boolean,
+    productdatanumber numeric(12,5) DEFAULT (0)::numeric,
+    productionlinechange boolean DEFAULT false,
+    productionline_id bigint,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: arch_mv_productioncounting_productiontrackingdto; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW arch_mv_productioncounting_productiontrackingdto AS
+ SELECT productiontracking.id,
+    productiontracking.number,
+    productiontracking.state,
+    productiontracking.createdate,
+    productiontracking.lasttracking,
+    productiontracking.timerangefrom,
+    productiontracking.timerangeto,
+    productiontracking.active,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    ordersorder.state AS orderstate,
+    (technologyoperationcomponent.id)::integer AS technologyoperationcomponent_id,
+    COALESCE((((technologyoperationcomponent.nodenumber)::text || ' '::text) || (operation.name)::text), ''::text) AS technologyoperationcomponentnumber,
+    (operation.id)::integer AS operation_id,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (division.id)::integer AS division_id,
+    division.number AS divisionnumber,
+    (subcontractor.id)::integer AS subcontractor_id,
+    subcontractor.name AS subcontractorname,
+    (repairorder.id)::integer AS repairorder_id,
+    repairorder.number AS repairordernumber,
+    productiontrackingcorrection.number AS correctionnumber,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    ordersgroup.number AS ordersgroup,
+    concat(product.number, ' - ', product.name) AS productnumber,
+    product.unit AS productunit,
+    outcomponent.usedquantity,
+    company.number AS companynumber,
+    COALESCE((((outproduct.number)::text || ' - '::text) || (outproduct.name)::text), (((product.number)::text || ' - '::text) || (product.name)::text)) AS outproductnumber
+   FROM ((((((((((((((((arch_productioncounting_productiontracking productiontracking
+     JOIN arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     JOIN basic_product product ON ((ordersorder.product_id = product.id)))
+     JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id)))
+     LEFT JOIN technologies_operation operation ON ((operation.id = technologyoperationcomponent.operation_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN basic_division division ON ((division.id = productiontracking.division_id)))
+     LEFT JOIN basic_company subcontractor ON ((subcontractor.id = productiontracking.subcontractor_id)))
+     LEFT JOIN arch_productioncounting_productiontracking productiontrackingcorrection ON ((productiontrackingcorrection.id = productiontracking.correction_id)))
+     LEFT JOIN arch_repairs_repairorder repairorder ON ((repairorder.id = productiontracking.repairorder_id)))
+     LEFT JOIN arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
+     LEFT JOIN arch_basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('02intermediate'::character varying)::text, ('03finalProduct'::character varying)::text])) AND ((pcq.role)::text = '02produced'::text))))
+     LEFT JOIN basic_product outproduct ON ((pcq.product_id = outproduct.id)))
+     LEFT JOIN arch_productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))))
+  WITH NO DATA;
+
+
+--
 -- Name: arch_operationaltasks_operationaltask; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4228,109 +5758,6 @@ ALTER SEQUENCE arch_operationaltasks_operationaltask_id_seq OWNED BY arch_operat
 
 
 --
--- Name: arch_orders_order; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_orders_order (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    description character varying(2048),
-    commentreasontypecorrectiondatefrom character varying(255),
-    commentreasontypecorrectiondateto character varying(255),
-    commentreasondeviationeffectivestart character varying(255),
-    commentreasondeviationeffectiveend character varying(255),
-    externalnumber character varying(255),
-    commentreasontypedeviationsquantity character varying(255),
-    datefrom timestamp without time zone,
-    dateto timestamp without time zone,
-    effectivedatefrom timestamp without time zone,
-    effectivedateto timestamp without time zone,
-    deadline timestamp without time zone,
-    correcteddatefrom timestamp without time zone,
-    correcteddateto timestamp without time zone,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    state character varying(255),
-    company_id bigint,
-    product_id bigint,
-    technology_id bigint,
-    productionline_id bigint,
-    plannedquantity numeric(12,5),
-    donequantity numeric(12,5),
-    externalsynchronized boolean DEFAULT true,
-    commissionedplannedquantity numeric(12,5),
-    commissionedcorrectedquantity numeric(12,5),
-    amountofproductproduced numeric(12,5),
-    remainingamountofproducttoproduce numeric(12,5),
-    ownlinechangeoverduration integer,
-    registerproductiontime boolean,
-    justone boolean,
-    registerquantityinproduct boolean,
-    laborworktime integer,
-    includetpz boolean,
-    inputproductsrequiredfortype character varying(255),
-    registerpiecework boolean,
-    generatedenddate timestamp without time zone,
-    machineworktime integer,
-    ownlinechangeover boolean DEFAULT false,
-    autocloseorder boolean,
-    registerquantityoutproduct boolean,
-    operationdurationquantityunit character varying(255),
-    realizationtime integer,
-    calculate boolean,
-    includeadditionaltime boolean,
-    allowtoclose boolean,
-    typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
-    masterorder_id bigint,
-    active boolean DEFAULT true,
-    productpriceperunit numeric(19,5),
-    trackingrecordtreatment character varying(255) DEFAULT '01duringProduction'::character varying,
-    failuresyncmessage character varying(255),
-    targetstate character varying(255),
-    ignorerequiredcomponents boolean,
-    automaticallymoveoverusage boolean DEFAULT false,
-    updatecomponentsavailability boolean,
-    ordertype character varying(255) DEFAULT '01withPatternTechnology'::character varying,
-    technologyprototype_id bigint,
-    level integer,
-    parent_id bigint,
-    ignoremissingcomponents boolean DEFAULT false,
-    masterorderproduct_id bigint,
-    dateschanged boolean DEFAULT false,
-    sourcecorrecteddatefrom timestamp without time zone,
-    sourcecorrecteddateto timestamp without time zone,
-    sourcestartdate timestamp without time zone,
-    sourcefinishdate timestamp without time zone,
-    batchnumber character varying(255),
-    root_id bigint,
-    includeordersforcomponent boolean,
-    plannedfinishallorders timestamp without time zone,
-    plannedstartallorders timestamp without time zone,
-    calculatedfinishallorders timestamp without time zone,
-    issubcontracted boolean DEFAULT false,
-    registerfilled boolean,
-    workplandelivered boolean DEFAULT false,
-    calculatedstartallorders timestamp without time zone,
-    scadacreatedorupdatestate character varying(255),
-    entityversion bigint DEFAULT 0,
-    workertochange character varying(255),
-    masterorderproductcomponent_id bigint,
-    wastesquantity numeric(12,5),
-    existsrepairorders boolean DEFAULT false,
-    ordercategory character varying(255),
-    address_id bigint,
-    finalproductiontracking boolean DEFAULT false,
-    updatefinishdate boolean DEFAULT false,
-    ordersgroup_id bigint,
-    plannedquantityforadditionalunit numeric,
-    directadditionalcost numeric,
-    directadditionalcostdescription character varying,
-    archived boolean DEFAULT false
-);
-
-
---
 -- Name: arch_orders_order_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -4347,6 +5774,56 @@ CREATE SEQUENCE arch_orders_order_id_seq
 --
 
 ALTER SEQUENCE arch_orders_order_id_seq OWNED BY arch_orders_order.id;
+
+
+--
+-- Name: arch_orders_orderlistdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_orders_orderlistdto AS
+ SELECT arch_mv_orders_orderlistdto.id,
+    arch_mv_orders_orderlistdto.active,
+    arch_mv_orders_orderlistdto.number,
+    arch_mv_orders_orderlistdto.name,
+    arch_mv_orders_orderlistdto.datefrom,
+    arch_mv_orders_orderlistdto.dateto,
+    arch_mv_orders_orderlistdto.startdate,
+    arch_mv_orders_orderlistdto.finishdate,
+    arch_mv_orders_orderlistdto.state,
+    arch_mv_orders_orderlistdto.externalnumber,
+    arch_mv_orders_orderlistdto.externalsynchronized,
+    arch_mv_orders_orderlistdto.issubcontracted,
+    arch_mv_orders_orderlistdto.plannedquantity,
+    arch_mv_orders_orderlistdto.donequantity,
+    arch_mv_orders_orderlistdto.workplandelivered,
+    arch_mv_orders_orderlistdto.deadline,
+    arch_mv_orders_orderlistdto.ordercategory,
+    arch_mv_orders_orderlistdto.plannedquantityforadditionalunit,
+    arch_mv_orders_orderlistdto.unitforadditionalunit,
+    arch_mv_orders_orderlistdto.productnumber,
+    arch_mv_orders_orderlistdto.technologynumber,
+    arch_mv_orders_orderlistdto.unit,
+    arch_mv_orders_orderlistdto.masterordernumber,
+    arch_mv_orders_orderlistdto.divisionname,
+    arch_mv_orders_orderlistdto.companyname,
+    arch_mv_orders_orderlistdto.masterorderdefinitionnumber,
+    arch_mv_orders_orderlistdto.existsrepairorders,
+    arch_mv_orders_orderlistdto.masterorderid,
+    arch_mv_orders_orderlistdto.ordersgroupnumber,
+    arch_mv_orders_orderlistdto.annotation
+   FROM arch_mv_orders_orderlistdto;
+
+
+--
+-- Name: arch_orders_orderlistdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_orders_orderlistdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -4637,19 +6114,6 @@ ALTER SEQUENCE arch_ordersforsubproductsgeneration_suborders_id_seq OWNED BY arc
 
 
 --
--- Name: arch_ordersgroups_drafrptquantitydto; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_ordersgroups_drafrptquantitydto (
-    id bigint,
-    number character varying(255),
-    sum numeric
-);
-
-ALTER TABLE ONLY arch_ordersgroups_drafrptquantitydto REPLICA IDENTITY NOTHING;
-
-
---
 -- Name: arch_ordersgroups_drafrptquantitydto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -4659,30 +6123,6 @@ CREATE SEQUENCE arch_ordersgroups_drafrptquantitydto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: arch_ordersgroups_ordersgroup; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_ordersgroups_ordersgroup (
-    id bigint NOT NULL,
-    number character varying(255),
-    assortment_id bigint,
-    productionline_id bigint,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    deadline timestamp without time zone,
-    quantity numeric(12,5),
-    producedquantity numeric(12,5),
-    remainingquantity numeric(12,5),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    active boolean DEFAULT true,
-    masterorder_id bigint,
-    parent_id bigint,
-    remainingquantityinorders numeric,
-    archived boolean DEFAULT false
-);
 
 
 --
@@ -4705,186 +6145,30 @@ ALTER SEQUENCE arch_ordersgroups_ordersgroup_id_seq OWNED BY arch_ordersgroups_o
 
 
 --
--- Name: basic_assortment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_assortment (
-    id bigint NOT NULL,
-    name character varying(255),
-    active boolean DEFAULT true
-);
-
-
---
--- Name: basic_company; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_company (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(255) DEFAULT 'Company'::character varying,
-    taxcountrycode_id bigint,
-    tax character varying(255),
-    street character varying(255),
-    house character varying(30),
-    flat character varying(30),
-    zipcode character varying(255),
-    city character varying(255),
-    state character varying(255),
-    country_id bigint,
-    email character varying(255),
-    website character varying(255),
-    phone character varying(255),
-    externalnumber character varying(255),
-    buffer integer,
-    active boolean DEFAULT true,
-    paymentform character varying(255),
-    country character varying(255),
-    entityversion bigint DEFAULT 0,
-    contactperson character varying(255),
-    issupplier boolean DEFAULT false,
-    isreceiver boolean DEFAULT false,
-    logoimage character varying(255)
-);
-
-
---
--- Name: productionlines_productionline; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productionlines_productionline (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    division_id bigint,
-    place character varying(255),
-    description character varying(2048),
-    supportsalltechnologies boolean DEFAULT true,
-    documentation character varying(255),
-    supportsothertechnologiesworkstationtypes boolean DEFAULT true,
-    quantityforotherworkstationtypes integer DEFAULT 1,
-    active boolean DEFAULT true,
-    eurocodsymbol character varying(3),
-    availabilityindicator numeric(12,5),
-    production boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    placeinscada character varying(255)
-);
-
-
---
--- Name: technologies_technology; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technology (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    product_id bigint,
-    technologygroup_id bigint,
-    externalsynchronized boolean DEFAULT true,
-    master boolean DEFAULT false,
-    description character varying(2048),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    recipeimportstatus character varying(255),
-    recipeimportmsg character varying(1024),
-    formula character varying(255),
-    minimalquantity numeric(10,5),
-    active boolean DEFAULT true,
-    technologybatchrequired boolean,
-    isstandardgoodfoodtechnology boolean DEFAULT true,
-    range character varying(255) DEFAULT '01oneDivision'::character varying,
-    division_id bigint,
-    componentslocation_id bigint,
-    componentsoutputlocation_id bigint,
-    productsinputlocation_id bigint,
-    isdivisionlocation boolean,
-    isdivisioninputlocation boolean,
-    isdivisionoutputlocation boolean,
-    technologytype character varying(255),
-    technologyprototype_id bigint,
-    productionline_id bigint,
-    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    productsflowlocation_id bigint,
-    automaticmoveforintermediate boolean DEFAULT false,
-    automaticmoveforfinal boolean DEFAULT false,
-    graphicsaccepted boolean,
-    constructionandtechnologyaccepted boolean,
-    typeofproductionrecording character varying(255),
-    justone boolean,
-    allowtoclose boolean,
-    registerquantityoutproduct boolean,
-    autocloseorder boolean,
-    registerpiecework boolean,
-    registerquantityinproduct boolean,
-    registerproductiontime boolean,
-    entityversion bigint DEFAULT 0,
-    standardperformancetechnology numeric(12,5),
-    template boolean DEFAULT false,
-    additionalactions boolean DEFAULT false,
-    generatorcontext_id bigint
-);
-
-
---
--- Name: technologies_technologygroup; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologygroup (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: arch_ordersgroups_ordersgroupdto; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW arch_ordersgroups_ordersgroupdto AS
- WITH technology_group_numbers AS (
-         SELECT o.ordersgroup_id,
-            string_agg(DISTINCT (tg.number)::text, ', '::text) AS number
-           FROM ((arch_orders_order o
-             JOIN technologies_technology t ON ((o.technology_id = t.id)))
-             JOIN technologies_technologygroup tg ON ((t.technologygroup_id = tg.id)))
-          WHERE (o.ordersgroup_id IS NOT NULL)
-          GROUP BY o.ordersgroup_id
-        ), performance AS (
-         SELECT o.ordersgroup_id,
-            first_value(t.standardperformancetechnology) OVER (PARTITION BY o.ordersgroup_id ORDER BY o.id) AS performancenorm
-           FROM (arch_orders_order o
-             JOIN technologies_technology t ON ((o.technology_id = t.id)))
-        )
- SELECT DISTINCT ordersgroup.id,
-    ordersgroup.active,
-    ordersgroup.number,
-    assortment.name AS assortmentname,
-    productionline.number AS productionlinenumber,
-    ordersgroup.startdate,
-    ordersgroup.finishdate,
-    ordersgroup.deadline,
-    ordersgroup.quantity,
-    ordersgroup.producedquantity,
-    ordersgroup.remainingquantity,
-    ordersgroup.state,
-    company.number AS company,
-    ordersgroup.remainingquantityinorders,
-    (COALESCE(ordersgroup.producedquantity, (0)::numeric) + COALESCE(drafrptquantity.sum, (0)::numeric)) AS producedquantitywithdraft,
-    (COALESCE(ordersgroup.remainingquantityinorders, (0)::numeric) - COALESCE(drafrptquantity.sum, (0)::numeric)) AS remainingquantityinorderswithdraft,
-    tgn.number AS technologygroup,
-    p.performancenorm,
-    (masterorder.deadline)::date AS clientdate
-   FROM (((((((arch_ordersgroups_ordersgroup ordersgroup
-     JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
-     JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
-     JOIN arch_masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
-     LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
-     LEFT JOIN arch_ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
-     LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)))
-     LEFT JOIN performance p ON ((p.ordersgroup_id = ordersgroup.id)));
+ SELECT arch_mv_ordersgroups_ordersgroupdto.id,
+    arch_mv_ordersgroups_ordersgroupdto.active,
+    arch_mv_ordersgroups_ordersgroupdto.number,
+    arch_mv_ordersgroups_ordersgroupdto.assortmentname,
+    arch_mv_ordersgroups_ordersgroupdto.productionlinenumber,
+    arch_mv_ordersgroups_ordersgroupdto.startdate,
+    arch_mv_ordersgroups_ordersgroupdto.finishdate,
+    arch_mv_ordersgroups_ordersgroupdto.deadline,
+    arch_mv_ordersgroups_ordersgroupdto.quantity,
+    arch_mv_ordersgroups_ordersgroupdto.producedquantity,
+    arch_mv_ordersgroups_ordersgroupdto.remainingquantity,
+    arch_mv_ordersgroups_ordersgroupdto.state,
+    arch_mv_ordersgroups_ordersgroupdto.company,
+    arch_mv_ordersgroups_ordersgroupdto.remainingquantityinorders,
+    arch_mv_ordersgroups_ordersgroupdto.producedquantitywithdraft,
+    arch_mv_ordersgroups_ordersgroupdto.remainingquantityinorderswithdraft,
+    arch_mv_ordersgroups_ordersgroupdto.technologygroup,
+    arch_mv_ordersgroups_ordersgroupdto.performancenorm,
+    arch_mv_ordersgroups_ordersgroupdto.clientdate
+   FROM arch_mv_ordersgroups_ordersgroupdto;
 
 
 --
@@ -5627,48 +6911,6 @@ ALTER SEQUENCE arch_productioncounting_productioncountingquantitysetcomponent_ O
 
 
 --
--- Name: arch_productioncounting_productiontracking; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_productioncounting_productiontracking (
-    id bigint NOT NULL,
-    number character varying(255),
-    order_id bigint,
-    technologyinstanceoperationcomponent_id bigint,
-    shift_id bigint,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    lasttracking boolean,
-    machinetime integer,
-    labortime integer,
-    executedoperationcycles numeric(12,5),
-    staff_id bigint,
-    workstationtype_id bigint,
-    division_id bigint,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    laststatechangefails boolean DEFAULT false,
-    laststatechangefailcause character varying(255),
-    isexternalsynchronized boolean DEFAULT true,
-    timerangefrom timestamp without time zone,
-    timerangeto timestamp without time zone,
-    shiftstartday date,
-    changeovertime integer,
-    subcontractor_id bigint,
-    technologyoperationcomponent_id bigint,
-    entityversion bigint DEFAULT 0,
-    repairorder_id bigint,
-    correction_id bigint,
-    iscorrection boolean DEFAULT false,
-    planforordercompleted boolean DEFAULT false,
-    workstation_id bigint,
-    archived boolean DEFAULT false
-);
-
-
---
 -- Name: arch_productioncounting_productiontracking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -5685,6 +6927,59 @@ CREATE SEQUENCE arch_productioncounting_productiontracking_id_seq
 --
 
 ALTER SEQUENCE arch_productioncounting_productiontracking_id_seq OWNED BY arch_productioncounting_productiontracking.id;
+
+
+--
+-- Name: arch_productioncounting_productiontrackingdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW arch_productioncounting_productiontrackingdto AS
+ SELECT arch_mv_productioncounting_productiontrackingdto.id,
+    arch_mv_productioncounting_productiontrackingdto.number,
+    arch_mv_productioncounting_productiontrackingdto.state,
+    arch_mv_productioncounting_productiontrackingdto.createdate,
+    arch_mv_productioncounting_productiontrackingdto.lasttracking,
+    arch_mv_productioncounting_productiontrackingdto.timerangefrom,
+    arch_mv_productioncounting_productiontrackingdto.timerangeto,
+    arch_mv_productioncounting_productiontrackingdto.active,
+    arch_mv_productioncounting_productiontrackingdto.order_id,
+    arch_mv_productioncounting_productiontrackingdto.ordernumber,
+    arch_mv_productioncounting_productiontrackingdto.orderstate,
+    arch_mv_productioncounting_productiontrackingdto.technologyoperationcomponent_id,
+    arch_mv_productioncounting_productiontrackingdto.technologyoperationcomponentnumber,
+    arch_mv_productioncounting_productiontrackingdto.operation_id,
+    arch_mv_productioncounting_productiontrackingdto.shift_id,
+    arch_mv_productioncounting_productiontrackingdto.shiftname,
+    arch_mv_productioncounting_productiontrackingdto.staff_id,
+    arch_mv_productioncounting_productiontrackingdto.staffname,
+    arch_mv_productioncounting_productiontrackingdto.division_id,
+    arch_mv_productioncounting_productiontrackingdto.divisionnumber,
+    arch_mv_productioncounting_productiontrackingdto.subcontractor_id,
+    arch_mv_productioncounting_productiontrackingdto.subcontractorname,
+    arch_mv_productioncounting_productiontrackingdto.repairorder_id,
+    arch_mv_productioncounting_productiontrackingdto.repairordernumber,
+    arch_mv_productioncounting_productiontrackingdto.correctionnumber,
+    arch_mv_productioncounting_productiontrackingdto.productionline_id,
+    arch_mv_productioncounting_productiontrackingdto.productionlinenumber,
+    arch_mv_productioncounting_productiontrackingdto.ordersgroup,
+    arch_mv_productioncounting_productiontrackingdto.productnumber,
+    arch_mv_productioncounting_productiontrackingdto.productunit,
+    arch_mv_productioncounting_productiontrackingdto.usedquantity,
+    arch_mv_productioncounting_productiontrackingdto.companynumber,
+    arch_mv_productioncounting_productiontrackingdto.outproductnumber
+   FROM arch_mv_productioncounting_productiontrackingdto;
+
+
+--
+-- Name: arch_productioncounting_productiontrackingdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE arch_productioncounting_productiontrackingdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -5922,27 +7217,6 @@ ALTER SEQUENCE arch_productioncounting_trackingoperationproductincomponent_id_ O
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_productioncounting_trackingoperationproductoutcomponent (
-    id bigint NOT NULL,
-    productiontracking_id bigint,
-    product_id bigint,
-    usedquantity numeric(14,5),
-    balance numeric(14,5),
-    batch_id bigint,
-    wastedquantity numeric(14,5),
-    givenunit character varying(255),
-    givenquantity numeric(14,5),
-    entityversion bigint DEFAULT 0,
-    wastesquantity numeric(14,5),
-    typeofmaterial character varying(255) DEFAULT '01component'::character varying,
-    archived boolean DEFAULT false
-);
-
-
---
 -- Name: arch_productioncounting_trackingoperationproductoutcomponent_id; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -6167,38 +7441,6 @@ CREATE SEQUENCE arch_productionscheduling_ordertimecalculation_id_seq
 --
 
 ALTER SEQUENCE arch_productionscheduling_ordertimecalculation_id_seq OWNED BY arch_productionscheduling_ordertimecalculation.id;
-
-
---
--- Name: arch_repairs_repairorder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_repairs_repairorder (
-    id bigint NOT NULL,
-    number character varying(255) NOT NULL,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    order_id bigint,
-    division_id bigint,
-    createdate timestamp without time zone,
-    shift_id bigint,
-    startdate timestamp without time zone,
-    enddate timestamp without time zone,
-    staff_id bigint,
-    product_id bigint,
-    faulttype_id bigint,
-    description character varying(2048),
-    quantitytorepair numeric(12,5),
-    quantityrepaired numeric(12,5),
-    lack numeric(12,5),
-    active boolean DEFAULT true,
-    orderdto_id bigint,
-    entityversion bigint DEFAULT 0,
-    productiontracking_id bigint,
-    labortime integer DEFAULT 0,
-    machinetime integer DEFAULT 0,
-    repairorderproduct_id bigint,
-    archived boolean DEFAULT false
-);
 
 
 --
@@ -6887,17 +8129,6 @@ ALTER SEQUENCE avglaborcostcalcfororder_avglaborcostcalcfororder_id_seq OWNED BY
 
 
 --
--- Name: basic_additionalcode; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_additionalcode (
-    id bigint NOT NULL,
-    code character varying(255),
-    product_id bigint
-);
-
-
---
 -- Name: basic_additionalcode_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -6914,33 +8145,6 @@ CREATE SEQUENCE basic_additionalcode_id_seq
 --
 
 ALTER SEQUENCE basic_additionalcode_id_seq OWNED BY basic_additionalcode.id;
-
-
---
--- Name: basic_address; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_address (
-    id bigint NOT NULL,
-    company_id bigint,
-    addresstype character varying(255),
-    number character varying(255),
-    name character varying(255),
-    phone character varying(255),
-    email character varying(255),
-    website character varying(255),
-    street character varying(255),
-    house character varying(30),
-    flat character varying(30),
-    zipcode character varying(255),
-    city character varying(255),
-    state character varying(255),
-    country_id bigint,
-    contactperson character varying(255),
-    canbedeleted boolean DEFAULT false,
-    active boolean DEFAULT true,
-    externalnumber character varying(255)
-);
 
 
 --
@@ -7011,89 +8215,6 @@ CREATE SEQUENCE basic_assortmentelement_id_seq
 --
 
 ALTER SEQUENCE basic_assortmentelement_id_seq OWNED BY basic_assortmentelement.id;
-
-
---
--- Name: basic_product; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_product (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    globaltypeofmaterial character varying(255),
-    ean character varying(255),
-    category character varying(255),
-    unit character varying(255),
-    externalnumber character varying(255),
-    description character varying(255),
-    parent_id bigint,
-    nodenumber character varying(255),
-    entitytype character varying(255) DEFAULT '01particularProduct'::character varying,
-    durabilityinmonths integer,
-    averageoffercost numeric(12,5) DEFAULT (0)::numeric,
-    costfornumber numeric(12,5) DEFAULT (1)::numeric,
-    lastpurchasecost numeric(12,5) DEFAULT (0)::numeric,
-    lastoffercost numeric(12,5) DEFAULT (0)::numeric,
-    isglutenproduct boolean,
-    symbol character varying(255),
-    averagecost numeric(12,5) DEFAULT (0)::numeric,
-    goodsgroup character varying(255),
-    nominalcost numeric(12,5) DEFAULT (0)::numeric,
-    bio character varying(255),
-    isdoublepallet boolean,
-    technologygroup_id bigint,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    quantityofextrusioningredient integer DEFAULT 1,
-    norm character varying(255),
-    actualversion character varying(255),
-    hasnutritionelements boolean DEFAULT false,
-    quantityfornutritions numeric(12,0),
-    quantityfornutritionsunit character varying(255),
-    showinproductdata boolean DEFAULT false,
-    doublequantityfordoublepallet boolean,
-    size character varying(255),
-    uppershelf character varying(255),
-    lowershelf character varying(255),
-    upperform character varying(255),
-    lowerform character varying(255),
-    usedquantitycontrol boolean DEFAULT false,
-    automaticusedquantity boolean DEFAULT false,
-    nominalweight numeric(12,5),
-    countusedquantityforfullpallets boolean DEFAULT false,
-    quantityinpackage integer,
-    synchronize boolean,
-    capacitynormfortwodimensionalmachines numeric(12,5),
-    downform_id bigint,
-    upform_id bigint,
-    downshelve_id bigint,
-    upshelve_id bigint,
-    costnormsgenerator_id bigint,
-    producer_id bigint,
-    machinepart boolean,
-    drawingnumber character varying(255),
-    catalognumber character varying(255),
-    isproductiondate boolean DEFAULT false,
-    fabric boolean,
-    fabricgrammage numeric(14,5),
-    entityversion bigint DEFAULT 0,
-    ispallet boolean DEFAULT false,
-    additionalunit character varying(255),
-    fromgenerator boolean DEFAULT false,
-    generatorcontext_id bigint,
-    dateformatinqcp5code character varying(255),
-    assortment_id bigint,
-    isoil boolean,
-    isaroma boolean,
-    capacitynormforthreedimensionalmachines numeric(12,5),
-    recommendednumofheadsfortwodimensionalmachines integer,
-    recommendednumofheadsforthreedimensionalmachines integer,
-    iscartonlabel boolean
-);
 
 
 --
@@ -7367,31 +8488,6 @@ ALTER SEQUENCE basic_currency_id_seq OWNED BY basic_currency.id;
 
 
 --
--- Name: basic_division; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_division (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    supervisor_id bigint,
-    componentslocation_id bigint,
-    componentsoutputlocation_id bigint,
-    productsinputlocation_id bigint,
-    productionline_id bigint,
-    parameter_id bigint,
-    productsflowlocation_id bigint,
-    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    automaticmoveforintermediate boolean DEFAULT false,
-    automaticmoveforfinal boolean DEFAULT false,
-    factory_id bigint,
-    active boolean DEFAULT true,
-    comment character varying(2048),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: basic_division_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -7512,22 +8608,6 @@ CREATE SEQUENCE basic_log_id_seq
 --
 
 ALTER SEQUENCE basic_log_id_seq OWNED BY basic_log.id;
-
-
---
--- Name: basic_palletnumber; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_palletnumber (
-    id bigint NOT NULL,
-    number character varying(6),
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    issuedatetime timestamp without time zone
-);
 
 
 --
@@ -7875,31 +8955,6 @@ ALTER SEQUENCE basic_reportcolumnwidth_id_seq OWNED BY basic_reportcolumnwidth.i
 
 
 --
--- Name: basic_shift; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_shift (
-    id bigint NOT NULL,
-    name character varying(1024),
-    mondayworking boolean DEFAULT true,
-    mondayhours character varying(255),
-    tuesdayworking boolean DEFAULT true,
-    tuesdayhours character varying(255),
-    wensdayworking boolean DEFAULT true,
-    wensdayhours character varying(255),
-    thursdayworking boolean DEFAULT true,
-    thursdayhours character varying(255),
-    fridayworking boolean DEFAULT true,
-    fridayhours character varying(255),
-    saturdayworking boolean DEFAULT false,
-    saturdayhours character varying(255),
-    sundayworking boolean DEFAULT false,
-    sundayhours character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: basic_shift_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -7950,33 +9005,6 @@ CREATE SEQUENCE basic_shifttimetableexception_id_seq
 --
 
 ALTER SEQUENCE basic_shifttimetableexception_id_seq OWNED BY basic_shifttimetableexception.id;
-
-
---
--- Name: basic_staff; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_staff (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(255),
-    surname character varying(255),
-    email character varying(255),
-    phone character varying(255),
-    workfor_id bigint,
-    post character varying(255),
-    shift_id bigint,
-    division_id bigint,
-    individuallaborcost numeric(12,5),
-    determinedindividual boolean,
-    laborhourlycost numeric(12,5),
-    wagegroup_id bigint,
-    active boolean DEFAULT true,
-    parameter_id bigint,
-    "position" character varying(255),
-    entityversion bigint DEFAULT 0,
-    crew_id bigint
-);
 
 
 --
@@ -8069,54 +9097,9 @@ CREATE TABLE basic_workstationtype (
     name character varying(1024),
     number character varying(255),
     description character varying(2048),
-    division_id bigint,
     active boolean DEFAULT true,
     subassembly boolean,
     entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: cmmsmachineparts_plannedevent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE cmmsmachineparts_plannedevent (
-    id bigint NOT NULL,
-    number character varying(255),
-    type character varying(255) DEFAULT '01review'::character varying,
-    description character varying(600),
-    owner_id bigint,
-    ownername character varying(255),
-    state character varying(255) DEFAULT '01new'::character varying,
-    factory_id bigint,
-    division_id bigint,
-    productionline_id bigint,
-    workstation_id bigint,
-    subassembly_id bigint,
-    plannedeventcontext_id bigint,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    plannedseparately boolean DEFAULT false,
-    afterreview boolean DEFAULT false,
-    requiresshutdown boolean DEFAULT false,
-    company_id bigint,
-    basedon character varying(255) DEFAULT '01date'::character varying,
-    date date,
-    counter numeric(14,5),
-    countertolerance numeric(14,5),
-    duration integer DEFAULT 0,
-    effectiveduration integer DEFAULT 0,
-    effectivecounter numeric(14,5),
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    isdeadline boolean,
-    solutiondescription text,
-    entityversion bigint DEFAULT 0,
-    maintenanceevent_id bigint,
-    sourcecost_id bigint,
-    recurringevent_id bigint
 );
 
 
@@ -8828,100 +9811,6 @@ CREATE VIEW basicproductioncounting_usedquantity_helper AS
 
 
 --
--- Name: technologies_operation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_operation (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    comment character varying(2048),
-    workstationtype_id bigint,
-    attachment character varying(255),
-    areproductquantitiesdivisible boolean DEFAULT false,
-    istjdivisible boolean DEFAULT false,
-    operationgroup_id bigint,
-    imageurlinworkplan character varying(255),
-    pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
-    productioninonecycle numeric(12,5) DEFAULT (1)::numeric,
-    laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
-    numberofoperations integer DEFAULT 1,
-    laborutilization numeric(8,5) DEFAULT 1.0,
-    nextoperationafterproducedtype character varying(255) DEFAULT '01all'::character varying,
-    nextoperationafterproducedquantityunit character varying(255),
-    machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
-    tj integer DEFAULT 0,
-    nextoperationafterproducedquantity numeric(12,5) DEFAULT (0)::numeric,
-    machineutilization numeric(8,5) DEFAULT 1.0,
-    timenextoperation integer DEFAULT 0,
-    tpz integer DEFAULT 0,
-    productioninonecycleunit character varying(255),
-    active boolean DEFAULT true,
-    issubcontracting boolean DEFAULT false,
-    assignedtooperation character varying(255) DEFAULT '02workstationTypes'::character varying,
-    quantityofworkstations integer DEFAULT 1,
-    division_id bigint,
-    showinproductdata boolean DEFAULT false,
-    productdatanumber numeric(12,5) DEFAULT (0)::numeric,
-    productionline_id bigint,
-    entityversion bigint DEFAULT 0,
-    product_id bigint
-);
-
-
---
--- Name: technologies_technologyoperationcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologyoperationcomponent (
-    id bigint NOT NULL,
-    technology_id bigint,
-    operation_id bigint,
-    parent_id bigint,
-    entitytype character varying(255),
-    priority integer,
-    nodenumber character varying(255),
-    comment character varying(2048),
-    attachment character varying(255),
-    areproductquantitiesdivisible boolean DEFAULT false,
-    istjdivisible boolean DEFAULT false,
-    tpz integer DEFAULT 0,
-    laborworktime integer DEFAULT 0,
-    productioninonecycleunit character varying(255),
-    nextoperationafterproducedquantityunit character varying(255),
-    nextoperationafterproducedquantity numeric(12,5) DEFAULT (0)::numeric,
-    nextoperationafterproducedtype character varying(255) DEFAULT '01all'::character varying,
-    machineutilization numeric(8,5) DEFAULT 1.0,
-    timenextoperation integer DEFAULT 0,
-    pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
-    machineworktime integer DEFAULT 0,
-    productioninonecycle numeric(12,5) DEFAULT (1)::numeric,
-    laborutilization numeric(8,5) DEFAULT 1.0,
-    duration integer DEFAULT 0,
-    numberofoperations integer DEFAULT 1,
-    tj integer DEFAULT 0,
-    machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
-    laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
-    issubcontracting boolean DEFAULT false,
-    assignedtooperation character varying(255) DEFAULT '02workstationTypes'::character varying,
-    workstationtype_id bigint,
-    quantityofworkstations integer DEFAULT 1,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    techopercomptimecalculation_id bigint,
-    hascorrections boolean,
-    division_id bigint,
-    showinproductdata boolean,
-    productdatanumber numeric(12,5) DEFAULT (0)::numeric,
-    productionlinechange boolean DEFAULT false,
-    productionline_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: basicproductioncounting_productioncountingquantitydto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -9174,36 +10063,6 @@ CREATE SEQUENCE cmmsmachineparts_machinepartforevent_id_seq
 --
 
 ALTER SEQUENCE cmmsmachineparts_machinepartforevent_id_seq OWNED BY cmmsmachineparts_machinepartforevent.id;
-
-
---
--- Name: cmmsmachineparts_maintenanceevent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE cmmsmachineparts_maintenanceevent (
-    id bigint NOT NULL,
-    number character varying(255) NOT NULL,
-    type character varying(255) DEFAULT '01failure'::character varying,
-    description character varying(600),
-    personreceiving_id bigint,
-    personreceivingname character varying(255),
-    state character varying(255) DEFAULT '01new'::character varying,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    factory_id bigint,
-    division_id bigint,
-    productionline_id bigint,
-    workstation_id bigint,
-    subassembly_id bigint,
-    faulttype_id bigint,
-    solutiondescription text,
-    maintenanceeventcontext_id bigint,
-    entityversion bigint DEFAULT 0,
-    sourcecost_id bigint,
-    soundnotifications boolean DEFAULT false
-);
 
 
 --
@@ -9762,28 +10621,6 @@ CREATE SEQUENCE cmmsmachineparts_timeusagereportfilter_id_seq
 --
 
 ALTER SEQUENCE cmmsmachineparts_timeusagereportfilter_id_seq OWNED BY cmmsmachineparts_timeusagereportfilter.id;
-
-
---
--- Name: qcadoosecurity_user; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE qcadoosecurity_user (
-    id bigint NOT NULL,
-    username character varying(255),
-    email character varying(255),
-    firstname character varying(255),
-    lastname character varying(255),
-    enabled boolean DEFAULT true,
-    description character varying(255),
-    password character varying(255),
-    lastactivity timestamp without time zone,
-    staff_id bigint,
-    group_id bigint,
-    entityversion bigint DEFAULT 0,
-    factory_id bigint,
-    ipaddress character varying
-);
 
 
 --
@@ -10437,56 +11274,6 @@ CREATE SEQUENCE deliveries_deliveredproduct_id_seq
 --
 
 ALTER SEQUENCE deliveries_deliveredproduct_id_seq OWNED BY deliveries_deliveredproduct.id;
-
-
---
--- Name: deliveries_delivery; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE deliveries_delivery (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    description character varying(2048),
-    supplier_id bigint,
-    deliverydate timestamp without time zone,
-    deliveryaddress character varying(2048),
-    relateddelivery_id bigint,
-    currency_id bigint,
-    externalnumber character varying(255),
-    externalsynchronized boolean DEFAULT true,
-    state character varying(255),
-    location_id bigint,
-    active boolean DEFAULT true,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    synchronizationstatus character varying(255),
-    entityversion bigint DEFAULT 0,
-    positionsfile character varying(255)
-);
-
-
---
--- Name: materialflowresources_storagelocation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflowresources_storagelocation (
-    id bigint NOT NULL,
-    number character varying(1024),
-    state character varying(255) DEFAULT '01draft'::character varying,
-    location_id bigint,
-    product_id bigint,
-    placestoragelocation boolean DEFAULT false,
-    maximumnumberofpallets numeric(12,5),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    active boolean DEFAULT true,
-    highstoragelocation boolean
-);
 
 
 --
@@ -12420,6 +13207,47 @@ CREATE TABLE masterorders_masterorderproduct (
 
 
 --
+-- Name: goodfood_labelactivedto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_labelactivedto AS
+ SELECT label.id,
+    label.registrationdate,
+    palletcontext.day AS palletcontextday,
+    shift.name AS palletcontextshiftname,
+    staff.name AS palletcontextoperatorname,
+    staff.surname AS palletcontextoperatorsurname,
+    productionline.number AS productionlinenumber,
+    masterorder.number AS masterordernumber,
+    product.number AS productnumber,
+    label.printedcount,
+    label.firstssccnumber,
+    label.lastssccnumber,
+    label.state
+   FROM (((((((goodfood_label label
+     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = label.palletcontext_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
+  WHERE (label.active = true);
+
+
+--
+-- Name: goodfood_labelactivedto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_labelactivedto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: goodfood_labeldto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -12560,6 +13388,80 @@ ALTER SEQUENCE goodfood_pallet_id_seq OWNED BY goodfood_pallet.id;
 
 
 --
+-- Name: qcadoomodel_unitconversionitem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qcadoomodel_unitconversionitem (
+    id bigint NOT NULL,
+    quantityfrom numeric(12,5),
+    quantityto numeric(12,5),
+    unitfrom character varying(255),
+    unitto character varying(255),
+    globalunitconversionsaggregate_id bigint,
+    product_id bigint,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: goodfood_palletactivedto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_palletactivedto AS
+ WITH orders_orderproduct AS (
+         SELECT orders_order.masterorder_id,
+            sum(orders_order.plannedquantity) AS orderquantity
+           FROM orders_order
+          WHERE (orders_order.masterorder_id IS NOT NULL)
+          GROUP BY orders_order.masterorder_id
+        )
+ SELECT pallet.id,
+    pallet.registrationdate,
+    pallet.senddate,
+    palletcontext.day AS palletcontextday,
+    shift.name AS palletcontextshiftname,
+    staff.name AS palletcontextoperatorname,
+    staff.surname AS palletcontextoperatorsurname,
+    productionline.number AS productionlinenumber,
+    masterorder.number AS masterordernumber,
+    product.number AS productnumber,
+    pallet.ssccnumber,
+    pallet.palletnumber,
+    secondpallet.palletnumber AS secondpalletnumber,
+        CASE
+            WHEN (orderproduct.masterorder_id IS NULL) THEN ((row_number() OVER (PARTITION BY masterorder.id ORDER BY pallet.id) || ' z '::text) || (ceiling((masterorderproduct.masterorderquantity / unitconversionitem.quantityfrom)))::integer)
+            ELSE ((row_number() OVER (PARTITION BY masterorder.id ORDER BY pallet.id) || ' z '::text) || (ceiling((orderproduct.orderquantity / unitconversionitem.quantityfrom)))::integer)
+        END AS numberofpallets,
+    pallet.state,
+    pallet.laststatechangefails
+   FROM (((((((((((goodfood_pallet pallet
+     LEFT JOIN goodfood_pallet secondpallet ON ((secondpallet.id = pallet.secondpallet_id)))
+     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = pallet.palletcontext_id)))
+     LEFT JOIN goodfood_label label ON ((label.id = pallet.label_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN orders_orderproduct orderproduct ON ((orderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
+     LEFT JOIN qcadoomodel_unitconversionitem unitconversionitem ON (((unitconversionitem.product_id = product.id) AND ((unitconversionitem.unitfrom)::text = 'szt.'::text) AND ((unitconversionitem.unitto)::text = 'paleta'::text))))
+  WHERE (pallet.active = true);
+
+
+--
+-- Name: goodfood_palletactivedto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palletactivedto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: goodfood_palletcontext_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -12576,22 +13478,6 @@ CREATE SEQUENCE goodfood_palletcontext_id_seq
 --
 
 ALTER SEQUENCE goodfood_palletcontext_id_seq OWNED BY goodfood_palletcontext.id;
-
-
---
--- Name: qcadoomodel_unitconversionitem; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE qcadoomodel_unitconversionitem (
-    id bigint NOT NULL,
-    quantityfrom numeric(12,5),
-    quantityto numeric(12,5),
-    unitfrom character varying(255),
-    unitto character varying(255),
-    globalunitconversionsaggregate_id bigint,
-    product_id bigint,
-    entityversion bigint DEFAULT 0
-);
 
 
 --
@@ -13607,20 +14493,6 @@ ALTER SEQUENCE masterorders_masterorder_id_seq OWNED BY masterorders_masterorder
 
 
 --
--- Name: masterorders_masterorderdefinition; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE masterorders_masterorderdefinition (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    parameter_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: masterorders_masterorderdefinition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -13809,27 +14681,6 @@ CREATE SEQUENCE masterorders_masterorderproduct_id_seq
 --
 
 ALTER SEQUENCE masterorders_masterorderproduct_id_seq OWNED BY masterorders_masterorderproduct.id;
-
-
---
--- Name: materialflow_location; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_location (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(255),
-    type character varying(255) DEFAULT '01controlPoint'::character varying,
-    externalnumber character varying(255),
-    algorithm character varying(255) DEFAULT '01fifo'::character varying,
-    requireprice boolean,
-    requirebatch boolean,
-    requireproductiondate boolean,
-    requireexpirationdate boolean,
-    entityversion bigint DEFAULT 0,
-    warehousenumberinoptima character varying(255),
-    draftmakesreservation boolean DEFAULT false
-);
 
 
 --
@@ -14305,28 +15156,6 @@ CREATE SEQUENCE materialflowresources_document_number_wz
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: subcontractorportal_suborder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE subcontractorportal_suborder (
-    id bigint NOT NULL,
-    number character varying(255),
-    ordernumber character varying(255),
-    description text,
-    datefrom timestamp without time zone,
-    dateto timestamp without time zone,
-    planneddatefrom timestamp without time zone,
-    planneddateto timestamp without time zone,
-    status character varying(255),
-    company_id bigint,
-    active boolean DEFAULT true,
-    changedby_id bigint,
-    hasoperations boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
 
 
 --
@@ -16183,37 +17012,6 @@ CREATE TABLE ordersgroups_ordersgroup (
     masterorder_id bigint,
     parent_id bigint,
     remainingquantityinorders numeric
-);
-
-
---
--- Name: repairs_repairorder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE repairs_repairorder (
-    id bigint NOT NULL,
-    number character varying(255) NOT NULL,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    order_id bigint,
-    division_id bigint,
-    createdate timestamp without time zone,
-    shift_id bigint,
-    startdate timestamp without time zone,
-    enddate timestamp without time zone,
-    staff_id bigint,
-    product_id bigint,
-    faulttype_id bigint,
-    description character varying(2048),
-    quantitytorepair numeric(12,5),
-    quantityrepaired numeric(12,5),
-    lack numeric(12,5),
-    active boolean DEFAULT true,
-    orderdto_id bigint,
-    entityversion bigint DEFAULT 0,
-    productiontracking_id bigint,
-    labortime integer DEFAULT 0,
-    machinetime integer DEFAULT 0,
-    repairorderproduct_id bigint
 );
 
 
@@ -19135,6 +19933,76 @@ ALTER SEQUENCE productioncounting_productiontracking_id_seq OWNED BY productionc
 --
 
 CREATE SEQUENCE productioncounting_productiontracking_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productioncounting_productiontrackingdraftdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW productioncounting_productiontrackingdraftdto AS
+ SELECT productiontracking.id,
+    productiontracking.number,
+    productiontracking.state,
+    productiontracking.createdate,
+    productiontracking.lasttracking,
+    productiontracking.timerangefrom,
+    productiontracking.timerangeto,
+    productiontracking.active,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    ordersorder.state AS orderstate,
+    (technologyoperationcomponent.id)::integer AS technologyoperationcomponent_id,
+    COALESCE((((technologyoperationcomponent.nodenumber)::text || ' '::text) || (operation.name)::text), ''::text) AS technologyoperationcomponentnumber,
+    (operation.id)::integer AS operation_id,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (division.id)::integer AS division_id,
+    division.number AS divisionnumber,
+    (subcontractor.id)::integer AS subcontractor_id,
+    subcontractor.name AS subcontractorname,
+    (repairorder.id)::integer AS repairorder_id,
+    repairorder.number AS repairordernumber,
+    productiontrackingcorrection.number AS correctionnumber,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    ordersgroup.number AS ordersgroup,
+    concat(product.number, ' - ', product.name) AS productnumber,
+    product.unit AS productunit,
+    outcomponent.usedquantity,
+    company.number AS companynumber,
+    COALESCE((((outproduct.number)::text || ' - '::text) || (outproduct.name)::text), (((product.number)::text || ' - '::text) || (product.name)::text)) AS outproductnumber
+   FROM ((((((((((((((((productioncounting_productiontracking productiontracking
+     JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     JOIN basic_product product ON ((ordersorder.product_id = product.id)))
+     JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = productiontracking.technologyoperationcomponent_id)))
+     LEFT JOIN technologies_operation operation ON ((operation.id = technologyoperationcomponent.operation_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN basic_division division ON ((division.id = productiontracking.division_id)))
+     LEFT JOIN basic_company subcontractor ON ((subcontractor.id = productiontracking.subcontractor_id)))
+     LEFT JOIN productioncounting_productiontracking productiontrackingcorrection ON ((productiontrackingcorrection.id = productiontracking.correction_id)))
+     LEFT JOIN repairs_repairorder repairorder ON ((repairorder.id = productiontracking.repairorder_id)))
+     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity pcq ON (((pcq.order_id = ordersorder.id) AND (pcq.technologyoperationcomponent_id = technologyoperationcomponent.id) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('02intermediate'::character varying)::text, ('03finalProduct'::character varying)::text])) AND ((pcq.role)::text = '02produced'::text))))
+     LEFT JOIN basic_product outproduct ON ((pcq.product_id = outproduct.id)))
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent outcomponent ON ((((outcomponent.product_id = outproduct.id) OR (outcomponent.product_id = product.id)) AND (productiontracking.id = outcomponent.productiontracking_id))))
+  WHERE ((productiontracking.state)::text = '01draft'::text);
+
+
+--
+-- Name: productioncounting_productiontrackingdraftdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productioncounting_productiontrackingdraftdto_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -27061,6 +27929,27 @@ SELECT pg_catalog.setval('arch_masterorders_masterorder_id_seq', 1, false);
 
 
 --
+-- Name: arch_masterorders_masterorderdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_masterorders_masterorderdto_id_seq', 1, false);
+
+
+--
+-- Name: arch_masterorders_masterorderposition_manyproducts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_masterorders_masterorderposition_manyproducts_id_seq', 1, false);
+
+
+--
+-- Name: arch_masterorders_masterorderpositiondto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_masterorders_masterorderpositiondto_id_seq', 1, false);
+
+
+--
 -- Data for Name: arch_masterorders_masterorderproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -27091,6 +27980,13 @@ SELECT pg_catalog.setval('arch_materialflowresources_document_id_seq', 1, false)
 
 
 --
+-- Name: arch_materialflowresources_documentdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_materialflowresources_documentdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: arch_materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -27103,6 +27999,13 @@ COPY arch_materialflowresources_position (id, document_id, product_id, quantity,
 --
 
 SELECT pg_catalog.setval('arch_materialflowresources_position_id_seq', 1, false);
+
+
+--
+-- Name: arch_materialflowresources_positiondto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_materialflowresources_positiondto_id_seq', 1, false);
 
 
 --
@@ -27201,6 +28104,13 @@ COPY arch_orders_order (id, number, name, description, commentreasontypecorrecti
 --
 
 SELECT pg_catalog.setval('arch_orders_order_id_seq', 1, false);
+
+
+--
+-- Name: arch_orders_orderlistdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_orders_orderlistdto_id_seq', 1, false);
 
 
 --
@@ -27635,6 +28545,13 @@ COPY arch_productioncounting_productiontracking (id, number, order_id, technolog
 --
 
 SELECT pg_catalog.setval('arch_productioncounting_productiontracking_id_seq', 1, false);
+
+
+--
+-- Name: arch_productioncounting_productiontrackingdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('arch_productioncounting_productiontrackingdto_id_seq', 1, false);
 
 
 --
@@ -29013,9 +29930,9 @@ SELECT pg_catalog.setval('basic_workstationattachment_id_seq', 1, false);
 -- Data for Name: basic_workstationtype; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_workstationtype (id, name, number, description, division_id, active, subassembly, entityversion) FROM stdin;
-1	Głowica ekstruzyjna dwustemplowa	GL.EKSTR2	\N	\N	t	\N	0
-2	Głowica ekstruzyjna trzystemplowa	GL.EKSTR3	\N	\N	t	t	0
+COPY basic_workstationtype (id, name, number, description, active, subassembly, entityversion) FROM stdin;
+1	Głowica ekstruzyjna dwustemplowa	GL.EKSTR2	\N	t	\N	0
+2	Głowica ekstruzyjna trzystemplowa	GL.EKSTR3	\N	t	t	0
 \.
 
 
@@ -30318,6 +31235,13 @@ SELECT pg_catalog.setval('goodfood_label_id_seq', 1, false);
 
 
 --
+-- Name: goodfood_labelactivedto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_labelactivedto_id_seq', 1, false);
+
+
+--
 -- Name: goodfood_labeldto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -30359,6 +31283,13 @@ SELECT pg_catalog.setval('goodfood_pallet_externalnumber_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('goodfood_pallet_id_seq', 1, false);
+
+
+--
+-- Name: goodfood_palletactivedto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palletactivedto_id_seq', 1, false);
 
 
 --
@@ -32848,6 +33779,13 @@ SELECT pg_catalog.setval('productioncounting_productiontracking_number_seq', 1, 
 
 
 --
+-- Name: productioncounting_productiontrackingdraftdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productioncounting_productiontrackingdraftdto_id_seq', 1, false);
+
+
+--
 -- Name: productioncounting_productiontrackingdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -33656,6 +34594,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 13	cmmsMachineParts	maintenance	13	\N	0
 14	subcontractorPortal	subcontractors	14	ROLE_SUBCONTRACTOR	0
 15	productionCounting	analysis	15	ROLE_ANALYSIS_VIEWER	0
+16	arch	archives	16	\N	0
 \.
 
 
@@ -33663,7 +34602,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_category_id_seq', 15, true);
+SELECT pg_catalog.setval('qcadooview_category_id_seq', 16, true);
 
 
 --
@@ -33804,7 +34743,14 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 135	goodFood	extrusionMixesList	t	\N	134	1	ROLE_TERMINAL_EXTRUSION_USER	0
 136	integrationScales	scales	t	4	135	22	ROLE_COMPANY_STRUCTURE	0
 137	goodFood	printedLabelsList	t	8	136	20	ROLE_TERMINAL_PALLET_USER	0
-138	arch	archOrdersGroups	t	7	137	18	ROLE_PLANNING	0
+139	productionCounting	productionTrackingsDraftList	t	8	138	21	ROLE_PRODUCTION_TRACKING	0
+138	arch	archOrdersGroups	t	16	137	3	ROLE_PLANNING	0
+140	arch	archMasterOrderPositionsList	t	16	139	2	ROLE_PLANNING	0
+141	arch	archMasterOrdersList	t	16	140	1	ROLE_PLANNING	0
+142	arch	archOrdersList	t	16	141	4	ROLE_PLANNING	0
+143	arch	archProductionTrackingsList	t	16	142	5	ROLE_PRODUCTION_TRACKING	0
+144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
+145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 \.
 
 
@@ -33812,7 +34758,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 138, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 145, true);
 
 
 --
@@ -33953,6 +34899,13 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 135	integrationScales	scalesList	scalesList	\N	0
 136	goodFood	printedLabelsList	printedLabelsList	\N	0
 137	arch	archOrdersGroups	archOrdersGroupsList	\N	0
+138	productionCounting	productionTrackingsDraftList	productionTrackingsDraftList	\N	0
+139	arch	archMasterOrderPositionsList	archMasterOrderPositionsList	\N	0
+140	arch	archMasterOrdersList	archMasterOrdersList	\N	0
+141	arch	archOrdersList	archOrdersList	\N	0
+142	arch	archProductionTrackingsList	archProductionTrackingsList	\N	0
+143	arch	archDocumentPositionsList	archDocumentPositionsList	\N	0
+144	arch	archDocumentsList	archDocumentsList	\N	0
 \.
 
 
@@ -33960,7 +34913,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 137, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 144, true);
 
 
 --
@@ -35647,6 +36600,14 @@ ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint
     ADD CONSTRAINT arch_integrationbartender_sendtoprint_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: arch_masterorders_masterorder_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY arch_masterorders_masterorder
+    ADD CONSTRAINT arch_masterorders_masterorder_externalnumber_key UNIQUE (externalnumber);
 
 
 --
@@ -37559,6 +38520,14 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
     ADD CONSTRAINT maintenanceevent_number_unique UNIQUE (number);
+
+
+--
+-- Name: masterorder_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_masterorder
+    ADD CONSTRAINT masterorder_externalnumber_unique UNIQUE (externalnumber);
 
 
 --
@@ -39919,6 +40888,13 @@ CREATE INDEX idx_bas_ingoperationrun_technologyoperationcomponent_id ON basicpro
 
 
 --
+-- Name: idx_bas_oductattachment_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bas_oductattachment_product_id ON basic_productattachment USING btree (product_id);
+
+
+--
 -- Name: idx_bas_ountingquantity_basicproductioncounting_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -39944,6 +40920,13 @@ CREATE INDEX idx_bas_ountingquantity_product_id ON basicproductioncounting_produ
 --
 
 CREATE INDEX idx_bas_ountingquantity_technologyoperationcomponent_id ON basicproductioncounting_productioncountingquantity USING btree (technologyoperationcomponent_id);
+
+
+--
+-- Name: idx_bas_product_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bas_product_parent_id ON basic_product USING btree (parent_id);
 
 
 --
@@ -39979,6 +40962,83 @@ CREATE INDEX idx_cos_erproductincomp_order_id ON costnormsformaterials_technolog
 --
 
 CREATE INDEX idx_cos_erproductincomp_product_id ON costnormsformaterials_technologyinstoperproductincomp USING btree (product_id);
+
+
+--
+-- Name: idx_cos_rationcomponent_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cos_rationcomponent_parent_id ON costnormsforoperation_calculationoperationcomponent USING btree (parent_id);
+
+
+--
+-- Name: idx_cos_rationcomponent_technologyoperationcomponent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_cos_rationcomponent_technologyoperationcomponent_id ON costnormsforoperation_calculationoperationcomponent USING btree (technologyoperationcomponent_id);
+
+
+--
+-- Name: idx_del_delivery_relateddelivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_delivery_relateddelivery_id ON deliveries_delivery USING btree (relateddelivery_id);
+
+
+--
+-- Name: idx_del_ductreservation_deliveredproduct_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_ductreservation_deliveredproduct_id ON deliveries_deliveredproductreservation USING btree (deliveredproduct_id);
+
+
+--
+-- Name: idx_del_ductreservation_orderedproduct_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_ductreservation_orderedproduct_id ON deliveries_orderedproductreservation USING btree (orderedproduct_id);
+
+
+--
+-- Name: idx_del_eliveredproduct_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_eliveredproduct_delivery_id ON deliveries_deliveredproduct USING btree (delivery_id);
+
+
+--
+-- Name: idx_del_eliveredproduct_palletnumber_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_eliveredproduct_palletnumber_id ON deliveries_deliveredproduct USING btree (palletnumber_id);
+
+
+--
+-- Name: idx_del_eliveredproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_eliveredproduct_product_id ON deliveries_deliveredproduct USING btree (product_id);
+
+
+--
+-- Name: idx_del_orderedproduct_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_orderedproduct_delivery_id ON deliveries_orderedproduct USING btree (delivery_id);
+
+
+--
+-- Name: idx_del_orderedproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_orderedproduct_product_id ON deliveries_orderedproduct USING btree (product_id);
+
+
+--
+-- Name: idx_del_verystatechange_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_del_verystatechange_delivery_id ON deliveries_deliverystatechange USING btree (delivery_id);
 
 
 --
@@ -40185,6 +41245,34 @@ CREATE INDEX idx_mas_terorderproduct_technology_id ON masterorders_masterorderpr
 
 
 --
+-- Name: idx_mat_coverageproduct_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_coverageproduct_order_id ON materialrequirementcoveragefororder_coverageproduct USING btree (order_id);
+
+
+--
+-- Name: idx_mat_coverageproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_coverageproduct_product_id ON materialrequirementcoveragefororder_coverageproduct USING btree (product_id);
+
+
+--
+-- Name: idx_mat_document_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_document_delivery_id ON materialflowresources_document USING btree (delivery_id);
+
+
+--
+-- Name: idx_mat_document_dispositionshift_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_document_dispositionshift_id ON materialflowresources_document USING btree (dispositionshift_id);
+
+
+--
 -- Name: idx_mat_document_order_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -40192,10 +41280,66 @@ CREATE INDEX idx_mat_document_order_id ON materialflowresources_document USING b
 
 
 --
+-- Name: idx_mat_eproductlogging_coverageproduct_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_eproductlogging_coverageproduct_id ON materialrequirementcoveragefororder_coverageproductlogging USING btree (coverageproduct_id);
+
+
+--
+-- Name: idx_mat_eproductlogging_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_eproductlogging_delivery_id ON materialrequirementcoveragefororder_coverageproductlogging USING btree (delivery_id);
+
+
+--
+-- Name: idx_mat_eproductlogging_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_eproductlogging_order_id ON materialrequirementcoveragefororder_coverageproductlogging USING btree (order_id);
+
+
+--
+-- Name: idx_mat_ourcecorrection_newpalletnumber_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_ourcecorrection_newpalletnumber_id ON materialflowresources_resourcecorrection USING btree (newpalletnumber_id);
+
+
+--
+-- Name: idx_mat_ourcecorrection_oldpalletnumber_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_ourcecorrection_oldpalletnumber_id ON materialflowresources_resourcecorrection USING btree (oldpalletnumber_id);
+
+
+--
+-- Name: idx_mat_ourcecorrection_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_ourcecorrection_product_id ON materialflowresources_resourcecorrection USING btree (product_id);
+
+
+--
+-- Name: idx_mat_ourcecorrection_resource_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_ourcecorrection_resource_id ON materialflowresources_resourcecorrection USING btree (resource_id);
+
+
+--
 -- Name: idx_mat_position_document_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_mat_position_document_id ON materialflowresources_position USING btree (document_id);
+
+
+--
+-- Name: idx_mat_position_palletnumber_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_position_palletnumber_id ON materialflowresources_position USING btree (palletnumber_id);
 
 
 --
@@ -40213,10 +41357,45 @@ CREATE INDEX idx_mat_position_resource_id ON materialflowresources_position USIN
 
 
 --
+-- Name: idx_mat_resource_palletnumber_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_resource_palletnumber_id ON materialflowresources_resource USING btree (palletnumber_id);
+
+
+--
 -- Name: idx_mat_resource_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_mat_resource_product_id ON materialflowresources_resource USING btree (product_id);
+
+
+--
+-- Name: idx_mat_resourcestock_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_mat_resourcestock_product_id ON materialflowresources_resourcestock USING btree (product_id);
+
+
+--
+-- Name: idx_ord_coverageproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_ord_coverageproduct_product_id ON ordersupplies_coverageproduct USING btree (product_id);
+
+
+--
+-- Name: idx_ord_eproductlogging_delivery_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_ord_eproductlogging_delivery_id ON ordersupplies_coverageproductlogging USING btree (delivery_id);
+
+
+--
+-- Name: idx_ord_eproductlogging_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_ord_eproductlogging_order_id ON ordersupplies_coverageproductlogging USING btree (order_id);
 
 
 --
@@ -40423,10 +41602,59 @@ CREATE INDEX idx_pro_ductiontracking_technologyoperationcomponent_id ON producti
 
 
 --
+-- Name: idx_pro_ialavailability_order_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_ialavailability_order_id ON productflowthrudivision_materialavailability USING btree (order_id);
+
+
+--
+-- Name: idx_pro_ialavailability_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_ialavailability_product_id ON productflowthrudivision_materialavailability USING btree (product_id);
+
+
+--
+-- Name: idx_pro_issue_document_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_issue_document_id ON productflowthrudivision_issue USING btree (document_id);
+
+
+--
+-- Name: idx_pro_issue_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_issue_product_id ON productflowthrudivision_issue USING btree (product_id);
+
+
+--
+-- Name: idx_pro_issue_productincomponent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_issue_productincomponent_id ON productflowthrudivision_issue USING btree (productincomponent_id);
+
+
+--
 -- Name: idx_pro_kingstatechange_productiontracking_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_pro_kingstatechange_productiontracking_id ON productioncounting_productiontrackingstatechange USING btree (productiontracking_id);
+
+
+--
+-- Name: idx_pro_productstoissue_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_productstoissue_product_id ON productflowthrudivision_productstoissue USING btree (product_id);
+
+
+--
+-- Name: idx_pro_productstoissue_productincomponent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_productstoissue_productincomponent_id ON productflowthrudivision_productstoissue USING btree (productincomponent_id);
 
 
 --
@@ -40448,6 +41676,13 @@ CREATE INDEX idx_pro_progressforday_technologyoperationcomponent_id ON productio
 --
 
 CREATE INDEX idx_pro_staffworktime_productionrecord_id ON productioncounting_staffworktime USING btree (productionrecord_id);
+
+
+--
+-- Name: idx_pro_timecalculation_technologyoperationcomponent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_pro_timecalculation_technologyoperationcomponent_id ON productionscheduling_opercomptimecalculation USING btree (technologyoperationcomponent_id);
 
 
 --
@@ -40476,6 +41711,41 @@ CREATE INDEX idx_pro_uctoutcomponent_productiontracking_id ON productioncounting
 --
 
 CREATE INDEX idx_qca_tconversionitem_product_id ON qcadoomodel_unitconversionitem USING btree (product_id);
+
+
+--
+-- Name: idx_sup_offerproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sup_offerproduct_product_id ON supplynegotiations_offerproduct USING btree (product_id);
+
+
+--
+-- Name: idx_sup_otiationproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sup_otiationproduct_product_id ON supplynegotiations_negotiationproduct USING btree (product_id);
+
+
+--
+-- Name: idx_sup_tionstatechange_requestforquotation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sup_tionstatechange_requestforquotation_id ON supplynegotiations_requestforquotationstatechange USING btree (requestforquotation_id);
+
+
+--
+-- Name: idx_sup_uotationproduct_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sup_uotationproduct_product_id ON supplynegotiations_requestforquotationproduct USING btree (product_id);
+
+
+--
+-- Name: idx_sup_uotationproduct_requestforquotation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_sup_uotationproduct_requestforquotation_id ON supplynegotiations_requestforquotationproduct USING btree (requestforquotation_id);
 
 
 --
@@ -40542,6 +41812,34 @@ CREATE INDEX idx_tec_ructuretreenode_maintechnology_id ON technologies_productst
 
 
 --
+-- Name: idx_tec_ructuretreenode_operation_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_tec_ructuretreenode_operation_id ON technologies_productstructuretreenode USING btree (operation_id);
+
+
+--
+-- Name: idx_tec_ructuretreenode_parent_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_tec_ructuretreenode_parent_id ON technologies_productstructuretreenode USING btree (parent_id);
+
+
+--
+-- Name: idx_tec_ructuretreenode_product_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_tec_ructuretreenode_product_id ON technologies_productstructuretreenode USING btree (product_id);
+
+
+--
+-- Name: idx_tec_ructuretreenode_technology_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_tec_ructuretreenode_technology_id ON technologies_productstructuretreenode USING btree (technology_id);
+
+
+--
 -- Name: idx_tec_technology_product_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -40567,6 +41865,13 @@ CREATE INDEX idx_tec_uctoutcomponent_operationcomponent_id ON technologies_opera
 --
 
 CREATE INDEX idx_tec_uctoutcomponent_product_id ON technologies_operationproductoutcomponent USING btree (product_id);
+
+
+--
+-- Name: idx_wor_planordercolumn_workplan_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_wor_planordercolumn_workplan_id ON workplans_workplanordercolumn USING btree (workplan_id);
 
 
 --
@@ -40881,6 +42186,51 @@ CREATE RULE "_RETURN" AS
      JOIN basic_product product ON ((topoc.product_id = product.id)))
   WHERE ((pt.state)::text = '01draft'::text)
   GROUP BY ordersgroup.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO arch_masterorders_masterorderposition_manyproducts DO INSTEAD  SELECT masterorderproduct.id,
+    masterorderdefinition.number AS masterorderdefinitionnumber,
+    (masterorder.id)::integer AS masterorderid,
+    (masterorderproduct.product_id)::integer AS productid,
+    (masterorderproduct.id)::integer AS masterorderproductid,
+    masterorder.name,
+    masterorder.number,
+    masterorder.deadline,
+    masterorder.masterorderstate AS masterorderstatus,
+    masterorderproduct.masterorderpositionstatus,
+    COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) AS masterorderquantity,
+    COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric) AS cumulatedmasterorderquantity,
+    COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric) AS producedorderquantity,
+        CASE
+            WHEN ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric)) > (0)::numeric) THEN (COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.donequantity) AS sum), (0)::numeric))
+            ELSE (0)::numeric
+        END AS lefttorelease,
+    masterorderproduct.comments,
+    _product.number AS productnumber,
+    _product.name AS productname,
+    _product.unit,
+    technology.number AS technologyname,
+    company.name AS companyname,
+    masterorder.active,
+    companypayer.name AS companypayer,
+    assortment.name AS assortmentname,
+    masterorder.state,
+    masterorder.description
+   FROM ((((((((arch_masterorders_masterorderproduct masterorderproduct
+     LEFT JOIN arch_masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
+     LEFT JOIN basic_product _product ON ((_product.id = masterorderproduct.product_id)))
+     LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
+     LEFT JOIN technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
+     LEFT JOIN arch_orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
+     LEFT JOIN basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
 
 
 --
@@ -50685,11 +52035,52 @@ ALTER TABLE ONLY basic_workstationattachment
 
 
 --
--- Name: workstationtype_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_mv_masterorders_masterorderpositiondto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY basic_workstationtype
-    ADD CONSTRAINT workstationtype_division_fkey FOREIGN KEY (division_id) REFERENCES basic_division(id) DEFERRABLE;
+REFRESH MATERIALIZED VIEW arch_mv_masterorders_masterorderpositiondto;
+
+
+--
+-- Name: arch_mv_masterorders_masterorderdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_masterorders_masterorderdto;
+
+
+--
+-- Name: arch_mv_materialflowresources_documentdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_materialflowresources_documentdto;
+
+
+--
+-- Name: arch_mv_materialflowresources_positiondto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_materialflowresources_positiondto;
+
+
+--
+-- Name: arch_mv_orders_orderlistdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_orders_orderlistdto;
+
+
+--
+-- Name: arch_mv_ordersgroups_ordersgroupdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_ordersgroups_ordersgroupdto;
+
+
+--
+-- Name: arch_mv_productioncounting_productiontrackingdto; Type: MATERIALIZED VIEW DATA; Schema: public; Owner: -
+--
+
+REFRESH MATERIALIZED VIEW arch_mv_productioncounting_productiontrackingdto;
 
 
 --
