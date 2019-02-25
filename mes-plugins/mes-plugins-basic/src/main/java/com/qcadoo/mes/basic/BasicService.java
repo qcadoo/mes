@@ -158,6 +158,22 @@ public class BasicService {
         return addressNumber;
     }
 
+    public String updateAddressNumber(final Entity address, final Entity company) {
+        String addressNumber = address.getStringField(AddressFields.NUMBER);
+
+        String[] parts = addressNumber.split(L_DASH);
+
+        int length = parts.length;
+
+		if (length > 1) {
+            Long number = Long.valueOf(parts[length - 1]);
+
+            addressNumber = generateNumber(company, number);
+        }
+
+        return addressNumber;
+    }
+
     private Collection<Entity> getNumbersProjection(final Entity company) {
         List<Entity> numbersProjection = Lists.newArrayList();
 
