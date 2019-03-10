@@ -41,7 +41,7 @@
 	
         </ribbon>
 		
-        <component type="form" name="machine" reference="form">
+        <component type="form" name="log" reference="form">
             <component type="gridLayout" name="gridLayout" columns="2" rows="7">
                 <layoutElement column="1" row="1">
                     <component type="input" name="createTime" field="createTime" defaultEnabled="never">                                        
