@@ -13693,18 +13693,47 @@ CREATE SEQUENCE hibernate_sequence
 
 
 --
+-- Name: integrationbartender_printer_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE integrationbartender_printer_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: integrationbartender_printer; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE integrationbartender_printer (
+    id bigint DEFAULT nextval('integrationbartender_printer_id_seq'::regclass) NOT NULL,
+    name character varying(255),
+    description character varying(2048),
+    printertype character varying(255),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
 -- Name: integrationbartender_printlabelshelper; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE integrationbartender_printlabelshelper (
     id bigint NOT NULL,
-    printer character varying(255),
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
     quantity integer,
-    masterorder_id bigint
+    masterorder_id bigint,
+    printer_id bigint
 );
 
 
@@ -13735,12 +13764,12 @@ CREATE TABLE integrationbartender_sendtoprint (
     id bigint NOT NULL,
     printlabelshelper_id bigint,
     path character varying(255),
-    printer character varying(255),
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
-    quantity integer
+    quantity integer,
+    printer_id bigint
 );
 
 
@@ -15441,7 +15470,8 @@ CREATE VIEW materialflowresources_palletstoragestatedetailsdto AS
     resource.typeofpallet,
     storagelocation.number AS storagelocationnumber,
     location.number AS locationnumber,
-    (location.id)::integer AS location_id
+    (location.id)::integer AS location_id,
+    resource.palletnumber_id AS palletid
    FROM (((((materialflowresources_resource resource
      LEFT JOIN basic_product product ON ((product.id = resource.product_id)))
      LEFT JOIN basic_additionalcode additionalcode ON ((additionalcode.id = resource.additionalcode_id)))
@@ -15469,7 +15499,7 @@ CREATE SEQUENCE materialflowresources_palletstoragestatedetailsdto_id_seq
 --
 
 CREATE VIEW materialflowresources_palletstoragestatedto AS
- SELECT row_number() OVER () AS id,
+ SELECT palletstoragestatedetails.palletid AS id,
     true AS active,
     palletstoragestatedetails.palletnumber,
     palletstoragestatedetails.palletnumberactive,
@@ -15482,7 +15512,7 @@ CREATE VIEW materialflowresources_palletstoragestatedto AS
     NULL::bigint AS newpalletnumber_id,
     palletstoragestatedetails.location_id
    FROM materialflowresources_palletstoragestatedetailsdto palletstoragestatedetails
-  GROUP BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.palletnumberactive, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, palletstoragestatedetails.location_id
+  GROUP BY palletstoragestatedetails.palletid, palletstoragestatedetails.palletnumber, palletstoragestatedetails.palletnumberactive, palletstoragestatedetails.typeofpallet, palletstoragestatedetails.storagelocationnumber, palletstoragestatedetails.locationnumber, palletstoragestatedetails.location_id
   ORDER BY palletstoragestatedetails.palletnumber, palletstoragestatedetails.locationnumber;
 
 
@@ -31374,10 +31404,25 @@ SELECT pg_catalog.setval('hibernate_sequence', 1, false);
 
 
 --
+-- Data for Name: integrationbartender_printer; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY integrationbartender_printer (id, name, description, printertype, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: integrationbartender_printer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('integrationbartender_printer_id_seq', 1, false);
+
+
+--
 -- Data for Name: integrationbartender_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY integrationbartender_printlabelshelper (id, printer, createdate, updatedate, createuser, updateuser, quantity, masterorder_id) FROM stdin;
+COPY integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, printer_id) FROM stdin;
 \.
 
 
@@ -31392,7 +31437,7 @@ SELECT pg_catalog.setval('integrationbartender_printlabelshelper_id_seq', 1, fal
 -- Data for Name: integrationbartender_sendtoprint; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY integrationbartender_sendtoprint (id, printlabelshelper_id, path, printer, createdate, updatedate, createuser, updateuser, quantity) FROM stdin;
+COPY integrationbartender_sendtoprint (id, printlabelshelper_id, path, createdate, updatedate, createuser, updateuser, quantity, printer_id) FROM stdin;
 \.
 
 
@@ -31606,6 +31651,9 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 2	113
 3	113
 4	113
+2	114
+3	114
+4	114
 \.
 
 
@@ -34184,6 +34232,11 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 32	Przeciążenia zasobów produkcji	\N	\N	\N	7	t	0	f
 33	Awaria maszyny	\N	\N	\N	7	t	0	f
 34	Inne	\N	\N	\N	7	t	0	f
+35	drukarka uniwersalna	\N	\N	01universalPrinter	\N	t	0	f
+36	drukarka do wszystkiego	\N	\N	02allPrinter	\N	t	0	f
+37	drukarka do etykiet kartonowych	\N	\N	03cartonLabelsPrinter	\N	t	0	f
+38	drukarka do etykiet paletowych	\N	\N	04palletLabelsPrinter	\N	t	0	f
+39	drukarka do stickerów	\N	\N	05stickerPrinter	\N	t	0	f
 \.
 
 
@@ -34191,7 +34244,7 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 -- Name: qcadoomodel_dictionaryitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionaryitem_id_seq', 34, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionaryitem_id_seq', 39, true);
 
 
 --
@@ -34533,6 +34586,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 111	ROLE_PALLET_DETAILS_FIX_STATE	\N	0
 112	ROLE_TERMINAL_EXTRUSION_PRINT	\N	0
 113	ROLE_PRINTED_LABEL_DETAILS_REPRINT	Dostęp do dodruku wydrukowanych etykiet.	0
+114	ROLE_PRINTERS	\N	0
 \.
 
 
@@ -34540,7 +34594,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 113, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 114, true);
 
 
 --
@@ -34751,6 +34805,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 143	arch	archProductionTrackingsList	t	16	142	5	ROLE_PRODUCTION_TRACKING	0
 144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
+146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
 \.
 
 
@@ -34758,7 +34813,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 145, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 146, true);
 
 
 --
@@ -34906,6 +34961,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 142	arch	archProductionTrackingsList	archProductionTrackingsList	\N	0
 143	arch	archDocumentPositionsList	archDocumentPositionsList	\N	0
 144	arch	archDocumentsList	archDocumentsList	\N	0
+145	integrationBarTender	printersList	printersList	\N	0
 \.
 
 
@@ -34913,7 +34969,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 144, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 145, true);
 
 
 --
@@ -38136,6 +38192,14 @@ ALTER TABLE ONLY goodfood_printedlabel
 
 ALTER TABLE ONLY goodfood_ssccnumber
     ADD CONSTRAINT goodfood_ssccnumber_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: integrationbartender_printer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationbartender_printer
+    ADD CONSTRAINT integrationbartender_printer_pkey PRIMARY KEY (id);
 
 
 --
@@ -48403,6 +48467,14 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 
 --
+-- Name: printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationbartender_printlabelshelper
+    ADD CONSTRAINT printlabelshelper_printer_fkey FOREIGN KEY (printer_id) REFERENCES integrationbartender_printer(id) DEFERRABLE;
+
+
+--
 -- Name: product_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50392,6 +50464,14 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 ALTER TABLE ONLY materialflowresources_resourcestock
     ADD CONSTRAINT resourcestock_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY integrationbartender_sendtoprint
+    ADD CONSTRAINT sendtoprint_prineter_fkey FOREIGN KEY (printer_id) REFERENCES integrationbartender_printer(id) DEFERRABLE;
 
 
 --
