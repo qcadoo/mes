@@ -24,31 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="technologyDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="changeTechnologyParameters" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" />
-        <string name="name" />
-        <string name="technologyType" />
-        <enum name="state" values="01draft,02accepted,03declined,04outdated,05checked" />
-        <boolean name="externalSynchronized" default="true" copyable="false"/>
-        <boolean name="master" default="false" copyable="false"/>
-        <string name="productNumber" />
-        <string name="technologyGroupNumber" />
-        <string name="divisionName" />
-        <string name="generatorName" />
+        <boolean name="changePerformanceNorm" default="false"/>
         <decimal name="standardPerformanceTechnology">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
-        <enum name="productGlobalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
-        <boolean name="attachmentsExists"/>
-        <string name="productionLineNumber" />
-        <string name="assortmentName" />
-        <datetime name="dateAndTime" />
+        <boolean name="changeGroup" default="false"/>
+        <belongsTo name="technologyGroup" plugin="technologies"
+                   model="technologyGroup" lazy="false"/>
+        <string name="selectedEntities" persistent="false"/>
+
     </fields>
-    <identifier expression="#number + ' - ' + #name"/>
-    <masterModel plugin="technologies" model="technology" />
+    <hooks/>
 </model>
