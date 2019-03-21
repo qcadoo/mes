@@ -43,11 +43,19 @@
 					this.addOnChangeListener({
 						onClick: function() {
 						    #{form}.performEvent({
-                                name : 'changeTechnologyParameters',
-                                callback : function () {
-                        		    #{window}.performBackWithoutConfirm();
-								}
+                                name : 'changeTechnologyParameters'
 							});
+						}
+					});
+
+
+					#{form}.addOnChangeListener({
+					    onSetValue: function(value) {
+								var generated = #{generated}.getValue().content.value;
+
+                                if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+								}
 						}
 					});
 				]]>
@@ -57,12 +65,33 @@
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
+                        var changeTechnologyParameters = #{window}.getRibbonItemOrNull("actions.changeTechnologyParameters");
+                        this.addOnChangeListener({
+
+						    onSetValue: function(value) {
+							    changeTechnologyParameters.enable();
+							    var changePerformanceNorm = #{changePerformanceNorm}.getValue().content.value;
+							    var changeGroup = #{changeGroup}.getValue().content.value;
+                                if (changePerformanceNorm == '0' && changeGroup == '0') {
+                                    changeTechnologyParameters.disable();
+                                }
+						    }
+
+						});
+          			]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="4">
                     <layoutElement column="1" row="1">
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false"/>
                         <component type="checkbox" name="changePerformanceNorm"
                                    reference="changePerformanceNorm"
                                    field="#{form}.changePerformanceNorm">
+                            <option type="labelWidth" value="30" />
+
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
                                       method="onChangePerformanceNorm"/>
@@ -72,13 +101,16 @@
                         <component type="input" name="standardPerformanceTechnology" defaultEnabled="false"
                                    field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
                             <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="30" />
+
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="checkbox" name="changeGroup"
                                    reference="changeGroup"
                                    field="#{form}.changeGroup" >
+                            <option type="labelWidth" value="30" />
+
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
                                       method="onChangeChangeGroup"/>
@@ -87,6 +119,8 @@
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="technologyGroup" field="technologyGroup" defaultEnabled="false"
                                    reference="technologyGroup">
+                            <option type="labelWidth" value="30" />
+
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>
 

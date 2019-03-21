@@ -13,6 +13,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -20,6 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +53,31 @@ public class ChangeTechnologyParametersListeners {
     public void changeTechnologyParameters(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
 
+        LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(L_TECHNOLOGY_GROUP);
+        String code = lookupComponent.getCurrentCode();
+        if(StringUtils.isNoneEmpty(code)
+            && Objects.isNull(lookupComponent.getFieldValue())) {
+            form.findFieldComponentByName(L_TECHNOLOGY_GROUP).addMessage("qcadooView.lookup.noMatchError",
+                    ComponentState.MessageType.FAILURE);
+            generated.setChecked(false);
+            return;
+        }
+        Entity entity = form.getPersistedEntityWithIncludedFormValues();
+        try {
+            entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
+        } catch (IllegalArgumentException e) {
+            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
+                    ComponentState.MessageType.FAILURE);
+            generated.setChecked(false);
+            return;
+        }
         JSONObject context = view.getJsonContext();
         Set<Long> ids = Arrays
                 .stream(context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "")
                         .split(",")).map(Long::valueOf).collect(Collectors.toSet());
 
-        Entity entity = form.getPersistedEntityWithIncludedFormValues();
         BigDecimal standardPerformanceTechnology = null;
         if(entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
             standardPerformanceTechnology = entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
@@ -73,7 +93,7 @@ public class ChangeTechnologyParametersListeners {
         } catch (Exception exc) {
             view.addTranslatedMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated", ComponentState.MessageType.FAILURE);
         }
-
+        generated.setChecked(true);
     }
 
     @Transactional
@@ -125,6 +145,7 @@ public class ChangeTechnologyParametersListeners {
             standardPerformanceTechnology.setEnabled(true);
         } else {
             standardPerformanceTechnology.setEnabled(false);
+            standardPerformanceTechnology.setFieldValue(null);
         }
 
     }
@@ -136,6 +157,7 @@ public class ChangeTechnologyParametersListeners {
             technologyGroup.setEnabled(true);
         } else {
             technologyGroup.setEnabled(false);
+            technologyGroup.setFieldValue(null);
         }
     }
 
