@@ -3704,14 +3704,14 @@ ALTER SEQUENCE arch_goodfood_printedlabel_id_seq OWNED BY arch_goodfood_printedl
 
 CREATE TABLE arch_integrationbartender_printlabelshelper (
     id bigint NOT NULL,
-    printer character varying(255),
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
     quantity integer,
     masterorder_id bigint,
-    archived boolean DEFAULT false
+    archived boolean DEFAULT false,
+    printer_id bigint
 );
 
 
@@ -3742,13 +3742,13 @@ CREATE TABLE arch_integrationbartender_sendtoprint (
     id bigint NOT NULL,
     printlabelshelper_id bigint,
     path character varying(255),
-    printer character varying(255),
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
     updateuser character varying(255),
     quantity integer,
-    archived boolean DEFAULT false
+    archived boolean DEFAULT false,
+    printer_id bigint
 );
 
 
@@ -22630,6 +22630,42 @@ CREATE SEQUENCE technologies_barcodeoperationcomponent_number_seq
 
 
 --
+-- Name: technologies_changetechnologyparameters; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_changetechnologyparameters (
+    id bigint NOT NULL,
+    changeperformancenorm boolean DEFAULT false,
+    standardperformancetechnology numeric(12,5),
+    changegroup boolean DEFAULT false,
+    technologygroup_id bigint,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: technologies_changetechnologyparameters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_changetechnologyparameters_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_changetechnologyparameters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_changetechnologyparameters_id_seq OWNED BY technologies_changetechnologyparameters.id;
+
+
+--
 -- Name: technologies_operation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22947,7 +22983,10 @@ CREATE TABLE technologies_technologydto (
     active boolean,
     standardperformancetechnology numeric(12,5),
     generatorname character varying(255),
-    attachmentsexists boolean
+    attachmentsexists boolean,
+    dateandtime timestamp without time zone,
+    productionlinenumber character varying(255),
+    assortmentname character varying(255)
 );
 
 ALTER TABLE ONLY technologies_technologydto REPLICA IDENTITY NOTHING;
@@ -26887,6 +26926,13 @@ ALTER TABLE ONLY technologies_barcodeoperationcomponent ALTER COLUMN id SET DEFA
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY technologies_changetechnologyparameters ALTER COLUMN id SET DEFAULT nextval('technologies_changetechnologyparameters_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY technologies_operation ALTER COLUMN id SET DEFAULT nextval('technologies_operation_id_seq'::regclass);
 
 
@@ -27917,7 +27963,7 @@ SELECT pg_catalog.setval('arch_goodfood_printedlabel_id_seq', 1, false);
 -- Data for Name: arch_integrationbartender_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_integrationbartender_printlabelshelper (id, printer, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, archived) FROM stdin;
+COPY arch_integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, archived, printer_id) FROM stdin;
 \.
 
 
@@ -27932,7 +27978,7 @@ SELECT pg_catalog.setval('arch_integrationbartender_printlabelshelper_id_seq', 1
 -- Data for Name: arch_integrationbartender_sendtoprint; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_integrationbartender_sendtoprint (id, printlabelshelper_id, path, printer, createdate, updatedate, createuser, updateuser, quantity, archived) FROM stdin;
+COPY arch_integrationbartender_sendtoprint (id, printlabelshelper_id, path, createdate, updatedate, createuser, updateuser, quantity, archived, printer_id) FROM stdin;
 \.
 
 
@@ -34806,6 +34852,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
+147	integrationBarTender	printedCartonLabelsList	t	1	146	16	ROLE_TERMINAL_CARTON_LABELS	0
 \.
 
 
@@ -34813,7 +34860,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 146, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 147, true);
 
 
 --
@@ -34962,6 +35009,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 143	arch	archDocumentPositionsList	archDocumentPositionsList	\N	0
 144	arch	archDocumentsList	archDocumentsList	\N	0
 145	integrationBarTender	printersList	printersList	\N	0
+146	integrationBarTender	printedCartonLabelsList	printedCartonLabelsList	\N	0
 \.
 
 
@@ -34969,7 +35017,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 145, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 146, true);
 
 
 --
@@ -35550,6 +35598,21 @@ SELECT pg_catalog.setval('technologies_barcodeoperationcomponent_id_seq', 1, fal
 --
 
 SELECT pg_catalog.setval('technologies_barcodeoperationcomponent_number_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_changetechnologyparameters; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_changetechnologyparameters (id, changeperformancenorm, standardperformancetechnology, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_changetechnologyparameters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_changetechnologyparameters_id_seq', 1, false);
 
 
 --
@@ -39995,6 +40058,14 @@ ALTER TABLE ONLY technologies_barcodeoperationcomponent
 
 
 --
+-- Name: technologies_changetechnologyparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_changetechnologyparameters
+    ADD CONSTRAINT technologies_changetechnologyparameters_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: technologies_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41958,14 +42029,20 @@ CREATE RULE "_RETURN" AS
     technology.active,
     technology.standardperformancetechnology,
     tcontext.number AS generatorname,
-    (count(technologyattachment.id) <> 0) AS attachmentsexists
-   FROM (((((technologies_technology technology
+    (count(technologyattachment.id) <> 0) AS attachmentsexists,
+    technologystatechange.dateandtime,
+    productionline.number AS productionlinenumber,
+    assortment.name AS assortmentname
+   FROM ((((((((technologies_technology technology
      LEFT JOIN basic_product product ON ((technology.product_id = product.id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
      LEFT JOIN basic_division division ON ((technology.division_id = division.id)))
      LEFT JOIN technologies_technologygroup tg ON ((technology.technologygroup_id = tg.id)))
      LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number;
+     LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name;
 
 
 --
@@ -43248,6 +43325,14 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
     ADD CONSTRAINT calculationoperationcomponent_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
+-- Name: changetechnologyparameters_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_changetechnologyparameters
+    ADD CONSTRAINT changetechnologyparameters_technologygroup_fkey FOREIGN KEY (technologygroup_id) REFERENCES technologies_technologygroup(id) DEFERRABLE;
 
 
 --
@@ -48475,6 +48560,14 @@ ALTER TABLE ONLY integrationbartender_printlabelshelper
 
 
 --
+-- Name: printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
+    ADD CONSTRAINT printlabelshelper_printer_fkey FOREIGN KEY (printer_id) REFERENCES integrationbartender_printer(id) DEFERRABLE;
+
+
+--
 -- Name: product_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50471,6 +50564,14 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 --
 
 ALTER TABLE ONLY integrationbartender_sendtoprint
+    ADD CONSTRAINT sendtoprint_prineter_fkey FOREIGN KEY (printer_id) REFERENCES integrationbartender_printer(id) DEFERRABLE;
+
+
+--
+-- Name: sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY arch_integrationbartender_sendtoprint
     ADD CONSTRAINT sendtoprint_prineter_fkey FOREIGN KEY (printer_id) REFERENCES integrationbartender_printer(id) DEFERRABLE;
 
 
