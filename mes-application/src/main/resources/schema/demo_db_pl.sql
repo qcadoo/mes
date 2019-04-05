@@ -2,11 +2,12 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.5.1
--- Dumped by pg_dump version 9.5.1
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.6.1
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SET check_function_bodies = false;
@@ -8823,7 +8824,9 @@ CREATE TABLE basic_parameter (
     seteffectivedatefromoninprogress boolean DEFAULT false,
     seteffectivedatetooncompleted boolean DEFAULT false,
     copydescription boolean DEFAULT false,
-    exporttopdfonlyvisiblecolumns boolean DEFAULT false
+    exporttopdfonlyvisiblecolumns boolean DEFAULT false,
+    additionalcartonlabelsquantity integer DEFAULT 50,
+    maxcartonlabelsquantity integer DEFAULT 3000
 );
 
 
@@ -13733,8 +13736,95 @@ CREATE TABLE integrationbartender_printlabelshelper (
     updateuser character varying(255),
     quantity integer,
     masterorder_id bigint,
+    printer_id bigint,
+    path character varying(255)
+);
+
+
+--
+-- Name: integrationbartender_sendtoprint; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE integrationbartender_sendtoprint (
+    id bigint NOT NULL,
+    printlabelshelper_id bigint,
+    path character varying(255),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    quantity integer,
     printer_id bigint
 );
+
+
+--
+-- Name: jointable_label_printlabelshelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_label_printlabelshelper (
+    printlabelshelper_id bigint NOT NULL,
+    label_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_order_printlabelshelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_order_printlabelshelper (
+    printlabelshelper_id bigint NOT NULL,
+    order_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_printlabelshelper_printedlabel; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_printlabelshelper_printedlabel (
+    printedlabel_id bigint NOT NULL,
+    printlabelshelper_id bigint NOT NULL
+);
+
+
+--
+-- Name: integrationbartender_printedcartonlabeldto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW integrationbartender_printedcartonlabeldto AS
+ SELECT printlabelshelper.id,
+    printlabelshelper.createdate,
+    printlabelshelper.createuser,
+    (printlabelshelper.masterorder_id)::integer AS masterorder_id,
+    masterorder.number AS masterordernumber,
+    printlabelshelper.quantity,
+    (printlabelshelper.printer_id)::integer AS printer_id,
+    printer.name AS printername
+   FROM (((integrationbartender_sendtoprint sendtoprint
+     JOIN integrationbartender_printlabelshelper printlabelshelper ON ((printlabelshelper.id = sendtoprint.printlabelshelper_id)))
+     JOIN masterorders_masterorder masterorder ON ((masterorder.id = printlabelshelper.masterorder_id)))
+     JOIN integrationbartender_printer printer ON ((printer.id = printlabelshelper.printer_id)))
+  WHERE (NOT (printlabelshelper.id IN ( SELECT jointable_label_printlabelshelper.printlabelshelper_id
+           FROM jointable_label_printlabelshelper
+        UNION
+         SELECT jointable_printlabelshelper_printedlabel.printlabelshelper_id
+           FROM jointable_printlabelshelper_printedlabel
+        UNION
+         SELECT jointable_order_printlabelshelper.printlabelshelper_id
+           FROM jointable_order_printlabelshelper)));
+
+
+--
+-- Name: integrationbartender_printedcartonlabeldto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE integrationbartender_printedcartonlabeldto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -13754,23 +13844,6 @@ CREATE SEQUENCE integrationbartender_printlabelshelper_id_seq
 --
 
 ALTER SEQUENCE integrationbartender_printlabelshelper_id_seq OWNED BY integrationbartender_printlabelshelper.id;
-
-
---
--- Name: integrationbartender_sendtoprint; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE integrationbartender_sendtoprint (
-    id bigint NOT NULL,
-    printlabelshelper_id bigint,
-    path character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    quantity integer,
-    printer_id bigint
-);
 
 
 --
@@ -14130,16 +14203,6 @@ CREATE TABLE jointable_issue_productstoissuehelper (
 
 
 --
--- Name: jointable_label_printlabelshelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_label_printlabelshelper (
-    printlabelshelper_id bigint NOT NULL,
-    label_id bigint NOT NULL
-);
-
-
---
 -- Name: jointable_materialrequirement_order; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -14176,16 +14239,6 @@ CREATE TABLE jointable_multiassignmenttoshift_staff (
 CREATE TABLE jointable_operation_workstation (
     workstation_id bigint NOT NULL,
     operation_id bigint NOT NULL
-);
-
-
---
--- Name: jointable_order_printlabelshelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_order_printlabelshelper (
-    printlabelshelper_id bigint NOT NULL,
-    order_id bigint NOT NULL
 );
 
 
@@ -14236,16 +14289,6 @@ CREATE TABLE jointable_plannedevent_plannedevent (
 CREATE TABLE jointable_plannedevent_staff (
     plannedevent_id bigint NOT NULL,
     staff_id bigint NOT NULL
-);
-
-
---
--- Name: jointable_printlabelshelper_printedlabel; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_printlabelshelper_printedlabel (
-    printedlabel_id bigint NOT NULL,
-    printlabelshelper_id bigint NOT NULL
 );
 
 
@@ -24067,3143 +24110,3143 @@ ALTER SEQUENCE zmbak_tpctable_id_seq OWNED BY zmbak_tpctable.id;
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batch id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batch ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_batch_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batchstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batchstatechange ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_batchstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_genealogyreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_genealogyreport ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_genealogyreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecord id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecord ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_trackingrecord_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecordstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_trackingrecordstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogy_usedbatchsimple id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_usedbatchsimple ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_usedbatchsimple_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductinbatch id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch ALTER COLUMN id SET DEFAULT nextval('advancedgenealogyfororders_genealogyproductinbatch_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent ALTER COLUMN id SET DEFAULT nextval('advancedgenealogyfororders_genealogyproductincomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecord id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord ALTER COLUMN id SET DEFAULT nextval('arch_advancedgenealogy_trackingrecord_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecordstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange ALTER COLUMN id SET DEFAULT nextval('arch_advancedgenealogy_trackingrecordstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_usedbatchsimple id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple ALTER COLUMN id SET DEFAULT nextval('arch_advancedgenealogy_usedbatchsimple_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductinbatch id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch ALTER COLUMN id SET DEFAULT nextval('arch_advancedgenealogyfororders_genealogyproductinbatch_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent ALTER COLUMN id SET DEFAULT nextval('arch_advancedgenealogyfororders_genealogyproductincomponent_id_'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_multiassignmenttoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift ALTER COLUMN id SET DEFAULT nextval('arch_assignmenttoshift_multiassignmenttoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift ALTER COLUMN id SET DEFAULT nextval('arch_assignmenttoshift_staffassignmenttoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift ALTER COLUMN id SET DEFAULT nextval('arch_avglaborcostcalcfororder_assignmentworkertoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN id SET DEFAULT nextval('arch_avglaborcostcalcfororder_avglaborcostcalcfororder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_basicproductioncounting id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting ALTER COLUMN id SET DEFAULT nextval('arch_basicproductioncounting_basicproductioncounting_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingoperationrun id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun ALTER COLUMN id SET DEFAULT nextval('arch_basicproductioncounting_productioncountingoperationrun_id_'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity ALTER COLUMN id SET DEFAULT nextval('arch_basicproductioncounting_productioncountingquantity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_costcalculation_componentcost id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_componentcost ALTER COLUMN id SET DEFAULT nextval('arch_costcalculation_componentcost_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation ALTER COLUMN id SET DEFAULT nextval('arch_costcalculation_costcalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_costnormsformaterials_technologyinstoperproductincomp id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp ALTER COLUMN id SET DEFAULT nextval('arch_costnormsformaterials_technologyinstoperproductincomp_id_s'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent ALTER COLUMN id SET DEFAULT nextval('arch_costnormsforoperation_calculationoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_esilco_importpositionerror id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_esilco_importpositionerror ALTER COLUMN id SET DEFAULT nextval('arch_esilco_importpositionerror_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionadditionalinputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionadditionalinputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproduct ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionfilmproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproductentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionfilmproductentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectioninputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectioninputproduct ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectioninputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionprotocol_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolcorrect id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolcorrect ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionprotocolcorrect_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionprotocolstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionremainderinputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionremainderinputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionstaff id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionstaff ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_confectionstaff_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionaddedmixentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionaddedmixingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouring id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouring ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionpouring_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionpouringingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringmix id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringmix ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionpouringmix_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionprotocol_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolcorrect id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolcorrect ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionprotocolcorrect_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionprotocolstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionsouse id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionsouse ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusionsouse_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusiontakenoffmixentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_extrusiontakenoffmixingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_label id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_label_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_labelstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_labelstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_pallet_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_palletstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_palletstatechange ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_palletstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_goodfood_printedlabel id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_printedlabel ALTER COLUMN id SET DEFAULT nextval('arch_goodfood_printedlabel_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_printlabelshelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_printlabelshelper ALTER COLUMN id SET DEFAULT nextval('arch_integrationbartender_printlabelshelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_sendtoprint id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint ALTER COLUMN id SET DEFAULT nextval('arch_integrationbartender_sendtoprint_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder ALTER COLUMN id SET DEFAULT nextval('arch_masterorders_masterorder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct ALTER COLUMN id SET DEFAULT nextval('arch_masterorders_masterorderproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document ALTER COLUMN id SET DEFAULT nextval('arch_materialflowresources_document_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position ALTER COLUMN id SET DEFAULT nextval('arch_materialflowresources_position_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation ALTER COLUMN id SET DEFAULT nextval('arch_materialflowresources_reservation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragefororder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder ALTER COLUMN id SET DEFAULT nextval('arch_materialrequirementcoveragefororder_coveragefororder_id_se'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation ALTER COLUMN id SET DEFAULT nextval('arch_materialrequirementcoveragefororder_coveragelocation_id_se'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct ALTER COLUMN id SET DEFAULT nextval('arch_materialrequirementcoveragefororder_coverageproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_operationaltasks_operationaltask id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_operationaltasks_operationaltask ALTER COLUMN id SET DEFAULT nextval('arch_operationaltasks_operationaltask_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_order id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order ALTER COLUMN id SET DEFAULT nextval('arch_orders_order_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_orderstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_orderstatechange ALTER COLUMN id SET DEFAULT nextval('arch_orders_orderstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondatefrom id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom ALTER COLUMN id SET DEFAULT nextval('arch_orders_reasontypecorrectiondatefrom_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondateto id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto ALTER COLUMN id SET DEFAULT nextval('arch_orders_reasontypecorrectiondateto_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectiveend id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectiveend ALTER COLUMN id SET DEFAULT nextval('arch_orders_reasontypedeviationeffectiveend_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectivestart id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectivestart ALTER COLUMN id SET DEFAULT nextval('arch_orders_reasontypedeviationeffectivestart_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypeofchangingorderstate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypeofchangingorderstate ALTER COLUMN id SET DEFAULT nextval('arch_orders_reasontypeofchangingorderstate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_orders_typeofcorrectioncauses id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_typeofcorrectioncauses ALTER COLUMN id SET DEFAULT nextval('arch_orders_typeofcorrectioncauses_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersforsubproductsgeneration_suborders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders ALTER COLUMN id SET DEFAULT nextval('arch_ordersforsubproductsgeneration_suborders_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup ALTER COLUMN id SET DEFAULT nextval('arch_ordersgroups_ordersgroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coveragelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coveragelocation ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coveragelocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageorderstate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageorderstate ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coverageorderstate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproduct ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coverageproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coverageproductlogging_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductselected id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductselected ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coverageproductselected_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_coverageregister_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_materialrequirementcoverage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage ALTER COLUMN id SET DEFAULT nextval('arch_ordersupplies_materialrequirementcoverage_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_issue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_materialavailability id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_materialavailability ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_materialavailability_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_productstoissue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_producttoissuecorrection_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_warehouseissue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissuestatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange ALTER COLUMN id SET DEFAULT nextval('arch_productflowthrudivision_warehouseissuestatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_anomaly_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyexplanation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyexplanation ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_anomalyexplanation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyproductiontrackingentryhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_anomalyproductiontrackingentryhelper_id'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyreasoncontainer id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_anomalyreasoncontainer_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productioncountingquantitysetcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productioncountingquantitysetcomponent_'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productiontracking_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingreport ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productiontrackingreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productiontrackingstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settechnologyincomponents id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_settechnologyincomponents_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_staffworktime id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_staffworktime ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_staffworktime_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_trackingoperationproductincomponent_id_'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_trackingoperationproductoutcomponent_id'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionpershift_dailyprogress id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_dailyprogress ALTER COLUMN id SET DEFAULT nextval('arch_productionpershift_dailyprogress_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionpershift_productionpershift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_productionpershift ALTER COLUMN id SET DEFAULT nextval('arch_productionpershift_productionpershift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionpershift_progressforday id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_progressforday ALTER COLUMN id SET DEFAULT nextval('arch_productionpershift_progressforday_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionpershift_reasontypeofcorrectionplan id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_reasontypeofcorrectionplan ALTER COLUMN id SET DEFAULT nextval('arch_productionpershift_reasontypeofcorrectionplan_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_opercomptimecalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation ALTER COLUMN id SET DEFAULT nextval('arch_productionscheduling_opercomptimecalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_ordertimecalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation ALTER COLUMN id SET DEFAULT nextval('arch_productionscheduling_ordertimecalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder ALTER COLUMN id SET DEFAULT nextval('arch_repairs_repairorder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct ALTER COLUMN id SET DEFAULT nextval('arch_repairs_repairorderproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderstatechange ALTER COLUMN id SET DEFAULT nextval('arch_repairs_repairorderstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderworktime id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderworktime ALTER COLUMN id SET DEFAULT nextval('arch_repairs_repairorderworktime_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_states_message id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message ALTER COLUMN id SET DEFAULT nextval('arch_states_message_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_stoppage_stoppage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_stoppage_stoppage ALTER COLUMN id SET DEFAULT nextval('arch_stoppage_stoppage_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_technologies_barcodeoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent ALTER COLUMN id SET DEFAULT nextval('arch_technologies_barcodeoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin ALTER COLUMN id SET DEFAULT nextval('arch_technologies_technologyoperationcomponentmergeproductin_id'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout ALTER COLUMN id SET DEFAULT nextval('arch_technologies_technologyoperationcomponentmergeproductout_i'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: arch_urcmaterialavailability_requiredcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent ALTER COLUMN id SET DEFAULT nextval('arch_urcmaterialavailability_requiredcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift ALTER COLUMN id SET DEFAULT nextval('assignmenttoshift_assignmenttoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport ALTER COLUMN id SET DEFAULT nextval('assignmenttoshift_assignmenttoshiftreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange ALTER COLUMN id SET DEFAULT nextval('assignmenttoshift_assignmenttoshiftstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: assignmenttoshift_multiassignmenttoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift ALTER COLUMN id SET DEFAULT nextval('assignmenttoshift_multiassignmenttoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift ALTER COLUMN id SET DEFAULT nextval('assignmenttoshift_staffassignmenttoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_assignmentworkertoshift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift ALTER COLUMN id SET DEFAULT nextval('avglaborcostcalcfororder_assignmentworkertoshift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_avglaborcostcalcfororder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder ALTER COLUMN id SET DEFAULT nextval('avglaborcostcalcfororder_avglaborcostcalcfororder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_additionalcode id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_additionalcode ALTER COLUMN id SET DEFAULT nextval('basic_additionalcode_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_address id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_address ALTER COLUMN id SET DEFAULT nextval('basic_address_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_assortment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_assortment ALTER COLUMN id SET DEFAULT nextval('basic_assortment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_assortmentelement id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_assortmentelement ALTER COLUMN id SET DEFAULT nextval('basic_assortmentelement_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_company id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_company ALTER COLUMN id SET DEFAULT nextval('basic_company_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_country id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_country ALTER COLUMN id SET DEFAULT nextval('basic_country_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_crew id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_crew ALTER COLUMN id SET DEFAULT nextval('basic_crew_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_currency id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_currency ALTER COLUMN id SET DEFAULT nextval('basic_currency_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_division id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division ALTER COLUMN id SET DEFAULT nextval('basic_division_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_factory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_factory ALTER COLUMN id SET DEFAULT nextval('basic_factory_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_faulttype id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_faulttype ALTER COLUMN id SET DEFAULT nextval('basic_faulttype_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_log id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_log ALTER COLUMN id SET DEFAULT nextval('basic_log_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_palletnumber id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_palletnumber ALTER COLUMN id SET DEFAULT nextval('basic_palletnumber_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_palletnumberhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_palletnumberhelper ALTER COLUMN id SET DEFAULT nextval('basic_palletnumberhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_parameter id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter ALTER COLUMN id SET DEFAULT nextval('basic_parameter_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_product id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product ALTER COLUMN id SET DEFAULT nextval('basic_product_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_productattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_productattachment ALTER COLUMN id SET DEFAULT nextval('basic_productattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_reportcolumnwidth id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_reportcolumnwidth ALTER COLUMN id SET DEFAULT nextval('basic_reportcolumnwidth_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_shift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_shift ALTER COLUMN id SET DEFAULT nextval('basic_shift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_shifttimetableexception id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_shifttimetableexception ALTER COLUMN id SET DEFAULT nextval('basic_shifttimetableexception_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_staff id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff ALTER COLUMN id SET DEFAULT nextval('basic_staff_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_subassembly id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassembly ALTER COLUMN id SET DEFAULT nextval('basic_subassembly_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_subassemblyattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblyattachment ALTER COLUMN id SET DEFAULT nextval('basic_subassemblyattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_subassemblytoworkstationhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblytoworkstationhelper ALTER COLUMN id SET DEFAULT nextval('basic_subassemblytoworkstationhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_substitute id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitute ALTER COLUMN id SET DEFAULT nextval('basic_substitute_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_substitutecomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitutecomponent ALTER COLUMN id SET DEFAULT nextval('basic_substitutecomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_viewedactivity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_viewedactivity ALTER COLUMN id SET DEFAULT nextval('basic_viewedactivity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_workstation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation ALTER COLUMN id SET DEFAULT nextval('basic_workstation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_workstationattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstationattachment ALTER COLUMN id SET DEFAULT nextval('basic_workstationattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basic_workstationtype id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstationtype ALTER COLUMN id SET DEFAULT nextval('basic_workstationtype_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basicproductioncounting_basicproductioncounting id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_basicproductioncounting ALTER COLUMN id SET DEFAULT nextval('basicproductioncounting_basicproductioncounting_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingoperationrun id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun ALTER COLUMN id SET DEFAULT nextval('basicproductioncounting_productioncountingoperationrun_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity ALTER COLUMN id SET DEFAULT nextval('basicproductioncounting_productioncountingquantity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cdnrcgoodfood_highestmasterordernum id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cdnrcgoodfood_highestmasterordernum ALTER COLUMN id SET DEFAULT nextval('cdnrcgoodfood_highestmasterordernum_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_action id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_action ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_action_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_actionforplannedevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_actionforplannedevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_eventattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_eventattachment ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_eventattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartattachment ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_machinepartattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_machinepartforevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_maintenanceevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_maintenanceeventcontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_maintenanceeventstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventattachment ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedeventattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedeventcontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventrealization id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedeventrealization_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedeventstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventxlshelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventxlshelper ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_plannedeventxlshelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecost id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecost ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_sourcecost_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecostreportfilter id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecostreportfilter ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_sourcecostreportfilter_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_staffworktime id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_staffworktime ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_staffworktime_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_timeusagereportfilter id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_timeusagereportfilter ALTER COLUMN id SET DEFAULT nextval('cmmsmachineparts_timeusagereportfilter_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsscheduler_actionforrecurringevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent ALTER COLUMN id SET DEFAULT nextval('cmmsscheduler_actionforrecurringevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent ALTER COLUMN id SET DEFAULT nextval('cmmsscheduler_recurringevent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventattachment ALTER COLUMN id SET DEFAULT nextval('cmmsscheduler_recurringeventattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventcontext ALTER COLUMN id SET DEFAULT nextval('cmmsscheduler_recurringeventcontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange ALTER COLUMN id SET DEFAULT nextval('cmmsscheduler_recurringeventstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: costcalculation_componentcost id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_componentcost ALTER COLUMN id SET DEFAULT nextval('costcalculation_componentcost_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation ALTER COLUMN id SET DEFAULT nextval('costcalculation_costcalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: costnormsformaterials_technologyinstoperproductincomp id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp ALTER COLUMN id SET DEFAULT nextval('costnormsformaterials_technologyinstoperproductincomp_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent ALTER COLUMN id SET DEFAULT nextval('costnormsforoperation_calculationoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_columnfordeliveries id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfordeliveries ALTER COLUMN id SET DEFAULT nextval('deliveries_columnfordeliveries_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_columnfororders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfororders ALTER COLUMN id SET DEFAULT nextval('deliveries_columnfororders_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_companyproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproduct ALTER COLUMN id SET DEFAULT nextval('deliveries_companyproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_companyproductsfamily id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproductsfamily ALTER COLUMN id SET DEFAULT nextval('deliveries_companyproductsfamily_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveredproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmulti id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmulti ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveredproductmulti_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveredproductmultiposition_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductreservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductreservation ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveredproductreservation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_delivery id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery ALTER COLUMN id SET DEFAULT nextval('deliveries_delivery_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliveryattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveryattachment ALTER COLUMN id SET DEFAULT nextval('deliveries_deliveryattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliverybypallettypereport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverybypallettypereport ALTER COLUMN id SET DEFAULT nextval('deliveries_deliverybypallettypereport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_deliverystatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverystatechange ALTER COLUMN id SET DEFAULT nextval('deliveries_deliverystatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct ALTER COLUMN id SET DEFAULT nextval('deliveries_orderedproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_orderedproductreservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproductreservation ALTER COLUMN id SET DEFAULT nextval('deliveries_orderedproductreservation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: deliveries_parameterdeliveryordercolumn id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn ALTER COLUMN id SET DEFAULT nextval('deliveries_parameterdeliveryordercolumn_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: emailnotifications_staffnotification id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY emailnotifications_staffnotification ALTER COLUMN id SET DEFAULT nextval('emailnotifications_staffnotification_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: esilco_importpositionerror id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_importpositionerror ALTER COLUMN id SET DEFAULT nextval('esilco_importpositionerror_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: esilco_printdocuments id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_printdocuments ALTER COLUMN id SET DEFAULT nextval('esilco_printdocuments_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionadditionalinputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionadditionalinputproduct ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionadditionalinputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectioncontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioncontext ALTER COLUMN id SET DEFAULT nextval('goodfood_confectioncontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproduct ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionfilmproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproductentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproductentry ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionfilmproductentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectioninputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioninputproduct ALTER COLUMN id SET DEFAULT nextval('goodfood_confectioninputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionprotocol_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolcorrect id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolcorrect ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionprotocolcorrect_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionprotocolstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionremainderinputproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionremainderinputproduct ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionremainderinputproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_confectionstaff id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionstaff ALTER COLUMN id SET DEFAULT nextval('goodfood_confectionstaff_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_eventlog id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_eventlog ALTER COLUMN id SET DEFAULT nextval('goodfood_eventlog_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionaddedmixentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionaddedmixingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusioncontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusioncontext ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusioncontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionmix_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmixingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmixingredient ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionmixingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouring id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouring ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionpouring_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionpouringingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringmix id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringmix ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionpouringmix_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocol_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolcorrect id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolcorrect ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocolcorrect_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionprotocolstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusionsouse id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionsouse ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusionsouse_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixentry id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusiontakenoffmixentry_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient ALTER COLUMN id SET DEFAULT nextval('goodfood_extrusiontakenoffmixingredient_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_goodfoodreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_goodfoodreport ALTER COLUMN id SET DEFAULT nextval('goodfood_goodfoodreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_label id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label ALTER COLUMN id SET DEFAULT nextval('goodfood_label_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_labelstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_labelstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_labelstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_pallet id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet ALTER COLUMN id SET DEFAULT nextval('goodfood_pallet_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_palletcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletcontext ALTER COLUMN id SET DEFAULT nextval('goodfood_palletcontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_palletstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_palletstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_printedlabel id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_printedlabel ALTER COLUMN id SET DEFAULT nextval('goodfood_printedlabel_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: goodfood_ssccnumber id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_ssccnumber ALTER COLUMN id SET DEFAULT nextval('goodfood_ssccnumber_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationbartender_printlabelshelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_printlabelshelper ALTER COLUMN id SET DEFAULT nextval('integrationbartender_printlabelshelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationbartender_sendtoprint id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_sendtoprint ALTER COLUMN id SET DEFAULT nextval('integrationbartender_sendtoprint_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationbaselinker_baselinkerparameters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_baselinkerparameters ALTER COLUMN id SET DEFAULT nextval('integrationbaselinker_baselinkerparameters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesfordocument id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesfordocument ALTER COLUMN id SET DEFAULT nextval('integrationbaselinker_statusesfordocument_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesformasterorder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder ALTER COLUMN id SET DEFAULT nextval('integrationbaselinker_statusesformasterorder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationscales_productionlineforscale id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_productionlineforscale ALTER COLUMN id SET DEFAULT nextval('integrationscales_productionlineforscale_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: integrationscales_scale id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_scale ALTER COLUMN id SET DEFAULT nextval('integrationscales_scale_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms ALTER COLUMN id SET DEFAULT nextval('linechangeovernorms_linechangeovernorms_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: masterorders_masterorder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder ALTER COLUMN id SET DEFAULT nextval('masterorders_masterorder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: masterorders_masterorderdefinition id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderdefinition ALTER COLUMN id SET DEFAULT nextval('masterorders_masterorderdefinition_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: masterorders_masterorderproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderproduct ALTER COLUMN id SET DEFAULT nextval('masterorders_masterorderproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_location id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_location ALTER COLUMN id SET DEFAULT nextval('materialflow_location_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocation ALTER COLUMN id SET DEFAULT nextval('materialflow_materialsinlocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocationcomponent ALTER COLUMN id SET DEFAULT nextval('materialflow_materialsinlocationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_stockcorrection id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_stockcorrection ALTER COLUMN id SET DEFAULT nextval('materialflow_stockcorrection_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_transfer id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer ALTER COLUMN id SET DEFAULT nextval('materialflow_transfer_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_transformations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations ALTER COLUMN id SET DEFAULT nextval('materialflow_transformations_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflow_userlocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_userlocation ALTER COLUMN id SET DEFAULT nextval('materialflow_userlocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_productquantity id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_productquantity ALTER COLUMN id SET DEFAULT nextval('materialflowmultitransfers_productquantity_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_transfertemplate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_transfertemplate ALTER COLUMN id SET DEFAULT nextval('materialflowmultitransfers_transfertemplate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormsgenerator id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormsgenerator ALTER COLUMN id SET DEFAULT nextval('materialflowresources_costnormsgenerator_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormslocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormslocation ALTER COLUMN id SET DEFAULT nextval('materialflowresources_costnormslocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_document id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document ALTER COLUMN id SET DEFAULT nextval('materialflowresources_document_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_documentpositionparameters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparameters ALTER COLUMN id SET DEFAULT nextval('materialflowresources_documentpositionparameters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_documentpositionparametersitem id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparametersitem ALTER COLUMN id SET DEFAULT nextval('materialflowresources_documentpositionparametersitem_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_importstoragelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_importstoragelocation ALTER COLUMN id SET DEFAULT nextval('materialflowresources_importstoragelocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_palletbalance id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_palletbalance ALTER COLUMN id SET DEFAULT nextval('materialflowresources_palletbalance_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_palletmovehelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_palletmovehelper ALTER COLUMN id SET DEFAULT nextval('materialflowresources_palletmovehelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_position id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position ALTER COLUMN id SET DEFAULT nextval('materialflowresources_position_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_positionaddmultihelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_positionaddmultihelper ALTER COLUMN id SET DEFAULT nextval('materialflowresources_positionaddmultihelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory ALTER COLUMN id SET DEFAULT nextval('materialflowresources_productstoragelocationhistory_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation ALTER COLUMN id SET DEFAULT nextval('materialflowresources_reservation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_resource id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resource_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resourcecorrection_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcestock id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcestock ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resourcestock_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_stocktaking id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_stocktaking ALTER COLUMN id SET DEFAULT nextval('materialflowresources_stocktaking_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocation ALTER COLUMN id SET DEFAULT nextval('materialflowresources_storagelocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhelper ALTER COLUMN id SET DEFAULT nextval('materialflowresources_storagelocationhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhistory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhistory ALTER COLUMN id SET DEFAULT nextval('materialflowresources_storagelocationhistory_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialflowresources_warehousestockreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_warehousestockreport ALTER COLUMN id SET DEFAULT nextval('materialflowresources_warehousestockreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_columnforcoveragesfororder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_columnforcoveragesfororder ALTER COLUMN id SET DEFAULT nextval('materialrequirementcoveragefororder_columnforcoveragesfororder_'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragefororder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder ALTER COLUMN id SET DEFAULT nextval('materialrequirementcoveragefororder_coveragefororder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation ALTER COLUMN id SET DEFAULT nextval('materialrequirementcoveragefororder_coveragelocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct ALTER COLUMN id SET DEFAULT nextval('materialrequirementcoveragefororder_coverageproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging ALTER COLUMN id SET DEFAULT nextval('materialrequirementcoveragefororder_coverageproductlogging_id_s'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: materialrequirements_materialrequirement id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirements_materialrequirement ALTER COLUMN id SET DEFAULT nextval('materialrequirements_materialrequirement_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nblsport_fabric id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_fabric ALTER COLUMN id SET DEFAULT nextval('nblsport_fabric_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nblsport_overhead id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_overhead ALTER COLUMN id SET DEFAULT nextval('nblsport_overhead_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrientcalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrientcalculation ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_nutrientcalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrition id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrition ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_nutrition_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritionelement id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritionelement ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_nutritionelement_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritiongroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritiongroup ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_nutritiongroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproduct ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_prototypeproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproductcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_prototypeproductcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: operationaltasks_operationaltask id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasks_operationaltask ALTER COLUMN id SET DEFAULT nextval('operationaltasks_operationaltask_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: operationaltasksfororders_techopercompoperationaltask id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask ALTER COLUMN id SET DEFAULT nextval('operationaltasksfororders_techopercompoperationaltask_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_changedateshelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_changedateshelper ALTER COLUMN id SET DEFAULT nextval('orders_changedateshelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_order id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_ordercategorycolor id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_ordercategorycolor ALTER COLUMN id SET DEFAULT nextval('orders_ordercategorycolor_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_orderstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_orderstatechange ALTER COLUMN id SET DEFAULT nextval('orders_orderstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondatefrom id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondatefrom ALTER COLUMN id SET DEFAULT nextval('orders_reasontypecorrectiondatefrom_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondateto id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondateto ALTER COLUMN id SET DEFAULT nextval('orders_reasontypecorrectiondateto_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectiveend id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectiveend ALTER COLUMN id SET DEFAULT nextval('orders_reasontypedeviationeffectiveend_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectivestart id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectivestart ALTER COLUMN id SET DEFAULT nextval('orders_reasontypedeviationeffectivestart_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_reasontypeofchangingorderstate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypeofchangingorderstate ALTER COLUMN id SET DEFAULT nextval('orders_reasontypeofchangingorderstate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: orders_typeofcorrectioncauses id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_typeofcorrectioncauses ALTER COLUMN id SET DEFAULT nextval('orders_typeofcorrectioncauses_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersforsubproductsgeneration_suborders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersforsubproductsgeneration_suborders ALTER COLUMN id SET DEFAULT nextval('ordersforsubproductsgeneration_suborders_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersgantt_ordersganttparameters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgantt_ordersganttparameters ALTER COLUMN id SET DEFAULT nextval('ordersgantt_ordersganttparameters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup ALTER COLUMN id SET DEFAULT nextval('ordersgroups_ordersgroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_columnforcoverages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_columnforcoverages ALTER COLUMN id SET DEFAULT nextval('ordersupplies_columnforcoverages_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_coveragelocation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coveragelocation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageorderstate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageorderstate ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageorderstate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductgenerated id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductgenerated ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageproductgenerated_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductselected id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductselected ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageproductselected_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister ALTER COLUMN id SET DEFAULT nextval('ordersupplies_coverageregister_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: ordersupplies_materialrequirementcoverage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage ALTER COLUMN id SET DEFAULT nextval('ordersupplies_materialrequirementcoverage_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_importpantones id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_importpantones ALTER COLUMN id SET DEFAULT nextval('pantone_importpantones_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_operationproductdeleted id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_operationproductdeleted ALTER COLUMN id SET DEFAULT nextval('pantone_operationproductdeleted_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_pantone id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantone ALTER COLUMN id SET DEFAULT nextval('pantone_pantone_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_pantoneforoperationproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforoperationproduct ALTER COLUMN id SET DEFAULT nextval('pantone_pantoneforoperationproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_pantoneforproducts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforproducts ALTER COLUMN id SET DEFAULT nextval('pantone_pantoneforproducts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_parameters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_parameters ALTER COLUMN id SET DEFAULT nextval('pantone_parameters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: pantone_selectedtechnologyoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_selectedtechnologyoperationcomponent ALTER COLUMN id SET DEFAULT nextval('pantone_selectedtechnologyoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productcatalognumbers_productcatalognumbers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcatalognumbers_productcatalognumbers ALTER COLUMN id SET DEFAULT nextval('productcatalognumbers_productcatalognumbers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productcharacteristics_forms id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_forms ALTER COLUMN id SET DEFAULT nextval('productcharacteristics_forms_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productcharacteristics_shelves id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_shelves ALTER COLUMN id SET DEFAULT nextval('productcharacteristics_shelves_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productdata_productdata id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdata ALTER COLUMN id SET DEFAULT nextval('productdata_productdata_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productdata_productdataattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataattachment ALTER COLUMN id SET DEFAULT nextval('productdata_productdataattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productdata_productdatainput id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdatainput ALTER COLUMN id SET DEFAULT nextval('productdata_productdatainput_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productdata_productdataoperation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataoperation ALTER COLUMN id SET DEFAULT nextval('productdata_productdataoperation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productdata_selectedtechnology id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_selectedtechnology ALTER COLUMN id SET DEFAULT nextval('productdata_selectedtechnology_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_issue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_materialavailability id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_materialavailability ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_materialavailability_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productandquantityhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productandquantityhelper ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_productandquantityhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_productstoissue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissuehelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissuehelper ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_productstoissuehelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_producttoissuecorrection_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrectionhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_producttoissuecorrectionhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_warehouseissue_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissuestatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange ALTER COLUMN id SET DEFAULT nextval('productflowthrudivision_warehouseissuestatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionbalancepershift_balance id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionbalancepershift_balance ALTER COLUMN id SET DEFAULT nextval('productionbalancepershift_balance_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionbalancepershift_balancecontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionbalancepershift_balancecontext ALTER COLUMN id SET DEFAULT nextval('productionbalancepershift_balancecontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomaly_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyexplanation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyexplanation ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomalyexplanation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackingentryhelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomalyproductiontrackingentryhelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackinghelper id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackinghelper ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomalyproductiontrackinghelper_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreason id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreason ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomalyreason_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreasoncontainer id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreasoncontainer ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomalyreasoncontainer_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_productionbalance id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productionbalance ALTER COLUMN id SET DEFAULT nextval('productioncounting_productionbalance_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_productioncountingquantitysetcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent ALTER COLUMN id SET DEFAULT nextval('productioncounting_productioncountingquantitysetcomponent_id_se'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontracking_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingreport ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontrackingreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingstatechange ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontrackingstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_settechnologyincomponents id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settechnologyincomponents ALTER COLUMN id SET DEFAULT nextval('productioncounting_settechnologyincomponents_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_settrackingoperationproductincomponents id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents ALTER COLUMN id SET DEFAULT nextval('productioncounting_settrackingoperationproductincomponents_id_s'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_staffworktime id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_staffworktime ALTER COLUMN id SET DEFAULT nextval('productioncounting_staffworktime_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent ALTER COLUMN id SET DEFAULT nextval('productioncounting_trackingoperationproductincomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent ALTER COLUMN id SET DEFAULT nextval('productioncounting_trackingoperationproductoutcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement ALTER COLUMN id SET DEFAULT nextval('productionlines_factorystructureelement_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionlines_productionline id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_productionline ALTER COLUMN id SET DEFAULT nextval('productionlines_productionline_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionlines_workstationtypecomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent ALTER COLUMN id SET DEFAULT nextval('productionlines_workstationtypecomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionpershift_dailyprogress id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_dailyprogress ALTER COLUMN id SET DEFAULT nextval('productionpershift_dailyprogress_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionpershift_ppsreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_ppsreport ALTER COLUMN id SET DEFAULT nextval('productionpershift_ppsreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionpershift_productionpershift id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_productionpershift ALTER COLUMN id SET DEFAULT nextval('productionpershift_productionpershift_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionpershift_progressforday id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_progressforday ALTER COLUMN id SET DEFAULT nextval('productionpershift_progressforday_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionpershift_reasontypeofcorrectionplan id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_reasontypeofcorrectionplan ALTER COLUMN id SET DEFAULT nextval('productionpershift_reasontypeofcorrectionplan_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionscheduling_opercomptimecalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_opercomptimecalculation ALTER COLUMN id SET DEFAULT nextval('productionscheduling_opercomptimecalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: productionscheduling_ordertimecalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_ordertimecalculation ALTER COLUMN id SET DEFAULT nextval('productionscheduling_ordertimecalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoocustomtranslation_customtranslation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoocustomtranslation_customtranslation ALTER COLUMN id SET DEFAULT nextval('qcadoocustomtranslation_customtranslation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoomodel_dictionary id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_dictionary ALTER COLUMN id SET DEFAULT nextval('qcadoomodel_dictionary_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoomodel_dictionaryitem id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_dictionaryitem ALTER COLUMN id SET DEFAULT nextval('qcadoomodel_dictionaryitem_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoomodel_globalunitconversionsaggregate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_globalunitconversionsaggregate ALTER COLUMN id SET DEFAULT nextval('qcadoomodel_globalunitconversionsaggregate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoomodel_unitconversionitem id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_unitconversionitem ALTER COLUMN id SET DEFAULT nextval('qcadoomodel_unitconversionitem_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooplugin_plugin id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooplugin_plugin ALTER COLUMN id SET DEFAULT nextval('qcadooplugin_plugin_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoosecurity_group id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_group ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_group_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoosecurity_persistenttoken id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_persistenttoken ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_persistenttoken_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoosecurity_role id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_role ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_role_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadoosecurity_user id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_user ALTER COLUMN id SET DEFAULT nextval('qcadoosecurity_user_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooview_alert id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_alert ALTER COLUMN id SET DEFAULT nextval('qcadooview_alert_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooview_category id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_category ALTER COLUMN id SET DEFAULT nextval('qcadooview_category_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooview_item id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_item ALTER COLUMN id SET DEFAULT nextval('qcadooview_item_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooview_view id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_view ALTER COLUMN id SET DEFAULT nextval('qcadooview_view_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: qcadooview_viewedalert id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_viewedalert ALTER COLUMN id SET DEFAULT nextval('qcadooview_viewedalert_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: repairs_repairorder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder ALTER COLUMN id SET DEFAULT nextval('repairs_repairorder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct ALTER COLUMN id SET DEFAULT nextval('repairs_repairorderproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: repairs_repairorderstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderstatechange ALTER COLUMN id SET DEFAULT nextval('repairs_repairorderstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: repairs_repairorderworktime id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderworktime ALTER COLUMN id SET DEFAULT nextval('repairs_repairorderworktime_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalance id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalance ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalance_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalancelocationscomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalancelocationscomponent_i'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalanceorderscomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalanceorderscomponent_id_s'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: states_message id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message ALTER COLUMN id SET DEFAULT nextval('states_message_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: stoppage_stoppage id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY stoppage_stoppage ALTER COLUMN id SET DEFAULT nextval('stoppage_stoppage_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_cost id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_cost ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_cost_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_event id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_event ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_event_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_message id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_message ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_message_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_operation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_operation ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_operation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_realisation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_realisation ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_realisation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborder id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborder ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_suborder_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderattachment ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_suborderattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderinput id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderinput ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_suborderinput_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoperation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoperation ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_suborderoperation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoutput id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoutput ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_suborderoutput_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordertmp id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_subordertmp ALTER COLUMN id SET DEFAULT nextval('subcontractorportal_subordertmp_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforoffers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforoffers ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_columnforoffers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforrequests id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforrequests ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_columnforrequests_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiation ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_negotiation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationproduct ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_negotiationproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationstatechange ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_negotiationstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_offer id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offer ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_offer_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerproduct ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_offerproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerstatechange ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_offerstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforoffers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_parametercolumnforoffers_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforrequests id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_parametercolumnforrequests_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotation ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_requestforquotation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationproduct ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_requestforquotationproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationstatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange ALTER COLUMN id SET DEFAULT nextval('supplynegotiations_requestforquotationstatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_barcodeoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_barcodeoperationcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_barcodeoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_changetechnologyparameters id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_changetechnologyparameters ALTER COLUMN id SET DEFAULT nextval('technologies_changetechnologyparameters_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_operation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation ALTER COLUMN id SET DEFAULT nextval('technologies_operation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_operationgroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationgroup ALTER COLUMN id SET DEFAULT nextval('technologies_operationgroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent ALTER COLUMN id SET DEFAULT nextval('technologies_operationproductincomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_operationproductoutcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_productcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_productcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode ALTER COLUMN id SET DEFAULT nextval('technologies_productstructuretreenode_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technology id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology ALTER COLUMN id SET DEFAULT nextval('technologies_technology_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologyattachment id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyattachment ALTER COLUMN id SET DEFAULT nextval('technologies_technologyattachment_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologygroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologygroup ALTER COLUMN id SET DEFAULT nextval('technologies_technologygroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponentmergeproductin_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponentmergeproductout_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologies_technologystatechange id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologystatechange ALTER COLUMN id SET DEFAULT nextval('technologies_technologystatechange_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatorcontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatorcontext ALTER COLUMN id SET DEFAULT nextval('technologiesgenerator_generatorcontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortechnologiesforproduct id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct ALTER COLUMN id SET DEFAULT nextval('technologiesgenerator_generatortechnologiesforproduct_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode ALTER COLUMN id SET DEFAULT nextval('technologiesgenerator_generatortreenode_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: timegapspreview_timegap id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegap ALTER COLUMN id SET DEFAULT nextval('timegapspreview_timegap_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: timegapspreview_timegapscontext id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegapscontext ALTER COLUMN id SET DEFAULT nextval('timegapspreview_timegapscontext_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: timenormsforoperations_techopercomptimecalculation id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timenormsforoperations_techopercomptimecalculation ALTER COLUMN id SET DEFAULT nextval('timenormsforoperations_techopercomptimecalculation_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: urccore_lastsynchronizationdate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urccore_lastsynchronizationdate ALTER COLUMN id SET DEFAULT nextval('urccore_lastsynchronizationdate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: urccore_synchronizationstatus id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urccore_synchronizationstatus ALTER COLUMN id SET DEFAULT nextval('urccore_synchronizationstatus_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: urcmaterialavailability_requiredcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcmaterialavailability_requiredcomponent ALTER COLUMN id SET DEFAULT nextval('urcmaterialavailability_requiredcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: urcproductioncounting_requestrepair id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcproductioncounting_requestrepair ALTER COLUMN id SET DEFAULT nextval('urcproductioncounting_requestrepair_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: wagegroups_wagegroup id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY wagegroups_wagegroup ALTER COLUMN id SET DEFAULT nextval('wagegroups_wagegroup_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: walusiak_exportdocumenthistory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY walusiak_exportdocumenthistory ALTER COLUMN id SET DEFAULT nextval('walusiak_exportdocumenthistory_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstate id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate ALTER COLUMN id SET DEFAULT nextval('warehouseminimalstate_warehouseminimumstate_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstatemulti id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstatemulti ALTER COLUMN id SET DEFAULT nextval('warehouseminimalstate_warehouseminimumstatemulti_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_columnforinputproducts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnforinputproducts ALTER COLUMN id SET DEFAULT nextval('workplans_columnforinputproducts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_columnfororders id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnfororders ALTER COLUMN id SET DEFAULT nextval('workplans_columnfororders_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_columnforoutputproducts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnforoutputproducts ALTER COLUMN id SET DEFAULT nextval('workplans_columnforoutputproducts_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_parameterinputcolumn id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterinputcolumn ALTER COLUMN id SET DEFAULT nextval('workplans_parameterinputcolumn_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_parameterordercolumn id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterordercolumn ALTER COLUMN id SET DEFAULT nextval('workplans_parameterordercolumn_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_parameteroutputcolumn id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameteroutputcolumn ALTER COLUMN id SET DEFAULT nextval('workplans_parameteroutputcolumn_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_workplan id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplan ALTER COLUMN id SET DEFAULT nextval('workplans_workplan_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: workplans_workplanordercolumn id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplanordercolumn ALTER COLUMN id SET DEFAULT nextval('workplans_workplanordercolumn_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicator id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicator ALTER COLUMN id SET DEFAULT nextval('zmbak_meatcuttingindicator_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicatorcomponent id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent ALTER COLUMN id SET DEFAULT nextval('zmbak_meatcuttingindicatorcomponent_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: zmbak_parameter id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter ALTER COLUMN id SET DEFAULT nextval('zmbak_parameter_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: zmbak_tpcreport id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_tpcreport ALTER COLUMN id SET DEFAULT nextval('zmbak_tpcreport_id_seq'::regclass);
 
 
 --
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: zmbak_tpctable id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_tpctable ALTER COLUMN id SET DEFAULT nextval('zmbak_tpctable_id_seq'::regclass);
@@ -29743,8 +29786,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f	50	3000
 \.
 
 
@@ -31450,6 +31493,13 @@ SELECT pg_catalog.setval('hibernate_sequence', 1, false);
 
 
 --
+-- Name: integrationbartender_printedcartonlabeldto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('integrationbartender_printedcartonlabeldto_id_seq', 1, false);
+
+
+--
 -- Data for Name: integrationbartender_printer; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -31468,7 +31518,7 @@ SELECT pg_catalog.setval('integrationbartender_printer_id_seq', 1, false);
 -- Data for Name: integrationbartender_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, printer_id) FROM stdin;
+COPY integrationbartender_printlabelshelper (id, createdate, updatedate, createuser, updateuser, quantity, masterorder_id, printer_id, path) FROM stdin;
 \.
 
 
@@ -34852,7 +34902,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
-147	integrationBarTender	printedCartonLabelsList	t	1	146	16	ROLE_TERMINAL_CARTON_LABELS	0
+147	integrationBarTender	printedCartonLabelsList	t	8	146	22	ROLE_TERMINAL_CARTON_LABELS	0
 \.
 
 
@@ -36274,7 +36324,7 @@ SELECT pg_catalog.setval('zmbak_tpctable_id_seq', 1, false);
 
 
 --
--- Name: advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batch advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batch
@@ -36282,7 +36332,7 @@ ALTER TABLE ONLY advancedgenealogy_batch
 
 
 --
--- Name: advancedgenealogy_batchlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batchstatechange advancedgenealogy_batchlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batchstatechange
@@ -36290,7 +36340,7 @@ ALTER TABLE ONLY advancedgenealogy_batchstatechange
 
 
 --
--- Name: advancedgenealogy_genealogyreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_genealogyreport advancedgenealogy_genealogyreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_genealogyreport
@@ -36298,7 +36348,7 @@ ALTER TABLE ONLY advancedgenealogy_genealogyreport
 
 
 --
--- Name: advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecord advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecord
@@ -36306,7 +36356,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecord
 
 
 --
--- Name: advancedgenealogy_trackingrecordlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecordstatechange advancedgenealogy_trackingrecordlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
@@ -36314,7 +36364,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_usedbatchsimple advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
@@ -36322,7 +36372,7 @@ ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductinbatch advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
@@ -36330,7 +36380,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: advancedgenealogyfororders_genealogyproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductincomponent advancedgenealogyfororders_genealogyproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
@@ -36338,7 +36388,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecord arch_advancedgenealogy_trackingrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
@@ -36346,7 +36396,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
 
 
 --
--- Name: arch_advancedgenealogy_trackingrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecordstatechange arch_advancedgenealogy_trackingrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
@@ -36354,7 +36404,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: arch_advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_usedbatchsimple arch_advancedgenealogy_usedbatchsimple_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
@@ -36362,7 +36412,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductinbatch arch_advancedgenealogyfororders_genealogyproductinbatch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
@@ -36370,7 +36420,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: arch_advancedgenealogyfororders_genealogyproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent arch_advancedgenealogyfororders_genealogyproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
@@ -36378,7 +36428,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: arch_assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_multiassignmenttoshift arch_assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
@@ -36386,7 +36436,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: arch_assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift arch_assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
@@ -36394,7 +36444,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift arch_avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
@@ -36402,7 +36452,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder arch_avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -36410,7 +36460,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: arch_basicproductioncounting__order_id_technologyoperationc_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity arch_basicproductioncounting__order_id_technologyoperationc_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -36418,7 +36468,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_basicproductioncounting arch_basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
@@ -36426,7 +36476,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingoperationru_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingoperationrun arch_basicproductioncounting_productioncountingoperationru_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
@@ -36434,7 +36484,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: arch_basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity arch_basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -36442,7 +36492,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: arch_costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_componentcost arch_costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_componentcost
@@ -36450,7 +36500,7 @@ ALTER TABLE ONLY arch_costcalculation_componentcost
 
 
 --
--- Name: arch_costcalculation_costcalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation arch_costcalculation_costcalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -36458,7 +36508,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: arch_costnormsformaterials_technologyinstoperproductincomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsformaterials_technologyinstoperproductincomp arch_costnormsformaterials_technologyinstoperproductincomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
@@ -36466,7 +36516,7 @@ ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: arch_costnormsforoperation_calculationoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent arch_costnormsforoperation_calculationoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
@@ -36474,7 +36524,7 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: arch_esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_esilco_importpositionerror arch_esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_esilco_importpositionerror
@@ -36482,7 +36532,7 @@ ALTER TABLE ONLY arch_esilco_importpositionerror
 
 
 --
--- Name: arch_goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionadditionalinputproduct arch_goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
@@ -36490,7 +36540,7 @@ ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: arch_goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproduct arch_goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
@@ -36498,7 +36548,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
 
 
 --
--- Name: arch_goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproductentry arch_goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
@@ -36506,7 +36556,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
 
 
 --
--- Name: arch_goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectioninputproduct arch_goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectioninputproduct
@@ -36514,7 +36564,7 @@ ALTER TABLE ONLY arch_goodfood_confectioninputproduct
 
 
 --
--- Name: arch_goodfood_confectionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol arch_goodfood_confectionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -36522,7 +36572,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: arch_goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol arch_goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -36530,7 +36580,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: arch_goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolcorrect arch_goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolcorrect
@@ -36538,7 +36588,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocolcorrect
 
 
 --
--- Name: arch_goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolstatechange arch_goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
@@ -36546,7 +36596,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
 
 
 --
--- Name: arch_goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionremainderinputproduct arch_goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
@@ -36554,7 +36604,7 @@ ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
 
 
 --
--- Name: arch_goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionstaff arch_goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionstaff
@@ -36562,7 +36612,7 @@ ALTER TABLE ONLY arch_goodfood_confectionstaff
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixentry arch_goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
@@ -36570,7 +36620,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
 
 
 --
--- Name: arch_goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient arch_goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
@@ -36578,7 +36628,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: arch_goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouring arch_goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouring
@@ -36586,7 +36636,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouring
 
 
 --
--- Name: arch_goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient arch_goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
@@ -36594,7 +36644,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
 
 
 --
--- Name: arch_goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringmix arch_goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringmix
@@ -36602,7 +36652,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringmix
 
 
 --
--- Name: arch_goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol arch_goodfood_extrusionprotocol_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol
@@ -36610,7 +36660,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 
 
 --
--- Name: arch_goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol arch_goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol
@@ -36618,7 +36668,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 
 
 --
--- Name: arch_goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolcorrect arch_goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolcorrect
@@ -36626,7 +36676,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocolcorrect
 
 
 --
--- Name: arch_goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolstatechange arch_goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
@@ -36634,7 +36684,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: arch_goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionsouse arch_goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionsouse
@@ -36642,7 +36692,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionsouse
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixentry arch_goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
@@ -36650,7 +36700,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: arch_goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient arch_goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
@@ -36658,7 +36708,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: arch_goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_label arch_goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label
@@ -36666,7 +36716,7 @@ ALTER TABLE ONLY arch_goodfood_label
 
 
 --
--- Name: arch_goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_labelstatechange arch_goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange
@@ -36674,7 +36724,7 @@ ALTER TABLE ONLY arch_goodfood_labelstatechange
 
 
 --
--- Name: arch_goodfood_pallet_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet arch_goodfood_pallet_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -36682,7 +36732,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: arch_goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet arch_goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -36690,7 +36740,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: arch_goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_palletstatechange arch_goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_palletstatechange
@@ -36698,7 +36748,7 @@ ALTER TABLE ONLY arch_goodfood_palletstatechange
 
 
 --
--- Name: arch_goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_printedlabel arch_goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_printedlabel
@@ -36706,7 +36756,7 @@ ALTER TABLE ONLY arch_goodfood_printedlabel
 
 
 --
--- Name: arch_integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_printlabelshelper arch_integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
@@ -36714,7 +36764,7 @@ ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
 
 
 --
--- Name: arch_integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_sendtoprint arch_integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint
@@ -36722,7 +36772,7 @@ ALTER TABLE ONLY arch_integrationbartender_sendtoprint
 
 
 --
--- Name: arch_masterorders_masterorder_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder arch_masterorders_masterorder_externalnumber_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -36730,7 +36780,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder arch_masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -36738,7 +36788,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: arch_masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderproduct arch_masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct
@@ -36746,7 +36796,7 @@ ALTER TABLE ONLY arch_masterorders_masterorderproduct
 
 
 --
--- Name: arch_materialflowresources_document_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document arch_materialflowresources_document_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -36754,7 +36804,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document arch_materialflowresources_document_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -36762,7 +36812,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: arch_materialflowresources_position_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position arch_materialflowresources_position_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -36770,7 +36820,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: arch_materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation arch_materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -36778,7 +36828,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragefororder arch_materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
@@ -36786,7 +36836,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation arch_materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
@@ -36794,7 +36844,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct arch_materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
@@ -36802,7 +36852,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: arch_materialrequirementcoveragefororder_coverageproductlo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging arch_materialrequirementcoveragefororder_coverageproductlo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -36810,7 +36860,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: arch_operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_operationaltasks_operationaltask arch_operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_operationaltasks_operationaltask
@@ -36818,7 +36868,7 @@ ALTER TABLE ONLY arch_operationaltasks_operationaltask
 
 
 --
--- Name: arch_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order arch_orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -36826,7 +36876,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: arch_orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_orderstatechange arch_orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_orderstatechange
@@ -36834,7 +36884,7 @@ ALTER TABLE ONLY arch_orders_orderstatechange
 
 
 --
--- Name: arch_orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondatefrom arch_orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
@@ -36842,7 +36892,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: arch_orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondateto arch_orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
@@ -36850,7 +36900,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
 
 
 --
--- Name: arch_orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectiveend arch_orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectiveend
@@ -36858,7 +36908,7 @@ ALTER TABLE ONLY arch_orders_reasontypedeviationeffectiveend
 
 
 --
--- Name: arch_orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectivestart arch_orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectivestart
@@ -36866,7 +36916,7 @@ ALTER TABLE ONLY arch_orders_reasontypedeviationeffectivestart
 
 
 --
--- Name: arch_orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypeofchangingorderstate arch_orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypeofchangingorderstate
@@ -36874,7 +36924,7 @@ ALTER TABLE ONLY arch_orders_reasontypeofchangingorderstate
 
 
 --
--- Name: arch_orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_typeofcorrectioncauses arch_orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_typeofcorrectioncauses
@@ -36882,7 +36932,7 @@ ALTER TABLE ONLY arch_orders_typeofcorrectioncauses
 
 
 --
--- Name: arch_ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersforsubproductsgeneration_suborders arch_ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
@@ -36890,7 +36940,7 @@ ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: arch_ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup arch_ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup
@@ -36898,7 +36948,7 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
--- Name: arch_ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coveragelocation arch_ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coveragelocation
@@ -36906,7 +36956,7 @@ ALTER TABLE ONLY arch_ordersupplies_coveragelocation
 
 
 --
--- Name: arch_ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageorderstate arch_ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
@@ -36914,7 +36964,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
 
 
 --
--- Name: arch_ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproduct arch_ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproduct
@@ -36922,7 +36972,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproduct
 
 
 --
--- Name: arch_ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging arch_ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -36930,7 +36980,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: arch_ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductselected arch_ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductselected
@@ -36938,7 +36988,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductselected
 
 
 --
--- Name: arch_ordersupplies_coverageregister_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister arch_ordersupplies_coverageregister_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -36946,7 +36996,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: arch_ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_materialrequirementcoverage arch_ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
@@ -36954,7 +37004,7 @@ ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: arch_productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue arch_productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -36962,7 +37012,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: arch_productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_materialavailability arch_productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
@@ -36970,7 +37020,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
 
 
 --
--- Name: arch_productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue arch_productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -36978,7 +37028,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: arch_productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection arch_productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -36986,7 +37036,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: arch_productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue arch_productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -36994,7 +37044,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: arch_productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissuestatechange arch_productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
@@ -37002,7 +37052,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: arch_productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly arch_productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly
@@ -37010,7 +37060,7 @@ ALTER TABLE ONLY arch_productioncounting_anomaly
 
 
 --
--- Name: arch_productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyexplanation arch_productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
@@ -37018,7 +37068,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
 
 
 --
--- Name: arch_productioncounting_anomalyproductiontrackingentryhelp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyproductiontrackingentryhelper arch_productioncounting_anomalyproductiontrackingentryhelp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
@@ -37026,7 +37076,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: arch_productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyreasoncontainer arch_productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
@@ -37034,7 +37084,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: arch_productioncounting_productioncountingquantitysetcompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productioncountingquantitysetcomponent arch_productioncounting_productioncountingquantitysetcompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
@@ -37042,7 +37092,7 @@ ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: arch_productioncounting_productiontracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking arch_productioncounting_productiontracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -37050,7 +37100,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontrackingreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingreport arch_productioncounting_productiontrackingreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
@@ -37058,7 +37108,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
 
 
 --
--- Name: arch_productioncounting_productiontrackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingstatechange arch_productioncounting_productiontrackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
@@ -37066,7 +37116,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
 
 
 --
--- Name: arch_productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settechnologyincomponents arch_productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
@@ -37074,7 +37124,7 @@ ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
 
 
 --
--- Name: arch_productioncounting_settrackingoperationproductincompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settrackingoperationproductincomponents arch_productioncounting_settrackingoperationproductincompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
@@ -37082,7 +37132,7 @@ ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: arch_productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_staffworktime arch_productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_staffworktime
@@ -37090,7 +37140,7 @@ ALTER TABLE ONLY arch_productioncounting_staffworktime
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductincomponent arch_productioncounting_trackingoperationproductincomponen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
@@ -37098,7 +37148,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: arch_productioncounting_trackingoperationproductoutcompone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent arch_productioncounting_trackingoperationproductoutcompone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
@@ -37106,7 +37156,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: arch_productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_dailyprogress arch_productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_dailyprogress
@@ -37114,7 +37164,7 @@ ALTER TABLE ONLY arch_productionpershift_dailyprogress
 
 
 --
--- Name: arch_productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_productionpershift arch_productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_productionpershift
@@ -37122,7 +37172,7 @@ ALTER TABLE ONLY arch_productionpershift_productionpershift
 
 
 --
--- Name: arch_productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_progressforday arch_productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_progressforday
@@ -37130,7 +37180,7 @@ ALTER TABLE ONLY arch_productionpershift_progressforday
 
 
 --
--- Name: arch_productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_reasontypeofcorrectionplan arch_productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_reasontypeofcorrectionplan
@@ -37138,7 +37188,7 @@ ALTER TABLE ONLY arch_productionpershift_reasontypeofcorrectionplan
 
 
 --
--- Name: arch_productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_opercomptimecalculation arch_productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
@@ -37146,7 +37196,7 @@ ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
 
 
 --
--- Name: arch_productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_ordertimecalculation arch_productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation
@@ -37154,7 +37204,7 @@ ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation
 
 
 --
--- Name: arch_repairs_repairorder_number_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder arch_repairs_repairorder_number_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -37162,7 +37212,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder arch_repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -37170,7 +37220,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: arch_repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct arch_repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -37178,7 +37228,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: arch_repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderstatechange arch_repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderstatechange
@@ -37186,7 +37236,7 @@ ALTER TABLE ONLY arch_repairs_repairorderstatechange
 
 
 --
--- Name: arch_repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderworktime arch_repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderworktime
@@ -37194,7 +37244,7 @@ ALTER TABLE ONLY arch_repairs_repairorderworktime
 
 
 --
--- Name: arch_simplematerialbalance_simplematerialbalanceorderscomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_simplematerialbalance_simplematerialbalanceorderscomponent arch_simplematerialbalance_simplematerialbalanceorderscomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
@@ -37202,7 +37252,7 @@ ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: arch_states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message arch_states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -37210,7 +37260,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: arch_stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_stoppage_stoppage arch_stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_stoppage_stoppage
@@ -37218,7 +37268,7 @@ ALTER TABLE ONLY arch_stoppage_stoppage
 
 
 --
--- Name: arch_technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_barcodeoperationcomponent arch_technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
@@ -37226,7 +37276,7 @@ ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
 
 
 --
--- Name: arch_technologies_technologyoperationcomponentmergeproduc_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin arch_technologies_technologyoperationcomponentmergeproduc_pkey1; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
@@ -37234,7 +37284,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: arch_technologies_technologyoperationcomponentmergeproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout arch_technologies_technologyoperationcomponentmergeproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
@@ -37242,7 +37292,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: arch_urcmaterialavailability_requiredcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_urcmaterialavailability_requiredcomponent arch_urcmaterialavailability_requiredcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
@@ -37250,7 +37300,7 @@ ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift assignmenttoshift_assignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
@@ -37258,7 +37308,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
 
 
 --
--- Name: assignmenttoshift_assignmenttoshiftreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftreport assignmenttoshift_assignmenttoshiftreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
@@ -37266,7 +37316,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
 
 
 --
--- Name: assignmenttoshift_assignmenttoshiftstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftstatechange assignmenttoshift_assignmenttoshiftstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
@@ -37274,7 +37324,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
 
 
 --
--- Name: assignmenttoshift_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift assignmenttoshift_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
@@ -37282,7 +37332,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
 
 
 --
--- Name: assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_multiassignmenttoshift assignmenttoshift_multiassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
@@ -37290,7 +37340,7 @@ ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift assignmenttoshift_staffassignmenttoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
@@ -37298,7 +37348,7 @@ ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_assignmentworkertoshift avglaborcostcalcfororder_assignmentworkertoshift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
@@ -37306,7 +37356,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_avglaborcostcalcfororder avglaborcostcalcfororder_avglaborcostcalcfororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -37314,7 +37364,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: basic_additionalcode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_additionalcode basic_additionalcode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_additionalcode
@@ -37322,7 +37372,7 @@ ALTER TABLE ONLY basic_additionalcode
 
 
 --
--- Name: basic_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_address basic_address_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_address
@@ -37330,7 +37380,7 @@ ALTER TABLE ONLY basic_address
 
 
 --
--- Name: basic_assortment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_assortment basic_assortment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_assortment
@@ -37338,7 +37388,7 @@ ALTER TABLE ONLY basic_assortment
 
 
 --
--- Name: basic_assortmentelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_assortmentelement basic_assortmentelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_assortmentelement
@@ -37346,7 +37396,7 @@ ALTER TABLE ONLY basic_assortmentelement
 
 
 --
--- Name: basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_company basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_company
@@ -37354,7 +37404,7 @@ ALTER TABLE ONLY basic_company
 
 
 --
--- Name: basic_country_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_country basic_country_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_country
@@ -37362,7 +37412,7 @@ ALTER TABLE ONLY basic_country
 
 
 --
--- Name: basic_crew_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_crew basic_crew_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_crew
@@ -37370,7 +37420,7 @@ ALTER TABLE ONLY basic_crew
 
 
 --
--- Name: basic_currency_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_currency basic_currency_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_currency
@@ -37378,7 +37428,7 @@ ALTER TABLE ONLY basic_currency
 
 
 --
--- Name: basic_division_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division basic_division_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -37386,7 +37436,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: basic_factory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_factory basic_factory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_factory
@@ -37394,7 +37444,7 @@ ALTER TABLE ONLY basic_factory
 
 
 --
--- Name: basic_faulttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_faulttype basic_faulttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_faulttype
@@ -37402,7 +37452,7 @@ ALTER TABLE ONLY basic_faulttype
 
 
 --
--- Name: basic_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_log basic_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_log
@@ -37410,7 +37460,7 @@ ALTER TABLE ONLY basic_log
 
 
 --
--- Name: basic_palletnumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_palletnumber basic_palletnumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_palletnumber
@@ -37418,7 +37468,7 @@ ALTER TABLE ONLY basic_palletnumber
 
 
 --
--- Name: basic_palletnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_palletnumberhelper basic_palletnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_palletnumberhelper
@@ -37426,7 +37476,7 @@ ALTER TABLE ONLY basic_palletnumberhelper
 
 
 --
--- Name: basic_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter basic_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -37434,7 +37484,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: basic_product_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product basic_product_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -37442,7 +37492,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: basic_productattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_productattachment basic_productattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_productattachment
@@ -37450,7 +37500,7 @@ ALTER TABLE ONLY basic_productattachment
 
 
 --
--- Name: basic_reportcolumnwidth_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_reportcolumnwidth basic_reportcolumnwidth_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_reportcolumnwidth
@@ -37458,7 +37508,7 @@ ALTER TABLE ONLY basic_reportcolumnwidth
 
 
 --
--- Name: basic_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_shift basic_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_shift
@@ -37466,7 +37516,7 @@ ALTER TABLE ONLY basic_shift
 
 
 --
--- Name: basic_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_shifttimetableexception basic_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_shifttimetableexception
@@ -37474,7 +37524,7 @@ ALTER TABLE ONLY basic_shifttimetableexception
 
 
 --
--- Name: basic_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff basic_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -37482,7 +37532,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: basic_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassembly basic_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassembly
@@ -37490,7 +37540,7 @@ ALTER TABLE ONLY basic_subassembly
 
 
 --
--- Name: basic_subassemblyattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassemblyattachment basic_subassemblyattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblyattachment
@@ -37498,7 +37548,7 @@ ALTER TABLE ONLY basic_subassemblyattachment
 
 
 --
--- Name: basic_subassemblytoworkstationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassemblytoworkstationhelper basic_subassemblytoworkstationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblytoworkstationhelper
@@ -37506,7 +37556,7 @@ ALTER TABLE ONLY basic_subassemblytoworkstationhelper
 
 
 --
--- Name: basic_substitute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitute basic_substitute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitute
@@ -37514,7 +37564,7 @@ ALTER TABLE ONLY basic_substitute
 
 
 --
--- Name: basic_substitutecomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitutecomponent basic_substitutecomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitutecomponent
@@ -37522,7 +37572,7 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
--- Name: basic_viewedactivity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_viewedactivity basic_viewedactivity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_viewedactivity
@@ -37530,7 +37580,7 @@ ALTER TABLE ONLY basic_viewedactivity
 
 
 --
--- Name: basic_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstation basic_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation
@@ -37538,7 +37588,7 @@ ALTER TABLE ONLY basic_workstation
 
 
 --
--- Name: basic_workstationattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstationattachment basic_workstationattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstationattachment
@@ -37546,7 +37596,7 @@ ALTER TABLE ONLY basic_workstationattachment
 
 
 --
--- Name: basic_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstationtype basic_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstationtype
@@ -37554,7 +37604,7 @@ ALTER TABLE ONLY basic_workstationtype
 
 
 --
--- Name: basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_basicproductioncounting basicproductioncounting_basicproductioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
@@ -37562,7 +37612,7 @@ ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: basicproductioncounting_productioncountingoperationrun_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingoperationrun basicproductioncounting_productioncountingoperationrun_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
@@ -37570,7 +37620,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity basicproductioncounting_productioncountingquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -37578,7 +37628,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: batch_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batch batch_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batch
@@ -37586,7 +37636,7 @@ ALTER TABLE ONLY advancedgenealogy_batch
 
 
 --
--- Name: cdnrcgoodfood_highestmasterordernum_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cdnrcgoodfood_highestmasterordernum cdnrcgoodfood_highestmasterordernum_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cdnrcgoodfood_highestmasterordernum
@@ -37594,7 +37644,7 @@ ALTER TABLE ONLY cdnrcgoodfood_highestmasterordernum
 
 
 --
--- Name: cmmsmachineparts_action_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_action cmmsmachineparts_action_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_action
@@ -37602,7 +37652,7 @@ ALTER TABLE ONLY cmmsmachineparts_action
 
 
 --
--- Name: cmmsmachineparts_actionforplannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_actionforplannedevent cmmsmachineparts_actionforplannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
@@ -37610,7 +37660,7 @@ ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
 
 
 --
--- Name: cmmsmachineparts_eventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_eventattachment cmmsmachineparts_eventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_eventattachment
@@ -37618,7 +37668,7 @@ ALTER TABLE ONLY cmmsmachineparts_eventattachment
 
 
 --
--- Name: cmmsmachineparts_machinepartattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartattachment cmmsmachineparts_machinepartattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartattachment
@@ -37626,7 +37676,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartattachment
 
 
 --
--- Name: cmmsmachineparts_machinepartforevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent cmmsmachineparts_machinepartforevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -37634,7 +37684,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: cmmsmachineparts_maintenanceevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent cmmsmachineparts_maintenanceevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -37642,7 +37692,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: cmmsmachineparts_maintenanceeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventcontext cmmsmachineparts_maintenanceeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
@@ -37650,7 +37700,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
 
 
 --
--- Name: cmmsmachineparts_maintenanceeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventstatechange cmmsmachineparts_maintenanceeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
@@ -37658,7 +37708,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
 
 
 --
--- Name: cmmsmachineparts_maintenanceeventxlshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventxlshelper cmmsmachineparts_maintenanceeventxlshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventxlshelper
@@ -37666,7 +37716,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventxlshelper
 
 
 --
--- Name: cmmsmachineparts_plannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent cmmsmachineparts_plannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -37674,7 +37724,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: cmmsmachineparts_plannedeventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventattachment cmmsmachineparts_plannedeventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventattachment
@@ -37682,7 +37732,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventattachment
 
 
 --
--- Name: cmmsmachineparts_plannedeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventcontext cmmsmachineparts_plannedeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
@@ -37690,7 +37740,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
 
 
 --
--- Name: cmmsmachineparts_plannedeventrealization_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventrealization cmmsmachineparts_plannedeventrealization_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
@@ -37698,7 +37748,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
 
 
 --
--- Name: cmmsmachineparts_plannedeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventstatechange cmmsmachineparts_plannedeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
@@ -37706,7 +37756,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
 
 
 --
--- Name: cmmsmachineparts_plannedeventxlshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventxlshelper cmmsmachineparts_plannedeventxlshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventxlshelper
@@ -37714,7 +37764,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventxlshelper
 
 
 --
--- Name: cmmsmachineparts_sourcecost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecost cmmsmachineparts_sourcecost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecost
@@ -37722,7 +37772,7 @@ ALTER TABLE ONLY cmmsmachineparts_sourcecost
 
 
 --
--- Name: cmmsmachineparts_sourcecostreportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecostreportfilter cmmsmachineparts_sourcecostreportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecostreportfilter
@@ -37730,7 +37780,7 @@ ALTER TABLE ONLY cmmsmachineparts_sourcecostreportfilter
 
 
 --
--- Name: cmmsmachineparts_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_staffworktime cmmsmachineparts_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_staffworktime
@@ -37738,7 +37788,7 @@ ALTER TABLE ONLY cmmsmachineparts_staffworktime
 
 
 --
--- Name: cmmsmachineparts_timeusagereportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_timeusagereportfilter cmmsmachineparts_timeusagereportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_timeusagereportfilter
@@ -37746,7 +37796,7 @@ ALTER TABLE ONLY cmmsmachineparts_timeusagereportfilter
 
 
 --
--- Name: cmmsscheduler_actionforrecurringevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_actionforrecurringevent cmmsscheduler_actionforrecurringevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
@@ -37754,7 +37804,7 @@ ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
 
 
 --
--- Name: cmmsscheduler_recurringevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent cmmsscheduler_recurringevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -37762,7 +37812,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: cmmsscheduler_recurringeventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventattachment cmmsscheduler_recurringeventattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventattachment
@@ -37770,7 +37820,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventattachment
 
 
 --
--- Name: cmmsscheduler_recurringeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventcontext cmmsscheduler_recurringeventcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
@@ -37778,7 +37828,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
 
 
 --
--- Name: cmmsscheduler_recurringeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventstatechange cmmsscheduler_recurringeventstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
@@ -37786,7 +37836,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
 
 
 --
--- Name: confectionprotocol_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol confectionprotocol_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -37794,7 +37844,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_componentcost costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_componentcost
@@ -37802,7 +37852,7 @@ ALTER TABLE ONLY costcalculation_componentcost
 
 
 --
--- Name: costcalculation_costcalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_costcalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -37810,7 +37860,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costnormsforoperation_calculationoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent costnormsforoperation_calculationoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
@@ -37818,7 +37868,7 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: costnormsforproduct_orderoperationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
@@ -37826,7 +37876,7 @@ ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: deliveries_columnfordeliveries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_columnfordeliveries deliveries_columnfordeliveries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfordeliveries
@@ -37834,7 +37884,7 @@ ALTER TABLE ONLY deliveries_columnfordeliveries
 
 
 --
--- Name: deliveries_columnfororders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_columnfororders deliveries_columnfororders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfororders
@@ -37842,7 +37892,7 @@ ALTER TABLE ONLY deliveries_columnfororders
 
 
 --
--- Name: deliveries_companyproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproduct deliveries_companyproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproduct
@@ -37850,7 +37900,7 @@ ALTER TABLE ONLY deliveries_companyproduct
 
 
 --
--- Name: deliveries_companyproductsfamily_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproductsfamily deliveries_companyproductsfamily_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproductsfamily
@@ -37858,7 +37908,7 @@ ALTER TABLE ONLY deliveries_companyproductsfamily
 
 
 --
--- Name: deliveries_deliveredproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveries_deliveredproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -37866,7 +37916,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveries_deliveredproductmulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmulti deliveries_deliveredproductmulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmulti
@@ -37874,7 +37924,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmulti
 
 
 --
--- Name: deliveries_deliveredproductmultiposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition deliveries_deliveredproductmultiposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition
@@ -37882,7 +37932,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmultiposition
 
 
 --
--- Name: deliveries_deliveredproductreservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductreservation deliveries_deliveredproductreservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductreservation
@@ -37890,7 +37940,7 @@ ALTER TABLE ONLY deliveries_deliveredproductreservation
 
 
 --
--- Name: deliveries_delivery_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_delivery deliveries_delivery_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery
@@ -37898,7 +37948,7 @@ ALTER TABLE ONLY deliveries_delivery
 
 
 --
--- Name: deliveries_deliveryattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveryattachment deliveries_deliveryattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveryattachment
@@ -37906,7 +37956,7 @@ ALTER TABLE ONLY deliveries_deliveryattachment
 
 
 --
--- Name: deliveries_deliverybypallettypereport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliverybypallettypereport deliveries_deliverybypallettypereport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverybypallettypereport
@@ -37914,7 +37964,7 @@ ALTER TABLE ONLY deliveries_deliverybypallettypereport
 
 
 --
--- Name: deliveries_deliverystatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliverystatechange deliveries_deliverystatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverystatechange
@@ -37922,7 +37972,7 @@ ALTER TABLE ONLY deliveries_deliverystatechange
 
 
 --
--- Name: deliveries_orderedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct deliveries_orderedproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -37930,7 +37980,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: deliveries_orderedproductreservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproductreservation deliveries_orderedproductreservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproductreservation
@@ -37938,7 +37988,7 @@ ALTER TABLE ONLY deliveries_orderedproductreservation
 
 
 --
--- Name: deliveries_parameterdeliveryordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_parameterdeliveryordercolumn deliveries_parameterdeliveryordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
@@ -37946,7 +37996,7 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
 
 
 --
--- Name: document_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -37954,7 +38004,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -37962,7 +38012,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: emailnotifications_staffnotification_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: emailnotifications_staffnotification emailnotifications_staffnotification_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY emailnotifications_staffnotification
@@ -37970,7 +38020,7 @@ ALTER TABLE ONLY emailnotifications_staffnotification
 
 
 --
--- Name: esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: esilco_importpositionerror esilco_importpositionerror_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_importpositionerror
@@ -37978,7 +38028,7 @@ ALTER TABLE ONLY esilco_importpositionerror
 
 
 --
--- Name: esilco_printdocuments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: esilco_printdocuments esilco_printdocuments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_printdocuments
@@ -37986,7 +38036,7 @@ ALTER TABLE ONLY esilco_printdocuments
 
 
 --
--- Name: extrusionprotocol_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol extrusionprotocol_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol
@@ -37994,7 +38044,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
--- Name: goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionadditionalinputproduct goodfood_confectionadditionalinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
@@ -38002,7 +38052,7 @@ ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: goodfood_confectioncontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioncontext goodfood_confectioncontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioncontext
@@ -38010,7 +38060,7 @@ ALTER TABLE ONLY goodfood_confectioncontext
 
 
 --
--- Name: goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproduct goodfood_confectionfilmproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproduct
@@ -38018,7 +38068,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproduct
 
 
 --
--- Name: goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproductentry goodfood_confectionfilmproductentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproductentry
@@ -38026,7 +38076,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproductentry
 
 
 --
--- Name: goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioninputproduct goodfood_confectioninputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioninputproduct
@@ -38034,7 +38084,7 @@ ALTER TABLE ONLY goodfood_confectioninputproduct
 
 
 --
--- Name: goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol goodfood_confectionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -38042,7 +38092,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolcorrect goodfood_confectionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolcorrect
@@ -38050,7 +38100,7 @@ ALTER TABLE ONLY goodfood_confectionprotocolcorrect
 
 
 --
--- Name: goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolstatechange goodfood_confectionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolstatechange
@@ -38058,7 +38108,7 @@ ALTER TABLE ONLY goodfood_confectionprotocolstatechange
 
 
 --
--- Name: goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionremainderinputproduct goodfood_confectionremainderinputproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionremainderinputproduct
@@ -38066,7 +38116,7 @@ ALTER TABLE ONLY goodfood_confectionremainderinputproduct
 
 
 --
--- Name: goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionstaff goodfood_confectionstaff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionstaff
@@ -38074,7 +38124,7 @@ ALTER TABLE ONLY goodfood_confectionstaff
 
 
 --
--- Name: goodfood_eventlog_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_eventlog goodfood_eventlog_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_eventlog
@@ -38082,7 +38132,7 @@ ALTER TABLE ONLY goodfood_eventlog
 
 
 --
--- Name: goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixentry goodfood_extrusionaddedmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry
@@ -38090,7 +38140,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixentry
 
 
 --
--- Name: goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient goodfood_extrusionaddedmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
@@ -38098,7 +38148,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: goodfood_extrusioncontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusioncontext goodfood_extrusioncontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusioncontext
@@ -38106,7 +38156,7 @@ ALTER TABLE ONLY goodfood_extrusioncontext
 
 
 --
--- Name: goodfood_extrusionmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -38114,7 +38164,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmixingredient goodfood_extrusionmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmixingredient
@@ -38122,7 +38172,7 @@ ALTER TABLE ONLY goodfood_extrusionmixingredient
 
 
 --
--- Name: goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouring goodfood_extrusionpouring_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouring
@@ -38130,7 +38180,7 @@ ALTER TABLE ONLY goodfood_extrusionpouring
 
 
 --
--- Name: goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient goodfood_extrusionpouringingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
@@ -38138,7 +38188,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
--- Name: goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringmix goodfood_extrusionpouringmix_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringmix
@@ -38146,7 +38196,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringmix
 
 
 --
--- Name: goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol goodfood_extrusionprotocol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol
@@ -38154,7 +38204,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
--- Name: goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolcorrect goodfood_extrusionprotocolcorrect_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolcorrect
@@ -38162,7 +38212,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocolcorrect
 
 
 --
--- Name: goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolstatechange goodfood_extrusionprotocolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
@@ -38170,7 +38220,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionsouse goodfood_extrusionsouse_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionsouse
@@ -38178,7 +38228,7 @@ ALTER TABLE ONLY goodfood_extrusionsouse
 
 
 --
--- Name: goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixentry goodfood_extrusiontakenoffmixentry_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
@@ -38186,7 +38236,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient goodfood_extrusiontakenoffmixingredient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
@@ -38194,7 +38244,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: goodfood_goodfoodreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_goodfoodreport goodfood_goodfoodreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_goodfoodreport
@@ -38202,7 +38252,7 @@ ALTER TABLE ONLY goodfood_goodfoodreport
 
 
 --
--- Name: goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_label goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label
@@ -38210,7 +38260,7 @@ ALTER TABLE ONLY goodfood_label
 
 
 --
--- Name: goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_labelstatechange goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_labelstatechange
@@ -38218,7 +38268,7 @@ ALTER TABLE ONLY goodfood_labelstatechange
 
 
 --
--- Name: goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -38226,7 +38276,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: goodfood_palletcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletcontext goodfood_palletcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletcontext
@@ -38234,7 +38284,7 @@ ALTER TABLE ONLY goodfood_palletcontext
 
 
 --
--- Name: goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletstatechange goodfood_palletstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletstatechange
@@ -38242,7 +38292,7 @@ ALTER TABLE ONLY goodfood_palletstatechange
 
 
 --
--- Name: goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_printedlabel goodfood_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_printedlabel
@@ -38250,7 +38300,7 @@ ALTER TABLE ONLY goodfood_printedlabel
 
 
 --
--- Name: goodfood_ssccnumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_ssccnumber goodfood_ssccnumber_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_ssccnumber
@@ -38258,7 +38308,7 @@ ALTER TABLE ONLY goodfood_ssccnumber
 
 
 --
--- Name: integrationbartender_printer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_printer integrationbartender_printer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_printer
@@ -38266,7 +38316,7 @@ ALTER TABLE ONLY integrationbartender_printer
 
 
 --
--- Name: integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_printlabelshelper integrationbartender_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_printlabelshelper
@@ -38274,7 +38324,7 @@ ALTER TABLE ONLY integrationbartender_printlabelshelper
 
 
 --
--- Name: integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_sendtoprint integrationbartender_sendtoprint_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_sendtoprint
@@ -38282,7 +38332,7 @@ ALTER TABLE ONLY integrationbartender_sendtoprint
 
 
 --
--- Name: integrationbaselinker_baselinkerparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_baselinkerparameters integrationbaselinker_baselinkerparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
@@ -38290,7 +38340,7 @@ ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
 
 
 --
--- Name: integrationbaselinker_statusesfordocument_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesfordocument integrationbaselinker_statusesfordocument_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesfordocument
@@ -38298,7 +38348,7 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument
 
 
 --
--- Name: integrationbaselinker_statusesformasterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesformasterorder integrationbaselinker_statusesformasterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
@@ -38306,7 +38356,7 @@ ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
 
 
 --
--- Name: integrationscales_productionlineforscale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationscales_productionlineforscale integrationscales_productionlineforscale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_productionlineforscale
@@ -38314,7 +38364,7 @@ ALTER TABLE ONLY integrationscales_productionlineforscale
 
 
 --
--- Name: integrationscales_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationscales_scale integrationscales_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_scale
@@ -38322,7 +38372,7 @@ ALTER TABLE ONLY integrationscales_scale
 
 
 --
--- Name: jointable_action_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_subassembly jointable_action_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_subassembly
@@ -38330,7 +38380,7 @@ ALTER TABLE ONLY jointable_action_subassembly
 
 
 --
--- Name: jointable_action_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstation jointable_action_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstation
@@ -38338,7 +38388,7 @@ ALTER TABLE ONLY jointable_action_workstation
 
 
 --
--- Name: jointable_action_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstationtype jointable_action_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstationtype
@@ -38346,7 +38396,7 @@ ALTER TABLE ONLY jointable_action_workstationtype
 
 
 --
--- Name: jointable_anomaly_anomalyreason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_anomaly_anomalyreason jointable_anomaly_anomalyreason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_anomaly_anomalyreason
@@ -38354,7 +38404,7 @@ ALTER TABLE ONLY jointable_anomaly_anomalyreason
 
 
 --
--- Name: jointable_company_negotiation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_negotiation jointable_company_negotiation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_negotiation
@@ -38362,7 +38412,7 @@ ALTER TABLE ONLY jointable_company_negotiation
 
 
 --
--- Name: jointable_company_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operation jointable_company_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operation
@@ -38370,7 +38420,7 @@ ALTER TABLE ONLY jointable_company_operation
 
 
 --
--- Name: jointable_company_operationgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operationgroup jointable_company_operationgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operationgroup
@@ -38378,7 +38428,7 @@ ALTER TABLE ONLY jointable_company_operationgroup
 
 
 --
--- Name: jointable_company_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_subassembly jointable_company_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_subassembly
@@ -38386,7 +38436,7 @@ ALTER TABLE ONLY jointable_company_subassembly
 
 
 --
--- Name: jointable_company_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_workstation jointable_company_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_workstation
@@ -38394,7 +38444,7 @@ ALTER TABLE ONLY jointable_company_workstation
 
 
 --
--- Name: jointable_division_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_division_productionline jointable_division_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_division_productionline
@@ -38402,7 +38452,7 @@ ALTER TABLE ONLY jointable_division_productionline
 
 
 --
--- Name: jointable_faulttype_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_subassembly jointable_faulttype_subassembly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_subassembly
@@ -38410,7 +38460,7 @@ ALTER TABLE ONLY jointable_faulttype_subassembly
 
 
 --
--- Name: jointable_faulttype_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstation jointable_faulttype_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstation
@@ -38418,7 +38468,7 @@ ALTER TABLE ONLY jointable_faulttype_workstation
 
 
 --
--- Name: jointable_faulttype_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstationtype jointable_faulttype_workstationtype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstationtype
@@ -38426,7 +38476,7 @@ ALTER TABLE ONLY jointable_faulttype_workstationtype
 
 
 --
--- Name: jointable_group_role_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_group_role jointable_group_role_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_group_role
@@ -38434,7 +38484,7 @@ ALTER TABLE ONLY jointable_group_role
 
 
 --
--- Name: jointable_issue_productstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_issue_productstoissuehelper jointable_issue_productstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_issue_productstoissuehelper
@@ -38442,7 +38492,7 @@ ALTER TABLE ONLY jointable_issue_productstoissuehelper
 
 
 --
--- Name: jointable_label_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_label_printlabelshelper jointable_label_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_label_printlabelshelper
@@ -38450,7 +38500,7 @@ ALTER TABLE ONLY jointable_label_printlabelshelper
 
 
 --
--- Name: jointable_materialrequirement_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirement_order jointable_materialrequirement_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirement_order
@@ -38458,7 +38508,7 @@ ALTER TABLE ONLY jointable_materialrequirement_order
 
 
 --
--- Name: jointable_materialrequirementcoverage_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirementcoverage_order jointable_materialrequirementcoverage_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirementcoverage_order
@@ -38466,7 +38516,7 @@ ALTER TABLE ONLY jointable_materialrequirementcoverage_order
 
 
 --
--- Name: jointable_multiassignmenttoshift_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_multiassignmenttoshift_staff jointable_multiassignmenttoshift_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
@@ -38474,7 +38524,7 @@ ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
 
 
 --
--- Name: jointable_operation_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_operation_workstation jointable_operation_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_operation_workstation
@@ -38482,7 +38532,7 @@ ALTER TABLE ONLY jointable_operation_workstation
 
 
 --
--- Name: jointable_order_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_printlabelshelper jointable_order_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_printlabelshelper
@@ -38490,7 +38540,7 @@ ALTER TABLE ONLY jointable_order_printlabelshelper
 
 
 --
--- Name: jointable_order_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_productionbalance jointable_order_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_productionbalance
@@ -38498,7 +38548,7 @@ ALTER TABLE ONLY jointable_order_productionbalance
 
 
 --
--- Name: jointable_order_workplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_workplan jointable_order_workplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_workplan
@@ -38506,7 +38556,7 @@ ALTER TABLE ONLY jointable_order_workplan
 
 
 --
--- Name: jointable_palletnumber_palletnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_palletnumber_palletnumberhelper jointable_palletnumber_palletnumberhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
@@ -38514,7 +38564,7 @@ ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
 
 
 --
--- Name: jointable_plannedevent_plannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_plannedevent jointable_plannedevent_plannedevent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_plannedevent
@@ -38522,7 +38572,7 @@ ALTER TABLE ONLY jointable_plannedevent_plannedevent
 
 
 --
--- Name: jointable_plannedevent_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_staff jointable_plannedevent_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_staff
@@ -38530,7 +38580,7 @@ ALTER TABLE ONLY jointable_plannedevent_staff
 
 
 --
--- Name: jointable_printlabelshelper_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_printlabelshelper_printedlabel jointable_printlabelshelper_printedlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
@@ -38538,7 +38588,7 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 
 --
--- Name: jointable_product_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_scale jointable_product_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_scale
@@ -38546,7 +38596,7 @@ ALTER TABLE ONLY jointable_product_scale
 
 
 --
--- Name: jointable_product_warehouseminimumstatemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_warehouseminimumstatemulti jointable_product_warehouseminimumstatemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
@@ -38554,7 +38604,7 @@ ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
 
 
 --
--- Name: jointable_productionline_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_scale jointable_productionline_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_scale
@@ -38562,7 +38612,7 @@ ALTER TABLE ONLY jointable_productionline_scale
 
 
 --
--- Name: jointable_productionline_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shift jointable_productionline_shift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shift
@@ -38570,7 +38620,7 @@ ALTER TABLE ONLY jointable_productionline_shift
 
 
 --
--- Name: jointable_productionline_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shifttimetableexception jointable_productionline_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shifttimetableexception
@@ -38578,7 +38628,7 @@ ALTER TABLE ONLY jointable_productionline_shifttimetableexception
 
 
 --
--- Name: jointable_productionline_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technology jointable_productionline_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technology
@@ -38586,7 +38636,7 @@ ALTER TABLE ONLY jointable_productionline_technology
 
 
 --
--- Name: jointable_productionline_technologygroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technologygroup jointable_productionline_technologygroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
@@ -38594,7 +38644,7 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 
 --
--- Name: jointable_shift_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_shift_shifttimetableexception jointable_shift_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_shift_shifttimetableexception
@@ -38602,7 +38652,7 @@ ALTER TABLE ONLY jointable_shift_shifttimetableexception
 
 
 --
--- Name: jointable_staff_timeusagereportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_staff_timeusagereportfilter jointable_staff_timeusagereportfilter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_staff_timeusagereportfilter
@@ -38610,7 +38660,7 @@ ALTER TABLE ONLY jointable_staff_timeusagereportfilter
 
 
 --
--- Name: jointable_stocktaking_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_stocktaking_storagelocation jointable_stocktaking_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_stocktaking_storagelocation
@@ -38618,7 +38668,7 @@ ALTER TABLE ONLY jointable_stocktaking_storagelocation
 
 
 --
--- Name: jointable_storagelocation_warehousestockreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_storagelocation_warehousestockreport jointable_storagelocation_warehousestockreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
@@ -38626,7 +38676,7 @@ ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
 
 
 --
--- Name: jointable_technologyoperationcomponent_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_technologyoperationcomponent_workstation jointable_technologyoperationcomponent_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
@@ -38634,7 +38684,7 @@ ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
 
 
 --
--- Name: linechangeovernorms_linechangeovernorms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_linechangeovernorms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -38642,7 +38692,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: maintenanceevent_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -38650,7 +38700,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: masterorder_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder masterorder_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -38658,7 +38708,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder masterorders_masterorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -38666,7 +38716,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: masterorders_masterorderdefinition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderdefinition masterorders_masterorderdefinition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderdefinition
@@ -38674,7 +38724,7 @@ ALTER TABLE ONLY masterorders_masterorderdefinition
 
 
 --
--- Name: masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderproduct masterorders_masterorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderproduct
@@ -38682,7 +38732,7 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 
 --
--- Name: materialflow_location_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_location materialflow_location_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_location
@@ -38690,7 +38740,7 @@ ALTER TABLE ONLY materialflow_location
 
 
 --
--- Name: materialflow_materialsinlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocation materialflow_materialsinlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocation
@@ -38698,7 +38748,7 @@ ALTER TABLE ONLY materialflow_materialsinlocation
 
 
 --
--- Name: materialflow_materialsinstockareascomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocationcomponent materialflow_materialsinstockareascomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocationcomponent
@@ -38706,7 +38756,7 @@ ALTER TABLE ONLY materialflow_materialsinlocationcomponent
 
 
 --
--- Name: materialflow_stockcorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_stockcorrection materialflow_stockcorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_stockcorrection
@@ -38714,7 +38764,7 @@ ALTER TABLE ONLY materialflow_stockcorrection
 
 
 --
--- Name: materialflow_transfer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer materialflow_transfer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -38722,7 +38772,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: materialflow_transformations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transformations materialflow_transformations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations
@@ -38730,7 +38780,7 @@ ALTER TABLE ONLY materialflow_transformations
 
 
 --
--- Name: materialflow_userlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_userlocation materialflow_userlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_userlocation
@@ -38738,7 +38788,7 @@ ALTER TABLE ONLY materialflow_userlocation
 
 
 --
--- Name: materialflowmultitransfers_productquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_productquantity materialflowmultitransfers_productquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_productquantity
@@ -38746,7 +38796,7 @@ ALTER TABLE ONLY materialflowmultitransfers_productquantity
 
 
 --
--- Name: materialflowmultitransfers_transfertemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_transfertemplate materialflowmultitransfers_transfertemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
@@ -38754,7 +38804,7 @@ ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
 
 
 --
--- Name: materialflowresources_costnormsgenerator_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormsgenerator materialflowresources_costnormsgenerator_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormsgenerator
@@ -38762,7 +38812,7 @@ ALTER TABLE ONLY materialflowresources_costnormsgenerator
 
 
 --
--- Name: materialflowresources_costnormslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormslocation materialflowresources_costnormslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormslocation
@@ -38770,7 +38820,7 @@ ALTER TABLE ONLY materialflowresources_costnormslocation
 
 
 --
--- Name: materialflowresources_documentpositionparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_documentpositionparameters materialflowresources_documentpositionparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparameters
@@ -38778,7 +38828,7 @@ ALTER TABLE ONLY materialflowresources_documentpositionparameters
 
 
 --
--- Name: materialflowresources_documentpositionparametersitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_documentpositionparametersitem materialflowresources_documentpositionparametersitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
@@ -38786,7 +38836,7 @@ ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
 
 
 --
--- Name: materialflowresources_importstoragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_importstoragelocation materialflowresources_importstoragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_importstoragelocation
@@ -38794,7 +38844,7 @@ ALTER TABLE ONLY materialflowresources_importstoragelocation
 
 
 --
--- Name: materialflowresources_palletbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_palletbalance materialflowresources_palletbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_palletbalance
@@ -38802,7 +38852,7 @@ ALTER TABLE ONLY materialflowresources_palletbalance
 
 
 --
--- Name: materialflowresources_palletmovehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_palletmovehelper materialflowresources_palletmovehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_palletmovehelper
@@ -38810,7 +38860,7 @@ ALTER TABLE ONLY materialflowresources_palletmovehelper
 
 
 --
--- Name: materialflowresources_positionaddmultihelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_positionaddmultihelper materialflowresources_positionaddmultihelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_positionaddmultihelper
@@ -38818,7 +38868,7 @@ ALTER TABLE ONLY materialflowresources_positionaddmultihelper
 
 
 --
--- Name: materialflowresources_productstoragelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory materialflowresources_productstoragelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
@@ -38826,7 +38876,7 @@ ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
 
 
 --
--- Name: materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation materialflowresources_reservation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -38834,7 +38884,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: materialflowresources_resource_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource materialflowresources_resource_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -38842,7 +38892,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: materialflowresources_resourcecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection materialflowresources_resourcecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -38850,7 +38900,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: materialflowresources_resourcestock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcestock materialflowresources_resourcestock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcestock
@@ -38858,7 +38908,7 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 
 --
--- Name: materialflowresources_stocktaking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_stocktaking materialflowresources_stocktaking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_stocktaking
@@ -38866,7 +38916,7 @@ ALTER TABLE ONLY materialflowresources_stocktaking
 
 
 --
--- Name: materialflowresources_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocation materialflowresources_storagelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocation
@@ -38874,7 +38924,7 @@ ALTER TABLE ONLY materialflowresources_storagelocation
 
 
 --
--- Name: materialflowresources_storagelocationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhelper materialflowresources_storagelocationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhelper
@@ -38882,7 +38932,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhelper
 
 
 --
--- Name: materialflowresources_storagelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhistory materialflowresources_storagelocationhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhistory
@@ -38890,7 +38940,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhistory
 
 
 --
--- Name: materialflowresources_warehousestockreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_warehousestockreport materialflowresources_warehousestockreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_warehousestockreport
@@ -38898,7 +38948,7 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
--- Name: materialrequirementcoveragefororder_columnforcoveragesforo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_columnforcoveragesfororder materialrequirementcoveragefororder_columnforcoveragesforo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_columnforcoveragesfororder
@@ -38906,7 +38956,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_columnforcoveragesfororder
 
 
 --
--- Name: materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragefororder materialrequirementcoveragefororder_coveragefororder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
@@ -38914,7 +38964,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragelocation materialrequirementcoveragefororder_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
@@ -38922,7 +38972,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproduct materialrequirementcoveragefororder_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
@@ -38930,7 +38980,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: materialrequirementcoveragefororder_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging materialrequirementcoveragefororder_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -38938,7 +38988,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: materialrequirements_materialrequirement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirements_materialrequirement materialrequirements_materialrequirement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirements_materialrequirement
@@ -38946,7 +38996,7 @@ ALTER TABLE ONLY materialrequirements_materialrequirement
 
 
 --
--- Name: nblsport_fabric_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_fabric nblsport_fabric_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_fabric
@@ -38954,7 +39004,7 @@ ALTER TABLE ONLY nblsport_fabric
 
 
 --
--- Name: nblsport_overhead_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_overhead nblsport_overhead_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_overhead
@@ -38962,7 +39012,7 @@ ALTER TABLE ONLY nblsport_overhead
 
 
 --
--- Name: nutrientcalculation_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrientcalculation nutrientcalculation_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrientcalculation
@@ -38970,7 +39020,7 @@ ALTER TABLE ONLY nutritionfacts_nutrientcalculation
 
 
 --
--- Name: nutrition_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrition nutrition_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrition
@@ -38978,7 +39028,7 @@ ALTER TABLE ONLY nutritionfacts_nutrition
 
 
 --
--- Name: nutritionelement_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritionelement nutritionelement_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritionelement
@@ -38986,7 +39036,7 @@ ALTER TABLE ONLY nutritionfacts_nutritionelement
 
 
 --
--- Name: nutritionfacts_prototypeproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproduct nutritionfacts_prototypeproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproduct
@@ -38994,7 +39044,7 @@ ALTER TABLE ONLY nutritionfacts_prototypeproduct
 
 
 --
--- Name: nutritionfacts_prototypeproductcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproductcomponent nutritionfacts_prototypeproductcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
@@ -39002,7 +39052,7 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
 
 
 --
--- Name: nutritiongroup_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritiongroup nutritiongroup_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritiongroup
@@ -39010,7 +39060,7 @@ ALTER TABLE ONLY nutritionfacts_nutritiongroup
 
 
 --
--- Name: operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasks_operationaltask operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasks_operationaltask
@@ -39018,7 +39068,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 
 --
--- Name: operationaltasksfororders_techopercompoperationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasksfororders_techopercompoperationaltask operationaltasksfororders_techopercompoperationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
@@ -39026,7 +39076,7 @@ ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
 
 
 --
--- Name: orders_changedateshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_changedateshelper orders_changedateshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_changedateshelper
@@ -39034,7 +39084,7 @@ ALTER TABLE ONLY orders_changedateshelper
 
 
 --
--- Name: orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order orders_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -39042,7 +39092,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: orders_ordercategorycolor_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_ordercategorycolor orders_ordercategorycolor_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_ordercategorycolor
@@ -39050,7 +39100,7 @@ ALTER TABLE ONLY orders_ordercategorycolor
 
 
 --
--- Name: orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_orderstatechange orders_orderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_orderstatechange
@@ -39058,7 +39108,7 @@ ALTER TABLE ONLY orders_orderstatechange
 
 
 --
--- Name: orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondatefrom orders_reasontypecorrectiondatefrom_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
@@ -39066,7 +39116,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondateto orders_reasontypecorrectiondateto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondateto
@@ -39074,7 +39124,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondateto
 
 
 --
--- Name: orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectiveend orders_reasontypedeviationeffectiveend_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectiveend
@@ -39082,7 +39132,7 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectiveend
 
 
 --
--- Name: orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectivestart orders_reasontypedeviationeffectivestart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectivestart
@@ -39090,7 +39140,7 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectivestart
 
 
 --
--- Name: orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypeofchangingorderstate orders_reasontypeofchangingorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypeofchangingorderstate
@@ -39098,7 +39148,7 @@ ALTER TABLE ONLY orders_reasontypeofchangingorderstate
 
 
 --
--- Name: orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_typeofcorrectioncauses orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_typeofcorrectioncauses
@@ -39106,7 +39156,7 @@ ALTER TABLE ONLY orders_typeofcorrectioncauses
 
 
 --
--- Name: ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersforsubproductsgeneration_suborders ordersforsubproductsgeneration_suborders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
@@ -39114,7 +39164,7 @@ ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: ordersgantt_ordersganttparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgantt_ordersganttparameters ordersgantt_ordersganttparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgantt_ordersganttparameters
@@ -39122,7 +39172,7 @@ ALTER TABLE ONLY ordersgantt_ordersganttparameters
 
 
 --
--- Name: ordersgroup_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroup_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -39130,7 +39180,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroups_ordersgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -39138,7 +39188,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersupplies_columnforcoverages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_columnforcoverages ordersupplies_columnforcoverages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_columnforcoverages
@@ -39146,7 +39196,7 @@ ALTER TABLE ONLY ordersupplies_columnforcoverages
 
 
 --
--- Name: ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coveragelocation ordersupplies_coveragelocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation
@@ -39154,7 +39204,7 @@ ALTER TABLE ONLY ordersupplies_coveragelocation
 
 
 --
--- Name: ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageorderstate ordersupplies_coverageorderstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageorderstate
@@ -39162,7 +39212,7 @@ ALTER TABLE ONLY ordersupplies_coverageorderstate
 
 
 --
--- Name: ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproduct ordersupplies_coverageproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproduct
@@ -39170,7 +39220,7 @@ ALTER TABLE ONLY ordersupplies_coverageproduct
 
 
 --
--- Name: ordersupplies_coverageproductgenerated_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductgenerated ordersupplies_coverageproductgenerated_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductgenerated
@@ -39178,7 +39228,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductgenerated
 
 
 --
--- Name: ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging ordersupplies_coverageproductlogging_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -39186,7 +39236,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductselected ordersupplies_coverageproductselected_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductselected
@@ -39194,7 +39244,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductselected
 
 
 --
--- Name: ordersupplies_coverageregister_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister ordersupplies_coverageregister_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -39202,7 +39252,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_materialrequirementcoverage ordersupplies_materialrequirementcoverage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
@@ -39210,7 +39260,7 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: pallet_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet pallet_externalnumber_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -39218,7 +39268,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: pantone_importpantones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_importpantones pantone_importpantones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_importpantones
@@ -39226,7 +39276,7 @@ ALTER TABLE ONLY pantone_importpantones
 
 
 --
--- Name: pantone_operationproductdeleted_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_operationproductdeleted pantone_operationproductdeleted_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_operationproductdeleted
@@ -39234,7 +39284,7 @@ ALTER TABLE ONLY pantone_operationproductdeleted
 
 
 --
--- Name: pantone_pantone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantone pantone_pantone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantone
@@ -39242,7 +39292,7 @@ ALTER TABLE ONLY pantone_pantone
 
 
 --
--- Name: pantone_pantoneforoperationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforoperationproduct pantone_pantoneforoperationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforoperationproduct
@@ -39250,7 +39300,7 @@ ALTER TABLE ONLY pantone_pantoneforoperationproduct
 
 
 --
--- Name: pantone_pantoneforproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforproducts pantone_pantoneforproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforproducts
@@ -39258,7 +39308,7 @@ ALTER TABLE ONLY pantone_pantoneforproducts
 
 
 --
--- Name: pantone_parameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_parameters pantone_parameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_parameters
@@ -39266,7 +39316,7 @@ ALTER TABLE ONLY pantone_parameters
 
 
 --
--- Name: pantone_selectedtechnologyoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_selectedtechnologyoperationcomponent pantone_selectedtechnologyoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_selectedtechnologyoperationcomponent
@@ -39274,7 +39324,7 @@ ALTER TABLE ONLY pantone_selectedtechnologyoperationcomponent
 
 
 --
--- Name: position_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -39282,7 +39332,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: productcatalognumbers_productcatalognumbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productcatalognumbers_productcatalognumbers productcatalognumbers_productcatalognumbers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
@@ -39290,7 +39340,7 @@ ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
 
 
 --
--- Name: productcharacteristics_forms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productcharacteristics_forms productcharacteristics_forms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_forms
@@ -39298,7 +39348,7 @@ ALTER TABLE ONLY productcharacteristics_forms
 
 
 --
--- Name: productcharacteristics_shelves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productcharacteristics_shelves productcharacteristics_shelves_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_shelves
@@ -39306,7 +39356,7 @@ ALTER TABLE ONLY productcharacteristics_shelves
 
 
 --
--- Name: productdata_productdata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdata productdata_productdata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdata
@@ -39314,7 +39364,7 @@ ALTER TABLE ONLY productdata_productdata
 
 
 --
--- Name: productdata_productdataattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdataattachment productdata_productdataattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataattachment
@@ -39322,7 +39372,7 @@ ALTER TABLE ONLY productdata_productdataattachment
 
 
 --
--- Name: productdata_productdatainput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdatainput productdata_productdatainput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdatainput
@@ -39330,7 +39380,7 @@ ALTER TABLE ONLY productdata_productdatainput
 
 
 --
--- Name: productdata_productdataoperation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdataoperation productdata_productdataoperation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataoperation
@@ -39338,7 +39388,7 @@ ALTER TABLE ONLY productdata_productdataoperation
 
 
 --
--- Name: productdata_selectedtechnology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_selectedtechnology productdata_selectedtechnology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_selectedtechnology
@@ -39346,7 +39396,7 @@ ALTER TABLE ONLY productdata_selectedtechnology
 
 
 --
--- Name: productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue productflowthrudivision_issue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -39354,7 +39404,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_materialavailability productflowthrudivision_materialavailability_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_materialavailability
@@ -39362,7 +39412,7 @@ ALTER TABLE ONLY productflowthrudivision_materialavailability
 
 
 --
--- Name: productflowthrudivision_productandquantityhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productandquantityhelper productflowthrudivision_productandquantityhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
@@ -39370,7 +39420,7 @@ ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
 
 
 --
--- Name: productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue productflowthrudivision_productstoissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -39378,7 +39428,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: productflowthrudivision_productstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissuehelper productflowthrudivision_productstoissuehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissuehelper
@@ -39386,7 +39436,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissuehelper
 
 
 --
--- Name: productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection productflowthrudivision_producttoissuecorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -39394,7 +39444,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: productflowthrudivision_producttoissuecorrectionhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrectionhelper productflowthrudivision_producttoissuecorrectionhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
@@ -39402,7 +39452,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
 
 
 --
--- Name: productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue productflowthrudivision_warehouseissue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -39410,7 +39460,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissuestatechange productflowthrudivision_warehouseissuestatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
@@ -39418,7 +39468,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: productionbalancepershift_balance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionbalancepershift_balance productionbalancepershift_balance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionbalancepershift_balance
@@ -39426,7 +39476,7 @@ ALTER TABLE ONLY productionbalancepershift_balance
 
 
 --
--- Name: productionbalancepershift_balancecontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionbalancepershift_balancecontext productionbalancepershift_balancecontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionbalancepershift_balancecontext
@@ -39434,7 +39484,7 @@ ALTER TABLE ONLY productionbalancepershift_balancecontext
 
 
 --
--- Name: productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly
@@ -39442,7 +39492,7 @@ ALTER TABLE ONLY productioncounting_anomaly
 
 
 --
--- Name: productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyexplanation productioncounting_anomalyexplanation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyexplanation
@@ -39450,7 +39500,7 @@ ALTER TABLE ONLY productioncounting_anomalyexplanation
 
 
 --
--- Name: productioncounting_anomalyproductiontrackingentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackingentryhelper productioncounting_anomalyproductiontrackingentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
@@ -39458,7 +39508,7 @@ ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: productioncounting_anomalyproductiontrackinghelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackinghelper productioncounting_anomalyproductiontrackinghelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackinghelper
@@ -39466,7 +39516,7 @@ ALTER TABLE ONLY productioncounting_anomalyproductiontrackinghelper
 
 
 --
--- Name: productioncounting_anomalyreason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreason productioncounting_anomalyreason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreason
@@ -39474,7 +39524,7 @@ ALTER TABLE ONLY productioncounting_anomalyreason
 
 
 --
--- Name: productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreasoncontainer productioncounting_anomalyreasoncontainer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
@@ -39482,7 +39532,7 @@ ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: productioncounting_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productionbalance productioncounting_productionbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productionbalance
@@ -39490,7 +39540,7 @@ ALTER TABLE ONLY productioncounting_productionbalance
 
 
 --
--- Name: productioncounting_productioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingreport productioncounting_productioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingreport
@@ -39498,7 +39548,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingreport
 
 
 --
--- Name: productioncounting_productioncountingquantitysetcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productioncountingquantitysetcomponent productioncounting_productioncountingquantitysetcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
@@ -39506,7 +39556,7 @@ ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: productioncounting_productionrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productioncounting_productionrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -39514,7 +39564,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingstatechange productioncounting_productionrecordstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingstatechange
@@ -39522,7 +39572,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingstatechange
 
 
 --
--- Name: productioncounting_recordoperationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponent productioncounting_recordoperationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
@@ -39530,7 +39580,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: productioncounting_recordoperationproductoutcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponent productioncounting_recordoperationproductoutcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
@@ -39538,7 +39588,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settechnologyincomponents productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settechnologyincomponents
@@ -39546,7 +39596,7 @@ ALTER TABLE ONLY productioncounting_settechnologyincomponents
 
 
 --
--- Name: productioncounting_settrackingoperationproductincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settrackingoperationproductincomponents productioncounting_settrackingoperationproductincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
@@ -39554,7 +39604,7 @@ ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_staffworktime productioncounting_staffworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_staffworktime
@@ -39562,7 +39612,7 @@ ALTER TABLE ONLY productioncounting_staffworktime
 
 
 --
--- Name: productioncountingquantity_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -39570,7 +39620,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productionlines_factorystructureelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement productionlines_factorystructureelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -39578,7 +39628,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: productionlines_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_productionline productionlines_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_productionline
@@ -39586,7 +39636,7 @@ ALTER TABLE ONLY productionlines_productionline
 
 
 --
--- Name: productionlines_workstationtypecomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_workstationtypecomponent productionlines_workstationtypecomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent
@@ -39594,7 +39644,7 @@ ALTER TABLE ONLY productionlines_workstationtypecomponent
 
 
 --
--- Name: productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_dailyprogress productionpershift_dailyprogress_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_dailyprogress
@@ -39602,7 +39652,7 @@ ALTER TABLE ONLY productionpershift_dailyprogress
 
 
 --
--- Name: productionpershift_ppsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_ppsreport productionpershift_ppsreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_ppsreport
@@ -39610,7 +39660,7 @@ ALTER TABLE ONLY productionpershift_ppsreport
 
 
 --
--- Name: productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_productionpershift productionpershift_productionpershift_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_productionpershift
@@ -39618,7 +39668,7 @@ ALTER TABLE ONLY productionpershift_productionpershift
 
 
 --
--- Name: productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_progressforday productionpershift_progressforday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_progressforday
@@ -39626,7 +39676,7 @@ ALTER TABLE ONLY productionpershift_progressforday
 
 
 --
--- Name: productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_reasontypeofcorrectionplan productionpershift_reasontypeofcorrectionplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_reasontypeofcorrectionplan
@@ -39634,7 +39684,7 @@ ALTER TABLE ONLY productionpershift_reasontypeofcorrectionplan
 
 
 --
--- Name: productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionscheduling_opercomptimecalculation productionscheduling_opercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_opercomptimecalculation
@@ -39642,7 +39692,7 @@ ALTER TABLE ONLY productionscheduling_opercomptimecalculation
 
 
 --
--- Name: productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: productionscheduling_ordertimecalculation productionscheduling_ordertimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_ordertimecalculation
@@ -39650,7 +39700,7 @@ ALTER TABLE ONLY productionscheduling_ordertimecalculation
 
 
 --
--- Name: qcadoocustomtranslation_customtranslation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoocustomtranslation_customtranslation qcadoocustomtranslation_customtranslation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoocustomtranslation_customtranslation
@@ -39658,7 +39708,7 @@ ALTER TABLE ONLY qcadoocustomtranslation_customtranslation
 
 
 --
--- Name: qcadoomodel_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_dictionary qcadoomodel_dictionary_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_dictionary
@@ -39666,7 +39716,7 @@ ALTER TABLE ONLY qcadoomodel_dictionary
 
 
 --
--- Name: qcadoomodel_dictionaryitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_dictionaryitem qcadoomodel_dictionaryitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_dictionaryitem
@@ -39674,7 +39724,7 @@ ALTER TABLE ONLY qcadoomodel_dictionaryitem
 
 
 --
--- Name: qcadoomodel_globalunitconversionsaggregate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_globalunitconversionsaggregate qcadoomodel_globalunitconversionsaggregate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_globalunitconversionsaggregate
@@ -39682,7 +39732,7 @@ ALTER TABLE ONLY qcadoomodel_globalunitconversionsaggregate
 
 
 --
--- Name: qcadoomodel_unitconv_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_unitconversionitem qcadoomodel_unitconv_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_unitconversionitem
@@ -39690,7 +39740,7 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 
 --
--- Name: qcadooplugin_plugin_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooplugin_plugin qcadooplugin_plugin_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooplugin_plugin
@@ -39698,7 +39748,7 @@ ALTER TABLE ONLY qcadooplugin_plugin
 
 
 --
--- Name: qcadoosecurity_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_group qcadoosecurity_group_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_group
@@ -39706,7 +39756,7 @@ ALTER TABLE ONLY qcadoosecurity_group
 
 
 --
--- Name: qcadoosecurity_persistenttoken_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_persistenttoken qcadoosecurity_persistenttoken_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_persistenttoken
@@ -39714,7 +39764,7 @@ ALTER TABLE ONLY qcadoosecurity_persistenttoken
 
 
 --
--- Name: qcadoosecurity_role_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_role qcadoosecurity_role_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_role
@@ -39722,7 +39772,7 @@ ALTER TABLE ONLY qcadoosecurity_role
 
 
 --
--- Name: qcadoosecurity_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_user qcadoosecurity_user_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_user
@@ -39730,7 +39780,7 @@ ALTER TABLE ONLY qcadoosecurity_user
 
 
 --
--- Name: qcadooview_alert_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_alert qcadooview_alert_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_alert
@@ -39738,7 +39788,7 @@ ALTER TABLE ONLY qcadooview_alert
 
 
 --
--- Name: qcadooview_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_category qcadooview_category_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_category
@@ -39746,7 +39796,7 @@ ALTER TABLE ONLY qcadooview_category
 
 
 --
--- Name: qcadooview_item_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_item qcadooview_item_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_item
@@ -39754,7 +39804,7 @@ ALTER TABLE ONLY qcadooview_item
 
 
 --
--- Name: qcadooview_view_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_view qcadooview_view_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_view
@@ -39762,7 +39812,7 @@ ALTER TABLE ONLY qcadooview_view
 
 
 --
--- Name: qcadooview_viewedalert_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_viewedalert qcadooview_viewedalert_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_viewedalert
@@ -39770,7 +39820,7 @@ ALTER TABLE ONLY qcadooview_viewedalert
 
 
 --
--- Name: repairorder_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -39778,7 +39828,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairs_repairorder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -39786,7 +39836,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairs_repairorderproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -39794,7 +39844,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderstatechange repairs_repairorderstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderstatechange
@@ -39802,7 +39852,7 @@ ALTER TABLE ONLY repairs_repairorderstatechange
 
 
 --
--- Name: repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderworktime repairs_repairorderworktime_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderworktime
@@ -39810,7 +39860,7 @@ ALTER TABLE ONLY repairs_repairorderworktime
 
 
 --
--- Name: resource_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -39818,7 +39868,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: simplematerialbalance_simplematerialbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalance simplematerialbalance_simplematerialbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalance
@@ -39826,7 +39876,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalance
 
 
 --
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalanceorderscomponent simplematerialbalance_simplematerialbalanceorderscomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
@@ -39834,7 +39884,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: simplematerialbalance_simplematerialbalancestockareascompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalancelocationscomponent simplematerialbalance_simplematerialbalancestockareascompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
@@ -39842,7 +39892,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
 
 
 --
--- Name: states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -39850,7 +39900,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: stoppage_stoppage stoppage_stoppage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY stoppage_stoppage
@@ -39858,7 +39908,7 @@ ALTER TABLE ONLY stoppage_stoppage
 
 
 --
--- Name: subcontractorportal_cost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_cost subcontractorportal_cost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_cost
@@ -39866,7 +39916,7 @@ ALTER TABLE ONLY subcontractorportal_cost
 
 
 --
--- Name: subcontractorportal_event_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_event subcontractorportal_event_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_event
@@ -39874,7 +39924,7 @@ ALTER TABLE ONLY subcontractorportal_event
 
 
 --
--- Name: subcontractorportal_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_message subcontractorportal_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_message
@@ -39882,7 +39932,7 @@ ALTER TABLE ONLY subcontractorportal_message
 
 
 --
--- Name: subcontractorportal_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_operation subcontractorportal_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_operation
@@ -39890,7 +39940,7 @@ ALTER TABLE ONLY subcontractorportal_operation
 
 
 --
--- Name: subcontractorportal_realisation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_realisation subcontractorportal_realisation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_realisation
@@ -39898,7 +39948,7 @@ ALTER TABLE ONLY subcontractorportal_realisation
 
 
 --
--- Name: subcontractorportal_suborder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborder subcontractorportal_suborder_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborder
@@ -39906,7 +39956,7 @@ ALTER TABLE ONLY subcontractorportal_suborder
 
 
 --
--- Name: subcontractorportal_suborderattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderattachment subcontractorportal_suborderattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderattachment
@@ -39914,7 +39964,7 @@ ALTER TABLE ONLY subcontractorportal_suborderattachment
 
 
 --
--- Name: subcontractorportal_suborderinput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderinput subcontractorportal_suborderinput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderinput
@@ -39922,7 +39972,7 @@ ALTER TABLE ONLY subcontractorportal_suborderinput
 
 
 --
--- Name: subcontractorportal_suborderoperation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoperation subcontractorportal_suborderoperation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoperation
@@ -39930,7 +39980,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoperation
 
 
 --
--- Name: subcontractorportal_suborderoutput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoutput subcontractorportal_suborderoutput_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoutput
@@ -39938,7 +39988,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoutput
 
 
 --
--- Name: subcontractorportal_subordertmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordertmp subcontractorportal_subordertmp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_subordertmp
@@ -39946,7 +39996,7 @@ ALTER TABLE ONLY subcontractorportal_subordertmp
 
 
 --
--- Name: supplynegotiations_columnforoffers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforoffers supplynegotiations_columnforoffers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforoffers
@@ -39954,7 +40004,7 @@ ALTER TABLE ONLY supplynegotiations_columnforoffers
 
 
 --
--- Name: supplynegotiations_columnforrequests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforrequests supplynegotiations_columnforrequests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforrequests
@@ -39962,7 +40012,7 @@ ALTER TABLE ONLY supplynegotiations_columnforrequests
 
 
 --
--- Name: supplynegotiations_negotiation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiation supplynegotiations_negotiation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiation
@@ -39970,7 +40020,7 @@ ALTER TABLE ONLY supplynegotiations_negotiation
 
 
 --
--- Name: supplynegotiations_negotiationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationproduct supplynegotiations_negotiationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationproduct
@@ -39978,7 +40028,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationproduct
 
 
 --
--- Name: supplynegotiations_negotiationstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationstatechange supplynegotiations_negotiationstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationstatechange
@@ -39986,7 +40036,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationstatechange
 
 
 --
--- Name: supplynegotiations_offer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offer supplynegotiations_offer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offer
@@ -39994,7 +40044,7 @@ ALTER TABLE ONLY supplynegotiations_offer
 
 
 --
--- Name: supplynegotiations_offerproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerproduct supplynegotiations_offerproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerproduct
@@ -40002,7 +40052,7 @@ ALTER TABLE ONLY supplynegotiations_offerproduct
 
 
 --
--- Name: supplynegotiations_offerstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerstatechange supplynegotiations_offerstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerstatechange
@@ -40010,7 +40060,7 @@ ALTER TABLE ONLY supplynegotiations_offerstatechange
 
 
 --
--- Name: supplynegotiations_parametercolumnforoffers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforoffers supplynegotiations_parametercolumnforoffers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
@@ -40018,7 +40068,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
 
 
 --
--- Name: supplynegotiations_parametercolumnforrequests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforrequests supplynegotiations_parametercolumnforrequests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
@@ -40026,7 +40076,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
 
 
 --
--- Name: supplynegotiations_requestforquotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotation supplynegotiations_requestforquotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotation
@@ -40034,7 +40084,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotation
 
 
 --
--- Name: supplynegotiations_requestforquotationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationproduct supplynegotiations_requestforquotationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
@@ -40042,7 +40092,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
 
 
 --
--- Name: supplynegotiations_requestforquotationstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationstatechange supplynegotiations_requestforquotationstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
@@ -40050,7 +40100,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
 
 
 --
--- Name: technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_barcodeoperationcomponent technologies_barcodeoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_barcodeoperationcomponent
@@ -40058,7 +40108,7 @@ ALTER TABLE ONLY technologies_barcodeoperationcomponent
 
 
 --
--- Name: technologies_changetechnologyparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_changetechnologyparameters technologies_changetechnologyparameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_changetechnologyparameters
@@ -40066,7 +40116,7 @@ ALTER TABLE ONLY technologies_changetechnologyparameters
 
 
 --
--- Name: technologies_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation technologies_operation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -40074,7 +40124,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: technologies_operationgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationgroup technologies_operationgroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationgroup
@@ -40082,7 +40132,7 @@ ALTER TABLE ONLY technologies_operationgroup
 
 
 --
--- Name: technologies_operationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent technologies_operationproductincomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -40090,7 +40140,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: technologies_operationproductoutcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent technologies_operationproductoutcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -40098,7 +40148,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: technologies_productcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productcomponent technologies_productcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productcomponent
@@ -40106,7 +40156,7 @@ ALTER TABLE ONLY technologies_productcomponent
 
 
 --
--- Name: technologies_productstructuretreenode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode technologies_productstructuretreenode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -40114,7 +40164,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: technologies_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technologies_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -40122,7 +40172,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technologies_technologyattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyattachment technologies_technologyattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyattachment
@@ -40130,7 +40180,7 @@ ALTER TABLE ONLY technologies_technologyattachment
 
 
 --
--- Name: technologies_technologygroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologygroup technologies_technologygroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologygroup
@@ -40138,7 +40188,7 @@ ALTER TABLE ONLY technologies_technologygroup
 
 
 --
--- Name: technologies_technologyoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologies_technologyoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -40146,7 +40196,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologies_technologyoperationcomponentmergeproductin_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin technologies_technologyoperationcomponentmergeproductin_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
@@ -40154,7 +40204,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologies_technologyoperationcomponentmergeproductout_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout technologies_technologyoperationcomponentmergeproductout_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
@@ -40162,7 +40212,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologies_technologystatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologystatechange technologies_technologystatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologystatechange
@@ -40170,7 +40220,7 @@ ALTER TABLE ONLY technologies_technologystatechange
 
 
 --
--- Name: technologiesgenerator_generatorcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatorcontext technologiesgenerator_generatorcontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatorcontext
@@ -40178,7 +40228,7 @@ ALTER TABLE ONLY technologiesgenerator_generatorcontext
 
 
 --
--- Name: technologiesgenerator_generatortechnologiesforproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortechnologiesforproduct technologiesgenerator_generatortechnologiesforproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
@@ -40186,7 +40236,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
 
 
 --
--- Name: technologiesgenerator_generatortreenode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode technologiesgenerator_generatortreenode_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -40194,7 +40244,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: timegapspreview_timegap_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegap timegapspreview_timegap_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegap
@@ -40202,7 +40252,7 @@ ALTER TABLE ONLY timegapspreview_timegap
 
 
 --
--- Name: timegapspreview_timegapscontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegapscontext timegapspreview_timegapscontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegapscontext
@@ -40210,7 +40260,7 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 
 --
--- Name: timenormsforoperations_techopercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: timenormsforoperations_techopercomptimecalculation timenormsforoperations_techopercomptimecalculation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timenormsforoperations_techopercomptimecalculation
@@ -40218,7 +40268,7 @@ ALTER TABLE ONLY timenormsforoperations_techopercomptimecalculation
 
 
 --
--- Name: universalrestconnectorbase_lastsynchronizationdate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: urccore_lastsynchronizationdate universalrestconnectorbase_lastsynchronizationdate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urccore_lastsynchronizationdate
@@ -40226,7 +40276,7 @@ ALTER TABLE ONLY urccore_lastsynchronizationdate
 
 
 --
--- Name: universalrestconnectormaterialavailability_orderrequiredco_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: urcmaterialavailability_requiredcomponent universalrestconnectormaterialavailability_orderrequiredco_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
@@ -40234,7 +40284,7 @@ ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: urccore_synchronizationstatus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: urccore_synchronizationstatus urccore_synchronizationstatus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urccore_synchronizationstatus
@@ -40242,7 +40292,7 @@ ALTER TABLE ONLY urccore_synchronizationstatus
 
 
 --
--- Name: urcproductioncounting_requestrepair_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: urcproductioncounting_requestrepair urcproductioncounting_requestrepair_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcproductioncounting_requestrepair
@@ -40250,7 +40300,7 @@ ALTER TABLE ONLY urcproductioncounting_requestrepair
 
 
 --
--- Name: wagegroups_wagegroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: wagegroups_wagegroup wagegroups_wagegroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY wagegroups_wagegroup
@@ -40258,7 +40308,7 @@ ALTER TABLE ONLY wagegroups_wagegroup
 
 
 --
--- Name: walusiak_exportdocumenthistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: walusiak_exportdocumenthistory walusiak_exportdocumenthistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY walusiak_exportdocumenthistory
@@ -40266,7 +40316,7 @@ ALTER TABLE ONLY walusiak_exportdocumenthistory
 
 
 --
--- Name: warehouseminimalstate_warehouseminimumstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstate warehouseminimalstate_warehouseminimumstate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
@@ -40274,7 +40324,7 @@ ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
 
 
 --
--- Name: warehouseminimalstate_warehouseminimumstatemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstatemulti warehouseminimalstate_warehouseminimumstatemulti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstatemulti
@@ -40282,7 +40332,7 @@ ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstatemulti
 
 
 --
--- Name: workplans_columnforinputproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_columnforinputproducts workplans_columnforinputproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnforinputproducts
@@ -40290,7 +40340,7 @@ ALTER TABLE ONLY workplans_columnforinputproducts
 
 
 --
--- Name: workplans_columnfororders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_columnfororders workplans_columnfororders_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnfororders
@@ -40298,7 +40348,7 @@ ALTER TABLE ONLY workplans_columnfororders
 
 
 --
--- Name: workplans_columnforoutputproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_columnforoutputproducts workplans_columnforoutputproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_columnforoutputproducts
@@ -40306,7 +40356,7 @@ ALTER TABLE ONLY workplans_columnforoutputproducts
 
 
 --
--- Name: workplans_parameterinputcolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterinputcolumn workplans_parameterinputcolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterinputcolumn
@@ -40314,7 +40364,7 @@ ALTER TABLE ONLY workplans_parameterinputcolumn
 
 
 --
--- Name: workplans_parameterordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterordercolumn workplans_parameterordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterordercolumn
@@ -40322,7 +40372,7 @@ ALTER TABLE ONLY workplans_parameterordercolumn
 
 
 --
--- Name: workplans_parameteroutputcolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameteroutputcolumn workplans_parameteroutputcolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameteroutputcolumn
@@ -40330,7 +40380,7 @@ ALTER TABLE ONLY workplans_parameteroutputcolumn
 
 
 --
--- Name: workplans_workplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_workplan workplans_workplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplan
@@ -40338,7 +40388,7 @@ ALTER TABLE ONLY workplans_workplan
 
 
 --
--- Name: workplans_workplanordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_workplanordercolumn workplans_workplanordercolumn_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplanordercolumn
@@ -40346,7 +40396,7 @@ ALTER TABLE ONLY workplans_workplanordercolumn
 
 
 --
--- Name: zmbak_meatcuttingindicator_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicator zmbak_meatcuttingindicator_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicator
@@ -40354,7 +40404,7 @@ ALTER TABLE ONLY zmbak_meatcuttingindicator
 
 
 --
--- Name: zmbak_meatcuttingindicatorcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicatorcomponent zmbak_meatcuttingindicatorcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
@@ -40362,7 +40412,7 @@ ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
 
 
 --
--- Name: zmbak_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter zmbak_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -40370,7 +40420,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: zmbak_tpcreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_tpcreport zmbak_tpcreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_tpcreport
@@ -40378,7 +40428,7 @@ ALTER TABLE ONLY zmbak_tpcreport
 
 
 --
--- Name: zmbak_tpctable_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_tpctable zmbak_tpctable_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_tpctable
@@ -42010,7 +42060,7 @@ CREATE INDEX idx_wor_planordercolumn_workplan_id ON workplans_workplanordercolum
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: technologies_technologydto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42046,7 +42096,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42091,7 +42141,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42108,7 +42158,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: basic_productdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42135,7 +42185,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: productioncounting_productionanalysisdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42233,7 +42283,7 @@ UNION ALL
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponentdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42257,7 +42307,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: goodfood_extrusionbatchingredientdto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42296,7 +42346,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: integrationscales_scaledto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42313,7 +42363,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: arch_ordersgroups_drafrptquantitydto _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42330,7 +42380,7 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderposition_manyproducts _RETURN; Type: RULE; Schema: public; Owner: -
 --
 
 CREATE RULE "_RETURN" AS
@@ -42375,56 +42425,56 @@ CREATE RULE "_RETURN" AS
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift assignmenttoshift_assignmenttoshift_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER assignmenttoshift_assignmenttoshift_trigger_externalnumber BEFORE INSERT ON assignmenttoshift_assignmenttoshift FOR EACH ROW EXECUTE PROCEDURE generate_and_set_assignmenttoshift_externalnumber_trigger();
 
 
 --
--- Name: cmmsmachineparts_maintenanceevent_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent cmmsmachineparts_maintenanceevent_trigger_number; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER cmmsmachineparts_maintenanceevent_trigger_number BEFORE INSERT ON cmmsmachineparts_maintenanceevent FOR EACH ROW EXECUTE PROCEDURE generate_and_set_maintenanceevent_number_trigger();
 
 
 --
--- Name: goodfood_confectionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol goodfood_confectionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER goodfood_confectionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_confectionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_confectionprotocol_externalnumber_trigger();
 
 
 --
--- Name: goodfood_extrusionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol goodfood_extrusionprotocol_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER goodfood_extrusionprotocol_trigger_externalnumber BEFORE INSERT ON goodfood_extrusionprotocol FOR EACH ROW EXECUTE PROCEDURE generate_and_set_extrusionprotocol_externalnumber_trigger();
 
 
 --
--- Name: goodfood_pallet_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
+-- Name: goodfood_pallet goodfood_pallet_trigger_externalnumber; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER goodfood_pallet_trigger_externalnumber BEFORE INSERT ON goodfood_pallet FOR EACH ROW EXECUTE PROCEDURE generate_and_set_pallet_externalnumber_trigger();
 
 
 --
--- Name: materialflowresources_document_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+-- Name: materialflowresources_document materialflowresources_document_trigger_number; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER materialflowresources_document_trigger_number BEFORE INSERT ON materialflowresources_document FOR EACH ROW EXECUTE PROCEDURE generate_and_set_document_number_trigger();
 
 
 --
--- Name: repairs_repairorder_trigger_number; Type: TRIGGER; Schema: public; Owner: -
+-- Name: repairs_repairorder repairs_repairorder_trigger_number; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER repairs_repairorder_trigger_number BEFORE INSERT ON repairs_repairorder FOR EACH ROW EXECUTE PROCEDURE generate_and_set_repairorder_number_trigger();
 
 
 --
--- Name: action_subassembly_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_subassembly action_subassembly_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_subassembly
@@ -42432,7 +42482,7 @@ ALTER TABLE ONLY jointable_action_subassembly
 
 
 --
--- Name: action_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_subassembly action_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_subassembly
@@ -42440,7 +42490,7 @@ ALTER TABLE ONLY jointable_action_subassembly
 
 
 --
--- Name: action_workstation_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstation action_workstation_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstation
@@ -42448,7 +42498,7 @@ ALTER TABLE ONLY jointable_action_workstation
 
 
 --
--- Name: action_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstation action_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstation
@@ -42456,7 +42506,7 @@ ALTER TABLE ONLY jointable_action_workstation
 
 
 --
--- Name: action_workstationtype_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstationtype action_workstationtype_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstationtype
@@ -42464,7 +42514,7 @@ ALTER TABLE ONLY jointable_action_workstationtype
 
 
 --
--- Name: action_workstationtype_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_action_workstationtype action_workstationtype_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_action_workstationtype
@@ -42472,7 +42522,7 @@ ALTER TABLE ONLY jointable_action_workstationtype
 
 
 --
--- Name: actionforplannedevet_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_actionforplannedevent actionforplannedevet_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
@@ -42480,7 +42530,7 @@ ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
 
 
 --
--- Name: actionforplannedevet_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_actionforplannedevent actionforplannedevet_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
@@ -42488,7 +42538,7 @@ ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
 
 
 --
--- Name: actionforplannedevet_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_actionforplannedevent actionforplannedevet_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
@@ -42496,7 +42546,7 @@ ALTER TABLE ONLY cmmsmachineparts_actionforplannedevent
 
 
 --
--- Name: actionforrecurringevent_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_actionforrecurringevent actionforrecurringevent_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
@@ -42504,7 +42554,7 @@ ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
 
 
 --
--- Name: actionforrecurringevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_actionforrecurringevent actionforrecurringevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
@@ -42512,7 +42562,7 @@ ALTER TABLE ONLY cmmsscheduler_actionforrecurringevent
 
 
 --
--- Name: additionalcode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_additionalcode additionalcode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_additionalcode
@@ -42520,7 +42570,7 @@ ALTER TABLE ONLY basic_additionalcode
 
 
 --
--- Name: address_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_address address_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_address
@@ -42528,7 +42578,7 @@ ALTER TABLE ONLY basic_address
 
 
 --
--- Name: address_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_address address_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_address
@@ -42536,7 +42586,7 @@ ALTER TABLE ONLY basic_address
 
 
 --
--- Name: advancedgenealogy_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioninputproduct advancedgenealogy_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioninputproduct
@@ -42544,7 +42594,7 @@ ALTER TABLE ONLY goodfood_confectioninputproduct
 
 
 --
--- Name: advancedgenealogy_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectioninputproduct advancedgenealogy_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectioninputproduct
@@ -42552,7 +42602,7 @@ ALTER TABLE ONLY arch_goodfood_confectioninputproduct
 
 
 --
--- Name: alert_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_viewedalert alert_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_viewedalert
@@ -42560,7 +42610,7 @@ ALTER TABLE ONLY qcadooview_viewedalert
 
 
 --
--- Name: anomaly_anomalyreason_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_anomaly_anomalyreason anomaly_anomalyreason_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_anomaly_anomalyreason
@@ -42568,7 +42618,7 @@ ALTER TABLE ONLY jointable_anomaly_anomalyreason
 
 
 --
--- Name: anomaly_anomalyreason_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_anomaly_anomalyreason anomaly_anomalyreason_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_anomaly_anomalyreason
@@ -42576,7 +42626,7 @@ ALTER TABLE ONLY jointable_anomaly_anomalyreason
 
 
 --
--- Name: anomaly_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly anomaly_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly
@@ -42584,7 +42634,7 @@ ALTER TABLE ONLY productioncounting_anomaly
 
 
 --
--- Name: anomaly_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly anomaly_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly
@@ -42592,7 +42642,7 @@ ALTER TABLE ONLY arch_productioncounting_anomaly
 
 
 --
--- Name: anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly
@@ -42600,7 +42650,7 @@ ALTER TABLE ONLY productioncounting_anomaly
 
 
 --
--- Name: anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly anomaly_masterproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly
@@ -42608,7 +42658,7 @@ ALTER TABLE ONLY arch_productioncounting_anomaly
 
 
 --
--- Name: anomaly_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly anomaly_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly
@@ -42616,7 +42666,7 @@ ALTER TABLE ONLY productioncounting_anomaly
 
 
 --
--- Name: anomaly_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly anomaly_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly
@@ -42624,7 +42674,7 @@ ALTER TABLE ONLY arch_productioncounting_anomaly
 
 
 --
--- Name: anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomaly anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomaly
@@ -42632,7 +42682,7 @@ ALTER TABLE ONLY productioncounting_anomaly
 
 
 --
--- Name: anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomaly anomaly_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomaly
@@ -42640,7 +42690,7 @@ ALTER TABLE ONLY arch_productioncounting_anomaly
 
 
 --
--- Name: anomalyexplanation_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyexplanation anomalyexplanation_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyexplanation
@@ -42648,7 +42698,7 @@ ALTER TABLE ONLY productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyexplanation_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_anomaly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
@@ -42656,7 +42706,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyexplanation anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyexplanation
@@ -42664,7 +42714,7 @@ ALTER TABLE ONLY productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
@@ -42672,7 +42722,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyexplanation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyexplanation anomalyexplanation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyexplanation
@@ -42680,7 +42730,7 @@ ALTER TABLE ONLY productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyexplanation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyexplanation anomalyexplanation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
@@ -42688,7 +42738,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyexplanation
 
 
 --
--- Name: anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
@@ -42696,7 +42746,7 @@ ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_apt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
@@ -42704,7 +42754,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: anomalyproductiontrackingentryhelper_topic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_topic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
@@ -42712,7 +42762,7 @@ ALTER TABLE ONLY productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: anomalyproductiontrackingentryhelper_topic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyproductiontrackingentryhelper anomalyproductiontrackingentryhelper_topic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
@@ -42720,7 +42770,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyproductiontrackingentryhelper
 
 
 --
--- Name: anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreasoncontainer anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
@@ -42728,7 +42778,7 @@ ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyreasoncontainer anomalyreasoncontainer_anomalyreason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
@@ -42736,7 +42786,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: anomalyreasoncontainer_apteh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_anomalyreasoncontainer anomalyreasoncontainer_apteh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
@@ -42744,7 +42794,7 @@ ALTER TABLE ONLY productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: anomalyreasoncontainer_apteh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_anomalyreasoncontainer anomalyreasoncontainer_apteh_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
@@ -42752,7 +42802,7 @@ ALTER TABLE ONLY arch_productioncounting_anomalyreasoncontainer
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftstatechange assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
@@ -42760,7 +42810,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
@@ -42768,7 +42818,7 @@ ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_assignmentworkertoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
@@ -42776,7 +42826,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
@@ -42784,7 +42834,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift assignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
@@ -42792,7 +42842,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: assignmenttoshift_crew_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift assignmenttoshift_crew_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
@@ -42800,7 +42850,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
 
 
 --
--- Name: assignmenttoshift_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift assignmenttoshift_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
@@ -42808,7 +42858,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
 
 
 --
--- Name: assignmenttoshift_multiassignmenttoshift_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_multiassignmenttoshift_staff assignmenttoshift_multiassignmenttoshift_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
@@ -42816,7 +42866,7 @@ ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
 
 
 --
--- Name: assignmenttoshiftreport_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftreport assignmenttoshiftreport_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
@@ -42824,7 +42874,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
 
 
 --
--- Name: assignmenttoshiftreport_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftreport assignmenttoshiftreport_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
@@ -42832,7 +42882,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftreport
 
 
 --
--- Name: assortmentelement_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_assortmentelement assortmentelement_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_assortmentelement
@@ -42840,7 +42890,7 @@ ALTER TABLE ONLY basic_assortmentelement
 
 
 --
--- Name: atrackingrecordstatechange_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecordstatechange atrackingrecordstatechange_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
@@ -42848,7 +42898,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: atrackingrecordstatechange_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecordstatechange atrackingrecordstatechange_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
@@ -42856,7 +42906,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: attachment_event_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventattachment attachment_event_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventattachment
@@ -42864,7 +42914,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventattachment
 
 
 --
--- Name: avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_assignmentworkertoshift avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
@@ -42872,7 +42922,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
@@ -42880,7 +42930,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: balance_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionbalancepershift_balance balance_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionbalancepershift_balance
@@ -42888,7 +42938,7 @@ ALTER TABLE ONLY productionbalancepershift_balance
 
 
 --
--- Name: barcodeoperationcomponen_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_barcodeoperationcomponent barcodeoperationcomponen_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_barcodeoperationcomponent
@@ -42896,7 +42946,7 @@ ALTER TABLE ONLY technologies_barcodeoperationcomponent
 
 
 --
--- Name: barcodeoperationcomponen_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_barcodeoperationcomponent barcodeoperationcomponen_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
@@ -42904,7 +42954,7 @@ ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
 
 
 --
--- Name: barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_barcodeoperationcomponent barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_barcodeoperationcomponent
@@ -42912,7 +42962,7 @@ ALTER TABLE ONLY technologies_barcodeoperationcomponent
 
 
 --
--- Name: barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_barcodeoperationcomponent barcodeoperationcomponent_orderfkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
@@ -42920,7 +42970,7 @@ ALTER TABLE ONLY arch_technologies_barcodeoperationcomponent
 
 
 --
--- Name: baselinkerparameters_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_baselinkerparameters baselinkerparameters_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
@@ -42928,7 +42978,7 @@ ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
 
 
 --
--- Name: baselinkerparameters_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_baselinkerparameters baselinkerparameters_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
@@ -42936,7 +42986,7 @@ ALTER TABLE ONLY integrationbaselinker_baselinkerparameters
 
 
 --
--- Name: basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -42944,7 +42994,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -42952,7 +43002,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder basic_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -42960,7 +43010,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: basic_parameter_defaultproductionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter basic_parameter_defaultproductionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -42968,7 +43018,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: basic_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_reportcolumnwidth basic_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_reportcolumnwidth
@@ -42976,7 +43026,7 @@ ALTER TABLE ONLY basic_reportcolumnwidth
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -42984,7 +43034,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioninputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioninputproduct
@@ -42992,7 +43042,7 @@ ALTER TABLE ONLY goodfood_confectioninputproduct
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionremainderinputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionremainderinputproduct
@@ -43000,7 +43050,7 @@ ALTER TABLE ONLY goodfood_confectionremainderinputproduct
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -43008,7 +43058,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectioninputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectioninputproduct
@@ -43016,7 +43066,7 @@ ALTER TABLE ONLY arch_goodfood_confectioninputproduct
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -43024,7 +43074,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionremainderinputproduct basic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
@@ -43032,7 +43082,7 @@ ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
 
 
 --
--- Name: basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_productquantity basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_productquantity
@@ -43040,7 +43090,7 @@ ALTER TABLE ONLY materialflowmultitransfers_productquantity
 
 
 --
--- Name: basic_product_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product basic_product_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -43048,7 +43098,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: basic_product_warehouseminimumstatemulti_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_warehouseminimumstatemulti basic_product_warehouseminimumstatemulti_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
@@ -43056,7 +43106,7 @@ ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioncontext basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioncontext
@@ -43064,7 +43114,7 @@ ALTER TABLE ONLY goodfood_confectioncontext
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusioncontext basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusioncontext
@@ -43072,7 +43122,7 @@ ALTER TABLE ONLY goodfood_extrusioncontext
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batchstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batchstatechange
@@ -43080,7 +43130,7 @@ ALTER TABLE ONLY advancedgenealogy_batchstatechange
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecordstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
@@ -43088,7 +43138,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshift basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
@@ -43096,7 +43146,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshift
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_assignmenttoshiftstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
@@ -43104,7 +43154,7 @@ ALTER TABLE ONLY assignmenttoshift_assignmenttoshiftstatechange
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingstatechange
@@ -43112,7 +43162,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingstatechange
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecordstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
@@ -43120,7 +43170,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecordstatechange
 
 
 --
--- Name: basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingstatechange basic_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
@@ -43128,7 +43178,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
 
 
 --
--- Name: basic_staff_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff basic_staff_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -43136,7 +43186,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionstaff basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionstaff
@@ -43144,7 +43194,7 @@ ALTER TABLE ONLY goodfood_confectionstaff
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionsouse basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionsouse
@@ -43152,7 +43202,7 @@ ALTER TABLE ONLY goodfood_extrusionsouse
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
@@ -43160,7 +43210,7 @@ ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_assignmentworkertoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
@@ -43168,7 +43218,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
@@ -43176,7 +43226,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_assignmentworkertoshift basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
@@ -43184,7 +43234,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionstaff basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionstaff
@@ -43192,7 +43242,7 @@ ALTER TABLE ONLY arch_goodfood_confectionstaff
 
 
 --
--- Name: basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionsouse basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionsouse
@@ -43200,7 +43250,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionsouse
 
 
 --
--- Name: basic_staff_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff basic_staff_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -43208,7 +43258,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: basicproductioncounting_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_basicproductioncounting basicproductioncounting_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
@@ -43216,7 +43266,7 @@ ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: basicproductioncounting_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_basicproductioncounting basicproductioncounting_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
@@ -43224,7 +43274,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_basicproductioncounting basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
@@ -43232,7 +43282,7 @@ ALTER TABLE ONLY basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_basicproductioncounting basicproductioncounting_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
@@ -43240,7 +43290,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_basicproductioncounting
 
 
 --
--- Name: batch_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batch batch_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batch
@@ -43248,7 +43298,7 @@ ALTER TABLE ONLY advancedgenealogy_batch
 
 
 --
--- Name: batch_supplier_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batch batch_supplier_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batch
@@ -43256,7 +43306,7 @@ ALTER TABLE ONLY advancedgenealogy_batch
 
 
 --
--- Name: batchstatechange_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_batchstatechange batchstatechange_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_batchstatechange
@@ -43264,7 +43314,7 @@ ALTER TABLE ONLY advancedgenealogy_batchstatechange
 
 
 --
--- Name: calculationoperationcomponent_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
@@ -43272,7 +43322,7 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
@@ -43280,7 +43330,7 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
@@ -43288,7 +43338,7 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
@@ -43296,7 +43346,7 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
@@ -43304,7 +43354,7 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
@@ -43312,7 +43362,7 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
@@ -43320,7 +43370,7 @@ ALTER TABLE ONLY costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsforoperation_calculationoperationcomponent calculationoperationcomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
@@ -43328,7 +43378,7 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
--- Name: changetechnologyparameters_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_changetechnologyparameters changetechnologyparameters_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_changetechnologyparameters
@@ -43336,7 +43386,7 @@ ALTER TABLE ONLY technologies_changetechnologyparameters
 
 
 --
--- Name: columnfordeliveries_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_columnfordeliveries columnfordeliveries_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfordeliveries
@@ -43344,7 +43394,7 @@ ALTER TABLE ONLY deliveries_columnfordeliveries
 
 
 --
--- Name: columnforoffers_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforoffers columnforoffers_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforoffers
@@ -43352,7 +43402,7 @@ ALTER TABLE ONLY supplynegotiations_columnforoffers
 
 
 --
--- Name: columnfororders_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_columnfororders columnfororders_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_columnfororders
@@ -43360,7 +43410,7 @@ ALTER TABLE ONLY deliveries_columnfororders
 
 
 --
--- Name: columnforrequests_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_columnforrequests columnforrequests_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_columnforrequests
@@ -43368,7 +43418,7 @@ ALTER TABLE ONLY supplynegotiations_columnforrequests
 
 
 --
--- Name: company_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order company_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -43376,7 +43426,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: company_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order company_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -43384,7 +43434,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: company_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_company company_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_company
@@ -43392,7 +43442,7 @@ ALTER TABLE ONLY basic_company
 
 
 --
--- Name: company_negotiation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_negotiation company_negotiation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_negotiation
@@ -43400,7 +43450,7 @@ ALTER TABLE ONLY jointable_company_negotiation
 
 
 --
--- Name: company_negotiation_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_negotiation company_negotiation_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_negotiation
@@ -43408,7 +43458,7 @@ ALTER TABLE ONLY jointable_company_negotiation
 
 
 --
--- Name: company_operation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operation company_operation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operation
@@ -43416,7 +43466,7 @@ ALTER TABLE ONLY jointable_company_operation
 
 
 --
--- Name: company_operation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operation company_operation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operation
@@ -43424,7 +43474,7 @@ ALTER TABLE ONLY jointable_company_operation
 
 
 --
--- Name: company_operationgroup_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operationgroup company_operationgroup_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operationgroup
@@ -43432,7 +43482,7 @@ ALTER TABLE ONLY jointable_company_operationgroup
 
 
 --
--- Name: company_operationgroup_operationgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_operationgroup company_operationgroup_operationgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_operationgroup
@@ -43440,7 +43490,7 @@ ALTER TABLE ONLY jointable_company_operationgroup
 
 
 --
--- Name: company_taxtcountrycode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_company company_taxtcountrycode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_company
@@ -43448,7 +43498,7 @@ ALTER TABLE ONLY basic_company
 
 
 --
--- Name: companyproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproduct companyproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproduct
@@ -43456,7 +43506,7 @@ ALTER TABLE ONLY deliveries_companyproduct
 
 
 --
--- Name: companyproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproduct companyproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproduct
@@ -43464,7 +43514,7 @@ ALTER TABLE ONLY deliveries_companyproduct
 
 
 --
--- Name: companyproductsfamily_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproductsfamily companyproductsfamily_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproductsfamily
@@ -43472,7 +43522,7 @@ ALTER TABLE ONLY deliveries_companyproductsfamily
 
 
 --
--- Name: companyproductsfamily_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_companyproductsfamily companyproductsfamily_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_companyproductsfamily
@@ -43480,7 +43530,7 @@ ALTER TABLE ONLY deliveries_companyproductsfamily
 
 
 --
--- Name: componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_componentcost componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_componentcost
@@ -43488,7 +43538,7 @@ ALTER TABLE ONLY costcalculation_componentcost
 
 
 --
--- Name: componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_componentcost componentcost_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_componentcost
@@ -43496,7 +43546,7 @@ ALTER TABLE ONLY arch_costcalculation_componentcost
 
 
 --
--- Name: componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_componentcost componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_componentcost
@@ -43504,7 +43554,7 @@ ALTER TABLE ONLY costcalculation_componentcost
 
 
 --
--- Name: componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_componentcost componentcost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_componentcost
@@ -43512,7 +43562,7 @@ ALTER TABLE ONLY arch_costcalculation_componentcost
 
 
 --
--- Name: confectionadditionalinputproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
@@ -43520,7 +43570,7 @@ ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectionadditionalinputproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
@@ -43528,7 +43578,7 @@ ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
@@ -43536,7 +43586,7 @@ ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
@@ -43544,7 +43594,7 @@ ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
@@ -43552,7 +43602,7 @@ ALTER TABLE ONLY goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionadditionalinputproduct confectionadditionalinputproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
@@ -43560,7 +43610,7 @@ ALTER TABLE ONLY arch_goodfood_confectionadditionalinputproduct
 
 
 --
--- Name: confectioncontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioncontext confectioncontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioncontext
@@ -43568,7 +43618,7 @@ ALTER TABLE ONLY goodfood_confectioncontext
 
 
 --
--- Name: confectionfilmproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproduct confectionfilmproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproduct
@@ -43576,7 +43626,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproduct
 
 
 --
--- Name: confectionfilmproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproduct confectionfilmproduct_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
@@ -43584,7 +43634,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
 
 
 --
--- Name: confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproductentry confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproductentry
@@ -43592,7 +43642,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproductentry
 
 
 --
--- Name: confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproductentry confectionfilmproductentry_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
@@ -43600,7 +43650,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
 
 
 --
--- Name: confectionfilmproductentry_confectionfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproductentry confectionfilmproductentry_confectionfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproductentry
@@ -43608,7 +43658,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproductentry
 
 
 --
--- Name: confectionfilmproductentry_confectionfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproductentry confectionfilmproductentry_confectionfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
@@ -43616,7 +43666,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproductentry
 
 
 --
--- Name: confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -43624,7 +43674,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol confectionprotocol_additionalfilmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -43632,7 +43682,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: confectionprotocol_filmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionfilmproduct confectionprotocol_filmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionfilmproduct
@@ -43640,7 +43690,7 @@ ALTER TABLE ONLY goodfood_confectionfilmproduct
 
 
 --
--- Name: confectionprotocol_filmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionfilmproduct confectionprotocol_filmproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
@@ -43648,7 +43698,7 @@ ALTER TABLE ONLY arch_goodfood_confectionfilmproduct
 
 
 --
--- Name: confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolcorrect confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolcorrect
@@ -43656,7 +43706,7 @@ ALTER TABLE ONLY goodfood_confectionprotocolcorrect
 
 
 --
--- Name: confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolcorrect confectionprotocolcorrect_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolcorrect
@@ -43664,7 +43714,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocolcorrect
 
 
 --
--- Name: confectionprotocolstatechange_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolstatechange confectionprotocolstatechange_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolstatechange
@@ -43672,7 +43722,7 @@ ALTER TABLE ONLY goodfood_confectionprotocolstatechange
 
 
 --
--- Name: confectionprotocolstatechange_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolstatechange confectionprotocolstatechange_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
@@ -43680,7 +43730,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
 
 
 --
--- Name: confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocolstatechange confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocolstatechange
@@ -43688,7 +43738,7 @@ ALTER TABLE ONLY goodfood_confectionprotocolstatechange
 
 
 --
--- Name: confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocolstatechange confectionprotocolstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
@@ -43696,7 +43746,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocolstatechange
 
 
 --
--- Name: cost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_cost cost_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_cost
@@ -43704,7 +43754,7 @@ ALTER TABLE ONLY subcontractorportal_cost
 
 
 --
--- Name: cost_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_cost cost_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_cost
@@ -43712,7 +43762,7 @@ ALTER TABLE ONLY subcontractorportal_cost
 
 
 --
--- Name: costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -43720,7 +43770,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -43728,7 +43778,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -43736,7 +43786,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -43744,7 +43794,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -43752,7 +43802,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -43760,7 +43810,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -43768,7 +43818,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -43776,7 +43826,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_costcalculation costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
@@ -43784,7 +43834,7 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costcalculation_costcalculation costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
@@ -43792,7 +43842,7 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costnormsforproduct_orderoperationproductincomponent_o_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_o_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
@@ -43800,7 +43850,7 @@ ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: costnormsforproduct_orderoperationproductincomponent_o_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_o_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
@@ -43808,7 +43858,7 @@ ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
@@ -43816,7 +43866,7 @@ ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_costnormsformaterials_technologyinstoperproductincomp costnormsforproduct_orderoperationproductincomponent_p_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
@@ -43824,7 +43874,7 @@ ALTER TABLE ONLY arch_costnormsformaterials_technologyinstoperproductincomp
 
 
 --
--- Name: costnormslocation_costnormsgenerator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormslocation costnormslocation_costnormsgenerator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormslocation
@@ -43832,7 +43882,7 @@ ALTER TABLE ONLY materialflowresources_costnormslocation
 
 
 --
--- Name: costnormslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_costnormslocation costnormslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_costnormslocation
@@ -43840,7 +43890,7 @@ ALTER TABLE ONLY materialflowresources_costnormslocation
 
 
 --
--- Name: coveragelocation_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragelocation coveragelocation_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
@@ -43848,7 +43898,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
@@ -43856,7 +43906,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation
@@ -43864,7 +43914,7 @@ ALTER TABLE ONLY ordersupplies_coveragelocation
 
 
 --
--- Name: coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
@@ -43872,7 +43922,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
@@ -43880,7 +43930,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coveragelocation coveragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coveragelocation
@@ -43888,7 +43938,7 @@ ALTER TABLE ONLY arch_ordersupplies_coveragelocation
 
 
 --
--- Name: coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coveragelocation coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation
@@ -43896,7 +43946,7 @@ ALTER TABLE ONLY ordersupplies_coveragelocation
 
 
 --
--- Name: coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coveragelocation coveragelocation_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coveragelocation
@@ -43904,7 +43954,7 @@ ALTER TABLE ONLY arch_ordersupplies_coveragelocation
 
 
 --
--- Name: coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coveragelocation
@@ -43912,7 +43962,7 @@ ALTER TABLE ONLY ordersupplies_coveragelocation
 
 
 --
--- Name: coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
@@ -43920,7 +43970,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
@@ -43928,7 +43978,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragelocation
 
 
 --
--- Name: coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coveragelocation coveragelocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coveragelocation
@@ -43936,7 +43986,7 @@ ALTER TABLE ONLY arch_ordersupplies_coveragelocation
 
 
 --
--- Name: coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageorderstate coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageorderstate
@@ -43944,7 +43994,7 @@ ALTER TABLE ONLY ordersupplies_coverageorderstate
 
 
 --
--- Name: coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageorderstate coverageorderstate_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
@@ -43952,7 +44002,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
 
 
 --
--- Name: coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageorderstate coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageorderstate
@@ -43960,7 +44010,7 @@ ALTER TABLE ONLY ordersupplies_coverageorderstate
 
 
 --
--- Name: coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageorderstate coverageorderstate_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
@@ -43968,7 +44018,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageorderstate
 
 
 --
--- Name: coverageproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproduct coverageproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproduct
@@ -43976,7 +44026,7 @@ ALTER TABLE ONLY ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproduct coverageproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproduct
@@ -43984,7 +44034,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproduct coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
@@ -43992,7 +44042,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_coveragefororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
@@ -44000,7 +44050,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproduct coverageproduct_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproduct
@@ -44008,7 +44058,7 @@ ALTER TABLE ONLY ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproduct_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproduct coverageproduct_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproduct
@@ -44016,7 +44066,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproduct coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
@@ -44024,7 +44074,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
@@ -44032,7 +44082,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproduct
@@ -44040,7 +44090,7 @@ ALTER TABLE ONLY ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
@@ -44048,7 +44098,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
@@ -44056,7 +44106,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct
 
 
 --
--- Name: coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproduct coverageproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproduct
@@ -44064,7 +44114,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproduct
 
 
 --
--- Name: coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -44072,7 +44122,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -44080,7 +44130,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -44088,7 +44138,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -44096,7 +44146,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -44104,7 +44154,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -44112,7 +44162,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -44120,7 +44170,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -44128,7 +44178,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -44136,7 +44186,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -44144,7 +44194,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -44152,7 +44202,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -44160,7 +44210,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -44168,7 +44218,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -44176,7 +44226,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -44184,7 +44234,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -44192,7 +44242,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductlogging
@@ -44200,7 +44250,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
@@ -44208,7 +44258,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
@@ -44216,7 +44266,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductlogging coverageproductlogging_subcontractedoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
@@ -44224,7 +44274,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductlogging
 
 
 --
--- Name: coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageproductselected coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageproductselected
@@ -44232,7 +44282,7 @@ ALTER TABLE ONLY ordersupplies_coverageproductselected
 
 
 --
--- Name: coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageproductselected coverageproductselected_coverageproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageproductselected
@@ -44240,7 +44290,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageproductselected
 
 
 --
--- Name: coverageregister_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister coverageregister_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -44248,7 +44298,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister coverageregister_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -44256,7 +44306,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister coverageregister_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -44264,7 +44314,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister coverageregister_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -44272,7 +44322,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister coverageregister_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -44280,7 +44330,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister coverageregister_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -44288,7 +44338,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister coverageregister_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -44296,7 +44346,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister coverageregister_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -44304,7 +44354,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_coverageregister coverageregister_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_coverageregister
@@ -44312,7 +44362,7 @@ ALTER TABLE ONLY ordersupplies_coverageregister
 
 
 --
--- Name: coverageregister_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_coverageregister coverageregister_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_coverageregister
@@ -44320,7 +44370,7 @@ ALTER TABLE ONLY arch_ordersupplies_coverageregister
 
 
 --
--- Name: crew_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_crew crew_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_crew
@@ -44328,7 +44378,7 @@ ALTER TABLE ONLY basic_crew
 
 
 --
--- Name: dailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_dailyprogress dailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_dailyprogress
@@ -44336,7 +44386,7 @@ ALTER TABLE ONLY productionpershift_dailyprogress
 
 
 --
--- Name: dailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_dailyprogress dailyprogress_progressforday_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_dailyprogress
@@ -44344,7 +44394,7 @@ ALTER TABLE ONLY arch_productionpershift_dailyprogress
 
 
 --
--- Name: dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_dailyprogress dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_dailyprogress
@@ -44352,7 +44402,7 @@ ALTER TABLE ONLY productionpershift_dailyprogress
 
 
 --
--- Name: dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_dailyprogress dailyprogress_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_dailyprogress
@@ -44360,7 +44410,7 @@ ALTER TABLE ONLY arch_productionpershift_dailyprogress
 
 
 --
--- Name: deliveredproduct_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44368,7 +44418,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproduct_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44376,7 +44426,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct deliveredproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -44384,7 +44434,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: deliveredproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44392,7 +44442,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproduct_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44400,7 +44450,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44408,7 +44458,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproduct_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct deliveredproduct_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -44416,7 +44466,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: deliveredproductmp_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition deliveredproductmp_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition
@@ -44424,7 +44474,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmultiposition
 
 
 --
--- Name: deliveredproductmp_deliveredproductmulti_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition deliveredproductmp_deliveredproductmulti_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition
@@ -44432,7 +44482,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmultiposition
 
 
 --
--- Name: deliveredproductmp_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition deliveredproductmp_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition
@@ -44440,7 +44490,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmultiposition
 
 
 --
--- Name: deliveredproductmulti_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmulti deliveredproductmulti_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmulti
@@ -44448,7 +44498,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmulti
 
 
 --
--- Name: deliveredproductmulti_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmulti deliveredproductmulti_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmulti
@@ -44456,7 +44506,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmulti
 
 
 --
--- Name: deliveredproductmulti_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmulti deliveredproductmulti_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmulti
@@ -44464,7 +44514,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmulti
 
 
 --
--- Name: deliveredproductmultiposition_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductmultiposition deliveredproductmultiposition_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductmultiposition
@@ -44472,7 +44522,7 @@ ALTER TABLE ONLY deliveries_deliveredproductmultiposition
 
 
 --
--- Name: deliveredproductreservation_deliveredproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductreservation deliveredproductreservation_deliveredproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductreservation
@@ -44480,7 +44530,7 @@ ALTER TABLE ONLY deliveries_deliveredproductreservation
 
 
 --
--- Name: deliveredproductreservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproductreservation deliveredproductreservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproductreservation
@@ -44488,7 +44538,7 @@ ALTER TABLE ONLY deliveries_deliveredproductreservation
 
 
 --
--- Name: delivery_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_delivery delivery_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery
@@ -44496,7 +44546,7 @@ ALTER TABLE ONLY deliveries_delivery
 
 
 --
--- Name: delivery_currency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_delivery delivery_currency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery
@@ -44504,7 +44554,7 @@ ALTER TABLE ONLY deliveries_delivery
 
 
 --
--- Name: delivery_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_delivery delivery_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery
@@ -44512,7 +44562,7 @@ ALTER TABLE ONLY deliveries_delivery
 
 
 --
--- Name: delivery_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_delivery delivery_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_delivery
@@ -44520,7 +44570,7 @@ ALTER TABLE ONLY deliveries_delivery
 
 
 --
--- Name: deliveryattachment_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveryattachment deliveryattachment_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveryattachment
@@ -44528,7 +44578,7 @@ ALTER TABLE ONLY deliveries_deliveryattachment
 
 
 --
--- Name: deliverystatechange_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliverystatechange deliverystatechange_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverystatechange
@@ -44536,7 +44586,7 @@ ALTER TABLE ONLY deliveries_deliverystatechange
 
 
 --
--- Name: deliverystatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliverystatechange deliverystatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliverystatechange
@@ -44544,7 +44594,7 @@ ALTER TABLE ONLY deliveries_deliverystatechange
 
 
 --
--- Name: dictionaryitem_dictionary_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_dictionaryitem dictionaryitem_dictionary_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_dictionaryitem
@@ -44552,7 +44602,7 @@ ALTER TABLE ONLY qcadoomodel_dictionaryitem
 
 
 --
--- Name: division_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44560,7 +44610,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44568,7 +44618,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44576,7 +44626,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44584,7 +44634,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44592,7 +44642,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44600,7 +44650,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44608,7 +44658,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_supervisor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_division division_supervisor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_division
@@ -44616,7 +44666,7 @@ ALTER TABLE ONLY basic_division
 
 
 --
--- Name: division_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue division_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -44624,7 +44674,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: division_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue division_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -44632,7 +44682,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: document_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44640,7 +44690,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44648,7 +44698,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44656,7 +44706,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44664,7 +44714,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44672,7 +44722,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44680,7 +44730,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44688,7 +44738,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_dispositionshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44696,7 +44746,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44704,7 +44754,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44712,7 +44762,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44720,7 +44770,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44728,7 +44778,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44736,7 +44786,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44744,7 +44794,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44752,7 +44802,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44760,7 +44810,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44768,7 +44818,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44776,7 +44826,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44784,7 +44834,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44792,7 +44842,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -44800,7 +44850,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document document_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -44808,7 +44858,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: documentpositionparametersitem_parameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_documentpositionparametersitem documentpositionparametersitem_parameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
@@ -44816,7 +44866,7 @@ ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
 
 
 --
--- Name: event_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_event event_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_event
@@ -44824,7 +44874,7 @@ ALTER TABLE ONLY subcontractorportal_event
 
 
 --
--- Name: event_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_event event_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_event
@@ -44832,7 +44882,7 @@ ALTER TABLE ONLY subcontractorportal_event
 
 
 --
--- Name: eventattachment_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_eventattachment eventattachment_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_eventattachment
@@ -44840,7 +44890,7 @@ ALTER TABLE ONLY cmmsmachineparts_eventattachment
 
 
 --
--- Name: eventlog_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_eventlog eventlog_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_eventlog
@@ -44848,7 +44898,7 @@ ALTER TABLE ONLY goodfood_eventlog
 
 
 --
--- Name: eventlog_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_eventlog eventlog_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_eventlog
@@ -44856,7 +44906,7 @@ ALTER TABLE ONLY goodfood_eventlog
 
 
 --
--- Name: extrusionaddedmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry
@@ -44864,7 +44914,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixentry
 
 
 --
--- Name: extrusionaddedmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
@@ -44872,7 +44922,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
 
 
 --
--- Name: extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixentry
@@ -44880,7 +44930,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixentry
 
 
 --
--- Name: extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixentry extrusionaddedmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
@@ -44888,7 +44938,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixentry
 
 
 --
--- Name: extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
@@ -44896,7 +44946,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
@@ -44904,7 +44954,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_extrusionaddedmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionaddedmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
@@ -44912,7 +44962,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_extrusionaddedmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionaddedmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
@@ -44920,7 +44970,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
@@ -44928,7 +44978,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
@@ -44936,7 +44986,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
@@ -44944,7 +44994,7 @@ ALTER TABLE ONLY goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionaddedmixingredient extrusionaddedmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
@@ -44952,7 +45002,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionaddedmixingredient
 
 
 --
--- Name: extrusioncontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusioncontext extrusioncontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusioncontext
@@ -44960,7 +45010,7 @@ ALTER TABLE ONLY goodfood_extrusioncontext
 
 
 --
--- Name: extrusionpouring_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouring extrusionpouring_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouring
@@ -44968,7 +45018,7 @@ ALTER TABLE ONLY goodfood_extrusionpouring
 
 
 --
--- Name: extrusionpouring_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouring extrusionpouring_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouring
@@ -44976,7 +45026,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouring
 
 
 --
--- Name: extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
@@ -44984,7 +45034,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
@@ -44992,7 +45042,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
@@ -45000,7 +45050,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
@@ -45008,7 +45058,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
@@ -45016,7 +45066,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_extrusionpouringmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
@@ -45024,7 +45074,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringingredient extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringingredient
@@ -45032,7 +45082,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringingredient extrusionpouringingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
@@ -45040,7 +45090,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringingredient
 
 
 --
--- Name: extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionpouringmix extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionpouringmix
@@ -45048,7 +45098,7 @@ ALTER TABLE ONLY goodfood_extrusionpouringmix
 
 
 --
--- Name: extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionpouringmix extrusionpouringmix_extrusionpouring_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionpouringmix
@@ -45056,7 +45106,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionpouringmix
 
 
 --
--- Name: extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolcorrect extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolcorrect
@@ -45064,7 +45114,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocolcorrect
 
 
 --
--- Name: extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolcorrect extrusionprotocolcorrect_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolcorrect
@@ -45072,7 +45122,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocolcorrect
 
 
 --
--- Name: extrusionprotocolstatechange_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
@@ -45080,7 +45130,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: extrusionprotocolstatechange_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
@@ -45088,7 +45138,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
@@ -45096,7 +45146,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocolstatechange extrusionprotocolstatechange_shif_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
@@ -45104,7 +45154,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocolstatechange
 
 
 --
--- Name: extrusiontakenoffmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
@@ -45112,7 +45162,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: extrusiontakenoffmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
@@ -45120,7 +45170,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
@@ -45128,7 +45178,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixentry extrusiontakenoffmixentry_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
@@ -45136,7 +45186,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixentry
 
 
 --
--- Name: extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
@@ -45144,7 +45194,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
@@ -45152,7 +45202,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
@@ -45160,7 +45210,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusionmixingredient_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
@@ -45168,7 +45218,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
@@ -45176,7 +45226,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_extrusiontakenoffmixentry_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
@@ -45184,7 +45234,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
@@ -45192,7 +45242,7 @@ ALTER TABLE ONLY goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusiontakenoffmixingredient extrusiontakenoffmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
@@ -45200,7 +45250,7 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: fabric_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_fabric fabric_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_fabric
@@ -45208,7 +45258,7 @@ ALTER TABLE ONLY nblsport_fabric
 
 
 --
--- Name: fabric_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_fabric fabric_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_fabric
@@ -45216,7 +45266,7 @@ ALTER TABLE ONLY nblsport_fabric
 
 
 --
--- Name: factory_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_factory factory_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_factory
@@ -45224,7 +45274,7 @@ ALTER TABLE ONLY basic_factory
 
 
 --
--- Name: factorystructureelement_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement factorystructureelement_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -45232,7 +45282,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: factorystructureelement_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement factorystructureelement_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -45240,7 +45290,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: factorystructureelement_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement factorystructureelement_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -45248,7 +45298,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: factorystructureelement_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement factorystructureelement_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -45256,7 +45306,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: factorystructureelement_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_factorystructureelement factorystructureelement_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_factorystructureelement
@@ -45264,7 +45314,7 @@ ALTER TABLE ONLY productionlines_factorystructureelement
 
 
 --
--- Name: forms_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productcharacteristics_forms forms_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_forms
@@ -45272,7 +45322,7 @@ ALTER TABLE ONLY productcharacteristics_forms
 
 
 --
--- Name: genealogyproductinbatch_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
@@ -45280,7 +45330,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: genealogyproductinbatch_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
@@ -45288,7 +45338,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
@@ -45296,7 +45346,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductinbatch genealogyproductinbatch_genealogyproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
@@ -45304,7 +45354,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
@@ -45312,7 +45362,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
@@ -45320,7 +45370,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
@@ -45328,7 +45378,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
@@ -45336,7 +45386,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyproductincomponent_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
@@ -45344,7 +45394,7 @@ ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyproductincomponent_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogyfororders_genealogyproductincomponent genealogyproductincomponent_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
@@ -45352,7 +45402,7 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductincomponent
 
 
 --
--- Name: genealogyreport_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_genealogyreport genealogyreport_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_genealogyreport
@@ -45360,7 +45410,7 @@ ALTER TABLE ONLY advancedgenealogy_genealogyreport
 
 
 --
--- Name: generatorcontext_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatorcontext generatorcontext_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatorcontext
@@ -45368,7 +45418,7 @@ ALTER TABLE ONLY technologiesgenerator_generatorcontext
 
 
 --
--- Name: generatorcontext_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatorcontext generatorcontext_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatorcontext
@@ -45376,7 +45426,7 @@ ALTER TABLE ONLY technologiesgenerator_generatorcontext
 
 
 --
--- Name: generatortechnologiesforproduct_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortechnologiesforproduct generatortechnologiesforproduct_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
@@ -45384,7 +45434,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
 
 
 --
--- Name: generatortechnologiesforproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortechnologiesforproduct generatortechnologiesforproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
@@ -45392,7 +45442,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
 
 
 --
--- Name: generatortechnologiesforproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortechnologiesforproduct generatortechnologiesforproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
@@ -45400,7 +45450,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortechnologiesforproduct
 
 
 --
--- Name: generatortreen_originaltechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreen_originaltechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45408,7 +45458,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreeno_producttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreeno_producttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45416,7 +45466,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreenod_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreenod_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45424,7 +45474,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreenode_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreenode_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45432,7 +45482,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreenode_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreenode_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45440,7 +45490,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreenode_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreenode_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45448,7 +45498,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: generatortreenode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode generatortreenode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -45456,7 +45506,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: goodfood_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder goodfood_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -45464,7 +45514,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: goodfood_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder goodfood_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -45472,7 +45522,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -45480,7 +45530,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol goodfood_confectioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -45488,7 +45538,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioninputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioninputproduct
@@ -45496,7 +45546,7 @@ ALTER TABLE ONLY goodfood_confectioninputproduct
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionremainderinputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionremainderinputproduct
@@ -45504,7 +45554,7 @@ ALTER TABLE ONLY goodfood_confectionremainderinputproduct
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionstaff goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionstaff
@@ -45512,7 +45562,7 @@ ALTER TABLE ONLY goodfood_confectionstaff
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectioninputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectioninputproduct
@@ -45520,7 +45570,7 @@ ALTER TABLE ONLY arch_goodfood_confectioninputproduct
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionremainderinputproduct goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
@@ -45528,7 +45578,7 @@ ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
 
 
 --
--- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionstaff goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionstaff
@@ -45536,7 +45586,7 @@ ALTER TABLE ONLY arch_goodfood_confectionstaff
 
 
 --
--- Name: goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol
@@ -45544,7 +45594,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
--- Name: goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol
@@ -45552,7 +45602,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 
 
 --
--- Name: goodfood_extrusionmix_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -45560,7 +45610,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmix_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -45568,7 +45618,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmix_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -45576,7 +45626,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmix_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -45584,7 +45634,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmix_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmix goodfood_extrusionmix_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmix
@@ -45592,7 +45642,7 @@ ALTER TABLE ONLY goodfood_extrusionmix
 
 
 --
--- Name: goodfood_extrusionmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmixingredient goodfood_extrusionmixingredient_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmixingredient
@@ -45600,7 +45650,7 @@ ALTER TABLE ONLY goodfood_extrusionmixingredient
 
 
 --
--- Name: goodfood_extrusionmixingredient_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmixingredient goodfood_extrusionmixingredient_extrusionmix_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmixingredient
@@ -45608,7 +45658,7 @@ ALTER TABLE ONLY goodfood_extrusionmixingredient
 
 
 --
--- Name: goodfood_extrusionmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionmixingredient goodfood_extrusionmixingredient_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionmixingredient
@@ -45616,7 +45666,7 @@ ALTER TABLE ONLY goodfood_extrusionmixingredient
 
 
 --
--- Name: goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionsouse goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionsouse
@@ -45624,7 +45674,7 @@ ALTER TABLE ONLY goodfood_extrusionsouse
 
 
 --
--- Name: goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionsouse goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionsouse
@@ -45632,7 +45682,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionsouse
 
 
 --
--- Name: group_role_group_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_group_role group_role_group_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_group_role
@@ -45640,7 +45690,7 @@ ALTER TABLE ONLY jointable_group_role
 
 
 --
--- Name: group_role_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_group_role group_role_role_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_group_role
@@ -45648,7 +45698,7 @@ ALTER TABLE ONLY jointable_group_role
 
 
 --
--- Name: importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: esilco_importpositionerror importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_importpositionerror
@@ -45656,7 +45706,7 @@ ALTER TABLE ONLY esilco_importpositionerror
 
 
 --
--- Name: importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_esilco_importpositionerror importpositionerror_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_esilco_importpositionerror
@@ -45664,7 +45714,7 @@ ALTER TABLE ONLY arch_esilco_importpositionerror
 
 
 --
--- Name: importstoragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_importstoragelocation importstoragelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_importstoragelocation
@@ -45672,7 +45722,7 @@ ALTER TABLE ONLY materialflowresources_importstoragelocation
 
 
 --
--- Name: issue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue issue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -45680,7 +45730,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: issue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue issue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -45688,7 +45738,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: issue_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue issue_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -45696,7 +45746,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: issue_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue issue_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -45704,7 +45754,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: issue_productstoissuehelper_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_issue_productstoissuehelper issue_productstoissuehelper_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_issue_productstoissuehelper
@@ -45712,7 +45762,7 @@ ALTER TABLE ONLY jointable_issue_productstoissuehelper
 
 
 --
--- Name: issue_productstoissuehelper_productstoissuehelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_issue_productstoissuehelper issue_productstoissuehelper_productstoissuehelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_issue_productstoissuehelper
@@ -45720,7 +45770,7 @@ ALTER TABLE ONLY jointable_issue_productstoissuehelper
 
 
 --
--- Name: issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -45728,7 +45778,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue issue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -45736,7 +45786,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: item_category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_item item_category_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_item
@@ -45744,7 +45794,7 @@ ALTER TABLE ONLY qcadooview_item
 
 
 --
--- Name: item_view_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_item item_view_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_item
@@ -45752,7 +45802,7 @@ ALTER TABLE ONLY qcadooview_item
 
 
 --
--- Name: jointable_company_subassembly_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_subassembly jointable_company_subassembly_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_subassembly
@@ -45760,7 +45810,7 @@ ALTER TABLE ONLY jointable_company_subassembly
 
 
 --
--- Name: jointable_company_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_subassembly jointable_company_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_subassembly
@@ -45768,7 +45818,7 @@ ALTER TABLE ONLY jointable_company_subassembly
 
 
 --
--- Name: jointable_company_workstation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_workstation jointable_company_workstation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_workstation
@@ -45776,7 +45826,7 @@ ALTER TABLE ONLY jointable_company_workstation
 
 
 --
--- Name: jointable_company_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_company_workstation jointable_company_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_company_workstation
@@ -45784,7 +45834,7 @@ ALTER TABLE ONLY jointable_company_workstation
 
 
 --
--- Name: jointable_division_productionline_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_division_productionline jointable_division_productionline_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_division_productionline
@@ -45792,7 +45842,7 @@ ALTER TABLE ONLY jointable_division_productionline
 
 
 --
--- Name: jointable_division_productionline_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_division_productionline jointable_division_productionline_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_division_productionline
@@ -45800,7 +45850,7 @@ ALTER TABLE ONLY jointable_division_productionline
 
 
 --
--- Name: jointable_faulttype_subassembly_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_subassembly jointable_faulttype_subassembly_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_subassembly
@@ -45808,7 +45858,7 @@ ALTER TABLE ONLY jointable_faulttype_subassembly
 
 
 --
--- Name: jointable_faulttype_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_subassembly jointable_faulttype_subassembly_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_subassembly
@@ -45816,7 +45866,7 @@ ALTER TABLE ONLY jointable_faulttype_subassembly
 
 
 --
--- Name: jointable_faulttype_workstation_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstation jointable_faulttype_workstation_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstation
@@ -45824,7 +45874,7 @@ ALTER TABLE ONLY jointable_faulttype_workstation
 
 
 --
--- Name: jointable_faulttype_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstation jointable_faulttype_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstation
@@ -45832,7 +45882,7 @@ ALTER TABLE ONLY jointable_faulttype_workstation
 
 
 --
--- Name: jointable_faulttype_workstationtype_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstationtype jointable_faulttype_workstationtype_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstationtype
@@ -45840,7 +45890,7 @@ ALTER TABLE ONLY jointable_faulttype_workstationtype
 
 
 --
--- Name: jointable_faulttype_workstationtype_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_faulttype_workstationtype jointable_faulttype_workstationtype_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_faulttype_workstationtype
@@ -45848,7 +45898,7 @@ ALTER TABLE ONLY jointable_faulttype_workstationtype
 
 
 --
--- Name: jointable_pl_tech_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technology jointable_pl_tech_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technology
@@ -45856,7 +45906,7 @@ ALTER TABLE ONLY jointable_productionline_technology
 
 
 --
--- Name: jointable_pl_tech_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technology jointable_pl_tech_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technology
@@ -45864,7 +45914,7 @@ ALTER TABLE ONLY jointable_productionline_technology
 
 
 --
--- Name: jointable_pl_techgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technologygroup jointable_pl_techgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
@@ -45872,7 +45922,7 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 
 --
--- Name: jointable_pl_techgroup_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_technologygroup jointable_pl_techgroup_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
@@ -45880,7 +45930,7 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 
 --
--- Name: label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_label label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label
@@ -45888,7 +45938,7 @@ ALTER TABLE ONLY goodfood_label
 
 
 --
--- Name: label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_label label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label
@@ -45896,7 +45946,7 @@ ALTER TABLE ONLY arch_goodfood_label
 
 
 --
--- Name: label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_label label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label
@@ -45904,7 +45954,7 @@ ALTER TABLE ONLY goodfood_label
 
 
 --
--- Name: label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_label label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label
@@ -45912,7 +45962,7 @@ ALTER TABLE ONLY arch_goodfood_label
 
 
 --
--- Name: label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_label label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label
@@ -45920,7 +45970,7 @@ ALTER TABLE ONLY goodfood_label
 
 
 --
--- Name: label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_label label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label
@@ -45928,7 +45978,7 @@ ALTER TABLE ONLY arch_goodfood_label
 
 
 --
--- Name: label_printlabelshelper_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_label_printlabelshelper label_printlabelshelper_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_label_printlabelshelper
@@ -45936,7 +45986,7 @@ ALTER TABLE ONLY jointable_label_printlabelshelper
 
 
 --
--- Name: label_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_label_printlabelshelper label_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_label_printlabelshelper
@@ -45944,7 +45994,7 @@ ALTER TABLE ONLY jointable_label_printlabelshelper
 
 
 --
--- Name: label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_label label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_label
@@ -45952,7 +46002,7 @@ ALTER TABLE ONLY goodfood_label
 
 
 --
--- Name: label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_label label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_label
@@ -45960,7 +46010,7 @@ ALTER TABLE ONLY arch_goodfood_label
 
 
 --
--- Name: labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_labelstatechange labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_labelstatechange
@@ -45968,7 +46018,7 @@ ALTER TABLE ONLY goodfood_labelstatechange
 
 
 --
--- Name: labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_labelstatechange labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange
@@ -45976,7 +46026,7 @@ ALTER TABLE ONLY arch_goodfood_labelstatechange
 
 
 --
--- Name: labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_labelstatechange labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_labelstatechange
@@ -45984,7 +46034,7 @@ ALTER TABLE ONLY goodfood_labelstatechange
 
 
 --
--- Name: labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_labelstatechange labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange
@@ -45992,7 +46042,7 @@ ALTER TABLE ONLY arch_goodfood_labelstatechange
 
 
 --
--- Name: linechangeovernorms_fromtechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_fromtechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -46000,7 +46050,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: linechangeovernorms_fromtechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_fromtechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -46008,7 +46058,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: linechangeovernorms_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -46016,7 +46066,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: linechangeovernorms_totechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_totechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -46024,7 +46074,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: linechangeovernorms_totechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: linechangeovernorms_linechangeovernorms linechangeovernorms_totechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
@@ -46032,7 +46082,7 @@ ALTER TABLE ONLY linechangeovernorms_linechangeovernorms
 
 
 --
--- Name: location_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue location_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -46040,7 +46090,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: location_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue location_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -46048,7 +46098,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -46056,7 +46106,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue location_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -46064,7 +46114,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: log_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_log log_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_log
@@ -46072,7 +46122,7 @@ ALTER TABLE ONLY basic_log
 
 
 --
--- Name: machinepartattachment_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartattachment machinepartattachment_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartattachment
@@ -46080,7 +46130,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartattachment
 
 
 --
--- Name: machinepartforevent_machinepart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent machinepartforevent_machinepart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -46088,7 +46138,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: machinepartforevent_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent machinepartforevent_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -46096,7 +46146,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: machinepartforevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent machinepartforevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -46104,7 +46154,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: machinepartforevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent machinepartforevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -46112,7 +46162,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: machinepartforevent_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_machinepartforevent machinepartforevent_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
@@ -46120,7 +46170,7 @@ ALTER TABLE ONLY cmmsmachineparts_machinepartforevent
 
 
 --
--- Name: maintenanceevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46128,7 +46178,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46136,7 +46186,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46144,7 +46194,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_maintenanceeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_maintenanceeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46152,7 +46202,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_personreceiving_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_personreceiving_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46160,7 +46210,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46168,7 +46218,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46176,7 +46226,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46184,7 +46234,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceevent maintenanceevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
@@ -46192,7 +46242,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceevent
 
 
 --
--- Name: maintenanceeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventcontext maintenanceeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
@@ -46200,7 +46250,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
 
 
 --
--- Name: maintenanceeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventcontext maintenanceeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
@@ -46208,7 +46258,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventcontext
 
 
 --
--- Name: maintenanceeventstatechange_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventstatechange maintenanceeventstatechange_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
@@ -46216,7 +46266,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
 
 
 --
--- Name: maintenanceeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_maintenanceeventstatechange maintenanceeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
@@ -46224,7 +46274,7 @@ ALTER TABLE ONLY cmmsmachineparts_maintenanceeventstatechange
 
 
 --
--- Name: masterorder_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder masterorder_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -46232,7 +46282,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: masterorder_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder masterorder_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -46240,7 +46290,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -46248,7 +46298,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder masterorder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -46256,7 +46306,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorder masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorder
@@ -46264,7 +46314,7 @@ ALTER TABLE ONLY masterorders_masterorder
 
 
 --
--- Name: masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorder masterorder_masterorderdefinition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorder
@@ -46272,7 +46322,7 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
--- Name: masterorderdefinition_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderdefinition masterorderdefinition_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderdefinition
@@ -46280,7 +46330,7 @@ ALTER TABLE ONLY masterorders_masterorderdefinition
 
 
 --
--- Name: masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderproduct masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderproduct
@@ -46288,7 +46338,7 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 
 --
--- Name: masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderproduct masterorderproduct_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct
@@ -46296,7 +46346,7 @@ ALTER TABLE ONLY arch_masterorders_masterorderproduct
 
 
 --
--- Name: masterorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderproduct masterorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderproduct
@@ -46304,7 +46354,7 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 
 --
--- Name: masterorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderproduct masterorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct
@@ -46312,7 +46362,7 @@ ALTER TABLE ONLY arch_masterorders_masterorderproduct
 
 
 --
--- Name: masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: masterorders_masterorderproduct masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY masterorders_masterorderproduct
@@ -46320,7 +46370,7 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 
 --
--- Name: masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_masterorders_masterorderproduct masterorderproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_masterorders_masterorderproduct
@@ -46328,7 +46378,7 @@ ALTER TABLE ONLY arch_masterorders_masterorderproduct
 
 
 --
--- Name: materialavailability_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_materialavailability materialavailability_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_materialavailability
@@ -46336,7 +46386,7 @@ ALTER TABLE ONLY productflowthrudivision_materialavailability
 
 
 --
--- Name: materialavailability_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_materialavailability materialavailability_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
@@ -46344,7 +46394,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
 
 
 --
--- Name: materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_materialavailability materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_materialavailability
@@ -46352,7 +46402,7 @@ ALTER TABLE ONLY productflowthrudivision_materialavailability
 
 
 --
--- Name: materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_materialavailability materialavailability_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
@@ -46360,7 +46410,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
 
 
 --
--- Name: materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_materialavailability materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_materialavailability
@@ -46368,7 +46418,7 @@ ALTER TABLE ONLY productflowthrudivision_materialavailability
 
 
 --
--- Name: materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_materialavailability materialavailability_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
@@ -46376,7 +46426,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
 
 
 --
--- Name: materialflowmultitransfers_transfertemplate_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_transfertemplate materialflowmultitransfers_transfertemplate_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
@@ -46384,7 +46434,7 @@ ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
 
 
 --
--- Name: materialflowmultitransfers_transfertemplate_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_transfertemplate materialflowmultitransfers_transfertemplate_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
@@ -46392,7 +46442,7 @@ ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
 
 
 --
--- Name: materialflowmultitransfers_transfertemplate_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_transfertemplate materialflowmultitransfers_transfertemplate_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
@@ -46400,7 +46450,7 @@ ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
 
 
 --
--- Name: materialrequirement_order_materialrequirement_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirement_order materialrequirement_order_materialrequirement_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirement_order
@@ -46408,7 +46458,7 @@ ALTER TABLE ONLY jointable_materialrequirement_order
 
 
 --
--- Name: materialrequirement_order_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirement_order materialrequirement_order_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirement_order
@@ -46416,7 +46466,7 @@ ALTER TABLE ONLY jointable_materialrequirement_order
 
 
 --
--- Name: materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
@@ -46424,7 +46474,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
@@ -46432,7 +46482,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_materialrequirementcoverage materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
@@ -46440,7 +46490,7 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_materialrequirementcoverage materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
@@ -46448,7 +46498,7 @@ ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
@@ -46456,7 +46506,7 @@ ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirementcoverage_order materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirementcoverage_order
@@ -46464,7 +46514,7 @@ ALTER TABLE ONLY jointable_materialrequirementcoverage_order
 
 
 --
--- Name: materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialrequirementcoveragefororder_coveragefororder materialrequirementcoverage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
@@ -46472,7 +46522,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
 
 
 --
--- Name: materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_materialrequirementcoverage materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
@@ -46480,7 +46530,7 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_materialrequirementcoverage materialrequirementcoverage_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
@@ -46488,7 +46538,7 @@ ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersupplies_materialrequirementcoverage materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
@@ -46496,7 +46546,7 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersupplies_materialrequirementcoverage materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
@@ -46504,7 +46554,7 @@ ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
 
 
 --
--- Name: materialsinlocationcomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocationcomponent materialsinlocationcomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocationcomponent
@@ -46512,7 +46562,7 @@ ALTER TABLE ONLY materialflow_materialsinlocationcomponent
 
 
 --
--- Name: materialsinlocationcomponent_materialsinlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_materialsinlocationcomponent materialsinlocationcomponent_materialsinlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_materialsinlocationcomponent
@@ -46520,7 +46570,7 @@ ALTER TABLE ONLY materialflow_materialsinlocationcomponent
 
 
 --
--- Name: meatcuttingindicatorcomponent_b_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicatorcomponent meatcuttingindicatorcomponent_b_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
@@ -46528,7 +46578,7 @@ ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
 
 
 --
--- Name: meatcuttingindicatorcomponent_mci_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicatorcomponent meatcuttingindicatorcomponent_mci_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
@@ -46536,7 +46586,7 @@ ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
 
 
 --
--- Name: meatcuttingindicatorcomponent_mcic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_meatcuttingindicatorcomponent meatcuttingindicatorcomponent_mcic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
@@ -46544,7 +46594,7 @@ ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
 
 
 --
--- Name: message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46552,7 +46602,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_assignmenttoshiftstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46560,7 +46610,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46568,7 +46618,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_batchstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46576,7 +46626,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_message message_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_message
@@ -46584,7 +46634,7 @@ ALTER TABLE ONLY subcontractorportal_message
 
 
 --
--- Name: message_confectionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_confectionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46592,7 +46642,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_confectionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_confectionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46600,7 +46650,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46608,7 +46658,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_deliverystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46616,7 +46666,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_extrusionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_extrusionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46624,7 +46674,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_extrusionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_extrusionprotocolstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46632,7 +46682,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46640,7 +46690,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46648,7 +46698,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46656,7 +46706,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_maintenanceeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46664,7 +46714,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_negotiationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_negotiationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46672,7 +46722,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_negotiationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_negotiationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46680,7 +46730,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46688,7 +46738,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_offerstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46696,7 +46746,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46704,7 +46754,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46712,7 +46762,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_palletstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_palletstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46720,7 +46770,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_palletstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_palletstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46728,7 +46778,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46736,7 +46786,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_plannedeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46744,7 +46794,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_prodrecstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_prodrecstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46752,7 +46802,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_prodrecstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_prodrecstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46760,7 +46810,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46768,7 +46818,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_recurringeventstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46776,7 +46826,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46784,7 +46834,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_requestforquotationstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46792,7 +46842,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_message message_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_message
@@ -46800,7 +46850,7 @@ ALTER TABLE ONLY subcontractorportal_message
 
 
 --
--- Name: message_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_message message_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_message
@@ -46808,7 +46858,7 @@ ALTER TABLE ONLY subcontractorportal_message
 
 
 --
--- Name: message_technologystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_technologystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46816,7 +46866,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_technologystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_technologystatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46824,7 +46874,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46832,7 +46882,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_trackingrecordstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46840,7 +46890,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: states_message message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY states_message
@@ -46848,7 +46898,7 @@ ALTER TABLE ONLY states_message
 
 
 --
--- Name: message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_states_message message_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_states_message
@@ -46856,7 +46906,7 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
--- Name: multiassignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
@@ -46864,7 +46914,7 @@ ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: multiassignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_assignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
@@ -46872,7 +46922,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
@@ -46880,7 +46930,7 @@ ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
@@ -46888,7 +46938,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
@@ -46896,7 +46946,7 @@ ALTER TABLE ONLY assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_multiassignmenttoshift multiassignmenttoshift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
@@ -46904,7 +46954,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_multiassignmenttoshift
 
 
 --
--- Name: negotiationproduct_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationproduct negotiationproduct_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationproduct
@@ -46912,7 +46962,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationproduct
 
 
 --
--- Name: negotiationproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationproduct negotiationproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationproduct
@@ -46920,7 +46970,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationproduct
 
 
 --
--- Name: negotiationproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationproduct negotiationproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationproduct
@@ -46928,7 +46978,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationproduct
 
 
 --
--- Name: negotiationstatechange_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationstatechange negotiationstatechange_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationstatechange
@@ -46936,7 +46986,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationstatechange
 
 
 --
--- Name: negotiationstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_negotiationstatechange negotiationstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_negotiationstatechange
@@ -46944,7 +46994,7 @@ ALTER TABLE ONLY supplynegotiations_negotiationstatechange
 
 
 --
--- Name: nutrientcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproductcomponent nutrientcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
@@ -46952,7 +47002,7 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
 
 
 --
--- Name: nutrientcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrientcalculation nutrientcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrientcalculation
@@ -46960,7 +47010,7 @@ ALTER TABLE ONLY nutritionfacts_nutrientcalculation
 
 
 --
--- Name: nutrition_nutritiongroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutrition nutrition_nutritiongroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutrition
@@ -46968,7 +47018,7 @@ ALTER TABLE ONLY nutritionfacts_nutrition
 
 
 --
--- Name: nutritionelement_nutrition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritionelement nutritionelement_nutrition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritionelement
@@ -46976,7 +47026,7 @@ ALTER TABLE ONLY nutritionfacts_nutritionelement
 
 
 --
--- Name: nutritionelement_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritionelement nutritionelement_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritionelement
@@ -46984,7 +47034,7 @@ ALTER TABLE ONLY nutritionfacts_nutritionelement
 
 
 --
--- Name: nutritionelement_prototypeproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_nutritionelement nutritionelement_prototypeproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_nutritionelement
@@ -46992,7 +47042,7 @@ ALTER TABLE ONLY nutritionfacts_nutritionelement
 
 
 --
--- Name: nutritionfacts_prototypeproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nutritionfacts_prototypeproductcomponent nutritionfacts_prototypeproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
@@ -47000,7 +47050,7 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
 
 
 --
--- Name: offer_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offer offer_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offer
@@ -47008,7 +47058,7 @@ ALTER TABLE ONLY supplynegotiations_offer
 
 
 --
--- Name: offer_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offer offer_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offer
@@ -47016,7 +47066,7 @@ ALTER TABLE ONLY supplynegotiations_offer
 
 
 --
--- Name: offer_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offer offer_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offer
@@ -47024,7 +47074,7 @@ ALTER TABLE ONLY supplynegotiations_offer
 
 
 --
--- Name: offerproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerproduct offerproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerproduct
@@ -47032,7 +47082,7 @@ ALTER TABLE ONLY supplynegotiations_offerproduct
 
 
 --
--- Name: offerproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerproduct offerproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerproduct
@@ -47040,7 +47090,7 @@ ALTER TABLE ONLY supplynegotiations_offerproduct
 
 
 --
--- Name: offerproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerproduct offerproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerproduct
@@ -47048,7 +47098,7 @@ ALTER TABLE ONLY supplynegotiations_offerproduct
 
 
 --
--- Name: offerstatechange_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerstatechange offerstatechange_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerstatechange
@@ -47056,7 +47106,7 @@ ALTER TABLE ONLY supplynegotiations_offerstatechange
 
 
 --
--- Name: offerstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_offerstatechange offerstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_offerstatechange
@@ -47064,7 +47114,7 @@ ALTER TABLE ONLY supplynegotiations_offerstatechange
 
 
 --
--- Name: operation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_operation operation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_operation
@@ -47072,7 +47122,7 @@ ALTER TABLE ONLY subcontractorportal_operation
 
 
 --
--- Name: operation_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation operation_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -47080,7 +47130,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: operation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_operation operation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_operation
@@ -47088,7 +47138,7 @@ ALTER TABLE ONLY subcontractorportal_operation
 
 
 --
--- Name: operation_operationgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation operation_operationgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -47096,7 +47146,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: operation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation operation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -47104,7 +47154,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: operation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation operation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -47112,7 +47162,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: operation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_operation_workstation operation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_operation_workstation
@@ -47120,7 +47170,7 @@ ALTER TABLE ONLY jointable_operation_workstation
 
 
 --
--- Name: operation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operation operation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operation
@@ -47128,7 +47178,7 @@ ALTER TABLE ONLY technologies_operation
 
 
 --
--- Name: operationaltask_techopercompoperationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasks_operationaltask operationaltask_techopercompoperationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasks_operationaltask
@@ -47136,7 +47186,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 
 --
--- Name: operationaltask_techopercompoperationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_operationaltasks_operationaltask operationaltask_techopercompoperationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_operationaltasks_operationaltask
@@ -47144,7 +47194,7 @@ ALTER TABLE ONLY arch_operationaltasks_operationaltask
 
 
 --
--- Name: operationproductincomponent_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent operationproductincomponent_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -47152,7 +47202,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: operationproductincomponent_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent operationproductincomponent_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -47160,7 +47210,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: operationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent operationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -47168,7 +47218,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: operationproductincomponent_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent operationproductincomponent_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -47176,7 +47226,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: operationproductoutcomponent_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent operationproductoutcomponent_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -47184,7 +47234,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: operationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent operationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -47192,7 +47242,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: operationproductoutcomponent_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent operationproductoutcomponent_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -47200,7 +47250,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: operationproductoutcomponent_productsshiftinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent operationproductoutcomponent_productsshiftinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -47208,7 +47258,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionscheduling_opercomptimecalculation opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_opercomptimecalculation
@@ -47216,7 +47266,7 @@ ALTER TABLE ONLY productionscheduling_opercomptimecalculation
 
 
 --
--- Name: opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_opercomptimecalculation opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
@@ -47224,7 +47274,7 @@ ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
 
 
 --
--- Name: opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionscheduling_opercomptimecalculation opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_opercomptimecalculation
@@ -47232,7 +47282,7 @@ ALTER TABLE ONLY productionscheduling_opercomptimecalculation
 
 
 --
--- Name: opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_opercomptimecalculation opercomptimecalculation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
@@ -47240,7 +47290,7 @@ ALTER TABLE ONLY arch_productionscheduling_opercomptimecalculation
 
 
 --
--- Name: order_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47248,7 +47298,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_address_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47256,7 +47306,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47264,7 +47314,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47272,7 +47322,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47280,7 +47330,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_masterorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47288,7 +47338,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_masterorderproductcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_masterorderproductcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47296,7 +47346,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_masterorderproductcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_masterorderproductcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47304,7 +47354,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_materialrequirementcoverage_order order_materialrequirementcoverage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_materialrequirementcoverage_order
@@ -47312,7 +47362,7 @@ ALTER TABLE ONLY jointable_materialrequirementcoverage_order
 
 
 --
--- Name: order_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47320,7 +47370,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47328,7 +47378,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47336,7 +47386,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47344,7 +47394,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_printlabelshelper_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_printlabelshelper order_printlabelshelper_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_printlabelshelper
@@ -47352,7 +47402,7 @@ ALTER TABLE ONLY jointable_order_printlabelshelper
 
 
 --
--- Name: order_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_printlabelshelper order_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_printlabelshelper
@@ -47360,7 +47410,7 @@ ALTER TABLE ONLY jointable_order_printlabelshelper
 
 
 --
--- Name: order_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47368,7 +47418,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47376,7 +47426,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_productionbalance_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_productionbalance order_productionbalance_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_productionbalance
@@ -47384,7 +47434,7 @@ ALTER TABLE ONLY jointable_order_productionbalance
 
 
 --
--- Name: order_productionbalance_productionbalance_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_productionbalance order_productionbalance_productionbalance_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_productionbalance
@@ -47392,7 +47442,7 @@ ALTER TABLE ONLY jointable_order_productionbalance
 
 
 --
--- Name: order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47400,7 +47450,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47408,7 +47458,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47416,7 +47466,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order order_technologyprototype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47424,7 +47474,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: order_workplan_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_workplan order_workplan_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_workplan
@@ -47432,7 +47482,7 @@ ALTER TABLE ONLY jointable_order_workplan
 
 
 --
--- Name: order_workplan_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_order_workplan order_workplan_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_order_workplan
@@ -47440,7 +47490,7 @@ ALTER TABLE ONLY jointable_order_workplan
 
 
 --
--- Name: ordercategorycolor_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_ordercategorycolor ordercategorycolor_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_ordercategorycolor
@@ -47448,7 +47498,7 @@ ALTER TABLE ONLY orders_ordercategorycolor
 
 
 --
--- Name: orderedproduct_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct orderedproduct_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -47456,7 +47506,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: orderedproduct_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct orderedproduct_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -47464,7 +47514,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: orderedproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_deliveredproduct orderedproduct_offer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_deliveredproduct
@@ -47472,7 +47522,7 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
--- Name: orderedproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct orderedproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -47480,7 +47530,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: orderedproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproduct orderedproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproduct
@@ -47488,7 +47538,7 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
--- Name: orderedproductreservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproductreservation orderedproductreservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproductreservation
@@ -47496,7 +47546,7 @@ ALTER TABLE ONLY deliveries_orderedproductreservation
 
 
 --
--- Name: orderedproductreservation_orderedproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_orderedproductreservation orderedproductreservation_orderedproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_orderedproductreservation
@@ -47504,7 +47554,7 @@ ALTER TABLE ONLY deliveries_orderedproductreservation
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -47512,7 +47562,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol
@@ -47520,7 +47570,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_avglaborcostcalcfororder orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -47528,7 +47578,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasks_operationaltask orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasks_operationaltask
@@ -47536,7 +47586,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -47544,7 +47594,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -47552,7 +47602,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol
@@ -47560,7 +47610,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 
 
 --
--- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_operationaltasks_operationaltask orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_operationaltasks_operationaltask
@@ -47568,7 +47618,7 @@ ALTER TABLE ONLY arch_operationaltasks_operationaltask
 
 
 --
--- Name: orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47576,7 +47626,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order orders_order_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47584,7 +47634,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: orders_order_root_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_order orders_order_root_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_order
@@ -47592,7 +47642,7 @@ ALTER TABLE ONLY orders_order
 
 
 --
--- Name: orders_order_root_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_order orders_order_root_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_order
@@ -47600,7 +47650,7 @@ ALTER TABLE ONLY arch_orders_order
 
 
 --
--- Name: ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -47608,7 +47658,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup ordersgroup_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup
@@ -47616,7 +47666,7 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroup_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -47624,7 +47674,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup ordersgroup_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup
@@ -47632,7 +47682,7 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -47640,7 +47690,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup ordersgroup_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup
@@ -47648,7 +47698,7 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersgroups_ordersgroup ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersgroups_ordersgroup
@@ -47656,7 +47706,7 @@ ALTER TABLE ONLY ordersgroups_ordersgroup
 
 
 --
--- Name: ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersgroups_ordersgroup ordersgroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersgroups_ordersgroup
@@ -47664,7 +47714,7 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
--- Name: orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_orderstatechange orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_orderstatechange
@@ -47672,7 +47722,7 @@ ALTER TABLE ONLY orders_orderstatechange
 
 
 --
--- Name: orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_orderstatechange orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_orderstatechange
@@ -47680,7 +47730,7 @@ ALTER TABLE ONLY arch_orders_orderstatechange
 
 
 --
--- Name: orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_orderstatechange orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_orderstatechange
@@ -47688,7 +47738,7 @@ ALTER TABLE ONLY orders_orderstatechange
 
 
 --
--- Name: orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_orderstatechange orderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_orderstatechange
@@ -47696,7 +47746,7 @@ ALTER TABLE ONLY arch_orders_orderstatechange
 
 
 --
--- Name: ordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionscheduling_ordertimecalculation ordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionscheduling_ordertimecalculation
@@ -47704,7 +47754,7 @@ ALTER TABLE ONLY productionscheduling_ordertimecalculation
 
 
 --
--- Name: ordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionscheduling_ordertimecalculation ordertimecalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation
@@ -47712,7 +47762,7 @@ ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation
 
 
 --
--- Name: pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -47720,7 +47770,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -47728,7 +47778,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -47736,7 +47786,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet pallet_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -47744,7 +47794,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -47752,7 +47802,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet pallet_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -47760,7 +47810,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_pallet pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_pallet
@@ -47768,7 +47818,7 @@ ALTER TABLE ONLY goodfood_pallet
 
 
 --
--- Name: pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_pallet pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_pallet
@@ -47776,7 +47826,7 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
--- Name: palletcontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletcontext palletcontext_operator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletcontext
@@ -47784,7 +47834,7 @@ ALTER TABLE ONLY goodfood_palletcontext
 
 
 --
--- Name: palletcontext_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletcontext palletcontext_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletcontext
@@ -47792,7 +47842,7 @@ ALTER TABLE ONLY goodfood_palletcontext
 
 
 --
--- Name: palletnumber_palletnumberhelper_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_palletnumber_palletnumberhelper palletnumber_palletnumberhelper_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
@@ -47800,7 +47850,7 @@ ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
 
 
 --
--- Name: palletnumber_palletnumberhelper_palletnumberhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_palletnumber_palletnumberhelper palletnumber_palletnumberhelper_palletnumberhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
@@ -47808,7 +47858,7 @@ ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
 
 
 --
--- Name: palletstatechange_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletstatechange palletstatechange_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletstatechange
@@ -47816,7 +47866,7 @@ ALTER TABLE ONLY goodfood_palletstatechange
 
 
 --
--- Name: palletstatechange_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_palletstatechange palletstatechange_pallet_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_palletstatechange
@@ -47824,7 +47874,7 @@ ALTER TABLE ONLY arch_goodfood_palletstatechange
 
 
 --
--- Name: palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_palletstatechange palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_palletstatechange
@@ -47832,7 +47882,7 @@ ALTER TABLE ONLY goodfood_palletstatechange
 
 
 --
--- Name: palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_palletstatechange palletstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_palletstatechange
@@ -47840,7 +47890,7 @@ ALTER TABLE ONLY arch_goodfood_palletstatechange
 
 
 --
--- Name: pantoneforoperationproduct_operationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforoperationproduct pantoneforoperationproduct_operationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforoperationproduct
@@ -47848,7 +47898,7 @@ ALTER TABLE ONLY pantone_pantoneforoperationproduct
 
 
 --
--- Name: pantoneforoperationproduct_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforoperationproduct pantoneforoperationproduct_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforoperationproduct
@@ -47856,7 +47906,7 @@ ALTER TABLE ONLY pantone_pantoneforoperationproduct
 
 
 --
--- Name: pantoneforoperationproduct_pantoneforproducts_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforoperationproduct pantoneforoperationproduct_pantoneforproducts_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforoperationproduct
@@ -47864,7 +47914,7 @@ ALTER TABLE ONLY pantone_pantoneforoperationproduct
 
 
 --
--- Name: pantoneforproducts_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforproducts pantoneforproducts_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforproducts
@@ -47872,7 +47922,7 @@ ALTER TABLE ONLY pantone_pantoneforproducts
 
 
 --
--- Name: pantoneforproducts_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_pantoneforproducts pantoneforproducts_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_pantoneforproducts
@@ -47880,7 +47930,7 @@ ALTER TABLE ONLY pantone_pantoneforproducts
 
 
 --
--- Name: parameter_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47888,7 +47938,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47896,7 +47946,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_companyname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_companyname_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47904,7 +47954,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_country_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47912,7 +47962,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_currency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_currency_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47920,7 +47970,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_esilcoaccountwithreservationlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_esilcoaccountwithreservationlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47928,7 +47978,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_esilcodispositionshiftlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_esilcodispositionshiftlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47936,7 +47986,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_freezerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter parameter_freezerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -47944,7 +47994,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: parameter_issuelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_issuelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47952,7 +48002,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47960,7 +48010,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_meatcuttinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter parameter_meatcuttinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -47968,7 +48018,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: parameter_meatcuttingoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter parameter_meatcuttingoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -47976,7 +48026,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: parameter_ordersganttparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_ordersganttparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47984,7 +48034,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -47992,7 +48042,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_resinandhardenerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_resinandhardenerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -48000,7 +48050,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_slaughterlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter parameter_slaughterlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -48008,7 +48058,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: parameter_slaughteroperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_parameter parameter_slaughteroperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_parameter
@@ -48016,7 +48066,7 @@ ALTER TABLE ONLY zmbak_parameter
 
 
 --
--- Name: parameter_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parameter_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -48024,7 +48074,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parametercolumnforoffers_columnforoffers_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforoffers parametercolumnforoffers_columnforoffers_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
@@ -48032,7 +48082,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
 
 
 --
--- Name: parametercolumnforoffers_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforoffers parametercolumnforoffers_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
@@ -48040,7 +48090,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforoffers
 
 
 --
--- Name: parametercolumnforrequests_columnforrequests_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforrequests parametercolumnforrequests_columnforrequests_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
@@ -48048,7 +48098,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
 
 
 --
--- Name: parametercolumnforrequests_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_parametercolumnforrequests parametercolumnforrequests_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
@@ -48056,7 +48106,7 @@ ALTER TABLE ONLY supplynegotiations_parametercolumnforrequests
 
 
 --
--- Name: parameterdeliveryordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_parameterdeliveryordercolumn parameterdeliveryordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
@@ -48064,7 +48114,7 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
 
 
 --
--- Name: parameterdeliveryordercolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: deliveries_parameterdeliveryordercolumn parameterdeliveryordercolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
@@ -48072,7 +48122,7 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
 
 
 --
--- Name: parametermaterialcost_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_overhead parametermaterialcost_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_overhead
@@ -48080,7 +48130,7 @@ ALTER TABLE ONLY nblsport_overhead
 
 
 --
--- Name: parameterproductioncost__parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: nblsport_overhead parameterproductioncost__parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY nblsport_overhead
@@ -48088,7 +48138,7 @@ ALTER TABLE ONLY nblsport_overhead
 
 
 --
--- Name: parameters_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_parameters parameters_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_parameters
@@ -48096,7 +48146,7 @@ ALTER TABLE ONLY pantone_parameters
 
 
 --
--- Name: parameters_paste_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: pantone_parameters parameters_paste_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY pantone_parameters
@@ -48104,7 +48154,7 @@ ALTER TABLE ONLY pantone_parameters
 
 
 --
--- Name: parammeter_documentpositionparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parammeter_documentpositionparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -48112,7 +48162,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parammeter_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parammeter_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -48120,7 +48170,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parammeter_resin_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_parameter parammeter_resin_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
@@ -48128,7 +48178,7 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: pc_swt_basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_staffworktime pc_swt_basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_staffworktime
@@ -48136,7 +48186,7 @@ ALTER TABLE ONLY productioncounting_staffworktime
 
 
 --
--- Name: pc_swt_basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_staffworktime pc_swt_basic_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_staffworktime
@@ -48144,7 +48194,7 @@ ALTER TABLE ONLY arch_productioncounting_staffworktime
 
 
 --
--- Name: pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_staffworktime pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_staffworktime
@@ -48152,7 +48202,7 @@ ALTER TABLE ONLY productioncounting_staffworktime
 
 
 --
--- Name: pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_staffworktime pc_swt_pc_productionrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_staffworktime
@@ -48160,7 +48210,7 @@ ALTER TABLE ONLY arch_productioncounting_staffworktime
 
 
 --
--- Name: placeofissue_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue placeofissue_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -48168,7 +48218,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: placeofissue_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue placeofissue_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -48176,7 +48226,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: plannedevent_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48184,7 +48234,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48192,7 +48242,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48200,7 +48250,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_document plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
@@ -48208,7 +48258,7 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_document plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
@@ -48216,7 +48266,7 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: plannedevent_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48224,7 +48274,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_plannedevent plannedevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_plannedevent
@@ -48232,7 +48282,7 @@ ALTER TABLE ONLY jointable_plannedevent_plannedevent
 
 
 --
--- Name: plannedevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_staff plannedevent_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_staff
@@ -48240,7 +48290,7 @@ ALTER TABLE ONLY jointable_plannedevent_staff
 
 
 --
--- Name: plannedevent_plannedeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_plannedeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48248,7 +48298,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48256,7 +48306,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48264,7 +48314,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_relatedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_plannedevent plannedevent_relatedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_plannedevent
@@ -48272,7 +48322,7 @@ ALTER TABLE ONLY jointable_plannedevent_plannedevent
 
 
 --
--- Name: plannedevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48280,7 +48330,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48288,7 +48338,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_staff_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_plannedevent_staff plannedevent_staff_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_plannedevent_staff
@@ -48296,7 +48346,7 @@ ALTER TABLE ONLY jointable_plannedevent_staff
 
 
 --
--- Name: plannedevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48304,7 +48354,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedevent plannedevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedevent
@@ -48312,7 +48362,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedevent
 
 
 --
--- Name: plannedeventattachment_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventattachment plannedeventattachment_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventattachment
@@ -48320,7 +48370,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventattachment
 
 
 --
--- Name: plannedeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventcontext plannedeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
@@ -48328,7 +48378,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
 
 
 --
--- Name: plannedeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventcontext plannedeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
@@ -48336,7 +48386,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventcontext
 
 
 --
--- Name: plannedeventrealization_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventrealization plannedeventrealization_action_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
@@ -48344,7 +48394,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
 
 
 --
--- Name: plannedeventrealization_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventrealization plannedeventrealization_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
@@ -48352,7 +48402,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
 
 
 --
--- Name: plannedeventrealization_worker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventrealization plannedeventrealization_worker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
@@ -48360,7 +48410,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventrealization
 
 
 --
--- Name: plannedeventstatechange_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventstatechange plannedeventstatechange_plannedevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
@@ -48368,7 +48418,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
 
 
 --
--- Name: plannedeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_plannedeventstatechange plannedeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
@@ -48376,7 +48426,7 @@ ALTER TABLE ONLY cmmsmachineparts_plannedeventstatechange
 
 
 --
--- Name: position_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48384,7 +48434,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48392,7 +48442,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: position_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48400,7 +48450,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48408,7 +48458,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48416,7 +48466,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48424,7 +48474,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: position_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48432,7 +48482,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48440,7 +48490,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48448,7 +48498,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48456,7 +48506,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_position position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_position
@@ -48464,7 +48514,7 @@ ALTER TABLE ONLY materialflowresources_position
 
 
 --
--- Name: position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_position position_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_position
@@ -48472,7 +48522,7 @@ ALTER TABLE ONLY arch_materialflowresources_position
 
 
 --
--- Name: printedlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_printedlabel printedlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_printedlabel
@@ -48480,7 +48530,7 @@ ALTER TABLE ONLY goodfood_printedlabel
 
 
 --
--- Name: printedlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_printedlabel printedlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_printedlabel
@@ -48488,7 +48538,7 @@ ALTER TABLE ONLY arch_goodfood_printedlabel
 
 
 --
--- Name: printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_printedlabel printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_printedlabel
@@ -48496,7 +48546,7 @@ ALTER TABLE ONLY goodfood_printedlabel
 
 
 --
--- Name: printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_printedlabel printedlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_printedlabel
@@ -48504,7 +48554,7 @@ ALTER TABLE ONLY arch_goodfood_printedlabel
 
 
 --
--- Name: printedlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_printedlabel printedlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_printedlabel
@@ -48512,7 +48562,7 @@ ALTER TABLE ONLY goodfood_printedlabel
 
 
 --
--- Name: printedlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_printedlabel printedlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_printedlabel
@@ -48520,7 +48570,7 @@ ALTER TABLE ONLY arch_goodfood_printedlabel
 
 
 --
--- Name: printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_printlabelshelper printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_printlabelshelper
@@ -48528,7 +48578,7 @@ ALTER TABLE ONLY integrationbartender_printlabelshelper
 
 
 --
--- Name: printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_printlabelshelper printlabelshelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
@@ -48536,7 +48586,7 @@ ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
 
 
 --
--- Name: printlabelshelper_printedlabel_printedlabel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_printlabelshelper_printedlabel printlabelshelper_printedlabel_printedlabel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
@@ -48544,7 +48594,7 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 
 --
--- Name: printlabelshelper_printedlabel_printedlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_printlabelshelper_printedlabel printlabelshelper_printedlabel_printedlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
@@ -48552,7 +48602,7 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 
 --
--- Name: printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_printlabelshelper printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_printlabelshelper
@@ -48560,7 +48610,7 @@ ALTER TABLE ONLY integrationbartender_printlabelshelper
 
 
 --
--- Name: printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_printlabelshelper printlabelshelper_printer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
@@ -48568,7 +48618,7 @@ ALTER TABLE ONLY arch_integrationbartender_printlabelshelper
 
 
 --
--- Name: product_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48576,7 +48626,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48584,7 +48634,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_costnormsgenerator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_costnormsgenerator_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48592,7 +48642,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_downform_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_downform_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48600,7 +48650,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_downshelve_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_downshelve_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48608,7 +48658,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48616,7 +48666,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue product_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -48624,7 +48674,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: product_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue product_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -48632,7 +48682,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: product_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue product_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -48640,7 +48690,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: product_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue product_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -48648,7 +48698,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: product_scale_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_scale product_scale_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_scale
@@ -48656,7 +48706,7 @@ ALTER TABLE ONLY jointable_product_scale
 
 
 --
--- Name: product_scale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_scale product_scale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_scale
@@ -48664,7 +48714,7 @@ ALTER TABLE ONLY jointable_product_scale
 
 
 --
--- Name: product_upform_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_upform_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48672,7 +48722,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: product_upshelve_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_product product_upshelve_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_product
@@ -48680,7 +48730,7 @@ ALTER TABLE ONLY basic_product
 
 
 --
--- Name: productandquantityhelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productandquantityhelper productandquantityhelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
@@ -48688,7 +48738,7 @@ ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
 
 
 --
--- Name: productandquantityhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productandquantityhelper productandquantityhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
@@ -48696,7 +48746,7 @@ ALTER TABLE ONLY productflowthrudivision_productandquantityhelper
 
 
 --
--- Name: productattachment_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_productattachment productattachment_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_productattachment
@@ -48704,7 +48754,7 @@ ALTER TABLE ONLY basic_productattachment
 
 
 --
--- Name: productcatalognumbers_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productcatalognumbers_productcatalognumbers productcatalognumbers_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
@@ -48712,7 +48762,7 @@ ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
 
 
 --
--- Name: productcatalognumbers_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productcatalognumbers_productcatalognumbers productcatalognumbers_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
@@ -48720,7 +48770,7 @@ ALTER TABLE ONLY productcatalognumbers_productcatalognumbers
 
 
 --
--- Name: productcomponent_operationin_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productcomponent productcomponent_operationin_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productcomponent
@@ -48728,7 +48778,7 @@ ALTER TABLE ONLY technologies_productcomponent
 
 
 --
--- Name: productcomponent_operationout_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productcomponent productcomponent_operationout_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productcomponent
@@ -48736,7 +48786,7 @@ ALTER TABLE ONLY technologies_productcomponent
 
 
 --
--- Name: productcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productcomponent productcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productcomponent
@@ -48744,7 +48794,7 @@ ALTER TABLE ONLY technologies_productcomponent
 
 
 --
--- Name: productdata_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdata productdata_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdata
@@ -48752,7 +48802,7 @@ ALTER TABLE ONLY productdata_productdata
 
 
 --
--- Name: productdata_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdata productdata_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdata
@@ -48760,7 +48810,7 @@ ALTER TABLE ONLY productdata_productdata
 
 
 --
--- Name: productdata_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdata productdata_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdata
@@ -48768,7 +48818,7 @@ ALTER TABLE ONLY productdata_productdata
 
 
 --
--- Name: productdataattachment_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdataattachment productdataattachment_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataattachment
@@ -48776,7 +48826,7 @@ ALTER TABLE ONLY productdata_productdataattachment
 
 
 --
--- Name: productdatainput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdatainput productdatainput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdatainput
@@ -48784,7 +48834,7 @@ ALTER TABLE ONLY productdata_productdatainput
 
 
 --
--- Name: productdatainput_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdatainput productdatainput_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdatainput
@@ -48792,7 +48842,7 @@ ALTER TABLE ONLY productdata_productdatainput
 
 
 --
--- Name: productdataoperation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdataoperation productdataoperation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataoperation
@@ -48800,7 +48850,7 @@ ALTER TABLE ONLY productdata_productdataoperation
 
 
 --
--- Name: productdataoperation_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productdata_productdataoperation productdataoperation_productdata_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productdata_productdataoperation
@@ -48808,7 +48858,7 @@ ALTER TABLE ONLY productdata_productdataoperation
 
 
 --
--- Name: productincomponent_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue productincomponent_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -48816,7 +48866,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: productincomponent_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue productincomponent_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -48824,7 +48874,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -48832,7 +48882,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue productincomponent_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -48840,7 +48890,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: productioncounting_productionrecord_d_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productioncounting_productionrecord_d_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -48848,7 +48898,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecord_d_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_d_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -48856,7 +48906,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -48864,7 +48914,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_s_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -48872,7 +48922,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecord_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productioncounting_productionrecord_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -48880,7 +48930,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecord_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productioncounting_productionrecord_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -48888,7 +48938,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingstatechange productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingstatechange
@@ -48896,7 +48946,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingstatechange
 
 
 --
--- Name: productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingstatechange productioncounting_productionrecordlogging_pr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
@@ -48904,7 +48954,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
 
 
 --
--- Name: productioncountingoperationrun_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
@@ -48912,7 +48962,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: productioncountingoperationrun_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
@@ -48920,7 +48970,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
@@ -48928,7 +48978,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingoperationrun productioncountingoperationrun_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
@@ -48936,7 +48986,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingoperationrun
 
 
 --
--- Name: productioncountingquantity_basicproductioncounting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_basicproductioncounting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -48944,7 +48994,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_basicproductioncounting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_basicproductioncounting_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -48952,7 +49002,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -48960,7 +49010,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -48968,7 +49018,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -48976,7 +49026,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -48984,7 +49034,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -48992,7 +49042,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -49000,7 +49050,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -49008,7 +49058,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -49016,7 +49066,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -49024,7 +49074,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -49032,7 +49082,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -49040,7 +49090,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -49048,7 +49098,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basicproductioncounting_productioncountingquantity productioncountingquantity_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
@@ -49056,7 +49106,7 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantity_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_basicproductioncounting_productioncountingquantity productioncountingquantity_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
@@ -49064,7 +49114,7 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 
 --
--- Name: productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
@@ -49072,7 +49122,7 @@ ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
@@ -49080,7 +49130,7 @@ ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
@@ -49088,7 +49138,7 @@ ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productioncountingquantitysetcomponent productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
@@ -49096,7 +49146,7 @@ ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
 
 
 --
--- Name: productionline_scale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_scale productionline_scale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_scale
@@ -49104,7 +49154,7 @@ ALTER TABLE ONLY jointable_productionline_scale
 
 
 --
--- Name: productionline_scale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_scale productionline_scale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_scale
@@ -49112,7 +49162,7 @@ ALTER TABLE ONLY jointable_productionline_scale
 
 
 --
--- Name: productionline_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shift productionline_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shift
@@ -49120,7 +49170,7 @@ ALTER TABLE ONLY jointable_productionline_shift
 
 
 --
--- Name: productionline_shifttimetableexception_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shifttimetableexception productionline_shifttimetableexception_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shifttimetableexception
@@ -49128,7 +49178,7 @@ ALTER TABLE ONLY jointable_productionline_shifttimetableexception
 
 
 --
--- Name: productionline_shifttimetableexception_ste_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shifttimetableexception productionline_shifttimetableexception_ste_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shifttimetableexception
@@ -49136,7 +49186,7 @@ ALTER TABLE ONLY jointable_productionline_shifttimetableexception
 
 
 --
--- Name: productionlineforscale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationscales_productionlineforscale productionlineforscale_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_productionlineforscale
@@ -49144,7 +49194,7 @@ ALTER TABLE ONLY integrationscales_productionlineforscale
 
 
 --
--- Name: productionlineforscale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationscales_productionlineforscale productionlineforscale_scale_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationscales_productionlineforscale
@@ -49152,7 +49202,7 @@ ALTER TABLE ONLY integrationscales_productionlineforscale
 
 
 --
--- Name: productionlines_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_productionline productionlines_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_productionline
@@ -49160,7 +49210,7 @@ ALTER TABLE ONLY productionlines_productionline
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectioncontext productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectioncontext
@@ -49168,7 +49218,7 @@ ALTER TABLE ONLY goodfood_confectioncontext
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_confectionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_confectionprotocol
@@ -49176,7 +49226,7 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusioncontext productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusioncontext
@@ -49184,7 +49234,7 @@ ALTER TABLE ONLY goodfood_extrusioncontext
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: goodfood_extrusionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY goodfood_extrusionprotocol
@@ -49192,7 +49242,7 @@ ALTER TABLE ONLY goodfood_extrusionprotocol
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
@@ -49200,7 +49250,7 @@ ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: avglaborcostcalcfororder_avglaborcostcalcfororder productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -49208,7 +49258,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasks_operationaltask productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasks_operationaltask
@@ -49216,7 +49266,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
@@ -49224,7 +49274,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_avglaborcostcalcfororder_avglaborcostcalcfororder productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
@@ -49232,7 +49282,7 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_avglaborcostcalcfororder
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_confectionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_confectionprotocol
@@ -49240,7 +49290,7 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_goodfood_extrusionprotocol productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_goodfood_extrusionprotocol
@@ -49248,7 +49298,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 
 
 --
--- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_operationaltasks_operationaltask productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_operationaltasks_operationaltask
@@ -49256,7 +49306,7 @@ ALTER TABLE ONLY arch_operationaltasks_operationaltask
 
 
 --
--- Name: productionlines_workstationtypecomponent_pl_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_workstationtypecomponent productionlines_workstationtypecomponent_pl_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent
@@ -49264,7 +49314,7 @@ ALTER TABLE ONLY productionlines_workstationtypecomponent
 
 
 --
--- Name: productionlines_workstationtypecomponent_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionlines_workstationtypecomponent productionlines_workstationtypecomponent_wt_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent
@@ -49272,7 +49322,7 @@ ALTER TABLE ONLY productionlines_workstationtypecomponent
 
 
 --
--- Name: productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_productionpershift productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_productionpershift
@@ -49280,7 +49330,7 @@ ALTER TABLE ONLY productionpershift_productionpershift
 
 
 --
--- Name: productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_productionpershift productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_productionpershift
@@ -49288,7 +49338,7 @@ ALTER TABLE ONLY arch_productionpershift_productionpershift
 
 
 --
--- Name: productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49296,7 +49346,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productionrecord_subcontractor_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49304,7 +49354,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_correction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_correction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49312,7 +49362,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_correction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_correction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49320,7 +49370,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49328,7 +49378,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49336,7 +49386,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49344,7 +49394,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49352,7 +49402,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49360,7 +49410,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49368,7 +49418,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49376,7 +49426,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49384,7 +49434,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontracking productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking
@@ -49392,7 +49442,7 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 
 --
--- Name: productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontracking productiontracking_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
@@ -49400,7 +49450,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingreport productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingreport
@@ -49408,7 +49458,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingreport
 
 
 --
--- Name: productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingreport productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
@@ -49416,7 +49466,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
 
 
 --
--- Name: productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_productiontrackingreport productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingreport
@@ -49424,7 +49474,7 @@ ALTER TABLE ONLY productioncounting_productiontrackingreport
 
 
 --
--- Name: productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_productiontrackingreport productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
@@ -49432,7 +49482,7 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
 
 
 --
--- Name: productquantity_transfer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowmultitransfers_productquantity productquantity_transfer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowmultitransfers_productquantity
@@ -49440,7 +49490,7 @@ ALTER TABLE ONLY materialflowmultitransfers_productquantity
 
 
 --
--- Name: productstoissue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue productstoissue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -49448,7 +49498,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: productstoissue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue productstoissue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -49456,7 +49506,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -49464,7 +49514,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue productstoissue_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -49472,7 +49522,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: productstoissuehelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissuehelper productstoissuehelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissuehelper
@@ -49480,7 +49530,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissuehelper
 
 
 --
--- Name: productstoragelocationhistory_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
@@ -49488,7 +49538,7 @@ ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
 
 
 --
--- Name: productstoragelocationhistory_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
@@ -49496,7 +49546,7 @@ ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
 
 
 --
--- Name: productstoragelocationhistory_storagelocationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_storagelocationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
@@ -49504,7 +49554,7 @@ ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
 
 
 --
--- Name: productstoragelocationhistory_storagelocationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_productstoragelocationhistory productstoragelocationhistory_storagelocationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
@@ -49512,7 +49562,7 @@ ALTER TABLE ONLY materialflowresources_productstoragelocationhistory
 
 
 --
--- Name: productstructuretreenode_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49520,7 +49570,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: productstructuretreenode_maintechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_maintechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49528,7 +49578,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: productstructuretreenode_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49536,7 +49586,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: productstructuretreenode_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49544,7 +49594,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: productstructuretreenode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49552,7 +49602,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: productstructuretreenode_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode productstructuretreenode_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -49560,7 +49610,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49568,7 +49618,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49576,7 +49626,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49584,7 +49634,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49592,7 +49642,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49600,7 +49650,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49608,7 +49658,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49616,7 +49666,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49624,7 +49674,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49632,7 +49682,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49640,7 +49690,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_producttoissuecorrectionhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_producttoissuecorrectionhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49648,7 +49698,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_producttoissuecorrectionhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_producttoissuecorrectionhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49656,7 +49706,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrection producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
@@ -49664,7 +49714,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_producttoissuecorrection producttoissuecorrection_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
@@ -49672,7 +49722,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_producttoissuecorrection
 
 
 --
--- Name: producttoissuecorrectionhelper_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrectionhelper producttoissuecorrectionhelper_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
@@ -49680,7 +49730,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
 
 
 --
--- Name: producttoissuecorrectionhelper_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_producttoissuecorrectionhelper producttoissuecorrectionhelper_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
@@ -49688,7 +49738,7 @@ ALTER TABLE ONLY productflowthrudivision_producttoissuecorrectionhelper
 
 
 --
--- Name: progressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_progressforday progressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_progressforday
@@ -49696,7 +49746,7 @@ ALTER TABLE ONLY productionpershift_progressforday
 
 
 --
--- Name: progressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_progressforday progressforday_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_progressforday
@@ -49704,7 +49754,7 @@ ALTER TABLE ONLY arch_productionpershift_progressforday
 
 
 --
--- Name: progressforday_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_progressforday progressforday_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_progressforday
@@ -49712,7 +49762,7 @@ ALTER TABLE ONLY productionpershift_progressforday
 
 
 --
--- Name: progressforday_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_progressforday progressforday_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_progressforday
@@ -49720,7 +49770,7 @@ ALTER TABLE ONLY arch_productionpershift_progressforday
 
 
 --
--- Name: qcadoomodel_unitconv_aggregate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_unitconversionitem qcadoomodel_unitconv_aggregate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_unitconversionitem
@@ -49728,7 +49778,7 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 
 --
--- Name: qcadoomodel_unitconv_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoomodel_unitconversionitem qcadoomodel_unitconv_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoomodel_unitconversionitem
@@ -49736,7 +49786,7 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 
 --
--- Name: realisation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_realisation realisation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_realisation
@@ -49744,7 +49794,7 @@ ALTER TABLE ONLY subcontractorportal_realisation
 
 
 --
--- Name: realisation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_realisation realisation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_realisation
@@ -49752,7 +49802,7 @@ ALTER TABLE ONLY subcontractorportal_realisation
 
 
 --
--- Name: reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
@@ -49760,7 +49810,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
@@ -49768,7 +49818,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
@@ -49776,7 +49826,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondatefrom reasontypecorrectiondatefrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
@@ -49784,7 +49834,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondatefrom
 
 
 --
--- Name: reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondateto reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondateto
@@ -49792,7 +49842,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondateto
 
 
 --
--- Name: reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondateto reasontypecorrectiondateto_changedateshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
@@ -49800,7 +49850,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
 
 
 --
--- Name: reasontypecorrectiondateto_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypecorrectiondateto reasontypecorrectiondateto_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypecorrectiondateto
@@ -49808,7 +49858,7 @@ ALTER TABLE ONLY orders_reasontypecorrectiondateto
 
 
 --
--- Name: reasontypecorrectiondateto_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypecorrectiondateto reasontypecorrectiondateto_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
@@ -49816,7 +49866,7 @@ ALTER TABLE ONLY arch_orders_reasontypecorrectiondateto
 
 
 --
--- Name: reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectiveend reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectiveend
@@ -49824,7 +49874,7 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectiveend
 
 
 --
--- Name: reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectiveend reasontypedeviationeffectiveend_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectiveend
@@ -49832,7 +49882,7 @@ ALTER TABLE ONLY arch_orders_reasontypedeviationeffectiveend
 
 
 --
--- Name: reasontypedeviationeffectivestart_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypedeviationeffectivestart reasontypedeviationeffectivestart_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypedeviationeffectivestart
@@ -49840,7 +49890,7 @@ ALTER TABLE ONLY orders_reasontypedeviationeffectivestart
 
 
 --
--- Name: reasontypedeviationeffectivestart_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypedeviationeffectivestart reasontypedeviationeffectivestart_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypedeviationeffectivestart
@@ -49848,7 +49898,7 @@ ALTER TABLE ONLY arch_orders_reasontypedeviationeffectivestart
 
 
 --
--- Name: reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_reasontypeofchangingorderstate reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_reasontypeofchangingorderstate
@@ -49856,7 +49906,7 @@ ALTER TABLE ONLY orders_reasontypeofchangingorderstate
 
 
 --
--- Name: reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_reasontypeofchangingorderstate reasontypeofchangingorderstate_orderstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_reasontypeofchangingorderstate
@@ -49864,7 +49914,7 @@ ALTER TABLE ONLY arch_orders_reasontypeofchangingorderstate
 
 
 --
--- Name: reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productionpershift_reasontypeofcorrectionplan reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productionpershift_reasontypeofcorrectionplan
@@ -49872,7 +49922,7 @@ ALTER TABLE ONLY productionpershift_reasontypeofcorrectionplan
 
 
 --
--- Name: reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productionpershift_reasontypeofcorrectionplan reasontypeofcorrectionplan_productionpershift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productionpershift_reasontypeofcorrectionplan
@@ -49880,7 +49930,7 @@ ALTER TABLE ONLY arch_productionpershift_reasontypeofcorrectionplan
 
 
 --
--- Name: recurringevent_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49888,7 +49938,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49896,7 +49946,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49904,7 +49954,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49912,7 +49962,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_recurringeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_recurringeventcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49920,7 +49970,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49928,7 +49978,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49936,7 +49986,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49944,7 +49994,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringevent recurringevent_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringevent
@@ -49952,7 +50002,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringevent
 
 
 --
--- Name: recurringeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventcontext recurringeventcontext_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
@@ -49960,7 +50010,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
 
 
 --
--- Name: recurringeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventcontext recurringeventcontext_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
@@ -49968,7 +50018,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventcontext
 
 
 --
--- Name: recurringeventstatechange_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventstatechange recurringeventstatechange_recurringevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
@@ -49976,7 +50026,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
 
 
 --
--- Name: recurringeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsscheduler_recurringeventstatechange recurringeventstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
@@ -49984,7 +50034,7 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange
 
 
 --
--- Name: repairorder_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -49992,7 +50042,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50000,7 +50050,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50008,7 +50058,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50016,7 +50066,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50024,7 +50074,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50032,7 +50082,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50040,7 +50090,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50048,7 +50098,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_repairorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_repairorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50056,7 +50106,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_repairorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_repairorderproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50064,7 +50114,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50072,7 +50122,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50080,7 +50130,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorder_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorder repairorder_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorder
@@ -50088,7 +50138,7 @@ ALTER TABLE ONLY repairs_repairorder
 
 
 --
--- Name: repairorder_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorder repairorder_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorder
@@ -50096,7 +50146,7 @@ ALTER TABLE ONLY arch_repairs_repairorder
 
 
 --
--- Name: repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -50104,7 +50154,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct repairorderproduct_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -50112,7 +50162,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairorderproduct_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -50120,7 +50170,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct repairorderproduct_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -50128,7 +50178,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -50136,7 +50186,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct repairorderproduct_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -50144,7 +50194,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -50152,7 +50202,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct repairorderproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -50160,7 +50210,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderproduct repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderproduct
@@ -50168,7 +50218,7 @@ ALTER TABLE ONLY repairs_repairorderproduct
 
 
 --
--- Name: repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderproduct repairorderproduct_trackingoperationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderproduct
@@ -50176,7 +50226,7 @@ ALTER TABLE ONLY arch_repairs_repairorderproduct
 
 
 --
--- Name: repairorderstatechange_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderstatechange repairorderstatechange_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderstatechange
@@ -50184,7 +50234,7 @@ ALTER TABLE ONLY repairs_repairorderstatechange
 
 
 --
--- Name: repairorderstatechange_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderstatechange repairorderstatechange_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderstatechange
@@ -50192,7 +50242,7 @@ ALTER TABLE ONLY arch_repairs_repairorderstatechange
 
 
 --
--- Name: repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderstatechange repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderstatechange
@@ -50200,7 +50250,7 @@ ALTER TABLE ONLY repairs_repairorderstatechange
 
 
 --
--- Name: repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderstatechange repairorderstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderstatechange
@@ -50208,7 +50258,7 @@ ALTER TABLE ONLY arch_repairs_repairorderstatechange
 
 
 --
--- Name: repairorderworktime_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderworktime repairorderworktime_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderworktime
@@ -50216,7 +50266,7 @@ ALTER TABLE ONLY repairs_repairorderworktime
 
 
 --
--- Name: repairorderworktime_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderworktime repairorderworktime_repairorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderworktime
@@ -50224,7 +50274,7 @@ ALTER TABLE ONLY arch_repairs_repairorderworktime
 
 
 --
--- Name: repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: repairs_repairorderworktime repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY repairs_repairorderworktime
@@ -50232,7 +50282,7 @@ ALTER TABLE ONLY repairs_repairorderworktime
 
 
 --
--- Name: repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_repairs_repairorderworktime repairorderworktime_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_repairs_repairorderworktime
@@ -50240,7 +50290,7 @@ ALTER TABLE ONLY arch_repairs_repairorderworktime
 
 
 --
--- Name: requestforquotation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotation requestforquotation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotation
@@ -50248,7 +50298,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotation
 
 
 --
--- Name: requestforquotation_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotation requestforquotation_negotiation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotation
@@ -50256,7 +50306,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotation
 
 
 --
--- Name: requestforquotationproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationproduct requestforquotationproduct_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
@@ -50264,7 +50314,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
 
 
 --
--- Name: requestforquotationproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationproduct requestforquotationproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
@@ -50272,7 +50322,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
 
 
 --
--- Name: requestforquotationproduct_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationproduct requestforquotationproduct_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
@@ -50280,7 +50330,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationproduct
 
 
 --
--- Name: requestforquotationstatechange_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationstatechange requestforquotationstatechange_requestforquotation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
@@ -50288,7 +50338,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
 
 
 --
--- Name: requestforquotationstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: supplynegotiations_requestforquotationstatechange requestforquotationstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
@@ -50296,7 +50346,7 @@ ALTER TABLE ONLY supplynegotiations_requestforquotationstatechange
 
 
 --
--- Name: requestrepair_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcproductioncounting_requestrepair requestrepair_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcproductioncounting_requestrepair
@@ -50304,7 +50354,7 @@ ALTER TABLE ONLY urcproductioncounting_requestrepair
 
 
 --
--- Name: requestrepair_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcproductioncounting_requestrepair requestrepair_faulttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcproductioncounting_requestrepair
@@ -50312,7 +50362,7 @@ ALTER TABLE ONLY urcproductioncounting_requestrepair
 
 
 --
--- Name: requestrepair_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcproductioncounting_requestrepair requestrepair_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcproductioncounting_requestrepair
@@ -50320,7 +50370,7 @@ ALTER TABLE ONLY urcproductioncounting_requestrepair
 
 
 --
--- Name: requiredcomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcmaterialavailability_requiredcomponent requiredcomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
@@ -50328,7 +50378,7 @@ ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: requiredcomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
@@ -50336,7 +50386,7 @@ ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcmaterialavailability_requiredcomponent requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
@@ -50344,7 +50394,7 @@ ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
@@ -50352,7 +50402,7 @@ ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: requiredcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: urcmaterialavailability_requiredcomponent requiredcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
@@ -50360,7 +50410,7 @@ ALTER TABLE ONLY urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: requiredcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_urcmaterialavailability_requiredcomponent requiredcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
@@ -50368,7 +50418,7 @@ ALTER TABLE ONLY arch_urcmaterialavailability_requiredcomponent
 
 
 --
--- Name: reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -50376,7 +50426,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation reservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -50384,7 +50434,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: reservation_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation reservation_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -50392,7 +50442,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: reservation_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation reservation_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -50400,7 +50450,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -50408,7 +50458,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation reservation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -50416,7 +50466,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: reservation_producttoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation reservation_producttoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -50424,7 +50474,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: reservation_producttoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation reservation_producttoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -50432,7 +50482,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_reservation reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_reservation
@@ -50440,7 +50490,7 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 
 --
--- Name: reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_materialflowresources_reservation reservation_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_reservation
@@ -50448,7 +50498,7 @@ ALTER TABLE ONLY arch_materialflowresources_reservation
 
 
 --
--- Name: resource_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -50456,7 +50506,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: resource_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -50464,7 +50514,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: resource_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -50472,7 +50522,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: resource_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -50480,7 +50530,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: resource_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resource resource_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resource
@@ -50488,7 +50538,7 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: resourcecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50496,7 +50546,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_newpalletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_newpalletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50504,7 +50554,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_newstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_newstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50512,7 +50562,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_oldpalletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_oldpalletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50520,7 +50570,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_oldstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_oldstoragelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50528,7 +50578,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50536,7 +50586,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcecorrection_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcecorrection resourcecorrection_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcecorrection
@@ -50544,7 +50594,7 @@ ALTER TABLE ONLY materialflowresources_resourcecorrection
 
 
 --
--- Name: resourcestock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcestock resourcestock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcestock
@@ -50552,7 +50602,7 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 
 --
--- Name: resourcestock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_resourcestock resourcestock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_resourcestock
@@ -50560,7 +50610,7 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 
 --
--- Name: sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_sendtoprint sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_sendtoprint
@@ -50568,7 +50618,7 @@ ALTER TABLE ONLY integrationbartender_sendtoprint
 
 
 --
--- Name: sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_sendtoprint sendtoprint_prineter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint
@@ -50576,7 +50626,7 @@ ALTER TABLE ONLY arch_integrationbartender_sendtoprint
 
 
 --
--- Name: sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbartender_sendtoprint sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbartender_sendtoprint
@@ -50584,7 +50634,7 @@ ALTER TABLE ONLY integrationbartender_sendtoprint
 
 
 --
--- Name: sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_integrationbartender_sendtoprint sendtoprint_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint
@@ -50592,7 +50642,7 @@ ALTER TABLE ONLY arch_integrationbartender_sendtoprint
 
 
 --
--- Name: settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settechnologyincomponents settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settechnologyincomponents
@@ -50600,7 +50650,7 @@ ALTER TABLE ONLY productioncounting_settechnologyincomponents
 
 
 --
--- Name: settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settechnologyincomponents settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
@@ -50608,7 +50658,7 @@ ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
 
 
 --
--- Name: settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settechnologyincomponents settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settechnologyincomponents
@@ -50616,7 +50666,7 @@ ALTER TABLE ONLY productioncounting_settechnologyincomponents
 
 
 --
--- Name: settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settechnologyincomponents settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
@@ -50624,7 +50674,7 @@ ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
 
 
 --
--- Name: settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settrackingoperationproductincomponents settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
@@ -50632,7 +50682,7 @@ ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settrackingoperationproductincomponents settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
@@ -50640,7 +50690,7 @@ ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_settrackingoperationproductincomponents settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
@@ -50648,7 +50698,7 @@ ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_settrackingoperationproductincomponents settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
@@ -50656,7 +50706,7 @@ ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
 
 
 --
--- Name: shelves_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productcharacteristics_shelves shelves_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productcharacteristics_shelves
@@ -50664,7 +50714,7 @@ ALTER TABLE ONLY productcharacteristics_shelves
 
 
 --
--- Name: shift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_productionline_shift shift_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_productionline_shift
@@ -50672,7 +50722,7 @@ ALTER TABLE ONLY jointable_productionline_shift
 
 
 --
--- Name: shift_shifttimetableexception_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_shift_shifttimetableexception shift_shifttimetableexception_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_shift_shifttimetableexception
@@ -50680,7 +50730,7 @@ ALTER TABLE ONLY jointable_shift_shifttimetableexception
 
 
 --
--- Name: shift_shifttimetableexception_shifttimetableexception_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_shift_shifttimetableexception shift_shifttimetableexception_shifttimetableexception_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_shift_shifttimetableexception
@@ -50688,7 +50738,7 @@ ALTER TABLE ONLY jointable_shift_shifttimetableexception
 
 
 --
--- Name: shift_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissuestatechange shift_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
@@ -50696,7 +50746,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: shift_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissuestatechange shift_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
@@ -50704,7 +50754,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: simplematerialbalancelocationscomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalancelocationscomponent simplematerialbalancelocationscomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
@@ -50712,7 +50762,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
 
 
 --
--- Name: simplematerialbalancelocationscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalancelocationscomponent simplematerialbalancelocationscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
@@ -50720,7 +50770,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
 
 
 --
--- Name: simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalanceorderscomponent simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
@@ -50728,7 +50778,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_simplematerialbalance_simplematerialbalanceorderscomponent simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
@@ -50736,7 +50786,7 @@ ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: simplematerialbalance_simplematerialbalanceorderscomponent simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
@@ -50744,7 +50794,7 @@ ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_simplematerialbalance_simplematerialbalanceorderscomponent simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
@@ -50752,7 +50802,7 @@ ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
 
 
 --
--- Name: sourcecost_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecost sourcecost_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecost
@@ -50760,7 +50810,7 @@ ALTER TABLE ONLY cmmsmachineparts_sourcecost
 
 
 --
--- Name: sourcecostreportfilter_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_sourcecostreportfilter sourcecostreportfilter_sourcecost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_sourcecostreportfilter
@@ -50768,7 +50818,7 @@ ALTER TABLE ONLY cmmsmachineparts_sourcecostreportfilter
 
 
 --
--- Name: staff_crew_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff staff_crew_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -50776,7 +50826,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: staff_multiassignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_multiassignmenttoshift_staff staff_multiassignmenttoshift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
@@ -50784,7 +50834,7 @@ ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
 
 
 --
--- Name: staff_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff staff_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -50792,7 +50842,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: staff_timeusagereportfilter_filter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_staff_timeusagereportfilter staff_timeusagereportfilter_filter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_staff_timeusagereportfilter
@@ -50800,7 +50850,7 @@ ALTER TABLE ONLY jointable_staff_timeusagereportfilter
 
 
 --
--- Name: staff_timeusagereportfilter_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_staff_timeusagereportfilter staff_timeusagereportfilter_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_staff_timeusagereportfilter
@@ -50808,7 +50858,7 @@ ALTER TABLE ONLY jointable_staff_timeusagereportfilter
 
 
 --
--- Name: staffassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: assignmenttoshift_staffassignmenttoshift staffassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
@@ -50816,7 +50866,7 @@ ALTER TABLE ONLY assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: staffassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_assignmenttoshift_staffassignmenttoshift staffassignmenttoshift_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
@@ -50824,7 +50874,7 @@ ALTER TABLE ONLY arch_assignmenttoshift_staffassignmenttoshift
 
 
 --
--- Name: staffnotification_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: emailnotifications_staffnotification staffnotification_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY emailnotifications_staffnotification
@@ -50832,7 +50882,7 @@ ALTER TABLE ONLY emailnotifications_staffnotification
 
 
 --
--- Name: staffnotification_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: emailnotifications_staffnotification staffnotification_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY emailnotifications_staffnotification
@@ -50840,7 +50890,7 @@ ALTER TABLE ONLY emailnotifications_staffnotification
 
 
 --
--- Name: staffworktime_worker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_staffworktime staffworktime_worker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_staffworktime
@@ -50848,7 +50898,7 @@ ALTER TABLE ONLY cmmsmachineparts_staffworktime
 
 
 --
--- Name: statusesfordocument_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesfordocument statusesfordocument_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesfordocument
@@ -50856,7 +50906,7 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument
 
 
 --
--- Name: statusesformasterorder_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: integrationbaselinker_statusesformasterorder statusesformasterorder_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
@@ -50864,7 +50914,7 @@ ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
 
 
 --
--- Name: stockcorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_stockcorrection stockcorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_stockcorrection
@@ -50872,7 +50922,7 @@ ALTER TABLE ONLY materialflow_stockcorrection
 
 
 --
--- Name: stockcorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_stockcorrection stockcorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_stockcorrection
@@ -50880,7 +50930,7 @@ ALTER TABLE ONLY materialflow_stockcorrection
 
 
 --
--- Name: stockcorrection_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_stockcorrection stockcorrection_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_stockcorrection
@@ -50888,7 +50938,7 @@ ALTER TABLE ONLY materialflow_stockcorrection
 
 
 --
--- Name: stocktaking_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_stocktaking stocktaking_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_stocktaking
@@ -50896,7 +50946,7 @@ ALTER TABLE ONLY materialflowresources_stocktaking
 
 
 --
--- Name: stocktaking_storagelocation_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_stocktaking_storagelocation stocktaking_storagelocation_stocktaking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_stocktaking_storagelocation
@@ -50904,7 +50954,7 @@ ALTER TABLE ONLY jointable_stocktaking_storagelocation
 
 
 --
--- Name: stocktaking_storagelocation_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_stocktaking_storagelocation stocktaking_storagelocation_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_stocktaking_storagelocation
@@ -50912,7 +50962,7 @@ ALTER TABLE ONLY jointable_stocktaking_storagelocation
 
 
 --
--- Name: stoppage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: stoppage_stoppage stoppage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY stoppage_stoppage
@@ -50920,7 +50970,7 @@ ALTER TABLE ONLY stoppage_stoppage
 
 
 --
--- Name: stoppage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_stoppage_stoppage stoppage_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_stoppage_stoppage
@@ -50928,7 +50978,7 @@ ALTER TABLE ONLY arch_stoppage_stoppage
 
 
 --
--- Name: storagelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocation storagelocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocation
@@ -50936,7 +50986,7 @@ ALTER TABLE ONLY materialflowresources_storagelocation
 
 
 --
--- Name: storagelocation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocation storagelocation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocation
@@ -50944,7 +50994,7 @@ ALTER TABLE ONLY materialflowresources_storagelocation
 
 
 --
--- Name: storagelocation_warehousestockreport_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_storagelocation_warehousestockreport storagelocation_warehousestockreport_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
@@ -50952,7 +51002,7 @@ ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
 
 
 --
--- Name: storagelocation_warehousestockreport_warehousestockreport_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_storagelocation_warehousestockreport storagelocation_warehousestockreport_warehousestockreport_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
@@ -50960,7 +51010,7 @@ ALTER TABLE ONLY jointable_storagelocation_warehousestockreport
 
 
 --
--- Name: storagelocationhelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhelper storagelocationhelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhelper
@@ -50968,7 +51018,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhelper
 
 
 --
--- Name: storagelocationhistory_productfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhistory storagelocationhistory_productfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhistory
@@ -50976,7 +51026,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhistory
 
 
 --
--- Name: storagelocationhistory_productto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhistory storagelocationhistory_productto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhistory
@@ -50984,7 +51034,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhistory
 
 
 --
--- Name: storagelocationhistory_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_storagelocationhistory storagelocationhistory_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_storagelocationhistory
@@ -50992,7 +51042,7 @@ ALTER TABLE ONLY materialflowresources_storagelocationhistory
 
 
 --
--- Name: subassembly_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassembly subassembly_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassembly
@@ -51000,7 +51050,7 @@ ALTER TABLE ONLY basic_subassembly
 
 
 --
--- Name: subassembly_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassembly subassembly_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassembly
@@ -51008,7 +51058,7 @@ ALTER TABLE ONLY basic_subassembly
 
 
 --
--- Name: subassemblyattachment_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassemblyattachment subassemblyattachment_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblyattachment
@@ -51016,7 +51066,7 @@ ALTER TABLE ONLY basic_subassemblyattachment
 
 
 --
--- Name: subassemblytoworkstationhelper_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassemblytoworkstationhelper subassemblytoworkstationhelper_subassembly_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblytoworkstationhelper
@@ -51024,7 +51074,7 @@ ALTER TABLE ONLY basic_subassemblytoworkstationhelper
 
 
 --
--- Name: subassemblytoworkstationhelper_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_subassemblytoworkstationhelper subassemblytoworkstationhelper_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_subassemblytoworkstationhelper
@@ -51032,7 +51082,7 @@ ALTER TABLE ONLY basic_subassemblytoworkstationhelper
 
 
 --
--- Name: suborder_changedby_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborder suborder_changedby_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborder
@@ -51040,7 +51090,7 @@ ALTER TABLE ONLY subcontractorportal_suborder
 
 
 --
--- Name: suborder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborder suborder_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborder
@@ -51048,7 +51098,7 @@ ALTER TABLE ONLY subcontractorportal_suborder
 
 
 --
--- Name: suborderattachment_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderattachment suborderattachment_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderattachment
@@ -51056,7 +51106,7 @@ ALTER TABLE ONLY subcontractorportal_suborderattachment
 
 
 --
--- Name: suborderinput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderinput suborderinput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderinput
@@ -51064,7 +51114,7 @@ ALTER TABLE ONLY subcontractorportal_suborderinput
 
 
 --
--- Name: suborderinput_storage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderinput suborderinput_storage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderinput
@@ -51072,7 +51122,7 @@ ALTER TABLE ONLY subcontractorportal_suborderinput
 
 
 --
--- Name: suborderinput_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderinput suborderinput_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderinput
@@ -51080,7 +51130,7 @@ ALTER TABLE ONLY subcontractorportal_suborderinput
 
 
 --
--- Name: suborderoperation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoperation suborderoperation_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoperation
@@ -51088,7 +51138,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoperation
 
 
 --
--- Name: suborderoperation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoperation suborderoperation_operationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoperation
@@ -51096,7 +51146,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoperation
 
 
 --
--- Name: suborderoperation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoperation suborderoperation_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoperation
@@ -51104,7 +51154,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoperation
 
 
 --
--- Name: suborderoutput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoutput suborderoutput_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoutput
@@ -51112,7 +51162,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoutput
 
 
 --
--- Name: suborderoutput_storage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoutput suborderoutput_storage_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoutput
@@ -51120,7 +51170,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoutput
 
 
 --
--- Name: suborderoutput_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_suborderoutput suborderoutput_suborder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_suborderoutput
@@ -51128,7 +51178,7 @@ ALTER TABLE ONLY subcontractorportal_suborderoutput
 
 
 --
--- Name: suborders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersforsubproductsgeneration_suborders suborders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
@@ -51136,7 +51186,7 @@ ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: suborders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersforsubproductsgeneration_suborders suborders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
@@ -51144,7 +51194,7 @@ ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: ordersforsubproductsgeneration_suborders suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
@@ -51152,7 +51202,7 @@ ALTER TABLE ONLY ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_ordersforsubproductsgeneration_suborders suborders_ordersgroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
@@ -51160,7 +51210,7 @@ ALTER TABLE ONLY arch_ordersforsubproductsgeneration_suborders
 
 
 --
--- Name: subordertmp_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: subcontractorportal_subordertmp subordertmp_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY subcontractorportal_subordertmp
@@ -51168,7 +51218,7 @@ ALTER TABLE ONLY subcontractorportal_subordertmp
 
 
 --
--- Name: substitute_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitute substitute_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitute
@@ -51176,7 +51226,7 @@ ALTER TABLE ONLY basic_substitute
 
 
 --
--- Name: substitutecomponent_baseproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitutecomponent substitutecomponent_baseproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitutecomponent
@@ -51184,7 +51234,7 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
--- Name: substitutecomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitutecomponent substitutecomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitutecomponent
@@ -51192,7 +51242,7 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
--- Name: substitutecomponent_substitute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_substitutecomponent substitutecomponent_substitute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_substitutecomponent
@@ -51200,7 +51250,7 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
--- Name: technologies_technology_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technologies_technology_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51208,7 +51258,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technologies_technologyattachment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyattachment technologies_technologyattachment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyattachment
@@ -51216,7 +51266,7 @@ ALTER TABLE ONLY technologies_technologyattachment
 
 
 --
--- Name: technologies_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologiesgenerator_generatortreenode technologies_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologiesgenerator_generatortreenode
@@ -51224,7 +51274,7 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
--- Name: technologies_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_productstructuretreenode technologies_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_productstructuretreenode
@@ -51232,7 +51282,7 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
--- Name: technology_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51240,7 +51290,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent technology_componentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -51248,7 +51298,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: technology_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51256,7 +51306,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductincomponent technology_componentsoutputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductincomponent
@@ -51264,7 +51314,7 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: technology_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51272,7 +51322,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_generatorcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51280,7 +51330,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51288,7 +51338,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_productionlines_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_productionlines_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51296,7 +51346,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_productsflowlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51304,7 +51354,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51312,7 +51362,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technology_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_operationproductoutcomponent technology_productsinputlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
@@ -51320,7 +51370,7 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: technology_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technology technology_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technology
@@ -51328,7 +51378,7 @@ ALTER TABLE ONLY technologies_technology
 
 
 --
--- Name: technologyoperationcomponent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51336,7 +51386,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51344,7 +51394,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_parent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51352,7 +51402,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51360,7 +51410,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51368,7 +51418,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_techopercomptimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_techopercomptimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51376,7 +51426,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponent_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue technologyoperationcomponent_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -51384,7 +51434,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: technologyoperationcomponent_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue technologyoperationcomponent_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -51392,7 +51442,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: technologyoperationcomponent_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_technologyoperationcomponent_workstation technologyoperationcomponent_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
@@ -51400,7 +51450,7 @@ ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
 
 
 --
--- Name: technologyoperationcomponent_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponent technologyoperationcomponent_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
@@ -51408,7 +51458,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
@@ -51416,7 +51466,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
@@ -51424,7 +51474,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
@@ -51432,7 +51482,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
@@ -51440,7 +51490,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
@@ -51448,7 +51498,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
@@ -51456,7 +51506,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
@@ -51464,7 +51514,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductin technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
@@ -51472,7 +51522,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
@@ -51480,7 +51530,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
@@ -51488,7 +51538,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
@@ -51496,7 +51546,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
@@ -51504,7 +51554,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
@@ -51512,7 +51562,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
@@ -51520,7 +51570,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
@@ -51528,7 +51578,7 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_technologies_technologyoperationcomponentmergeproductout technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
@@ -51536,7 +51586,7 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 
 
 --
--- Name: technologystatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologystatechange technologystatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologystatechange
@@ -51544,7 +51594,7 @@ ALTER TABLE ONLY technologies_technologystatechange
 
 
 --
--- Name: technologystatechange_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: technologies_technologystatechange technologystatechange_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY technologies_technologystatechange
@@ -51552,7 +51602,7 @@ ALTER TABLE ONLY technologies_technologystatechange
 
 
 --
--- Name: techopercompoperationaltask_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: operationaltasksfororders_techopercompoperationaltask techopercompoperationaltask_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
@@ -51560,7 +51610,7 @@ ALTER TABLE ONLY operationaltasksfororders_techopercompoperationaltask
 
 
 --
--- Name: timegap_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegap timegap_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegap
@@ -51568,7 +51618,7 @@ ALTER TABLE ONLY timegapspreview_timegap
 
 
 --
--- Name: timegap_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegap timegap_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegap
@@ -51576,7 +51626,7 @@ ALTER TABLE ONLY timegapspreview_timegap
 
 
 --
--- Name: timegapscontext_longestdurationline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegapscontext timegapscontext_longestdurationline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegapscontext
@@ -51584,7 +51634,7 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 
 --
--- Name: timegapscontext_supportedtechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegapscontext timegapscontext_supportedtechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegapscontext
@@ -51592,7 +51642,7 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 
 --
--- Name: timegapscontext_supportedtechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: timegapspreview_timegapscontext timegapscontext_supportedtechnologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY timegapspreview_timegapscontext
@@ -51600,7 +51650,7 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 
 --
--- Name: tpctable_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: zmbak_tpctable tpctable_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY zmbak_tpctable
@@ -51608,7 +51658,7 @@ ALTER TABLE ONLY zmbak_tpctable
 
 
 --
--- Name: trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
@@ -51616,7 +51666,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
@@ -51624,7 +51674,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
@@ -51632,7 +51682,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
@@ -51640,7 +51690,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductincomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
@@ -51648,7 +51698,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductincomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
@@ -51656,7 +51706,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductincomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
@@ -51664,7 +51714,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
@@ -51672,7 +51722,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
@@ -51680,7 +51730,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
@@ -51688,7 +51738,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
@@ -51696,7 +51746,7 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
@@ -51704,7 +51754,7 @@ ALTER TABLE ONLY arch_productioncounting_trackingoperationproductoutcomponent
 
 
 --
--- Name: trackingrecord_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecord trackingrecord_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecord
@@ -51712,7 +51762,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecord
 
 
 --
--- Name: trackingrecord_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecord trackingrecord_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
@@ -51720,7 +51770,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
 
 
 --
--- Name: trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_trackingrecord trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_trackingrecord
@@ -51728,7 +51778,7 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecord
 
 
 --
--- Name: trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_trackingrecord trackingrecord_producedbatch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
@@ -51736,7 +51786,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
 
 
 --
--- Name: transfer_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51744,7 +51794,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51752,7 +51802,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51760,7 +51810,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51768,7 +51818,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51776,7 +51826,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_transformationsconsumption_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_transformationsconsumption_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51784,7 +51834,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transfer_transformationsproduction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transfer transfer_transformationsproduction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transfer
@@ -51792,7 +51842,7 @@ ALTER TABLE ONLY materialflow_transfer
 
 
 --
--- Name: transformations_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transformations transformations_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations
@@ -51800,7 +51850,7 @@ ALTER TABLE ONLY materialflow_transformations
 
 
 --
--- Name: transformations_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transformations transformations_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations
@@ -51808,7 +51858,7 @@ ALTER TABLE ONLY materialflow_transformations
 
 
 --
--- Name: transformations_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transformations transformations_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations
@@ -51816,7 +51866,7 @@ ALTER TABLE ONLY materialflow_transformations
 
 
 --
--- Name: transformations_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_transformations transformations_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_transformations
@@ -51824,7 +51874,7 @@ ALTER TABLE ONLY materialflow_transformations
 
 
 --
--- Name: typeofcorrectioncauses_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: orders_typeofcorrectioncauses typeofcorrectioncauses_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_typeofcorrectioncauses
@@ -51832,7 +51882,7 @@ ALTER TABLE ONLY orders_typeofcorrectioncauses
 
 
 --
--- Name: typeofcorrectioncauses_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_typeofcorrectioncauses typeofcorrectioncauses_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_orders_typeofcorrectioncauses
@@ -51840,7 +51890,7 @@ ALTER TABLE ONLY arch_orders_typeofcorrectioncauses
 
 
 --
--- Name: usedbatchsimple_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_usedbatchsimple usedbatchsimple_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
@@ -51848,7 +51898,7 @@ ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: usedbatchsimple_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_usedbatchsimple usedbatchsimple_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
@@ -51856,7 +51906,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: advancedgenealogy_usedbatchsimple usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
@@ -51864,7 +51914,7 @@ ALTER TABLE ONLY advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_advancedgenealogy_usedbatchsimple usedbatchsimple_trackingrecord_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
@@ -51872,7 +51922,7 @@ ALTER TABLE ONLY arch_advancedgenealogy_usedbatchsimple
 
 
 --
--- Name: user_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_user user_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_user
@@ -51880,7 +51930,7 @@ ALTER TABLE ONLY qcadoosecurity_user
 
 
 --
--- Name: user_group_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_user user_group_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_user
@@ -51888,7 +51938,7 @@ ALTER TABLE ONLY qcadoosecurity_user
 
 
 --
--- Name: user_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadoosecurity_user user_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadoosecurity_user
@@ -51896,7 +51946,7 @@ ALTER TABLE ONLY qcadoosecurity_user
 
 
 --
--- Name: userlocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_userlocation userlocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_userlocation
@@ -51904,7 +51954,7 @@ ALTER TABLE ONLY materialflow_userlocation
 
 
 --
--- Name: userlocation_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflow_userlocation userlocation_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_userlocation
@@ -51912,7 +51962,7 @@ ALTER TABLE ONLY materialflow_userlocation
 
 
 --
--- Name: viewedactivity_log_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_viewedactivity viewedactivity_log_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_viewedactivity
@@ -51920,7 +51970,7 @@ ALTER TABLE ONLY basic_viewedactivity
 
 
 --
--- Name: viewedactivity_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_viewedactivity viewedactivity_user_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_viewedactivity
@@ -51928,7 +51978,7 @@ ALTER TABLE ONLY basic_viewedactivity
 
 
 --
--- Name: viewedalert_alert_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: qcadooview_viewedalert viewedalert_alert_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qcadooview_viewedalert
@@ -51936,7 +51986,7 @@ ALTER TABLE ONLY qcadooview_viewedalert
 
 
 --
--- Name: wagegroups_wagegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_staff wagegroups_wagegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
@@ -51944,7 +51994,7 @@ ALTER TABLE ONLY basic_staff
 
 
 --
--- Name: warehouseissue_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_issue warehouseissue_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_issue
@@ -51952,7 +52002,7 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 
 --
--- Name: warehouseissue_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_issue warehouseissue_issue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
@@ -51960,7 +52010,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_issue
 
 
 --
--- Name: warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -51968,7 +52018,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue warehouseissue_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -51976,7 +52026,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: warehouseissue_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_productstoissue warehouseissue_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_productstoissue
@@ -51984,7 +52034,7 @@ ALTER TABLE ONLY productflowthrudivision_productstoissue
 
 
 --
--- Name: warehouseissue_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_productstoissue warehouseissue_productstoissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
@@ -51992,7 +52042,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
--- Name: warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissuestatechange warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
@@ -52000,7 +52050,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissuestatechange warehouseissue_warehouseissuestatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
@@ -52008,7 +52058,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: warehouseminimalstate_warehouseminimumstatemulti_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_product_warehouseminimumstatemulti warehouseminimalstate_warehouseminimumstatemulti_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
@@ -52016,7 +52066,7 @@ ALTER TABLE ONLY jointable_product_warehouseminimumstatemulti
 
 
 --
--- Name: warehouseminimumstate_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstate warehouseminimumstate_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
@@ -52024,7 +52074,7 @@ ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
 
 
 --
--- Name: warehouseminimumstate_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstate warehouseminimumstate_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
@@ -52032,7 +52082,7 @@ ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstate
 
 
 --
--- Name: warehouseminimumstatemulti_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: warehouseminimalstate_warehouseminimumstatemulti warehouseminimumstatemulti_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstatemulti
@@ -52040,7 +52090,7 @@ ALTER TABLE ONLY warehouseminimalstate_warehouseminimumstatemulti
 
 
 --
--- Name: warehousestockreport_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: materialflowresources_warehousestockreport warehousestockreport_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_warehousestockreport
@@ -52048,7 +52098,7 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
--- Name: worker_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: cmmsmachineparts_staffworktime worker_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY cmmsmachineparts_staffworktime
@@ -52056,7 +52106,7 @@ ALTER TABLE ONLY cmmsmachineparts_staffworktime
 
 
 --
--- Name: workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -52064,7 +52114,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue workerwhocollected_warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -52072,7 +52122,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: productflowthrudivision_warehouseissue workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY productflowthrudivision_warehouseissue
@@ -52080,7 +52130,7 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissue
 
 
 --
--- Name: workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_productflowthrudivision_warehouseissue workerwhoissued__warehouseissue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
@@ -52088,7 +52138,7 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissue
 
 
 --
--- Name: workplans_parameterinputcolumn_cfip_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterinputcolumn workplans_parameterinputcolumn_cfip_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterinputcolumn
@@ -52096,7 +52146,7 @@ ALTER TABLE ONLY workplans_parameterinputcolumn
 
 
 --
--- Name: workplans_parameterordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterordercolumn workplans_parameterordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterordercolumn
@@ -52104,7 +52154,7 @@ ALTER TABLE ONLY workplans_parameterordercolumn
 
 
 --
--- Name: workplans_parameterordercolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterordercolumn workplans_parameterordercolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterordercolumn
@@ -52112,7 +52162,7 @@ ALTER TABLE ONLY workplans_parameterordercolumn
 
 
 --
--- Name: workplans_parameteroutputcolumn_cfop_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameteroutputcolumn workplans_parameteroutputcolumn_cfop_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameteroutputcolumn
@@ -52120,7 +52170,7 @@ ALTER TABLE ONLY workplans_parameteroutputcolumn
 
 
 --
--- Name: workplans_parameteroutputcolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameterinputcolumn workplans_parameteroutputcolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameterinputcolumn
@@ -52128,7 +52178,7 @@ ALTER TABLE ONLY workplans_parameterinputcolumn
 
 
 --
--- Name: workplans_parameteroutputcolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_parameteroutputcolumn workplans_parameteroutputcolumn_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_parameteroutputcolumn
@@ -52136,7 +52186,7 @@ ALTER TABLE ONLY workplans_parameteroutputcolumn
 
 
 --
--- Name: workplans_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_workplan workplans_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplan
@@ -52144,7 +52194,7 @@ ALTER TABLE ONLY workplans_workplan
 
 
 --
--- Name: workplans_workplanordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_workplanordercolumn workplans_workplanordercolumn_columnfororders_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplanordercolumn
@@ -52152,7 +52202,7 @@ ALTER TABLE ONLY workplans_workplanordercolumn
 
 
 --
--- Name: workplans_workplanordercolumn_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: workplans_workplanordercolumn workplans_workplanordercolumn_workplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY workplans_workplanordercolumn
@@ -52160,7 +52210,7 @@ ALTER TABLE ONLY workplans_workplanordercolumn
 
 
 --
--- Name: workstation_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstation workstation_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation
@@ -52168,7 +52218,7 @@ ALTER TABLE ONLY basic_workstation
 
 
 --
--- Name: workstation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstation workstation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation
@@ -52176,7 +52226,7 @@ ALTER TABLE ONLY basic_workstation
 
 
 --
--- Name: workstation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_operation_workstation workstation_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_operation_workstation
@@ -52184,7 +52234,7 @@ ALTER TABLE ONLY jointable_operation_workstation
 
 
 --
--- Name: workstation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstation workstation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation
@@ -52192,7 +52242,7 @@ ALTER TABLE ONLY basic_workstation
 
 
 --
--- Name: workstation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: jointable_technologyoperationcomponent_workstation workstation_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
@@ -52200,7 +52250,7 @@ ALTER TABLE ONLY jointable_technologyoperationcomponent_workstation
 
 
 --
--- Name: workstation_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstation workstation_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstation
@@ -52208,7 +52258,7 @@ ALTER TABLE ONLY basic_workstation
 
 
 --
--- Name: workstationattachment_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: basic_workstationattachment workstationattachment_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_workstationattachment
