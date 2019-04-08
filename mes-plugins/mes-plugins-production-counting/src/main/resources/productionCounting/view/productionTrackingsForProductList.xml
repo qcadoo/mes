@@ -34,6 +34,7 @@
 
 		<ribbon>
 			<template name="standardGridTemplate" includeItems="actions.refresh"/>
+
 			<group name="goActions">
 				<bigButton name="goToProductionTracking" icon="genealogyIcon24.png"
 						   state="disabled">
@@ -60,9 +61,8 @@
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 							    goButton.disable();
-
 							} else {
-							  goButton.enable();
+								goButton.enable();
 							}
 						}
 					}
@@ -102,10 +102,10 @@
 					width="100"/>
 			<option type="column" name="timeRangeTo" fields="timeRangeTo"
 					width="100"/>
-			<option type="column" name="orderState" fields="orderState" hidden="true"/>
-
 			<option type="column" name="typeOfRecord" fields="typeOfRecord"
 					width="60"/>
+			<option type="column" name="orderState" fields="orderState" hidden="true"/>
+			<option type="column" name="productiontracking_id" fields="productiontracking_id" hidden="true"/>
 
 			<option type="order" column="number" direction="asc"/>
 
@@ -117,8 +117,10 @@
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>
 
+			<option type="suppressSelectEvent" value="true" />
+
 			<listener event="goToProductionTracking"
-					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingsForProductListListeners"
 					  method="goToProductionTracking"/>
 		</component>
 
