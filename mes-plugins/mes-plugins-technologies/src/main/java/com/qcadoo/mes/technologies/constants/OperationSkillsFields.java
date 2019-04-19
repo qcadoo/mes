@@ -21,36 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.technologies.constants;
 
-public final class StaffFields {
+public final class OperationSkillsFields {
 
-    private StaffFields() {
+    private OperationSkillsFields() {
 
     }
 
-    public static final String NAME = "name";
+    public static final String OPERATION = "operation";
 
-    public static final String NUMBER = "number";
+    public static final String SKILL = "skill";
 
-    public static final String SURNAME = "surname";
-
-    public static final String PHONE = "phone";
-
-    public static final String EMAIL = "email";
-
-    public static final String POST = "post";
-
-    public static final String WORK_FOR = "workFor";
-
-    public static final String SHIFT = "shift";
-
-    public static final String DIVISION = "division";
-
-    public static final String CREW = "crew";
-
-    public static final String CREWS = "crews";
-
-    public static final String STAFF_SKILLS = "staffSkills";
+    public static final String REQUIRED_LEVEL = "requiredLevel";
 
 }

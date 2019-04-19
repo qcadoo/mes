@@ -27,6 +27,7 @@
 <model name="operation" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -70,7 +71,9 @@
             <validatesRange from="1" exclusively="false"/>
         </integer>
 
+        <hasMany name="operationSkills" plugin="technologies" model="operationSkill" joinField="operation" cascade="delete" copyable="false"/>
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationModelValidators"
                        method="checkIfProductsInProductComponentsAreDistinct"/>
@@ -78,5 +81,6 @@
 
         <onSave class="com.qcadoo.mes.technologies.hooks.OperationModelHooks" method="onSave"/>
     </hooks>
+
     <identifier expression="#number + ' - ' + #name"/>
 </model>

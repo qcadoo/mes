@@ -60,6 +60,8 @@ public final class TechnologiesConstants {
 
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
+    public static final String OPERATION_SKILL = "operationSkill";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

@@ -222,6 +222,8 @@
 
         <security:role identifier="ROLE_PRINTERS"/>
 
+        <security:role identifier="ROLE_SKILLS"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -268,6 +270,9 @@
         <model:model model="productAttachment" resource="model/productAttachment.xml"/>
         <model:model model="productDto" resource="model/productDto.xml"/>
         <model:model model="attachmentDto" resource="model/attachmentDto.xml"/>
+
+		<model:model model="skill" resource="model/skill.xml"/>
+		<model:model model="staffSkill" resource="model/staffSkill.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -348,6 +353,9 @@
         <menu:menu-item name="attachmentsList" category="basic"
                         view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
 
+		<menu:menu-item name="skillsList" category="basic"
+						view="skillsList" defaultAuthorizationRole="ROLE_SKILLS"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -403,6 +411,11 @@
 
         <view:view resource="view/exceptionsForLineList.xml"/>
         <view:view resource="view/attachmentsList.xml"/>
+
+		<view:view resource="view/skillsList.xml"/>
+		<view:view resource="view/skillDetails.xml"/>
+
+		<view:view resource="view/staffSkillDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>
