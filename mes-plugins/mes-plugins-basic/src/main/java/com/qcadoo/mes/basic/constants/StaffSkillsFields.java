@@ -29,7 +29,7 @@ public final class StaffSkillsFields {
 
     }
 
-    public static final String STAFF = "STAFF";
+    public static final String STAFF = "staff";
 
     public static final String SKILL = "skill";
 

@@ -37,7 +37,7 @@
     </fields>
 
     <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationSkillHooks"
+        <validatesWith class="com.qcadoo.mes.technologies.validators.OperationSkillValidators"
                        method="validatesWith"/>
     </hooks>
 </model>
