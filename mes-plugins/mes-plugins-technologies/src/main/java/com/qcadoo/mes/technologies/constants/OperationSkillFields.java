@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class OperationSkillsFields {
+public final class OperationSkillFields {
 
-    private OperationSkillsFields() {
+    private OperationSkillFields() {
 
     }
 

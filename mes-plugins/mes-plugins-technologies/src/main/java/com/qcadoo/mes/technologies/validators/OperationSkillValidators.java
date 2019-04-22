@@ -31,7 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.SkillFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationSkillsFields;
+import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -51,8 +51,8 @@ public class OperationSkillValidators {
 		boolean isNotAlreadyAdded = true;
 
 		Long operationSkillId = operationSkill.getId();
-		Entity operation = operationSkill.getBelongsToField(OperationSkillsFields.OPERATION);
-		Entity skill = operationSkill.getBelongsToField(OperationSkillsFields.SKILL);
+		Entity operation = operationSkill.getBelongsToField(OperationSkillFields.OPERATION);
+		Entity skill = operationSkill.getBelongsToField(OperationSkillFields.SKILL);
 
 		if (!Objects.isNull(operation) && !Objects.isNull(skill)) {
 			Entity operationFromDB = operation.getDataDefinition().get(operation.getId());
@@ -64,7 +64,7 @@ public class OperationSkillValidators {
 			}
 
 			if (checkIfSkillIsAlreadyAdded(skill, operationSkills)) {
-				operationSkill.addError(operationSkillDD.getField(OperationSkillsFields.SKILL),
+				operationSkill.addError(operationSkillDD.getField(OperationSkillFields.SKILL),
 						"technologies.operationSkill.error.skill.alreadyAdded");
 
 				isNotAlreadyAdded = false;
@@ -79,20 +79,20 @@ public class OperationSkillValidators {
 	}
 
 	private boolean checkIfSkillIsAlreadyAdded(final Entity skill, final List<Entity> operationSkills) {
-		return operationSkills.stream().anyMatch(addedOperationSkill -> addedOperationSkill.getBelongsToField(OperationSkillsFields.SKILL).getId().equals(skill.getId()));
+		return operationSkills.stream().anyMatch(addedOperationSkill -> addedOperationSkill.getBelongsToField(OperationSkillFields.SKILL).getId().equals(skill.getId()));
 	}
 
     private boolean checkIfRequiredLevelIsValid(final DataDefinition operationSkillDD, final Entity operationSkill) {
         boolean isValid = true;
 
-        Entity skill = operationSkill.getBelongsToField(OperationSkillsFields.SKILL);
-        Integer requiredLevel = operationSkill.getIntegerField(OperationSkillsFields.REQUIRED_LEVEL);
+        Entity skill = operationSkill.getBelongsToField(OperationSkillFields.SKILL);
+        Integer requiredLevel = operationSkill.getIntegerField(OperationSkillFields.REQUIRED_LEVEL);
 
         if (!Objects.isNull(skill) && !Objects.isNull(requiredLevel)) {
             Integer maximumLevel = skill.getIntegerField(SkillFields.MAXIMUM_LEVEL);
 
             if (requiredLevel.compareTo(maximumLevel) > 0) {
-                operationSkill.addError(operationSkillDD.getField(OperationSkillsFields.REQUIRED_LEVEL),
+                operationSkill.addError(operationSkillDD.getField(OperationSkillFields.REQUIRED_LEVEL),
                         "technologies.operationSkill.error.requiredLevel.greaterThanMaximumLevel");
 
                 isValid = false;

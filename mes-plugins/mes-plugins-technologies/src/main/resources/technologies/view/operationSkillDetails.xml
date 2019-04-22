@@ -49,6 +49,10 @@
 
                             <option type="expression" value="#name"/>
                             <option type="fieldCode" value="name"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
+                                    method="filterAlreadySelected"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">
@@ -63,5 +67,10 @@
         </windowTab>
          
     </component>
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.technologies.hooks.OperationSkillDetailsHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 
 </view>
