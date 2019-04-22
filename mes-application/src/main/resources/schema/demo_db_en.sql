@@ -4681,7 +4681,7 @@ CREATE TABLE basic_product (
     category character varying(255),
     unit character varying(255),
     externalnumber character varying(255),
-    description character varying(255),
+    description character varying(2048),
     parent_id bigint,
     nodenumber character varying(255),
     entitytype character varying(255) DEFAULT '01particularProduct'::character varying,
@@ -4747,7 +4747,8 @@ CREATE TABLE basic_product (
     capacitynormforthreedimensionalmachines numeric(12,5),
     recommendednumofheadsfortwodimensionalmachines integer,
     recommendednumofheadsforthreedimensionalmachines integer,
-    iscartonlabel boolean
+    iscartonlabel boolean,
+    isactivecartonlabelquantity boolean
 );
 
 
@@ -9010,6 +9011,31 @@ ALTER SEQUENCE basic_shifttimetableexception_id_seq OWNED BY basic_shifttimetabl
 
 
 --
+-- Name: basic_skill_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_skill_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_skill; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_skill (
+    id bigint DEFAULT nextval('basic_skill_id_seq'::regclass) NOT NULL,
+    name character varying(1024),
+    description character varying(2048),
+    maximumlevel integer,
+    active boolean DEFAULT true
+);
+
+
+--
 -- Name: basic_staff_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -9026,6 +9052,31 @@ CREATE SEQUENCE basic_staff_id_seq
 --
 
 ALTER SEQUENCE basic_staff_id_seq OWNED BY basic_staff.id;
+
+
+--
+-- Name: basic_staffskill_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_staffskill_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_staffskill; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_staffskill (
+    id bigint DEFAULT nextval('basic_staffskill_id_seq'::regclass) NOT NULL,
+    staff_id bigint,
+    skill_id bigint,
+    level integer,
+    active boolean DEFAULT true
+);
 
 
 --
@@ -20240,7 +20291,7 @@ CREATE VIEW productioncounting_trackingoperationproductcomponentdto AS
 --
 
 CREATE VIEW productioncounting_productiontrackingforproductdto AS
- SELECT trackingoperationproductcomponentdto.id,
+ SELECT row_number() OVER () AS id,
     productiontrackingdto.number,
     productiontrackingdto.state,
     productiontrackingdto.createdate,
@@ -22883,6 +22934,31 @@ CREATE SEQUENCE technologies_operationproductoutcomponent_id_seq
 --
 
 ALTER SEQUENCE technologies_operationproductoutcomponent_id_seq OWNED BY technologies_operationproductoutcomponent.id;
+
+
+--
+-- Name: technologies_operationskill_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_operationskill_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_operationskill; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_operationskill (
+    id bigint DEFAULT nextval('technologies_operationskill_id_seq'::regclass) NOT NULL,
+    operation_id bigint,
+    skill_id bigint,
+    requiredlevel integer,
+    active boolean DEFAULT true
+);
 
 
 --
@@ -29798,7 +29874,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 1, true);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, uppershelf, lowershelf, upperform, lowerform, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, fabric, fabricgrammage, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, uppershelf, lowershelf, upperform, lowerform, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, fabric, fabricgrammage, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity) FROM stdin;
 \.
 
 
@@ -29886,6 +29962,21 @@ SELECT pg_catalog.setval('basic_shifttimetableexception_id_seq', 1, false);
 
 
 --
+-- Data for Name: basic_skill; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_skill (id, name, description, maximumlevel, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_skill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_skill_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_staff; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -29898,6 +29989,21 @@ COPY basic_staff (id, number, name, surname, email, phone, workfor_id, post, shi
 --
 
 SELECT pg_catalog.setval('basic_staff_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_staffskill; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_staffskill (id, staff_id, skill_id, level, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_staffskill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_staffskill_id_seq', 1, false);
 
 
 --
@@ -31746,6 +31852,9 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 2	114
 3	114
 4	114
+2	115
+3	115
+4	115
 \.
 
 
@@ -34679,6 +34788,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 112	ROLE_TERMINAL_EXTRUSION_PRINT	\N	0
 113	ROLE_PRINTED_LABEL_DETAILS_REPRINT	Dostęp do dodruku wydrukowanych etykiet.	0
 114	ROLE_PRINTERS	\N	0
+115	ROLE_SKILLS	\N	0
 \.
 
 
@@ -34686,7 +34796,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 114, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 115, true);
 
 
 --
@@ -34899,6 +35009,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
 147	integrationBarTender	printedCartonLabelsList	t	8	146	22	ROLE_TERMINAL_CARTON_LABELS	0
+148	basic	skillsList	t	4	147	23	ROLE_SKILLS	0
 \.
 
 
@@ -34906,7 +35017,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 147, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 148, true);
 
 
 --
@@ -35056,6 +35167,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 144	arch	archDocumentsList	archDocumentsList	\N	0
 145	integrationBarTender	printersList	printersList	\N	0
 146	integrationBarTender	printedCartonLabelsList	printedCartonLabelsList	\N	0
+147	basic	skillsList	skillsList	\N	0
 \.
 
 
@@ -35063,7 +35175,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 146, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 147, true);
 
 
 --
@@ -35726,6 +35838,21 @@ COPY technologies_operationproductoutcomponent (id, operationcomponent_id, produ
 --
 
 SELECT pg_catalog.setval('technologies_operationproductoutcomponent_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_operationskill; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_operationskill (id, operation_id, skill_id, requiredlevel, active) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_operationskill_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_operationskill_id_seq', 1, false);
 
 
 --
@@ -37520,11 +37647,27 @@ ALTER TABLE ONLY basic_shifttimetableexception
 
 
 --
+-- Name: basic_skill_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_skill
+    ADD CONSTRAINT basic_skill_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_staff_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_staff
     ADD CONSTRAINT basic_staff_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_staffkill_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_staffskill
+    ADD CONSTRAINT basic_staffkill_pkey PRIMARY KEY (id);
 
 
 --
@@ -40141,6 +40284,14 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
     ADD CONSTRAINT technologies_operationproductoutcomponent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_operationskill_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_operationskill
+    ADD CONSTRAINT technologies_operationskill_pkey PRIMARY KEY (id);
 
 
 --
@@ -47254,6 +47405,14 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
+-- Name: operationskill_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_operationskill
+    ADD CONSTRAINT operationskill_operation_fkey FOREIGN KEY (operation_id) REFERENCES technologies_operation(id) DEFERRABLE;
+
+
+--
 -- Name: opercomptimecalculation_ordertimecalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50875,6 +51034,30 @@ ALTER TABLE ONLY emailnotifications_staffnotification
 
 ALTER TABLE ONLY emailnotifications_staffnotification
     ADD CONSTRAINT staffnotification_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
+
+
+--
+-- Name: staffskill_skill_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_staffskill
+    ADD CONSTRAINT staffskill_skill_fkey FOREIGN KEY (skill_id) REFERENCES basic_skill(id) DEFERRABLE;
+
+
+--
+-- Name: staffskill_skill_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_operationskill
+    ADD CONSTRAINT staffskill_skill_fkey FOREIGN KEY (skill_id) REFERENCES basic_skill(id) DEFERRABLE;
+
+
+--
+-- Name: staffskill_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_staffskill
+    ADD CONSTRAINT staffskill_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
