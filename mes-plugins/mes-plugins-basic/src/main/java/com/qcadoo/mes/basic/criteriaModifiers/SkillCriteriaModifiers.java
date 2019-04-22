@@ -21,36 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.basic.criteriaModifiers;
 
-public final class StaffFields {
+import java.util.List;
 
-    private StaffFields() {
+import org.springframework.stereotype.Service;
 
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+@Service
+public class SkillCriteriaModifiers {
+
+    private static final String L_ID = "id";
+
+    private static final String L_SKILL_IDS = "skillIds";
+
+    public void filterAlreadySelected(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_SKILL_IDS)) {
+            List<Long> skllIds = filterValueHolder.getListOfLongs(L_SKILL_IDS);
+
+            scb.add(SearchRestrictions.not(SearchRestrictions.in(L_ID, skllIds)));
+        }
     }
-
-    public static final String NAME = "name";
-
-    public static final String NUMBER = "number";
-
-    public static final String SURNAME = "surname";
-
-    public static final String PHONE = "phone";
-
-    public static final String EMAIL = "email";
-
-    public static final String POST = "post";
-
-    public static final String WORK_FOR = "workFor";
-
-    public static final String SHIFT = "shift";
-
-    public static final String DIVISION = "division";
-
-    public static final String CREW = "crew";
-
-    public static final String CREWS = "crews";
-
-    public static final String STAFF_SKILLS = "staffSkills";
 
 }

@@ -62,4 +62,7 @@ public final class OperationFields {
     public static final String PRODUCTION_LINE = "productionLine";
 
     public static final String PRODUCT = "product";
+
+    public static final String OPERATION_SKILLS = "operationSkills";
+
 }

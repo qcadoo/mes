@@ -83,7 +83,7 @@
                     <component type="lookup" name="user" field="user" reference="user" defaultEnabled="never" >
                         <option type="column" name="userName" fields="userName" link="true" width="200"/>
                         <option type="fieldCode" value="userName"/>
-                        <option type="expression" value="#uuserName"/>
+                        <option type="expression" value="#userName"/>
                         <option type="labelWidth" value="25"/>
                     </component>
                 </layoutElement>
