@@ -55,6 +55,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 
 import org.json.JSONException;
@@ -355,8 +356,7 @@ public class CostCalculationDetailsHooks {
 
     public void applyValuesToFields(final ViewDefinitionState view, final Entity technology, final Entity order) {
         if (technology == null) {
-            clearFieldValues(view);
-
+            clearFieldValues(view, order);
             return;
         }
 
@@ -406,9 +406,11 @@ public class CostCalculationDetailsHooks {
         componentsMap.get(CostCalculationFields.PRODUCT).setEnabled(false);
     }
 
-    private void clearFieldValues(final ViewDefinitionState view) {
-        view.getComponentByReference(CostCalculationFields.ORDER).addMessage("costCalculation.messages.lackOfTechnology",
-                ComponentState.MessageType.FAILURE);
+    private void clearFieldValues(final ViewDefinitionState view, final Entity order) {
+        if(Objects.nonNull(order)) {
+            view.getComponentByReference(CostCalculationFields.ORDER)
+                    .addMessage("costCalculation.messages.lackOfTechnology", ComponentState.MessageType.FAILURE);
+        }
         view.getComponentByReference(CostCalculationFields.DEFAULT_TECHNOLOGY).setFieldValue(null);
         view.getComponentByReference(CostCalculationFields.TECHNOLOGY).setFieldValue(null);
         view.getComponentByReference(CostCalculationFields.QUANTITY).setFieldValue(null);
