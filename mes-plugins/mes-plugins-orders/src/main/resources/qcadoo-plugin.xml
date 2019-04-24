@@ -81,6 +81,8 @@
 
         <model:model model="changeDatesHelper" resource="model/changeDatesHelper.xml"/>
 
+        <model:model model="schedule" resource="model/schedule.xml"/>
+
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -228,9 +230,15 @@
         <menu:menu-item name="productionOrdersPlanning" category="orders"
                         view="ordersPlanningList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="schedulesList" category="orders"
+                        view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersPlanningList.xml"/>
         <view:view resource="view/orderDetails.xml"/>
+
+        <view:view resource="view/schedulesList.xml"/>
+        <view:view resource="view/scheduleDetails.xml"/>
 
         <view:view resource="view/ordersParameters.xml"/>
 
