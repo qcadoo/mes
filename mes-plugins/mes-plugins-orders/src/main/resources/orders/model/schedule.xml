@@ -48,6 +48,8 @@
               default="01leastWorkers"
               required="true"/>
         <datetime name="approveTime" />
+
+        <manyToMany name="orders" joinField="schedules" model="order"/>
     </fields>
 
     <hooks>

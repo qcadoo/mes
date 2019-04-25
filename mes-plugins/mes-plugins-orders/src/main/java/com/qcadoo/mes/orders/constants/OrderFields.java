@@ -135,4 +135,6 @@ public final class OrderFields {
 
     public static final String UNIT_FOR_ADDITIONAL_UNIT = "unitForAdditionalUnit";
 
+    public static final String SCHEDULES = "schedules";
+
 }

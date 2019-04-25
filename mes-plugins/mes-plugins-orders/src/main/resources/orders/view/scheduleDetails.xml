@@ -86,6 +86,60 @@
         </windowTab>
 
         <windowTab name="inputDataTab">
+            <component type="lookup" name="ordersLookup" reference="ordersLookup"
+                       field="orders" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="name" fields="name" link="true"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"/>
+                <option type="column" name="productName" fields="product" expression="#product['name']"/>
+                <option type="column" name="state" fields="state"/>
+
+                <option type="searchable" value="number,name,productNumber,productName,state"/>
+                <option type="orderable" value="number,name,productNumber,productName,state"/>
+
+                <option type="expression" value="#number + ' - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+
+                <option type="multiselect" value="true"/>
+                <criteriaModifier
+                        class="com.qcadoo.mes.orders.criteriaModifires.ScheduleOrderCriteriaModifier"
+                        method="filterByState"/>
+            </component>
+
+            <component type="grid" name="orders" source="#{form}.orders"
+                       reference="orders">
+
+                <option type="column" name="number" fields="number" link="true" width="40"/>
+                <option type="column" name="name" fields="name" link="true" width="100"/>
+                <option type="column" name="productNumber" fields="product" expression="#product['number']"
+                        link="true" width="60"/>
+                <option type="column" name="technologyNumber" fields="technology" expression="#technology['number']"
+                        link="true" width="60"/>
+                <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
+                <option type="column" name="startDate" fields="startDate" width="50"/>
+                <option type="column" name="finishDate" fields="finishDate" width="50"/>
+                <option type="column" name="state" fields="state" width="50"/>
+
+                <option type="order" column="number" direction="asc"/>
+
+                <option type="searchable"
+                        value="number,name,productNumber,technologyNumber,plannedQuantity,state,startDate,finishDate"/>
+                <option type="orderable"
+                        value="number,name,productNumber,technologyNumber,plannedQuantity,state,startDate,finishDate"/>
+
+                <option type="weakRelation" value="true"/>
+                <option type="correspondingLookup" value="ordersLookup"/>
+
+                <option type="correspondingView" value="orders/orderDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="false"/>
+
+                <option type="fixedHeight" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+
+            </component>
         </windowTab>
 
         <windowTab name="scheduleTab">
@@ -93,6 +147,10 @@
 
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.orders.hooks.ScheduleDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
 
 </view>
