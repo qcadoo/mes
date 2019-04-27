@@ -183,7 +183,7 @@
 		<level value="info" />
 	</logger>
 
-	<logger name="com.mchange">
+	<logger name="com.zaxxer">
 		<level value="info" />
 	</logger>
 
