@@ -159,7 +159,9 @@ public class CostCalculationDetailsHooks {
 
                 technology = getTechnologyFromOrder(order);
             }
-            applyValuesToFields(view, technology, order);
+            if(Objects.nonNull(order) || Objects.nonNull(technology)) {
+                applyValuesToFields(view, technology, order);
+            }
         }
         setCriteriaModifierParameters(view);
         setFieldsEnabled(view);
