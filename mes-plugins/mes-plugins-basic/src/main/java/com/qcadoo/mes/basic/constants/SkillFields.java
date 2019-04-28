@@ -31,10 +31,10 @@ public final class SkillFields {
 
     public static final String NAME = "name";
 
-    public static final String DESCRIPTION = "leader";
+    public static final String DESCRIPTION = "description";
 
     public static final String MAXIMUM_LEVEL = "maximumLevel";
 
-    public static final String CREW_SKILLS = "crewSkills";
+    public static final String STAFF_SKILLS = "staffSkills";
 
 }
