@@ -99,13 +99,12 @@ public class ScheduleDetailsListenersPS {
         schedulePosition.setField(OrdersConstants.MODEL_SCHEDULE, schedule);
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
         schedulePosition.setField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+        Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
         schedulePosition.setField(OperationProductOutComponentFields.PRODUCT,
-                technologyService.getMainOutputProductComponent(technologyOperationComponent)
-                        .getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+                mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = ordersOperationsQuantity
                 .get(order.getId());
-        BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer
-                .get(productQuantitiesService.getOutputProductsFromOperationComponent(technologyOperationComponent));
+        BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
         schedulePosition.setField(OperationProductOutComponentFields.QUANTITY, productComponentQuantity);
         schedulePosition.setField(OperCompTimeCalculation.OPERATION_OFF_SET,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.OPERATION_OFF_SET));
