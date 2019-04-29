@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
+                    xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
+                    plugin="orders"
+                    view="scheduleDetails">
+
+    <windowTab name="scheduleTab">
+        <ribbon>
+            <group name="setAPlan">
+                <bigButton name="getOperations" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(getOperations);" state="enabled">
+                </bigButton>
+                <bigButton name="assignOperationsToWorkstations" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(assignOperationsToWorkstations);" state="enabled">
+                </bigButton>
+                <bigButton name="assignWorkersToOperations" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(assignWorkersToOperations);" state="enabled">
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <component type="grid" name="positions" source="#{form}.positions"
+                   reference="positions">
+
+            <option type="column" name="operationNumber" fields="technologyOperationComponent"
+                    expression="#technologyOperationComponent.get('operation').get('number')"/>
+            <option type="column" name="operationName" fields="technologyOperationComponent"
+                    expression="#technologyOperationComponent['operation'].get('name')"/>
+            <option type="column" name="orderNumber" fields="order"
+                    expression="#order.get('number')"/>
+            <option type="column" name="productNumber" fields="product"
+                    expression="#product.get('number')"/>
+            <option type="column" name="productName" fields="product"
+                    expression="#product.get('name')"/>
+            <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="productUnit" fields="product"
+                    expression="#product.get('unit')" width="40"/>
+            <option type="column" name="laborWorkTime" fields="laborWorkTime"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+            <option type="column" name="machineWorkTime" fields="machineWorkTime"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+            <option type="column" name="operationOffSet" fields="operationOffSet"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operationOffSet)"/>
+
+            <option type="order" column="operationNumber" direction="asc"/>
+
+            <option type="searchable"
+                    value="operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity"/>
+            <option type="orderable"
+                    value="operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity"/>
+
+            <option type="fixedHeight" value="true"/>
+
+        </component>
+    </windowTab>
+</windowTabExtension>

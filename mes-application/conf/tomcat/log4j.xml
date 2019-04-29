@@ -205,7 +205,7 @@
 		<level value="error" />
 	</logger>
 
-	<logger name="com.qcadoo.localization">
+	<logger name="com.qcadoo.localization" additivity="false">
 		<level value="debug" />
 		<appender-ref ref="localization-log" />
 	</logger>

@@ -82,6 +82,13 @@
                 <option type="header" value="true"/>
                 <option type="expression"
                         value="#number + ', ' + '@orders.schedule.state.value.' + #state"/>
+
+                <listener event="assignOperationsToWorkstations"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
+                          method="assignOperationsToWorkstations"/>
+                <listener event="assignWorkersToOperations"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
+                          method="assignWorkersToOperations"/>
             </component>
         </windowTab>
 
@@ -140,9 +147,6 @@
                 <option type="creatable" value="true"/>
 
             </component>
-        </windowTab>
-
-        <windowTab name="scheduleTab">
         </windowTab>
 
     </component>

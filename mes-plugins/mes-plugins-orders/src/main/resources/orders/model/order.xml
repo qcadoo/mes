@@ -168,6 +168,9 @@
         <manyToMany name="schedules" joinField="orders"
                           model="schedule"/>
 
+        <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
+                 cascade="delete"/>
+
     </fields>
 
     <hooks>

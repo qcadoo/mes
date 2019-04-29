@@ -24,41 +24,25 @@
     ***************************************************************************
 
 -->
-<model name="schedule"
+<model name="schedulePosition"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number" unique="true"/>
-        <string name="name">
-            <validatesLength max="255"/>
-        </string>
-        <datetime name="startTime" required="true"/>
-        <enum name="state" values="01draft,02approved,03rejected" default="01draft" required="true"/>
-        <enum name="sortOrder"
-              values="01desc,02asc"
-              default="01desc"
-              required="true"/>
-        <enum name="workstationAssignCriterion"
-              values="01shortestTime,02leastWorkstations"
-              default="01shortestTime"
-              required="true"/>
-        <enum name="workerAssignCriterion"
-              values="01leastWorkers"
-              default="01leastWorkers"
-              required="true"/>
-        <datetime name="approveTime" />
-
-        <manyToMany name="orders" joinField="schedules" model="order"/>
-
-        <hasMany name="positions" joinField="schedule" model="schedulePosition"
-                 cascade="delete"/>
+        <belongsTo name="schedule" model="schedule"/>
+        <belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent"/>
+        <belongsTo name="order" model="order"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
+        <decimal name="quantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <integer name="operationOffSet" />
+        <integer name="machineWorkTime" default="0" />
+        <integer name="laborWorkTime" default="0" />
     </fields>
 
-    <hooks>
-        <onSave class="com.qcadoo.mes.orders.hooks.ScheduleHooks"
-                method="onSave"/>
-    </hooks>
+    <hooks/>
 
-    <identifier expression="#number + ' - ' + #name"/>
 </model>
