@@ -88,6 +88,10 @@
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="workstation"/>
+        </model:model-field>
+
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">

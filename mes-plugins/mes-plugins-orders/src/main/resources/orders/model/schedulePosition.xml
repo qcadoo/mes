@@ -33,14 +33,17 @@
         <belongsTo name="technologyOperationComponent" plugin="technologies" model="technologyOperationComponent"/>
         <belongsTo name="order" model="order"/>
         <belongsTo name="product" plugin="basic" model="product"/>
+        <belongsTo name="workstation" plugin="basic" model="workstation"/>
         <decimal name="quantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <integer name="operationOffSet" />
+        <integer name="additionalTime" default="0" />
         <integer name="machineWorkTime" default="0" />
         <integer name="laborWorkTime" default="0" />
+        <datetime name="startTime"/>
+        <datetime name="endTime"/>
     </fields>
 
     <hooks/>

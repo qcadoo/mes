@@ -47,6 +47,8 @@
         <component type="grid" name="positions" source="#{form}.positions"
                    reference="positions">
 
+            <option type="column" name="workstationName" fields="workstation"
+                    expression="#workstation?.get('name')"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
                     expression="#technologyOperationComponent.get('operation').get('number')"/>
             <option type="column" name="operationName" fields="technologyOperationComponent"
@@ -60,19 +62,21 @@
             <option type="column" name="quantity" fields="quantity"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product.get('unit')" width="40"/>
+            <option type="column" name="startTime" fields="startTime"/>
+            <option type="column" name="endTime" fields="endTime"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
             <option type="column" name="machineWorkTime" fields="machineWorkTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
-            <option type="column" name="operationOffSet" fields="operationOffSet"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#operationOffSet)"/>
+            <option type="column" name="additionalTime" fields="additionalTime"
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
 
             <option type="order" column="operationNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity"/>
+                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
             <option type="orderable"
-                    value="operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity"/>
+                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
 
             <option type="fixedHeight" value="true"/>
 

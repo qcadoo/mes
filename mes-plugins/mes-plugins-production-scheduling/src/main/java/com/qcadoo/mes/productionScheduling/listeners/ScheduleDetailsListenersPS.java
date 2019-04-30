@@ -17,6 +17,7 @@ import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
+import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.constants.OperCompTimeCalculation;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
@@ -26,6 +27,7 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -98,7 +100,7 @@ public class ScheduleDetailsListenersPS {
         Entity schedulePosition = schedulePositionDD.create();
         schedulePosition.setField(OrdersConstants.MODEL_SCHEDULE, schedule);
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
-        schedulePosition.setField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+        schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
         schedulePosition.setField(OperationProductOutComponentFields.PRODUCT,
                 mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
@@ -106,11 +108,11 @@ public class ScheduleDetailsListenersPS {
                 .get(order.getId());
         BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
         schedulePosition.setField(OperationProductOutComponentFields.QUANTITY, productComponentQuantity);
-        schedulePosition.setField(OperCompTimeCalculation.OPERATION_OFF_SET,
-                operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.OPERATION_OFF_SET));
+        schedulePosition.setField(SchedulePositionFields.ADDITIONAL_TIME,
+                technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
         schedulePosition.setField(OperCompTimeCalculation.LABOR_WORK_TIME,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.LABOR_WORK_TIME));
-        schedulePosition.setField(OperCompTimeCalculation.MACHINE_WORK_TIME,
+        schedulePosition.setField(SchedulePositionFields.MACHINE_WORK_TIME,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.MACHINE_WORK_TIME));
         return schedulePositionDD.save(schedulePosition);
     }
