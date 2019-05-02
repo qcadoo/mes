@@ -49,7 +49,7 @@ import com.qcadoo.plugins.dictionaries.DictionariesService;
 import com.qcadoo.report.api.FontUtils;
 
 @Service
-public class ExportToPDFControllerOOverrideUtil {
+public class ExportToPdfControllerOOverrideUtil {
 
     private static final String L_ORDERS_PLANNING_LIST = "ordersPlanningList";
 

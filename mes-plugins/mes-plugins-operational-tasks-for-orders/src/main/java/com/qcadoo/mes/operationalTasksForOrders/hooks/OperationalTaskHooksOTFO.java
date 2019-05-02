@@ -49,9 +49,9 @@ public class OperationalTaskHooksOTFO {
     }
 
     public void fillTechOperCompOperationalTasks(final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity technologyOperationComponent = operationalTask
                     .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -80,9 +80,9 @@ public class OperationalTaskHooksOTFO {
     }
 
     private void fillNameAndDescription(final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity techOperCompOperationalTask = operationalTask
                     .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
@@ -103,9 +103,9 @@ public class OperationalTaskHooksOTFO {
     }
 
     private void fillProductionLine(final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
             if (order == null) {
@@ -119,9 +119,9 @@ public class OperationalTaskHooksOTFO {
     }
 
     public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity techOperCompOperationalTask = operationalTask
                     .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 

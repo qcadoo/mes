@@ -183,7 +183,7 @@
 		<level value="info" />
 	</logger>
 
-	<logger name="com.mchange">
+	<logger name="com.zaxxer">
 		<level value="info" />
 	</logger>
 
@@ -205,7 +205,7 @@
 		<level value="error" />
 	</logger>
 
-	<logger name="com.qcadoo.localization">
+	<logger name="com.qcadoo.localization" additivity="false">
 		<level value="info" />
 		<appender-ref ref="localization-log" />
 	</logger>

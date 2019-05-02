@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.qcadoo.mes.techSubcontrForOperTasks.constants.TechSubcontrForOperTasksConstants;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Aspect
@@ -43,16 +42,15 @@ public class OperationalTaskDetailsListenersOTFOOverrideAspect {
     @Autowired
     private OperationalTaskDetailsListenersOTFOOverrideUtil operationalTaskDetailsListenersOTFOOverrideUtil;
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO.setOperationalTaskNameAndDescription(..)) "
-            + "&& args(view, state, args)")
-    public void setOperationalTaskNameAndDescriptionExecution(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO.setNameAndDescription(..)) "
+            + "&& args(view)")
+    public void setNameAndDescriptionExecution(final ViewDefinitionState view) {
     }
 
-    @After("setOperationalTaskNameAndDescriptionExecution(view, state, args)")
-    public void afterSetOperationalTaskNameAndDescriptionExecution(final ProceedingJoinPoint pjp, final ViewDefinitionState view,
-            final ComponentState state, final String[] args) throws Throwable {
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
+    @After("setNameAndDescriptionExecution(view)")
+    public void afterSetNameAndDescriptionExecution(final ProceedingJoinPoint pjp, final ViewDefinitionState view)
+            throws Throwable {
+        operationalTaskDetailsListenersOTFOOverrideUtil.setNameDescriptionAndProductionLineForSubcontracted(view);
     }
 
 }

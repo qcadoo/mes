@@ -53,8 +53,8 @@ public class TechnologyOperationComponentHooksOTFO {
         String comment = (technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT) == null) ? ""
                 : technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
         String technologyOperationComponentComment = (technologyOperationComponentFromDB
-                .getStringField(TechnologyOperationComponentFields.COMMENT) == null) ? "" : technologyOperationComponentFromDB
-                .getStringField(TechnologyOperationComponentFields.COMMENT);
+                .getStringField(TechnologyOperationComponentFields.COMMENT) == null) ? ""
+                        : technologyOperationComponentFromDB.getStringField(TechnologyOperationComponentFields.COMMENT);
 
         if (!comment.equals(technologyOperationComponentComment)) {
             changedDescriptionInOperationalTasks(technologyOperationComponent);
@@ -70,7 +70,8 @@ public class TechnologyOperationComponentHooksOTFO {
                     .getOperationalTasksForTechOperCompOperationalTasks(techOperCompOperationalTask);
 
             for (Entity operationalTask : operationalTasks) {
-                String comment = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT) == null ? ""
+                String comment = technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT) == null
+                        ? ""
                         : technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
 
                 operationalTask.setField(OperationalTaskFields.DESCRIPTION, comment);

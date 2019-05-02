@@ -24,9 +24,10 @@
     ***************************************************************************
 
 -->
-<model name="techOperCompOperationalTask" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="techOperCompOperationalTask"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />
@@ -34,6 +35,10 @@
 		<hasMany name="operationalTasks" plugin="operationalTasks"
 			model="operationalTask" joinField="techOperCompOperationalTask"
 			cascade="nullify" />
+		<hasMany name="operationalTaskDtos" plugin="operationalTasks"
+				 model="operationalTaskDto" joinField="techOperCompOperationalTask"
+				 cascade="nullify" />
 	</fields>
+
 	<hooks />
 </model>

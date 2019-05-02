@@ -41,7 +41,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -100,8 +100,8 @@ public class OperationalTasksListOTFOHooksTest {
 
         ReflectionTestUtils.setField(operationalTasksListHooksOTFO, "dataDefinitionService", dataDefinitionService);
 
-        given(view.getComponentByReference(OperationalTaskFields.PRODUCT_IN)).willReturn(productInLookup);
-        given(view.getComponentByReference(OperationalTaskFields.PRODUCT_OUT)).willReturn(productOutLookup);
+        given(view.getComponentByReference(OperationalTaskDtoFields.PRODUCT_IN)).willReturn(productInLookup);
+        given(view.getComponentByReference(OperationalTaskDtoFields.PRODUCT_OUT)).willReturn(productOutLookup);
         given(view.getComponentByReference(L_GRID)).willReturn(grid);
 
         given(

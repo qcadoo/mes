@@ -33,4 +33,6 @@ public final class OperationalTasksConstants {
 
     public static final String MODEL_OPERATIONAL_TASK = "operationalTask";
 
+    public static final String MODEL_OPERATIONAL_TASK_DTO = "operationalTaskDto";
+
 }

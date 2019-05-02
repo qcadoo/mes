@@ -30,15 +30,14 @@ import static org.junit.Assert.assertNotNull;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 
-import com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO;
 import com.qcadoo.mes.techSubcontrForOperTasks.constants.TechSubcontrForOperTasksConstants;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import junit.framework.Assert;
 
 public class OperationalTaskDetailsListenersOTFOOverrideAspectTest {
 
@@ -52,11 +51,9 @@ public class OperationalTaskDetailsListenersOTFOOverrideAspectTest {
 
     @Test
     public final void checkSetOperationalTaskNameAndDescriptionPointcutDefinition() throws NoSuchMethodException {
-        Class<?> clazz = OperationalTaskDetailsListenersOTFO.class;
-        assertEquals("com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO",
-                clazz.getCanonicalName());
-        final Method method = clazz.getDeclaredMethod("setOperationalTaskNameAndDescription", ViewDefinitionState.class,
-                ComponentState.class, String[].class);
+        Class<?> clazz = OperationalTaskDetailsHooksOTFO.class;
+        assertEquals("com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO", clazz.getCanonicalName());
+        final Method method = clazz.getDeclaredMethod("setNameAndDescription", ViewDefinitionState.class);
         assertNotNull(method);
         assertTrue(Modifier.isPublic(method.getModifiers()));
     }

@@ -40,22 +40,23 @@ import com.qcadoo.plugin.api.RunIfEnabled;
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
-public class ExportToPDFControllerOOverrideAspect {
+public class ExportToPdfControllerOOverrideAspect {
 
     @Autowired
-    private ExportToPDFControllerOOverrideUtil exportToPDFControllerOOverrideUtil;
+    private ExportToPdfControllerOOverrideUtil exportToPdfControllerOOverrideUtil;
 
-    @Pointcut("execution(private void com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController.addPdfTableCells(..)) "
+    @Pointcut("execution(private void com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPdfController.addPdfTableCells(..)) "
             + "&& args(pdfTable, rows, columns, viewName)")
-    public void addPdfTableCells(final PdfPTable pdfTable, final List<Map<String, String>> rows, final List<String> columns, final String viewName) {
+    public void addPdfTableCells(final PdfPTable pdfTable, final List<Map<String, String>> rows, final List<String> columns,
+            final String viewName) {
 
     }
 
     @Around("addPdfTableCells(pdfTable, rows, columns, viewName)")
-    public void aroundAddPdfTableCells(final ProceedingJoinPoint pjp, final PdfPTable pdfTable, final List<Map<String, String>> rows, final List<String> columns, final String viewName)
-            throws Throwable {
-        if (exportToPDFControllerOOverrideUtil.shouldOverride(viewName)) {
-            exportToPDFControllerOOverrideUtil.addPdfTableCells(pdfTable, rows, columns, viewName);
+    public void aroundAddPdfTableCells(final ProceedingJoinPoint pjp, final PdfPTable pdfTable,
+            final List<Map<String, String>> rows, final List<String> columns, final String viewName) throws Throwable {
+        if (exportToPdfControllerOOverrideUtil.shouldOverride(viewName)) {
+            exportToPdfControllerOOverrideUtil.addPdfTableCells(pdfTable, rows, columns, viewName);
         } else {
             pjp.proceed();
         }

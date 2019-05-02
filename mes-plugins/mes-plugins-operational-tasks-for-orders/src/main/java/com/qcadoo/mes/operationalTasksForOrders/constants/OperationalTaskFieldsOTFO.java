@@ -35,6 +35,14 @@ public final class OperationalTaskFieldsOTFO {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    public static final String PRODUCT = "product";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
+
     public static final String TECH_OPER_COMP_OPERATIONAL_TASK = "techOperCompOperationalTask";
 
 }

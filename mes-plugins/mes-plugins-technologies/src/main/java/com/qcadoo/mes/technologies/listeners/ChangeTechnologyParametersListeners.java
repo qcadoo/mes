@@ -66,7 +66,12 @@ public class ChangeTechnologyParametersListeners {
         }
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
         try {
-            entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
+            //entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
+            entity = entity.getDataDefinition().validate(entity);
+            if(!entity.isValid()) {
+                form.setEntity(entity);
+                return;
+            }
         } catch (IllegalArgumentException e) {
             form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
                     ComponentState.MessageType.FAILURE);

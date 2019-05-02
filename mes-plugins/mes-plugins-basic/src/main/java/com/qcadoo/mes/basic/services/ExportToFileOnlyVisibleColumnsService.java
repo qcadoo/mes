@@ -27,21 +27,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugins.qcadooExport.api.ExportToPDFColumns;
 import com.qcadoo.security.api.SecurityRolesService;
 import com.qcadoo.view.api.components.GridComponent;
 
 @Service
-@Order(1)
-public class ExportToPDFColumnsServiceB implements ExportToPDFColumns {
+public class ExportToFileOnlyVisibleColumnsService {
 
     @Autowired
     private SecurityRolesService securityRolesService;
@@ -49,7 +45,7 @@ public class ExportToPDFColumnsServiceB implements ExportToPDFColumns {
     @Autowired
     private ParameterService parameterService;
 
-    public List<String> getColumns(final GridComponent grid) {
+    public List<String> getColumns(final GridComponent grid, final String parameterFieldName) {
         List<String> columns = Lists.newLinkedList();
 
         grid.getColumns().entrySet().stream().forEach(entry -> {
@@ -63,7 +59,7 @@ public class ExportToPDFColumnsServiceB implements ExportToPDFColumns {
 
         Entity parameter = parameterService.getParameter();
 
-        if (parameter.getBooleanField(ParameterFields.EXPORT_TO_PDF_ONLY_VISIBLE_COLUMNS)) {
+        if (parameter.getBooleanField(parameterFieldName)) {
             return columns.stream().filter(column -> !grid.getUserHiddenColumns().contains(column)).collect(Collectors.toList());
         } else {
             return columns;

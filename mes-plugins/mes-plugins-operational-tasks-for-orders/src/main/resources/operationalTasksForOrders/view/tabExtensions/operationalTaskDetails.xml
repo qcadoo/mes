@@ -39,48 +39,90 @@
 			<option type="searchable" value="name,number" />
 			<option type="orderable" value="name,number" />
 
-			<option type="expression" value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+			<option type="expression" value="#number + ' - ' + #name" />
 			<option type="fieldCode" value="number" />
 		</component>
 		<component type="gridLayout" name="gridLayout" reference="gridLayout"
-			columns="3" rows="5">
+			columns="3" rows="1">
 			<layoutElement column="1" row="1">
-				<component type="lookup" name="order" field="#{form}.order"
-					reference="order">
-					<option type="column" name="name" fields="name" link="true" />
+				<component type="gridLayout" name="gridLayoutInside"
+				   hasBorders="true" columns="6" rows="5">
+					<layoutElement column="1" row="1" width="5">
+						<component type="lookup" name="order" field="#{form}.order"
+								   reference="order">
+							<option type="column" name="name" fields="name" link="true" />
 
-					<option type="order" column="number" direction="desc" />
+							<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="name,number" />
-					<option type="orderable" value="name,number" />
+							<option type="searchable" value="name,number" />
+							<option type="orderable" value="name,number" />
 
-					<option type="expression"
-						value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-					<option type="fieldCode" value="number" />
-					<criteriaModifier
-							class="com.qcadoo.mes.operationalTasksForOrders.criteriaModifires.OrdersOTFOCriteriaModifiers"
-							method="showWithProductionLines"/>
-					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
-						method="setOperationalTaskProductionLineAndClearOperation" />
-				</component>
-			</layoutElement>
-			<layoutElement column="1" row="2">
-				<component type="lookup" name="technologyOperationComponent"
-					field="#{form}.technologyOperationComponent" source="#{technology}.operationComponents"
-					reference="technologyOperationComponent">
-					<option type="column" name="name" fields="operation"
-						expression="#operation['name']" link="true" />
+							<option type="expression"
+									value="#number + ' - ' + #name" />
+							<option type="fieldCode" value="number" />
 
-					<option type="searchable" value="name,nodeNumber" />
-					<option type="orderable" value="name,nodeNumber" />
+							<criteriaModifier
+									class="com.qcadoo.mes.operationalTasksForOrders.criteriaModifiers.OrdersCriteriaModifiersOTFO"
+									method="showWithProductionLines"/>
 
-					<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
-					<option type="fieldCode" value="nodeNumber" />
+							<listener event="onSelectedEntityChange"
+									  class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
+									  method="onOrderChange" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="2" width="5">
+						<component type="lookup" name="technologyOperationComponent"
+								   field="#{form}.technologyOperationComponent" source="#{technology}.operationComponents"
+								   reference="technologyOperationComponent">
+							<option type="column" name="name" fields="operation"
+									expression="#operation['name']" link="true" />
 
-					<listener event="onSelectedEntityChange"
-						class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
-						method="setOperationalTaskNameAndDescription" />
+							<option type="searchable" value="name,nodeNumber" />
+							<option type="orderable" value="name,nodeNumber" />
+
+							<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
+							<option type="fieldCode" value="nodeNumber" />
+
+							<listener event="onSelectedEntityChange"
+									  class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
+									  method="onTechnologyOperationComponentChange" />
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="3" width="5">
+						<component type="lookup" name="product" field="product"
+								   reference="product" defaultEnabled="false">
+							<option type="column" name="name" fields="name" link="true"
+									width="200"/>
+							<option type="column" name="ean" fields="ean"/>
+							<option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+							<option type="searchable" value="name,ean,globalTypeOfMaterial"/>
+							<option type="orderable" value="name,ean,globalTypeOfMaterial"/>
+
+							<option type="expression"
+									value="#number + ' - ' + #name"/>
+							<option type="fieldCode" value="number"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="4" width="5">
+						<component type="input" name="plannedQuantity" field="plannedQuantity" reference="plannedQuantity"
+								   defaultEnabled="false">
+							<option type="alignment" value="right"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="6" row="4">
+						<component type="input" name="plannedQuantityUNIT"
+								   reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+					</layoutElement>
+					<layoutElement column="1" row="5" width="5">
+						<component type="input" name="usedQuantity" field="usedQuantity" reference="usedQuantity"
+								   defaultEnabled="false">
+							<option type="alignment" value="right"/>
+						</component>
+					</layoutElement>
+					<layoutElement column="6" row="5">
+						<component type="input" name="usedQuantityUNIT"
+								   reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+					</layoutElement>
 				</component>
 			</layoutElement>
 		</component>

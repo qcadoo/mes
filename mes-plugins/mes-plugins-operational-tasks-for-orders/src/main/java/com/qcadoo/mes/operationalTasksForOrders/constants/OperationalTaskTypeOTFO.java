@@ -21,28 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasks.constants;
+package com.qcadoo.mes.operationalTasksForOrders.constants;
 
-public enum OperationalTaskTypeTask {
-    OTHER_CASE("01otherCase");
+public enum OperationalTaskTypeOTFO {
+    EXECUTION_OPERATION_IN_ORDER("02executionOperationInOrder");
 
-    private final String operationalTaskTypeTask;
+    private final String operationalTaskType;
 
-    private OperationalTaskTypeTask(final String operationalTaskTypeTask) {
-        this.operationalTaskTypeTask = operationalTaskTypeTask;
+    private OperationalTaskTypeOTFO(final String operationalTaskType) {
+        this.operationalTaskType = operationalTaskType;
     }
 
     public String getStringValue() {
-        return operationalTaskTypeTask;
+        return operationalTaskType;
     }
 
-    public static OperationalTaskTypeTask parseString(final String string) {
-        for (OperationalTaskTypeTask typeTask : values()) {
-            if (typeTask.getStringValue().equals(string)) {
-                return typeTask;
+    public static OperationalTaskTypeOTFO parseString(final String string) {
+        for (OperationalTaskTypeOTFO type : values()) {
+            if (type.getStringValue().equals(string)) {
+                return type;
             }
         }
-        throw new IllegalStateException("Unsupported OperationalTaskTypeTask: " + string);
+
+        throw new IllegalStateException("Unsupported OperationalTaskTypeOTFO: " + string);
     }
 
 }

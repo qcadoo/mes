@@ -165,6 +165,12 @@
         <hasMany name="barcodeOperationComponents" joinField="order" model="barcodeOperationComponent" plugin="technologies"
                  cascade="delete" copyable="false"/>
 
+        <manyToMany name="schedules" joinField="orders"
+                          model="schedule"/>
+
+        <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
+                 cascade="delete"/>
+
     </fields>
 
     <hooks>

@@ -37,21 +37,21 @@ import org.junit.Test;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController;
+import com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPdfController;
 
-public class ExportToPDFControllerOOverrideAspectTest {
+public class ExportToPdfControllerOOverrideAspectTest {
 
     @Test
     public final void checkAopXmlClassNameIntegrity() {
-        assertEquals(ExportToPDFControllerOOverrideAspect.class.getCanonicalName(),
-                "com.qcadoo.mes.orders.aop.ExportToPDFControllerOOverrideAspect");
+        assertEquals(ExportToPdfControllerOOverrideAspect.class.getCanonicalName(),
+                "com.qcadoo.mes.orders.aop.ExportToPdfControllerOOverrideAspect");
     }
 
     @Test
     public final void checkPointcutIntegrity() throws SecurityException, NoSuchMethodException {
-        Class<?> clazz = ExportToPDFController.class;
+        Class<?> clazz = ExportToPdfController.class;
 
-        assertEquals(clazz.getCanonicalName(), "com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPDFController");
+        assertEquals(clazz.getCanonicalName(), "com.qcadoo.plugins.qcadooExport.internal.controllers.ExportToPdfController");
 
         Method putMethod = clazz.getDeclaredMethod("addPdfTableCells", PdfPTable.class, List.class, List.class, String.class);
 
@@ -62,7 +62,7 @@ public class ExportToPDFControllerOOverrideAspectTest {
 
     @Test
     public final void checkAspectAnnotations() {
-        Class<?> clazz = ExportToPDFControllerOOverrideAspect.class;
+        Class<?> clazz = ExportToPdfControllerOOverrideAspect.class;
 
         assertNotNull(clazz.getAnnotation(Aspect.class));
         RunIfEnabled runIfEnabledAnnotation = clazz.getAnnotation(RunIfEnabled.class);

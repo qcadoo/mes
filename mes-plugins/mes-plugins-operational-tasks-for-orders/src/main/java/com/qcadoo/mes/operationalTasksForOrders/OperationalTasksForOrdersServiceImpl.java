@@ -30,10 +30,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskTypeTask;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTasksForOrdersConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -80,20 +80,20 @@ public class OperationalTasksForOrdersServiceImpl implements OperationalTasksFor
     }
 
     @Override
-    public List<Entity> getTechOperCompOperationalTasksForTechnologyOperationComponent(final Entity technologyOperationComponent) {
-        return getTechOperCompOperationalTaskDD()
-                .find()
-                .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                        technologyOperationComponent)).list().getEntities();
+    public List<Entity> getTechOperCompOperationalTasksForTechnologyOperationComponent(
+            final Entity technologyOperationComponent) {
+        return getTechOperCompOperationalTaskDD().find().add(SearchRestrictions
+                .belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
+                .list().getEntities();
     }
 
     @Override
     public List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTask) {
         return dataDefinitionService
-                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
-                .find()
+                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                        techOperCompOperationalTask)).list().getEntities();
+                        techOperCompOperationalTask))
+                .list().getEntities();
     }
 
     @Override
@@ -104,13 +104,13 @@ public class OperationalTasksForOrdersServiceImpl implements OperationalTasksFor
     }
 
     @Override
-    public boolean isOperationalTaskTypeTaskOtherCase(final String typeTask) {
-        return OperationalTaskTypeTask.OTHER_CASE.getStringValue().equals(typeTask);
+    public boolean isOperationalTaskTypeOtherCase(final String type) {
+        return OperationalTaskType.OTHER_CASE.getStringValue().equals(type);
     }
 
     @Override
-    public boolean isOperationalTaskTypeTaskExecutionOperationInOrder(final String typeTask) {
-        return OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(typeTask);
+    public boolean isOperationalTaskTypeExecutionOperationInOrder(final String type) {
+        return OperationalTaskTypeOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(type);
     }
 
 }

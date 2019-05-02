@@ -134,5 +134,4 @@ public final class OrderFields {
     public static final String PLANED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
 
     public static final String UNIT_FOR_ADDITIONAL_UNIT = "unitForAdditionalUnit";
-
 }

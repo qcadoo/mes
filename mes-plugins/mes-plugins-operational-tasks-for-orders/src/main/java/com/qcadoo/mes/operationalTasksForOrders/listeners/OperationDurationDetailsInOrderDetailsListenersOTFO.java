@@ -23,12 +23,17 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -44,10 +49,6 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class OperationDurationDetailsInOrderDetailsListenersOTFO {
@@ -95,11 +96,10 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
     }
 
     private void deleteTechOperCompOperationalTasks(final Entity technologyOperationComponent) {
-        Entity techOperCompOperationalTask = operationalTasksForOrdersService
-                .getTechOperCompOperationalTaskDD()
-                .find()
+        Entity techOperCompOperationalTask = operationalTasksForOrdersService.getTechOperCompOperationalTaskDD().find()
                 .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                        technologyOperationComponent)).setMaxResults(1).uniqueResult();
+                        technologyOperationComponent))
+                .setMaxResults(1).uniqueResult();
 
         if (techOperCompOperationalTask != null) {
             techOperCompOperationalTask.getDataDefinition().delete(techOperCompOperationalTask.getId());
@@ -108,7 +108,8 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
     private void createOperationalTasks(final Entity order, final Entity technologyOperationComponent,
             final boolean isSubcontracting) {
-        Entity techOperCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order, technologyOperationComponent);
+        Entity techOperCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order,
+                technologyOperationComponent);
 
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
@@ -117,8 +118,8 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
         Entity operationalTask = operationTaskDD.create();
 
-        operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService.generateNumber(
-                OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
+        operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
+                .generateNumber(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
         operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
         if (techOperCompTimeCalculation != null) {
@@ -128,8 +129,8 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
                     techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
         }
 
-        operationalTask.setField(OperationalTaskFields.TYPE_TASK,
-                OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue());
+        operationalTask.setField(OperationalTaskFields.TYPE,
+                OperationalTaskTypeOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue());
         operationalTask.setField(OperationalTaskFieldsOTFO.ORDER, order);
 
         if (!isSubcontracting) {

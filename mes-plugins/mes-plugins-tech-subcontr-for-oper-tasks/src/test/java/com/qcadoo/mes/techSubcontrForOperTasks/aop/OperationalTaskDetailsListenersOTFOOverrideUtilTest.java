@@ -79,7 +79,7 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtilTest {
                 .willReturn(true);
 
         // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
+        operationalTaskDetailsListenersOTFOOverrideUtil.setNameDescriptionAndProductionLineForSubcontracted(view);
 
         // then
         Mockito.verify(nameField).setFieldValue(null);
@@ -93,11 +93,11 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtilTest {
         // given
         given(orderLookup.getEntity()).willReturn(order);
         given(technologyOperationComponentLookup.getEntity()).willReturn(null);
-        given(technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING)).willReturn(
-                false);
+        given(technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING))
+                .willReturn(false);
 
         // when
-        operationalTaskDetailsListenersOTFOOverrideUtil.setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(view);
+        operationalTaskDetailsListenersOTFOOverrideUtil.setNameDescriptionAndProductionLineForSubcontracted(view);
 
         // then
         Mockito.verify(descriptionField).setFieldValue(null);

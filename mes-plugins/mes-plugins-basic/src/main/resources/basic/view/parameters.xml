@@ -43,7 +43,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="parameter" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="5">
+                           rows="4">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
@@ -95,12 +95,6 @@
                                    reference="unit" hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
-                        <component type="checkbox" name="exportToPdfOnlyVisibleColumns"
-                                   reference="exportToPdfOnlyVisibleColumns" field="#{form}.exportToPdfOnlyVisibleColumns">
-                            <option type="labelWidth" value="80"/>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -137,6 +131,18 @@
                     <component type="textarea" name="additionalTextInFooter"
                                field="#{form}.additionalTextInFooter" reference="additionalTextInFooter"/>
                 </layoutElement>
+                <layoutElement column="2" row="4">
+                    <component type="checkbox" name="exportToPdfOnlyVisibleColumns"
+                               reference="exportToPdfOnlyVisibleColumns" field="#{form}.exportToPdfOnlyVisibleColumns">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+				<layoutElement column="2" row="5">
+					<component type="checkbox" name="exportToCsvOnlyVisibleColumns"
+							   reference="exportToCsvOnlyVisibleColumns" field="#{form}.exportToCsvOnlyVisibleColumns">
+						<option type="labelWidth" value="80"/>
+					</component>
+				</layoutElement>
             </component>
         </windowTab>
 

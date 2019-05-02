@@ -90,7 +90,7 @@
                         <component type="checkbox" name="changePerformanceNorm"
                                    reference="changePerformanceNorm"
                                    field="#{form}.changePerformanceNorm">
-                            <option type="labelWidth" value="30" />
+                            <option type="labelWidth" value="35" />
 
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
@@ -101,7 +101,7 @@
                         <component type="input" name="standardPerformanceTechnology" defaultEnabled="false"
                                    field="standardPerformanceTechnology" reference="standardPerformanceTechnology">
                             <option type="alignment" value="right"/>
-                            <option type="labelWidth" value="30" />
+                            <option type="labelWidth" value="35" />
 
                         </component>
                     </layoutElement>
@@ -109,7 +109,7 @@
                         <component type="checkbox" name="changeGroup"
                                    reference="changeGroup"
                                    field="#{form}.changeGroup" >
-                            <option type="labelWidth" value="30" />
+                            <option type="labelWidth" value="35" />
 
                             <listener event="onChange"
                                       class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
@@ -119,7 +119,7 @@
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="technologyGroup" field="technologyGroup" defaultEnabled="false"
                                    reference="technologyGroup">
-                            <option type="labelWidth" value="30" />
+                            <option type="labelWidth" value="35" />
 
                             <option type="column" name="name" fields="name" link="true"
                                     width="200"/>

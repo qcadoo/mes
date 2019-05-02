@@ -35,4 +35,6 @@ public final class OrderTimeCalculationFields {
 
     public static final String ORDER = "order";
 
+    public static final String OPER_COMP_TIME_CALCULATIONS = "operCompTimeCalculations";
+
 }

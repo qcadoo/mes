@@ -45,4 +45,6 @@ public final class OrderFieldsPS {
 
     public static final String GENERATED_END_DATE = "generatedEndDate";
 
+    public static final String ORDER_TIME_CALCULATIONS = "orderTimeCalculations";
+
 }

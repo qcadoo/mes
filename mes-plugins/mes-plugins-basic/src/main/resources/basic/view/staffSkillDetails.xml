@@ -52,7 +52,7 @@
 
 							<criteriaModifier
 									class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
-									method="filterAlreadySelected"/>
+									method="filterByStaff"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">

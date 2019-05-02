@@ -35,16 +35,16 @@ public final class OperationalTaskFields {
 
     public static final String DESCRIPTION = "description";
 
-    public static final String TYPE_TASK = "typeTask";
+    public static final String TYPE = "type";
 
     public static final String START_DATE = "startDate";
 
     public static final String FINISH_DATE = "finishDate";
 
+    public static final String STAFF = "staff";
+
     public static final String PRODUCTION_LINE = "productionLine";
 
-    public static final String PRODUCT_IN = "productIn";
-
-    public static final String PRODUCT_OUT = "productOut";
+    public static final String WORKSTATION = "workstation";
 
 }

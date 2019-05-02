@@ -51,8 +51,8 @@
                             <option type="fieldCode" value="name"/>
 
                             <criteriaModifier
-                                    class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
-                                    method="filterAlreadySelected"/>
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.SkillCriteriaModifiersT"
+                                    method="filterByOperation"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">

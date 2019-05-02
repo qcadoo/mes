@@ -33,4 +33,6 @@ public final class TechOperCompOperationalTasksFields {
 
     public static final String OPERATIONAL_TASKS = "operationalTasks";
 
+    public static final String OPERATIONAL_TASK_DTOS = "operationalTaskDtos";
+
 }

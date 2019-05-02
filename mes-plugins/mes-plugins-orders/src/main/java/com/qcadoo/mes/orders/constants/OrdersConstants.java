@@ -53,6 +53,10 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_CATEGORY_COLOR = "orderCategoryColor";
 
+    public static final String MODEL_SCHEDULE = "schedule";
+
+    public static final String MODEL_SCHEDULE_POSITION = "schedulePosition";
+
     // VIEW
 
     public static final String VIEW_ORDER_DETAILS = "orderDetails";

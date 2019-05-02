@@ -85,7 +85,7 @@ public interface OperationalTasksForOrdersService {
      * 
      * @return operationalTasks
      */
-    List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTas);
+    List<Entity> getOperationalTasksForTechOperCompOperationalTasks(final Entity techOperCompOperationalTask);
 
     /**
      * Gets operational tasks for order
@@ -100,19 +100,19 @@ public interface OperationalTasksForOrdersService {
     /**
      * Is operational task type task other case
      * 
-     * @param typeTask
+     * @param type
      * 
      * @return boolean
      */
-    boolean isOperationalTaskTypeTaskOtherCase(final String typeTask);
+    boolean isOperationalTaskTypeOtherCase(final String type);
 
     /**
      * Is operational task type task execution operation in order
      * 
-     * @param typeTask
+     * @param type
      * 
      * @return boolean
      */
-    boolean isOperationalTaskTypeTaskExecutionOperationInOrder(final String typeTask);
+    boolean isOperationalTaskTypeExecutionOperationInOrder(final String type);
 
 }

@@ -41,7 +41,7 @@ public enum InputProductsRequiredForTypeOTFO {
             return START_OPERATIONAL_TASK;
         }
 
-        throw new IllegalStateException("Unsupported inputProductsRequiredForType: " + string);
+        throw new IllegalStateException("Unsupported InputProductsRequiredForType: " + string);
     }
 
 }

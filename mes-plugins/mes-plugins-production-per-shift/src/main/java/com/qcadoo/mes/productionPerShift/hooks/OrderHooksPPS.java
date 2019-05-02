@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
@@ -54,6 +42,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 public class OrderHooksPPS {
@@ -80,8 +80,10 @@ public class OrderHooksPPS {
     private AutomaticPpsParametersService automaticPpsParametersService;
 
     public void onUpdate(final DataDefinition orderDD, final Entity order) {
-        setUpPpsDaysAndDatesFor(order);
-        regenerateProductionPerShift(orderDD, order);
+        if(Objects.nonNull(order.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
+            setUpPpsDaysAndDatesFor(order);
+            regenerateProductionPerShift(orderDD, order);
+        }
     }
 
     void setUpPpsDaysAndDatesFor(final Entity order) {

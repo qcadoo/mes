@@ -23,27 +23,51 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import java.util.List;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.basic.constants.StaffSkillsFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class SkillCriteriaModifiers {
 
+    private static final String L_DOT = ".";
+
     private static final String L_ID = "id";
 
-    private static final String L_SKILL_IDS = "skillIds";
+    private static final String L_THIS_ID = "this.id";
 
-    public void filterAlreadySelected(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
-        if (filterValueHolder.has(L_SKILL_IDS)) {
-            List<Long> skllIds = filterValueHolder.getListOfLongs(L_SKILL_IDS);
+    private static final String L_STAFF_ID = "staffId";
 
-            scb.add(SearchRestrictions.not(SearchRestrictions.in(L_ID, skllIds)));
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void filterByStaff(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_STAFF_ID)) {
+            SearchCriteriaBuilder subCriteria = getStaffDD().findWithAlias(BasicConstants.MODEL_STAFF)
+                    .add(SearchRestrictions.idEq(filterValueHolder.getLong(L_STAFF_ID)))
+                    .createAlias(StaffFields.STAFF_SKILLS, StaffFields.STAFF_SKILLS, JoinType.INNER)
+                    .createAlias(StaffFields.STAFF_SKILLS + L_DOT + StaffSkillsFields.SKILL, StaffSkillsFields.SKILL,
+                            JoinType.INNER)
+                    .add(SearchRestrictions.eqField(StaffSkillsFields.SKILL + L_DOT + L_ID, L_THIS_ID))
+                    .setProjection(SearchProjections.id());
+
+            scb.add(SearchSubqueries.notExists(subCriteria));
         }
+    }
+
+    private DataDefinition getStaffDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF);
     }
 
 }

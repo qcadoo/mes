@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,10 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
     private static final String L_CREATE_OPERATIONAL_TASKS = "createOperationalTasks";
 
     private static final String L_GENERATED_END_DATE = "generatedEndDate";
+
+    public void beforeRender(final ViewDefinitionState view) {
+        disableCreateButton(view);
+    }
 
     public void disableCreateButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
@@ -75,7 +81,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
 
         Long orderId = orderForm.getEntityId();
 
-        if (orderId == null) {
+        if (Objects.isNull(orderId)) {
             return false;
         }
 
@@ -84,7 +90,7 @@ public class OperationDurationDetailsInOrderDetailsHooksOTFO {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         String state = order.getStringField(OrderFields.STATE);
 
-        return ((technology != null) && checkIfOrderStateIsCorrect(state));
+        return (!Objects.isNull(technology) && checkIfOrderStateIsCorrect(state));
     }
 
     private boolean checkIfOrderStateIsCorrect(final String state) {
