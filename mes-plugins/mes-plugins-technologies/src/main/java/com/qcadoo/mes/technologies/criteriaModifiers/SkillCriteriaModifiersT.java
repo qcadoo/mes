@@ -21,14 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.criteriaModifiers;
+package com.qcadoo.mes.technologies.criteriaModifiers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.StaffFields;
-import com.qcadoo.mes.basic.constants.StaffSkillsFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationSkillFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.search.JoinType;
@@ -39,7 +39,7 @@ import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class SkillCriteriaModifiers {
+public class SkillCriteriaModifiersT {
 
     private static final String L_DOT = ".";
 
@@ -47,27 +47,27 @@ public class SkillCriteriaModifiers {
 
     private static final String L_THIS_ID = "this.id";
 
-    private static final String L_STAFF_ID = "staffId";
+    private static final String L_OPERATION_ID = "operationId";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void filterByStaff(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
-        if (filterValueHolder.has(L_STAFF_ID)) {
-            SearchCriteriaBuilder subCriteria = getStaffDD().findWithAlias(BasicConstants.MODEL_STAFF)
-                    .add(SearchRestrictions.idEq(filterValueHolder.getLong(L_STAFF_ID)))
-                    .createAlias(StaffFields.STAFF_SKILLS, StaffFields.STAFF_SKILLS, JoinType.INNER)
-                    .createAlias(StaffFields.STAFF_SKILLS + L_DOT + StaffSkillsFields.SKILL, StaffSkillsFields.SKILL,
-                            JoinType.INNER)
-                    .add(SearchRestrictions.eqField(StaffSkillsFields.SKILL + L_DOT + L_ID, L_THIS_ID))
+    public void filterByOperation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_OPERATION_ID)) {
+            SearchCriteriaBuilder subCriteria = getOperationDD().findWithAlias(TechnologiesConstants.MODEL_OPERATION)
+                    .add(SearchRestrictions.idEq(filterValueHolder.getLong(L_OPERATION_ID)))
+                    .createAlias(OperationFields.OPERATION_SKILLS, OperationFields.OPERATION_SKILLS, JoinType.INNER)
+                    .createAlias(OperationFields.OPERATION_SKILLS + L_DOT + OperationSkillFields.SKILL,
+                            OperationSkillFields.SKILL, JoinType.INNER)
+                    .add(SearchRestrictions.eqField(OperationSkillFields.SKILL + L_DOT + L_ID, L_THIS_ID))
                     .setProjection(SearchProjections.id());
 
             scb.add(SearchSubqueries.notExists(subCriteria));
         }
     }
 
-    private DataDefinition getStaffDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF);
+    private DataDefinition getOperationDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION);
     }
 
 }

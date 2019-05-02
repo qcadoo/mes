@@ -23,18 +23,10 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,10 +39,7 @@ public class OperationSkillDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    private static final String L_SKILL_IDS = "skillIds";
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private static final String L_OPERATION_ID = "operationId";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent operationSkillForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -65,43 +54,15 @@ public class OperationSkillDetailsHooks {
     private void filterSkillLookup(final LookupComponent skillLookup, final Entity operation) {
         FilterValueHolder filterValueHolder = skillLookup.getFilterValue();
 
-        List<Long> skillIds = Lists.newArrayList();
+        Long operationId = operation.getId();
 
-        if (!Objects.isNull(operation)) {
-            Optional<List<Long>> mayBeSkillIds = getOperationSkillIds(operation);
-
-            if (mayBeSkillIds.isPresent()) {
-                skillIds = mayBeSkillIds.get();
-            }
-        }
-
-        if (skillIds.isEmpty()) {
-            filterValueHolder.remove(L_SKILL_IDS);
+        if (Objects.isNull(operationId)) {
+            filterValueHolder.remove(L_OPERATION_ID);
         } else {
-            filterValueHolder.put(L_SKILL_IDS, skillIds);
+            filterValueHolder.put(L_OPERATION_ID, operationId);
         }
 
         skillLookup.setFilterValue(filterValueHolder);
     }
 
-    private Optional<List<Long>> getOperationSkillIds(final Entity operation) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT skill_id FROM technologies_operationskill ");
-        query.append("WHERE operation_id = :operationId");
-
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("operationId", operation.getId());
-
-        List<Long> skillIds;
-
-        try {
-            skillIds = jdbcTemplate.queryForList(query.toString(), params, Long.class);
-        } catch (EmptyResultDataAccessException e) {
-            return Optional.empty();
-        }
-
-        return Optional.of(skillIds);
-    }
 }
