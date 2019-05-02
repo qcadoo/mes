@@ -68,10 +68,13 @@
 	<modules>
 		<localization:translation path="locales" />
 
-		<view:view-grid-column plugin="operationalTasks"
-			view="operationalTasksList" component="grid">
-			<view:column name="techOperCompIsSubcontracting" fields="techOperCompOperationalTask"
-				expression="(#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('isSubcontracting') == true) ? '@qcadooView.true' : '@qcadooView.false'" />
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<boolean name="technologyOperationComponentIsSubcontracting"/>
+		</model:model-field>
+
+		<view:view-grid-column plugin="operationalTasks" view="operationalTasksList" component="grid">
+			<view:column name="technologyOperationComponentIsSubcontracting" fields="technologyOperationComponentIsSubcontracting"
+						 orderable="true" searchable="true" width="50"/>
 		</view:view-grid-column>
 	</modules>
 	

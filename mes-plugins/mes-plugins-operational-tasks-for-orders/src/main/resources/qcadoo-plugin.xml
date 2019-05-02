@@ -72,7 +72,31 @@
 		<localization:translation path="locales" />
 	
 		<model:model model="techOperCompOperationalTask" resource="model/techOperCompOperationalTask.xml" />
-	
+
+		<model:model-enum-value plugin="basic" model="parameter"
+								value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+		<model:model-field plugin="technologies" model="technologyOperationComponent">
+			<model:hasMany name="techOperCompOperationalTasks"
+						   plugin="operationalTasksForOrders" model="techOperCompOperationalTask"
+						   joinField="technologyOperationComponent" cascade="delete" />
+		</model:model-field>
+
+		<model:model-enum-value plugin="orders" model="order"
+								value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+		<model:model-field plugin="orders" model="order">
+			<model:hasMany name="operationalTasks" plugin="operationalTasks"
+						   model="operationalTask" joinField="order" cascade="delete" />
+		</model:model-field>
+
+		<model:model-field model="order" plugin="orders">
+			<model:hasMany name="operationalTaskDtos" plugin="operationalTasks"
+						   model="operationalTaskDto" joinField="order" cascade="nullify" persistent="false"/>
+		</model:model-field>
+
+		<model:model-enum-value plugin="operationalTasks"
+								model="operationalTask" enum="type" value="02executionOperationInOrder" />
 		<model:model-field plugin="operationalTasks" model="operationalTask">
 			<model:belongsTo name="order" plugin="orders" model="order" />
 		</model:model-field>
@@ -86,30 +110,59 @@
 				persistent="false" />
 		</model:model-field>
 		<model:model-field plugin="operationalTasks" model="operationalTask">
+			<model:belongsTo name="product" plugin="basic" model="product" persistent="false" />
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTask">
+			<model:decimal name="plannedQuantity" persistent="false" />
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTask">
+			<model:decimal name="usedQuantity" persistent="false" />
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTask">
+			<model:decimal name="remainingQuantity" persistent="false" />
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTask">
 			<model:belongsTo name="techOperCompOperationalTask"
-				plugin="operationalTasksForOrders" model="techOperCompOperationalTask" />
+							 plugin="operationalTasksForOrders" model="techOperCompOperationalTask" />
 		</model:model-field>
+
 		<model:model-enum-value plugin="operationalTasks"
-			model="operationalTask" value="02executionOperationInOrder" enum="typeTask" />
-	
-		<model:model-enum-value plugin="basic" model="parameter"
-			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-	
-		<model:model-field plugin="technologies"
-			model="technologyOperationComponent">
-			<model:hasMany name="techOperCompOperationalTasks"
-				plugin="operationalTasksForOrders" model="techOperCompOperationalTask"
-				joinField="technologyOperationComponent" cascade="delete" />
+								model="operationalTaskDto" enum="type" value="02executionOperationInOrder" />
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<model:belongsTo name="order" plugin="orders" model="order" persistent="false"/>
 		</model:model-field>
-	
-		<model:model-field plugin="orders" model="order">
-			<model:hasMany name="operationalTasks" plugin="operationalTasks"
-				model="operationalTask" joinField="order" cascade="delete" />
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<integer name="orderId"/>
 		</model:model-field>
-	
-		<model:model-enum-value plugin="orders" model="order"
-			value="02startOperationalTask" enum="inputProductsRequiredForType" />
-	
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<string name="orderNumber"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<string name="technologyOperationComponentNodeNumber"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<string name="productNumber"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<string name="productName"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<string name="productUnit"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<decimal name="plannedQuantity"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<decimal name="usedQuantity"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<decimal name="remainingQuantity"/>
+		</model:model-field>
+		<model:model-field plugin="operationalTasks" model="operationalTaskDto">
+			<model:belongsTo name="techOperCompOperationalTask"
+							 plugin="operationalTasksForOrders" model="techOperCompOperationalTask" />
+		</model:model-field>
+
 		<model:model-hook plugin="operationalTasks" model="operationalTask">
 			<model:validatesWith
 				class="com.qcadoo.mes.operationalTasksForOrders.validators.OperationalTaskValidatorsOTFO"
@@ -149,69 +202,61 @@
 				class="com.qcadoo.mes.operationalTasksForOrders.hooks.OrderHooksOTFO"
 				method="changedProductionLineInOperationalTasksWhenChanged" />
 		</model:model-hook>
-	
+
+		<view:view resource="view/operationalTasksInOrderList.xml"/>
+
 		<view:view-tab resource="view/tabExtensions/operationalTaskDetails.xml" />
 	
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/operationalTaskDetails.xml" />
 		<view:view-ribbon-group
 			resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml" />
+		<view:view-ribbon-group
+				resource="view/ribbonExtensions/orderDetails.xml" />
 	
 		<view:view-grid-column plugin="operationalTasks"
 			view="operationalTasksList" component="grid">
-			<view:column name="orderNumber" fields="order" expression="#order['number']"
-				orderable="true" searchable="true" />
-			<view:column name="technology" fields="order"
-				expression="#order['technology'].get('number')" orderable="true"
-				searchable="true" />
-			<view:column name="techOperCompNodeNumber" fields="techOperCompOperationalTask"
-				expression="#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('nodeNumber')"
-				orderable="true" searchable="true" />
-			<view:column name="techOperCompNumber" fields="techOperCompOperationalTask"
-				expression="#techOperCompOperationalTask?.get('technologyOperationComponent')?.get('operation')?.getStringField('number')"
-				orderable="true" searchable="true" />
+			<view:column name="orderNumber" fields="orderNumber"
+						 orderable="true" searchable="true" link="true"
+						 correspondingView="orders/orderDetails" correspondingField="orderId"
+						 width="100" />
+			<view:column name="orderId" fields="orderId" hidden="true"/>
+			<view:column name="technologyOperationComponentNodeNumber" fields="technologyOperationComponentNodeNumber"
+						 orderable="true" searchable="true" width="75" />
+			<view:column name="productNumber" fields="productNumber"
+						 orderable="true" searchable="true" width="75" />
+			<view:column name="productName" fields="productName"
+						 orderable="true" searchable="true" width="75" />
+			<view:column name="plannedQuantity" fields="plannedQuantity"
+						 orderable="true" searchable="true" width="50" />
+			<view:column name="productUnit" fields="productUnit"
+						 orderable="true" searchable="true" width="25" />
+			<view:column name="usedQuantity" fields="usedQuantity"
+						 orderable="true" searchable="true" width="50" />
+			<view:column name="remainingQuantity" fields="remainingQuantity"
+						 orderable="true" searchable="true" width="50" />
 		</view:view-grid-column>
-	
+
 		<view:view-hook plugin="operationalTasks" view="operationalTaskDetails"
 			type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
-			method="setTechnology" />
-	
-		<view:view-hook plugin="operationalTasks" view="operationalTaskDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
-			method="setTechnologyOperationComponent" />
-	
-		<view:view-hook plugin="operationalTasks" view="operationalTaskDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
-			method="disableFieldsWhenOrderTypeIsSelected" />
-	
-		<view:view-hook plugin="operationalTasks" view="operationalTaskDetails"
-			type="beforeRender"
-			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO"
-			method="disableButtons" />
-			
+			method="beforeRender" />
+
 		<view:view-hook plugin="operationalTasks" view="operationalTasksList"
 			type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTasksListHooksOTFO"
-			method="addDiscriminatorRestrictionToGrid" />
+			method="beforeRender" />
 	
 		<view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
 			type="beforeRender"
 			class="com.qcadoo.mes.operationalTasksForOrders.hooks.OperationDurationDetailsInOrderDetailsHooksOTFO"
-			method="disableCreateButton" />
+			method="beforeRender" />
 	
 		<view:view-listener plugin="operationalTasks" view="operationalTaskDetails"
-			component="typeTask" event="onSelectedEntityChange"
+			component="type" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
-			method="disableFieldsWhenOrderTypeIsSelected" />
-	
-		<view:view-listener plugin="operationalTasks" view="operationalTaskDetails"
-			component="typeTask" event="onSelectedEntityChange"
-			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
-			method="disableButtons" />
-	
+			method="onTypeChange" />
+
 		<view:view-listener plugin="operationalTasks" view="operationalTaskDetails"
 			component="form" event="showOrder"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTaskDetailsListenersOTFO"
@@ -230,18 +275,23 @@
 		<view:view-listener plugin="operationalTasks" view="operationalTasksList"
 			component="productIn" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksListListenersOTFO"
-			method="addDiscriminatorRestrictionToGrid" />
+			method="onProductInChange" />
 	
 		<view:view-listener plugin="operationalTasks" view="operationalTasksList"
 			component="productOut" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationalTasksListListenersOTFO"
-			method="addDiscriminatorRestrictionToGrid" />
+			method="onProductOutChange" />
 	
 		<view:view-listener plugin="productionScheduling"
 			view="operationDurationDetailsInOrder" component="form"
 			event="createOperationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OperationDurationDetailsInOrderDetailsListenersOTFO"
 			method="createOperationalTasks" />
+
+		<view:view-listener plugin="orders" view="orderDetails"
+			component="form" event="showOperationalTasks"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OrderDetailsListenersOTFO"
+			method="showOperationalTasks" />
 	</modules>
 
 	<features>

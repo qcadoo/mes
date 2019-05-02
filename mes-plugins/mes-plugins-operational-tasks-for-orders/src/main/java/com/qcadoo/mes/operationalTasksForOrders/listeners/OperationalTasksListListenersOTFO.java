@@ -36,7 +36,11 @@ public class OperationalTasksListListenersOTFO {
     @Autowired
     private OperationalTasksListHooksOTFO operationalTasksListHooksOTFO;
 
-    public void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onProductInChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
+    }
+
+    public void onProductOutChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         operationalTasksListHooksOTFO.addDiscriminatorRestrictionToGrid(view);
     }
 

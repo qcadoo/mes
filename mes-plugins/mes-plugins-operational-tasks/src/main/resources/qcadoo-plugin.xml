@@ -63,6 +63,20 @@
         <localization:translation path="locales"/>
 
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
+        <model:model model="operationalTaskDto" resource="model/operationalTaskDto.xml"/>
+
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="operationalTasks" plugin="operationalTasks" model="operationalTask"
+                           joinField="staff" />
+        </model:model-field>
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="operationalTasks" plugin="operationalTasks" model="operationalTask"
+                           joinField="workstation" />
+        </model:model-field>
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="operationalTasks" plugin="operationalTasks" model="operationalTask"
+                           joinField="productionLine"/>
+        </model:model-field>
 
         <menu:menu-category name="orders"/>
 

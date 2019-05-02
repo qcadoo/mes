@@ -40,9 +40,9 @@ public class OperationalTaskHooksOTFOOverrideUtil {
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
             Entity technologyOperationComponent = operationalTask
@@ -57,8 +57,8 @@ public class OperationalTaskHooksOTFOOverrideUtil {
     }
 
     private boolean isSubcontracting(final Entity technologyOperationComponent) {
-        return ((technologyOperationComponent != null) && technologyOperationComponent
-                .getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
+        return ((technologyOperationComponent != null)
+                && technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
     }
 
 }

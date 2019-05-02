@@ -29,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -41,17 +42,22 @@ public class OperationalTaskValidators {
 
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = true;
+
         isValid = hasName(operationalTaskDD, operationalTask) && isValid;
         isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
+
         return isValid;
     }
 
     private boolean hasName(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        String type = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
-        if ("01otherCase".equalsIgnoreCase(type) && hasBlankName(operationalTask)) {
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+
+        if (OperationalTaskType.OTHER_CASE.getStringValue().equalsIgnoreCase(type) && hasBlankName(operationalTask)) {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.NAME), NAME_IS_BLANK_MESSAGE);
+
             return false;
         }
+
         return true;
     }
 
@@ -62,11 +68,14 @@ public class OperationalTaskValidators {
     private boolean datesAreInCorrectOrder(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
         Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+
         if (finishDate.before(startDate)) {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE), WRONG_DATES_ORDER_MESSAGE);
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE), WRONG_DATES_ORDER_MESSAGE);
+
             return false;
         }
+
         return true;
     }
 

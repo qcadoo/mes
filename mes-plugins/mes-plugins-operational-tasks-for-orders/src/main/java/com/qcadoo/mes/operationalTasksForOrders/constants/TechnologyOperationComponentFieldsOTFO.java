@@ -29,6 +29,8 @@ public final class TechnologyOperationComponentFieldsOTFO {
 
     }
 
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
+
     public static final String TECH_OPER_COMP_OPERATIONAL_TASKS = "techOperCompOperationalTasks";
 
 }

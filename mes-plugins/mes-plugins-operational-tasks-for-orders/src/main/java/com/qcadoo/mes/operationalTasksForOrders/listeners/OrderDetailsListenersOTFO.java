@@ -24,10 +24,12 @@
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -83,6 +85,20 @@ public class OrderDetailsListenersOTFO {
         for (Entity operationalTask : operationTasks) {
             operationTaskDD.delete(operationalTask.getId());
         }
+    }
+
+    public void showOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
+
+        if (orderId == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderId);
+
+        String url = "/page/operationalTasksForOrders/operationalTasksInOrderList.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
 }

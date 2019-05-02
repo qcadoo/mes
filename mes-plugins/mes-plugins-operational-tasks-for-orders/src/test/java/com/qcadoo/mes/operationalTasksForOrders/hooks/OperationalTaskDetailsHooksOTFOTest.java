@@ -33,10 +33,10 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskTypeTask;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeTaskOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeOTFO;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -57,7 +57,7 @@ public class OperationalTaskDetailsHooksOTFOTest {
     private LookupComponent orderField, productionLineField, technologyOperationComponentField;
 
     @Mock
-    private FieldComponent typeTaskField, nameField, descriptionField;
+    private FieldComponent typeField, nameField, descriptionField;
 
     @Before
     public void init() {
@@ -68,7 +68,7 @@ public class OperationalTaskDetailsHooksOTFOTest {
         ReflectionTestUtils.setField(operationalTaskDetailsHooksOTFO, "operationalTasksForOrdersService",
                 operationalTasksForOrdersService);
 
-        given(view.getComponentByReference(OperationalTaskFields.TYPE_TASK)).willReturn(typeTaskField);
+        given(view.getComponentByReference(OperationalTaskFields.TYPE)).willReturn(typeField);
         given(view.getComponentByReference(OperationalTaskFields.NAME)).willReturn(nameField);
         given(view.getComponentByReference(OperationalTaskFields.DESCRIPTION)).willReturn(descriptionField);
         given(view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER)).willReturn(orderField);
@@ -79,11 +79,11 @@ public class OperationalTaskDetailsHooksOTFOTest {
     @Test
     public void shouldDisabledFieldWhenTypeForOrderIsSelected() throws Exception {
         // given
-        String typeTask = OperationalTaskTypeTaskOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue();
+        String type = OperationalTaskTypeOTFO.EXECUTION_OPERATION_IN_ORDER.getStringValue();
 
-        given(typeTaskField.getFieldValue()).willReturn(typeTask);
+        given(typeField.getFieldValue()).willReturn(type);
 
-        given(operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)).willReturn(false);
+        given(operationalTasksForOrdersService.isOperationalTaskTypeOtherCase(type)).willReturn(false);
 
         // when
         operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);
@@ -99,11 +99,11 @@ public class OperationalTaskDetailsHooksOTFOTest {
     @Test
     public void shouldEnabledFieldWhenTypeOtherCaseIsSelected() throws Exception {
         // given
-        String typeTask = OperationalTaskTypeTask.OTHER_CASE.getStringValue();
+        String type = OperationalTaskType.OTHER_CASE.getStringValue();
 
-        given(typeTaskField.getFieldValue()).willReturn(typeTask);
+        given(typeField.getFieldValue()).willReturn(type);
 
-        given(operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)).willReturn(true);
+        given(operationalTasksForOrdersService.isOperationalTaskTypeOtherCase(type)).willReturn(true);
 
         // when
         operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);

@@ -23,12 +23,17 @@
  */
 package com.qcadoo.mes.operationalTasks.hooks;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
@@ -39,9 +44,34 @@ public class OperationalTasksDetailsHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void generateOperationalTasksNumber(final ViewDefinitionState state) {
-        numberGeneratorService.generateAndInsertNumber(state, OperationalTasksConstants.PLUGIN_IDENTIFIER,
+    public void beforeRender(final ViewDefinitionState view) {
+        generateOperationalTasksNumber(view);
+        filterWorkstationLookup(view);
+    }
+
+    private void generateOperationalTasksNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK, L_FORM, OperationalTaskFields.NUMBER);
+    }
+
+    private void filterWorkstationLookup(final ViewDefinitionState view) {
+        LookupComponent productionLineLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
+
+        Entity productionLine = productionLineLookup.getEntity();
+
+        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
+
+        Long productionLineId = productionLine.getId();
+
+        if (Objects.isNull(productionLineId)) {
+            filterValueHolder.remove(OperationalTaskFields.PRODUCTION_LINE);
+        } else {
+            filterValueHolder.put(OperationalTaskFields.PRODUCTION_LINE, productionLineId);
+        }
+
+        workstationLookup.setFilterValue(filterValueHolder);
     }
 
 }

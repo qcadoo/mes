@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
-import static com.qcadoo.testing.model.EntityTestUtils.*;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -63,7 +65,7 @@ public class OperationalTaskValidatorsTest {
 
     private Entity mockOperationalTask(final String type, final String name, final Date startDate, final Date finishDate) {
         Entity operationalTask = mockEntity(operationalTaskDD);
-        stubStringField(operationalTask, OperationalTaskFields.TYPE_TASK, type);
+        stubStringField(operationalTask, OperationalTaskFields.TYPE, type);
         stubStringField(operationalTask, OperationalTaskFields.NAME, name);
         stubDateField(operationalTask, OperationalTaskFields.START_DATE, startDate);
         stubDateField(operationalTask, OperationalTaskFields.FINISH_DATE, finishDate);

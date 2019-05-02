@@ -21,28 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.operationalTasks.constants;
 
-public final class ParameterFields {
+public enum OperationalTaskType {
+    OTHER_CASE("01otherCase");
 
-    private ParameterFields() {
+    private final String operationalTaskType;
 
+    private OperationalTaskType(final String operationalTaskType) {
+        this.operationalTaskType = operationalTaskType;
     }
 
-    public static final String COUNTRY = "country";
+    public String getStringValue() {
+        return operationalTaskType;
+    }
 
-    public static final String CURRENCY = "currency";
+    public static OperationalTaskType parseString(final String string) {
+        for (OperationalTaskType type : values()) {
+            if (type.getStringValue().equals(string)) {
+                return type;
+            }
+        }
 
-    public static final String UNIT = "unit";
-
-    public static final String ADDITIONAL_TEXT_IN_FOOTER = "additionalTextInFooter";
-
-    public static final String COMPANY = "company";
-
-    public static final String REPORT_COLUMN_WIDTHS = "reportColumnWidths";
-
-    public static final String EXPORT_TO_PDF_ONLY_VISIBLE_COLUMNS = "exportToPdfOnlyVisibleColumns";
-
-    public static final String EXPORT_TO_CSV_ONLY_VISIBLE_COLUMNS = "exportToCsvOnlyVisibleColumns";
+        throw new IllegalStateException("Unsupported OperationalTaskType: " + string);
+    }
 
 }

@@ -21,28 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.operationalTasks.constants;
 
-public final class ParameterFields {
+public final class StaffFieldsOT {
 
-    private ParameterFields() {
+    private StaffFieldsOT() {
 
     }
 
-    public static final String COUNTRY = "country";
-
-    public static final String CURRENCY = "currency";
-
-    public static final String UNIT = "unit";
-
-    public static final String ADDITIONAL_TEXT_IN_FOOTER = "additionalTextInFooter";
-
-    public static final String COMPANY = "company";
-
-    public static final String REPORT_COLUMN_WIDTHS = "reportColumnWidths";
-
-    public static final String EXPORT_TO_PDF_ONLY_VISIBLE_COLUMNS = "exportToPdfOnlyVisibleColumns";
-
-    public static final String EXPORT_TO_CSV_ONLY_VISIBLE_COLUMNS = "exportToCsvOnlyVisibleColumns";
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 
 }

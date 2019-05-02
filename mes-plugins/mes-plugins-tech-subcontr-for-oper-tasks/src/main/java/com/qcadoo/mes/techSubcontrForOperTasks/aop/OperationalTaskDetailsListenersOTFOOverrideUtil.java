@@ -38,7 +38,7 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtil {
 
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public void setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(final ViewDefinitionState view) {
+    public void setNameDescriptionAndProductionLineForSubcontracted(final ViewDefinitionState view) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
@@ -62,8 +62,8 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtil {
     }
 
     private boolean isSubcontracting(final Entity technologyOperationComponent) {
-        return ((technologyOperationComponent != null) && technologyOperationComponent
-                .getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
+        return ((technologyOperationComponent != null)
+                && technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
     }
 
 }

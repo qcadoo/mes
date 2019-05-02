@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,17 +24,25 @@
     ***************************************************************************
 
 -->
-<!DOCTYPE aspectj PUBLIC
-        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
-<aspectj>
-    <aspects>
-        <aspect name="com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect" />
-		
-        <aspect name="com.qcadoo.mes.orders.states.aop.listener.ClearBarCodesOnOrderChangeStateAspect" />
-        <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
-        <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateChangeReasonAspect" />
-        <aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStatesAspect" />
+<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd" 
+	plugin="orders"
+	view="orderDetails">
+	
+	<group name="operationalTasks">
+		<bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
+			<script>
+				<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationalTasks', []);
+							}
+						}
+					});		
+				]]>
+			</script>
+		</bigButton>
+	</group>
 
-        <aspect name="com.qcadoo.mes.orders.aop.ExportToPdfControllerOOverrideAspect" />
-    </aspects>
-</aspectj>
+</ribbonExtension>

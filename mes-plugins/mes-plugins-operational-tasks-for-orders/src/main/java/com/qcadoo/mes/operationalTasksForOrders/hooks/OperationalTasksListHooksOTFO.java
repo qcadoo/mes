@@ -24,21 +24,26 @@
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskDtoFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
@@ -49,7 +54,9 @@ public class OperationalTasksListHooksOTFO {
 
     private static final String L_GRID = "grid";
 
-    private static final String L_OPERATION_COMPONENT = "operationComponent";
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -57,84 +64,72 @@ public class OperationalTasksListHooksOTFO {
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
+    public void beforeRender(final ViewDefinitionState view) {
+        addDiscriminatorRestrictionToGrid(view);
+    }
+
     public void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        LookupComponent productInLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT_IN);
-        LookupComponent productOutLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT_OUT);
+        LookupComponent productInLookup = (LookupComponent) view.getComponentByReference(OperationalTaskDtoFields.PRODUCT_IN);
+        LookupComponent productOutLookup = (LookupComponent) view.getComponentByReference(OperationalTaskDtoFields.PRODUCT_OUT);
 
         Entity productIn = productInLookup.getEntity();
         Entity productOut = productOutLookup.getEntity();
 
-        if ((productIn == null) && (productOut == null)) {
+        if (Objects.isNull(productIn) && Objects.isNull(productOut)) {
             return;
         }
 
-        List<Entity> operations = Lists.newArrayList();
+        List<Entity> technologyOperationComponents = Lists.newArrayList();
 
-        if (productIn != null) {
-            operations = getTechnologyOperationComponents(getOperatonProductInComponents(productIn));
+        if (!Objects.isNull(productIn)) {
+            technologyOperationComponents.addAll(getTechnologyOperationComponents(
+                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT,
+                    OperationProductInComponentFields.OPERATION_COMPONENT, OperationProductInComponentFields.PRODUCT, productIn));
         }
-        if (productOut != null) {
-            operations.addAll(getTechnologyOperationComponents(getOperationProductOutComponents(productOut)));
+        if (!Objects.isNull(productOut)) {
+            technologyOperationComponents
+                    .addAll(getTechnologyOperationComponents(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT,
+                            OperationProductOutComponentFields.OPERATION_COMPONENT, OperationProductOutComponentFields.PRODUCT,
+                            productOut));
         }
 
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
-        List<Entity> tasks = getOperationalTasks(operations);
+        List<Entity> operationalTaskDtos = getOperationalTaskDtos(technologyOperationComponents);
 
-        grid.setEntities(tasks);
+        grid.setEntities(operationalTaskDtos);
         grid.performEvent(view, "refresh");
     }
 
-    private List<Entity> getOperationalTasks(final List<Entity> technologyOperationComponents) {
-        List<Entity> operationalTasks = Lists.newArrayList();
+    private List<Entity> getOperationalTaskDtos(final List<Entity> technologyOperationComponents) {
+        List<Entity> operationalTaskDtos = Lists.newArrayList();
 
-        for (Entity technologyOperationComponent : technologyOperationComponents) {
-            Entity techOperCompOperationalTask = operationalTasksForOrdersService
-                    .getTechOperCompOperationalTaskDD()
-                    .find()
-                    .add(SearchRestrictions.belongsTo(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            technologyOperationComponent)).setMaxResults(1).uniqueResult();
+        if (!technologyOperationComponents.isEmpty()) {
+            List<Long> technologyOperationComponentIds = technologyOperationComponents.stream()
+                    .map(technologyOperationComponent -> technologyOperationComponent.getId()).collect(Collectors.toList());
 
-            List<Entity> techOperCompOperationalTaskOperationalTasks = dataDefinitionService
-                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
-                    .find()
-                    .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                            techOperCompOperationalTask)).list().getEntities();
-
-            for (Entity operationalTask : techOperCompOperationalTaskOperationalTasks) {
-                if (!operationalTasks.contains(operationalTask)) {
-                    operationalTasks.add(operationalTask);
-                }
-            }
+            operationalTaskDtos = dataDefinitionService
+                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK_DTO).find()
+                    .createAlias(OperationalTaskDtoFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
+                            OperationalTaskDtoFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK, JoinType.LEFT)
+                    .createAlias(
+                            OperationalTaskDtoFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK + L_DOT
+                                    + TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT,
+                            TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.LEFT)
+                    .add(SearchRestrictions.in(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT + L_DOT + L_ID,
+                            technologyOperationComponentIds))
+                    .list().getEntities();
         }
 
-        return operationalTasks;
+        return operationalTaskDtos;
     }
 
-    private List<Entity> getTechnologyOperationComponents(final List<Entity> operationProductComponents) {
-        List<Entity> technologyOperationComponents = Lists.newArrayList();
-
-        for (Entity operationProductComponent : operationProductComponents) {
-            Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
-
-            if (!technologyOperationComponents.contains(operationComponent)) {
-                technologyOperationComponents.add(operationComponent);
-            }
-        }
-
-        return technologyOperationComponents;
-    }
-
-    private List<Entity> getOperatonProductInComponents(final Entity productIn) {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, productIn)).list().getEntities();
-    }
-
-    private List<Entity> getOperationProductOutComponents(final Entity productOut) {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).find()
-                .add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, productOut)).list().getEntities();
+    private List<Entity> getTechnologyOperationComponents(final String modelName,
+            final String technologyOperationComponentFieldName, final String productFieldName, final Entity product) {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, modelName).find()
+                .add(SearchRestrictions.belongsTo(productFieldName, product))
+                .setProjection(SearchProjections.distinct(SearchProjections.field(technologyOperationComponentFieldName)))
+                .addOrder(SearchOrders.desc(technologyOperationComponentFieldName)).list().getEntities();
     }
 
 }

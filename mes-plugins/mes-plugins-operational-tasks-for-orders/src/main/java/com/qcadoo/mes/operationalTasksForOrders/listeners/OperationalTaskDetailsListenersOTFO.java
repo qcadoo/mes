@@ -24,21 +24,20 @@
 package com.qcadoo.mes.operationalTasksForOrders.listeners;
 
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskDtoFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskDetailsHooksOTFO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
@@ -56,11 +55,16 @@ public class OperationalTaskDetailsListenersOTFO {
     @Autowired
     private OperationalTaskDetailsHooksOTFO operationalTaskDetailsHooksOTFO;
 
+    public final void onTypeChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        disableFieldsWhenOrderTypeIsSelected(view, state, args);
+        disableButtons(view, state, args);
+    }
+
     public final void showOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         Entity order = orderLookup.getEntity();
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return;
         }
 
@@ -76,7 +80,7 @@ public class OperationalTaskDetailsListenersOTFO {
                 .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
 
-        if (technologyOperationComponent == null) {
+        if (Objects.isNull(technologyOperationComponent)) {
             return;
         }
 
@@ -94,20 +98,20 @@ public class OperationalTaskDetailsListenersOTFO {
         FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity operationalTask = operationalTaskForm.getEntity();
 
-        if (operationalTask.getId() == null) {
+        if (Objects.isNull(operationalTask.getId())) {
             return;
         }
 
         Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return;
         }
 
         String orderNumber = order.getStringField(OrderFields.NUMBER);
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("orderNumber", orderNumber);
+        filters.put(OperationalTaskDtoFieldsOTFO.ORDER_NUMBER, orderNumber);
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -126,8 +130,7 @@ public class OperationalTaskDetailsListenersOTFO {
         operationalTaskDetailsHooksOTFO.disableFieldsWhenOrderTypeIsSelected(view);
     }
 
-    public void setOperationalTaskProductionLineAndClearOperation(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void onOrderChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
@@ -139,7 +142,7 @@ public class OperationalTaskDetailsListenersOTFO {
         technologyOperationComponentLookup.setFieldValue(null);
         technologyOperationComponentLookup.requestComponentUpdateState();
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             productionLineLookup.setFieldValue(null);
         } else {
             Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
@@ -150,31 +153,13 @@ public class OperationalTaskDetailsListenersOTFO {
         productionLineLookup.requestComponentUpdateState();
     }
 
-    public void setOperationalTaskNameAndDescription(final ViewDefinitionState view, final ComponentState state,
+    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
-        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
-        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.DESCRIPTION);
-
-        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
-
-        if (technologyOperationComponent == null) {
-            nameField.setFieldValue(null);
-            descriptionField.setFieldValue(null);
-        } else {
-            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
-            nameField.setFieldValue(operation.getStringField(OperationFields.NAME));
-            descriptionField.setFieldValue(technologyOperationComponent
-                    .getStringField(TechnologyOperationComponentFields.COMMENT));
-        }
-
-        nameField.requestComponentUpdateState();
-        descriptionField.requestComponentUpdateState();
+        operationalTaskDetailsHooksOTFO.setNameAndDescription(view);
+        operationalTaskDetailsHooksOTFO.setAdditionalFields(view);
     }
 
-    public void disableButtons(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    private void disableButtons(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         operationalTaskDetailsHooksOTFO.disableButtons(view);
     }
 

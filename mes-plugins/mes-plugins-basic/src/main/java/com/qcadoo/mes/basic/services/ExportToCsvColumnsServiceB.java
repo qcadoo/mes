@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,28 +21,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasksForOrders.constants;
+package com.qcadoo.mes.basic.services;
 
-public enum OperationalTaskTypeTaskOTFO {
-    EXECUTION_OPERATION_IN_ORDER("02executionOperationInOrder");
+import java.util.List;
 
-    private final String operationalTaskTypeTask;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
 
-    private OperationalTaskTypeTaskOTFO(final String operationalTaskTypeTask) {
-        this.operationalTaskTypeTask = operationalTaskTypeTask;
-    }
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.plugins.qcadooExport.api.ExportToCsvColumns;
+import com.qcadoo.view.api.components.GridComponent;
 
-    public String getStringValue() {
-        return operationalTaskTypeTask;
-    }
+@Service
+@Order(1)
+public class ExportToCsvColumnsServiceB implements ExportToCsvColumns {
 
-    public static OperationalTaskTypeTaskOTFO parseString(final String string) {
-        for (OperationalTaskTypeTaskOTFO typeTask : values()) {
-            if (typeTask.getStringValue().equals(string)) {
-                return typeTask;
-            }
-        }
-        throw new IllegalStateException("Unsupported OperationalTaskTypeTaskOTFO: " + string);
+    @Autowired
+    private ExportToFileOnlyVisibleColumnsService exportToFileOnlyVisibleColumnsService;
+
+    public List<String> getColumns(final GridComponent grid) {
+        return exportToFileOnlyVisibleColumnsService.getColumns(grid, ParameterFields.EXPORT_TO_CSV_ONLY_VISIBLE_COLUMNS);
     }
 
 }

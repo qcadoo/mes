@@ -23,20 +23,30 @@
  */
 package com.qcadoo.mes.operationalTasksForOrders.hooks;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -64,23 +74,38 @@ public class OperationalTaskDetailsHooksOTFO {
 
     private static final String L_SHOW_OPERATIONAL_TASKS_WITH_ORDER = "showOperationalTasksWithOrder";
 
+    private static final String PLANNED_QUANTITY_UNIT = "plannedQuantityUNIT";
+
+    private static final String USED_QUANTITY_UNIT = "usedQuantityUNIT";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+	@Autowired
+	private NumberService numberService;
 
     @Autowired
     private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
-    public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
-        FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
+    public void beforeRender(final ViewDefinitionState view) {
+        setTechnology(view);
+        setTechnologyOperationComponent(view);
+        setAdditionalFields(view);
+        disableFieldsWhenOrderTypeIsSelected(view);
+        disableButtons(view);
+    }
 
-        String typeTask = (String) typeTaskField.getFieldValue();
+    public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
+
+        String type = (String) typeField.getFieldValue();
 
         List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME, OperationalTaskFields.PRODUCTION_LINE,
                 OperationalTaskFields.DESCRIPTION);
         List<String> extendFields = Lists.newArrayList(OperationalTaskFieldsOTFO.ORDER,
                 OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskOtherCase(typeTask)) {
+        if (operationalTasksForOrdersService.isOperationalTaskTypeOtherCase(type)) {
             changedStateField(view, referenceBasicFields, true);
             changedStateField(view, extendFields, false);
             clearFieldValue(view, extendFields);
@@ -107,17 +132,17 @@ public class OperationalTaskDetailsHooksOTFO {
 
     public void disableButtons(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
-        String typeTask = (String) typeTaskField.getFieldValue();
+        String type = (String) typeField.getFieldValue();
 
-        boolean isOperationalTaskTypeTaskExecutionOperationInOrder = operationalTasksForOrdersService
-                .isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask);
-        boolean isOrderSelected = (orderLookup.getEntity() != null);
-        boolean isTechnologyOperationComponentSelected = (technologyOperationComponentLookup.getEntity() != null);
+        boolean isOperationalTaskTypeExecutionOperationInOrder = operationalTasksForOrdersService
+                .isOperationalTaskTypeExecutionOperationInOrder(type);
+        boolean isOrderSelected = !Objects.isNull(orderLookup.getEntity());
+        boolean isTechnologyOperationComponentSelected = !Objects.isNull(technologyOperationComponentLookup.getEntity());
 
         RibbonGroup order = window.getRibbon().getGroupByName(L_ORDER);
         RibbonGroup technologyOperationComponent = window.getRibbon().getGroupByName(L_TECHNOLOGY_OPERATION_COMPONENT);
@@ -127,61 +152,60 @@ public class OperationalTaskDetailsHooksOTFO {
         RibbonActionItem showOperationParameters = technologyOperationComponent.getItemByName(L_SHOW_OPERATION_PARAMETERS);
         RibbonActionItem showOperationalTasksWithOrder = operationalTasks.getItemByName(L_SHOW_OPERATIONAL_TASKS_WITH_ORDER);
 
-        showOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected);
+        showOrder.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
         showOrder.requestUpdate(true);
 
-        showOperationParameters.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected
-                && isTechnologyOperationComponentSelected);
+        showOperationParameters.setEnabled(
+                isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected && isTechnologyOperationComponentSelected);
         showOperationParameters.requestUpdate(true);
 
-        showOperationalTasksWithOrder.setEnabled(isOperationalTaskTypeTaskExecutionOperationInOrder && isOrderSelected);
+        showOperationalTasksWithOrder.setEnabled(isOperationalTaskTypeExecutionOperationInOrder && isOrderSelected);
         showOperationalTasksWithOrder.requestUpdate(true);
     }
 
-    public void setTechnology(final ViewDefinitionState view) {
-        FieldComponent technologyField = (FieldComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY);
+    private void setTechnology(final ViewDefinitionState view) {
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
 
         Entity order = orderLookup.getEntity();
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return;
         }
 
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        if (technology != null) {
-            technologyField.setFieldValue(technology.getId());
-            technologyField.requestComponentUpdateState();
+        if (!Objects.isNull(technology)) {
+            technologyLookup.setFieldValue(technology.getId());
+            technologyLookup.requestComponentUpdateState();
         }
     }
 
-    public void setTechnologyOperationComponent(final ViewDefinitionState view) {
+    private void setTechnologyOperationComponent(final ViewDefinitionState view) {
         FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent typeTaskField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE_TASK);
+        FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
 
         Long operationalTaskId = operationalTaskForm.getEntityId();
 
-        if (operationalTaskId == null) {
+        if (Objects.isNull(operationalTaskId)) {
             return;
         }
 
-        String typeTask = (String) typeTaskField.getFieldValue();
+        String type = (String) typeField.getFieldValue();
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
-            if ((orderLookup.getEntity() != null) && (technologyOperationComponentLookup.getEntity() == null)) {
-                Entity operationalTask = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
-                        OperationalTasksConstants.MODEL_OPERATIONAL_TASK).get(operationalTaskId);
+        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
+            if (!Objects.isNull(orderLookup.getEntity()) && Objects.isNull(technologyOperationComponentLookup.getEntity())) {
+                Entity operationalTask = getOperationalTaskDD().get(operationalTaskId);
 
-                if (operationalTask != null) {
+                if (!Objects.isNull(operationalTask)) {
                     Entity techOperCompOperationalTask = operationalTask
                             .getBelongsToField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK);
 
-                    if (techOperCompOperationalTask != null) {
+                    if (!Objects.isNull(techOperCompOperationalTask)) {
                         Entity technologyOperationComponent = techOperCompOperationalTask
                                 .getBelongsToField(TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -194,6 +218,91 @@ public class OperationalTaskDetailsHooksOTFO {
             technologyOperationComponentLookup.setFieldValue(null);
             technologyOperationComponentLookup.requestComponentUpdateState();
         }
+    }
+
+    public void setNameAndDescription(final ViewDefinitionState view) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+        FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
+        FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.DESCRIPTION);
+
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+
+        if (Objects.isNull(technologyOperationComponent)) {
+            nameField.setFieldValue(null);
+            descriptionField.setFieldValue(null);
+        } else {
+            Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
+            descriptionField
+                    .setFieldValue(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+
+            if (!Objects.isNull(operation)) {
+                nameField.setFieldValue(operation.getStringField(OperationFields.NAME));
+            }
+        }
+
+        nameField.requestComponentUpdateState();
+        descriptionField.requestComponentUpdateState();
+    }
+
+    public void setAdditionalFields(final ViewDefinitionState view) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.PRODUCT);
+        FieldComponent plannedQuantityField = (FieldComponent) view
+                .getComponentByReference(OperationalTaskFieldsOTFO.PLANNED_QUANTITY);
+        FieldComponent plannedQuantityUnitField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY_UNIT);
+        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.USED_QUANTITY);
+        FieldComponent usedQuantityUnitField = (FieldComponent) view.getComponentByReference(USED_QUANTITY_UNIT);
+
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+
+        if (Objects.isNull(technologyOperationComponent)) {
+            productLookup.setFieldValue(null);
+            plannedQuantityField.setFieldValue(null);
+            plannedQuantityUnitField.setFieldValue(null);
+            usedQuantityField.setFieldValue(null);
+            usedQuantityUnitField.setFieldValue(null);
+        } else {
+            Entity operationProductOutComponent = getOperationProductOutComponent(technologyOperationComponent);
+
+            if (!Objects.isNull(operationProductOutComponent)) {
+                Entity product = operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+                BigDecimal plannedQuantity = operationProductOutComponent.getDecimalField(OperationProductOutComponentFields.QUANTITY);
+				BigDecimal usedQuantity = BigDecimal.ZERO;
+
+                String unit = product.getStringField(ProductFields.UNIT);
+
+                productLookup.setFieldValue(product.getId());
+                plannedQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(plannedQuantity, 0));
+                plannedQuantityUnitField.setFieldValue(unit);
+                usedQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(usedQuantity, 0));
+                usedQuantityUnitField.setFieldValue(unit);
+            }
+        }
+
+        productLookup.requestComponentUpdateState();
+        plannedQuantityField.requestComponentUpdateState();
+        plannedQuantityUnitField.requestComponentUpdateState();
+        usedQuantityField.requestComponentUpdateState();
+        usedQuantityUnitField.requestComponentUpdateState();
+    }
+
+    public Entity getOperationProductOutComponent(final Entity technologyOperationComponent) {
+        return getOperationProductOutComponentDD().find().add(SearchRestrictions
+                .belongsTo(OperationProductOutComponentFields.OPERATION_COMPONENT, technologyOperationComponent)).setMaxResults(1)
+                .uniqueResult();
+    }
+
+    private DataDefinition getOperationalTaskDD() {
+        return dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
+                OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
+    }
+
+    private DataDefinition getOperationProductOutComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
     }
 
 }
