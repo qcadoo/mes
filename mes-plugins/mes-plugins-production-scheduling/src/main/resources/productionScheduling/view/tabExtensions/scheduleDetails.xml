@@ -39,7 +39,7 @@
                            action="#{form}.fireEvent(assignOperationsToWorkstations);" state="enabled">
                 </bigButton>
                 <bigButton name="assignWorkersToOperations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(assignWorkersToOperations);" state="enabled">
+                           action="#{form}.fireEvent(assignWorkersToOperations);" state="disabled">
                 </bigButton>
             </group>
         </ribbon>
@@ -49,6 +49,8 @@
 
             <option type="column" name="workstationName" fields="workstation"
                     expression="#workstation?.get('name')"/>
+            <option type="column" name="nodeNumber" fields="technologyOperationComponent"
+                    expression="#technologyOperationComponent['nodeNumber']"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
                     expression="#technologyOperationComponent.get('operation').get('number')"/>
             <option type="column" name="operationName" fields="technologyOperationComponent"
@@ -71,12 +73,12 @@
             <option type="column" name="additionalTime" fields="additionalTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
 
-            <option type="order" column="operationNumber" direction="asc"/>
+            <option type="order" column="nodeNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="workstationName,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
             <option type="orderable"
-                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="workstationName,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
 
             <option type="fixedHeight" value="true"/>
 

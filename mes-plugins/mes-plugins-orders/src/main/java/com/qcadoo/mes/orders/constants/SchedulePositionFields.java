@@ -10,4 +10,12 @@ public class SchedulePositionFields {
     public static final String MACHINE_WORK_TIME = "machineWorkTime";
 
     public static final String ADDITIONAL_TIME = "additionalTime";
+
+    public static final String ORDER = "order";
+
+    public static final String START_TIME = "startTime";
+
+    public static final String END_TIME = "endTime";
+
+    public static final String WORKSTATION = "workstation";
 }

@@ -63,7 +63,8 @@ public class ScheduleDetailsListenersPS {
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
         Map<Long, OperationProductComponentWithQuantityContainer> ordersOperationsQuantity = Maps.newHashMap();
-        for (Entity order : ordersGrid.getEntities()) {
+        List<Entity> orders = ordersGrid.getEntities();
+        for (Entity order : orders) {
             OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
                     order, order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             ordersOperationsQuantity.put(order.getId(), operationProductComponentWithQuantityContainer);
@@ -74,7 +75,7 @@ public class ScheduleDetailsListenersPS {
         List<Entity> positions = Lists.newArrayList();
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
-        for (Entity order : ordersGrid.getEntities()) {
+        for (Entity order : orders) {
             List<Entity> orderTimeCalculations = order.getHasManyField(OrderFieldsPS.ORDER_TIME_CALCULATIONS);
             if (!orderTimeCalculations.isEmpty()) {
                 List<Entity> operCompTimeCalculations = orderTimeCalculations.get(0)

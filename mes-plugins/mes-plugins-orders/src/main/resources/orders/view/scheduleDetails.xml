@@ -33,6 +33,23 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="approveSchedule" icon="acceptIcon16.png"
+                             state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+                                    #{form}.performEvent('generateOperationalTasks');
+								}
+							});
+						]]>
+                    </script>
+                </smallButton>
+                <smallButton name="rejectSchedule" icon="deleteIcon16.png"
+                             state="disabled">
+                </smallButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -89,6 +106,9 @@
                 <listener event="assignWorkersToOperations"
                           class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
                           method="assignWorkersToOperations"/>
+                <listener event="generateOperationalTasks"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
+                          method="generateOperationalTasks"/>
             </component>
         </windowTab>
 

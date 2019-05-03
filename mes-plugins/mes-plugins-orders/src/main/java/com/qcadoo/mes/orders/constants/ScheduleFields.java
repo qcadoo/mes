@@ -13,6 +13,8 @@ public final class ScheduleFields {
 
     public static final String SORT_ORDER = "sortOrder";
 
+    public static final String WORKSTATION_ASSIGN_CRITERION = "workstationAssignCriterion";
+
     public static final String POSITIONS = "positions";
 
     public static final String ORDERS = "orders";
