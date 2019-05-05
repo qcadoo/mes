@@ -56,6 +56,7 @@
         <decimal name="amountOfProductProduced"/>
         <decimal name="wastesQuantity"/>
         <decimal name="remainingAmountOfProductToProduce"/>
+        <decimal name="doneInPercentage"/>
         <string name="company"/>
     </fields>
     <hooks>
