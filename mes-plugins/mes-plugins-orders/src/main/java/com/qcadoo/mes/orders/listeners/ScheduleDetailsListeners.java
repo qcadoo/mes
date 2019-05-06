@@ -61,8 +61,7 @@ public class ScheduleDetailsListeners {
                 if (finishDate == null) {
                     finishDate = schedule.getDateField(ScheduleFields.START_TIME);
                 }
-                Date newFinishDate = Date.from(finishDate.toInstant().plusSeconds(machineWorkTime)
-                        .plusSeconds(position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
+                Date newFinishDate = Date.from(finishDate.toInstant().plusSeconds(machineWorkTime));
                 operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
             }
 
@@ -90,12 +89,9 @@ public class ScheduleDetailsListeners {
         workstationsFinishDates.put(firstEntry.getKey(), firstEntry.getValue());
         position.setField(SchedulePositionFields.WORKSTATION,
                 workstations.stream().filter(entity -> entity.getId().equals(firstEntry.getKey())).findFirst().get());
-        position.setField(SchedulePositionFields.START_TIME,
-                Date.from(firstEntry.getValue().toInstant()
-                        .minusSeconds(position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME))
-                        .minusSeconds(position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME))));
-        position.setField(SchedulePositionFields.END_TIME, Date.from(firstEntry.getValue().toInstant()
-                .minusSeconds(position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME))));
+        position.setField(SchedulePositionFields.START_TIME, Date.from(firstEntry.getValue().toInstant()
+                .minusSeconds(position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME))));
+        position.setField(SchedulePositionFields.END_TIME, firstEntry.getValue());
         position.getDataDefinition().save(position);
     }
 
@@ -120,10 +116,6 @@ public class ScheduleDetailsListeners {
     }
 
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void generateOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         throw new UnsupportedOperationException();
     }
 }

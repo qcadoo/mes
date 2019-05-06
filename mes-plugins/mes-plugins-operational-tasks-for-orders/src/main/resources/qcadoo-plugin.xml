@@ -292,6 +292,11 @@
 			component="form" event="showOperationalTasks"
 			class="com.qcadoo.mes.operationalTasksForOrders.listeners.OrderDetailsListenersOTFO"
 			method="showOperationalTasks" />
+
+		<view:view-listener plugin="orders" view="scheduleDetails"
+			component="form" event="generateOperationalTasks"
+			class="com.qcadoo.mes.operationalTasksForOrders.listeners.ScheduleDetailsListenersOTFO"
+			method="generateOperationalTasks" />
 	</modules>
 
 	<features>

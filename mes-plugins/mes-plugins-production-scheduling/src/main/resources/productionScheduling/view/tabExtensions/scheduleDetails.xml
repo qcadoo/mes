@@ -48,7 +48,7 @@
                    reference="positions">
 
             <option type="column" name="workstationName" fields="workstation"
-                    expression="#workstation?.get('name')"/>
+                    expression="#workstation?.get('name')" width="100"/>
             <option type="column" name="nodeNumber" fields="technologyOperationComponent"
                     expression="#technologyOperationComponent['nodeNumber']"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
@@ -56,12 +56,12 @@
             <option type="column" name="operationName" fields="technologyOperationComponent"
                     expression="#technologyOperationComponent['operation'].get('name')"/>
             <option type="column" name="orderNumber" fields="order"
-                    expression="#order.get('number')"/>
+                    expression="#order.get('number')" width="60"/>
             <option type="column" name="productNumber" fields="product"
                     expression="#product.get('number')"/>
             <option type="column" name="productName" fields="product"
                     expression="#product.get('name')"/>
-            <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="quantity" fields="quantity" width="40"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product.get('unit')" width="40"/>
             <option type="column" name="startTime" fields="startTime"/>

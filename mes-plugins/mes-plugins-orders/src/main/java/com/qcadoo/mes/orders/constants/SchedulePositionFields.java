@@ -18,4 +18,8 @@ public class SchedulePositionFields {
     public static final String END_TIME = "endTime";
 
     public static final String WORKSTATION = "workstation";
+
+    public static final String PRODUCT = "product";
+
+    public static final String QUANTITY = "quantity";
 }

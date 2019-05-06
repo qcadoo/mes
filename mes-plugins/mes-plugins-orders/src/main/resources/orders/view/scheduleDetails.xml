@@ -35,7 +35,7 @@
             <template name="standardFormTemplate"/>
             <group name="status">
                 <smallButton name="approveSchedule" icon="acceptIcon16.png"
-                             state="disabled">
+                             state="enabled">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({
@@ -106,9 +106,6 @@
                 <listener event="assignWorkersToOperations"
                           class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
                           method="assignWorkersToOperations"/>
-                <listener event="generateOperationalTasks"
-                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
-                          method="generateOperationalTasks"/>
             </component>
         </windowTab>
 
