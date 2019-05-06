@@ -48,9 +48,9 @@
                    reference="positions">
 
             <option type="column" name="workstationName" fields="workstation"
-                    expression="#workstation?.get('name')" width="100"/>
+                    expression="#workstation?.get('name')" width="140"/>
             <option type="column" name="nodeNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['nodeNumber']"/>
+                    expression="#technologyOperationComponent['nodeNumber']" width="60"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
                     expression="#technologyOperationComponent.get('operation').get('number')"/>
             <option type="column" name="operationName" fields="technologyOperationComponent"
@@ -64,14 +64,17 @@
             <option type="column" name="quantity" fields="quantity" width="40"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product.get('unit')" width="40"/>
-            <option type="column" name="startTime" fields="startTime"/>
-            <option type="column" name="endTime" fields="endTime"/>
+            <option type="column" name="startTime" fields="startTime" width="120"/>
+            <option type="column" name="endTime" fields="endTime" width="120"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"
+                    width="60"/>
             <option type="column" name="machineWorkTime" fields="machineWorkTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"
+                    width="60"/>
             <option type="column" name="additionalTime" fields="additionalTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"
+                    width="60"/>
 
             <option type="order" column="nodeNumber" direction="desc"/>
 
