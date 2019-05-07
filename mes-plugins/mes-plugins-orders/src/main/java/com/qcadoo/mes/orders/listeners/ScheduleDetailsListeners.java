@@ -38,6 +38,8 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ScheduleDetailsListeners {
 
+    private  static final String FINISH_DATE = "finishDate";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -120,10 +122,10 @@ public class ScheduleDetailsListeners {
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService.get("operationalTasks", "operationalTask").find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
-                .add(SearchRestrictions.gt("finishDate", scheduleStartTime))
-                .setProjection(list().add(alias(SearchProjections.max("finishDate"), "finishDate")).add(rowCount()))
-                .addOrder(SearchOrders.asc("finishDate")).setMaxResults(1).uniqueResult();
-        return operationalTasksMaxFinishDateEntity.getDateField("finishDate");
+                .add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
+                .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
+                .addOrder(SearchOrders.asc(FINISH_DATE)).setMaxResults(1).uniqueResult();
+        return operationalTasksMaxFinishDateEntity.getDateField(FINISH_DATE);
     }
 
     private void updatePositionWorkstationAndDates(Entry<Long, Date> firstEntry, Map<Long, Date> workstationsFinishDates,
