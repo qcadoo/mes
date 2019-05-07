@@ -60,12 +60,15 @@ public class ScheduleDetailsListenersOTFO {
                         order.getBelongsToField(OrderFields.PRODUCTION_LINE));
             }
 
-            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                    operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
             operationalTask.setField(OperationalTaskFields.WORKSTATION, position.getField(SchedulePositionFields.WORKSTATION));
 
-            operationalTaskDD.save(operationalTask);
+            operationalTask = operationalTaskDD.save(operationalTask);
+            if (operationalTask.isValid()) {
+                operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
+                        operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
+            }
         }
         scheduleForm.addMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated",
                 ComponentState.MessageType.SUCCESS);

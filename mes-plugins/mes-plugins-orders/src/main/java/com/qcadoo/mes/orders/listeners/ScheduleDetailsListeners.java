@@ -38,7 +38,7 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ScheduleDetailsListeners {
 
-    private  static final String FINISH_DATE = "finishDate";
+    private static final String FINISH_DATE = "finishDate";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -78,17 +78,13 @@ public class ScheduleDetailsListeners {
                             workstation);
                     if (operationalTasksMaxFinishDate != null) {
                         finishDate = operationalTasksMaxFinishDate;
+                        workstationsFinishDates.put(workstation.getId(), finishDate);
                     }
                 }
                 if (finishDate == null) {
                     finishDate = scheduleStartTime;
                 }
-                List<Entity> children = dataDefinitionService
-                        .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                        .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                        .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
-                                technologyOperationComponent))
-                        .list().getEntities();
+                List<Entity> children = getChildren(technologyOperationComponent);
                 for (Entity child : children) {
                     Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME)
                             .toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
@@ -117,6 +113,13 @@ public class ScheduleDetailsListeners {
             }
             updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position, workstations);
         }
+    }
+
+    private List<Entity> getChildren(Entity technologyOperationComponent) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER).add(SearchRestrictions
+                        .belongsTo("toc." + TechnologyOperationComponentFields.PARENT, technologyOperationComponent))
+                .list().getEntities();
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {

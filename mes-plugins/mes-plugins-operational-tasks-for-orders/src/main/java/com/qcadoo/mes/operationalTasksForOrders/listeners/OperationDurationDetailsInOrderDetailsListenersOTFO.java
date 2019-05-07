@@ -142,10 +142,11 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
 
         operationalTask.setField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
-        operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
-
-        operationalTask.getDataDefinition().save(operationalTask);
+        operationalTask = operationalTask.getDataDefinition().save(operationalTask);
+        if (operationalTask.isValid()) {
+            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
+                    operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
+        }
     }
 
 }
