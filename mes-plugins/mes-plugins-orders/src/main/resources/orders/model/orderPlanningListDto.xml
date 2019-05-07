@@ -57,6 +57,8 @@
         <decimal name="wastesQuantity"/>
         <decimal name="remainingAmountOfProductToProduce"/>
         <decimal name="doneInPercentage"/>
+        <decimal name="flagPercentageOfExecutionWithColor"/>
+        <string name="percentageOfExecutionCellColor"/>
         <string name="company"/>
     </fields>
     <hooks>

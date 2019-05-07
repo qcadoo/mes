@@ -133,6 +133,14 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="2" row="3">
+                        <component type="checkbox" name="flagPercentageOfExecutionWithColor"
+                                   field="#{form}.flagPercentageOfExecutionWithColor"
+                                   reference="flagPercentageOfExecutionWithColor" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"
