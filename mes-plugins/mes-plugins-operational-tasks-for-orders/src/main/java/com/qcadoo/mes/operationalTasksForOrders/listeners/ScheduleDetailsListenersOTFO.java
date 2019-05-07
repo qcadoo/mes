@@ -63,6 +63,7 @@ public class ScheduleDetailsListenersOTFO {
             operationalTask.setField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
             operationalTask.setField(OperationalTaskFields.WORKSTATION, position.getField(SchedulePositionFields.WORKSTATION));
+            operationalTask.setField(OperationalTaskFields.STAFF, position.getField(SchedulePositionFields.STAFF));
 
             operationalTask = operationalTaskDD.save(operationalTask);
             if (operationalTask.isValid()) {

@@ -92,6 +92,10 @@
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="workstation"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="staff"/>
+        </model:model-field>
+
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -248,6 +252,7 @@
 
         <view:view resource="view/schedulesList.xml"/>
         <view:view resource="view/scheduleDetails.xml"/>
+        <view:view resource="view/schedulePositionDetails.xml"/>
 
         <view:view resource="view/ordersParameters.xml"/>
 
