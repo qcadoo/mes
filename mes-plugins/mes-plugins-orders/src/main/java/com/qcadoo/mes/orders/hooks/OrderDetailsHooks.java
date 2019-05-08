@@ -662,7 +662,7 @@ public class OrderDetailsHooks {
 
         BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)).multiply(new BigDecimal(100));
         doneInPercentageQuantity = doneInPercentageQuantity.divide( order.getDecimalField(OrderFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
-        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.HALF_UP),0));
+        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING),0));
         doneInPercentage.setEnabled(false);
         doneInPercentageUnit.setFieldValue("%");
     }
