@@ -64,6 +64,7 @@
 
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
         <model:model model="operationalTaskDto" resource="model/operationalTaskDto.xml"/>
+        <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
 
         <model:model-field plugin="basic" model="staff">
             <model:hasMany name="operationalTasks" plugin="operationalTasks" model="operationalTask"

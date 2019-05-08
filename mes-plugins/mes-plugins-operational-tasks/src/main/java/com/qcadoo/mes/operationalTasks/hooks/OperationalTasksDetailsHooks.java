@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.operationalTasks.hooks;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.model.api.Entity;
@@ -35,6 +30,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTasksDetailsHooks {
@@ -63,11 +63,11 @@ public class OperationalTasksDetailsHooks {
 
         FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
 
-        Long productionLineId = productionLine.getId();
 
-        if (Objects.isNull(productionLineId)) {
+        if (Objects.isNull(productionLine)) {
             filterValueHolder.remove(OperationalTaskFields.PRODUCTION_LINE);
         } else {
+            Long productionLineId = productionLine.getId();
             filterValueHolder.put(OperationalTaskFields.PRODUCTION_LINE, productionLineId);
         }
 
