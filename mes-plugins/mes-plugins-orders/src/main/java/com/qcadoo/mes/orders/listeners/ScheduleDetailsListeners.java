@@ -18,11 +18,13 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
 import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
+import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +47,9 @@ public class ScheduleDetailsListeners {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private StateExecutorService stateExecutorService;
 
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
@@ -164,5 +169,9 @@ public class ScheduleDetailsListeners {
 
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         throw new UnsupportedOperationException();
+    }
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        stateExecutorService.changeState(ScheduleServiceMarker.class, view, args);
     }
 }

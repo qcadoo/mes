@@ -83,6 +83,7 @@
 
         <model:model model="schedule" resource="model/schedule.xml"/>
         <model:model model="schedulePosition" resource="model/schedulePosition.xml"/>
+        <model:model model="scheduleStateChange" resource="model/scheduleStateChange.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>

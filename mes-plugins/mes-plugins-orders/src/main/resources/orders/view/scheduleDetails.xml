@@ -35,25 +35,88 @@
             <template name="standardFormTemplate"/>
             <group name="status">
                 <smallButton name="approveSchedule" icon="acceptIcon16.png"
-                             state="enabled">
+                             state="disabled">
                     <script>
                         <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-                                    #{form}.performEvent('generateOperationalTasks');
-								}
-							});
-						]]>
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.approveSchedule.confirm)}")) {
+								            #{form}.performEvent('changeState', ['02approved']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
                     </script>
                 </smallButton>
                 <smallButton name="rejectSchedule" icon="deleteIcon16.png"
                              state="disabled">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+							            if (window.confirm("#{translate(orders.scheduleDetails.window.ribbon.status.rejectSchedule.confirm)}")) {
+								            #{form}.performEvent('changeState', ['03rejected']);
+								        }
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
                 </smallButton>
             </group>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="schedule" reference="form">
+                <script>
+                    <![CDATA[
+						this.addOnChangeListener({
+							onSetValue: function() {
+                                var approveSchedule = #{window}.getRibbonItem("status.approveSchedule");
+                                var rejectSchedule = #{window}.getRibbonItem("status.rejectSchedule");
+								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
+								var state = #{state}.getValue().content.value;
+								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
+								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
+
+                                if (isSaved && state == "01draft") {
+                                    approveSchedule.enable();
+                                } else {
+                                    approveSchedule.disable();
+                                }
+
+                                if (isSaved && state != "03rejected") {
+                                    rejectSchedule.enable();
+                                } else {
+                                    rejectSchedule.disable();
+                                }
+
+                                for (var elementKey in tabItemNames) {
+									var ribbonItem = #{scheduleTab}.getRibbonItem(tabItemNames[elementKey]);
+
+									if (isSaved && state == "01draft") {
+										ribbonItem.enable();
+									} else {
+										ribbonItem.disable();
+									}
+								}
+
+   								for(var elementKey in saveActions){
+   									var ribbonItem = #{window}.getRibbonItem(saveActions[elementKey]);
+
+   									if(state != "01draft"){
+   										ribbonItem.disable();
+ 									} else {
+										ribbonItem.enable();
+ 									}
+     							}
+							}
+						});
+					]]>
+                </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="7">
                     <layoutElement column="1" row="1">
@@ -106,6 +169,9 @@
                 <listener event="assignWorkersToOperations"
                           class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
                           method="assignWorkersToOperations"/>
+                <listener event="changeState"
+                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
+                          method="changeState"/>
             </component>
         </windowTab>
 
@@ -163,6 +229,25 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
+            </component>
+        </windowTab>
+        <windowTab name="historyTab">
+            <component type="flowGridLayout" name="stateChangesLayout" columns="1" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="stateChanges" source="#{form}.stateChanges" reference="stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="sourceState" fields="sourceState"/>
+                        <option type="column" name="targetState" fields="targetState"/>
+                        <option type="column" name="shiftName" fields="shift"
+                                expression="#shift?.get('name')"/>
+                        <option type="column" name="worker" fields="worker"/>
+
+                        <option type="order" column="dateAndTime" direction="asc"/>
+
+                        <option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                        <option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 

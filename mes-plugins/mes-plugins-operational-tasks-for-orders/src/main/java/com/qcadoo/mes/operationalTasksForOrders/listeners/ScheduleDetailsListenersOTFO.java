@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeOTFO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -27,9 +26,6 @@ public class ScheduleDetailsListenersOTFO {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private OperationalTasksForOrdersService operationalTasksForOrdersService;
 
     public void generateOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent scheduleForm = (FormComponent) state;
