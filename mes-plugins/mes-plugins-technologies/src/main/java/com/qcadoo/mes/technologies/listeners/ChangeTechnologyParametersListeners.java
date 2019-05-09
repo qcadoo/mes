@@ -64,9 +64,16 @@ public class ChangeTechnologyParametersListeners {
             generated.setChecked(false);
             return;
         }
+        Entity group = null;
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
+
+        if(entity.getBooleanField(L_CHANGE_GROUP) && Objects.nonNull(entity.getLongField(L_TECHNOLOGY_GROUP))) {
+            group = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_GROUP).get(entity.getLongField(L_TECHNOLOGY_GROUP));
+            entity.setField(L_TECHNOLOGY_GROUP, group);
+        }
+
         try {
-            //entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
             entity = entity.getDataDefinition().validate(entity);
             if(!entity.isValid()) {
                 form.setEntity(entity);
@@ -88,11 +95,7 @@ public class ChangeTechnologyParametersListeners {
             standardPerformanceTechnology = entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
         }
 
-        Entity group = null;
-        if(entity.getBooleanField(L_CHANGE_GROUP) && Objects.nonNull(entity.getLongField(L_TECHNOLOGY_GROUP))) {
-            group = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_GROUP).get(entity.getLongField(L_TECHNOLOGY_GROUP));
-        }
+
         try {
             createCustomizedTechnologies(view, state, ids, entity, group, standardPerformanceTechnology);
         } catch (Exception exc) {
