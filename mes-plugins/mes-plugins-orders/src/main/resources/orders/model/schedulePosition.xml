@@ -47,6 +47,9 @@
         <datetime name="endTime"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onSave class="com.qcadoo.mes.orders.hooks.SchedulePositionHooks"
+                method="onSave"/>
+    </hooks>
 
 </model>

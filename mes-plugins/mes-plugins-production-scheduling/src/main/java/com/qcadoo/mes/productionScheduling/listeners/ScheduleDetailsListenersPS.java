@@ -115,7 +115,7 @@ public class ScheduleDetailsListenersPS {
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.LABOR_WORK_TIME));
         schedulePosition.setField(SchedulePositionFields.MACHINE_WORK_TIME,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.MACHINE_WORK_TIME));
-        return schedulePositionDD.save(schedulePosition);
+        return schedulePosition;
     }
 
     @Transactional

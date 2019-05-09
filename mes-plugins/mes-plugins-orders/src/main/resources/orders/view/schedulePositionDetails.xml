@@ -37,7 +37,7 @@
         </ribbon>
 
         <component type="form" name="schedulePosition" reference="form">
-            <component type="gridLayout" name="gridLayout" columns="1"
+            <component type="gridLayout" name="gridLayout" columns="2"
                        rows="4">
                 <layoutElement column="1" row="1">
                     <component type="lookup" name="staff" reference="staff"
