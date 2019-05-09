@@ -36,9 +36,7 @@ import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsO
 import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskTypeOTFO;
 import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -114,13 +112,10 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
         DataDefinition operationTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
 
-        Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-
         Entity operationalTask = operationTaskDD.create();
 
         operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
                 .generateNumber(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
-        operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
         if (techOperCompTimeCalculation != null) {
             operationalTask.setField(OperationalTaskFields.START_DATE,
@@ -137,16 +132,9 @@ public class OperationDurationDetailsInOrderDetailsListenersOTFO {
             operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, order.getBelongsToField(OrderFields.PRODUCTION_LINE));
         }
 
-        operationalTask.setField(OperationalTaskFields.DESCRIPTION,
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
-
         operationalTask.setField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
-        operationalTask = operationalTask.getDataDefinition().save(operationalTask);
-        if (operationalTask.isValid()) {
-            operationalTask.setField(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                    operationalTasksForOrdersService.createTechOperCompOperationalTask(technologyOperationComponent));
-        }
+        operationalTask.getDataDefinition().save(operationalTask);
     }
 
 }
