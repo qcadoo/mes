@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
@@ -26,6 +27,7 @@ import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
 import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
@@ -168,7 +170,15 @@ public class ScheduleDetailsListeners {
     }
 
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        throw new UnsupportedOperationException();
+        DataDefinition staffDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF);
+        Entity staff = staffDD.find().setMaxResults(1).uniqueResult();
+        Entity schedule = ((FormComponent) state).getEntity();
+        schedule = schedule.getDataDefinition().get(schedule.getId());
+        List<Entity> positions = schedule.getHasManyField(ScheduleFields.POSITIONS);
+        for (Entity position : positions) {
+            position.setField(SchedulePositionFields.STAFF, staff);
+            position.getDataDefinition().save(position);
+        }
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {

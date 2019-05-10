@@ -113,6 +113,15 @@
 										ribbonItem.enable();
  									}
      							}
+     							if(state != "01draft"){
+     							    this.setEnabled(false, true);
+     							    #{orders}.setEditable(false);
+     							    #{positions}.setEditable(false);
+                                } else {
+                                    this.setEnabled(true, true);
+                                    #{orders}.setEditable(true);
+     							    #{positions}.setEditable(true);
+                                }
 							}
 						});
 					]]>
@@ -175,6 +184,26 @@
             </component>
         </windowTab>
 
+        <windowTab name="historyTab">
+            <component type="flowGridLayout" name="stateChangesLayout" columns="1" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="stateChanges" source="#{form}.stateChanges" reference="stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="sourceState" fields="sourceState"/>
+                        <option type="column" name="targetState" fields="targetState"/>
+                        <option type="column" name="shiftName" fields="shift"
+                                expression="#shift?.get('name')"/>
+                        <option type="column" name="worker" fields="worker"/>
+
+                        <option type="order" column="dateAndTime" direction="asc"/>
+
+                        <option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                        <option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
         <windowTab name="inputDataTab">
             <component type="lookup" name="ordersLookup" reference="ordersLookup"
                        field="orders" defaultVisible="false" persistent="false"
@@ -229,25 +258,6 @@
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
 
-            </component>
-        </windowTab>
-        <windowTab name="historyTab">
-            <component type="flowGridLayout" name="stateChangesLayout" columns="1" rows="3">
-                <layoutElement column="1" row="1" minHeight="3">
-                    <component type="grid" name="stateChanges" source="#{form}.stateChanges" reference="stateChanges">
-                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
-                        <option type="column" name="sourceState" fields="sourceState"/>
-                        <option type="column" name="targetState" fields="targetState"/>
-                        <option type="column" name="shiftName" fields="shift"
-                                expression="#shift?.get('name')"/>
-                        <option type="column" name="worker" fields="worker"/>
-
-                        <option type="order" column="dateAndTime" direction="asc"/>
-
-                        <option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
-                        <option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
-                    </component>
-                </layoutElement>
             </component>
         </windowTab>
 

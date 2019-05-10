@@ -6,5 +6,7 @@ public final class ScheduleStateChangeFields {
     }
 
     public static final String SCHEDULE = "schedule";
+    
+    public static final String DATE_AND_TIME = "dateAndTime";
 
 }

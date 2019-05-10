@@ -25,24 +25,29 @@ public class SchedulePositionHooks {
                 schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
                         "qcadooView.validate.field.error.missing");
             } else {
-                List<Entity> children = dataDefinition.find()
-                        .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                        .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
-                                schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)))
-                        .list().getEntities();
-                for (Entity child : children) {
-                    if (child.getDateField(SchedulePositionFields.END_TIME) != null) {
-                        Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME)
-                                .toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
-                        if (childEndTimeWithAdditionalTime
-                                .after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
-                            schedulePosition
-                                    .addGlobalMessage("orders.schedulePosition.message.linkedOperationStartTimeIncorrect");
-                            break;
-                        }
-                    }
+                validateChildrenDates(dataDefinition, schedulePosition);
+            }
+        }
+    }
+
+    private void validateChildrenDates(DataDefinition dataDefinition, Entity schedulePosition) {
+        List<Entity> children = getChildren(dataDefinition, schedulePosition);
+        for (Entity child : children) {
+            if (child.getDateField(SchedulePositionFields.END_TIME) != null) {
+                Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME).toInstant()
+                        .plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
+                if (childEndTimeWithAdditionalTime.after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+                    schedulePosition.addGlobalMessage("orders.schedulePosition.message.linkedOperationStartTimeIncorrect");
+                    break;
                 }
             }
         }
+    }
+
+    private List<Entity> getChildren(final DataDefinition dataDefinition, final Entity schedulePosition) {
+        return dataDefinition.find().createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
+                        schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)))
+                .list().getEntities();
     }
 }
