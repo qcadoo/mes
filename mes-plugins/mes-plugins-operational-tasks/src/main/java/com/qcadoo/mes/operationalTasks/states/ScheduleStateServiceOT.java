@@ -1,5 +1,12 @@
 package com.qcadoo.mes.operationalTasks.states;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,6 +14,7 @@ import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleStateChangeFields;
@@ -17,6 +25,9 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
@@ -40,11 +51,9 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
 
     @Override
     public Entity onBeforeSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
-                              StateChangeEntityDescriber describer) {
-        switch (targetState) {
-            case ScheduleStateStringValues.APPROVED:
-                entity.setField(ScheduleFields.APPROVE_TIME,
-                        stateChangeEntity.getDateField(ScheduleStateChangeFields.DATE_AND_TIME));
+            StateChangeEntityDescriber describer) {
+        if (ScheduleStateStringValues.APPROVED.equals(targetState)) {
+            entity.setField(ScheduleFields.APPROVE_TIME, stateChangeEntity.getDateField(ScheduleStateChangeFields.DATE_AND_TIME));
         }
 
         return entity;
@@ -56,6 +65,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
         switch (targetState) {
             case ScheduleStateStringValues.APPROVED:
                 generateOperationalTasks(entity);
+                updateOrderDates(entity);
                 break;
 
             case ScheduleStateStringValues.REJECTED:
@@ -65,6 +75,37 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
         }
 
         return entity;
+    }
+
+    private void updateOrderDates(Entity entity) {
+        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        for (Entity order : orders) {
+            Entity schedulePositionMinStartTimeEntity = dataDefinitionService
+                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                    .setProjection(list().add(
+                            alias(SearchProjections.min(SchedulePositionFields.START_TIME), SchedulePositionFields.START_TIME))
+                            .add(rowCount()))
+                    .addOrder(SearchOrders.asc(SchedulePositionFields.START_TIME)).setMaxResults(1).uniqueResult();
+            Entity schedulePositionMaxEndTimeEntity = dataDefinitionService
+                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                    .setProjection(list()
+                            .add(alias(SearchProjections.max(SchedulePositionFields.END_TIME), SchedulePositionFields.END_TIME))
+                            .add(rowCount()))
+                    .addOrder(SearchOrders.desc(SchedulePositionFields.END_TIME)).setMaxResults(1).uniqueResult();
+            Date startTime = schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
+            Date endTime = schedulePositionMaxEndTimeEntity.getDateField(SchedulePositionFields.END_TIME);
+            if (startTime != null || endTime != null) {
+                if (startTime != null) {
+                    order.setField(OrderFields.DATE_FROM, startTime);
+                }
+                if (endTime != null) {
+                    order.setField(OrderFields.DATE_TO, endTime);
+                }
+                order.getDataDefinition().save(order);
+            }
+        }
     }
 
     private void generateOperationalTasks(Entity schedule) {

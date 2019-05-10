@@ -134,7 +134,7 @@ public class ScheduleDetailsListeners {
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
-                .addOrder(SearchOrders.asc(FINISH_DATE)).setMaxResults(1).uniqueResult();
+                .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
         return operationalTasksMaxFinishDateEntity.getDateField(FINISH_DATE);
     }
 
