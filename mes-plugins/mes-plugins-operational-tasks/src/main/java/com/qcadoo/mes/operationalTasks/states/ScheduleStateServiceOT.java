@@ -1,17 +1,8 @@
 package com.qcadoo.mes.operationalTasks.states;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -31,9 +22,20 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
 @Service
 @RunIfEnabled(OperationalTasksConstants.PLUGIN_IDENTIFIER)
 public class ScheduleStateServiceOT extends BasicStateService implements ScheduleServiceMarker {
+
+    private static final String IS_SUBCONTRACTING = "isSubcontracting";
 
     @Autowired
     private ScheduleStateChangeDescriber scheduleStateChangeDescriber;
@@ -109,7 +111,6 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
     }
 
     private void generateOperationalTasks(Entity schedule) {
-        // TODO KASI change fields and enum constants
         DataDefinition operationalTaskDD = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER,
                 OperationalTasksConstants.MODEL_OPERATIONAL_TASK);
         for (Entity position : schedule.getHasManyField(ScheduleFields.POSITIONS)) {
@@ -118,22 +119,22 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
                     OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
             operationalTask.setField(OperationalTaskFields.START_DATE, position.getField(SchedulePositionFields.START_TIME));
             operationalTask.setField(OperationalTaskFields.FINISH_DATE, position.getField(SchedulePositionFields.END_TIME));
-            operationalTask.setField(OperationalTaskFields.TYPE, "02executionOperationInOrder");
+            operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
             Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
-            operationalTask.setField("order", order);
+            operationalTask.setField(OperationalTaskFields.ORDER, order);
             Entity technologyOperationComponent = position
                     .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-            if (!technologyOperationComponent.getBooleanField("isSubcontracting")) {
+            if (!technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)) {
                 operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE,
                         order.getBelongsToField(OrderFields.PRODUCTION_LINE));
             }
 
-            operationalTask.setField("technologyOperationComponent", technologyOperationComponent);
+            operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
             operationalTask.setField(OperationalTaskFields.WORKSTATION, position.getField(SchedulePositionFields.WORKSTATION));
             operationalTask.setField(OperationalTaskFields.STAFF, position.getField(SchedulePositionFields.STAFF));
-            operationalTask.setField("product", position.getField(SchedulePositionFields.PRODUCT));
-            operationalTask.setField("plannedQuantity", position.getField(SchedulePositionFields.QUANTITY));
+            operationalTask.setField(OperationalTaskFields.PRODUCT, position.getField(SchedulePositionFields.PRODUCT));
+            operationalTask.setField(OperationalTaskFields.PLANNED_QUANTITY, position.getField(SchedulePositionFields.QUANTITY));
 
             operationalTaskDD.save(operationalTask);
         }

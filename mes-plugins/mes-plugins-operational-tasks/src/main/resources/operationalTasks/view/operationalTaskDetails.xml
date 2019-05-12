@@ -33,6 +33,51 @@
 
 		<ribbon>
 			<template name="standardFormTemplate" />
+			<group name="order">
+				<bigButton name="showOrder" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOrder', []);
+							}
+						}
+					});
+				]]>
+					</script>
+				</bigButton>
+			</group>
+			<group name="technologyOperationComponent">
+				<bigButton name="showOperationParameters" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationParameters', []);
+							}
+						}
+					});
+				]]>
+					</script>
+				</bigButton>
+			</group>
+			<group name="operationalTasks">
+				<bigButton name="showOperationalTasksWithOrder" icon="genealogyIcon24.png">
+					<script>
+						<![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationalTasksWithOrder', []);
+							}
+						}
+					});
+				]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 
 		<windowTab name="mainTab">
@@ -42,7 +87,11 @@
 					rows="6">
 					<layoutElement column="1" row="1">
 						<component type="select" name="type" reference="type"
-								   field="type" />
+								   field="type">
+						<listener event="onSelectedEntityChange"
+								  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+								  method="onTypeChange" />
+						</component>
 					</layoutElement>
 					<layoutElement column="1" row="2">
 						<component type="input" name="number" field="number"
@@ -116,8 +165,117 @@
 
 				</component>
 
+				<listener event="showOrder"
+						  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+						  method="showOrder"/>
+
+				<listener event="showOperationParameters"
+						  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+						  method="showOperationParameters"/>
+
+				<listener event="showOperationalTasksWithOrder"
+						  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+						  method="showOperationalTasksWithOrder"/>
 				<option type="header" value="true" />
 				<option type="expression" value="#number" />
+			</component>
+		</windowTab>
+		<windowTab name="orderTab" reference="orderTab">
+			<component type="lookup" name="technology" field="technology"
+					   reference="technology" hasLabel="false" defaultVisible="false">
+				<option type="column" name="name" fields="name" link="true" />
+
+				<option type="order" column="number" direction="desc" />
+
+				<option type="searchable" value="name,number" />
+				<option type="orderable" value="name,number" />
+
+				<option type="expression" value="#number + ' - ' + #name" />
+				<option type="fieldCode" value="number" />
+			</component>
+			<component type="gridLayout" name="gridLayout" reference="gridLayout"
+					   columns="3" rows="1">
+				<layoutElement column="1" row="1">
+					<component type="gridLayout" name="gridLayoutInside"
+							   hasBorders="true" columns="6" rows="5">
+						<layoutElement column="1" row="1" width="5">
+							<component type="lookup" name="order" field="#{form}.order"
+									   reference="order">
+								<option type="column" name="name" fields="name" link="true" />
+
+								<option type="order" column="number" direction="desc" />
+
+								<option type="searchable" value="name,number" />
+								<option type="orderable" value="name,number" />
+
+								<option type="expression"
+										value="#number + ' - ' + #name" />
+								<option type="fieldCode" value="number" />
+
+								<criteriaModifier
+										class="com.qcadoo.mes.operationalTasks.criteriaModifiers.OrdersCriteriaModifiers"
+										method="showWithProductionLines"/>
+
+								<listener event="onSelectedEntityChange"
+										  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+										  method="onOrderChange" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="2" width="5">
+							<component type="lookup" name="technologyOperationComponent"
+									   field="#{form}.technologyOperationComponent" source="#{technology}.operationComponents"
+									   reference="technologyOperationComponent">
+								<option type="column" name="name" fields="operation"
+										expression="#operation['name']" link="true" />
+
+								<option type="searchable" value="name,nodeNumber" />
+								<option type="orderable" value="name,nodeNumber" />
+
+								<option type="expression" value="#nodeNumber + '  ' + #operation['name']" />
+								<option type="fieldCode" value="nodeNumber" />
+
+								<listener event="onSelectedEntityChange"
+										  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
+										  method="onTechnologyOperationComponentChange" />
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="3" width="5">
+							<component type="lookup" name="product" field="#{form}.product"
+									   reference="product" defaultEnabled="false">
+								<option type="column" name="name" fields="name" link="true"
+										width="200"/>
+								<option type="column" name="ean" fields="ean"/>
+								<option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+								<option type="searchable" value="name,ean,globalTypeOfMaterial"/>
+								<option type="orderable" value="name,ean,globalTypeOfMaterial"/>
+
+								<option type="expression"
+										value="#number + ' - ' + #name"/>
+								<option type="fieldCode" value="number"/>
+							</component>
+						</layoutElement>
+						<layoutElement column="1" row="4" width="5">
+							<component type="input" name="plannedQuantity" field="#{form}.plannedQuantity" reference="plannedQuantity"
+									   defaultEnabled="false">
+								<option type="alignment" value="right"/>
+							</component>
+						</layoutElement>
+						<layoutElement column="6" row="4">
+							<component type="input" name="plannedQuantityUNIT"
+									   reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+						</layoutElement>
+						<layoutElement column="1" row="5" width="5">
+							<component type="input" name="usedQuantity" field="#{form}.usedQuantity" reference="usedQuantity"
+									   defaultEnabled="false">
+								<option type="alignment" value="right"/>
+							</component>
+						</layoutElement>
+						<layoutElement column="6" row="5">
+							<component type="input" name="usedQuantityUNIT"
+									   reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+						</layoutElement>
+					</component>
+				</layoutElement>
 			</component>
 		</windowTab>
 		<windowTab name="historyTab">

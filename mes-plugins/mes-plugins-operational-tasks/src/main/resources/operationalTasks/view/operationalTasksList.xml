@@ -49,6 +49,9 @@
 						<option type="expression"
 							value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange"
+								  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTasksListListenersOT"
+								  method="onProductInChange"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="2" row="1">
@@ -63,6 +66,9 @@
 						<option type="expression"
 							value="#number + ' - ' + #name" />
 						<option type="fieldCode" value="number" />
+						<listener event="onSelectedEntityChange"
+								  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTasksListListenersOT"
+								  method="onProductOutChange"/>
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="3">
@@ -75,11 +81,28 @@
 						<option type="column" name="staffName" fields="staffName" width="125" />
 						<option type="column" name="productionLineName" fields="productionLineName" width="100"/>
 						<option type="column" name="workstationName" fields="workstationName" width="100" />
+						<option type="column" name="orderNumber" fields="orderNumber" link="true"
+								correspondingView="orders/orderDetails" correspondingField="orderId"
+								width="100"/>
+						<option type="column" name="orderId" fields="orderId" hidden="true"/>
+						<option type="column" name="technologyOperationComponentNodeNumber" fields="technologyOperationComponentNodeNumber" width="75" />
+						<option type="column" name="productNumber" fields="productNumber" width="75" />
+						<option type="column" name="productName" fields="productName" width="75" />
+						<option type="column" name="plannedQuantity" fields="plannedQuantity" width="50" />
+						<option type="column" name="usedQuantity" fields="usedQuantity" width="50" />
+						<option type="column" name="remainingQuantity" fields="remainingQuantity" width="50" />
+						<option type="column" name="doneInPercentage" fields="doneInPercentage" width="50"
+								classesCondition="rowObject['operTaskFlagPercentExecutionWithColor']>0"
+								classesNames="rowObject['percentageOfExecutionCellColor']"/>
+						<option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
+						<option type="column" name="operTaskFlagPercentExecutionWithColor" fields="operTaskFlagPercentExecutionWithColor" hidden="true"/>
 
 						<option type="order" column="name" direction="asc" />
 
-						<option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName" />
-						<option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName" />
+						<option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity" />
+						<option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity" />
 
 						<option type="correspondingView" value="operationalTasks/operationalTaskDetails" />
 						<option type="correspondingComponent" value="form" />
@@ -97,5 +120,9 @@
 		</component>
 
 	</component>
-
+	<hooks>
+		<beforeRender
+				class="com.qcadoo.mes.operationalTasks.hooks.OperationalTasksListHooks"
+				method="beforeRender"/>
+	</hooks>
 </view>

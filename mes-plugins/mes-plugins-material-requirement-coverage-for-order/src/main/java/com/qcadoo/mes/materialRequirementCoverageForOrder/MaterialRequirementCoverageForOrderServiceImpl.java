@@ -50,11 +50,6 @@ import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.ProductExtrac
 import com.qcadoo.mes.materialRequirements.MaterialRequirementService;
 import com.qcadoo.mes.materialRequirements.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasksForOrders.constants.InputProductsRequiredForTypeOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
-import com.qcadoo.mes.operationalTasksForOrders.constants.TechOperCompOperationalTasksFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
@@ -82,10 +77,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -95,6 +86,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialRequirementCoverageForOrderService {
@@ -342,11 +338,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
                 Map<Long, BigDecimal> productComponentQuantities = Maps.newHashMap();
                 OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
 
-                if (InputProductsRequiredForTypeOTFO.START_OPERATIONAL_TASK.getStringValue()
-                        .equals(intputProductsRequiredForType)) {
-                    operationProductComponentWithQuantityContainer = productQuantitiesService
-                            .getProductComponentQuantitiesWithoutNonComponents(Lists.newArrayList(order));
-                } else if (InputProductsRequiredForType.START_ORDER.getStringValue().equals(intputProductsRequiredForType)) {
+               if (InputProductsRequiredForType.START_ORDER.getStringValue().equals(intputProductsRequiredForType)) {
                     if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
                         operationProductComponentWithQuantityContainer = productQuantitiesService
                                 .getProductComponentQuantitiesWithoutNonComponents(Lists.newArrayList(order));
@@ -821,18 +813,6 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
         }
-    }
-
-    private Entity getOperationalTaskFromDB(final Entity order, final Entity technologyOperationComponent) {
-        return dataDefinitionService
-                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
-                .find()
-                .createAlias(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK,
-                        OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK)
-                .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.ORDER, order))
-                .add(SearchRestrictions.belongsTo(OperationalTaskFieldsOTFO.TECH_OPER_COMP_OPERATIONAL_TASK + "."
-                        + TechOperCompOperationalTasksFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
-                .addOrder(SearchOrders.asc(OperationalTaskFields.START_DATE)).setMaxResults(1).uniqueResult();
     }
 
     private BigDecimal subtractUsedQuantityFromProductionTrackings(final BigDecimal quantity, final Entity order,

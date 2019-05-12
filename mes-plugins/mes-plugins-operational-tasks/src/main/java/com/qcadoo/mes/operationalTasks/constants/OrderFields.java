@@ -23,40 +23,11 @@
  */
 package com.qcadoo.mes.operationalTasks.constants;
 
-public final class OperationalTaskFields {
+public final class OrderFields {
 
-    private OperationalTaskFields() {
+    private OrderFields() {
 
     }
 
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String TYPE = "type";
-
-    public static final String START_DATE = "startDate";
-
-    public static final String FINISH_DATE = "finishDate";
-
-    public static final String STAFF = "staff";
-
-    public static final String PRODUCTION_LINE = "productionLine";
-
-    public static final String WORKSTATION = "workstation";
-
-    public static final String ORDER = "order";
-
-    public static final String TECHNOLOGY = "technology";
-
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
-    public static final String PRODUCT = "product";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
+    public static final String operationalTasks = "operationalTasks";
 }

@@ -23,15 +23,16 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+
 import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationalTaskValidators {
@@ -45,6 +46,7 @@ public class OperationalTaskValidators {
 
         isValid = hasName(operationalTaskDD, operationalTask) && isValid;
         isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
     }
@@ -73,6 +75,24 @@ public class OperationalTaskValidators {
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE), WRONG_DATES_ORDER_MESSAGE);
             operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE), WRONG_DATES_ORDER_MESSAGE);
 
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkIfOrderHasTechnology(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+
+        if (order == null) {
+            return true;
+        }
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology == null) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ORDER),
+                    "operationalTasks.operationalTask.order.error.technologyIsNull");
             return false;
         }
 

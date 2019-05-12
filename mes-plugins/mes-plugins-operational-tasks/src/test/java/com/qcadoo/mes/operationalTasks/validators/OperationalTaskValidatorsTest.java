@@ -23,11 +23,9 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
-import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 import java.util.Date;
 
@@ -36,10 +34,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
+import static com.qcadoo.testing.model.EntityTestUtils.stubStringField;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class OperationalTaskValidatorsTest {
 
@@ -143,4 +142,6 @@ public class OperationalTaskValidatorsTest {
         // then
         assertFalse(isValid);
     }
+
+
 }

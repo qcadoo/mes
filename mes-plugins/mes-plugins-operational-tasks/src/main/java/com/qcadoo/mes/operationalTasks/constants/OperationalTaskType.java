@@ -24,7 +24,7 @@
 package com.qcadoo.mes.operationalTasks.constants;
 
 public enum OperationalTaskType {
-    OTHER_CASE("01otherCase");
+    OTHER_CASE("01otherCase"),EXECUTION_OPERATION_IN_ORDER("02executionOperationInOrder");
 
     private final String operationalTaskType;
 

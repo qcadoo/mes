@@ -21,38 +21,27 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.operationalTasks.constants;
+package com.qcadoo.mes.operationalTasks.listeners;
 
-public final class OperationalTaskDtoFields {
+import com.qcadoo.mes.operationalTasks.hooks.OperationalTasksListHooks;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
-    private OperationalTaskDtoFields() {
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
+public class OperationalTasksListListenersOT {
+
+    @Autowired
+    private OperationalTasksListHooks operationalTasksListHooks;
+
+    public void onProductInChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        operationalTasksListHooks.addDiscriminatorRestrictionToGrid(view);
     }
 
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String DESCRIPTION = "description";
-
-    public static final String TYPE = "type";
-
-    public static final String START_DATE = "startDate";
-
-    public static final String FINISH_DATE = "finishDate";
-
-    public static final String STAFF_NAME = "staffName";
-
-    public static final String PRODUCTION_LINE_NAME = "productionLineName";
-
-    public static final String WORKSTATION_NAME = "workstationName";
-
-    public static final String PRODUCT_IN = "productIn";
-
-    public static final String PRODUCT_OUT = "productOut";
-
-    public static final String TOC_ID = "tocId";
-
-    public static final String ORDER_NUMBER = "orderNumber";
+    public void onProductOutChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        operationalTasksListHooks.addDiscriminatorRestrictionToGrid(view);
+    }
 
 }

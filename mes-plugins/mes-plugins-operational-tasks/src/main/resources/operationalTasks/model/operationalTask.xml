@@ -25,40 +25,58 @@
 
 -->
 <model name="operationalTask"
-	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<string name="number">
-			<validatesLength max="256" />
-		</string>
-		<string name="name">
-			<validatesLength max="1024" />
-		</string>
-		<string name="description">
-			<validatesLength max="1024" />
-		</string>
-		<enum name="type" values="01otherCase" required="true"
-			default="01otherCase" />
-		<datetime name="startDate" required="true" />
-		<datetime name="finishDate" required="true" />
-		<belongsTo name="staff" model="staff" plugin="basic"/>
-		<belongsTo name="productionLine" model="productionLine"
-			plugin="productionLines" />
-		<belongsTo name="workstation" model="workstation"
-				   plugin="basic"/>
+    <fields>
+        <string name="number">
+            <validatesLength max="256"/>
+        </string>
+        <string name="name">
+            <validatesLength max="1024"/>
+        </string>
+        <string name="description">
+            <validatesLength max="1024"/>
+        </string>
+        <enum name="type" values="01otherCase,02executionOperationInOrder" required="true"
+              default="01otherCase"/>
+        <datetime name="startDate" required="true"/>
+        <datetime name="finishDate" required="true"/>
 
-		<enum name="state" values="01pending,02started,03finished,04rejected" default="01pending"/>
-		<hasMany name="stateChanges" model="operationalTaskStateChange" joinField="operationalTask" cascade="delete"/>
 
-	</fields>
+        <belongsTo name="staff" model="staff" plugin="basic"/>
+        <belongsTo name="productionLine" model="productionLine"
+                   plugin="productionLines"/>
+        <belongsTo name="workstation" model="workstation"
+                   plugin="basic"/>
+        <belongsTo name="order" plugin="orders" model="order"/>
+        <belongsTo name="technologyOperationComponent"
+                   plugin="technologies" model="technologyOperationComponent"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
 
-	<hooks>
-		<validatesWith
-			class="com.qcadoo.mes.operationalTasks.validators.OperationalTaskValidators"
-			method="onValidate" />
-		<onCreate class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onCreate"/>
-	</hooks>
+        <decimal name="plannedQuantity">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="usedQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
 
-	<identifier expression="#number + ' - ' + #name" />
+        <enum name="state" values="01pending,02started,03finished,04rejected" default="01pending"/>
+        <hasMany name="stateChanges" model="operationalTaskStateChange" joinField="operationalTask" cascade="delete"/>
+
+    </fields>
+
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.operationalTasks.validators.OperationalTaskValidators"
+                method="onValidate"/>
+        <onCreate class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onCreate"/>
+        <onSave class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onSave"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
 </model>

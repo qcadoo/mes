@@ -83,6 +83,22 @@
                            joinField="productionLine"/>
         </model:model-field>
 
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="operationalTasks" plugin="operationalTasks"
+                           model="operationalTask" joinField="order" cascade="delete" />
+        </model:model-field>
+
+        <model:model-enum-value plugin="basic" model="parameter"
+                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+        <model:model-enum-value plugin="orders" model="order"
+                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+        <model:model-field plugin="operationalTasks" model="operationalTask">
+            <model:belongsTo name="technology" plugin="technologies"
+                             model="technology" persistent="false" />
+        </model:model-field>
+
         <menu:menu-category name="orders"/>
 
         <menu:menu-item name="operationalTasks" category="orders"
@@ -90,6 +106,39 @@
 
         <view:view resource="view/operationalTasksList.xml"/>
         <view:view resource="view/operationalTaskDetails.xml"/>
+
+        <view:view-ribbon-group
+                resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml" />
+        <view:view-ribbon-group
+                resource="view/ribbonExtensions/orderDetails.xml" />
+
+        <model:model-hook plugin="orders" model="order">
+            <model:onSave
+                    class="com.qcadoo.mes.operationalTasks.hooks.OrderHooksOT"
+                    method="changedProductionLineInOperationalTasksWhenChanged" />
+        </model:model-hook>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="operationalTaskStateChanges"
+                           plugin="operationalTasks" model="operationalTaskStateChange"
+                           joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.operationalTasks.hooks.OperationDurationDetailsInOrderDetailsHooks"
+                        method="beforeRender" />
+
+        <view:view-listener plugin="productionScheduling"
+                            view="operationDurationDetailsInOrder" component="form"
+                            event="createOperationalTasks"
+                            class="com.qcadoo.mes.operationalTasks.listeners.OperationDurationDetailsInOrderDetailsListenersOT"
+                            method="createOperationalTasks" />
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="showOperationalTasks"
+                            class="com.qcadoo.mes.operationalTasks.listeners.OrderDetailsListenersOT"
+                            method="showOperationalTasks" />
 
         <view:resource uri="public/**/*"/>
     </modules>
