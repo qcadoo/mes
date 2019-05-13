@@ -63,6 +63,7 @@
 								classesNames="rowObject['percentageOfExecutionCellColor']"/>
 						<option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
 						<option type="column" name="operTaskFlagPercentExecutionWithColor" fields="operTaskFlagPercentExecutionWithColor" hidden="true"/>
+						<option type="column" name="type" fields="type" hidden="true"/>
 
 						<option type="order" column="name" direction="asc" />
 
