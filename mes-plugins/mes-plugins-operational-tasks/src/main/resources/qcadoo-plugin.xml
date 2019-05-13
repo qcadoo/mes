@@ -106,11 +106,14 @@
 
         <view:view resource="view/operationalTasksList.xml"/>
         <view:view resource="view/operationalTaskDetails.xml"/>
+        <view:view resource="view/operationalTasksParameters.xml"/>
 
         <view:view-ribbon-group
                 resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml" />
         <view:view-ribbon-group
                 resource="view/ribbonExtensions/orderDetails.xml" />
+        <view:view-ribbon-group
+                resource="view/ribbonExtensions/parameters.xml" />
 
         <model:model-hook plugin="orders" model="order">
             <model:onSave
@@ -122,6 +125,10 @@
             <model:hasMany name="operationalTaskStateChanges"
                            plugin="operationalTasks" model="operationalTaskStateChange"
                            joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="operTaskFlagPercentExecutionWithColor" default="false"/>
         </model:model-field>
 
         <view:view-hook plugin="productionScheduling" view="operationDurationDetailsInOrder"
@@ -140,6 +147,10 @@
                             class="com.qcadoo.mes.operationalTasks.listeners.OrderDetailsListenersOT"
                             method="showOperationalTasks" />
 
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToOperationalTasksParameters"
+                            class="com.qcadoo.mes.operationalTasks.listeners.ParametersListenersOT"
+                            method="redirectToOperationalTasksParameters"/>
         <view:resource uri="public/**/*"/>
     </modules>
 

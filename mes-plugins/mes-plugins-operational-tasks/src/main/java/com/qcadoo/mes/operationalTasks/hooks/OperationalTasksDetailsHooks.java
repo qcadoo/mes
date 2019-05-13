@@ -24,6 +24,7 @@
 package com.qcadoo.mes.operationalTasks.hooks;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationalTasks.OperationalTasksService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
@@ -32,6 +33,7 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -47,6 +49,9 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Objects;
 
@@ -88,9 +93,36 @@ public class OperationalTasksDetailsHooks {
         generateOperationalTasksNumber(view);
         filterWorkstationLookup(view);
         setTechnology(view);
+        setQuantities(view);
+
         setTechnologyOperationComponent(view);
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
+    }
+
+    private void setQuantities(final ViewDefinitionState view) {
+        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        if(Objects.nonNull(form.getEntityId())) {
+            Entity ot = form.getEntity();
+            Entity product = ot.getBelongsToField(OperationalTaskFields.PRODUCT);
+            if(Objects.nonNull(product)) {
+                FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference("doneInPercentage");
+                FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
+                FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
+                FieldComponent plannedQuantityUnit = (FieldComponent) view.getComponentByReference("plannedQuantityUNIT");
+
+                usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+                plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
+
+                BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(ot.getDecimalField(OperationalTaskFields.USED_QUANTITY)).multiply(new BigDecimal(100));
+                doneInPercentageQuantity = doneInPercentageQuantity
+                        .divide(ot.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+                doneInPercentage.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
+                doneInPercentage.setEnabled(false);
+                doneInPercentageUnit.setFieldValue("%");
+            }
+        }
     }
 
     private void generateOperationalTasksNumber(final ViewDefinitionState view) {

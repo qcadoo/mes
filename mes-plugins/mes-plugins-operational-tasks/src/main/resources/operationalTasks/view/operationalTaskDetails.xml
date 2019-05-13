@@ -197,7 +197,7 @@
 					   columns="3" rows="1">
 				<layoutElement column="1" row="1">
 					<component type="gridLayout" name="gridLayoutInside"
-							   hasBorders="true" columns="6" rows="5">
+							   hasBorders="true" columns="6" rows="6">
 						<layoutElement column="1" row="1" width="5">
 							<component type="lookup" name="order" field="#{form}.order"
 									   reference="order">
@@ -273,6 +273,16 @@
 						<layoutElement column="6" row="5">
 							<component type="input" name="usedQuantityUNIT"
 									   reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+						</layoutElement>
+						<layoutElement column="1" row="6" width="5">
+							<component type="input" name="doneInPercentage" reference="doneInPercentage"
+									   defaultEnabled="false">
+								<option type="alignment" value="right"/>
+							</component>
+						</layoutElement>
+						<layoutElement column="6" row="6">
+							<component type="input" name="doneInPercentageUNIT"
+									   reference="doneInPercentageUNIT" defaultEnabled="false" hasLabel="false"/>
 						</layoutElement>
 					</component>
 				</layoutElement>
