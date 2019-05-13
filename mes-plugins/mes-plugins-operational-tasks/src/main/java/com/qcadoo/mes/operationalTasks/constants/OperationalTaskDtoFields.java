@@ -47,10 +47,6 @@ public final class OperationalTaskDtoFields {
 
     public static final String WORKSTATION_NAME = "workstationName";
 
-    public static final String PRODUCT_IN = "productIn";
-
-    public static final String PRODUCT_OUT = "productOut";
-
     public static final String TOC_ID = "tocId";
 
     public static final String ORDER_NUMBER = "orderNumber";

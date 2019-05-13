@@ -37,41 +37,8 @@
 
 		<component type="form" name="form" reference="form">
 			<component type="gridLayout" name="mainTabGridLayout"
-				columns="3" rows="2" hasBorder="false">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="productIn" field="productIn"
-						reference="productIn">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
-
-						<option type="expression"
-							value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange"
-								  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTasksListListenersOT"
-								  method="onProductInChange"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="lookup" name="productOut" field="productOut"
-						reference="productOut">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
-
-						<option type="expression"
-							value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-						<listener event="onSelectedEntityChange"
-								  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTasksListListenersOT"
-								  method="onProductOutChange"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="3">
+				columns="3" rows="1" hasBorder="false">
+				<layoutElement column="1" row="1" width="3">
 					<component type="grid" name="operationalTasksList"
 						reference="grid">
 						<option type="column" name="number" fields="number" link="true" width="75" />
@@ -120,9 +87,4 @@
 		</component>
 
 	</component>
-	<hooks>
-		<beforeRender
-				class="com.qcadoo.mes.operationalTasks.hooks.OperationalTasksListHooks"
-				method="beforeRender"/>
-	</hooks>
 </view>

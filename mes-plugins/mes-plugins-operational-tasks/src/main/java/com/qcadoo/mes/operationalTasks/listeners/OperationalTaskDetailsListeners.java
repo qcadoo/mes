@@ -157,7 +157,10 @@ public class OperationalTaskDetailsListeners {
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         LookupComponent productionLineLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
-
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT);
+        productLookup.setFieldValue(null);
+        FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.PLANNED_QUANTITY);
+        plannedQuantityField.setFieldValue(null);
         Entity order = orderLookup.getEntity();
 
         technologyOperationComponentLookup.setFieldValue(null);
