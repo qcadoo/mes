@@ -46,6 +46,9 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
+    @Autowired
+    private OperationalTaskOrderStateService operationalTaskOrderStateService;
+
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
         return scheduleStateChangeDescriber;
@@ -72,7 +75,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
 
             case ScheduleStateStringValues.REJECTED:
                 if (ScheduleStateStringValues.APPROVED.equals(sourceState)) {
-                    // TODO KASI reject operationalTasks
+                    operationalTaskOrderStateService.rejectOperationalTasksForSchedule(entity);
                 }
         }
 
