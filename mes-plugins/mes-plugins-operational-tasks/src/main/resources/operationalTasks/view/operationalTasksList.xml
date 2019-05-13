@@ -100,9 +100,9 @@
 						<option type="order" column="name" direction="asc" />
 
 						<option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity" />
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage" />
 						<option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity" />
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage" />
 
 						<option type="correspondingView" value="operationalTasks/operationalTaskDetails" />
 						<option type="correspondingComponent" value="form" />
