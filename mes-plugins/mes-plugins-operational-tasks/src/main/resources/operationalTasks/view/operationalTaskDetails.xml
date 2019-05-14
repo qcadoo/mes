@@ -177,7 +177,7 @@
 						  class="com.qcadoo.mes.operationalTasks.listeners.OperationalTaskDetailsListeners"
 						  method="showOperationalTasksWithOrder"/>
 				<option type="header" value="true" />
-				<option type="expression" value="#number" />
+				<option type="expression" value="#number + ', ' + '@operationalTasks.operationalTask.state.value.' + #state" />
 			</component>
 		</windowTab>
 		<windowTab name="orderTab" reference="orderTab">

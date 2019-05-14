@@ -132,7 +132,7 @@ public class OperationalTaskDetailsListeners {
         String orderNumber = order.getStringField(OrderFields.NUMBER);
 
         Map<String, String> filters = Maps.newHashMap();
-        filters.put(OperationalTaskDtoFields.ORDER_NUMBER, orderNumber);
+        filters.put(OperationalTaskDtoFields.ORDER_NUMBER, "["+orderNumber+"]");
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);

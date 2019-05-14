@@ -39,7 +39,7 @@ public class OperationalTaskHooks {
             Entity technologyOperationComponent = operationalTask
                     .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-            if (operationalTask == null) {
+            if (technologyOperationComponent == null) {
                 operationalTask.setField(OperationalTaskFields.NAME, null);
                 operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
             } else {
