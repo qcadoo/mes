@@ -52,11 +52,11 @@
             <option type="column" name="workstationNumber" fields="workstation"
                     expression="#workstation?.get('number')" link="true" width="140"/>
             <option type="column" name="nodeNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['nodeNumber']" width="60"/>
+                    expression="#technologyOperationComponent['nodeNumber']" link="true" width="60"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent.get('operation').get('number')"/>
+                    expression="#technologyOperationComponent.get('operation').get('number')" link="true"/>
             <option type="column" name="operationName" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['operation'].get('name')"/>
+                    expression="#technologyOperationComponent['operation'].get('name')" link="true"/>
             <option type="column" name="orderNumber" fields="order"
                     expression="#order.get('number')" width="60"/>
             <option type="column" name="productNumber" fields="product"

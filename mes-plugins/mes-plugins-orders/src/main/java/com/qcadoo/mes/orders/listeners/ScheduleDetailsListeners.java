@@ -60,8 +60,8 @@ public class ScheduleDetailsListeners {
         List<Entity> positions = sortPositions(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Entity position : positions) {
-            Long orderId = position.getBelongsToField(SchedulePositionFields.ORDER).getId();
-            if (orderWithOperationWithoutWorkstations.contains(orderId)) {
+            Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
+            if (orderWithOperationWithoutWorkstations.contains(order.getId())) {
                 continue;
             }
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
@@ -73,7 +73,7 @@ public class ScheduleDetailsListeners {
             List<Entity> workstations = technologyOperationComponent
                     .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
             if (workstations.isEmpty()) {
-                orderWithOperationWithoutWorkstations.add(orderId);
+                orderWithOperationWithoutWorkstations.add(order.getId());
                 continue;
             }
             Map<Long, Date> operationWorkstationsFinishDates = Maps.newHashMap();
@@ -91,7 +91,7 @@ public class ScheduleDetailsListeners {
                 if (finishDate == null) {
                     finishDate = scheduleStartTime;
                 }
-                List<Entity> children = getChildren(technologyOperationComponent);
+                List<Entity> children = getChildren(technologyOperationComponent, order);
                 for (Entity child : children) {
                     Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME)
                             .toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
@@ -122,11 +122,12 @@ public class ScheduleDetailsListeners {
         }
     }
 
-    private List<Entity> getChildren(Entity technologyOperationComponent) {
+    private List<Entity> getChildren(Entity technologyOperationComponent, Entity order) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER).add(SearchRestrictions
-                        .belongsTo("toc." + TechnologyOperationComponentFields.PARENT, technologyOperationComponent))
-                .list().getEntities();
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
+                        technologyOperationComponent))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order)).list().getEntities();
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
