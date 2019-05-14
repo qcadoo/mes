@@ -29,7 +29,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number">
+        <string name="number" required="true" unique="true">
             <validatesLength max="256"/>
         </string>
         <string name="name">
@@ -76,6 +76,7 @@
                 method="onValidate"/>
         <onCreate class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onCreate"/>
         <onSave class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onSave"/>
+        <onCopy class="com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks" method="onCopy"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

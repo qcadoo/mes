@@ -23,6 +23,10 @@ public class OperationalTaskHooks {
     @Autowired
     private OperationalTasksService operationalTasksService;
 
+    public void onCopy(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        setInitialState(operationalTask);
+    }
+
     public void onCreate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         setInitialState(operationalTask);
     }
