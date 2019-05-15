@@ -24,4 +24,6 @@ public class SchedulePositionFields {
     public static final String QUANTITY = "quantity";
 
     public static final String STAFF = "staff";
+
+    public static final String SCHEDULE = "schedule";
 }

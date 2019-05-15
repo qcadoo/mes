@@ -91,7 +91,8 @@ public class ScheduleDetailsListeners {
                 if (finishDate == null) {
                     finishDate = scheduleStartTime;
                 }
-                List<Entity> children = getChildren(technologyOperationComponent, order);
+                List<Entity> children = getChildren(technologyOperationComponent, order,
+                        position.getBelongsToField(SchedulePositionFields.SCHEDULE));
                 for (Entity child : children) {
                     Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME)
                             .toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
@@ -122,12 +123,13 @@ public class ScheduleDetailsListeners {
         }
     }
 
-    private List<Entity> getChildren(Entity technologyOperationComponent, Entity order) {
+    private List<Entity> getChildren(Entity technologyOperationComponent, Entity order, Entity schedule) {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
                 .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
                 .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
                         technologyOperationComponent))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {

@@ -58,6 +58,7 @@
 
     <hooks>
         <onCreate class="com.qcadoo.mes.orders.hooks.ScheduleHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.orders.hooks.ScheduleHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.orders.hooks.ScheduleHooks"
                 method="onSave"/>
     </hooks>

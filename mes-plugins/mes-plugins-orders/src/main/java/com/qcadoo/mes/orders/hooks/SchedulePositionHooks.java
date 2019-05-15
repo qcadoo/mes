@@ -56,6 +56,8 @@ public class SchedulePositionHooks {
                         schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)))
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER,
                         schedulePosition.getBelongsToField(SchedulePositionFields.ORDER)))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE,
+                        schedulePosition.getBelongsToField(SchedulePositionFields.SCHEDULE)))
                 .list().getEntities();
     }
 }

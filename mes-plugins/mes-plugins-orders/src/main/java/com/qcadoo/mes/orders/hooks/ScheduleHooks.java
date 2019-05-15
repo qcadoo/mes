@@ -28,6 +28,10 @@ public class ScheduleHooks {
         setInitialState(schedule);
     }
 
+    public void onCopy(final DataDefinition scheduleDD, final Entity schedule) {
+        setInitialState(schedule);
+    }
+
     private void setInitialState(final Entity schedule) {
         stateExecutorService.buildInitial(ScheduleServiceMarker.class, schedule, ScheduleStateStringValues.DRAFT);
     }
