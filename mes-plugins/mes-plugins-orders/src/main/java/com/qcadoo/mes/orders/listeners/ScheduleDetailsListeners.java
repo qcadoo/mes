@@ -80,7 +80,7 @@ public class ScheduleDetailsListeners {
 
             for (Entity workstation : workstations) {
                 Date finishDate = workstationsFinishDates.get(workstation.getId());
-                if (finishDate == null && pluginManager.isPluginEnabled("operationalTasksForOrders")) {
+                if (finishDate == null && pluginManager.isPluginEnabled("operationalTasks")) {
                     Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
                             workstation);
                     if (operationalTasksMaxFinishDate != null) {
