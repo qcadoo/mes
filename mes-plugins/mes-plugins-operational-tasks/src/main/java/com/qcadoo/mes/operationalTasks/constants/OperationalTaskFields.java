@@ -59,4 +59,6 @@ public final class OperationalTaskFields {
 
     public static final String USED_QUANTITY = "usedQuantity";
 
+    public static final String STATE = "state";
+
 }

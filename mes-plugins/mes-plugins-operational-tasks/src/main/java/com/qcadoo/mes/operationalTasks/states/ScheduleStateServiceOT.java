@@ -1,11 +1,13 @@
 package com.qcadoo.mes.operationalTasks.states;
 
+import static com.qcadoo.model.api.search.SearchOrders.desc;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,17 +16,20 @@ import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasks.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.orders.states.ScheduleStateChangeDescriber;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -55,6 +60,38 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
     }
 
     @Override
+    public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
+            StateChangeEntityDescriber describer) {
+        if (ScheduleStateStringValues.APPROVED.equals(targetState)) {
+            checkExistingOperationalTasksState(entity);
+        }
+
+        return entity;
+    }
+
+    private void checkExistingOperationalTasksState(Entity entity) {
+        List<Entity> orders = dataDefinitionService
+                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
+                .createAlias(OperationalTaskFields.ORDER, OperationalTaskFields.ORDER, JoinType.INNER)
+                .add(SearchRestrictions.in(OperationalTaskFields.ORDER + ".id",
+                        entity.getManyToManyField(ScheduleFields.ORDERS).stream().mapToLong(Entity::getId).boxed()
+                                .collect(Collectors.toList())))
+                .setProjection(
+                        list().add(alias(SearchProjections.groupField(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER),
+                                OrderFields.NUMBER)))
+                .addOrder(desc(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER)).list().getEntities();
+        if (!orders.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Entity order : orders) {
+                sb.append(order.getStringField(OrderFields.NUMBER));
+                sb.append(", ");
+            }
+            entity.addGlobalError("orders.schedule.operationalTasks.wrongState", false, true, sb.toString());
+        }
+    }
+
+    @Override
     public Entity onAfterSave(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
             StateChangeEntityDescriber describer) {
         switch (targetState) {
@@ -78,6 +115,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             Entity schedulePositionMinStartTimeEntity = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
                     .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
                     .setProjection(list().add(
                             alias(SearchProjections.min(SchedulePositionFields.START_TIME), SchedulePositionFields.START_TIME))
                             .add(rowCount()))
@@ -85,6 +123,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             Entity schedulePositionMaxEndTimeEntity = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
                     .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
                     .setProjection(list()
                             .add(alias(SearchProjections.max(SchedulePositionFields.END_TIME), SchedulePositionFields.END_TIME))
                             .add(rowCount()))
@@ -92,11 +131,20 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             Date startTime = schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
             Date endTime = schedulePositionMaxEndTimeEntity.getDateField(SchedulePositionFields.END_TIME);
             if (startTime != null || endTime != null) {
+                String orderState = order.getStringField(OrderFields.STATE);
                 if (startTime != null) {
-                    order.setField(OrderFields.DATE_FROM, startTime);
+                    if (OrderState.PENDING.getStringValue().equals(orderState)) {
+                        order.setField(OrderFields.DATE_FROM, startTime);
+                    } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
+                        order.setField(OrderFields.CORRECTED_DATE_FROM, startTime);
+                    }
                 }
                 if (endTime != null) {
-                    order.setField(OrderFields.DATE_TO, endTime);
+                    if (OrderState.PENDING.getStringValue().equals(orderState)) {
+                        order.setField(OrderFields.DATE_TO, endTime);
+                    } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
+                        order.setField(OrderFields.CORRECTED_DATE_TO, endTime);
+                    }
                 }
                 order.getDataDefinition().save(order);
             }
@@ -112,7 +160,8 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
                     OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK));
             operationalTask.setField(OperationalTaskFields.START_DATE, position.getField(SchedulePositionFields.START_TIME));
             operationalTask.setField(OperationalTaskFields.FINISH_DATE, position.getField(SchedulePositionFields.END_TIME));
-            operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
+            operationalTask.setField(OperationalTaskFields.TYPE,
+                    OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
             Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
             operationalTask.setField(OperationalTaskFields.ORDER, order);
             Entity technologyOperationComponent = position
