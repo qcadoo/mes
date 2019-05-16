@@ -9,6 +9,32 @@
         </ribbon>
 
         <component type="grid" name="schedules" reference="grid">
+            <script>
+                <![CDATA[
+                    this.addOnChangeListener({
+                        onChange: function(selectedEntitiesArray) {
+                            var deleteButton = #{window}.getRibbonItem("actions.delete");
+                            if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                deleteButton.disable();
+                            } else {
+                                var approved = false;
+                                for (var i = 0; i < selectedEntitiesArray.length; i++) {
+                                    if (selectedEntitiesArray[i].fields.state == "02approved") {
+                                        approved = true;
+                                        break;
+                                    }
+                                }
+
+								if (approved) {
+                                    deleteButton.disable();
+								} else {
+								    deleteButton.enable();
+								}
+                            }
+                        }
+                    });
+                ]]>
+            </script>
             <option type="column" name="number" fields="number" link="true" width="40"/>
             <option type="column" name="name" fields="name" link="true" width="50"/>
             <option type="column" name="state" fields="state" link="true" width="40"/>

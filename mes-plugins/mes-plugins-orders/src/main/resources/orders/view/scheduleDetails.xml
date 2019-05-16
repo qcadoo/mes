@@ -123,7 +123,7 @@
                                     #{orders}.setEditable(true);
      							    #{positions}.setEditable(true);
                                 }
-                                if (state == "02approved") {
+                                if (state == "02approved" || !isSaved) {
                                     deleteButton.disable();
                                 } else {
                                     deleteButton.enable();
