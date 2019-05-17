@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductionLinesService;
@@ -36,22 +46,17 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
 
     private static final String L_TECHNOLOGY = "technology";
+    
+    private static final String L_ORDER = "order";
 
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    private static final String L_OPER_COMP_TIME_CALCULATIONS = "operCompTimeCalculations";
 
     @Autowired
     private NumberService numberService;
@@ -87,7 +92,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
             return getIntegerValue(operationComponent.getField(field));
         } else {
-            return getIntegerValue(operationComponent.getBelongsToField("technologyOperationComponent").getField(field));
+            return getIntegerValue(operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getField(field));
         }
     }
 
@@ -96,7 +101,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         if (TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT.equals(entityType)) {
             return operationComponent.getDecimalField(field);
         } else {
-            return operationComponent.getBelongsToField("technologyOperationComponent").getDecimalField(field);
+            return operationComponent.getBelongsToField(L_TECHNOLOGY_OPERATION_COMPONENT).getDecimalField(field);
         }
     }
 
@@ -265,10 +270,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public Entity createOrGetOperCompTimeCalculation(Entity order, Entity technologyOperationComponent) {
         if (Objects.nonNull(order)) {
             Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+                    .add(SearchRestrictions.belongsTo(L_ORDER, order)).setMaxResults(1).uniqueResult();
             if (Objects.isNull(orderTimeCalculation)) {
                 orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).create();
-                orderTimeCalculation.setField("order", order);
+                orderTimeCalculation.setField(L_ORDER, order);
                 orderTimeCalculation = orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
             }
             Entity operCompTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION).find()
@@ -293,6 +298,21 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
                 operCompTimeCalculation = operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
             }
             return operCompTimeCalculation;
+        }
+    }
+
+    @Override
+    public void deleteOperCompTimeCalculations(Entity order) {
+        Entity orderTimeCalculation = dataDefinitionService
+                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                .find().add(SearchRestrictions.belongsTo(L_ORDER, order)).setMaxResults(1).uniqueResult();
+        if (!Objects.isNull(orderTimeCalculation)
+                && !orderTimeCalculation.getHasManyField(L_OPER_COMP_TIME_CALCULATIONS).isEmpty()) {
+            dataDefinitionService
+                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            TimeNormsConstants.MODEL_OPER_COMP_TIME_CALCULATION)
+                    .delete(orderTimeCalculation.getHasManyField(L_OPER_COMP_TIME_CALCULATIONS).stream().mapToLong(Entity::getId)
+                            .boxed().toArray(Long[]::new));
         }
     }
 

@@ -139,6 +139,8 @@ public class ScheduleDetailsListenersPS {
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
                 .getProductComponentQuantities(technology, quantity, operationRuns);
 
+        operationWorkTimeService.deleteOperCompTimeCalculations(order);
+
         operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, includeAdditionalTime,
                 productionLine, true);
 
