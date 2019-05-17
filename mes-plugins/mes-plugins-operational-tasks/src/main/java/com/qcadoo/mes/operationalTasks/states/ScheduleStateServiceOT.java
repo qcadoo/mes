@@ -1,17 +1,5 @@
 package com.qcadoo.mes.operationalTasks.states;
 
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
@@ -35,6 +23,17 @@ import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 @RunIfEnabled(OperationalTasksConstants.PLUGIN_IDENTIFIER)
@@ -176,7 +175,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             operationalTask.setField(OperationalTaskFields.WORKSTATION, position.getField(SchedulePositionFields.WORKSTATION));
             operationalTask.setField(OperationalTaskFields.STAFF, position.getField(SchedulePositionFields.STAFF));
             operationalTask.setField(OperationalTaskFields.PRODUCT, position.getField(SchedulePositionFields.PRODUCT));
-            operationalTask.setField(OperationalTaskFields.SCHEDULE, schedule);
+            operationalTask.setField(OperationalTaskFields.SCHEDULE_POSITION, position);
 
             operationalTaskDD.save(operationalTask);
         }
