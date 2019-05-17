@@ -43,6 +43,7 @@ import com.qcadoo.view.api.components.FormComponent;
 public class ScheduleDetailsListeners {
 
     private static final String FINISH_DATE = "finishDate";
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -80,7 +81,7 @@ public class ScheduleDetailsListeners {
 
             for (Entity workstation : workstations) {
                 Date finishDate = workstationsFinishDates.get(workstation.getId());
-                if (finishDate == null && pluginManager.isPluginEnabled("operationalTasks")) {
+                if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
                     Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
                             workstation);
                     if (operationalTasksMaxFinishDate != null) {

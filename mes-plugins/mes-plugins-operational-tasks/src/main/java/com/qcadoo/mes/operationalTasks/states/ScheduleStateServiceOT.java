@@ -111,41 +111,57 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
     private void updateOrderDates(Entity entity) {
         List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
         for (Entity order : orders) {
-            Entity schedulePositionMinStartTimeEntity = dataDefinitionService
-                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
-                    .setProjection(list().add(
-                            alias(SearchProjections.min(SchedulePositionFields.START_TIME), SchedulePositionFields.START_TIME))
-                            .add(rowCount()))
-                    .addOrder(SearchOrders.asc(SchedulePositionFields.START_TIME)).setMaxResults(1).uniqueResult();
-            Entity schedulePositionMaxEndTimeEntity = dataDefinitionService
-                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
-                    .setProjection(list()
-                            .add(alias(SearchProjections.max(SchedulePositionFields.END_TIME), SchedulePositionFields.END_TIME))
-                            .add(rowCount()))
-                    .addOrder(SearchOrders.desc(SchedulePositionFields.END_TIME)).setMaxResults(1).uniqueResult();
-            Date startTime = schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
-            Date endTime = schedulePositionMaxEndTimeEntity.getDateField(SchedulePositionFields.END_TIME);
+            Date startTime = getOrderStartTime(entity, order);
+            Date endTime = getOrderEndTime(entity, order);
             if (startTime != null || endTime != null) {
                 String orderState = order.getStringField(OrderFields.STATE);
-                if (startTime != null) {
-                    if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                        order.setField(OrderFields.DATE_FROM, startTime);
-                    } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                        order.setField(OrderFields.CORRECTED_DATE_FROM, startTime);
-                    }
-                }
-                if (endTime != null) {
-                    if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                        order.setField(OrderFields.DATE_TO, endTime);
-                    } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                        order.setField(OrderFields.CORRECTED_DATE_TO, endTime);
-                    }
-                }
+                setOrderDateFrom(order, startTime, orderState);
+                setOrderDateTo(order, endTime, orderState);
                 order.getDataDefinition().save(order);
+            }
+        }
+    }
+
+    private Date getOrderEndTime(Entity entity, Entity order) {
+        Entity schedulePositionMaxEndTimeEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
+                .setProjection(
+                        list().add(alias(SearchProjections.max(SchedulePositionFields.END_TIME), SchedulePositionFields.END_TIME))
+                                .add(rowCount()))
+                .addOrder(SearchOrders.desc(SchedulePositionFields.END_TIME)).setMaxResults(1).uniqueResult();
+        return schedulePositionMaxEndTimeEntity.getDateField(SchedulePositionFields.END_TIME);
+    }
+
+    private Date getOrderStartTime(Entity entity, Entity order) {
+        Entity schedulePositionMinStartTimeEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
+                .setProjection(list()
+                        .add(alias(SearchProjections.min(SchedulePositionFields.START_TIME), SchedulePositionFields.START_TIME))
+                        .add(rowCount()))
+                .addOrder(SearchOrders.asc(SchedulePositionFields.START_TIME)).setMaxResults(1).uniqueResult();
+        return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
+    }
+
+    private void setOrderDateTo(Entity order, Date endTime, String orderState) {
+        if (endTime != null) {
+            if (OrderState.PENDING.getStringValue().equals(orderState)) {
+                order.setField(OrderFields.DATE_TO, endTime);
+            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
+                order.setField(OrderFields.CORRECTED_DATE_TO, endTime);
+            }
+        }
+    }
+
+    private void setOrderDateFrom(Entity order, Date startTime, String orderState) {
+        if (startTime != null) {
+            if (OrderState.PENDING.getStringValue().equals(orderState)) {
+                order.setField(OrderFields.DATE_FROM, startTime);
+            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
+                order.setField(OrderFields.CORRECTED_DATE_FROM, startTime);
             }
         }
     }
