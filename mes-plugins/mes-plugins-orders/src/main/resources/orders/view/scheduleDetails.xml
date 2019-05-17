@@ -77,6 +77,7 @@
 							onSetValue: function() {
                                 var approveSchedule = #{window}.getRibbonItem("status.approveSchedule");
                                 var rejectSchedule = #{window}.getRibbonItem("status.rejectSchedule");
+                                var deleteButton = #{window}.getRibbonItem("actions.delete");
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var state = #{state}.getValue().content.value;
 								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
@@ -121,6 +122,11 @@
                                     this.setEnabled(true, true);
                                     #{orders}.setEditable(true);
      							    #{positions}.setEditable(true);
+                                }
+                                if (state == "02approved" || !isSaved) {
+                                    deleteButton.disable();
+                                } else {
+                                    deleteButton.enable();
                                 }
 							}
 						});

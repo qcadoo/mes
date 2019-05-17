@@ -99,7 +99,7 @@ public class ScheduleDetailsListenersPS {
         Entity technologyOperationComponent = operCompTimeCalculation
                 .getBelongsToField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT);
         Entity schedulePosition = schedulePositionDD.create();
-        schedulePosition.setField(OrdersConstants.MODEL_SCHEDULE, schedule);
+        schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
@@ -132,6 +132,9 @@ public class ScheduleDetailsListenersPS {
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            return null;
+        }
 
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
                 .getProductComponentQuantities(technology, quantity, operationRuns);

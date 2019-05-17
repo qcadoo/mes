@@ -59,4 +59,6 @@ public final class OperationalTaskFields {
 
     public static final String SCHEDULE_POSITION = "schedulePosition";
 
+    public static final String STATE = "state";
+
 }
