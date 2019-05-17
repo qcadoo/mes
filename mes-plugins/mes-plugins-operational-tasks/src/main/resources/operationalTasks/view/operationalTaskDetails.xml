@@ -255,7 +255,7 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="1" row="4" width="5">
-							<component type="input" name="plannedQuantity" field="#{form}.plannedQuantity" reference="plannedQuantity"
+							<component type="input" name="plannedQuantity" reference="plannedQuantity"
 									   defaultEnabled="false">
 								<option type="alignment" value="right"/>
 							</component>
@@ -265,7 +265,7 @@
 									   reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
 						</layoutElement>
 						<layoutElement column="1" row="5" width="5">
-							<component type="input" name="usedQuantity" field="#{form}.usedQuantity" reference="usedQuantity"
+							<component type="input" name="usedQuantity" reference="usedQuantity"
 									   defaultEnabled="false">
 								<option type="alignment" value="right"/>
 							</component>

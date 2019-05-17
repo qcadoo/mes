@@ -53,17 +53,7 @@
         <belongsTo name="technologyOperationComponent"
                    plugin="technologies" model="technologyOperationComponent"/>
         <belongsTo name="product" plugin="basic" model="product"/>
-
-        <decimal name="plannedQuantity">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
-        <decimal name="usedQuantity">
-            <validatesRange from="0" exclusively="false"/>
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-        </decimal>
+        <belongsTo name="schedulePosition" plugin="orders" model="schedulePosition"/>
 
         <enum name="state" values="01pending,02started,03finished,04rejected" default="01pending"/>
         <hasMany name="stateChanges" model="operationalTaskStateChange" joinField="operationalTask" cascade="delete"/>

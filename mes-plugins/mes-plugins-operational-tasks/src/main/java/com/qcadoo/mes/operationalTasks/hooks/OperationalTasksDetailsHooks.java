@@ -106,6 +106,7 @@ public class OperationalTasksDetailsHooks {
             Entity ot = form.getEntity();
             Entity product = ot.getBelongsToField(OperationalTaskFields.PRODUCT);
             if(Objects.nonNull(product)) {
+                Entity otDto = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK_DTO).get(ot.getId());
                 FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference("doneInPercentage");
                 FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
                 FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
@@ -114,13 +115,21 @@ public class OperationalTasksDetailsHooks {
                 usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
                 plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
 
-                BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(ot.getDecimalField(OperationalTaskFields.USED_QUANTITY)).multiply(new BigDecimal(100));
-                doneInPercentageQuantity = doneInPercentageQuantity
-                        .divide(ot.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
-                doneInPercentage.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
-                doneInPercentage.setEnabled(false);
-                doneInPercentageUnit.setFieldValue("%");
+                if(Objects.nonNull(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY)) && otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(otDto.getDecimalField("usedQuantity"))
+                            .multiply(new BigDecimal(100));
+                    doneInPercentageQuantity = doneInPercentageQuantity
+                            .divide(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+                    doneInPercentage.setFieldValue(numberService
+                            .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
+                    doneInPercentage.setEnabled(false);
+                    doneInPercentageUnit.setFieldValue("%");
+                } else {
+                    doneInPercentage.setFieldValue(numberService
+                            .formatWithMinimumFractionDigits(BigDecimal.ZERO, 0));
+                    doneInPercentage.setEnabled(false);
+                    doneInPercentageUnit.setFieldValue("%");
+                }
             }
         }
     }

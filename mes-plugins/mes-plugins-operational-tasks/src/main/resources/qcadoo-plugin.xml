@@ -127,6 +127,12 @@
                            joinField="shift" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="orders" model="schedulePosition">
+            <model:hasMany name="operationalTasks"
+                           plugin="operationalTasks" model="operationalTask"
+                           joinField="schedulePosition" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="operTaskFlagPercentExecutionWithColor" default="false"/>
         </model:model-field>

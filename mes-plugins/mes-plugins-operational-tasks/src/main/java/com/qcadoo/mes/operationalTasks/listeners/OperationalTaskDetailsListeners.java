@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.operationalTasks.listeners;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.hooks.OperationalTasksDetailsHooks;
@@ -33,7 +31,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -42,7 +39,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
-import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Objects;
 
@@ -184,16 +180,13 @@ public class OperationalTaskDetailsListeners {
     }
 
     public void setAdditionalFields(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
-        Entity order = orderLookup.getEntity();
-        order = order.getDataDefinition().get(order.getId());
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT);
         FieldComponent plannedQuantityField = (FieldComponent) view
                 .getComponentByReference(OperationalTaskFields.PLANNED_QUANTITY);
         FieldComponent plannedQuantityUnitField = (FieldComponent) view.getComponentByReference(PLANNED_QUANTITY_UNIT);
-        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.USED_QUANTITY);
+        FieldComponent usedQuantityField = (FieldComponent) view.getComponentByReference("usedQuantity");
         FieldComponent usedQuantityUnitField = (FieldComponent) view.getComponentByReference(USED_QUANTITY_UNIT);
 
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
@@ -206,22 +199,8 @@ public class OperationalTaskDetailsListeners {
             usedQuantityUnitField.setFieldValue(null);
         } else {
             Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
-                    .getProductComponentQuantitiesWithoutNonComponents(Lists.newArrayList(order), true);
-
             Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
-            BigDecimal plannedQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
-
-            BigDecimal usedQuantity = BigDecimal.ZERO;
-
-            String unit = product.getStringField(ProductFields.UNIT);
-
             productLookup.setFieldValue(product.getId());
-            plannedQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(plannedQuantity, 0));
-            plannedQuantityUnitField.setFieldValue(unit);
-            usedQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(usedQuantity, 0));
-            usedQuantityUnitField.setFieldValue(unit);
-
         }
 
         productLookup.requestComponentUpdateState();

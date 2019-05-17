@@ -5,7 +5,6 @@ import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
 import com.qcadoo.mes.operationalTasks.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -63,14 +62,9 @@ public class OperationalTaskOrderStateService {
             for (Entity pos : positions) {
                 Entity operationalTask = dataDefinitionService
                         .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
-                        .find()
-                        .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER,
-                                pos.getBelongsToField(SchedulePositionFields.ORDER)))
-                        .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT,
-                                pos.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)))
-                        .add(SearchRestrictions.belongsTo(OperationalTaskFields.PRODUCT,
-                                pos.getBelongsToField(SchedulePositionFields.PRODUCT))).setMaxResults(1).uniqueResult();
-                if(Objects.nonNull(operationalTask)) {
+                        .find().add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
+                        .uniqueResult();
+                if (Objects.nonNull(operationalTask)) {
                     stateExecutorService.changeState(OperationalTasksServiceMarker.class, operationalTask, userLogin,
                             OperationalTaskStateStringValues.REJECTED);
                 }

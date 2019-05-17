@@ -14,7 +14,7 @@ public class OrdersCriteriaModifiers {
     public void showWithProductionLines(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNotNull(OrderFields.PRODUCTION_LINE));
         scb.add(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.PENDING.getStringValue(),
-                OrderState.IN_PROGRESS.getStringValue())));
+                OrderState.ACCEPTED.getStringValue())));
     }
 
 }

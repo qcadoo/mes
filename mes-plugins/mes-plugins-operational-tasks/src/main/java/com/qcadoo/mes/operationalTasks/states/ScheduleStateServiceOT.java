@@ -137,7 +137,7 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             operationalTask.setField(OperationalTaskFields.WORKSTATION, position.getField(SchedulePositionFields.WORKSTATION));
             operationalTask.setField(OperationalTaskFields.STAFF, position.getField(SchedulePositionFields.STAFF));
             operationalTask.setField(OperationalTaskFields.PRODUCT, position.getField(SchedulePositionFields.PRODUCT));
-            operationalTask.setField(OperationalTaskFields.PLANNED_QUANTITY, position.getField(SchedulePositionFields.QUANTITY));
+            operationalTask.setField(OperationalTaskFields.SCHEDULE, schedule);
 
             operationalTaskDD.save(operationalTask);
         }
