@@ -34,6 +34,7 @@
         <belongsTo name="order" model="order"/>
         <belongsTo name="product" plugin="basic" model="product"/>
         <belongsTo name="workstation" plugin="basic" model="workstation"/>
+        <belongsTo name="staff" model="staff" plugin="basic"/>
         <decimal name="quantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
@@ -46,6 +47,9 @@
         <datetime name="endTime"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onSave class="com.qcadoo.mes.orders.hooks.SchedulePositionHooks"
+                method="onSave"/>
+    </hooks>
 
 </model>

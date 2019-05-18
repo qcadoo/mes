@@ -23,30 +23,29 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.operationalTasks.OperationalTasksService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskHooksOTFOOverrideUtil {
 
     @Autowired
-    private OperationalTasksForOrdersService operationalTasksForOrdersService;
+    private OperationalTasksService operationalTasksForOrdersService;
 
     public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
         if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
-            Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
 
             Entity technologyOperationComponent = operationalTask
-                    .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+                    .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
                 operationalTask.setField(OperationalTaskFields.NAME, null);

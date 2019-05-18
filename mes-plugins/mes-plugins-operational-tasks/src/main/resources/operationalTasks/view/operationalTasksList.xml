@@ -25,77 +25,61 @@
 
 -->
 <view name="operationalTasksList" modelName="operationalTaskDto"
-	  defaultAuthorizationRole="ROLE_PLANNING" menuAccessible="true"
-	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+      defaultAuthorizationRole="ROLE_PLANNING" menuAccessible="true"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
-	<component type="window" name="window">
+    <component type="window" name="window">
 
-		<ribbon>
-			<template name="standardGridTemplate" />
-		</ribbon>
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
 
-		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="mainTabGridLayout"
-				columns="3" rows="2" hasBorder="false">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="productIn" field="productIn"
-						reference="productIn">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+        <component type="grid" name="operationalTasksList"
+                   reference="grid">
+            <option type="column" name="number" fields="number" link="true" width="75"/>
+            <option type="column" name="name" fields="name" link="true" width="125"/>
+            <option type="column" name="startDate" fields="startDate" width="100"/>
+            <option type="column" name="finishDate" fields="finishDate" width="100"/>
+            <option type="column" name="staffName" fields="staffName" width="125"/>
+            <option type="column" name="productionLineName" fields="productionLineName" width="100"/>
+            <option type="column" name="workstationName" fields="workstationName" width="100"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                    correspondingView="orders/orderDetails" correspondingField="orderId"
+                    width="100"/>
+            <option type="column" name="orderId" fields="orderId" hidden="true"/>
+            <option type="column" name="technologyOperationComponentNodeNumber" fields="technologyOperationComponentNodeNumber"
+                    width="75"/>
+            <option type="column" name="productNumber" fields="productNumber" width="75"/>
+            <option type="column" name="productName" fields="productName" width="75"/>
+            <option type="column" name="plannedQuantity" fields="plannedQuantity" width="50"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity" width="50"/>
+            <option type="column" name="productUnit" fields="productUnit" width="30"/>
+            <option type="column" name="remainingQuantity" fields="remainingQuantity" width="50"/>
+            <option type="column" name="doneInPercentage" fields="doneInPercentage" width="50"
+                    classesCondition="rowObject['operTaskFlagPercentExecutionWithColor']>0"
+                    classesNames="rowObject['percentageOfExecutionCellColor']"/>
+            <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
+            <option type="column" name="operTaskFlagPercentExecutionWithColor" fields="operTaskFlagPercentExecutionWithColor"
+                    hidden="true"/>
+            <option type="column" name="type" fields="type" hidden="true"/>
 
-						<option type="expression"
-							value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				<layoutElement column="2" row="1">
-					<component type="lookup" name="productOut" field="productOut"
-						reference="productOut">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
+            <option type="order" column="name" direction="asc"/>
 
-						<option type="searchable" value="name,number" />
-						<option type="orderable" value="name,number" />
+            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
+            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
 
-						<option type="expression"
-							value="#number + ' - ' + #name" />
-						<option type="fieldCode" value="number" />
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="3">
-					<component type="grid" name="operationalTasksList"
-						reference="grid">
-						<option type="column" name="number" fields="number" link="true" width="75" />
-						<option type="column" name="name" fields="name" link="true" width="125" />
-						<option type="column" name="startDate" fields="startDate" width="100" />
-						<option type="column" name="finishDate" fields="finishDate" width="100"/>
-						<option type="column" name="staffName" fields="staffName" width="125" />
-						<option type="column" name="productionLineName" fields="productionLineName" width="100"/>
-						<option type="column" name="workstationName" fields="workstationName" width="100" />
+            <option type="correspondingView" value="operationalTasks/operationalTaskDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
-						<option type="order" column="name" direction="asc" />
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
 
-						<option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName" />
-						<option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName" />
 
-						<option type="correspondingView" value="operationalTasks/operationalTaskDetails" />
-						<option type="correspondingComponent" value="form" />
-
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-
-						<option type="fixedHeight" value="true" />
-						<option type="header" value="false" />
-					</component>
-				</layoutElement>
-			</component>
-
-			<option type="header" value="true" />
-		</component>
-
-	</component>
-
+        </component>
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
 </view>

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
+import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
+import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -17,6 +20,21 @@ public class ScheduleHooks {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
+    public void onCreate(final DataDefinition scheduleDD, final Entity schedule) {
+        setInitialState(schedule);
+    }
+
+    public void onCopy(final DataDefinition scheduleDD, final Entity schedule) {
+        setInitialState(schedule);
+    }
+
+    private void setInitialState(final Entity schedule) {
+        stateExecutorService.buildInitial(ScheduleServiceMarker.class, schedule, ScheduleStateStringValues.DRAFT);
+    }
 
     public void onSave(final DataDefinition scheduleDD, final Entity schedule) {
         setScheduleNumber(schedule);

@@ -35,6 +35,7 @@
         </string>
         <datetime name="startTime" required="true"/>
         <enum name="state" values="01draft,02approved,03rejected" default="01draft" required="true"/>
+        <hasMany name="stateChanges" model="scheduleStateChange" joinField="schedule" cascade="delete"/>
         <enum name="sortOrder"
               values="01desc,02asc"
               default="01desc"
@@ -56,6 +57,8 @@
     </fields>
 
     <hooks>
+        <onCreate class="com.qcadoo.mes.orders.hooks.ScheduleHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.orders.hooks.ScheduleHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.orders.hooks.ScheduleHooks"
                 method="onSave"/>
     </hooks>

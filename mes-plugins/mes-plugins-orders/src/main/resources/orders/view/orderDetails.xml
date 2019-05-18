@@ -911,7 +911,7 @@
                        columns="3" rows="3">
                 <layoutElement column="1" row="1" height="3">
                     <component type="gridLayout" name="prodQuantityTablayout"
-                               columns="1" rows="4">
+                               columns="1" rows="5">
                         <layoutElement column="1" row="1">
                             <component type="borderLayout" name="commissionedAmount">
                                 <component type="gridLayout" name="commissionedAmountGridLayout"
@@ -973,6 +973,25 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="3">
+                            <component type="gridLayout" name="doneInPercentageGridLayout"
+                                       columns="4" rows="1" reference="doneInPercentageGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="doneInPercentage"
+                                               reference="doneInPercentage" defaultEnabled="false">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="doneInPercentageUnit" reference="doneInPercentageUnit"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4">
                             <component type="gridLayout" name="wastesQuantityGridLayout"
                                        columns="4" rows="1" reference="wastesQuantityGridLayout"
                                        hasBorders="false">
@@ -995,7 +1014,7 @@
                                 </layoutElement>
                             </component>
                         </layoutElement>
-                        <layoutElement column="1" row="4">
+                        <layoutElement column="1" row="5">
                             <component type="gridLayout"
                                        name="remainingAmountOfProductToProduceGridLayout" columns="4"
                                        rows="1" reference="remainingAmountOfProductToProduceGridLayout"

@@ -29,17 +29,17 @@
                     plugin="orders"
                     view="scheduleDetails">
 
-    <windowTab name="scheduleTab">
+    <windowTab name="scheduleTab" reference="scheduleTab">
         <ribbon>
             <group name="setAPlan">
                 <bigButton name="getOperations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(getOperations);" state="enabled">
+                           action="#{form}.fireEvent(getOperations);" state="disabled">
                 </bigButton>
                 <bigButton name="assignOperationsToWorkstations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(assignOperationsToWorkstations);" state="enabled">
+                           action="#{form}.fireEvent(assignOperationsToWorkstations);" state="disabled">
                 </bigButton>
                 <bigButton name="assignWorkersToOperations" icon="generateIcon24.png"
-                           action="#{form}.fireEvent(assignWorkersToOperations);" state="enabled">
+                           action="#{form}.fireEvent(assignWorkersToOperations);" state="disabled">
                 </bigButton>
             </group>
         </ribbon>
@@ -47,36 +47,47 @@
         <component type="grid" name="positions" source="#{form}.positions"
                    reference="positions">
 
-            <option type="column" name="workstationName" fields="workstation"
-                    expression="#workstation?.get('name')"/>
+            <option type="column" name="staffName" fields="staff"
+                    expression="#staff != null ? #staff.get('name') + ' ' + #staff.get('surname') : ''" link="true"/>
+            <option type="column" name="workstationNumber" fields="workstation"
+                    expression="#workstation?.get('number')" link="true" width="140"/>
+            <option type="column" name="nodeNumber" fields="technologyOperationComponent"
+                    expression="#technologyOperationComponent['nodeNumber']" link="true" width="60"/>
             <option type="column" name="operationNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent.get('operation').get('number')"/>
+                    expression="#technologyOperationComponent.get('operation').get('number')" link="true"/>
             <option type="column" name="operationName" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['operation'].get('name')"/>
+                    expression="#technologyOperationComponent['operation'].get('name')" link="true"/>
             <option type="column" name="orderNumber" fields="order"
-                    expression="#order.get('number')"/>
+                    expression="#order.get('number')" width="60"/>
             <option type="column" name="productNumber" fields="product"
                     expression="#product.get('number')"/>
             <option type="column" name="productName" fields="product"
                     expression="#product.get('name')"/>
-            <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="quantity" fields="quantity" width="40"/>
             <option type="column" name="productUnit" fields="product"
                     expression="#product.get('unit')" width="40"/>
-            <option type="column" name="startTime" fields="startTime"/>
-            <option type="column" name="endTime" fields="endTime"/>
+            <option type="column" name="startTime" fields="startTime" width="120"/>
+            <option type="column" name="endTime" fields="endTime" width="120"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"
+                    width="60"/>
             <option type="column" name="machineWorkTime" fields="machineWorkTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#machineWorkTime)"
+                    width="60"/>
             <option type="column" name="additionalTime" fields="additionalTime"
-                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
+                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"
+                    width="60"/>
 
-            <option type="order" column="operationNumber" direction="asc"/>
+            <option type="correspondingView" value="orders/schedulePositionDetails"/>
+            <option type="correspondingComponent" value="form"/>
+            <option type="correspondingViewInModal" value="true" />
+
+            <option type="order" column="nodeNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
             <option type="orderable"
-                    value="workstationName,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
 
             <option type="fixedHeight" value="true"/>
 

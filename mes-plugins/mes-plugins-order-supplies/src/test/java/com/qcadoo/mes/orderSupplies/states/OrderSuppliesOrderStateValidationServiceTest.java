@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
-import com.qcadoo.mes.operationalTasksForOrders.constants.InputProductsRequiredForTypeOTFO;
+import com.qcadoo.mes.operationalTasks.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -62,7 +62,7 @@ public class OrderSuppliesOrderStateValidationServiceTest {
         // given
         given(stateChangeContext.getOwner()).willReturn(order);
         given(order.getStringField(OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE)).willReturn(
-                InputProductsRequiredForTypeOTFO.START_OPERATIONAL_TASK.getStringValue());
+                InputProductsRequiredForType.START_OPERATIONAL_TASK.getStringValue());
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
                 TypeOfProductionRecording.CUMULATED.getStringValue());
 
@@ -78,7 +78,7 @@ public class OrderSuppliesOrderStateValidationServiceTest {
         // given
         given(stateChangeContext.getOwner()).willReturn(order);
         given(order.getStringField(OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE)).willReturn(
-                InputProductsRequiredForTypeOTFO.START_OPERATIONAL_TASK.getStringValue());
+                InputProductsRequiredForType.START_OPERATIONAL_TASK.getStringValue());
         given(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).willReturn(
                 TypeOfProductionRecording.FOR_EACH.getStringValue());
 

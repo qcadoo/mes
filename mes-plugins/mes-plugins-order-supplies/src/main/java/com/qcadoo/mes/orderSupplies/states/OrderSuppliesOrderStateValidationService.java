@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.orderSupplies.states;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
-import com.qcadoo.mes.operationalTasksForOrders.constants.InputProductsRequiredForTypeOTFO;
+import com.qcadoo.mes.operationalTasks.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderSuppliesOrderStateValidationService {
@@ -41,7 +41,7 @@ public class OrderSuppliesOrderStateValidationService {
         String inputProductsRequiredForType = order.getStringField(OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE);
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-        if (InputProductsRequiredForTypeOTFO.START_OPERATIONAL_TASK.getStringValue().equals(inputProductsRequiredForType)
+        if (InputProductsRequiredForType.START_OPERATIONAL_TASK.getStringValue().equals(inputProductsRequiredForType)
                 && !TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
             stateChangeContext.addFieldValidationError(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
                     "orders.order.typeOfProductionRecording.error.typeIsntForEach");

@@ -23,15 +23,19 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.operationalTasks.OperationalTasksService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Date;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskValidators {
@@ -40,11 +44,16 @@ public class OperationalTaskValidators {
 
     private static final String WRONG_DATES_ORDER_MESSAGE = "operationalTasks.operationalTask.error.finishDateIsEarlier";
 
+    @Autowired
+    private OperationalTasksService operationalTasksService;
+
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = true;
 
         isValid = hasName(operationalTaskDD, operationalTask) && isValid;
         isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
     }
@@ -78,5 +87,45 @@ public class OperationalTaskValidators {
 
         return true;
     }
+
+    private boolean checkIfOrderHasTechnology(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+        Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+
+        if (order == null) {
+            return true;
+        }
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology == null) {
+            operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ORDER),
+                    "operationalTasks.operationalTask.order.error.technologyIsNull");
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkIfFieldSet(DataDefinition operationalTaskDD, Entity operationalTask) {
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+
+        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
+            boolean valid = true;
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+            if (Objects.isNull(order)) {
+                operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.ORDER), "qcadooView.validate.field.error.missing");
+                valid = false;
+            }
+
+            Entity toc = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+            if (Objects.isNull(toc)) {
+                operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT), "qcadooView.validate.field.error.missing");
+                valid = false;
+            }
+            return valid;
+        }
+        return true;
+    }
+
 
 }

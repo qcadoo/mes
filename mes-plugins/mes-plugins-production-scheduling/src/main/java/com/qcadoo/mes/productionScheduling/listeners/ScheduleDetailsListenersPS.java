@@ -63,7 +63,8 @@ public class ScheduleDetailsListenersPS {
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
         Map<Long, OperationProductComponentWithQuantityContainer> ordersOperationsQuantity = Maps.newHashMap();
-        for (Entity order : ordersGrid.getEntities()) {
+        List<Entity> orders = ordersGrid.getEntities();
+        for (Entity order : orders) {
             OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
                     order, order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             ordersOperationsQuantity.put(order.getId(), operationProductComponentWithQuantityContainer);
@@ -74,7 +75,7 @@ public class ScheduleDetailsListenersPS {
         List<Entity> positions = Lists.newArrayList();
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
-        for (Entity order : ordersGrid.getEntities()) {
+        for (Entity order : orders) {
             List<Entity> orderTimeCalculations = order.getHasManyField(OrderFieldsPS.ORDER_TIME_CALCULATIONS);
             if (!orderTimeCalculations.isEmpty()) {
                 List<Entity> operCompTimeCalculations = orderTimeCalculations.get(0)
@@ -98,23 +99,23 @@ public class ScheduleDetailsListenersPS {
         Entity technologyOperationComponent = operCompTimeCalculation
                 .getBelongsToField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT);
         Entity schedulePosition = schedulePositionDD.create();
-        schedulePosition.setField(OrdersConstants.MODEL_SCHEDULE, schedule);
+        schedulePosition.setField(SchedulePositionFields.SCHEDULE, schedule);
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-        schedulePosition.setField(OperationProductOutComponentFields.PRODUCT,
+        schedulePosition.setField(SchedulePositionFields.PRODUCT,
                 mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = ordersOperationsQuantity
                 .get(order.getId());
         BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
-        schedulePosition.setField(OperationProductOutComponentFields.QUANTITY, productComponentQuantity);
+        schedulePosition.setField(SchedulePositionFields.QUANTITY, productComponentQuantity);
         schedulePosition.setField(SchedulePositionFields.ADDITIONAL_TIME,
                 technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
         schedulePosition.setField(OperCompTimeCalculation.LABOR_WORK_TIME,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.LABOR_WORK_TIME));
         schedulePosition.setField(SchedulePositionFields.MACHINE_WORK_TIME,
                 operCompTimeCalculation.getIntegerField(OperCompTimeCalculation.MACHINE_WORK_TIME));
-        return schedulePositionDD.save(schedulePosition);
+        return schedulePosition;
     }
 
     @Transactional
@@ -131,9 +132,14 @@ public class ScheduleDetailsListenersPS {
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        if (technology == null) {
+            return null;
+        }
 
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
                 .getProductComponentQuantities(technology, quantity, operationRuns);
+
+        operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
         operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, includeAdditionalTime,
                 productionLine, true);

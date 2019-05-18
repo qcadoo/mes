@@ -247,6 +247,12 @@
             <option type="column" name="wastesQuantity" fields="wastesQuantity" width="20"/>
             <option type="column" name="remainingAmountOfProductToProduce" fields="remainingAmountOfProductToProduce" width="20"/>
             <option type="column" name="unit" fields="unit" width="15"/>
+            <option type="column" name="doneInPercentage" fields="doneInPercentage" width="50"
+                    classesCondition="rowObject['flagPercentageOfExecutionWithColor']>0"
+                    classesNames="rowObject['percentageOfExecutionCellColor']"/>
+            <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
+            <option type="column" name="flagPercentageOfExecutionWithColor" fields="flagPercentageOfExecutionWithColor" hidden="true"/>
+
             <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
             <option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
             <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
@@ -265,9 +271,9 @@
 
             <option type="order" column="dateFrom" direction="desc"/>
 
-            <option type="searchable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
-            <option type="multiSearch" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
-            <option type="orderable" value="name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="searchable" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="multiSearch" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="orderable" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"

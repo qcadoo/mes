@@ -32,17 +32,25 @@
 		<string name="number" />
 		<string name="name" />
 		<string name="description" />
-		<enum name="type" values="01otherCase" />
+		<enum name="type" values="01otherCase,02executionOperationInOrder" />
 		<datetime name="startDate" />
 		<datetime name="finishDate" />
 		<string name="staffName"/>
 		<string name="productionLineName" />
 		<string name="workstationName" />
-
-		<belongsTo name="productIn" model="product" plugin="basic"
-				   persistent="false" />
-		<belongsTo name="productOut" model="product" plugin="basic"
-				   persistent="false" />
+		<integer name="orderId"/>
+		<integer name="tocId"/>
+		<string name="orderNumber"/>
+		<string name="technologyOperationComponentNodeNumber"/>
+		<string name="productNumber"/>
+		<string name="productName"/>
+		<string name="productUnit"/>
+		<decimal name="plannedQuantity"/>
+		<decimal name="usedQuantity"/>
+		<decimal name="remainingQuantity"/>
+		<decimal name="doneInPercentage"/>
+		<decimal name="operTaskFlagPercentExecutionWithColor"/>
+		<string name="percentageOfExecutionCellColor"/>
 	</fields>
 
 	<hooks />

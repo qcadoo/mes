@@ -11,7 +11,11 @@ public final class ScheduleFields {
 
     public static final String START_TIME = "startTime";
 
+    public static final String APPROVE_TIME = "approveTime";
+
     public static final String SORT_ORDER = "sortOrder";
+
+    public static final String WORKSTATION_ASSIGN_CRITERION = "workstationAssignCriterion";
 
     public static final String POSITIONS = "positions";
 

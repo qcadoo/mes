@@ -70,4 +70,6 @@ public final class ParameterFieldsO {
     public static final String SET_EFFECTIVE_DATE_FROM_ON_IN_PROGRESS = "setEffectiveDateFromOnInProgress";
 
     public static final String SET_EFFECTIVE_DATE_TO_ON_COMPLETED = "setEffectiveDateToOnCompleted";
+
+    public static final String FLAG_PERCENTAGE_OF_EXECUTION_WITH_COLOR= "flagPercentageOfExecutionWithColor";
 }

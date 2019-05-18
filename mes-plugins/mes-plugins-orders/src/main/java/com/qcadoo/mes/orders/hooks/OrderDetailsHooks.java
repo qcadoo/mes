@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -77,8 +68,21 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 @Service
 public class OrderDetailsHooks {
+
+    public static final String DONE_IN_PERCENTAGE_UNIT = "doneInPercentageUnit";
 
     private static final String L_FORM = "form";
 
@@ -92,6 +96,8 @@ public class OrderDetailsHooks {
 
     private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Lists.newArrayList("defaultTechnology",
             "technologyPrototype", "predefinedTechnology");
+
+    public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -635,9 +641,12 @@ public class OrderDetailsHooks {
 
         Entity order = orderForm.getEntity();
 
+        FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE);
+        FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE_UNIT);
         FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
         FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
+
 
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
@@ -650,6 +659,12 @@ public class OrderDetailsHooks {
         remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
+
+        BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)).multiply(new BigDecimal(100));
+        doneInPercentageQuantity = doneInPercentageQuantity.divide( order.getDecimalField(OrderFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING),0));
+        doneInPercentage.setEnabled(false);
+        doneInPercentageUnit.setFieldValue("%");
     }
 
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {

@@ -17,7 +17,12 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
+			<artifactId>mes-plugins-production-scheduling</artifactId>
+			<version>1.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-material-requirements</artifactId>
 			<version>1.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
