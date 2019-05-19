@@ -23,9 +23,11 @@
  */
 package com.qcadoo.mes.operationalTasks;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasks.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -65,6 +67,16 @@ public class OperationalTasksServiceImpl implements OperationalTasksService {
     @Override
     public boolean isOperationalTaskTypeExecutionOperationInOrder(final String type) {
         return OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equals(type);
+    }
+
+    @Override
+    public Entity findOperationalTasks(Entity order, Entity toc) {
+        return dataDefinitionService
+                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .add(SearchRestrictions.in(OperationalTaskFields.STATE, Lists.newArrayList(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED)))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

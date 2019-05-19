@@ -51,4 +51,6 @@ public final class OperationalTaskDtoFields {
 
     public static final String ORDER_NUMBER = "orderNumber";
 
+    public static final String USED_QUANTITY = "usedQuantity";
+
 }

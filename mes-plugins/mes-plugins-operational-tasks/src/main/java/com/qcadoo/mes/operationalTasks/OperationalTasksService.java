@@ -67,4 +67,5 @@ public interface OperationalTasksService {
      */
     boolean isOperationalTaskTypeExecutionOperationInOrder(final String type);
 
+    Entity findOperationalTasks(Entity order, Entity toc);
 }
