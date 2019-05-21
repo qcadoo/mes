@@ -62,13 +62,14 @@
             <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
             <option type="column" name="operTaskFlagPercentExecutionWithColor" fields="operTaskFlagPercentExecutionWithColor"
                     hidden="true"/>
-            <option type="column" name="type" fields="type" hidden="true"/>
+            <option type="column" name="state" fields="state" width="50"/>
+            <option type="column" name="type" fields="type" width="50"/>
 
             <option type="order" column="name" direction="asc"/>
 
-            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
-            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,
+            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
 
             <option type="correspondingView" value="operationalTasks/operationalTaskDetails"/>
