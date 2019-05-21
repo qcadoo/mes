@@ -45,8 +45,8 @@
               default="01shortestTime"
               required="true"/>
         <enum name="workerAssignCriterion"
-              values="01leastWorkers"
-              default="01leastWorkers"
+              values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished"
+              default="01workstationLastOperatorLatestFinished"
               required="true"/>
         <datetime name="approveTime" />
 
