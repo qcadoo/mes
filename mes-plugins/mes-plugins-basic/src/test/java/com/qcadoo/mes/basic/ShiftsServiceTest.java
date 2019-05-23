@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -46,6 +44,8 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchResult;
 
+import junit.framework.Assert;
+
 public class ShiftsServiceTest {
 
     private ShiftsServiceImpl shiftsService;
@@ -57,7 +57,7 @@ public class ShiftsServiceTest {
     private DataDefinition dataDefinition;
 
     @Mock
-    private Entity entity, shift, exception;
+    private Entity entity, shift, exception, productionLine;
 
     List<Entity> shifts = new ArrayList<Entity>();
 
@@ -165,7 +165,7 @@ public class ShiftsServiceTest {
         when(builder.list()).thenReturn(result);
         when(result.getTotalNumberOfEntities()).thenReturn(0);
         // when
-        Date dateToFromMethod = shiftsService.findDateFromForOrder(dateTo, 123L);
+        Date dateToFromMethod = shiftsService.findDateFromForProductionLine(dateTo, 123L, productionLine);
         // then
         Assert.assertNull(dateToFromMethod);
     }
@@ -203,7 +203,7 @@ public class ShiftsServiceTest {
 
         when(shift.getHasManyField("timetableExceptions")).thenReturn((EntityList) exceptions);
         // when
-        shiftsService.findDateFromForOrder(dateTo, 123L);
+        shiftsService.findDateFromForProductionLine(dateTo, 123L, productionLine);
         // then
     }
 }

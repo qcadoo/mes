@@ -42,9 +42,9 @@ public interface ShiftsService {
     // FIXME maku: ugly coupling - interface uses type defined within one of concrete implementations
     List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
 
-    Date findDateFromForOrder(final Date dateTo, final long seconds);
+    Date findDateFromForProductionLine(final Date dateTo, final long seconds, final Entity productionLine);
 
-    Date findDateToForOrder(final Date dateFrom, final long seconds);
+    Date findDateToForProductionLine(final Date dateFrom, final long seconds, Entity productionLine);
 
     List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
 

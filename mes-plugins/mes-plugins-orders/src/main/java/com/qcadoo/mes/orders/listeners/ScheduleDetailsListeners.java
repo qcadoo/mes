@@ -12,11 +12,13 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -28,6 +30,7 @@ import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
 import com.qcadoo.mes.orders.constants.ScheduleWorkerAssignCriterion;
 import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
+import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -66,6 +69,9 @@ public class ScheduleDetailsListeners {
     @Autowired
     private StateExecutorService stateExecutorService;
 
+    @Autowired
+    private ShiftsService shiftsService;
+
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
@@ -73,28 +79,27 @@ public class ScheduleDetailsListeners {
         List<Entity> positions = sortPositionsForWorkstations(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Entity position : positions) {
-            Entity order = position.getBelongsToField(SchedulePositionFields.ORDER);
-            Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
-            if (orderWithOperationWithoutWorkstations.contains(order.getId()) || machineWorkTime == 0) {
+            if (orderWithOperationWithoutWorkstations.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())
+                    || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
                 continue;
             }
-            Entity technologyOperationComponent = position
-                    .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> workstations = technologyOperationComponent
+            List<Entity> workstations = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
                     .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
             if (workstations.isEmpty()) {
-                orderWithOperationWithoutWorkstations.add(order.getId());
+                orderWithOperationWithoutWorkstations.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
                 continue;
             }
             Map<Long, Date> operationWorkstationsFinishDates = Maps.newHashMap();
+            Map<Long, Date> operationWorkstationsStartDates = Maps.newHashMap();
 
-            getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime, position, order, machineWorkTime,
-                    technologyOperationComponent, workstations, operationWorkstationsFinishDates);
+            getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime, position, workstations,
+                    operationWorkstationsFinishDates, operationWorkstationsStartDates);
 
             if (ScheduleWorkstationAssignCriterion.SHORTEST_TIME.getStringValue()
                     .equals(schedule.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION))) {
-                operationWorkstationsFinishDates.entrySet().stream().min(comparingByValue()).ifPresent(
-                        entry -> updatePositionWorkstationAndDates(entry, workstationsFinishDates, position, workstations));
+                operationWorkstationsFinishDates.entrySet().stream().min(comparingByValue())
+                        .ifPresent(entry -> updatePositionWorkstationAndDates(entry, workstationsFinishDates, position,
+                                operationWorkstationsStartDates.get(entry.getKey())));
             } else {
                 Entry<Long, Date> firstEntry;
                 if (workstationsFinishDates.isEmpty()) {
@@ -104,14 +109,15 @@ public class ScheduleDetailsListeners {
                             .filter(entry -> workstationsFinishDates.containsKey(entry.getKey())).findFirst()
                             .orElse(operationWorkstationsFinishDates.entrySet().iterator().next());
                 }
-                updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position, workstations);
+                updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position,
+                        operationWorkstationsStartDates.get(firstEntry.getKey()));
             }
         }
     }
 
     private void getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
-            Entity order, Integer machineWorkTime, Entity technologyOperationComponent, List<Entity> workstations,
-            Map<Long, Date> operationWorkstationsFinishDates) {
+            List<Entity> workstations, Map<Long, Date> operationWorkstationsFinishDates,
+            Map<Long, Date> operationWorkstationsStartDates) {
         for (Entity workstation : workstations) {
             Date finishDate = workstationsFinishDates.get(workstation.getId());
             if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
@@ -125,7 +131,8 @@ public class ScheduleDetailsListeners {
             if (finishDate == null) {
                 finishDate = scheduleStartTime;
             }
-            List<Entity> children = getChildren(technologyOperationComponent, order,
+            List<Entity> children = getChildren(position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    position.getBelongsToField(SchedulePositionFields.ORDER),
                     position.getBelongsToField(SchedulePositionFields.SCHEDULE));
             for (Entity child : children) {
                 Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME).toInstant()
@@ -134,7 +141,18 @@ public class ScheduleDetailsListeners {
                     finishDate = childEndTimeWithAdditionalTime;
                 }
             }
-            Date newFinishDate = Date.from(finishDate.toInstant().plusSeconds(machineWorkTime));
+            DateTime finishDateTime = new DateTime(finishDate);
+            Date newStartDate = shiftsService
+                    .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
+                    .orElse(finishDateTime).toDate();
+
+            Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
+            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
+                    workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
+            if (newFinishDate == null) {
+                newFinishDate = Date.from(newStartDate.toInstant().plusSeconds(machineWorkTime));
+            }
+            operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
             operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
         }
     }
@@ -158,12 +176,10 @@ public class ScheduleDetailsListeners {
     }
 
     private void updatePositionWorkstationAndDates(Entry<Long, Date> firstEntry, Map<Long, Date> workstationsFinishDates,
-            Entity position, List<Entity> workstations) {
+            Entity position, Date startTime) {
         workstationsFinishDates.put(firstEntry.getKey(), firstEntry.getValue());
-        workstations.stream().filter(entity -> entity.getId().equals(firstEntry.getKey())).findFirst()
-                .ifPresent(entity -> position.setField(SchedulePositionFields.WORKSTATION, entity));
-        position.setField(SchedulePositionFields.START_TIME, Date.from(firstEntry.getValue().toInstant()
-                .minusSeconds(position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME))));
+        position.setField(SchedulePositionFields.WORKSTATION, firstEntry.getKey());
+        position.setField(SchedulePositionFields.START_TIME, startTime);
         position.setField(SchedulePositionFields.END_TIME, firstEntry.getValue());
         position.setField(SchedulePositionFields.STAFF, null);
         position.getDataDefinition().save(position);
@@ -196,9 +212,8 @@ public class ScheduleDetailsListeners {
         List<Entity> positions = sortPositionsForWorkers(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Entity position : positions) {
-            Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Entity workstation = position.getBelongsToField(SchedulePositionFields.WORKSTATION);
-            if (machineWorkTime == 0 || workstation == null) {
+            if (position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0 || workstation == null) {
                 continue;
             }
             List<Entity> workers = getWorkers(position);
@@ -220,7 +235,7 @@ public class ScheduleDetailsListeners {
                 }
             }
             firstEntryOptional.ifPresent(firstEntry -> updatePositionWorker(workersFinishDates, workstationLastWorkers, position,
-                    workstation, workers, firstEntry));
+                    workstation, firstEntry));
         }
     }
 
@@ -279,11 +294,10 @@ public class ScheduleDetailsListeners {
     }
 
     private void updatePositionWorker(Map<Long, Date> workersFinishDates, Map<Long, Long> workstationLastWorkers, Entity position,
-            Entity workstation, List<Entity> workers, Entry<Long, Date> firstEntry) {
+            Entity workstation, Entry<Long, Date> firstEntry) {
         workersFinishDates.put(firstEntry.getKey(), firstEntry.getValue());
         workstationLastWorkers.put(workstation.getId(), firstEntry.getKey());
-        workers.stream().filter(entity -> entity.getId().equals(firstEntry.getKey())).findFirst()
-                .ifPresent(entity -> position.setField(SchedulePositionFields.STAFF, entity));
+        position.setField(SchedulePositionFields.STAFF, firstEntry.getKey());
         position.getDataDefinition().save(position);
     }
 
