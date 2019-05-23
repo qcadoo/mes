@@ -62,10 +62,6 @@ public interface ShiftsService {
 
     String getWeekDayName(final DateTime dateTime);
 
-    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine, final List<Entity> shifts);
-
     Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine);
-
-    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final List<Entity> shifts);
 
 }

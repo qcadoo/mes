@@ -27,6 +27,7 @@ import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,6 +63,8 @@ public class ShiftsServiceTest {
     List<Entity> shifts = new ArrayList<Entity>();
 
     List<Entity> exceptions;
+
+    List<Entity> productionLineShifts;
 
     @org.junit.Before
     public void init() {
@@ -155,9 +158,10 @@ public class ShiftsServiceTest {
     }
 
     @Test
-    public void shouldReturnNullWhenShiftDoesnotExist() throws Exception {
+    public void shouldReturnDateFromWhenShiftDoesnotExist() throws Exception {
         // given
-        Date dateTo = mock(Date.class);
+        Instant now = Instant.now();
+        Date dateTo = Date.from(now);
         SearchCriteriaBuilder builder = mock(SearchCriteriaBuilder.class);
         SearchResult result = mock(SearchResult.class);
         when(dataDefinitionService.get("basic", "shift")).thenReturn(dataDefinition);
@@ -167,15 +171,17 @@ public class ShiftsServiceTest {
         // when
         Date dateToFromMethod = shiftsService.findDateFromForProductionLine(dateTo, 123L, productionLine);
         // then
-        Assert.assertNull(dateToFromMethod);
+        Assert.assertEquals(dateToFromMethod, Date.from(now.minusSeconds(123L)));
     }
 
     @Test
     public void shouldReturnDateFrom() throws Exception {
         // given
-        Date dateTo = mock(Date.class);
+        Instant now = Instant.now();
+        Date dateTo = Date.from(now);
         shifts.add(shift);
         exceptions = mockEntityList(new ArrayList<Entity>());
+        productionLineShifts = mockEntityList(new ArrayList<Entity>());
         exceptions.add(exception);
         String hours = "07:00-15:00";
         SearchCriteriaBuilder builder = mock(SearchCriteriaBuilder.class);
@@ -185,6 +191,7 @@ public class ShiftsServiceTest {
         when(builder.list()).thenReturn(result);
         when(result.getTotalNumberOfEntities()).thenReturn(1);
         when(result.getEntities()).thenReturn(shifts);
+        when(productionLine.getHasManyField("shifts")).thenReturn((EntityList) productionLineShifts);
 
         when(shift.getField("mondayWorking")).thenReturn(true);
         when(shift.getStringField("mondayHours")).thenReturn(hours);

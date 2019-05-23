@@ -191,9 +191,7 @@ public class OperationDurationDetailsInOrderListeners {
             if (startTime == null) {
                 startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     generatedEndDateField.setFieldValue(null);

@@ -149,9 +149,6 @@ public class ScheduleDetailsListeners {
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
                     workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
-            if (newFinishDate == null) {
-                newFinishDate = Date.from(newStartDate.toInstant().plusSeconds(machineWorkTime));
-            }
             operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
             operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
         }

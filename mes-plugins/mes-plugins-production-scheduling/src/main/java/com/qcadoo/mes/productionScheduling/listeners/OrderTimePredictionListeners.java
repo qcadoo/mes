@@ -257,13 +257,13 @@ public class OrderTimePredictionListeners {
             if (startTime == null) {
                 dateFromField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     dateToField.setFieldValue(null);
                 } else {
+                    Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
+
                     dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
 
                     startTime = shiftsService.findDateFromForProductionLine(stopTime, maxPathTime, productionLine);
@@ -329,14 +329,8 @@ public class OrderTimePredictionListeners {
             }
 
             Date dateFrom = shiftsService.findDateToForProductionLine(startDate, offset, productionLine);
-            if (dateFrom == null) {
-                continue;
-            }
 
             Date dateTo = shiftsService.findDateToForProductionLine(startDate, offset + duration, productionLine);
-            if (dateTo == null) {
-                continue;
-            }
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

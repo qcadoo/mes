@@ -257,9 +257,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                         startTimeField.addMessage("orders.validate.global.error.dateFromIsNull",
                                 ComponentState.MessageType.FAILURE);
                     } else {
-                        Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
-
-                        if (stopTime == null) {
+                        if (maxPathTime == 0) {
                             orderForm.addMessage("productionScheduling.timenorms.isZero", ComponentState.MessageType.FAILURE,
                                     false);
 
