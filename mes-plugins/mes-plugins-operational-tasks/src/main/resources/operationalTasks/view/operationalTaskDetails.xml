@@ -346,6 +346,9 @@
 
 						<option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
 						<option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+						<criteriaModifier
+								class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+								method="filterHistory"/>
 					</component>
 				</layoutElement>
 			</component>
