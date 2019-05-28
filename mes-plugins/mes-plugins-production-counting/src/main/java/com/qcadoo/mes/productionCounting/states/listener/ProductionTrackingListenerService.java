@@ -164,7 +164,7 @@ public final class ProductionTrackingListenerService {
                 BigDecimal alreadyProduced = BigDecimalUtils.convertNullToZero(trackingOperationProductInComponentDto
                         .getDecimalField(TrackingOperationProductOutComponentDtoFields.PRODUCED_SUM));
                 Entity otDto = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK_DTO).get(ot.getId());
-                if(alreadyProduced.compareTo(otDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY)) >= 0) {
+                if(alreadyProduced.compareTo(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY)) >= 0) {
                     String userLogin = securityService.getCurrentUserName();
                     stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
                             OperationalTaskStateStringValues.FINISHED);
