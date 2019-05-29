@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="4"
-                           rows="2" fixedRowHeight="false" hasBorders="false">
+                           rows="3" fixedRowHeight="false" hasBorders="false">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="skill" field="skill"
                                    reference="skill">
@@ -53,9 +53,16 @@
 							<criteriaModifier
 									class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
 									method="filterByStaff"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.basic.listeners.SkillListeners"
+                                      method="onOnSkillChange" />
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">
+                        <component type="input" name="maxLevel" reference="maxLevel" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="2">
                         <component type="input" name="level" field="level"
 								   reference="level"/>
                     </layoutElement>
