@@ -118,8 +118,9 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
             Date endTime = getOrderEndTime(entity, order);
             if (startTime != null || endTime != null) {
                 String orderState = order.getStringField(OrderFields.STATE);
-                setOrderDateFrom(order, startTime, orderState);
-                setOrderDateTo(order, endTime, orderState);
+                Entity orderFromDB = order.getDataDefinition().get(order.getId());
+                setOrderDateFrom(order, startTime, orderState, orderFromDB);
+                setOrderDateTo(order, endTime, orderState, orderFromDB);
                 order.getDataDefinition().save(order);
             }
         }
@@ -149,8 +150,12 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
         return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
     }
 
-    private void setOrderDateTo(Entity order, Date endTime, String orderState) {
-        if (endTime != null) {
+    private void setOrderDateTo(Entity order, Date endTime, String orderState, Entity orderFromDB) {
+        Date finishDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
+            finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
+        }
+        if (endTime != null && !finishDateDB.equals(endTime)) {
             if (OrderState.PENDING.getStringValue().equals(orderState)) {
                 order.setField(OrderFields.DATE_TO, endTime);
             } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
@@ -159,8 +164,12 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
         }
     }
 
-    private void setOrderDateFrom(Entity order, Date startTime, String orderState) {
-        if (startTime != null) {
+    private void setOrderDateFrom(Entity order, Date startTime, String orderState, Entity orderFromDB) {
+        Date startDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
+            startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
+        }
+        if (startTime != null && !startDateDB.equals(startTime)) {
             if (OrderState.PENDING.getStringValue().equals(orderState)) {
                 order.setField(OrderFields.DATE_FROM, startTime);
             } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
