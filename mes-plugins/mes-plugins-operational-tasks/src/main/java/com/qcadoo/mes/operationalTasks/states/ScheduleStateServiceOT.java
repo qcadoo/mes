@@ -1,5 +1,17 @@
 package com.qcadoo.mes.operationalTasks.states;
 
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
@@ -23,17 +35,6 @@ import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 @RunIfEnabled(OperationalTasksConstants.PLUGIN_IDENTIFIER)
@@ -69,24 +70,26 @@ public class ScheduleStateServiceOT extends BasicStateService implements Schedul
     }
 
     private void checkExistingOperationalTasksState(Entity entity) {
-        List<Entity> orders = dataDefinitionService
-                .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
-                .createAlias(OperationalTaskFields.ORDER, OperationalTaskFields.ORDER, JoinType.INNER)
-                .add(SearchRestrictions.in(OperationalTaskFields.ORDER + ".id",
-                        entity.getManyToManyField(ScheduleFields.ORDERS).stream().mapToLong(Entity::getId).boxed()
-                                .collect(Collectors.toList())))
-                .setProjection(
-                        list().add(alias(SearchProjections.groupField(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER),
-                                OrderFields.NUMBER)))
-                .addOrder(desc(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER)).list().getEntities();
-        if (!orders.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            for (Entity order : orders) {
-                sb.append(order.getStringField(OrderFields.NUMBER));
-                sb.append(", ");
+        List<Entity> scheduleOrders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        if (!scheduleOrders.isEmpty()) {
+            List<Entity> orders = dataDefinitionService
+                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                    .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
+                    .createAlias(OperationalTaskFields.ORDER, OperationalTaskFields.ORDER, JoinType.INNER)
+                    .add(SearchRestrictions.in(OperationalTaskFields.ORDER + ".id",
+                            scheduleOrders.stream().mapToLong(Entity::getId).boxed().collect(Collectors.toList())))
+                    .setProjection(
+                            list().add(alias(SearchProjections.groupField(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER),
+                                    OrderFields.NUMBER)))
+                    .addOrder(desc(OperationalTaskFields.ORDER + "." + OrderFields.NUMBER)).list().getEntities();
+            if (!orders.isEmpty()) {
+                StringBuilder sb = new StringBuilder();
+                for (Entity order : orders) {
+                    sb.append(order.getStringField(OrderFields.NUMBER));
+                    sb.append(", ");
+                }
+                entity.addGlobalError("orders.schedule.operationalTasks.wrongState", false, true, sb.toString());
             }
-            entity.addGlobalError("orders.schedule.operationalTasks.wrongState", false, true, sb.toString());
         }
     }
 
