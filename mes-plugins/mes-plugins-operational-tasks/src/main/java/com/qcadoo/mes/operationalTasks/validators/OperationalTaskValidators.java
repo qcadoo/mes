@@ -100,7 +100,7 @@ public class OperationalTaskValidators {
 
             boolean isValid = ((countProjection == null) || ((Long) countProjection.getField(L_COUNT) == 0));
             if(!isValid) {
-                operationalTask.addGlobalError("Tak nie można");
+                operationalTask.addGlobalError("operationalTasks.operationalTask.error.notUnique");
             }
             return isValid;
         }
