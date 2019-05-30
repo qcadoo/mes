@@ -580,9 +580,6 @@
                                            reference="doneQuantity" hasDescription="true">
                                     <option type="labelWidth" value="55"/>
                                     <option type="alignment" value="right"/>
-
-                                    <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
-                                    <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                 </component>
                             </layoutElement>
                             <layoutElement column="7" row="1">
@@ -959,9 +956,6 @@
                                                field="#{form}.amountOfProductProduced">
                                         <option type="labelWidth" value="55"/>
                                         <option type="alignment" value="right"/>
-
-                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
-                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="4" row="1">
@@ -1001,9 +995,6 @@
                                                field="#{form}.wastesQuantity" defaultEnabled="false">
                                         <option type="labelWidth" value="55"/>
                                         <option type="alignment" value="right"/>
-
-                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
-                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="4" row="1">
