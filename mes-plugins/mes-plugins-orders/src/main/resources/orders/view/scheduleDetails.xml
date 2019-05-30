@@ -81,12 +81,15 @@
 								var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 								var state = #{state}.getValue().content.value;
 								var tabItemNames = ["setAPlan.getOperations", "setAPlan.assignOperationsToWorkstations", "setAPlan.assignWorkersToOperations"];
+								var generatePlan = #{scheduleTab}.getRibbonItem("setAPlan.generatePlan");
 								var saveActions = ["actions.save","actions.saveNew","actions.saveBack"];
 
                                 if (isSaved && state == "01draft") {
                                     approveSchedule.enable();
+                                    generatePlan.enable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
                                 } else {
                                     approveSchedule.disable();
+                                    generatePlan.disable("#{translate(orders.scheduleDetails.window.scheduleTab.ribbon.setAPlan.generatePlan.message)}");
                                 }
 
                                 if (isSaved && state != "03rejected") {

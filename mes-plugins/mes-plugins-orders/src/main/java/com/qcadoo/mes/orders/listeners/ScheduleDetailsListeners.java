@@ -15,6 +15,7 @@ import java.util.Set;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -72,6 +73,7 @@ public class ScheduleDetailsListeners {
     @Autowired
     private ShiftsService shiftsService;
 
+    @Transactional
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
@@ -202,6 +204,7 @@ public class ScheduleDetailsListeners {
         }
     }
 
+    @Transactional
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workersFinishDates = Maps.newHashMap();
