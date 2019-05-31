@@ -37,7 +37,6 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
@@ -80,9 +79,6 @@ public class OperationDurationDetailsInOrderListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ShiftsServiceImpl shiftsService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -191,9 +187,7 @@ public class OperationDurationDetailsInOrderListeners {
             if (startTime == null) {
                 startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     generatedEndDateField.setFieldValue(null);

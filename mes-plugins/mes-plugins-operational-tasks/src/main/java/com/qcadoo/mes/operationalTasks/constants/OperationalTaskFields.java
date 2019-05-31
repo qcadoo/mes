@@ -57,6 +57,8 @@ public final class OperationalTaskFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
+    public static final String USED_QUANTITY = "usedQuantity";
+
     public static final String SCHEDULE_POSITION = "schedulePosition";
 
     public static final String STATE = "state";

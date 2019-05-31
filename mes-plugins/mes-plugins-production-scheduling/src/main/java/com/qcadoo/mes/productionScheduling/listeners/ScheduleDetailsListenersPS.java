@@ -18,6 +18,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
+import com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.constants.OperCompTimeCalculation;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
@@ -58,6 +59,16 @@ public class ScheduleDetailsListenersPS {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private ScheduleDetailsListeners scheduleDetailsListeners;
+
+    @Transactional
+    public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        getOperations(view, state, args);
+        scheduleDetailsListeners.assignOperationsToWorkstations(view, state, args);
+        scheduleDetailsListeners.assignWorkersToOperations(view, state, args);
+    }
 
     @Transactional
     public void getOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {

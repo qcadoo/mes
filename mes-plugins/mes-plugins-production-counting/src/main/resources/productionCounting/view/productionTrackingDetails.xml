@@ -269,7 +269,9 @@
 
                             <option type="expression" value="#nodeNumber + '  ' + #operation['name']"/>
                             <option type="fieldCode" value="nodeNumber"/>
-
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                                      method="onTechnologyOperationComponentChange"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
                                     method="restrictTechnologyOperationComponentsToOrderTechnology"/>

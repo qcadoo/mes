@@ -23,9 +23,26 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.aop;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.Validate;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
@@ -55,23 +72,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.apache.commons.lang3.Validate;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Aspect
 @Configurable
@@ -90,9 +90,6 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ShiftsServiceImpl shiftsService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -256,9 +253,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                         startTimeField.addMessage("orders.validate.global.error.dateFromIsNull",
                                 ComponentState.MessageType.FAILURE);
                     } else {
-                        Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-                        if (stopTime == null) {
+                        if (maxPathTime == 0) {
                             orderForm.addMessage("productionScheduling.timenorms.isZero", ComponentState.MessageType.FAILURE,
                                     false);
 

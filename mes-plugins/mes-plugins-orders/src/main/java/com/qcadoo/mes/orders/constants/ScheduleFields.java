@@ -17,6 +17,8 @@ public final class ScheduleFields {
 
     public static final String WORKSTATION_ASSIGN_CRITERION = "workstationAssignCriterion";
 
+    public static final String WORKER_ASSIGN_CRITERION = "workerAssignCriterion";
+
     public static final String POSITIONS = "positions";
 
     public static final String ORDERS = "orders";

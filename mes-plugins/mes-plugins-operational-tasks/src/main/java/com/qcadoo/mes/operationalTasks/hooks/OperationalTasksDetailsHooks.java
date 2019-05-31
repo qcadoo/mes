@@ -111,10 +111,15 @@ public class OperationalTasksDetailsHooks {
                 FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference("doneInPercentageUNIT");
                 FieldComponent usedQuantityUnit = (FieldComponent) view.getComponentByReference("usedQuantityUNIT");
                 FieldComponent plannedQuantityUnit = (FieldComponent) view.getComponentByReference("plannedQuantityUNIT");
-
+                FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference("usedQuantity");
+                FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
                 usedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
                 plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
 
+                plannedQuantity.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), 0));
+                usedQuantity.setFieldValue(numberService
+                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskFields.USED_QUANTITY), 0));
                 if(Objects.nonNull(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY)) && otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
                     BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(otDto.getDecimalField("usedQuantity"))
                             .multiply(new BigDecimal(100));

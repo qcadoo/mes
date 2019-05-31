@@ -28,15 +28,31 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     @Override
     public Entity onValidate(Entity entity, String sourceState, String targetState, Entity stateChangeEntity,
             StateChangeEntityDescriber describer) {
-        if (ScheduleStateStringValues.APPROVED.equals(targetState)) {
-            checkIfScheduleHasNotPositions(entity);
-            checkOrderStates(entity);
+        switch (targetState) {
+            case ScheduleStateStringValues.APPROVED:
+                checkIfScheduleHasNotPositions(entity);
+                checkOrderStatesForApproved(entity);
+                break;
+
+            case ScheduleStateStringValues.REJECTED:
+                checkOrderStatesForRejected(entity);
         }
 
         return entity;
     }
 
-    private void checkOrderStates(Entity entity) {
+    private void checkOrderStatesForRejected(Entity entity) {
+        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        for (Entity order : orders) {
+            if (OrderStateStringValues.COMPLETED.equals(order.getStringField(OrderFields.STATE))
+                    || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
+                entity.addGlobalError("orders.schedule.orders.wrongState");
+                break;
+            }
+        }
+    }
+
+    private void checkOrderStatesForApproved(Entity entity) {
         List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
         for (Entity order : orders) {
             if (!OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE))

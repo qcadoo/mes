@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -46,6 +34,8 @@ import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.operationalTasks.OperationalTasksService;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
@@ -73,6 +63,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -109,6 +112,9 @@ public class ProductionTrackingDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OperationalTasksService operationalTasksService;
 
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
@@ -378,6 +384,31 @@ public class ProductionTrackingDetailsListeners {
 
         trackingOperationProductInComponentsGrid.setEntities(Lists.newArrayList());
         trackingOperationProductOutComponentsGrid.setEntities(Lists.newArrayList());
+    }
+
+    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+        Entity order = getOrderFromLookup(view);
+
+        Entity operationalTask = operationalTasksService.findOperationalTasks(order, technologyOperationComponent);
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.STAFF);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.WORKSTATION);
+        if(Objects.nonNull(operationalTask)) {
+            if(Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.STAFF))) {
+                staffLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.STAFF).getId());
+            } else {
+                staffLookup.setFieldValue(null);
+            }
+            if(Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION))) {
+                workstationLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION).getId());
+            } else {
+                workstationLookup.setFieldValue(null);
+            }
+        } else {
+            staffLookup.setFieldValue(null);
+            workstationLookup.setFieldValue(null);
+        }
     }
 
     public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {

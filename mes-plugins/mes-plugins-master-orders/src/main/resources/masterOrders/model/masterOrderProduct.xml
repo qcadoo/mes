@@ -83,6 +83,8 @@
                 method="onValidate"/>
         <onDelete class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
                   method="onDelete"/>
+        <onSave class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductHooks"
+                  method="onSave"/>
     </hooks>
 
 </model>

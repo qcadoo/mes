@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
@@ -48,19 +62,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class OrderTimePredictionListeners {
@@ -256,18 +257,18 @@ public class OrderTimePredictionListeners {
             if (startTime == null) {
                 dateFromField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     dateToField.setFieldValue(null);
                 } else {
+                    Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
+
                     dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
 
-                    startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+                    startTime = shiftsService.findDateFromForProductionLine(stopTime, maxPathTime, productionLine);
 
-                    scheduleOperationComponents(technology.getId(), startTime);
+                    scheduleOperationComponents(technology.getId(), startTime, productionLine);
 
                     isGenerated = true;
                 }
@@ -292,7 +293,7 @@ public class OrderTimePredictionListeners {
         }
     }
 
-    private void scheduleOperationComponents(final Long technologyId, final Date startDate) {
+    private void scheduleOperationComponents(final Long technologyId, final Date startDate, final Entity productionLine) {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
@@ -327,15 +328,9 @@ public class OrderTimePredictionListeners {
                 duration = duration + 1;
             }
 
-            Date dateFrom = shiftsService.findDateToForOrder(startDate, offset);
-            if (dateFrom == null) {
-                continue;
-            }
+            Date dateFrom = shiftsService.findDateToForProductionLine(startDate, offset, productionLine);
 
-            Date dateTo = shiftsService.findDateToForOrder(startDate, offset + duration);
-            if (dateTo == null) {
-                continue;
-            }
+            Date dateTo = shiftsService.findDateToForProductionLine(startDate, offset + duration, productionLine);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

@@ -5,8 +5,20 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.io.InputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,14 +29,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class ImportStorageLocationService {
@@ -40,6 +44,9 @@ public class ImportStorageLocationService {
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private SecurityService securityService;
 
     @Transactional
     public ImportStorageLocationsResult importPositionsFromFile(final Entity entity, final ViewDefinitionState view) {
@@ -62,11 +69,12 @@ public class ImportStorageLocationService {
 
         List<ImportedStorageLocationPosition> storageLocationsToUpdate = Lists.newArrayList();
 
+        String userLogin = securityService.getCurrentUserName();
         for (ImportedStorageLocationPosition position : positionsContainer.getPositions()) {
             if (storageLocationsByNumber.containsKey(position.getStorageLocation())) {
                 storageLocationsToUpdate.add(position);
             } else {
-                createStorageLocation(result, warehouse.getId(), position);
+                createStorageLocation(result, warehouse.getId(), position, userLogin);
             }
         }
 
@@ -77,11 +85,11 @@ public class ImportStorageLocationService {
 
             List<ProductDto> prods = findProductsByList(productsNumber);
             fillResultWithNotExistingProducts(result, productsNumber, prods);
-            Map<String, Long> productsIdByNumber = prods.stream()
-                    .collect(Collectors.toMap(ProductDto::getProductNumber, ProductDto::getProductId));
+            Map<String, Long> productsIdByNumber = prods.stream().collect(
+                    Collectors.toMap(ProductDto::getProductNumber, ProductDto::getProductId));
             for (ImportedStorageLocationPosition position : list) {
                 updateStorageLocation(storageLocationsByNumber.get(position.getStorageLocation()),
-                        productsIdByNumber.get(position.getProduct()));
+                        productsIdByNumber.get(position.getProduct()), userLogin);
             }
 
         });
@@ -90,7 +98,7 @@ public class ImportStorageLocationService {
                 positionsContainer.getPositions());
 
         storageLocationsToClearProduct.forEach(sl -> {
-            updateStorageLocation(storageLocationsByNumber.get(sl), null);
+            updateStorageLocation(storageLocationsByNumber.get(sl), null, userLogin);
         });
 
         updateStorageLocationInResource(warehouse.getId());
@@ -125,7 +133,7 @@ public class ImportStorageLocationService {
         return storageLocationsDB;
     }
 
-    private void updateStorageLocation(StorageLocationDto storageLocationDto, Long productId) {
+    private void updateStorageLocation(StorageLocationDto storageLocationDto, Long productId, String userLogin) {
         String insert = "UPDATE materialflowresources_storagelocation SET product_id=:product_id WHERE id = :id";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -133,6 +141,7 @@ public class ImportStorageLocationService {
         parameters.put("id", storageLocationDto.getStorageLocationId());
 
         jdbcTemplate.update(insert, parameters);
+        insertAuditEntry(userLogin, parameters, storageLocationDto.getStorageLocationId());
     }
 
     private List<ProductDto> findProductsByList(List<String> list) {
@@ -144,13 +153,14 @@ public class ImportStorageLocationService {
                 ProductDto.class));
     }
 
-    private void createStorageLocation(ImportStorageLocationsResult result, Long id, ImportedStorageLocationPosition position) {
+    private void createStorageLocation(ImportStorageLocationsResult result, Long id, ImportedStorageLocationPosition position,
+            String userLogin) {
         String insert = "INSERT INTO materialflowresources_storagelocation(number, location_id, product_id, active) "
                 + "VALUES (:number, :location_id, :product_id, :active);";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
 
-        if(StringUtils.isNotEmpty(position.getProduct())) {
+        if (StringUtils.isNotEmpty(position.getProduct())) {
             String queryProductByNumber = "SELECT id FROM basic_product WHERE number = :number";
             Map<String, Object> queryProductByNumberParameters = new HashMap<String, Object>();
             queryProductByNumberParameters.put("number", position.getProduct());
@@ -172,6 +182,8 @@ public class ImportStorageLocationService {
         parameters.put("active", true);
 
         jdbcTemplate.update(insert, parameters);
+
+        insertAuditEntry(userLogin, parameters, null);
     }
 
     private ImportedStorageLocationsPositionsContainer importPositionsToContainer(final Entity entity,
@@ -222,4 +234,27 @@ public class ImportStorageLocationService {
         return builder.toString();
     }
 
+    private void insertAuditEntry(String userLogin, Map<String, Object> parameters, Long storageLocationId) {
+        if (parameters.containsKey("product_id")) {
+            String insertHistoryEntry;
+            Map<String, Object> parametersForHistory = new HashMap<String, Object>();
+
+            if (Objects.nonNull(storageLocationId)) {
+                insertHistoryEntry = "INSERT INTO materialflowresources_storagelocationhistory(storagelocation_id, productto_id, createdate, updatedate, createuser, updateuser) "
+                        + " VALUES (:storagelocation_id, :product_id, :createdate, :updatedate, :createuser, :updateuser);";
+                parametersForHistory.put("storagelocation_id", storageLocationId);
+
+            } else {
+                insertHistoryEntry = "INSERT INTO materialflowresources_storagelocationhistory(storagelocation_id, productto_id, createdate, updatedate, createuser, updateuser) "
+                        + " VALUES (currval('materialflowresources_storagelocation_id_seq'), :product_id, :createdate, :updatedate, :createuser, :updateuser);";
+            }
+
+            parametersForHistory.put("product_id", parameters.get("product_id"));
+            parametersForHistory.put("createdate", new Date());
+            parametersForHistory.put("updatedate", new Date());
+            parametersForHistory.put("createuser", userLogin);
+            parametersForHistory.put("updateuser", userLogin);
+            jdbcTemplate.update(insertHistoryEntry, parametersForHistory);
+        }
+    }
 }

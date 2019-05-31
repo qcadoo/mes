@@ -33,6 +33,7 @@
 		<string name="name" />
 		<string name="description" />
 		<enum name="type" values="01otherCase,02executionOperationInOrder" />
+		<enum name="state" values="01pending,02started,03finished,04rejected"/>
 		<datetime name="startDate" />
 		<datetime name="finishDate" />
 		<string name="staffName"/>

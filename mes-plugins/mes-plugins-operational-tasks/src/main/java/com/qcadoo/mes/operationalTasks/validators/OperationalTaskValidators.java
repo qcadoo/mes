@@ -23,12 +23,18 @@
  */
 package com.qcadoo.mes.operationalTasks.validators;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.operationalTasks.OperationalTasksService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskType;
+import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.operationalTasks.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 import java.util.Date;
 import java.util.Objects;
@@ -36,6 +42,9 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class OperationalTaskValidators {
@@ -44,8 +53,13 @@ public class OperationalTaskValidators {
 
     private static final String WRONG_DATES_ORDER_MESSAGE = "operationalTasks.operationalTask.error.finishDateIsEarlier";
 
+    private static final String L_COUNT = "count";
+
     @Autowired
     private OperationalTasksService operationalTasksService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = true;
@@ -54,8 +68,44 @@ public class OperationalTaskValidators {
         isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
+    }
+
+    private boolean checkIfAlreadyExists(DataDefinition operationalTaskDD, Entity operationalTask) {
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+
+        if (OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue().equalsIgnoreCase(type)) {
+
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+            Entity toc = operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+            SearchCriteriaBuilder scb = dataDefinitionService
+                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                    .add(SearchRestrictions.in(OperationalTaskFields.STATE, Lists
+                            .newArrayList(OperationalTaskStateStringValues.PENDING,
+                            OperationalTaskStateStringValues.STARTED,
+                            OperationalTaskStateStringValues.FINISHED)));
+            if(Objects.nonNull(operationalTask.getId())) {
+                scb.add(SearchRestrictions.idNe(operationalTask.getId()));
+            }
+
+            scb.setProjection(alias(rowCount(), L_COUNT));
+            scb.addOrder(asc(L_COUNT));
+
+            Entity countProjection = scb.setMaxResults(1).uniqueResult();
+
+            boolean isValid = ((countProjection == null) || ((Long) countProjection.getField(L_COUNT) == 0));
+            if(!isValid) {
+                operationalTask.addGlobalError("operationalTasks.operationalTask.error.notUnique");
+            }
+            return isValid;
+        }
+
+        return true;
     }
 
     private boolean hasName(final DataDefinition operationalTaskDD, final Entity operationalTask) {

@@ -647,7 +647,6 @@ public class OrderDetailsHooks {
         FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
-
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
@@ -656,13 +655,19 @@ public class OrderDetailsHooks {
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
-        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
+        if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) == 1) {
+            remainingAmountOfProductToProduce = BigDecimal.ZERO;
+        }
+        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(remainingAmountOfProductToProduce, 0));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
 
-        BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY)).multiply(new BigDecimal(100));
-        doneInPercentageQuantity = doneInPercentageQuantity.divide( order.getDecimalField(OrderFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
-        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING),0));
+        BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY))
+                .multiply(new BigDecimal(100));
+        doneInPercentageQuantity = doneInPercentageQuantity.divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY),
+                MathContext.DECIMAL64);
+        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
         doneInPercentage.setEnabled(false);
         doneInPercentageUnit.setFieldValue("%");
     }
