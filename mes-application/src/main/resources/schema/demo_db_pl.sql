@@ -5192,7 +5192,6 @@ CREATE TABLE basic_division (
     componentsoutputlocation_id bigint,
     productsinputlocation_id bigint,
     productionline_id bigint,
-    parameter_id bigint,
     productsflowlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     automaticmoveforintermediate boolean DEFAULT false,
@@ -17075,6 +17074,7 @@ CREATE VIEW operationaltasks_operationaltaskdto AS
     operationaltask.name,
     operationaltask.description,
     operationaltask.type,
+    operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
@@ -17109,6 +17109,7 @@ UNION ALL
     operationaltask.name,
     operationaltask.description,
     operationaltask.type,
+    operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
@@ -17149,6 +17150,7 @@ UNION ALL
     operationaltask.name,
     operationaltask.description,
     operationaltask.type,
+    operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
@@ -17189,6 +17191,7 @@ UNION ALL
     operationaltask.name,
     operationaltask.description,
     operationaltask.type,
+    operationaltask.state,
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
@@ -17494,7 +17497,7 @@ CREATE VIEW orders_orderplanninglistdto AS
     ordersorder.ordercategory,
     COALESCE(ordersorder.amountofproductproduced, (0)::numeric) AS amountofproductproduced,
     COALESCE(ordersorder.wastesquantity, (0)::numeric) AS wastesquantity,
-    COALESCE(ordersorder.remainingamountofproducttoproduce, (0)::numeric) AS remainingamountofproducttoproduce,
+    GREATEST(COALESCE(ordersorder.remainingamountofproducttoproduce, (0)::numeric), (0)::numeric) AS remainingamountofproducttoproduce,
     product.number AS productnumber,
     technology.number AS technologynumber,
     product.unit,
@@ -17763,7 +17766,7 @@ CREATE TABLE orders_schedule (
     state character varying(255) DEFAULT '01draft'::character varying,
     sortorder character varying(255) DEFAULT '01desc'::character varying,
     workstationassigncriterion character varying(255) DEFAULT '01shortestTime'::character varying,
-    workerassigncriterion character varying(255) DEFAULT '01leastWorkers'::character varying,
+    workerassigncriterion character varying(255) DEFAULT '01workstationLastOperatorLatestFinished'::character varying,
     approvetime timestamp without time zone
 );
 
@@ -30156,7 +30159,7 @@ SELECT pg_catalog.setval('basic_currency_id_seq', 182, true);
 -- Data for Name: basic_division; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_division (id, number, name, supervisor_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, productionline_id, parameter_id, productsflowlocation_id, productionflow, automaticmoveforintermediate, automaticmoveforfinal, factory_id, active, comment, entityversion) FROM stdin;
+COPY basic_division (id, number, name, supervisor_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, productionline_id, productsflowlocation_id, productionflow, automaticmoveforintermediate, automaticmoveforfinal, factory_id, active, comment, entityversion) FROM stdin;
 \.
 
 
@@ -35076,7 +35079,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
 142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
 144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	AGPL
-74	goodFoodGantt	1.5.0	DISABLED	f	0	\N	Commercial
 149	integrationBaseLinker	1.5.0	DISABLED	f	0	other	Commercial
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
@@ -35430,7 +35432,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 109	productFlowThruDivision	warehouseIssue	t	9	108	11	ROLE_REQUIREMENTS	0
 110	subcontractorPortal	subOrders	t	7	109	13	\N	0
 111	subcontractorPortal	subOrdersForSubcontractors	t	14	110	1	ROLE_SUBCONTRACTOR	0
-112	goodFoodGantt	goodFoodGantt	t	7	111	14	ROLE_PLANNING_ON_LINE_VIEW	0
 113	repairs	repairOrders	t	7	112	15	ROLE_REPAIR_ORDERS	0
 114	ordersGroups	ordersGroups	t	7	113	16	ROLE_PLANNING	0
 115	urcProductionCounting	productionRegistrationTerminal	t	8	114	9	ROLE_PRODUCTION_REGISTRATION_TERMINAL	0
@@ -35589,7 +35590,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 108	productFlowThruDivision	warehouseIssueList	warehouseIssueList	\N	0
 109	subcontractorPortal	subOrdersList	subOrdersList	\N	0
 110	subcontractorPortal	subOrdersListForSubcontractors	subOrdersListForSubcontractors	\N	0
-111	goodFoodGantt	goodFoodGantt	\N	/goodFoodGantt.html	0
 112	repairs	repairOrdersList	repairOrdersList	\N	0
 113	ordersGroups	ordersGroupsList	ordersGroupsList	\N	0
 114	urcProductionCounting	productionRegistrationTerminal	\N	/productionRegistrationTerminal.html	0
@@ -45261,14 +45261,6 @@ ALTER TABLE ONLY basic_division
 
 ALTER TABLE ONLY basic_division
     ADD CONSTRAINT division_factory_fkey FOREIGN KEY (factory_id) REFERENCES basic_factory(id) DEFERRABLE;
-
-
---
--- Name: division_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_division
-    ADD CONSTRAINT division_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
 
 
 --
