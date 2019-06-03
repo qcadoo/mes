@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -38,6 +32,7 @@ import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
@@ -50,6 +45,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListeners {
@@ -94,12 +96,26 @@ public class OrderDetailsListeners {
         setDefaultNameUsingTechnology(view, state, args);
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
         Entity technology = technologyLookup.getEntity();
         Entity defaultProductionLine = orderService.getDefaultProductionLine();
         if (technology != null) {
             orderDetailsHooks.fillProductionLine(productionLineLookup, technology, defaultProductionLine);
+            orderDetailsHooks.fillDivision(divisionLookup, technology, defaultProductionLine);
         }
     }
+
+    public void onProductionLineChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
+        Entity productionLine = productionLineLookup.getEntity();
+        List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+        if(divisions.size() == 1) {
+            divisionLookup.setFieldValue(divisions.get(0).getId());
+            divisionLookup.requestComponentUpdateState();
+        }
+    }
+
 
     public void setDefaultNameUsingTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (!(state instanceof FieldComponent)) {

@@ -22,6 +22,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -29,12 +30,6 @@ import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -43,6 +38,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
@@ -56,6 +57,8 @@ public class OrdersFromMOProductsGenerationService {
     public static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
 
     public static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
+
+    public static final String L_DIVISION = "division";
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -145,7 +148,7 @@ public class OrdersFromMOProductsGenerationService {
                     }
                 }
 
-                if(Objects.isNull(calculatedOrderStartDate)) {
+                if (Objects.isNull(calculatedOrderStartDate)) {
                     calculatedOrderStartDate = new DateTime().toDate();
                 }
 
@@ -329,6 +332,7 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
         order.setField(OrderFields.PRODUCTION_LINE, getProductionLine(technology));
+        order.setField(OrderFields.DIVISION, getDivision(technology));
         if (!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
@@ -385,6 +389,21 @@ public class OrdersFromMOProductsGenerationService {
             productionLine = orderService.getDefaultProductionLine();
         }
         return productionLine;
+    }
+
+    public Entity getDivision(final Entity technology) {
+        Entity division = null;
+        if (Objects.nonNull(technology)) {
+            division = technology.getBelongsToField(L_DIVISION);
+        }
+        if (Objects.isNull(division)) {
+            Entity defaultProductionLine = orderService.getDefaultProductionLine();
+            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            if (divisions.size() == 1) {
+                division = divisions.get(0);
+            }
+        }
+        return division;
     }
 
     private Entity getTechnology(final Entity masterOrderProduct) {

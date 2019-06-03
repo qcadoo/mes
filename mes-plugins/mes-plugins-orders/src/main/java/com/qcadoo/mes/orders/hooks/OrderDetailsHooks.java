@@ -39,6 +39,7 @@ import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -98,6 +99,14 @@ public class OrderDetailsHooks {
             "technologyPrototype", "predefinedTechnology");
 
     public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
+
+    public static final String L_DIVISION = "division";
+
+    public static final String L_RANGE = "range";
+
+    public static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
+
+    public static final String L_ONE_DIVISION = "01oneDivision";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -175,14 +184,30 @@ public class OrderDetailsHooks {
 
     public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
             final Entity defaultProductionLine) {
-        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision")
-                && "01oneDivision".equals(technology.getField("range"))
+        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+                && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
             productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             productionLineLookup.requestComponentUpdateState();
         } else if (defaultProductionLine != null) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
+        }
+    }
+
+    public void fillDivision(final LookupComponent divisionLookup, final Entity technology,
+            final Entity defaultProductionLine) {
+        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+                && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
+                && Objects.nonNull(technology.getBelongsToField(L_DIVISION))) {
+            divisionLookup.setFieldValue(technology.getBelongsToField(L_DIVISION).getId());
+            divisionLookup.requestComponentUpdateState();
+        } else if(Objects.nonNull(defaultProductionLine)) {
+            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            if(divisions.size() == 1) {
+                divisionLookup.setFieldValue(divisions.get(0).getId());
+                divisionLookup.requestComponentUpdateState();
+            }
         }
     }
 

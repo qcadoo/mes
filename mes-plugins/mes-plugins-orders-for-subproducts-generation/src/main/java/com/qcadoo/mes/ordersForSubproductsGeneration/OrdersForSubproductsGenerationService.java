@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -61,6 +47,7 @@ import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
@@ -81,6 +68,20 @@ import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -214,13 +215,8 @@ public class OrdersForSubproductsGenerationService {
 
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
-        Entity prodLine = technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE);
-        if (prodLine != null) {
-            order.setField(OrderFields.PRODUCTION_LINE, prodLine);
-        } else {
-            order.setField(OrderFields.PRODUCTION_LINE, parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
-        }
-
+        getProductionLine(parentOrder, order, technology);
+        getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
                 parentOrder.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
@@ -273,13 +269,8 @@ public class OrdersForSubproductsGenerationService {
 
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
-        Entity prodLine = technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE);
-        if (prodLine != null) {
-            order.setField(OrderFields.PRODUCTION_LINE, prodLine);
-        } else {
-            order.setField(OrderFields.PRODUCTION_LINE, parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
-        }
-
+        getProductionLine(parentOrder, order, technology);
+        getDivision(parentOrder, order, technology);
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
                 parentOrder.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
@@ -293,6 +284,31 @@ public class OrdersForSubproductsGenerationService {
         order.isActive();
         LOG.info(String.format("Finish generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
+    }
+
+    private void getProductionLine(Entity parentOrder, Entity order, Entity technology) {
+        Entity prodLine = technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTION_LINE);
+        if (prodLine != null) {
+            order.setField(OrderFields.PRODUCTION_LINE, prodLine);
+        } else {
+            order.setField(OrderFields.PRODUCTION_LINE, parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE));
+        }
+    }
+
+    private void getDivision(Entity parentOrder, Entity order, Entity technology) {
+        Entity division = technology.getBelongsToField("division");
+        if (Objects.nonNull(division)) {
+            order.setField(OrderFields.DIVISION, division);
+        } else {
+            Entity productionLine = parentOrder.getBelongsToField(OrderFields.PRODUCTION_LINE);
+            if(Objects.nonNull(productionLine)) {
+                List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+                if (divisions.size() == 1) {
+                    order.setField(OrderFields.DIVISION, division);
+
+                }
+            }
+        }
     }
 
     private Entity findForOrder(Entity parentOrder, Entity coverageProduct) {

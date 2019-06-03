@@ -81,6 +81,8 @@ public final class OrderFields {
 
     public static final String PRODUCTION_LINE = "productionLine";
 
+    public static final String DIVISION = "division";
+
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String DONE_QUANTITY = "doneQuantity";
