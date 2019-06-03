@@ -78,8 +78,6 @@ import com.qcadoo.view.api.components.FormComponent;
 @RunIfEnabled(OrdersForSubproductsGenerationConstans.PLUGIN_IDENTIFIER)
 public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
-    public static final int MILLS = 1000;
-
     private static final String L_FORM = "form";
 
     private static final String L_START_TIME = "startTime";
@@ -384,13 +382,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 continue;
             }
 
-            long milliseconds = offset * MILLS + duration * MILLS;
-
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, milliseconds);
-
-            if (dateTo == null) {
-                continue;
-            }
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

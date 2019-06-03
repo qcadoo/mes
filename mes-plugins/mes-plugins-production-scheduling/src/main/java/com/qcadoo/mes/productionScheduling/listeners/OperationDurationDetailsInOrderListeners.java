@@ -75,8 +75,6 @@ public class OperationDurationDetailsInOrderListeners {
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
-    public static final int MILLS = 1000;
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -285,13 +283,7 @@ public class OperationDurationDetailsInOrderListeners {
                 continue;
             }
 
-            long milliseconds = offset * MILLS + duration * MILLS;
-
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, milliseconds);
-
-            if (dateTo == null) {
-                continue;
-            }
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
