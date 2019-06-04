@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.operationalTasks;
 
-import com.qcadoo.model.api.Entity;
-
 import java.util.List;
+
+import com.qcadoo.model.api.Entity;
 
 public interface OperationalTasksService {
 

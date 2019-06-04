@@ -1,5 +1,13 @@
 package com.qcadoo.mes.operationalTasks.states;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
 import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
@@ -12,14 +20,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
-
-import java.util.List;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskOrderStateService {
@@ -48,8 +48,8 @@ public class OperationalTaskOrderStateService {
                         OperationalTaskStateStringValues.STARTED);
             }
         } catch (Exception exc) {
-            stateChangeContext
-                    .addMessage("operationalTasks.operationalTask.error.startOperationalTask", StateMessageType.FAILURE);
+            stateChangeContext.addMessage("operationalTasks.operationalTask.error.startOperationalTask",
+                    StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             LOG.error("Error when start operational task.", exc);
         }
@@ -61,8 +61,8 @@ public class OperationalTaskOrderStateService {
         try {
             for (Entity pos : positions) {
                 Entity operationalTask = dataDefinitionService
-                        .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK)
-                        .find().add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
+                        .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                        .add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
                         .uniqueResult();
                 if (Objects.nonNull(operationalTask)) {
                     stateExecutorService.changeState(OperationalTasksServiceMarker.class, operationalTask, userLogin,
@@ -71,7 +71,51 @@ public class OperationalTaskOrderStateService {
             }
         } catch (Exception exc) {
             schedule.addGlobalError("operationalTasks.operationalTask.error.rejectOperationalTask");
-            LOG.error("Error when rejected operational task.", exc);
+            LOG.error("Error when reject operational task.", exc);
+
+        }
+    }
+
+    public void rejectOperationalTask(StateChangeContext stateChangeContext) {
+        try {
+            Entity order = stateChangeContext.getOwner();
+            List<Entity> tasksForOrder = dataDefinitionService
+                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order)).list().getEntities();
+
+            String userLogin = securityService.getCurrentUserName();
+            for (Entity ot : tasksForOrder) {
+                stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
+                        OperationalTaskStateStringValues.REJECTED);
+            }
+        } catch (Exception exc) {
+            stateChangeContext.addMessage("operationalTasks.operationalTask.error.rejectOperationalTask",
+                    StateMessageType.FAILURE);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            LOG.error("Error when reject operational task.", exc);
+
+        }
+    }
+
+    public void finishOperationalTask(StateChangeContext stateChangeContext) {
+        try {
+            Entity order = stateChangeContext.getOwner();
+            List<Entity> tasksForOrder = dataDefinitionService
+                    .get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK).find()
+                    .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order))
+                    .add(SearchRestrictions.eq(OperationalTaskFields.STATE, OperationalTaskStateStringValues.STARTED)).list()
+                    .getEntities();
+
+            String userLogin = securityService.getCurrentUserName();
+            for (Entity ot : tasksForOrder) {
+                stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
+                        OperationalTaskStateStringValues.FINISHED);
+            }
+        } catch (Exception exc) {
+            stateChangeContext.addMessage("operationalTasks.operationalTask.error.finishOperationalTask",
+                    StateMessageType.FAILURE);
+            stateChangeContext.setStatus(StateChangeStatus.FAILURE);
+            LOG.error("Error when finish operational task.", exc);
 
         }
     }

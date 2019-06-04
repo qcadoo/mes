@@ -41,18 +41,6 @@ public final class OperationalTaskDtoFields {
 
     public static final String FINISH_DATE = "finishDate";
 
-    public static final String STAFF_NAME = "staffName";
-
-    public static final String PRODUCTION_LINE_NAME = "productionLineName";
-
-    public static final String WORKSTATION_NAME = "workstationName";
-
-    public static final String TOC_ID = "tocId";
-
     public static final String ORDER_NUMBER = "orderNumber";
-
-    public static final String USED_QUANTITY = "usedQuantity";
-
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
 
 }
