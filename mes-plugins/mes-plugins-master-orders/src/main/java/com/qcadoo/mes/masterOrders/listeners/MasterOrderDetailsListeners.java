@@ -41,12 +41,13 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -127,7 +128,6 @@ public class MasterOrderDetailsListeners {
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();

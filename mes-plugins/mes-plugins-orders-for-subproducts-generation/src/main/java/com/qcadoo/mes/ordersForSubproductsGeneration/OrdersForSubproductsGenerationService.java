@@ -226,8 +226,8 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS,
                 parentOrder.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
         setOrderWithDefaultProductionCountingValues(order, technology);
+        order.setField(OrderFields.DESCRIPTION, parentOrder.getStringField(OrderFields.DESCRIPTION));
         order = order.getDataDefinition().save(order);
-        order.isActive();
         LOG.info(String.format("Finish generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
     }
@@ -280,8 +280,8 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS,
                 parentOrder.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
         setOrderWithDefaultProductionCountingValues(order, technology);
+        order.setField(OrderFields.DESCRIPTION, parentOrder.getStringField(OrderFields.DESCRIPTION));
         order = order.getDataDefinition().save(order);
-        order.isActive();
         LOG.info(String.format("Finish generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
     }

@@ -217,6 +217,10 @@
             <model:boolean name="flagPercentageOfExecutionWithColor" default="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="copyNotesFromMasterOrderPosition" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="scheduleStateChanges"
                            plugin="orders" model="scheduleStateChange"

@@ -141,6 +141,15 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="2" row="4">
+                        <component type="checkbox" name="copyNotesFromMasterOrderPosition"
+                                   field="#{form}.copyNotesFromMasterOrderPosition"
+                                   reference="copyNotesFromMasterOrderPosition" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+
+
                 </component>
 
                 <listener event="redirectToDeviationsDictionary"

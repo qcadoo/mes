@@ -23,17 +23,11 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -54,6 +48,13 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -77,6 +78,9 @@ public class OrderDetailsHooksMO {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrdersFromMOProductsGenerationService ordersFromMOProductsGenerationService;
 
     public void fillMasterOrderFields(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -202,13 +206,8 @@ public class OrderDetailsHooksMO {
                 technologyPrototypeLookup.requestComponentUpdateState();
                 technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
             }
-            String orderDescription;
-            if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
-                orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
-            } else {
-                orderDescription = orderService.buildOrderDescription(masterOrder, masterOrderTechnology,
-                        fillOrderDescriptionBasedOnTechnology);
-            }
+            String orderDescription = ordersFromMOProductsGenerationService.buildDescription(parameter, masterOrder,
+                    productComponentDB, masterOrderTechnology);
 
             if ((Strings.nullToEmpty((String) descriptionField.getFieldValue())).isEmpty()) {
                 descriptionField.setFieldValue("");
