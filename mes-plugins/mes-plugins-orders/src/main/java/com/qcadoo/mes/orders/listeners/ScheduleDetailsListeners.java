@@ -43,7 +43,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchSubqueries;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -63,9 +62,6 @@ public class ScheduleDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private PluginManager pluginManager;
 
     @Autowired
     private StateExecutorService stateExecutorService;
@@ -122,7 +118,7 @@ public class ScheduleDetailsListeners {
             Map<Long, Date> operationWorkstationsStartDates) {
         for (Entity workstation : workstations) {
             Date finishDate = workstationsFinishDates.get(workstation.getId());
-            if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
+            if (finishDate == null) {
                 Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
                         workstation);
                 if (operationalTasksMaxFinishDate != null) {
@@ -277,7 +273,7 @@ public class ScheduleDetailsListeners {
             List<Entity> workers, Map<Long, Date> operationWorkersFinishDates) {
         for (Entity worker : workers) {
             Date finishDate = workersFinishDates.get(worker.getId());
-            if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
+            if (finishDate == null) {
                 Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorker(scheduleStartTime, worker);
                 if (operationalTasksMaxFinishDate != null) {
                     finishDate = operationalTasksMaxFinishDate;

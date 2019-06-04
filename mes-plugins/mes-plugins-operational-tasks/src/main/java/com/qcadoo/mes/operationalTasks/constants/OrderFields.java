@@ -29,5 +29,5 @@ public final class OrderFields {
 
     }
 
-    public static final String operationalTasks = "operationalTasks";
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 }

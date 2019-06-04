@@ -17,6 +17,10 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ScheduleStateService extends BasicStateService implements ScheduleServiceMarker {
 
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    private static final String L_FOR_EACH = "03forEach";
+
     @Autowired
     private ScheduleStateChangeDescriber scheduleStateChangeDescriber;
 
@@ -31,6 +35,7 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         switch (targetState) {
             case ScheduleStateStringValues.APPROVED:
                 checkIfScheduleHasNotPositions(entity);
+                checkOrderTypeOfProductionRecording(entity);
                 checkOrderStatesForApproved(entity);
                 break;
 
@@ -39,6 +44,16 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         }
 
         return entity;
+    }
+
+    private void checkOrderTypeOfProductionRecording(Entity entity) {
+        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        for (Entity order : orders) {
+            if (!L_FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                entity.addGlobalError("orders.schedule.orders.wrongTypeOfProductionRecording");
+                break;
+            }
+        }
     }
 
     private void checkOrderStatesForRejected(Entity entity) {

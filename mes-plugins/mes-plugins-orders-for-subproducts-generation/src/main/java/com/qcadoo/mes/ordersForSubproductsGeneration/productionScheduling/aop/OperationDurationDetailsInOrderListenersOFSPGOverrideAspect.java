@@ -197,8 +197,8 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 viewDefinitionState.getLocale());
 
         // Included in work time
-        Boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
-        Boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
+        boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
+        boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
@@ -307,7 +307,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
                 .find().createAlias("order", "ord", JoinType.LEFT)
                 .add(SearchRestrictions.in("ord.id",
-                        getOrderAndSubOrders(order.getId()).stream().map(entity -> entity.getId()).collect(Collectors.toList())))
+                        getOrderAndSubOrders(order.getId()).stream().map(Entity::getId).collect(Collectors.toList())))
                 .list().getEntities();
 
         return ordersTimeCalculations.stream().map(e -> e.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM))
@@ -382,7 +382,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
                 continue;
             }
 
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, offset + duration);
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, (long) offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

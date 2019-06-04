@@ -153,8 +153,8 @@ public class OperationDurationDetailsInOrderListeners {
                 viewDefinitionState.getLocale());
 
         // Included in work time
-        Boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
-        Boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
+        boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
+        boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
@@ -283,7 +283,7 @@ public class OperationDurationDetailsInOrderListeners {
                 continue;
             }
 
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, offset + duration);
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, (long) offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
