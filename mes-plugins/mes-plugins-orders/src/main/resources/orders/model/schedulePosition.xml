@@ -45,6 +45,8 @@
         <integer name="laborWorkTime" default="0" />
         <datetime name="startTime"/>
         <datetime name="endTime"/>
+
+        <hasMany name="operationalTasks" model="operationalTask" joinField="schedulePosition"/>
     </fields>
 
     <hooks>

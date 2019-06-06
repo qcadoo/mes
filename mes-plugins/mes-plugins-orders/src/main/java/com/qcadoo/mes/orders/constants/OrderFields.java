@@ -125,8 +125,6 @@ public final class OrderFields {
 
     public static final String SOURCE_FINISH_DATE = "sourceFinishDate";
 
-    public static final String BATCH_NUMBER = "batchNumber";
-
     public static final String WORKER_TO_CHANGE = "workerToChange";
 
     public static final String ORDER_CATEGORY = "orderCategory";
@@ -136,4 +134,6 @@ public final class OrderFields {
     public static final String PLANED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
 
     public static final String UNIT_FOR_ADDITIONAL_UNIT = "unitForAdditionalUnit";
+
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 }

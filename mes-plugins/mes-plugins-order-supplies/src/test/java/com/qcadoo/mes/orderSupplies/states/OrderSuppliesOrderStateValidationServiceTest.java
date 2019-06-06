@@ -34,7 +34,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
-import com.qcadoo.mes.operationalTasks.constants.InputProductsRequiredForType;
+import com.qcadoo.mes.orders.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.states.StateChangeContext;

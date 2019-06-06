@@ -52,10 +52,6 @@ public class ScheduleDetailsListeners {
 
     private static final String FINISH_DATE = "finishDate";
 
-    private static final String OPERATIONAL_TASKS = "operationalTasks";
-
-    private static final String OPERATIONAL_TASK = "operationalTask";
-
     private static final String REJECTED = "04rejected";
 
     private static final String STATE = "state";
@@ -162,7 +158,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
+        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
@@ -236,8 +233,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Long getOperationalTasksLastWorkerForWorkstation(Entity workstation) {
-        Entity entity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
+        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK)
+                .find().add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.isNotNull(SchedulePositionFields.STAFF)).add(SearchRestrictions.ne(STATE, REJECTED))
                 .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
         if (entity != null) {
@@ -308,7 +305,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Date getOperationalTasksMaxFinishDateForWorker(Date scheduleStartTime, Entity worker) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
+        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.STAFF, worker))
                 .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))

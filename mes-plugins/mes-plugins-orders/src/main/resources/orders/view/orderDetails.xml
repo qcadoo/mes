@@ -239,6 +239,21 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="operationalTasks">
+                <bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationalTasks', []);
+							}
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -520,7 +535,7 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.orders.criteriaModifires.ProductionLineCriteriaModifiersO"
+                                    class="com.qcadoo.mes.orders.criteriaModifiers.ProductionLineCriteriaModifiersO"
                                     method="filterProductionLines"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
@@ -630,7 +645,8 @@
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
-
+                <listener event="showOperationalTasks" method="showOperationalTasks"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
 
             </component>
             <component type="input" name="oldTechnologyId" reference="oldTechnologyId" defaultVisible="false"/>

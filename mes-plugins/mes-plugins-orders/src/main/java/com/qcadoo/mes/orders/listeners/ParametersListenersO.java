@@ -95,4 +95,13 @@ public class ParametersListenersO {
         }
     }
 
+    public void redirectToOperationalTasksParameters(final ViewDefinitionState view, final ComponentState componentState,
+                                                     final String[] args) {
+        Long parameterId = (Long) componentState.getFieldValue();
+
+        if (parameterId != null) {
+            String url = "../page/orders/operationalTasksParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
+            view.redirectTo(url, false, true);
+        }
+    }
 }

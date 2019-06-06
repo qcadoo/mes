@@ -2,7 +2,7 @@ package com.qcadoo.mes.orders.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.criteriaModifires.ScheduleOrderCriteriaModifier;
+import com.qcadoo.mes.orders.criteriaModifiers.ScheduleOrderCriteriaModifier;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;

@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -46,13 +53,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OrderDetailsListeners {
 
@@ -65,6 +65,10 @@ public class OrderDetailsListeners {
     private static final String L_EFFECTIVE_DATE_FROM = "effectiveDateFrom";
 
     private static final String L_EFFECTIVE_DATE_TO = "effectiveDateTo";
+
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_FILTERS = "filters";
 
     @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
@@ -344,6 +348,34 @@ public class OrderDetailsListeners {
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         additionalUnitService.setQuantityFieldForAdditionalUnit(view,
                 ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
+    }
+
+    public void showOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
+            return;
+        }
+
+        Entity orderFromDB = orderForm.getEntity().getDataDefinition().get(orderId);
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("orderNumber", applyInOperator(orderFromDB.getStringField(OrderFields.NUMBER)));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        String url = "/page/orders/operationalTasksList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    private String applyInOperator(final String value){
+        return "[" + value + "]";
     }
 
 }

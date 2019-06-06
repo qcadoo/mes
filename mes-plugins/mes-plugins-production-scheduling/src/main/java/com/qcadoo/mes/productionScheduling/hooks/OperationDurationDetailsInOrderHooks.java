@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.productionScheduling.criteriaModifiers.OperCompTimeCalculationsCM;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -53,6 +56,10 @@ public class OperationDurationDetailsInOrderHooks {
     private static final String L_WINDOW = "window";
 
     private static final String L_GENERATED_END_DATE = "generatedEndDate";
+
+    private static final String L_OPERATIONAL_TASKS = "operationalTasks";
+
+    private static final String L_CREATE_OPERATIONAL_TASKS = "createOperationalTasks";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -77,6 +84,7 @@ public class OperationDurationDetailsInOrderHooks {
         fillUnitField(view);
         disableCopyRealizationTimeButton(view);
         setCriteriaModifierParameters(view);
+        disableCreateButton(view);
     }
 
     private void setCriteriaModifierParameters(ViewDefinitionState view) {
@@ -89,7 +97,7 @@ public class OperationDurationDetailsInOrderHooks {
 
     }
 
-    public void fillUnitField(final ViewDefinitionState view) {
+    private void fillUnitField(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(OrderFieldsPS.OPERATION_DURATION_QUANTITY_UNIT);
 
@@ -108,7 +116,7 @@ public class OperationDurationDetailsInOrderHooks {
         }
     }
 
-    public void disableCopyRealizationTimeButton(final ViewDefinitionState view) {
+    private void disableCopyRealizationTimeButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
         RibbonGroup realizationTimeGroup = window.getRibbon().getGroupByName("operationDuration");
@@ -127,5 +135,42 @@ public class OperationDurationDetailsInOrderHooks {
         FieldComponent generatedEndDateField = (FieldComponent) view.getComponentByReference(L_GENERATED_END_DATE);
 
         return !StringUtils.isEmpty((String) generatedEndDateField.getFieldValue());
+    }
+
+    void disableCreateButton(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
+        RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
+        RibbonActionItem createOperationalTasks = operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS);
+
+        if (isGenerated(view) && orderHasTechnologyAndCorrectState(view)) {
+            createOperationalTasks.setEnabled(true);
+        } else {
+            createOperationalTasks.setEnabled(false);
+        }
+
+        createOperationalTasks.requestUpdate(true);
+    }
+
+    private boolean orderHasTechnologyAndCorrectState(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (Objects.isNull(orderId)) {
+            return false;
+        }
+
+        Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        String state = order.getStringField(OrderFields.STATE);
+
+        return (!Objects.isNull(technology) && checkIfOrderStateIsCorrect(state));
+    }
+
+    private boolean checkIfOrderStateIsCorrect(final String state) {
+        return (OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)
+                || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state));
     }
 }
