@@ -99,7 +99,7 @@ public class ChangeTechnologyParametersListeners {
         try {
             createCustomizedTechnologies(view, state, ids, entity, group, standardPerformanceTechnology);
         } catch (Exception exc) {
-            view.addTranslatedMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated", ComponentState.MessageType.FAILURE);
+            view.addMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated", ComponentState.MessageType.FAILURE);
         }
         generated.setChecked(true);
     }

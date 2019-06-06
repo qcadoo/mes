@@ -21,7 +21,6 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -60,8 +59,6 @@ public class OrdersFromMOProductsGenerationService {
     public static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
 
     public static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
-
-    public static final String L_DIVISION = "division";
 
     public static final String COPY_NOTES_FROM_MASTER_ORDER_POSITION = "copyNotesFromMasterOrderPosition";
 
@@ -340,8 +337,8 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.ADDRESS, masterOrder.getBelongsToField(MasterOrderFields.ADDRESS));
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
-        order.setField(OrderFields.PRODUCTION_LINE, getProductionLine(technology));
-        order.setField(OrderFields.DIVISION, getDivision(technology));
+        order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
+        order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
         if (!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
@@ -410,31 +407,6 @@ public class OrdersFromMOProductsGenerationService {
                 masterOrder.getStringField(MasterOrderFields.NUMBER) + "-");
     }
 
-    public Entity getProductionLine(final Entity technology) {
-        Entity productionLine = null;
-        if (Objects.nonNull(technology)) {
-            productionLine = technology.getBelongsToField("productionLine");
-        }
-        if (Objects.isNull(productionLine)) {
-            productionLine = orderService.getDefaultProductionLine();
-        }
-        return productionLine;
-    }
-
-    public Entity getDivision(final Entity technology) {
-        Entity division = null;
-        if (Objects.nonNull(technology)) {
-            division = technology.getBelongsToField(L_DIVISION);
-        }
-        if (Objects.isNull(division)) {
-            Entity defaultProductionLine = orderService.getDefaultProductionLine();
-            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
-            if (divisions.size() == 1) {
-                division = divisions.get(0);
-            }
-        }
-        return division;
-    }
 
     private Entity getTechnology(final Entity masterOrderProduct) {
         Entity technology;

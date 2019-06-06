@@ -60,11 +60,14 @@
                 <![CDATA[
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					var conversionsButton = #{window}.getRibbonItem("conversions.getDefaultConversions");
+					var generateOrders = #{window}.getRibbonItemOrNull("orders.generateOrders");
+
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
 								deleteButton.disable();
 								conversionsButton.disable();
+								if (generateOrders) generateOrders.disable("#{translate(basic.products.ribbon.message.generateOrders)}");
 							} else {
 								var hasExternal = false;
 								for (var i in selectedEntitiesArray) {
@@ -79,6 +82,8 @@
 									deleteButton.enable();
 								}
 								conversionsButton.enable();
+								if (generateOrders) generateOrders.enable("#{translate(basic.products.ribbon.message.generateOrders)}");
+
 							}
 						}
 					}
