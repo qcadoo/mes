@@ -366,23 +366,24 @@ public class OrdersFromMOProductsGenerationService {
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
-        if (copyDescription) {
+        if (copyDescription && StringUtils.isNoneBlank(masterOrder.getStringField(MasterOrderFields.DESCRIPTION))) {
             descriptionBuilder.append(masterOrder.getStringField(MasterOrderFields.DESCRIPTION));
         }
 
-        if (copyNotesFromMasterOrderPosition) {
-            if(StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+        if (copyNotesFromMasterOrderPosition
+                && StringUtils.isNoneBlank(masterOrderProduct.getStringField(MasterOrderProductFields.CPMMENTS))) {
+            if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
             descriptionBuilder.append(masterOrderProduct.getStringField(MasterOrderProductFields.CPMMENTS));
         }
 
-        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)) {
-            if(StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
+                && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
+            if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
-            descriptionBuilder.append(technology.getStringField(
-                    TechnologyFields.DESCRIPTION));
+            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
 
         }
 
@@ -406,7 +407,6 @@ public class OrdersFromMOProductsGenerationService {
         return numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER, 3,
                 masterOrder.getStringField(MasterOrderFields.NUMBER) + "-");
     }
-
 
     private Entity getTechnology(final Entity masterOrderProduct) {
         Entity technology;
