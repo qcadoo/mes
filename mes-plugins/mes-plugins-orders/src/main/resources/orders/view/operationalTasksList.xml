@@ -72,7 +72,7 @@
             <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
 
-            <option type="correspondingView" value="operationalTasks/operationalTaskDetails"/>
+            <option type="correspondingView" value="orders/operationalTaskDetails"/>
             <option type="correspondingComponent" value="form"/>
 
             <option type="fullscreen" value="true"/>
