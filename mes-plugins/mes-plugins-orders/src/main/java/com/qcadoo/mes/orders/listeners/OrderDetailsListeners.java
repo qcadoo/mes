@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -52,6 +45,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListeners {
@@ -113,10 +114,12 @@ public class OrderDetailsListeners {
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(OrderFields.DIVISION);
         Entity productionLine = productionLineLookup.getEntity();
-        List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
-        if(divisions.size() == 1) {
-            divisionLookup.setFieldValue(divisions.get(0).getId());
-            divisionLookup.requestComponentUpdateState();
+        if(Objects.nonNull(productionLine)) {
+            List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            if (divisions.size() == 1) {
+                divisionLookup.setFieldValue(divisions.get(0).getId());
+                divisionLookup.requestComponentUpdateState();
+            }
         }
     }
 
