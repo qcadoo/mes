@@ -84,8 +84,7 @@ public class OrdersGenerationFromProductsListeners {
         try {
             generateOrders(view, ids, entity);
         } catch (Exception exc) {
-            view.addMessage("orders.ordersGenerationFromProducts.error.ordersNotGenerated ",
-                    ComponentState.MessageType.FAILURE);
+            view.addMessage("orders.ordersGenerationFromProducts.error.ordersNotGenerated ", ComponentState.MessageType.FAILURE);
 
         }
         generated.setChecked(true);
@@ -151,7 +150,8 @@ public class OrdersGenerationFromProductsListeners {
         boolean fillOrderDescriptionBasedOnTechnology = parameters
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
         StringBuilder descriptionBuilder = new StringBuilder();
-        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)) {
+        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
+                && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
             if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
