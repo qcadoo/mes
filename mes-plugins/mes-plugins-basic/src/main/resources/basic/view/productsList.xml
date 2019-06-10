@@ -127,6 +127,7 @@
         <listener event="navigateToProductImportPage" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
                   method="navigateToProductImportPage"/>
 
+
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>

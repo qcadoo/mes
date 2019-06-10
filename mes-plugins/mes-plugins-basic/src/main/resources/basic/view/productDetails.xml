@@ -48,6 +48,10 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="replacements">
+                <bigButton name="addManyReplacements" state="enabled" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(addManyReplacements)"/>
+            </group>
             <group name="attachments">
                 <bigButton name="downloadAttachment" icon="generateIcon24.png"
                            state="enabled">
@@ -164,6 +168,9 @@
                           method="getDefaultConversions"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
+
+                <listener event="addManyReplacements" class="com.qcadoo.mes.basic.listeners.ReplacementsListeners"
+                          method="openReplacements"/>
             </component>
         </windowTab>
 

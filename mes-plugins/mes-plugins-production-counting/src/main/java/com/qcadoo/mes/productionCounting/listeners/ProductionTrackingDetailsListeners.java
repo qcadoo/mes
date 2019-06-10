@@ -357,7 +357,7 @@ public class ProductionTrackingDetailsListeners {
         LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
         Entity order = orderLookup.getEntity();
-        if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+        if (Objects.nonNull(order) && Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
             divisionLookup.setFieldValue(order.getBelongsToField(OrderFields.TECHNOLOGY).getBelongsToField("division").getId());
             divisionLookup.requestComponentUpdateState();
         }
