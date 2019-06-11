@@ -103,11 +103,12 @@
 
 
             </component>
-            <option type="header" value="false"/>
 
             <listener event="addManyReplacements" class="com.qcadoo.mes.basic.listeners.ReplacementsListeners"
                       method="addManyReplacements"/>
         </component>
+        <option type="header" value="false"/>
+
     </component>
     <hooks>
     <beforeRender class="com.qcadoo.mes.basic.hooks.ProductReplacementsHooks"

@@ -77,7 +77,8 @@
 						var saveNew = #{window}.getRibbonItem("actions.saveNew");
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
-						
+						var addManyReplacements = #{window}.getRibbonItem("replacements.addManyReplacements");
+
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								if (! value || ! value.content) {
@@ -90,10 +91,12 @@
 								if (! value.content.entityId) {
 									cancel.disable();
 									del.disable();
+									addManyReplacements.disable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 									return;
 								}
 								cancel.enable();
 								del.enable();
+								addManyReplacements.enable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 							}
 						});
 					]]>
