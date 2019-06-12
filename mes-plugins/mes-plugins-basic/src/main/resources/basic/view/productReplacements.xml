@@ -70,9 +70,9 @@
                     <component type="checkbox" name="generated" defaultVisible="false"
                                reference="generated" defaultEnabled="false"/>
                     <component type="grid" name="products" reference="grid">
-                        <option type="column" name="number" fields="number" link="true"
+                        <option type="column" name="number" fields="number"
                                 width="150"/>
-                        <option type="column" name="name" fields="name" link="true"
+                        <option type="column" name="name" fields="name"
                                 width="300"/>
                         <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
                         <option type="column" name="category" fields="category" width="85"/>
