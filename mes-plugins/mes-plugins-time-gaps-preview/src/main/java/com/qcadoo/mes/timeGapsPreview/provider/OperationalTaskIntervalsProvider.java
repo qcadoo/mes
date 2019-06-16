@@ -25,20 +25,20 @@ package com.qcadoo.mes.timeGapsPreview.provider;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 
 @Service
 public class OperationalTaskIntervalsProvider extends AbstractIntervalsProvider {
 
     @Override
     protected String getPluginIdentifier() {
-        return OperationalTasksConstants.PLUGIN_IDENTIFIER;
+        return OrdersConstants.PLUGIN_IDENTIFIER;
     }
 
     @Override
     protected String getModelName() {
-        return OperationalTasksConstants.MODEL_OPERATIONAL_TASK;
+        return OrdersConstants.MODEL_OPERATIONAL_TASK;
     }
 
     @Override

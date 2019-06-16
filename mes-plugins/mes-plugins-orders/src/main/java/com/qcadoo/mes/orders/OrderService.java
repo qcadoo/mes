@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Locale;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.Locale;
 
 public interface OrderService {
 
@@ -71,6 +71,10 @@ public interface OrderService {
      * @return defaultName
      */
     String makeDefaultName(final Entity product, Entity technology, final Locale locale);
+
+    Entity getProductionLine(Entity technology);
+
+    Entity getDivision(Entity technology);
 
     /**
      * Changes field state

@@ -43,7 +43,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchSubqueries;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -53,19 +52,12 @@ public class ScheduleDetailsListeners {
 
     private static final String FINISH_DATE = "finishDate";
 
-    private static final String OPERATIONAL_TASKS = "operationalTasks";
-
-    private static final String OPERATIONAL_TASK = "operationalTask";
-
     private static final String REJECTED = "04rejected";
 
     private static final String STATE = "state";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private PluginManager pluginManager;
 
     @Autowired
     private StateExecutorService stateExecutorService;
@@ -122,7 +114,7 @@ public class ScheduleDetailsListeners {
             Map<Long, Date> operationWorkstationsStartDates) {
         for (Entity workstation : workstations) {
             Date finishDate = workstationsFinishDates.get(workstation.getId());
-            if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
+            if (finishDate == null) {
                 Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
                         workstation);
                 if (operationalTasksMaxFinishDate != null) {
@@ -166,7 +158,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
+        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
@@ -240,8 +233,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Long getOperationalTasksLastWorkerForWorkstation(Entity workstation) {
-        Entity entity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
+        Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK)
+                .find().add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
                 .add(SearchRestrictions.isNotNull(SchedulePositionFields.STAFF)).add(SearchRestrictions.ne(STATE, REJECTED))
                 .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
         if (entity != null) {
@@ -277,7 +270,7 @@ public class ScheduleDetailsListeners {
             List<Entity> workers, Map<Long, Date> operationWorkersFinishDates) {
         for (Entity worker : workers) {
             Date finishDate = workersFinishDates.get(worker.getId());
-            if (finishDate == null && pluginManager.isPluginEnabled(OPERATIONAL_TASKS)) {
+            if (finishDate == null) {
                 Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorker(scheduleStartTime, worker);
                 if (operationalTasksMaxFinishDate != null) {
                     finishDate = operationalTasksMaxFinishDate;
@@ -312,7 +305,8 @@ public class ScheduleDetailsListeners {
     }
 
     private Date getOperationalTasksMaxFinishDateForWorker(Date scheduleStartTime, Entity worker) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService.get(OPERATIONAL_TASKS, OPERATIONAL_TASK).find()
+        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.STAFF, worker))
                 .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))

@@ -237,7 +237,7 @@ public class ImportStorageLocationService {
     private void insertAuditEntry(String userLogin, Map<String, Object> parameters, Long storageLocationId) {
         if (parameters.containsKey("product_id")) {
             String insertHistoryEntry;
-            Map<String, Object> parametersForHistory = new HashMap<String, Object>();
+            Map<String, Object> parametersForHistory = new HashMap<>();
 
             if (Objects.nonNull(storageLocationId)) {
                 insertHistoryEntry = "INSERT INTO materialflowresources_storagelocationhistory(storagelocation_id, productto_id, createdate, updatedate, createuser, updateuser) "

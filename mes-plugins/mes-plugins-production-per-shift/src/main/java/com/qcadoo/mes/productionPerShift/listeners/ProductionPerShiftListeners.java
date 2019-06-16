@@ -39,9 +39,9 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.FluentIterable;
 import com.qcadoo.commons.functional.LazyStream;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.basic.shift.ShiftsDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.dates.OrderDates;
 import com.qcadoo.mes.productionPerShift.PPSHelper;
@@ -83,8 +83,6 @@ public class ProductionPerShiftListeners {
 
     private static final String ORDER_LOOKUP_REF = "order";
 
-    private static final String OPERATION_LOOKUP_REF = "productionPerShiftOperation";
-
     private static final String PROGRESS_ADL_REF = "progressForDays";
 
     private static final String DAY_NUMBER_INPUT_REF = "day";
@@ -115,7 +113,7 @@ public class ProductionPerShiftListeners {
     private ProductionPerShiftDetailsHooks detailsHooks;
 
     @Autowired
-    private ShiftsDataProvider shiftsDataProvider;
+    private ShiftsService shiftsService;
 
     @Autowired
     private ProgressForDayDataProvider progressForDayDataProvider;
@@ -312,7 +310,7 @@ public class ProductionPerShiftListeners {
         }
 
         int lastDay = -1;
-        List<Shift> shifts = shiftsDataProvider.findAll();
+        List<Shift> shifts = shiftsService.findAll(order.getBelongsToField(OrderFields.PRODUCTION_LINE));
 
         LazyStream<OrderRealizationDay> realizationDaysStream = orderRealizationDaysResolver.asStreamFrom(
                 progressType.extractStartDateTimeFrom(maybeOrderDates.get()), shifts);

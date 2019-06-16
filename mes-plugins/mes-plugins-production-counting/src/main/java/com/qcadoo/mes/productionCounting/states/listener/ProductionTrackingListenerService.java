@@ -23,52 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
-import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.operationalTasks.OperationalTasksService;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskDtoFields;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTasksConstants;
-import com.qcadoo.mes.operationalTasks.states.OperationalTasksServiceMarker;
-import com.qcadoo.mes.operationalTasks.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentDtoFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
-import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
-import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.states.service.StateChangeContextBuilder;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.validators.ErrorMessage;
-import com.qcadoo.security.api.SecurityService;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
@@ -76,18 +30,46 @@ import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
 import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
 import static com.qcadoo.model.api.search.SearchOrders.asc;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
+import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
+import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.states.service.StateChangeContextBuilder;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
+
 @Service
 public final class ProductionTrackingListenerService {
 
     private static final String L_PRODUCT = "product";
 
     private static final String L_COUNT = "count";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private StateExecutorService stateExecutorService;
 
     @Autowired
     private NumberService numberService;
@@ -113,15 +95,6 @@ public final class ProductionTrackingListenerService {
     @Autowired
     private ParameterService parameterService;
 
-    @Autowired
-    private TechnologyService technologyService;
-
-    @Autowired
-    private OperationalTasksService operationalTasksService;
-
-    @Autowired
-    private SecurityService securityService;
-
     public void onChangeFromDraftToAny(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
@@ -142,36 +115,6 @@ public final class ProductionTrackingListenerService {
         updateBasicProductionCounting(productionTracking, new Addition());
         setOrderDoneAndWastesQuantity(productionTracking, new Addition());
         closeOrder(productionTracking);
-        closeOperationalTasks(productionTracking);
-    }
-
-    private void closeOperationalTasks(final Entity productionTracking) {
-        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-        if (Objects.nonNull(toc)) {
-            Entity ot = operationalTasksService.findOperationalTasks(
-                    productionTracking.getBelongsToField(ProductionTrackingFields.ORDER), toc);
-
-            if (Objects.nonNull(ot)) {
-                Entity mainProduct = technologyService.getMainOutputProductComponent(toc);
-                Entity mainTrackingOperationProductOutComponent = productionTracking
-                        .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, mainProduct.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT)))
-                        .setMaxResults(1).uniqueResult();
-                Entity trackingOperationProductInComponentDto = dataDefinitionService.get(
-                        ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
-                        mainTrackingOperationProductOutComponent.getId());
-                BigDecimal alreadyProduced = BigDecimalUtils.convertNullToZero(trackingOperationProductInComponentDto
-                        .getDecimalField(TrackingOperationProductOutComponentDtoFields.PRODUCED_SUM));
-                Entity otDto = dataDefinitionService.get(OperationalTasksConstants.PLUGIN_IDENTIFIER, OperationalTasksConstants.MODEL_OPERATIONAL_TASK_DTO).get(ot.getId());
-                if(alreadyProduced.compareTo(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY)) >= 0) {
-                    String userLogin = securityService.getCurrentUserName();
-                    stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
-                            OperationalTaskStateStringValues.FINISHED);
-                }
-            }
-        }
-
     }
 
     public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {

@@ -23,8 +23,8 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import com.qcadoo.mes.operationalTasks.OperationalTasksService;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.OperationalTasksService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -36,12 +36,12 @@ import org.springframework.stereotype.Service;
 public class OperationalTaskHooksOTFOOverrideUtil {
 
     @Autowired
-    private OperationalTasksService operationalTasksForOrdersService;
+    private OperationalTasksService operationalTasksService;
 
     public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
+        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
 
             Entity technologyOperationComponent = operationalTask

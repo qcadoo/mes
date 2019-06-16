@@ -74,11 +74,6 @@
             <plugin>costCalculation</plugin>
             <version>[1.1.8</version>
         </dependency>
-
-        <dependency>
-            <plugin>operationalTasks</plugin>
-            <version>[1.1.8</version>
-        </dependency>
     </dependencies>
 
     <modules>

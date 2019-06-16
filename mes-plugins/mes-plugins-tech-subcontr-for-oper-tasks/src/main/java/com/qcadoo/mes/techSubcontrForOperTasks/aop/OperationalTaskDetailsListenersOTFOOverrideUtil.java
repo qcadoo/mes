@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;

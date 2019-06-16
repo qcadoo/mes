@@ -34,8 +34,8 @@ import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.operationalTasks.OperationalTasksService;
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.OperationalTasksService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
@@ -127,8 +127,10 @@ public class ProductionTrackingDetailsListeners {
             Map<String, Object> parameters = Maps.newHashMap();
 
             parameters.put("form.productionTrackingId", productionTrackingId);
-            parameters.put("form.selectedTOPICs", trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().stream()
-                    .map(String::valueOf).collect(Collectors.joining(",")));
+            parameters.put(
+                    "form.selectedTOPICs",
+                    trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().stream().map(String::valueOf)
+                            .collect(Collectors.joining(",")));
             parameters.put("form.performAndAccept", Boolean.FALSE);
 
             String url = "/productionCounting/anomalyProductionTrackingDetails.html";
@@ -136,8 +138,7 @@ public class ProductionTrackingDetailsListeners {
         }
     }
 
-    public void goToProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void goToProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
@@ -155,8 +156,8 @@ public class ProductionTrackingDetailsListeners {
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
 
-        if (maybeForm.isPresent() && parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
+        if (maybeForm.isPresent()
+                && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
             Entity productionTracking = productionTrackingForm.getEntity();
 
@@ -167,8 +168,8 @@ public class ProductionTrackingDetailsListeners {
 
             List<Entity> recordOutProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-            Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                    .groupRecordOutProductsByLocation(recordOutProducts, technology);
+            Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
+                    recordOutProducts, technology);
 
             productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
             productionTrackingDocumentsHelper.fillProductsOutFromSet(groupedRecordOutProducts);
@@ -177,8 +178,8 @@ public class ProductionTrackingDetailsListeners {
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
             recordInProducts = recordInProducts.stream().filter(rp -> !setTechnologyInComponentsService.isSet(rp))
                     .collect(Collectors.toList());
-            Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
-                    .groupRecordInProductsByWarehouse(recordInProducts, technology);
+            Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
+                    recordInProducts, technology);
 
             productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
             productionTrackingDocumentsHelper.fillProductsInFromSet(groupedRecordInProducts);
@@ -194,10 +195,13 @@ public class ProductionTrackingDetailsListeners {
                 Map<String, Object> parameters = Maps.newHashMap();
 
                 parameters.put("form.productionTrackingId", productionTrackingId);
-                parameters.put("form.selectedTOPICs", recordInProducts.stream()
-                        .filter(ip -> productIds
-                                .contains(ip.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId()))
-                        .map(ip -> ip.getId()).map(String::valueOf).collect(Collectors.joining(",")));
+                parameters.put(
+                        "form.selectedTOPICs",
+                        recordInProducts
+                                .stream()
+                                .filter(ip -> productIds.contains(ip.getBelongsToField(
+                                        TrackingOperationProductInComponentFields.PRODUCT).getId())).map(ip -> ip.getId())
+                                .map(String::valueOf).collect(Collectors.joining(",")));
                 parameters.put("form.performAndAccept", Boolean.TRUE);
 
                 String url = "/productionCounting/anomalyProductionTrackingDetails.html";
@@ -224,8 +228,7 @@ public class ProductionTrackingDetailsListeners {
         laborTimeField.setFieldValue(totalLabor);
     }
 
-    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Long productionRecordId = productionRecordForm.getEntityId();
@@ -241,8 +244,8 @@ public class ProductionTrackingDetailsListeners {
 
         clearWasteUsedDetails(trackingOperationProductInComponents);
         copyPlannedQuantityToUsedQuantity(trackingOperationProductInComponents);
-        copyPlannedQuantityToUsedQuantity(
-                productionRecord.getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS));
+        copyPlannedQuantityToUsedQuantity(productionRecord
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS));
     }
 
     private void copyPlannedQuantityToUsedQuantity(List<Entity> recordOperationProductComponents) {
@@ -250,17 +253,15 @@ public class ProductionTrackingDetailsListeners {
             Entity product = recordOperationProductComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
             Entity recordOperationProductComponentDto;
-            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT
-                    .equals(recordOperationProductComponent.getDataDefinition().getName())) {
-                recordOperationProductComponentDto = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                        .get(recordOperationProductComponent.getId());
+            if (ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT.equals(recordOperationProductComponent
+                    .getDataDefinition().getName())) {
+                recordOperationProductComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(
+                        recordOperationProductComponent.getId());
             } else {
-                recordOperationProductComponentDto = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
-                        .get(recordOperationProductComponent.getId());
+                recordOperationProductComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
+                        recordOperationProductComponent.getId());
             }
 
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponentDto
@@ -277,8 +278,8 @@ public class ProductionTrackingDetailsListeners {
                 recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, baseUnit);
             } else {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(baseUnit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder
-                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                UnitConversionItemFieldsB.PRODUCT, product)));
                 if (unitConversions.isDefinedFor(additionalUnit)) {
                     BigDecimal convertedQuantity = unitConversions.convertTo(plannedQuantity, additionalUnit);
                     recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY,
@@ -298,8 +299,8 @@ public class ProductionTrackingDetailsListeners {
     private void clearWasteUsedDetails(EntityList trackingOperationProductInComponents) {
         for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED, Boolean.FALSE);
-            trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED_ONLY,
-                    Boolean.FALSE);
+            trackingOperationProductInComponent
+                    .setField(TrackingOperationProductInComponentFields.WASTE_USED_ONLY, Boolean.FALSE);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_USED_QUANTITY, null);
             trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.WASTE_UNIT, null);
         }
@@ -345,6 +346,23 @@ public class ProductionTrackingDetailsListeners {
         return orderLookup.getEntity();
     }
 
+    public void onOrderChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        clearFields(view, componentState, args);
+        enableOrDisableFields(view, componentState, args);
+        checkJustOne(view, componentState, args);
+        fillDivisionFieldFromOrder(view);
+    }
+
+    private void fillDivisionFieldFromOrder(final ViewDefinitionState view) {
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
+        Entity order = orderLookup.getEntity();
+        if (Objects.nonNull(order) && Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+            divisionLookup.setFieldValue(order.getBelongsToField(OrderFields.TECHNOLOGY).getBelongsToField("division").getId());
+            divisionLookup.requestComponentUpdateState();
+        }
+    }
+
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         Entity order = getOrderFromLookup(view);
 
@@ -386,21 +404,23 @@ public class ProductionTrackingDetailsListeners {
         trackingOperationProductOutComponentsGrid.setEntities(Lists.newArrayList());
     }
 
-    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
         Entity order = getOrderFromLookup(view);
 
         Entity operationalTask = operationalTasksService.findOperationalTasks(order, technologyOperationComponent);
         LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.STAFF);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.WORKSTATION);
-        if(Objects.nonNull(operationalTask)) {
-            if(Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.STAFF))) {
+        if (Objects.nonNull(operationalTask)) {
+            if (Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.STAFF))) {
                 staffLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.STAFF).getId());
             } else {
                 staffLookup.setFieldValue(null);
             }
-            if(Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION))) {
+            if (Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION))) {
                 workstationLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION).getId());
             } else {
                 workstationLookup.setFieldValue(null);

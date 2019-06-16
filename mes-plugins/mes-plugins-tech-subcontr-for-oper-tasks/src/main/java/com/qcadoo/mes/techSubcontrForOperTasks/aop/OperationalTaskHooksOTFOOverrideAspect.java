@@ -43,7 +43,7 @@ public class OperationalTaskHooksOTFOOverrideAspect {
     @Autowired
     private OperationalTaskHooksOTFOOverrideUtil operationalTaskHooksOTFOOverrideUtil;
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasks.hooks.OperationalTaskHooks.onSave(..)) "
+    @Pointcut("execution(public void com.qcadoo.mes.orders.hooks.OperationalTaskHooks.onSave(..)) "
             + "&& args(operationalTaskDD, operationalTask)")
     public void onSaveExecution(final DataDefinition operationalTaskDD, final Entity operationalTask) {
     }

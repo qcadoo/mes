@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Interval;
 import org.joda.time.LocalTime;
@@ -92,11 +92,9 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private static final String SHIFTS = "shifts";
 
-    private static final long STEP = DateTimeConstants.MILLIS_PER_WEEK;
+    private static final int MAX_LOOPS = 1000;
 
-    private static final long MAX_TIMESTAMP = new DateTime(2100, 1, 1, 0, 0, 0, 0).toDate().getTime();
-
-    private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
+    private static final int MILLS = 1000;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -136,10 +134,8 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine) {
-        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
-        if (shifts.isEmpty()) {
-            shifts = getShifts();
-        }
+        List<Entity> shifts = getShifts(productionLine);
+
         return getNearestWorkingDate(dateFrom, productionLine, shifts);
     }
 
@@ -165,7 +161,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             currentDate = currentDate.plusDays(1);
         }
 
-        DateTime result = finalShiftWorkTimes.stream().min((a, b) -> a.getFrom().compareTo(b.getFrom())).get().getFrom();
+        DateTime result = finalShiftWorkTimes.stream().min(Comparator.comparing(DateTimeRange::getFrom)).get().getFrom();
 
         if (result.compareTo(dateFrom) <= 0) {
             return Optional.of(dateFrom);
@@ -278,7 +274,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private List<Shift> transformEntitiesToShifts(List<Entity> shiftsEntities) {
         List<Entity> shifts = Lists.newArrayList(shiftsEntities);
-        shifts.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        shifts.sort(Comparator.comparing(Entity::getId));
 
         return shifts.stream().map(Shift::new).collect(Collectors.toList());
     }
@@ -341,81 +337,37 @@ public class ShiftsServiceImpl implements ShiftsService {
             return Date.from(dateFrom.toInstant().plusSeconds(seconds));
         }
 
-        long start = dateFrom.getTime();
-        long remaining = seconds;
+        DateTime dateFromDT = new DateTime(dateFrom, DateTimeZone.getDefault());
 
-        while (remaining >= 0) {
-            List<ShiftHour> hours = getHoursShifts(productionLine, new Date(start), new Date(start + STEP));
-
-            for (ShiftHour hour : hours) {
-                long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
-                if (diff >= remaining) {
-                    return new Date(hour.getDateFrom().getTime() + (remaining * 1000));
-                } else {
-                    remaining -= diff;
-                }
-            }
-
-            start += STEP;
-
-            if (start > MAX_TIMESTAMP) {
+        List<Shift> shifts = findAll(productionLine);
+        DateTime dateOfDay = new DateTime(dateFrom);
+        dateOfDay = dateOfDay.minusDays(1);
+        dateOfDay = dateOfDay.toLocalDate().toDateTimeAtStartOfDay();
+        long leftMilliseconds = seconds * MILLS;
+        int loopCount = 0;
+        while (leftMilliseconds > 0L) {
+            if (loopCount > MAX_LOOPS) {
                 return Date.from(dateFrom.toInstant().plusSeconds(seconds));
             }
+            for (Shift shift : shifts) {
+                for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay)) {
+                    if (dateFrom.after(dateOfDay.toDate())) {
+                        range = range.trimBefore(dateFromDT);
+                    }
+                    if (range != null) {
+                        if (leftMilliseconds > range.durationMillis()) {
+                            leftMilliseconds = leftMilliseconds - range.durationMillis();
+                        } else {
+                            return range.getFrom().plusMillis((int) leftMilliseconds).toDate();
+                        }
+                    }
+                }
+            }
+            loopCount++;
+            dateOfDay = dateOfDay.plusDays(1);
         }
 
         return Date.from(dateFrom.toInstant().plusSeconds(seconds));
-    }
-
-    private List<ShiftHour> getHoursShifts(final Entity productionLine, final Date dateFrom, final Date dateTo) {
-        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
-        if (shifts.isEmpty()) {
-            shifts = getShifts();
-        }
-
-        List<ShiftHour> hours = Lists.newArrayList();
-
-        for (Entity shift : shifts) {
-            hours.addAll(getHoursForShift(shift, dateFrom, dateTo));
-        }
-
-        hours.sort(new ShiftHoursComparator());
-
-        return mergeOverlappedHours(hours);
-    }
-
-    @Override
-    public Date findDateFromForProductionLine(final Date dateTo, final long seconds, final Entity productionLine) {
-        if (getShiftDataDefinition().find().list().getTotalNumberOfEntities() == 0) {
-            return Date.from(dateTo.toInstant().minusSeconds(seconds));
-        }
-
-        long stop = dateTo.getTime();
-        long remaining = seconds;
-
-        while (remaining >= 0) {
-            List<ShiftHour> hours = getHoursShifts(productionLine, new Date(stop - STEP), new Date(stop));
-
-            for (int i = hours.size() - 1; i >= 0; i--) {
-                ShiftHour hour = hours.get(i);
-
-                long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
-                if (diff >= remaining) {
-                    return new Date(hour.getDateTo().getTime() - (remaining * 1000));
-                } else {
-                    remaining -= diff;
-                }
-            }
-
-            stop -= STEP;
-
-            if (stop < MIN_TIMESTAMP) {
-                return Date.from(dateTo.toInstant().minusSeconds(seconds));
-            }
-        }
-
-        return Date.from(dateTo.toInstant().minusSeconds(seconds));
     }
 
     @Override
@@ -751,6 +703,24 @@ public class ShiftsServiceImpl implements ShiftsService {
         return getShiftDataDefinition().find().list().getEntities();
     }
 
+    private List<Entity> getShifts(final Entity productionLine) {
+        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
+        if (shifts.isEmpty()) {
+            shifts = getShifts();
+        }
+        return shifts;
+    }
+
+    @Override
+    public List<Shift> findAll() {
+        return getShifts().stream().map(Shift::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Shift> findAll(Entity productionLine) {
+        return getShifts(productionLine).stream().map(Shift::new).collect(Collectors.toList());
+    }
+
     /**
      * @deprecated Use Shift#worksAt
      */
@@ -778,7 +748,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
         private final Date dateFrom;
 
-        public ShiftHour(final Date dateFrom, final Date dateTo) {
+        ShiftHour(final Date dateFrom, final Date dateTo) {
             this.dateFrom = new Date(dateFrom.getTime());
             if (dateFrom.after(dateTo)) {
                 Calendar cal = Calendar.getInstance();

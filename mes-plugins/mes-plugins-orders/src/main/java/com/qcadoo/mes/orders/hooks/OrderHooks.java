@@ -41,9 +41,11 @@ import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -69,13 +71,9 @@ import com.qcadoo.view.api.utils.TimeConverterService;
 @Service
 public class OrderHooks {
 
-    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+    private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
-    public static final String BACKUP_TECHNOLOGY_PREFIX = "B_";
-
-    public static final long SECOND_MILLIS = 1000;
-
-    public static final List<String> sourceDateFields = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
+    private static final List<String> sourceDateFields = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
             "sourceStartDate", "sourceFinishDate");
 
     @Autowired
@@ -111,6 +109,9 @@ public class OrderHooks {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private OperationalTasksService operationalTasksService;
+
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         boolean isValid = true;
 
@@ -141,6 +142,36 @@ public class OrderHooks {
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
         setRemainingQuantity(order);
         setAdditionalFields(order);
+        changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
+    }
+
+    private void changedProductionLineInOperationalTasksWhenChanged(final DataDefinition orderDD, final Entity order) {
+        Long orderId = order.getId();
+
+        if (orderId == null) {
+            return;
+        }
+
+        Entity orderFromDB = orderDD.get(orderId);
+
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity orderProductionLine = orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
+        if ((productionLine != null) && (orderProductionLine != null)) {
+            if (!orderProductionLine.getId().equals(productionLine.getId())) {
+                changedProductionLineInOperationalTasks(orderFromDB, productionLine);
+            }
+        }
+    }
+
+    private void changedProductionLineInOperationalTasks(final Entity order, final Entity productionLine) {
+        List<Entity> operationalTasks = operationalTasksService.getOperationalTasksForOrder(order);
+
+        for (Entity operationalTask : operationalTasks) {
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
+
+            operationalTask.getDataDefinition().save(operationalTask);
+        }
     }
 
     private void setAdditionalFields(final Entity order) {

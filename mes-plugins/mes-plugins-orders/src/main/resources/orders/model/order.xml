@@ -171,6 +171,10 @@
         <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
                  cascade="delete"/>
 
+        <belongsTo name="division" model="division" plugin="basic"/>
+
+        <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete" />
+
     </fields>
 
     <hooks>

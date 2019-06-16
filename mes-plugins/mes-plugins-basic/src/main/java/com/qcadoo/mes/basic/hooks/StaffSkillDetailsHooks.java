@@ -23,16 +23,18 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.constants.SkillFields;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class StaffSkillDetailsHooks {
@@ -40,6 +42,8 @@ public class StaffSkillDetailsHooks {
     private static final String L_FORM = "form";
 
     private static final String L_STAFF_ID = "staffId";
+
+    private static final String MAX_LEVEL = "maxLevel";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent staffSkillForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -49,6 +53,16 @@ public class StaffSkillDetailsHooks {
         Entity staff = staffSkill.getBelongsToField(StaffSkillsFields.STAFF);
 
         filterSkillLookup(skillLookup, staff);
+        fillMaxSkill(view, skillLookup);
+    }
+
+    private void fillMaxSkill(final ViewDefinitionState view, final LookupComponent skillLookup) {
+        Entity skill = skillLookup.getEntity();
+
+        if(Objects.nonNull(skill)) {
+            FieldComponent maxSkillLevelField = (FieldComponent) view.getComponentByReference(MAX_LEVEL);
+            maxSkillLevelField.setFieldValue(skill.getIntegerField(SkillFields.MAXIMUM_LEVEL));
+        }
     }
 
     private void filterSkillLookup(final LookupComponent skillLookup, final Entity staff) {

@@ -23,17 +23,10 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -44,7 +37,6 @@ import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -54,6 +46,13 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -77,6 +76,9 @@ public class OrderDetailsHooksMO {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrdersFromMOProductsGenerationService ordersFromMOProductsGenerationService;
 
     public void fillMasterOrderFields(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -122,9 +124,6 @@ public class OrderDetailsHooksMO {
                 .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
-        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
-                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
-                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
         if (masterOrder != null && productComponent != null && productComponent.getId() != null) {
@@ -202,13 +201,8 @@ public class OrderDetailsHooksMO {
                 technologyPrototypeLookup.requestComponentUpdateState();
                 technologyPrototypeLookup.performEvent(view, "onSelectedEntityChange", "");
             }
-            String orderDescription;
-            if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
-                orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
-            } else {
-                orderDescription = orderService.buildOrderDescription(masterOrder, masterOrderTechnology,
-                        fillOrderDescriptionBasedOnTechnology);
-            }
+            String orderDescription = ordersFromMOProductsGenerationService.buildDescription(parameter, masterOrder,
+                    productComponentDB, masterOrderTechnology);
 
             if ((Strings.nullToEmpty((String) descriptionField.getFieldValue())).isEmpty()) {
                 descriptionField.setFieldValue("");

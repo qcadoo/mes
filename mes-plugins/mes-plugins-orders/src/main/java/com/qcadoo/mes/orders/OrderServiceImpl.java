@@ -29,9 +29,9 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -40,15 +40,24 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
     private static final String L_EMPTY_NUMBER = "";
+
+    public static final String L_DIVISION = "division";
 
     private static final Set<String> L_ORDER_STARTED_STATES = Collections.unmodifiableSet(Sets.newHashSet(
             OrderState.IN_PROGRESS.getStringValue(), OrderState.COMPLETED.getStringValue(),
@@ -108,6 +117,35 @@ public class OrderServiceImpl implements OrderService {
                     cal.get(Calendar.YEAR) + "." + (cal.get(Calendar.MONTH) + 1) + "." + cal.get(Calendar.DAY_OF_MONTH));
         }
     }
+
+    @Override
+    public Entity getProductionLine(final Entity technology) {
+        Entity productionLine = null;
+        if (Objects.nonNull(technology)) {
+            productionLine = technology.getBelongsToField("productionLine");
+        }
+        if (Objects.isNull(productionLine)) {
+            productionLine = getDefaultProductionLine();
+        }
+        return productionLine;
+    }
+
+    @Override
+    public Entity getDivision(final Entity technology) {
+        Entity division = null;
+        if (Objects.nonNull(technology)) {
+            division = technology.getBelongsToField(L_DIVISION);
+        }
+        if (Objects.isNull(division)) {
+            Entity defaultProductionLine = getDefaultProductionLine();
+            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            if (divisions.size() == 1) {
+                division = divisions.get(0);
+            }
+        }
+        return division;
+    }
+
 
     // FIXME - this method doesn't have anything in common with production orders..
     @Override

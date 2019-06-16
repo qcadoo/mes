@@ -192,11 +192,6 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-operational-tasks</artifactId>
-            <version>1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-column-extension</artifactId>
             <version>1.5-SNAPSHOT</version>
         </dependency>
