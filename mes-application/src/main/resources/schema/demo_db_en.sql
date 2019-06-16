@@ -214,279 +214,279 @@ $$;
 CREATE FUNCTION archive_connected_tables_all() RETURNS void
     LANGUAGE plpgsql
     AS $$
-	DECLARE
-		_masterOrder RECORD;
-		_goodfoodLabel RECORD;
-		_statesMessage RECORD;
-		_goodfoodPallet RECORD;
-		_printLabelsHelper RECORD;
-		_order RECORD;
-		_orderstatechange RECORD;
-		_ordertimecalculation RECORD;
-		_productionpershift RECORD;
-		_progressforday RECORD;
-		_productiontracking RECORD;
-		_anomaly RECORD;
-		_labelstatechange RECORD;
-		_palletstatechange RECORD;
-		_productiontrackingstatechange RECORD;
-		_trackingoperationproductincomponent RECORD;
-		_trackingoperationproductoutcomponent RECORD;
-		_repairorder RECORD;
-		_anomalyproductiontrackingentryhelper RECORD;
-		_extrusionprotocol RECORD;
-		_extrusionprotocolstatechange RECORD;
-		_extrusionaddedmixentry RECORD;
-		_extrusionpouring RECORD;
-		_extrusiontakenoffmixentry RECORD;
-		_confectionprotocol RECORD;
-		_confectionfilmproduct RECORD;
-		_confectionprotocolstatechange RECORD;
-		_costcalculation RECORD;
-		_bproductioncountingquantity RECORD;
-		_basicproductioncounting RECORD;
-		_avglaborcostcalcfororder RECORD;
-		_atrackingrecord RECORD;
-		_document_position RECORD;
-		_document RECORD;
-	BEGIN
-		SET session_replication_role = 'replica';
+DECLARE
+    _masterOrder RECORD;
+    _goodfoodLabel RECORD;
+    _statesMessage RECORD;
+    _goodfoodPallet RECORD;
+    _printLabelsHelper RECORD;
+    _order RECORD;
+    _orderstatechange RECORD;
+    _ordertimecalculation RECORD;
+    _productionpershift RECORD;
+    _progressforday RECORD;
+    _productiontracking RECORD;
+    _anomaly RECORD;
+    _labelstatechange RECORD;
+    _palletstatechange RECORD;
+    _productiontrackingstatechange RECORD;
+    _trackingoperationproductincomponent RECORD;
+    _trackingoperationproductoutcomponent RECORD;
+    _repairorder RECORD;
+    _anomalyproductiontrackingentryhelper RECORD;
+    _extrusionprotocol RECORD;
+    _extrusionprotocolstatechange RECORD;
+    _extrusionaddedmixentry RECORD;
+    _extrusionpouring RECORD;
+    _extrusiontakenoffmixentry RECORD;
+    _confectionprotocol RECORD;
+    _confectionfilmproduct RECORD;
+    _confectionprotocolstatechange RECORD;
+    _costcalculation RECORD;
+    _bproductioncountingquantity RECORD;
+    _basicproductioncounting RECORD;
+    _avglaborcostcalcfororder RECORD;
+    _atrackingrecord RECORD;
+    _document_position RECORD;
+    _document RECORD;
+BEGIN
+    SET session_replication_role = 'replica';
 
-		FOR _masterOrder IN SELECT * FROM arch_masterorders_masterorder where archived = false
-		LOOP
-			-- masterorders_masterorder
-			INSERT INTO arch_assignmenttoshift_multiassignmenttoshift SELECT * FROM assignmenttoshift_multiassignmenttoshift WHERE masterorder_id = _masterOrder.id;
-			INSERT INTO arch_assignmenttoshift_staffassignmenttoshift SELECT * FROM assignmenttoshift_staffassignmenttoshift WHERE masterorder_id = _masterOrder.id;
-			INSERT INTO arch_goodfood_label SELECT * FROM goodfood_label WHERE masterorder_id = _masterOrder.id;
-			INSERT INTO arch_goodfood_printedlabel SELECT * FROM goodfood_printedlabel WHERE masterorder_id = _masterOrder.id;
-			INSERT INTO arch_integrationbartender_printlabelshelper SELECT * FROM integrationbartender_printlabelshelper WHERE masterorder_id = _masterOrder.id;
-			INSERT INTO arch_masterorders_masterorderproduct SELECT * FROM masterorders_masterorderproduct WHERE masterorder_id = _masterOrder.id;
-			-- goodfood_label
-			FOR _goodfoodLabel IN SELECT * FROM arch_goodfood_label WHERE archived = false
-			LOOP
-				INSERT INTO arch_goodfood_labelstatechange SELECT * FROM goodfood_labelstatechange WHERE label_id = _goodfoodLabel.id;
+    FOR _masterOrder IN SELECT * FROM arch_masterorders_masterorder where archived = false
+        LOOP
+            -- masterorders_masterorder
+            INSERT INTO arch_assignmenttoshift_multiassignmenttoshift SELECT * FROM assignmenttoshift_multiassignmenttoshift WHERE masterorder_id = _masterOrder.id;
+            INSERT INTO arch_assignmenttoshift_staffassignmenttoshift SELECT * FROM assignmenttoshift_staffassignmenttoshift WHERE masterorder_id = _masterOrder.id;
+            INSERT INTO arch_goodfood_label SELECT * FROM goodfood_label WHERE masterorder_id = _masterOrder.id;
+            INSERT INTO arch_goodfood_printedlabel SELECT * FROM goodfood_printedlabel WHERE masterorder_id = _masterOrder.id;
+            INSERT INTO arch_integrationbartender_printlabelshelper SELECT * FROM integrationbartender_printlabelshelper WHERE masterorder_id = _masterOrder.id;
+            INSERT INTO arch_masterorders_masterorderproduct SELECT * FROM masterorders_masterorderproduct WHERE masterorder_id = _masterOrder.id;
+            -- goodfood_label
+            FOR _goodfoodLabel IN SELECT * FROM arch_goodfood_label WHERE archived = false
+                LOOP
+                    INSERT INTO arch_goodfood_labelstatechange SELECT * FROM goodfood_labelstatechange WHERE label_id = _goodfoodLabel.id;
 
-				INSERT INTO arch_goodfood_pallet SELECT * FROM goodfood_pallet WHERE label_id = _goodfoodLabel.id ORDER BY secondpallet_id DESC;
-				FOR _goodfoodPallet IN SELECT * FROM arch_goodfood_pallet
-				LOOP
-					INSERT INTO arch_goodfood_palletstatechange SELECT * FROM goodfood_palletstatechange WHERE pallet_id = _goodfoodPallet.id;
-				END LOOP;
-			END LOOP;
-			FOR _labelstatechange IN SELECT * FROM arch_goodfood_labelstatechange WHERE archived = false
-			LOOP
-				INSERT INTO arch_states_message SELECT * FROM states_message WHERE labelstatechange_id = _labelstatechange.id;
-			END LOOP;
-			FOR _palletstatechange IN SELECT * FROM arch_goodfood_palletstatechange WHERE archived = false
-			LOOP
-				INSERT INTO arch_states_message SELECT * FROM states_message WHERE palletstatechange_id = _palletstatechange.id;
-			END LOOP;
-			-- arch_integrationbartender_printlabelshelper
-			FOR _printLabelsHelper IN SELECT * FROM arch_integrationbartender_printlabelshelper WHERE archived = false
-			LOOP
-				INSERT INTO arch_integrationbartender_sendtoprint SELECT * FROM integrationbartender_sendtoprint WHERE printlabelshelper_id = _printLabelsHelper.id;
-			END LOOP;
-		END LOOP;
-		-- arch_orders_order
-		FOR _order IN SELECT * FROM arch_orders_order WHERE archived = false
-		LOOP
-			--RAISE NOTICE 'Order : %' , _order.number;
+                    INSERT INTO arch_goodfood_pallet SELECT * FROM goodfood_pallet WHERE label_id = _goodfoodLabel.id ORDER BY secondpallet_id DESC;
+                    FOR _goodfoodPallet IN SELECT * FROM arch_goodfood_pallet
+                        LOOP
+                            INSERT INTO arch_goodfood_palletstatechange SELECT * FROM goodfood_palletstatechange WHERE pallet_id = _goodfoodPallet.id;
+                        END LOOP;
+                END LOOP;
+            FOR _labelstatechange IN SELECT * FROM arch_goodfood_labelstatechange WHERE archived = false
+                LOOP
+                    INSERT INTO arch_states_message SELECT * FROM states_message WHERE labelstatechange_id = _labelstatechange.id;
+                END LOOP;
+            FOR _palletstatechange IN SELECT * FROM arch_goodfood_palletstatechange WHERE archived = false
+                LOOP
+                    INSERT INTO arch_states_message SELECT * FROM states_message WHERE palletstatechange_id = _palletstatechange.id;
+                END LOOP;
+            -- arch_integrationbartender_printlabelshelper
+            FOR _printLabelsHelper IN SELECT * FROM arch_integrationbartender_printlabelshelper WHERE archived = false
+                LOOP
+                    INSERT INTO arch_integrationbartender_sendtoprint SELECT * FROM integrationbartender_sendtoprint WHERE printlabelshelper_id = _printLabelsHelper.id;
+                END LOOP;
+        END LOOP;
+    -- arch_orders_order
+    FOR _order IN SELECT * FROM arch_orders_order WHERE archived = false
+        LOOP
+            --RAISE NOTICE 'Order : %' , _order.number;
 
-			INSERT INTO arch_orders_orderstatechange SELECT * FROM orders_orderstatechange WHERE order_id = _order.id;
-			INSERT INTO arch_orders_reasontypecorrectiondatefrom SELECT * FROM orders_reasontypecorrectiondatefrom WHERE order_id = _order.id;
-			INSERT INTO arch_orders_reasontypecorrectiondateto SELECT * FROM orders_reasontypecorrectiondateto WHERE order_id = _order.id;
-			INSERT INTO arch_orders_reasontypedeviationeffectiveend SELECT * FROM orders_reasontypedeviationeffectiveend WHERE order_id = _order.id;
-			INSERT INTO arch_orders_reasontypedeviationeffectivestart SELECT * FROM orders_reasontypedeviationeffectivestart WHERE order_id = _order.id;
-			INSERT INTO arch_orders_typeofcorrectioncauses SELECT * FROM orders_typeofcorrectioncauses WHERE order_id = _order.id;
-			INSERT INTO arch_technologies_barcodeoperationcomponent SELECT * FROM technologies_barcodeoperationcomponent WHERE order_id = _order.id;
-			INSERT INTO arch_technologies_technologyoperationcomponentmergeproductin SELECT * FROM technologies_technologyoperationcomponentmergeproductin WHERE order_id = _order.id;
-			INSERT INTO arch_technologies_technologyoperationcomponentmergeproductout SELECT * FROM technologies_technologyoperationcomponentmergeproductout WHERE order_id = _order.id;
-			INSERT INTO arch_stoppage_stoppage SELECT * FROM stoppage_stoppage WHERE order_id = _order.id;
-			INSERT INTO arch_urcmaterialavailability_requiredcomponent SELECT * FROM urcmaterialavailability_requiredcomponent WHERE order_id = _order.id;
-			INSERT INTO arch_simplematerialbalance_simplematerialbalanceorderscomponent SELECT * FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
-			INSERT INTO arch_productionscheduling_ordertimecalculation SELECT * FROM productionscheduling_ordertimecalculation WHERE order_id = _order.id;
-			INSERT INTO arch_productionpershift_productionpershift SELECT * FROM productionpershift_productionpershift WHERE order_id = _order.id;
-			INSERT INTO arch_productioncounting_productiontrackingreport SELECT * FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
-			INSERT INTO arch_productioncounting_productiontracking SELECT * FROM productioncounting_productiontracking WHERE order_id = _order.id;
-			INSERT INTO arch_productflowthrudivision_materialavailability SELECT * FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
-			INSERT INTO arch_operationaltasks_operationaltask SELECT * FROM operationaltasks_operationaltask WHERE order_id = _order.id;
-			INSERT INTO arch_goodfood_extrusionprotocol SELECT * FROM goodfood_extrusionprotocol WHERE order_id = _order.id;
-			INSERT INTO arch_goodfood_confectionprotocol SELECT * FROM goodfood_confectionprotocol WHERE order_id = _order.id;
-			INSERT INTO arch_costnormsformaterials_technologyinstoperproductincomp SELECT * FROM costnormsformaterials_technologyinstoperproductincomp WHERE order_id = _order.id;
-			INSERT INTO arch_costcalculation_costcalculation SELECT * FROM costcalculation_costcalculation WHERE order_id = _order.id;
-			INSERT INTO arch_basicproductioncounting_basicproductioncounting SELECT * FROM basicproductioncounting_basicproductioncounting WHERE order_id = _order.id;
-			INSERT INTO arch_basicproductioncounting_productioncountingquantity SELECT * FROM basicproductioncounting_productioncountingquantity WHERE order_id = _order.id;
-			INSERT INTO arch_basicproductioncounting_productioncountingoperationrun SELECT * FROM basicproductioncounting_productioncountingoperationrun WHERE order_id = _order.id;
-			INSERT INTO arch_avglaborcostcalcfororder_avglaborcostcalcfororder SELECT * FROM avglaborcostcalcfororder_avglaborcostcalcfororder  WHERE order_id = _order.id;
-			INSERT INTO arch_advancedgenealogy_trackingrecord SELECT * FROM advancedgenealogy_trackingrecord  WHERE order_id = _order.id;
-			INSERT INTO arch_materialflowresources_document SELECT * FROM materialflowresources_document WHERE order_id = _order.id;
-		END LOOP;
-		--RAISE NOTICE '--------->	arch_orders_orderstatechange';
+            INSERT INTO arch_orders_orderstatechange SELECT * FROM orders_orderstatechange WHERE order_id = _order.id;
+            INSERT INTO arch_orders_reasontypecorrectiondatefrom SELECT * FROM orders_reasontypecorrectiondatefrom WHERE order_id = _order.id;
+            INSERT INTO arch_orders_reasontypecorrectiondateto SELECT * FROM orders_reasontypecorrectiondateto WHERE order_id = _order.id;
+            INSERT INTO arch_orders_reasontypedeviationeffectiveend SELECT * FROM orders_reasontypedeviationeffectiveend WHERE order_id = _order.id;
+            INSERT INTO arch_orders_reasontypedeviationeffectivestart SELECT * FROM orders_reasontypedeviationeffectivestart WHERE order_id = _order.id;
+            INSERT INTO arch_orders_typeofcorrectioncauses SELECT * FROM orders_typeofcorrectioncauses WHERE order_id = _order.id;
+            INSERT INTO arch_technologies_barcodeoperationcomponent SELECT * FROM technologies_barcodeoperationcomponent WHERE order_id = _order.id;
+            INSERT INTO arch_technologies_technologyoperationcomponentmergeproductin SELECT * FROM technologies_technologyoperationcomponentmergeproductin WHERE order_id = _order.id;
+            INSERT INTO arch_technologies_technologyoperationcomponentmergeproductout SELECT * FROM technologies_technologyoperationcomponentmergeproductout WHERE order_id = _order.id;
+            INSERT INTO arch_stoppage_stoppage SELECT * FROM stoppage_stoppage WHERE order_id = _order.id;
+            INSERT INTO arch_urcmaterialavailability_requiredcomponent SELECT * FROM urcmaterialavailability_requiredcomponent WHERE order_id = _order.id;
+            INSERT INTO arch_simplematerialbalance_simplematerialbalanceorderscomponent SELECT * FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
+            INSERT INTO arch_productionscheduling_ordertimecalculation SELECT * FROM productionscheduling_ordertimecalculation WHERE order_id = _order.id;
+            INSERT INTO arch_productionpershift_productionpershift SELECT * FROM productionpershift_productionpershift WHERE order_id = _order.id;
+            INSERT INTO arch_productioncounting_productiontrackingreport SELECT * FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
+            INSERT INTO arch_productioncounting_productiontracking SELECT * FROM productioncounting_productiontracking WHERE order_id = _order.id;
+            INSERT INTO arch_productflowthrudivision_materialavailability SELECT * FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
+            INSERT INTO arch_orders_operationaltask SELECT * FROM orders_operationaltask WHERE order_id = _order.id;
+            INSERT INTO arch_goodfood_extrusionprotocol SELECT * FROM goodfood_extrusionprotocol WHERE order_id = _order.id;
+            INSERT INTO arch_goodfood_confectionprotocol SELECT * FROM goodfood_confectionprotocol WHERE order_id = _order.id;
+            INSERT INTO arch_costnormsformaterials_technologyinstoperproductincomp SELECT * FROM costnormsformaterials_technologyinstoperproductincomp WHERE order_id = _order.id;
+            INSERT INTO arch_costcalculation_costcalculation SELECT * FROM costcalculation_costcalculation WHERE order_id = _order.id;
+            INSERT INTO arch_basicproductioncounting_basicproductioncounting SELECT * FROM basicproductioncounting_basicproductioncounting WHERE order_id = _order.id;
+            INSERT INTO arch_basicproductioncounting_productioncountingquantity SELECT * FROM basicproductioncounting_productioncountingquantity WHERE order_id = _order.id;
+            INSERT INTO arch_basicproductioncounting_productioncountingoperationrun SELECT * FROM basicproductioncounting_productioncountingoperationrun WHERE order_id = _order.id;
+            INSERT INTO arch_avglaborcostcalcfororder_avglaborcostcalcfororder SELECT * FROM avglaborcostcalcfororder_avglaborcostcalcfororder  WHERE order_id = _order.id;
+            INSERT INTO arch_advancedgenealogy_trackingrecord SELECT * FROM advancedgenealogy_trackingrecord  WHERE order_id = _order.id;
+            INSERT INTO arch_materialflowresources_document SELECT * FROM materialflowresources_document WHERE order_id = _order.id;
+        END LOOP;
+    --RAISE NOTICE '--------->	arch_orders_orderstatechange';
 
-		-- arch_orders_orderstatechange
-		FOR _orderstatechange IN SELECT * FROM arch_orders_orderstatechange WHERE archived = false
-		LOOP
-			INSERT INTO arch_states_message SELECT * FROM states_message WHERE orderstatechange_id = _orderstatechange.id;
-			INSERT INTO arch_orders_reasontypeofchangingorderstate SELECT * FROM orders_reasontypeofchangingorderstate WHERE orderstatechange_id = _orderstatechange.id;
-		END LOOP;
-		--RAISE NOTICE '--------->	arch_productionscheduling_ordertimecalculation';
+    -- arch_orders_orderstatechange
+    FOR _orderstatechange IN SELECT * FROM arch_orders_orderstatechange WHERE archived = false
+        LOOP
+            INSERT INTO arch_states_message SELECT * FROM states_message WHERE orderstatechange_id = _orderstatechange.id;
+            INSERT INTO arch_orders_reasontypeofchangingorderstate SELECT * FROM orders_reasontypeofchangingorderstate WHERE orderstatechange_id = _orderstatechange.id;
+        END LOOP;
+    --RAISE NOTICE '--------->	arch_productionscheduling_ordertimecalculation';
 
-		-- arch_productionscheduling_ordertimecalculation
-		FOR _ordertimecalculation IN SELECT * FROM arch_productionscheduling_ordertimecalculation WHERE archived = false
-		LOOP
-			INSERT INTO arch_productionscheduling_opercomptimecalculation SELECT * FROM productionscheduling_opercomptimecalculation WHERE ordertimecalculation_id = _ordertimecalculation.id;
-		END LOOP;
-		--RAISE NOTICE '--------->	arch_productionpershift_productionpershift';
+    -- arch_productionscheduling_ordertimecalculation
+    FOR _ordertimecalculation IN SELECT * FROM arch_productionscheduling_ordertimecalculation WHERE archived = false
+        LOOP
+            INSERT INTO arch_productionscheduling_opercomptimecalculation SELECT * FROM productionscheduling_opercomptimecalculation WHERE ordertimecalculation_id = _ordertimecalculation.id;
+        END LOOP;
+    --RAISE NOTICE '--------->	arch_productionpershift_productionpershift';
 
-		-- arch_productionpershift_productionpershift
-		FOR _productionpershift IN SELECT * FROM arch_productionpershift_productionpershift WHERE archived = false
-		LOOP
-			INSERT INTO arch_productionpershift_progressforday SELECT * FROM productionpershift_progressforday WHERE productionpershift_id = _productionpershift.id;
-			INSERT INTO arch_productionpershift_reasontypeofcorrectionplan SELECT * FROM productionpershift_reasontypeofcorrectionplan WHERE productionpershift_id = _productionpershift.id;
-		END LOOP;
-		--RAISE NOTICE '--------->	arch_productionpershift_progressforday';
+    -- arch_productionpershift_productionpershift
+    FOR _productionpershift IN SELECT * FROM arch_productionpershift_productionpershift WHERE archived = false
+        LOOP
+            INSERT INTO arch_productionpershift_progressforday SELECT * FROM productionpershift_progressforday WHERE productionpershift_id = _productionpershift.id;
+            INSERT INTO arch_productionpershift_reasontypeofcorrectionplan SELECT * FROM productionpershift_reasontypeofcorrectionplan WHERE productionpershift_id = _productionpershift.id;
+        END LOOP;
+    --RAISE NOTICE '--------->	arch_productionpershift_progressforday';
 
-		-- arch_productionpershift_progressforday
-		FOR _progressforday IN SELECT * FROM arch_productionpershift_progressforday WHERE archived = false
-		LOOP
-			INSERT INTO arch_productionpershift_dailyprogress SELECT * FROM productionpershift_dailyprogress WHERE progressforday_id = _progressforday.id;
-		END LOOP;
-		--RAISE NOTICE '--------->	arch_productioncounting_productiontracking';
+    -- arch_productionpershift_progressforday
+    FOR _progressforday IN SELECT * FROM arch_productionpershift_progressforday WHERE archived = false
+        LOOP
+            INSERT INTO arch_productionpershift_dailyprogress SELECT * FROM productionpershift_dailyprogress WHERE progressforday_id = _progressforday.id;
+        END LOOP;
+    --RAISE NOTICE '--------->	arch_productioncounting_productiontracking';
 
-		-- arch_productioncounting_productiontracking
-		FOR _productiontracking IN SELECT * FROM arch_productioncounting_productiontracking WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_anomaly SELECT * FROM productioncounting_anomaly WHERE productiontracking_id = _productiontracking.id;
-			INSERT INTO arch_productioncounting_productiontrackingstatechange SELECT * FROM productioncounting_productiontrackingstatechange WHERE productiontracking_id = _productiontracking.id;
-			INSERT INTO arch_productioncounting_staffworktime SELECT * FROM productioncounting_staffworktime WHERE productionrecord_id = _productiontracking.id;
-			INSERT INTO arch_productioncounting_trackingoperationproductincomponent SELECT * FROM productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id;
-			INSERT INTO arch_productioncounting_trackingoperationproductoutcomponent SELECT * FROM productioncounting_trackingoperationproductoutcomponent WHERE productiontracking_id = _productiontracking.id;
-			INSERT INTO arch_repairs_repairorder SELECT * FROM repairs_repairorder WHERE productiontracking_id = _productiontracking.id;
+    -- arch_productioncounting_productiontracking
+    FOR _productiontracking IN SELECT * FROM arch_productioncounting_productiontracking WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_anomaly SELECT * FROM productioncounting_anomaly WHERE productiontracking_id = _productiontracking.id;
+            INSERT INTO arch_productioncounting_productiontrackingstatechange SELECT * FROM productioncounting_productiontrackingstatechange WHERE productiontracking_id = _productiontracking.id;
+            INSERT INTO arch_productioncounting_staffworktime SELECT * FROM productioncounting_staffworktime WHERE productionrecord_id = _productiontracking.id;
+            INSERT INTO arch_productioncounting_trackingoperationproductincomponent SELECT * FROM productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id;
+            INSERT INTO arch_productioncounting_trackingoperationproductoutcomponent SELECT * FROM productioncounting_trackingoperationproductoutcomponent WHERE productiontracking_id = _productiontracking.id;
+            INSERT INTO arch_repairs_repairorder SELECT * FROM repairs_repairorder WHERE productiontracking_id = _productiontracking.id;
 
-		END LOOP;
-		FOR _productiontrackingstatechange IN SELECT * FROM arch_productioncounting_productiontrackingstatechange WHERE archived = false
-		LOOP
-			INSERT INTO arch_states_message SELECT * FROM states_message WHERE productiontrackingstatechange_id = _productiontrackingstatechange.id;
-		END LOOP;
-		-- arch_productioncounting_anomaly
-		FOR _anomaly IN SELECT * FROM arch_productioncounting_anomaly WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_anomalyexplanation SELECT * FROM productioncounting_anomalyexplanation WHERE anomaly_id = _anomaly.id;
-		END LOOP;
-		-- arch_productioncounting_trackingoperationproductincomponent
-		FOR _trackingoperationproductincomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductincomponent WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_anomalyproductiontrackingentryhelper SELECT * FROM productioncounting_anomalyproductiontrackingentryhelper WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
-			INSERT INTO arch_productioncounting_settechnologyincomponents SELECT * FROM productioncounting_settechnologyincomponents WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
-			INSERT INTO arch_repairs_repairorderproduct SELECT * FROM repairs_repairorderproduct WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
-		END LOOP;
-		-- arch_productioncounting_trackingoperationproductoutcomponent
-		FOR _trackingoperationproductoutcomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductoutcomponent  WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_settrackingoperationproductincomponents SELECT * FROM productioncounting_settrackingoperationproductincomponents WHERE trackingoperationproductoutcomponent_id = _trackingoperationproductoutcomponent.id;
-		END LOOP;
-		-- arch_repairs_repairorder
-		FOR _repairorder IN SELECT * FROM arch_repairs_repairorder  WHERE archived = false
-		LOOP
-			INSERT INTO arch_repairs_repairorderstatechange SELECT * FROM repairs_repairorderstatechange WHERE repairorder_id = _repairorder.id;
-			INSERT INTO arch_repairs_repairorderworktime SELECT * FROM repairs_repairorderworktime WHERE repairorder_id = _repairorder.id;
-		END LOOP;
-		-- arch_productioncounting_anomalyproductiontrackingentryhelper
-		FOR _anomalyproductiontrackingentryhelper IN SELECT * FROM arch_productioncounting_anomalyproductiontrackingentryhelper WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_anomalyreasoncontainer SELECT * FROM productioncounting_anomalyreasoncontainer WHERE anomalyproductiontrackingentryhelper_id = _anomalyproductiontrackingentryhelper.id;
-		END LOOP;
-		-- arch_goodfood_extrusionprotocol
-		FOR _extrusionprotocol IN SELECT * FROM arch_goodfood_extrusionprotocol WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_extrusionaddedmixentry SELECT * FROM goodfood_extrusionaddedmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			INSERT INTO arch_goodfood_extrusionpouring SELECT * FROM goodfood_extrusionpouring WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			INSERT INTO arch_goodfood_extrusionprotocolcorrect SELECT * FROM goodfood_extrusionprotocolcorrect WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			INSERT INTO arch_goodfood_extrusionprotocolstatechange SELECT * FROM goodfood_extrusionprotocolstatechange WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			INSERT INTO arch_goodfood_extrusionsouse SELECT * FROM goodfood_extrusionsouse WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			INSERT INTO arch_goodfood_extrusiontakenoffmixentry SELECT * FROM goodfood_extrusiontakenoffmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id;
+        END LOOP;
+    FOR _productiontrackingstatechange IN SELECT * FROM arch_productioncounting_productiontrackingstatechange WHERE archived = false
+        LOOP
+            INSERT INTO arch_states_message SELECT * FROM states_message WHERE productiontrackingstatechange_id = _productiontrackingstatechange.id;
+        END LOOP;
+    -- arch_productioncounting_anomaly
+    FOR _anomaly IN SELECT * FROM arch_productioncounting_anomaly WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_anomalyexplanation SELECT * FROM productioncounting_anomalyexplanation WHERE anomaly_id = _anomaly.id;
+        END LOOP;
+    -- arch_productioncounting_trackingoperationproductincomponent
+    FOR _trackingoperationproductincomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductincomponent WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_anomalyproductiontrackingentryhelper SELECT * FROM productioncounting_anomalyproductiontrackingentryhelper WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
+            INSERT INTO arch_productioncounting_settechnologyincomponents SELECT * FROM productioncounting_settechnologyincomponents WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
+            INSERT INTO arch_repairs_repairorderproduct SELECT * FROM repairs_repairorderproduct WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
+        END LOOP;
+    -- arch_productioncounting_trackingoperationproductoutcomponent
+    FOR _trackingoperationproductoutcomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductoutcomponent  WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_settrackingoperationproductincomponents SELECT * FROM productioncounting_settrackingoperationproductincomponents WHERE trackingoperationproductoutcomponent_id = _trackingoperationproductoutcomponent.id;
+        END LOOP;
+    -- arch_repairs_repairorder
+    FOR _repairorder IN SELECT * FROM arch_repairs_repairorder  WHERE archived = false
+        LOOP
+            INSERT INTO arch_repairs_repairorderstatechange SELECT * FROM repairs_repairorderstatechange WHERE repairorder_id = _repairorder.id;
+            INSERT INTO arch_repairs_repairorderworktime SELECT * FROM repairs_repairorderworktime WHERE repairorder_id = _repairorder.id;
+        END LOOP;
+    -- arch_productioncounting_anomalyproductiontrackingentryhelper
+    FOR _anomalyproductiontrackingentryhelper IN SELECT * FROM arch_productioncounting_anomalyproductiontrackingentryhelper WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_anomalyreasoncontainer SELECT * FROM productioncounting_anomalyreasoncontainer WHERE anomalyproductiontrackingentryhelper_id = _anomalyproductiontrackingentryhelper.id;
+        END LOOP;
+    -- arch_goodfood_extrusionprotocol
+    FOR _extrusionprotocol IN SELECT * FROM arch_goodfood_extrusionprotocol WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_extrusionaddedmixentry SELECT * FROM goodfood_extrusionaddedmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id;
+            INSERT INTO arch_goodfood_extrusionpouring SELECT * FROM goodfood_extrusionpouring WHERE extrusionprotocol_id = _extrusionprotocol.id;
+            INSERT INTO arch_goodfood_extrusionprotocolcorrect SELECT * FROM goodfood_extrusionprotocolcorrect WHERE extrusionprotocol_id = _extrusionprotocol.id;
+            INSERT INTO arch_goodfood_extrusionprotocolstatechange SELECT * FROM goodfood_extrusionprotocolstatechange WHERE extrusionprotocol_id = _extrusionprotocol.id;
+            INSERT INTO arch_goodfood_extrusionsouse SELECT * FROM goodfood_extrusionsouse WHERE extrusionprotocol_id = _extrusionprotocol.id;
+            INSERT INTO arch_goodfood_extrusiontakenoffmixentry SELECT * FROM goodfood_extrusiontakenoffmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id;
 
-		END LOOP;
-		-- arch_goodfood_extrusionprotocolstatechange
-		FOR _extrusionprotocolstatechange IN SELECT * FROM arch_goodfood_extrusionprotocolstatechange WHERE archived = false
-		LOOP
-			INSERT INTO arch_states_message SELECT * FROM states_message WHERE extrusionprotocolstatechange_id = _extrusionprotocolstatechange.id;
-		END LOOP;
-		-- arch_goodfood_extrusionaddedmixentry
-		FOR _extrusionaddedmixentry IN SELECT * FROM arch_goodfood_extrusionaddedmixentry WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_extrusionaddedmixingredient SELECT * FROM goodfood_extrusionaddedmixingredient WHERE extrusionaddedmixentry_id = _extrusionaddedmixentry.id;
-		END LOOP;
-		-- arch_goodfood_extrusionpouring
-		FOR _extrusionpouring IN SELECT * FROM arch_goodfood_extrusionpouring  WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_extrusionpouringingredient SELECT * FROM goodfood_extrusionpouringingredient WHERE extrusionpouring_id = _extrusionpouring.id;
-			INSERT INTO arch_goodfood_extrusionpouringmix SELECT * FROM goodfood_extrusionpouringmix WHERE extrusionpouring_id = _extrusionpouring.id;
-		END LOOP;
-		-- arch_goodfood_extrusiontakenoffmixentry
-		FOR _extrusiontakenoffmixentry IN SELECT * FROM arch_goodfood_extrusiontakenoffmixentry WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_extrusiontakenoffmixingredient SELECT * FROM goodfood_extrusiontakenoffmixingredient WHERE extrusiontakenoffmixentry_id = _extrusiontakenoffmixentry.id;
-		END LOOP;
-		-- arch_goodfood_confectionprotocol
-		FOR _confectionprotocol IN SELECT * FROM arch_goodfood_confectionprotocol WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_confectionadditionalinputproduct SELECT * FROM goodfood_confectionadditionalinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectionfilmproduct SELECT * FROM goodfood_confectionfilmproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectioninputproduct SELECT * FROM goodfood_confectioninputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectionprotocolcorrect SELECT * FROM goodfood_confectionprotocolcorrect WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectionprotocolstatechange SELECT * FROM goodfood_confectionprotocolstatechange WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectionremainderinputproduct SELECT * FROM goodfood_confectionremainderinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-			INSERT INTO arch_goodfood_confectionstaff SELECT * FROM goodfood_confectionstaff WHERE confectionprotocol_id = _confectionprotocol.id;
-		END LOOP;
-		-- arch_goodfood_confectionfilmproduct
-		FOR _confectionfilmproduct IN SELECT * FROM arch_goodfood_confectionfilmproduct WHERE archived = false
-		LOOP
-			INSERT INTO arch_goodfood_confectionfilmproductentry SELECT * FROM goodfood_confectionfilmproductentry WHERE confectionfilmproduct_id = _confectionfilmproduct.id;
-		END LOOP;
-		-- arch_goodfood_confectionprotocolstatechange
-		FOR _confectionprotocolstatechange  IN SELECT * FROM arch_goodfood_confectionprotocolstatechange WHERE archived = false
-		LOOP
-			INSERT INTO arch_states_message SELECT * FROM states_message WHERE confectionprotocolstatechange_id = _confectionprotocolstatechange.id;
-		END LOOP;
-		-- arch_costcalculation_costcalculation
-		FOR _costcalculation IN SELECT * FROM arch_costcalculation_costcalculation WHERE archived = false
-		LOOP
-			INSERT INTO arch_costcalculation_componentcost SELECT * FROM costcalculation_componentcost WHERE costcalculation_id = _costcalculation.id;
-			INSERT INTO arch_costnormsforoperation_calculationoperationcomponent SELECT * FROM costnormsforoperation_calculationoperationcomponent WHERE costcalculation_id = _costcalculation.id;
-		END LOOP;
-		-- arch_basicproductioncounting_productioncountingquantity
-		FOR _bproductioncountingquantity IN SELECT * FROM arch_basicproductioncounting_productioncountingquantity WHERE archived = false
-		LOOP
-			INSERT INTO arch_productioncounting_productioncountingquantitysetcomponent SELECT * FROM productioncounting_productioncountingquantitysetcomponent WHERE productioncountingquantity_id = _bproductioncountingquantity.id;
-		END LOOP;
-		-- arch_avglaborcostcalcfororder_avglaborcostcalcfororder
-		FOR _avglaborcostcalcfororder IN SELECT * FROM arch_avglaborcostcalcfororder_avglaborcostcalcfororder WHERE archived = false
-		LOOP
-			INSERT INTO arch_avglaborcostcalcfororder_assignmentworkertoshift SELECT * FROM avglaborcostcalcfororder_assignmentworkertoshift WHERE avglaborcostcalcfororder_id = _avglaborcostcalcfororder.id;
-		END LOOP;
-		-- arch_advancedgenealogy_trackingrecord
-		FOR _atrackingrecord IN SELECT * FROM arch_advancedgenealogy_trackingrecord WHERE archived = false
-		LOOP
-			INSERT INTO arch_advancedgenealogy_trackingrecord SELECT * FROM advancedgenealogy_trackingrecord WHERE trackingrecord_id = _atrackingrecord.id;
-			INSERT INTO arch_advancedgenealogy_usedbatchsimple SELECT * FROM advancedgenealogy_usedbatchsimple WHERE trackingrecord_id = _atrackingrecord.id;
-			INSERT INTO arch_advancedgenealogyfororders_genealogyproductincomponent SELECT * FROM advancedgenealogyfororders_genealogyproductincomponent WHERE trackingrecord_id = _atrackingrecord.id;
+        END LOOP;
+    -- arch_goodfood_extrusionprotocolstatechange
+    FOR _extrusionprotocolstatechange IN SELECT * FROM arch_goodfood_extrusionprotocolstatechange WHERE archived = false
+        LOOP
+            INSERT INTO arch_states_message SELECT * FROM states_message WHERE extrusionprotocolstatechange_id = _extrusionprotocolstatechange.id;
+        END LOOP;
+    -- arch_goodfood_extrusionaddedmixentry
+    FOR _extrusionaddedmixentry IN SELECT * FROM arch_goodfood_extrusionaddedmixentry WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_extrusionaddedmixingredient SELECT * FROM goodfood_extrusionaddedmixingredient WHERE extrusionaddedmixentry_id = _extrusionaddedmixentry.id;
+        END LOOP;
+    -- arch_goodfood_extrusionpouring
+    FOR _extrusionpouring IN SELECT * FROM arch_goodfood_extrusionpouring  WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_extrusionpouringingredient SELECT * FROM goodfood_extrusionpouringingredient WHERE extrusionpouring_id = _extrusionpouring.id;
+            INSERT INTO arch_goodfood_extrusionpouringmix SELECT * FROM goodfood_extrusionpouringmix WHERE extrusionpouring_id = _extrusionpouring.id;
+        END LOOP;
+    -- arch_goodfood_extrusiontakenoffmixentry
+    FOR _extrusiontakenoffmixentry IN SELECT * FROM arch_goodfood_extrusiontakenoffmixentry WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_extrusiontakenoffmixingredient SELECT * FROM goodfood_extrusiontakenoffmixingredient WHERE extrusiontakenoffmixentry_id = _extrusiontakenoffmixentry.id;
+        END LOOP;
+    -- arch_goodfood_confectionprotocol
+    FOR _confectionprotocol IN SELECT * FROM arch_goodfood_confectionprotocol WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_confectionadditionalinputproduct SELECT * FROM goodfood_confectionadditionalinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectionfilmproduct SELECT * FROM goodfood_confectionfilmproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectioninputproduct SELECT * FROM goodfood_confectioninputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectionprotocolcorrect SELECT * FROM goodfood_confectionprotocolcorrect WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectionprotocolstatechange SELECT * FROM goodfood_confectionprotocolstatechange WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectionremainderinputproduct SELECT * FROM goodfood_confectionremainderinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+            INSERT INTO arch_goodfood_confectionstaff SELECT * FROM goodfood_confectionstaff WHERE confectionprotocol_id = _confectionprotocol.id;
+        END LOOP;
+    -- arch_goodfood_confectionfilmproduct
+    FOR _confectionfilmproduct IN SELECT * FROM arch_goodfood_confectionfilmproduct WHERE archived = false
+        LOOP
+            INSERT INTO arch_goodfood_confectionfilmproductentry SELECT * FROM goodfood_confectionfilmproductentry WHERE confectionfilmproduct_id = _confectionfilmproduct.id;
+        END LOOP;
+    -- arch_goodfood_confectionprotocolstatechange
+    FOR _confectionprotocolstatechange  IN SELECT * FROM arch_goodfood_confectionprotocolstatechange WHERE archived = false
+        LOOP
+            INSERT INTO arch_states_message SELECT * FROM states_message WHERE confectionprotocolstatechange_id = _confectionprotocolstatechange.id;
+        END LOOP;
+    -- arch_costcalculation_costcalculation
+    FOR _costcalculation IN SELECT * FROM arch_costcalculation_costcalculation WHERE archived = false
+        LOOP
+            INSERT INTO arch_costcalculation_componentcost SELECT * FROM costcalculation_componentcost WHERE costcalculation_id = _costcalculation.id;
+            INSERT INTO arch_costnormsforoperation_calculationoperationcomponent SELECT * FROM costnormsforoperation_calculationoperationcomponent WHERE costcalculation_id = _costcalculation.id;
+        END LOOP;
+    -- arch_basicproductioncounting_productioncountingquantity
+    FOR _bproductioncountingquantity IN SELECT * FROM arch_basicproductioncounting_productioncountingquantity WHERE archived = false
+        LOOP
+            INSERT INTO arch_productioncounting_productioncountingquantitysetcomponent SELECT * FROM productioncounting_productioncountingquantitysetcomponent WHERE productioncountingquantity_id = _bproductioncountingquantity.id;
+        END LOOP;
+    -- arch_avglaborcostcalcfororder_avglaborcostcalcfororder
+    FOR _avglaborcostcalcfororder IN SELECT * FROM arch_avglaborcostcalcfororder_avglaborcostcalcfororder WHERE archived = false
+        LOOP
+            INSERT INTO arch_avglaborcostcalcfororder_assignmentworkertoshift SELECT * FROM avglaborcostcalcfororder_assignmentworkertoshift WHERE avglaborcostcalcfororder_id = _avglaborcostcalcfororder.id;
+        END LOOP;
+    -- arch_advancedgenealogy_trackingrecord
+    FOR _atrackingrecord IN SELECT * FROM arch_advancedgenealogy_trackingrecord WHERE archived = false
+        LOOP
+            INSERT INTO arch_advancedgenealogy_trackingrecord SELECT * FROM advancedgenealogy_trackingrecord WHERE trackingrecord_id = _atrackingrecord.id;
+            INSERT INTO arch_advancedgenealogy_usedbatchsimple SELECT * FROM advancedgenealogy_usedbatchsimple WHERE trackingrecord_id = _atrackingrecord.id;
+            INSERT INTO arch_advancedgenealogyfororders_genealogyproductincomponent SELECT * FROM advancedgenealogyfororders_genealogyproductincomponent WHERE trackingrecord_id = _atrackingrecord.id;
 
-		END LOOP;
-		FOR _document IN SELECT * FROM arch_materialflowresources_document WHERE archived = false
-		LOOP
-			INSERT INTO arch_esilco_importpositionerror SELECT * FROM esilco_importpositionerror WHERE document_id = _document.id;
-			INSERT INTO arch_materialflowresources_position SELECT * FROM materialflowresources_position WHERE document_id = _document.id;
-			INSERT INTO arch_productflowthrudivision_issue SELECT * FROM productflowthrudivision_issue WHERE document_id = _document.id;
-			INSERT INTO arch_productflowthrudivision_producttoissuecorrection SELECT * FROM productflowthrudivision_producttoissuecorrection WHERE accountwithreservation_id = _document.id;
-		END LOOP;
-		FOR _document_position IN SELECT * FROM arch_materialflowresources_position WHERE archived = false
-		LOOP
-			INSERT INTO arch_materialflowresources_reservation SELECT * FROM materialflowresources_reservation WHERE position_id = _document_position.id;
-		END LOOP;
+        END LOOP;
+    FOR _document IN SELECT * FROM arch_materialflowresources_document WHERE archived = false
+        LOOP
+            INSERT INTO arch_esilco_importpositionerror SELECT * FROM esilco_importpositionerror WHERE document_id = _document.id;
+            INSERT INTO arch_materialflowresources_position SELECT * FROM materialflowresources_position WHERE document_id = _document.id;
+            INSERT INTO arch_productflowthrudivision_issue SELECT * FROM productflowthrudivision_issue WHERE document_id = _document.id;
+            INSERT INTO arch_productflowthrudivision_producttoissuecorrection SELECT * FROM productflowthrudivision_producttoissuecorrection WHERE accountwithreservation_id = _document.id;
+        END LOOP;
+    FOR _document_position IN SELECT * FROM arch_materialflowresources_position WHERE archived = false
+        LOOP
+            INSERT INTO arch_materialflowresources_reservation SELECT * FROM materialflowresources_reservation WHERE position_id = _document_position.id;
+        END LOOP;
 
-		SET session_replication_role = 'origin';
+    SET session_replication_role = 'origin';
 
-	END;
+END;
 $$;
 
 
@@ -1436,277 +1436,277 @@ CREATE FUNCTION refreshmaterializedviewforarchive() RETURNS void
 CREATE FUNCTION remove_archived_data() RETURNS void
     LANGUAGE plpgsql
     AS $$
-	DECLARE
-		_masterOrder RECORD;
-		_goodfoodLabel RECORD;
-		_statesMessage RECORD;
-		_goodfoodPallet RECORD;
-		_printLabelsHelper RECORD;
-		_order RECORD;
-		_orderstatechange RECORD;
-		_ordertimecalculation RECORD;
-		_productionpershift RECORD;
-		_progressforday RECORD;
-		_productiontracking RECORD;
-		_anomaly RECORD;
-		_labelstatechange RECORD;
-		_palletstatechange RECORD;
-		_productiontrackingstatechange RECORD;
-		_trackingoperationproductincomponent RECORD;
-		_trackingoperationproductoutcomponent RECORD;
-		_repairorder RECORD;
-		_anomalyproductiontrackingentryhelper RECORD;
-		_extrusionprotocol RECORD;
-		_extrusionprotocolstatechange RECORD;
-		_extrusionaddedmixentry RECORD;
-		_extrusionpouring RECORD;
-		_extrusiontakenoffmixentry RECORD;
-		_confectionprotocol RECORD;
-		_confectionfilmproduct RECORD;
-		_confectionprotocolstatechange RECORD;
-		_costcalculation RECORD;
-		_bproductioncountingquantity RECORD;
-		_basicproductioncounting RECORD;
-		_avglaborcostcalcfororder RECORD;
-		_atrackingrecord RECORD;
-		_document_position RECORD;
-		_document RECORD;
-		_pallet RECORD;
-		_label RECORD;
-		_orderGroup RECORD;
-	BEGIN
-		RAISE NOTICE 'START remove archived data';
-		SET session_replication_role = 'replica';
+DECLARE
+    _masterOrder RECORD;
+    _goodfoodLabel RECORD;
+    _statesMessage RECORD;
+    _goodfoodPallet RECORD;
+    _printLabelsHelper RECORD;
+    _order RECORD;
+    _orderstatechange RECORD;
+    _ordertimecalculation RECORD;
+    _productionpershift RECORD;
+    _progressforday RECORD;
+    _productiontracking RECORD;
+    _anomaly RECORD;
+    _labelstatechange RECORD;
+    _palletstatechange RECORD;
+    _productiontrackingstatechange RECORD;
+    _trackingoperationproductincomponent RECORD;
+    _trackingoperationproductoutcomponent RECORD;
+    _repairorder RECORD;
+    _anomalyproductiontrackingentryhelper RECORD;
+    _extrusionprotocol RECORD;
+    _extrusionprotocolstatechange RECORD;
+    _extrusionaddedmixentry RECORD;
+    _extrusionpouring RECORD;
+    _extrusiontakenoffmixentry RECORD;
+    _confectionprotocol RECORD;
+    _confectionfilmproduct RECORD;
+    _confectionprotocolstatechange RECORD;
+    _costcalculation RECORD;
+    _bproductioncountingquantity RECORD;
+    _basicproductioncounting RECORD;
+    _avglaborcostcalcfororder RECORD;
+    _atrackingrecord RECORD;
+    _document_position RECORD;
+    _document RECORD;
+    _pallet RECORD;
+    _label RECORD;
+    _orderGroup RECORD;
+BEGIN
+    RAISE NOTICE 'START remove archived data';
+    SET session_replication_role = 'replica';
 
-		FOR _order IN SELECT id, number FROM arch_orders_order WHERE archived = false
-		LOOP
-		--RAISE NOTICE 'order : %', _order.number;
+    FOR _order IN SELECT id, number FROM arch_orders_order WHERE archived = false
+        LOOP
+            --RAISE NOTICE 'order : %', _order.number;
 
-			FOR _document IN SELECT id, number FROM arch_materialflowresources_document WHERE order_id = _order.id AND archived = false
-			LOOP
-				--RAISE NOTICE 'document : %', _document.number;
+            FOR _document IN SELECT id, number FROM arch_materialflowresources_document WHERE order_id = _order.id AND archived = false
+                LOOP
+                    --RAISE NOTICE 'document : %', _document.number;
 
-				DELETE FROM esilco_importpositionerror WHERE document_id = _document.id;
-				DELETE FROM productflowthrudivision_issue WHERE document_id = _document.id;
-				DELETE FROM productflowthrudivision_producttoissuecorrection WHERE accountwithreservation_id = _document.id;
+                    DELETE FROM esilco_importpositionerror WHERE document_id = _document.id;
+                    DELETE FROM productflowthrudivision_issue WHERE document_id = _document.id;
+                    DELETE FROM productflowthrudivision_producttoissuecorrection WHERE accountwithreservation_id = _document.id;
 
-				FOR _document_position IN SELECT * FROM arch_materialflowresources_position WHERE archived = false
-				LOOP
-					DELETE FROM materialflowresources_reservation WHERE position_id = _document_position.id;
-				END LOOP;
-				DELETE FROM materialflowresources_position WHERE document_id = _document.id;
-				DELETE FROM materialflowresources_document WHERE id = _document.id;
-			END LOOP;
+                    FOR _document_position IN SELECT * FROM arch_materialflowresources_position WHERE archived = false
+                        LOOP
+                            DELETE FROM materialflowresources_reservation WHERE position_id = _document_position.id;
+                        END LOOP;
+                    DELETE FROM materialflowresources_position WHERE document_id = _document.id;
+                    DELETE FROM materialflowresources_document WHERE id = _document.id;
+                END LOOP;
 
-			FOR _atrackingrecord IN SELECT * FROM arch_advancedgenealogy_trackingrecord WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM advancedgenealogy_trackingrecord WHERE trackingrecord_id = _atrackingrecord.id;
-				DELETE FROM advancedgenealogy_usedbatchsimple WHERE trackingrecord_id = _atrackingrecord.id;
-				DELETE FROM advancedgenealogyfororders_genealogyproductincomponent WHERE trackingrecord_id = _atrackingrecord.id;
-				DELETE FROM advancedgenealogy_trackingrecord WHERE id = _atrackingrecord.id;
-			END LOOP;
+            FOR _atrackingrecord IN SELECT * FROM arch_advancedgenealogy_trackingrecord WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM advancedgenealogy_trackingrecord WHERE trackingrecord_id = _atrackingrecord.id;
+                    DELETE FROM advancedgenealogy_usedbatchsimple WHERE trackingrecord_id = _atrackingrecord.id;
+                    DELETE FROM advancedgenealogyfororders_genealogyproductincomponent WHERE trackingrecord_id = _atrackingrecord.id;
+                    DELETE FROM advancedgenealogy_trackingrecord WHERE id = _atrackingrecord.id;
+                END LOOP;
 
-			FOR _avglaborcostcalcfororder IN SELECT * FROM arch_avglaborcostcalcfororder_avglaborcostcalcfororder WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM avglaborcostcalcfororder_assignmentworkertoshift WHERE avglaborcostcalcfororder_id = _avglaborcostcalcfororder.id;
-				DELETE FROM avglaborcostcalcfororder_avglaborcostcalcfororder WHERE id = _avglaborcostcalcfororder.id;
-			END LOOP;
+            FOR _avglaborcostcalcfororder IN SELECT * FROM arch_avglaborcostcalcfororder_avglaborcostcalcfororder WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM avglaborcostcalcfororder_assignmentworkertoshift WHERE avglaborcostcalcfororder_id = _avglaborcostcalcfororder.id;
+                    DELETE FROM avglaborcostcalcfororder_avglaborcostcalcfororder WHERE id = _avglaborcostcalcfororder.id;
+                END LOOP;
 
-			FOR _bproductioncountingquantity IN SELECT * FROM arch_basicproductioncounting_productioncountingquantity WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM productioncounting_productioncountingquantitysetcomponent WHERE productioncountingquantity_id = _bproductioncountingquantity.id;
-			END LOOP;
+            FOR _bproductioncountingquantity IN SELECT * FROM arch_basicproductioncounting_productioncountingquantity WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM productioncounting_productioncountingquantitysetcomponent WHERE productioncountingquantity_id = _bproductioncountingquantity.id;
+                END LOOP;
 
-			FOR _costcalculation IN SELECT * FROM arch_costcalculation_costcalculation WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM costcalculation_componentcost WHERE costcalculation_id = _costcalculation.id;
-				DELETE FROM costnormsforoperation_calculationoperationcomponent WHERE costcalculation_id = _costcalculation.id;
-				DELETE FROM costcalculation_costcalculation WHERE id = _costcalculation.id;
-			END LOOP;
+            FOR _costcalculation IN SELECT * FROM arch_costcalculation_costcalculation WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM costcalculation_componentcost WHERE costcalculation_id = _costcalculation.id;
+                    DELETE FROM costnormsforoperation_calculationoperationcomponent WHERE costcalculation_id = _costcalculation.id;
+                    DELETE FROM costcalculation_costcalculation WHERE id = _costcalculation.id;
+                END LOOP;
 
-			FOR _confectionprotocol IN SELECT * FROM arch_goodfood_confectionprotocol WHERE order_id = _order.id AND archived = false
-			LOOP
-				FOR _confectionfilmproduct IN SELECT * FROM arch_goodfood_confectionfilmproduct WHERE confectionprotocol_id = _confectionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM goodfood_confectionfilmproductentry WHERE confectionfilmproduct_id = _confectionfilmproduct.id;
-					DELETE FROM goodfood_confectionfilmproduct WHERE id = _confectionfilmproduct.id;
-				END LOOP;
-				FOR _confectionprotocolstatechange  IN SELECT * FROM arch_goodfood_confectionprotocolstatechange WHERE confectionprotocol_id = _confectionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM states_message WHERE confectionprotocolstatechange_id = _confectionprotocolstatechange.id;
-					DELETE FROM goodfood_confectionprotocolstatechange WHERE id = _confectionprotocolstatechange.id;
-				END LOOP;
-				DELETE FROM goodfood_confectionadditionalinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-				DELETE FROM goodfood_confectioninputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-				DELETE FROM goodfood_confectionprotocolcorrect WHERE confectionprotocol_id = _confectionprotocol.id;
-				DELETE FROM goodfood_confectionremainderinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
-				DELETE FROM goodfood_confectionstaff WHERE confectionprotocol_id = _confectionprotocol.id;
-			END LOOP;
+            FOR _confectionprotocol IN SELECT * FROM arch_goodfood_confectionprotocol WHERE order_id = _order.id AND archived = false
+                LOOP
+                    FOR _confectionfilmproduct IN SELECT * FROM arch_goodfood_confectionfilmproduct WHERE confectionprotocol_id = _confectionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM goodfood_confectionfilmproductentry WHERE confectionfilmproduct_id = _confectionfilmproduct.id;
+                            DELETE FROM goodfood_confectionfilmproduct WHERE id = _confectionfilmproduct.id;
+                        END LOOP;
+                    FOR _confectionprotocolstatechange  IN SELECT * FROM arch_goodfood_confectionprotocolstatechange WHERE confectionprotocol_id = _confectionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM states_message WHERE confectionprotocolstatechange_id = _confectionprotocolstatechange.id;
+                            DELETE FROM goodfood_confectionprotocolstatechange WHERE id = _confectionprotocolstatechange.id;
+                        END LOOP;
+                    DELETE FROM goodfood_confectionadditionalinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+                    DELETE FROM goodfood_confectioninputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+                    DELETE FROM goodfood_confectionprotocolcorrect WHERE confectionprotocol_id = _confectionprotocol.id;
+                    DELETE FROM goodfood_confectionremainderinputproduct WHERE confectionprotocol_id = _confectionprotocol.id;
+                    DELETE FROM goodfood_confectionstaff WHERE confectionprotocol_id = _confectionprotocol.id;
+                END LOOP;
 
-			FOR _extrusionprotocol IN SELECT * FROM arch_goodfood_extrusionprotocol WHERE order_id = _order.id AND archived = false
-			LOOP
-				FOR _extrusionprotocolstatechange IN SELECT * FROM arch_goodfood_extrusionprotocolstatechange WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM states_message WHERE extrusionprotocolstatechange_id = _extrusionprotocolstatechange.id;
-					DELETE FROM goodfood_extrusionprotocolstatechange WHERE id = _extrusionprotocolstatechange.id;
-				END LOOP;
+            FOR _extrusionprotocol IN SELECT * FROM arch_goodfood_extrusionprotocol WHERE order_id = _order.id AND archived = false
+                LOOP
+                    FOR _extrusionprotocolstatechange IN SELECT * FROM arch_goodfood_extrusionprotocolstatechange WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM states_message WHERE extrusionprotocolstatechange_id = _extrusionprotocolstatechange.id;
+                            DELETE FROM goodfood_extrusionprotocolstatechange WHERE id = _extrusionprotocolstatechange.id;
+                        END LOOP;
 
-				FOR _extrusiontakenoffmixentry IN SELECT * FROM arch_goodfood_extrusiontakenoffmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM goodfood_extrusiontakenoffmixingredient WHERE extrusiontakenoffmixentry_id = _extrusiontakenoffmixentry.id;
-					DELETE FROM goodfood_extrusiontakenoffmixentry WHERE id = _extrusiontakenoffmixentry.id;
-				END LOOP;
+                    FOR _extrusiontakenoffmixentry IN SELECT * FROM arch_goodfood_extrusiontakenoffmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM goodfood_extrusiontakenoffmixingredient WHERE extrusiontakenoffmixentry_id = _extrusiontakenoffmixentry.id;
+                            DELETE FROM goodfood_extrusiontakenoffmixentry WHERE id = _extrusiontakenoffmixentry.id;
+                        END LOOP;
 
-				FOR _extrusionpouring IN SELECT * FROM arch_goodfood_extrusionpouring WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM goodfood_extrusionpouringingredient WHERE extrusionpouring_id = _extrusionpouring.id;
-					DELETE FROM goodfood_extrusionpouringmix WHERE extrusionpouring_id = _extrusionpouring.id;
-					DELETE FROM goodfood_extrusionpouring WHERE id = _extrusionpouring.id;
-				END LOOP;
+                    FOR _extrusionpouring IN SELECT * FROM arch_goodfood_extrusionpouring WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM goodfood_extrusionpouringingredient WHERE extrusionpouring_id = _extrusionpouring.id;
+                            DELETE FROM goodfood_extrusionpouringmix WHERE extrusionpouring_id = _extrusionpouring.id;
+                            DELETE FROM goodfood_extrusionpouring WHERE id = _extrusionpouring.id;
+                        END LOOP;
 
-				FOR _extrusionaddedmixentry IN SELECT * FROM arch_goodfood_extrusionaddedmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
-				LOOP
-					DELETE FROM goodfood_extrusionaddedmixingredient WHERE extrusionaddedmixentry_id = _extrusionaddedmixentry.id;
-					DELETE FROM goodfood_extrusionaddedmixentry WHERE id = _extrusionaddedmixentry.id;
+                    FOR _extrusionaddedmixentry IN SELECT * FROM arch_goodfood_extrusionaddedmixentry WHERE extrusionprotocol_id = _extrusionprotocol.id AND archived = false
+                        LOOP
+                            DELETE FROM goodfood_extrusionaddedmixingredient WHERE extrusionaddedmixentry_id = _extrusionaddedmixentry.id;
+                            DELETE FROM goodfood_extrusionaddedmixentry WHERE id = _extrusionaddedmixentry.id;
 
-				END LOOP;
+                        END LOOP;
 
-				DELETE FROM goodfood_extrusionprotocolcorrect WHERE extrusionprotocol_id = _extrusionprotocol.id;
-				DELETE FROM goodfood_extrusionsouse WHERE extrusionprotocol_id = _extrusionprotocol.id;
-			END LOOP;
-			FOR _productiontracking IN SELECT * FROM arch_productioncounting_productiontracking WHERE order_id = _order.id AND archived = false
-			LOOP
-				FOR _trackingoperationproductincomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id AND archived = false
-				LOOP
-					FOR _anomalyproductiontrackingentryhelper IN SELECT * FROM arch_productioncounting_anomalyproductiontrackingentryhelper WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id AND archived = false
-					LOOP
-						DELETE FROM productioncounting_anomalyreasoncontainer WHERE anomalyproductiontrackingentryhelper_id = _anomalyproductiontrackingentryhelper.id;
-						DELETE FROM productioncounting_anomalyproductiontrackingentryhelper WHERE id = _anomalyproductiontrackingentryhelper.id;
-					END LOOP;
-					DELETE FROM productioncounting_settechnologyincomponents WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
-					DELETE FROM repairs_repairorderproduct WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
-					DELETE FROM productioncounting_trackingoperationproductincomponent WHERE id = _trackingoperationproductincomponent.id;
+                    DELETE FROM goodfood_extrusionprotocolcorrect WHERE extrusionprotocol_id = _extrusionprotocol.id;
+                    DELETE FROM goodfood_extrusionsouse WHERE extrusionprotocol_id = _extrusionprotocol.id;
+                END LOOP;
+            FOR _productiontracking IN SELECT * FROM arch_productioncounting_productiontracking WHERE order_id = _order.id AND archived = false
+                LOOP
+                    FOR _trackingoperationproductincomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id AND archived = false
+                        LOOP
+                            FOR _anomalyproductiontrackingentryhelper IN SELECT * FROM arch_productioncounting_anomalyproductiontrackingentryhelper WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id AND archived = false
+                                LOOP
+                                    DELETE FROM productioncounting_anomalyreasoncontainer WHERE anomalyproductiontrackingentryhelper_id = _anomalyproductiontrackingentryhelper.id;
+                                    DELETE FROM productioncounting_anomalyproductiontrackingentryhelper WHERE id = _anomalyproductiontrackingentryhelper.id;
+                                END LOOP;
+                            DELETE FROM productioncounting_settechnologyincomponents WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
+                            DELETE FROM repairs_repairorderproduct WHERE trackingoperationproductincomponent_id = _trackingoperationproductincomponent.id;
+                            DELETE FROM productioncounting_trackingoperationproductincomponent WHERE id = _trackingoperationproductincomponent.id;
 
-				END LOOP;
-				FOR _repairorder IN SELECT * FROM arch_repairs_repairorder WHERE productiontracking_id = _productiontracking.id AND archived = false
-				LOOP
-					DELETE FROM repairs_repairorderstatechange WHERE repairorder_id = _repairorder.id;
-					DELETE FROM repairs_repairorderworktime WHERE repairorder_id = _repairorder.id;
-					DELETE FROM repairs_repairorder WHERE id = _repairorder.id;
-				END LOOP;
-				FOR _trackingoperationproductoutcomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductoutcomponent WHERE productiontracking_id = _productiontracking.id AND archived = false
-				LOOP
-					DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE trackingoperationproductoutcomponent_id = _trackingoperationproductoutcomponent.id;
-					DELETE FROM productioncounting_trackingoperationproductoutcomponent WHERE id = _trackingoperationproductoutcomponent.id;
-				END LOOP;
-				FOR _anomaly IN SELECT * FROM arch_productioncounting_anomaly WHERE productiontracking_id = _productiontracking.id AND archived = false
-				LOOP
-					DELETE FROM productioncounting_anomalyexplanation WHERE anomaly_id = _anomaly.id;
-					DELETE FROM productioncounting_anomaly WHERE id = _anomaly.id;
-				END LOOP;
+                        END LOOP;
+                    FOR _repairorder IN SELECT * FROM arch_repairs_repairorder WHERE productiontracking_id = _productiontracking.id AND archived = false
+                        LOOP
+                            DELETE FROM repairs_repairorderstatechange WHERE repairorder_id = _repairorder.id;
+                            DELETE FROM repairs_repairorderworktime WHERE repairorder_id = _repairorder.id;
+                            DELETE FROM repairs_repairorder WHERE id = _repairorder.id;
+                        END LOOP;
+                    FOR _trackingoperationproductoutcomponent IN SELECT * FROM arch_productioncounting_trackingoperationproductoutcomponent WHERE productiontracking_id = _productiontracking.id AND archived = false
+                        LOOP
+                            DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE trackingoperationproductoutcomponent_id = _trackingoperationproductoutcomponent.id;
+                            DELETE FROM productioncounting_trackingoperationproductoutcomponent WHERE id = _trackingoperationproductoutcomponent.id;
+                        END LOOP;
+                    FOR _anomaly IN SELECT * FROM arch_productioncounting_anomaly WHERE productiontracking_id = _productiontracking.id AND archived = false
+                        LOOP
+                            DELETE FROM productioncounting_anomalyexplanation WHERE anomaly_id = _anomaly.id;
+                            DELETE FROM productioncounting_anomaly WHERE id = _anomaly.id;
+                        END LOOP;
 
-				FOR _productiontrackingstatechange IN SELECT * FROM arch_productioncounting_productiontrackingstatechange WHERE productiontracking_id = _productiontracking.id AND archived = false
-				LOOP
-					DELETE FROM states_message WHERE productiontrackingstatechange_id = _productiontrackingstatechange.id;
-					DELETE FROM productioncounting_productiontrackingstatechange WHERE id = _productiontrackingstatechange.id;
-				END LOOP;
-				DELETE FROM productioncounting_staffworktime WHERE productionrecord_id = _productiontracking.id;
-				DELETE FROM productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id;
-			END LOOP;
-			FOR _productionpershift IN SELECT * FROM arch_productionpershift_productionpershift WHERE order_id = _order.id AND archived = false
-			LOOP
-				FOR _progressforday IN SELECT * FROM arch_productionpershift_progressforday WHERE productionpershift_id = _productionpershift.id AND archived = false
-				LOOP
-					DELETE FROM productionpershift_dailyprogress WHERE progressforday_id = _progressforday.id;
-					DELETE FROM productionpershift_progressforday WHERE id = _progressforday.id;
-				END LOOP;
-				DELETE FROM productionpershift_reasontypeofcorrectionplan WHERE productionpershift_id = _productionpershift.id;
-			END LOOP;
-			FOR _ordertimecalculation IN SELECT * FROM arch_productionscheduling_ordertimecalculation WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM productionscheduling_opercomptimecalculation WHERE ordertimecalculation_id = _ordertimecalculation.id;
-				DELETE FROM productionscheduling_ordertimecalculation WHERE id = _ordertimecalculation.id;
-			END LOOP;
-			FOR _orderstatechange IN SELECT * FROM arch_orders_orderstatechange WHERE order_id = _order.id AND archived = false
-			LOOP
-				DELETE FROM states_message WHERE orderstatechange_id = _orderstatechange.id;
-				DELETE FROM orders_reasontypeofchangingorderstate WHERE orderstatechange_id = _orderstatechange.id;
-				DELETE FROM orders_orderstatechange WHERE id = _orderstatechange.id;
-			END LOOP;
+                    FOR _productiontrackingstatechange IN SELECT * FROM arch_productioncounting_productiontrackingstatechange WHERE productiontracking_id = _productiontracking.id AND archived = false
+                        LOOP
+                            DELETE FROM states_message WHERE productiontrackingstatechange_id = _productiontrackingstatechange.id;
+                            DELETE FROM productioncounting_productiontrackingstatechange WHERE id = _productiontrackingstatechange.id;
+                        END LOOP;
+                    DELETE FROM productioncounting_staffworktime WHERE productionrecord_id = _productiontracking.id;
+                    DELETE FROM productioncounting_trackingoperationproductincomponent WHERE productiontracking_id = _productiontracking.id;
+                END LOOP;
+            FOR _productionpershift IN SELECT * FROM arch_productionpershift_productionpershift WHERE order_id = _order.id AND archived = false
+                LOOP
+                    FOR _progressforday IN SELECT * FROM arch_productionpershift_progressforday WHERE productionpershift_id = _productionpershift.id AND archived = false
+                        LOOP
+                            DELETE FROM productionpershift_dailyprogress WHERE progressforday_id = _progressforday.id;
+                            DELETE FROM productionpershift_progressforday WHERE id = _progressforday.id;
+                        END LOOP;
+                    DELETE FROM productionpershift_reasontypeofcorrectionplan WHERE productionpershift_id = _productionpershift.id;
+                END LOOP;
+            FOR _ordertimecalculation IN SELECT * FROM arch_productionscheduling_ordertimecalculation WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM productionscheduling_opercomptimecalculation WHERE ordertimecalculation_id = _ordertimecalculation.id;
+                    DELETE FROM productionscheduling_ordertimecalculation WHERE id = _ordertimecalculation.id;
+                END LOOP;
+            FOR _orderstatechange IN SELECT * FROM arch_orders_orderstatechange WHERE order_id = _order.id AND archived = false
+                LOOP
+                    DELETE FROM states_message WHERE orderstatechange_id = _orderstatechange.id;
+                    DELETE FROM orders_reasontypeofchangingorderstate WHERE orderstatechange_id = _orderstatechange.id;
+                    DELETE FROM orders_orderstatechange WHERE id = _orderstatechange.id;
+                END LOOP;
 
-			DELETE FROM basicproductioncounting_productioncountingoperationrun WHERE  order_id = _order.id;
-			DELETE FROM basicproductioncounting_productioncountingquantity WHERE  order_id = _order.id;
-			DELETE FROM basicproductioncounting_basicproductioncounting WHERE order_id = _order.id;
-			DELETE FROM costnormsformaterials_technologyinstoperproductincomp WHERE order_id = _order.id;
-			DELETE FROM goodfood_confectionprotocol WHERE order_id = _order.id;
-			DELETE FROM goodfood_extrusionprotocol WHERE order_id = _order.id;
-			DELETE FROM operationaltasks_operationaltask WHERE order_id = _order.id;
-			DELETE FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
-			DELETE FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
-			DELETE FROM productioncounting_productiontracking WHERE order_id = _order.id;
-			DELETE FROM productionpershift_productionpershift WHERE order_id = _order.id;
-			DELETE FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
-			DELETE FROM urcmaterialavailability_requiredcomponent WHERE order_id = _order.id;
-			DELETE FROM stoppage_stoppage WHERE order_id = _order.id;
-			DELETE FROM technologies_technologyoperationcomponentmergeproductout WHERE order_id = _order.id;
-			DELETE FROM technologies_technologyoperationcomponentmergeproductin WHERE order_id = _order.id;
-			DELETE FROM technologies_barcodeoperationcomponent WHERE order_id = _order.id;
-			DELETE FROM orders_typeofcorrectioncauses WHERE order_id = _order.id;
-			DELETE FROM orders_reasontypedeviationeffectiveend WHERE order_id = _order.id;
-			DELETE FROM orders_reasontypedeviationeffectivestart WHERE order_id = _order.id;
-			DELETE FROM orders_reasontypecorrectiondateto WHERE order_id = _order.id;
-			DELETE FROM orders_reasontypecorrectiondatefrom WHERE order_id = _order.id;
-			DELETE FROM orders_order WHERE id = _order.id;
-		END LOOP;
+            DELETE FROM basicproductioncounting_productioncountingoperationrun WHERE  order_id = _order.id;
+            DELETE FROM basicproductioncounting_productioncountingquantity WHERE  order_id = _order.id;
+            DELETE FROM basicproductioncounting_basicproductioncounting WHERE order_id = _order.id;
+            DELETE FROM costnormsformaterials_technologyinstoperproductincomp WHERE order_id = _order.id;
+            DELETE FROM goodfood_confectionprotocol WHERE order_id = _order.id;
+            DELETE FROM goodfood_extrusionprotocol WHERE order_id = _order.id;
+            DELETE FROM orders_operationaltask WHERE order_id = _order.id;
+            DELETE FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
+            DELETE FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
+            DELETE FROM productioncounting_productiontracking WHERE order_id = _order.id;
+            DELETE FROM productionpershift_productionpershift WHERE order_id = _order.id;
+            DELETE FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
+            DELETE FROM urcmaterialavailability_requiredcomponent WHERE order_id = _order.id;
+            DELETE FROM stoppage_stoppage WHERE order_id = _order.id;
+            DELETE FROM technologies_technologyoperationcomponentmergeproductout WHERE order_id = _order.id;
+            DELETE FROM technologies_technologyoperationcomponentmergeproductin WHERE order_id = _order.id;
+            DELETE FROM technologies_barcodeoperationcomponent WHERE order_id = _order.id;
+            DELETE FROM orders_typeofcorrectioncauses WHERE order_id = _order.id;
+            DELETE FROM orders_reasontypedeviationeffectiveend WHERE order_id = _order.id;
+            DELETE FROM orders_reasontypedeviationeffectivestart WHERE order_id = _order.id;
+            DELETE FROM orders_reasontypecorrectiondateto WHERE order_id = _order.id;
+            DELETE FROM orders_reasontypecorrectiondatefrom WHERE order_id = _order.id;
+            DELETE FROM orders_order WHERE id = _order.id;
+        END LOOP;
 
-		FOR _orderGroup IN SELECT * FROM arch_ordersgroups_ordersgroup WHERE archived = false
-		LOOP
-			DELETE FROM ordersgroups_ordersgroup WHERE id = _orderGroup.id;
-		END LOOP;
+    FOR _orderGroup IN SELECT * FROM arch_ordersgroups_ordersgroup WHERE archived = false
+        LOOP
+            DELETE FROM ordersgroups_ordersgroup WHERE id = _orderGroup.id;
+        END LOOP;
 
-		FOR _masterOrder IN SELECT * FROM arch_masterorders_masterorder where archived = false
-		LOOP
+    FOR _masterOrder IN SELECT * FROM arch_masterorders_masterorder where archived = false
+        LOOP
 
-			DELETE FROM goodfood_printedlabel WHERE masterorder_id = _masterOrder.id;
+            DELETE FROM goodfood_printedlabel WHERE masterorder_id = _masterOrder.id;
 
-			FOR _printLabelsHelper IN SELECT * FROM arch_integrationbartender_printlabelshelper WHERE masterorder_id = _masterOrder.id AND archived = false
-			LOOP
-				DELETE FROM integrationbartender_sendtoprint WHERE printlabelshelper_id = _printLabelsHelper.id;
-				DELETE FROM integrationbartender_printlabelshelper WHERE id = _printLabelsHelper.id;
-			END LOOP;
+            FOR _printLabelsHelper IN SELECT * FROM arch_integrationbartender_printlabelshelper WHERE masterorder_id = _masterOrder.id AND archived = false
+                LOOP
+                    DELETE FROM integrationbartender_sendtoprint WHERE printlabelshelper_id = _printLabelsHelper.id;
+                    DELETE FROM integrationbartender_printlabelshelper WHERE id = _printLabelsHelper.id;
+                END LOOP;
 
-			FOR _goodfoodLabel IN SELECT * FROM arch_goodfood_label WHERE masterorder_id = _masterOrder.id AND archived = false
-			LOOP
-				FOR _pallet IN SELECT * FROM arch_goodfood_pallet WHERE label_id = _goodfoodLabel.id
-				LOOP
-					FOR _palletstatechange IN SELECT * FROM arch_goodfood_palletstatechange WHERE pallet_id = _pallet.id AND archived = false
-					LOOP
-						DELETE FROM states_message WHERE palletstatechange_id = _palletstatechange.id;
-						DELETE FROM goodfood_palletstatechange WHERE id = _palletstatechange.id;
-					END LOOP;
-					DELETE FROM goodfood_pallet WHERE id = _pallet.id;
-				END LOOP;
+            FOR _goodfoodLabel IN SELECT * FROM arch_goodfood_label WHERE masterorder_id = _masterOrder.id AND archived = false
+                LOOP
+                    FOR _pallet IN SELECT * FROM arch_goodfood_pallet WHERE label_id = _goodfoodLabel.id
+                        LOOP
+                            FOR _palletstatechange IN SELECT * FROM arch_goodfood_palletstatechange WHERE pallet_id = _pallet.id AND archived = false
+                                LOOP
+                                    DELETE FROM states_message WHERE palletstatechange_id = _palletstatechange.id;
+                                    DELETE FROM goodfood_palletstatechange WHERE id = _palletstatechange.id;
+                                END LOOP;
+                            DELETE FROM goodfood_pallet WHERE id = _pallet.id;
+                        END LOOP;
 
-				FOR _labelstatechange IN SELECT * FROM arch_goodfood_labelstatechange WHERE label_id = _goodfoodLabel.id AND archived = false
-				LOOP
-					DELETE FROM states_message WHERE labelstatechange_id = _labelstatechange.id;
-					DELETE FROM goodfood_labelstatechange WHERE id = _labelstatechange.id;
-				END LOOP;
-				DELETE FROM goodfood_label WHERE id = _goodfoodLabel.id;
-			END LOOP;
+                    FOR _labelstatechange IN SELECT * FROM arch_goodfood_labelstatechange WHERE label_id = _goodfoodLabel.id AND archived = false
+                        LOOP
+                            DELETE FROM states_message WHERE labelstatechange_id = _labelstatechange.id;
+                            DELETE FROM goodfood_labelstatechange WHERE id = _labelstatechange.id;
+                        END LOOP;
+                    DELETE FROM goodfood_label WHERE id = _goodfoodLabel.id;
+                END LOOP;
 
-			DELETE FROM assignmenttoshift_staffassignmenttoshift WHERE masterorder_id = _masterOrder.id;
-			DELETE FROM assignmenttoshift_multiassignmenttoshift WHERE masterorder_id = _masterOrder.id;
-			DELETE FROM masterorders_masterorderproduct WHERE masterorder_id = _masterOrder.id;
-			DELETE FROM masterorders_masterorder WHERE id = _masterOrder.id;
-		END LOOP;
+            DELETE FROM assignmenttoshift_staffassignmenttoshift WHERE masterorder_id = _masterOrder.id;
+            DELETE FROM assignmenttoshift_multiassignmenttoshift WHERE masterorder_id = _masterOrder.id;
+            DELETE FROM masterorders_masterorderproduct WHERE masterorder_id = _masterOrder.id;
+            DELETE FROM masterorders_masterorder WHERE id = _masterOrder.id;
+        END LOOP;
 
-		SET session_replication_role = 'origin';
+    SET session_replication_role = 'origin';
 
-		RAISE NOTICE 'FINISH remove archived data';
+    RAISE NOTICE 'FINISH remove archived data';
 
 
-	END;
+END;
 $$;
 
 
@@ -4321,7 +4321,8 @@ CREATE TABLE arch_orders_order (
     plannedquantityforadditionalunit numeric,
     directadditionalcost numeric,
     directadditionalcostdescription character varying,
-    archived boolean DEFAULT false
+    archived boolean DEFAULT false,
+    division_id bigint
 );
 
 
@@ -5749,10 +5750,10 @@ CREATE MATERIALIZED VIEW arch_mv_productioncounting_productiontrackingdto AS
 
 
 --
--- Name: arch_operationaltasks_operationaltask; Type: TABLE; Schema: public; Owner: -
+-- Name: arch_orders_operationaltask; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE arch_operationaltasks_operationaltask (
+CREATE TABLE arch_orders_operationaltask (
     id bigint NOT NULL,
     number character varying(256),
     name character varying(1024),
@@ -5769,10 +5770,10 @@ CREATE TABLE arch_operationaltasks_operationaltask (
 
 
 --
--- Name: arch_operationaltasks_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: arch_orders_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE arch_operationaltasks_operationaltask_id_seq
+CREATE SEQUENCE arch_orders_operationaltask_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -5781,10 +5782,10 @@ CREATE SEQUENCE arch_operationaltasks_operationaltask_id_seq
 
 
 --
--- Name: arch_operationaltasks_operationaltask_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: arch_orders_operationaltask_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE arch_operationaltasks_operationaltask_id_seq OWNED BY arch_operationaltasks_operationaltask.id;
+ALTER SEQUENCE arch_orders_operationaltask_id_seq OWNED BY arch_orders_operationaltask.id;
 
 
 --
@@ -8859,7 +8860,8 @@ CREATE TABLE basic_parameter (
     exporttocsvonlyvisiblecolumns boolean DEFAULT false,
     flagpercentageofexecutionwithcolor boolean DEFAULT false,
     opertaskflagpercentexecutionwithcolor boolean DEFAULT false,
-    automaticclosingoforderwithingroups boolean DEFAULT false
+    automaticclosingoforderwithingroups boolean DEFAULT false,
+    copynotesfrommasterorderposition boolean DEFAULT false
 );
 
 
@@ -9678,7 +9680,8 @@ CREATE TABLE orders_order (
     ordersgroup_id bigint,
     plannedquantityforadditionalunit numeric,
     directadditionalcost numeric,
-    directadditionalcostdescription character varying
+    directadditionalcostdescription character varying,
+    division_id bigint
 );
 
 
@@ -16979,10 +16982,44 @@ ALTER SEQUENCE nutritionfacts_prototypeproductcomponent_id_seq OWNED BY nutritio
 
 
 --
--- Name: operationaltasks_operationaltask; Type: TABLE; Schema: public; Owner: -
+-- Name: orders_changedateshelper; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE operationaltasks_operationaltask (
+CREATE TABLE orders_changedateshelper (
+    id bigint NOT NULL,
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone,
+    commentreasontypecorrectiondatefrom character varying(255),
+    commentreasontypecorrectiondateto character varying(255),
+    ids character varying(255),
+    orderids character varying(255)
+);
+
+
+--
+-- Name: orders_changedateshelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_changedateshelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_changedateshelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_changedateshelper_id_seq OWNED BY orders_changedateshelper.id;
+
+
+--
+-- Name: orders_operationaltask; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_operationaltask (
     id bigint NOT NULL,
     number character varying(256),
     name character varying(1024),
@@ -17003,10 +17040,10 @@ CREATE TABLE operationaltasks_operationaltask (
 
 
 --
--- Name: operationaltasks_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: orders_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE operationaltasks_operationaltask_id_seq
+CREATE SEQUENCE orders_operationaltask_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -17015,10 +17052,10 @@ CREATE SEQUENCE operationaltasks_operationaltask_id_seq
 
 
 --
--- Name: operationaltasks_operationaltask_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: orders_operationaltask_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE operationaltasks_operationaltask_id_seq OWNED BY operationaltasks_operationaltask.id;
+ALTER SEQUENCE orders_operationaltask_id_seq OWNED BY orders_operationaltask.id;
 
 
 --
@@ -17065,10 +17102,10 @@ CREATE TABLE technologies_operationproductoutcomponent (
 
 
 --
--- Name: operationaltasks_operationaltaskdto; Type: VIEW; Schema: public; Owner: -
+-- Name: orders_operationaltaskdto; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW operationaltasks_operationaltaskdto AS
+CREATE VIEW orders_operationaltaskdto AS
  SELECT operationaltask.id,
     operationaltask.number,
     operationaltask.name,
@@ -17094,7 +17131,7 @@ CREATE VIEW operationaltasks_operationaltaskdto AS
     NULL::numeric AS doneinpercentage,
     NULL::numeric AS opertaskflagpercentexecutionwithcolor,
     NULL::character varying AS percentageofexecutioncellcolor
-   FROM (((((((operationaltasks_operationaltask operationaltask
+   FROM (((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
@@ -17134,7 +17171,7 @@ UNION ALL
             ELSE (0)::numeric
         END AS opertaskflagpercentexecutionwithcolor,
     'red-cell'::character varying(255) AS percentageofexecutioncellcolor
-   FROM ((((((((operationaltasks_operationaltask operationaltask
+   FROM ((((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
@@ -17175,7 +17212,7 @@ UNION ALL
             ELSE (0)::numeric
         END AS opertaskflagpercentexecutionwithcolor,
     'red-cell'::character varying(255) AS percentageofexecutioncellcolor
-   FROM ((((((((operationaltasks_operationaltask operationaltask
+   FROM ((((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
@@ -17220,7 +17257,7 @@ UNION ALL
             WHEN (((COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric) * (100)::numeric) / productioncountingquantitydto.plannedquantity) = (0)::numeric) THEN 'red-cell'::character varying(255)
             ELSE 'yellow-cell'::character varying(255)
         END AS percentageofexecutioncellcolor
-   FROM ((((((((operationaltasks_operationaltask operationaltask
+   FROM ((((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
@@ -17233,10 +17270,10 @@ UNION ALL
 
 
 --
--- Name: operationaltasks_operationaltaskdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: orders_operationaltaskdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE operationaltasks_operationaltaskdto_id_seq
+CREATE SEQUENCE orders_operationaltaskdto_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -17245,10 +17282,10 @@ CREATE SEQUENCE operationaltasks_operationaltaskdto_id_seq
 
 
 --
--- Name: operationaltasks_operationaltaskstatechange; Type: TABLE; Schema: public; Owner: -
+-- Name: orders_operationaltaskstatechange; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE operationaltasks_operationaltaskstatechange (
+CREATE TABLE orders_operationaltaskstatechange (
     id bigint NOT NULL,
     dateandtime timestamp without time zone,
     sourcestate character varying(255),
@@ -17262,10 +17299,10 @@ CREATE TABLE operationaltasks_operationaltaskstatechange (
 
 
 --
--- Name: operationaltasks_operationaltaskstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: orders_operationaltaskstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE operationaltasks_operationaltaskstatechange_id_seq
+CREATE SEQUENCE orders_operationaltaskstatechange_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -17274,44 +17311,10 @@ CREATE SEQUENCE operationaltasks_operationaltaskstatechange_id_seq
 
 
 --
--- Name: operationaltasks_operationaltaskstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: orders_operationaltaskstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE operationaltasks_operationaltaskstatechange_id_seq OWNED BY operationaltasks_operationaltaskstatechange.id;
-
-
---
--- Name: orders_changedateshelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_changedateshelper (
-    id bigint NOT NULL,
-    datefrom timestamp without time zone,
-    dateto timestamp without time zone,
-    commentreasontypecorrectiondatefrom character varying(255),
-    commentreasontypecorrectiondateto character varying(255),
-    ids character varying(255),
-    orderids character varying(255)
-);
-
-
---
--- Name: orders_changedateshelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_changedateshelper_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_changedateshelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_changedateshelper_id_seq OWNED BY orders_changedateshelper.id;
+ALTER SEQUENCE orders_operationaltaskstatechange_id_seq OWNED BY orders_operationaltaskstatechange.id;
 
 
 --
@@ -17460,7 +17463,7 @@ CREATE VIEW orders_orderlistdto AS
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
-     LEFT JOIN basic_division division ON ((division.id = technology.division_id)));
+     LEFT JOIN basic_division division ON ((division.id = ordersorder.division_id)));
 
 
 --
@@ -17542,6 +17545,37 @@ CREATE SEQUENCE orders_orderplanninglistdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: orders_ordersgenerationhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_ordersgenerationhelper (
+    id bigint NOT NULL,
+    plannedquantity numeric(12,5),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone
+);
+
+
+--
+-- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_ordersgenerationhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_ordersgenerationhelper_id_seq OWNED BY orders_ordersgenerationhelper.id;
 
 
 --
@@ -24976,7 +25010,7 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproduct ALTER 
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_operationaltasks_operationaltask ALTER COLUMN id SET DEFAULT nextval('arch_operationaltasks_operationaltask_id_seq'::regclass);
+ALTER TABLE ONLY arch_orders_operationaltask ALTER COLUMN id SET DEFAULT nextval('arch_orders_operationaltask_id_seq'::regclass);
 
 
 --
@@ -26551,21 +26585,21 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent ALTER COLUMN id SET DE
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask ALTER COLUMN id SET DEFAULT nextval('operationaltasks_operationaltask_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY operationaltasks_operationaltaskstatechange ALTER COLUMN id SET DEFAULT nextval('operationaltasks_operationaltaskstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY orders_changedateshelper ALTER COLUMN id SET DEFAULT nextval('orders_changedateshelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_operationaltask ALTER COLUMN id SET DEFAULT nextval('orders_operationaltask_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_operationaltaskstatechange ALTER COLUMN id SET DEFAULT nextval('orders_operationaltaskstatechange_id_seq'::regclass);
 
 
 --
@@ -26580,6 +26614,13 @@ ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_
 --
 
 ALTER TABLE ONLY orders_ordercategorycolor ALTER COLUMN id SET DEFAULT nextval('orders_ordercategorycolor_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_ordersgenerationhelper ALTER COLUMN id SET DEFAULT nextval('orders_ordersgenerationhelper_id_seq'::regclass);
 
 
 --
@@ -28660,25 +28701,25 @@ COPY arch_materialrequirementcoveragefororder_coverageproductlogging (id, covera
 
 
 --
--- Data for Name: arch_operationaltasks_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: arch_orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_operationaltasks_operationaltask (id, number, name, description, typetask, startdate, finishdate, productionline_id, technologyinstanceoperationcomponent_id, order_id, entityversion, archived) FROM stdin;
+COPY arch_orders_operationaltask (id, number, name, description, typetask, startdate, finishdate, productionline_id, technologyinstanceoperationcomponent_id, order_id, entityversion, archived) FROM stdin;
 \.
 
 
 --
--- Name: arch_operationaltasks_operationaltask_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+-- Name: arch_orders_operationaltask_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('arch_operationaltasks_operationaltask_id_seq', 1, false);
+SELECT pg_catalog.setval('arch_orders_operationaltask_id_seq', 1, false);
 
 
 --
 -- Data for Name: arch_orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, archived) FROM stdin;
+COPY arch_orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, archived, division_id) FROM stdin;
 \.
 
 
@@ -30250,8 +30291,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups) FROM stdin;
-1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f	50	3000	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition) FROM stdin;
+1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f	50	3000	f	f	f	f	f
 \.
 
 
@@ -33391,43 +33432,6 @@ SELECT pg_catalog.setval('nutritionfacts_prototypeproductcomponent_id_seq', 1, f
 
 
 --
--- Data for Name: operationaltasks_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY operationaltasks_operationaltask (id, number, name, description, type, startdate, finishdate, productionline_id, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id) FROM stdin;
-\.
-
-
---
--- Name: operationaltasks_operationaltask_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('operationaltasks_operationaltask_id_seq', 1, false);
-
-
---
--- Name: operationaltasks_operationaltaskdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('operationaltasks_operationaltaskdto_id_seq', 1, false);
-
-
---
--- Data for Name: operationaltasks_operationaltaskstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY operationaltasks_operationaltaskstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, operationaltask_id, shift_id) FROM stdin;
-\.
-
-
---
--- Name: operationaltasks_operationaltaskstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('operationaltasks_operationaltaskstatechange_id_seq', 1, false);
-
-
---
 -- Data for Name: orders_changedateshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -33443,10 +33447,47 @@ SELECT pg_catalog.setval('orders_changedateshelper_id_seq', 1, false);
 
 
 --
+-- Data for Name: orders_operationaltask; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_operationaltask (id, number, name, description, type, startdate, finishdate, productionline_id, order_id, entityversion, staff_id, workstation_id, state, technologyoperationcomponent_id, product_id, scheduleposition_id) FROM stdin;
+\.
+
+
+--
+-- Name: orders_operationaltask_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_operationaltask_id_seq', 1, false);
+
+
+--
+-- Name: orders_operationaltaskdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_operationaltaskdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: orders_operationaltaskstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_operationaltaskstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, operationaltask_id, shift_id) FROM stdin;
+\.
+
+
+--
+-- Name: orders_operationaltaskstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_operationaltaskstatechange_id_seq', 1, false);
+
+
+--
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, trackingrecordtreatment, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id) FROM stdin;
 \.
 
 
@@ -33491,6 +33532,21 @@ SELECT pg_catalog.setval('orders_orderlistdto_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('orders_orderplanninglistdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: orders_ordersgenerationhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_ordersgenerationhelper (id, plannedquantity, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_ordersgenerationhelper_id_seq', 1, false);
 
 
 --
@@ -35033,7 +35089,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 112	technologies	1.5.0	ENABLED	f	0	technologies	AGPL
 113	timeNormsForOperations	1.5.0	ENABLED	f	0	technologies	AGPL
 114	materialFlow	1.5.0	ENABLED	f	0	flow	AGPL
-115	operationalTasks	1.5.0	ENABLED	f	0	planning	AGPL
 116	materialRequirements	1.5.0	ENABLED	f	0	calculations	AGPL
 118	operationTimeCalculations	1.5.0	ENABLED	f	0	calculations	AGPL
 119	minimalAffordableQuantity	1.5.0	ENABLED	f	0	technologies	AGPL
@@ -35301,7 +35356,6 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 4	basic	basic	4	\N	0
 5	technologies	technology	5	ROLE_TECHNOLOGIES	0
 6	materialFlow	materialFlow	6	\N	0
-7	operationalTasks	orders	7	\N	0
 8	orders	ordersTracking	8	ROLE_ORDERS_TRACKING	0
 9	materialRequirements	requirements	9	\N	0
 10	lineChangeoverNorms	calculations	10	\N	0
@@ -35310,6 +35364,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 14	subcontractorPortal	subcontractors	14	ROLE_SUBCONTRACTOR	0
 15	productionCounting	analysis	15	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	16	\N	0
+7	orders	orders	7	\N	0
 \.
 
 
@@ -35370,7 +35425,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 43	materialFlow	stockCorrections	f	6	43	3	ROLE_MATERIAL_FLOW	0
 44	materialFlow	materialsInLocations	f	6	44	4	ROLE_MATERIAL_FLOW	0
 45	materialFlow	locations	t	6	45	5	ROLE_MATERIAL_FLOW	0
-46	operationalTasks	operationalTasks	t	7	46	1	ROLE_PLANNING	0
 47	orders	productionOrdersPlanning	t	7	47	2	ROLE_PLANNING	0
 48	orders	productionOrders	t	7	48	3	ROLE_PLANNING	0
 49	materialRequirements	materialRequirements	t	9	49	1	ROLE_REQUIREMENTS	0
@@ -35469,6 +35523,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 147	integrationBarTender	printedCartonLabelsList	t	8	146	22	ROLE_TERMINAL_CARTON_LABELS	0
 148	basic	skillsList	t	4	147	23	ROLE_SKILLS	0
 149	orders	schedulesList	t	7	148	18	ROLE_PLANNING	0
+46	orders	operationalTasks	t	7	46	1	ROLE_PLANNING	0
 \.
 
 
@@ -35529,7 +35584,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 43	materialFlow	stockCorrectionsList	stockCorrectionsList	\N	0
 44	materialFlow	materialsInLocationsList	materialsInLocationsList	\N	0
 45	materialFlow	locationsList	locationsList	\N	0
-46	operationalTasks	operationalTasksList	operationalTasksList	\N	0
 47	orders	ordersPlanningList	ordersPlanningList	\N	0
 48	orders	ordersList	ordersList	\N	0
 49	materialRequirements	materialRequirementsList	materialRequirementsList	\N	0
@@ -35627,6 +35681,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 146	integrationBarTender	printedCartonLabelsList	printedCartonLabelsList	\N	0
 147	basic	skillsList	skillsList	\N	0
 148	orders	schedulesList	schedulesList	\N	0
+46	orders	operationalTasksList	operationalTasksList	\N	0
 \.
 
 
@@ -37442,11 +37497,11 @@ ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coverageproductlogging
 
 
 --
--- Name: arch_operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: arch_orders_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_operationaltasks_operationaltask
-    ADD CONSTRAINT arch_operationaltasks_operationaltask_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY arch_orders_operationaltask
+    ADD CONSTRAINT arch_orders_operationaltask_pkey PRIMARY KEY (id);
 
 
 --
@@ -39666,27 +39721,27 @@ ALTER TABLE ONLY nutritionfacts_nutritiongroup
 
 
 --
--- Name: operationaltasks_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY operationaltasks_operationaltask
-    ADD CONSTRAINT operationaltasks_operationaltask_pkey PRIMARY KEY (id);
-
-
---
--- Name: operationaltasks_operationaltaskstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY operationaltasks_operationaltaskstatechange
-    ADD CONSTRAINT operationaltasks_operationaltaskstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: orders_changedateshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY orders_changedateshelper
     ADD CONSTRAINT orders_changedateshelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_operationaltask_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_operationaltask
+    ADD CONSTRAINT orders_operationaltask_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_operationaltaskstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_operationaltaskstatechange
+    ADD CONSTRAINT orders_operationaltaskstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -39703,6 +39758,14 @@ ALTER TABLE ONLY orders_order
 
 ALTER TABLE ONLY orders_ordercategorycolor
     ADD CONSTRAINT orders_ordercategorycolor_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_ordersgenerationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_ordersgenerationhelper
+    ADD CONSTRAINT orders_ordersgenerationhelper_pkey PRIMARY KEY (id);
 
 
 --
@@ -47811,7 +47874,7 @@ ALTER TABLE ONLY technologies_operation
 -- Name: operationaltask_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
@@ -47819,7 +47882,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 -- Name: operationaltask_scheduleposition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_scheduleposition_fkey FOREIGN KEY (scheduleposition_id) REFERENCES orders_scheduleposition(id) DEFERRABLE;
 
 
@@ -47827,7 +47890,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 -- Name: operationaltask_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
@@ -47835,7 +47898,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 -- Name: operationaltask_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
@@ -47843,7 +47906,7 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 -- Name: operationaltask_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT operationaltask_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
 
 
@@ -47851,15 +47914,15 @@ ALTER TABLE ONLY operationaltasks_operationaltask
 -- Name: operationaltaskstatechange_operationaltask_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltaskstatechange
-    ADD CONSTRAINT operationaltaskstatechange_operationaltask_fkey FOREIGN KEY (operationaltask_id) REFERENCES operationaltasks_operationaltask(id) DEFERRABLE;
+ALTER TABLE ONLY orders_operationaltaskstatechange
+    ADD CONSTRAINT operationaltaskstatechange_operationaltask_fkey FOREIGN KEY (operationaltask_id) REFERENCES orders_operationaltask(id) DEFERRABLE;
 
 
 --
 -- Name: operationaltaskstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltaskstatechange
+ALTER TABLE ONLY orders_operationaltaskstatechange
     ADD CONSTRAINT operationaltaskstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
 
 
@@ -47981,6 +48044,22 @@ ALTER TABLE ONLY orders_order
 
 ALTER TABLE ONLY arch_orders_order
     ADD CONSTRAINT order_address_fkey FOREIGN KEY (address_id) REFERENCES basic_address(id) DEFERRABLE;
+
+
+--
+-- Name: order_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_order
+    ADD CONSTRAINT order_division_fkey FOREIGN KEY (division_id) REFERENCES basic_division(id) DEFERRABLE;
+
+
+--
+-- Name: order_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY arch_orders_order
+    ADD CONSTRAINT order_division_fkey FOREIGN KEY (division_id) REFERENCES basic_division(id) DEFERRABLE;
 
 
 --
@@ -48275,7 +48354,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
 -- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
 
 
@@ -48307,7 +48386,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 -- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_operationaltasks_operationaltask
+ALTER TABLE ONLY arch_orders_operationaltask
     ADD CONSTRAINT orders_order_fkey FOREIGN KEY (order_id) REFERENCES arch_orders_order(id) DEFERRABLE;
 
 
@@ -49955,7 +50034,7 @@ ALTER TABLE ONLY avglaborcostcalcfororder_avglaborcostcalcfororder
 -- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY operationaltasks_operationaltask
+ALTER TABLE ONLY orders_operationaltask
     ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
@@ -49995,7 +50074,7 @@ ALTER TABLE ONLY arch_goodfood_extrusionprotocol
 -- Name: productionlines_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_operationaltasks_operationaltask
+ALTER TABLE ONLY arch_orders_operationaltask
     ADD CONSTRAINT productionlines_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
