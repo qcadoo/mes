@@ -204,6 +204,8 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
+        operationWorkTimeService.deleteOperCompTimeCalculations(order);
+
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
                 includeAdditionalTime, productionLine, true);
 
