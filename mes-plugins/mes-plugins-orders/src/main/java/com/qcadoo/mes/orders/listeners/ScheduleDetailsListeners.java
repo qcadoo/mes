@@ -69,18 +69,17 @@ public class ScheduleDetailsListeners {
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
-        Set<Long> orderWithOperationWithoutWorkstations = Sets.newHashSet();
+        Set<Long> ordersToAvoid = Sets.newHashSet();
         List<Entity> positions = sortPositionsForWorkstations(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
         for (Entity position : positions) {
-            if (orderWithOperationWithoutWorkstations.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())
-                    || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
+            if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
                 continue;
             }
             List<Entity> workstations = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
                     .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-            if (workstations.isEmpty()) {
-                orderWithOperationWithoutWorkstations.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+            if (workstations.isEmpty() || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
+                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
                 continue;
             }
             Map<Long, Date> operationWorkstationsFinishDates = Maps.newHashMap();
