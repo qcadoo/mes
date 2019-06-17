@@ -226,8 +226,10 @@ public class ScheduleDetailsListeners {
                     firstEntryOptional = operationWorkersFinishDates.entrySet().stream().min(comparingByValue());
                 }
             }
+            position.setField(SchedulePositionFields.STAFF, null);
             firstEntryOptional.ifPresent(firstEntry -> updatePositionWorker(workersFinishDates, workstationLastWorkers, position,
                     workstation, firstEntry));
+            position.getDataDefinition().save(position);
         }
     }
 
@@ -290,7 +292,6 @@ public class ScheduleDetailsListeners {
         workersFinishDates.put(firstEntry.getKey(), firstEntry.getValue());
         workstationLastWorkers.put(workstation.getId(), firstEntry.getKey());
         position.setField(SchedulePositionFields.STAFF, firstEntry.getKey());
-        position.getDataDefinition().save(position);
     }
 
     private List<Entity> sortPositionsForWorkers(Long scheduleId) {
