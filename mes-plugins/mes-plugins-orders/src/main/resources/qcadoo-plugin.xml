@@ -354,16 +354,6 @@
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
                         method="updateRibbonState"/>
 
-<<<<<<< HEAD
-        <!--<report:report-template name="order"-->
-        <!--resource="report/order.jrxml" />-->
-=======
-        <view:view-hook plugin="technologies" view="operationProductOutComponentDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.orders.hooks.OPOCDetailsHooksO"
-                        method="toggleSetField"/>
->>>>>>> dev
-
         <view:resource uri="public/**/*"/>
 
         <custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule"/>
