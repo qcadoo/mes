@@ -56,7 +56,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="4">
+                           columns="3" rows="5">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="defaultProductionLine"
                                    field="#{form}.defaultProductionLine" reference="defaultProductionLine">
