@@ -268,7 +268,39 @@
             </component>
         </windowTab>
 
+        <windowTab name="skillsTab" reference="skillsTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1" fixedRowHeight="false">
+                <layoutElement column="1" row="1" width="3">
+                    <component type="grid" name="operationSkills" reference="operationSkills"
+                               source="#{form}.operationSkills">
+                        <option type="column" name="skillName" fields="skill" expression="#skill['name']" link="true" width="100"/>
+                        <option type="column" name="skillDescription" fields="skill" expression="#skill['description']" link="true" width="150"/>
+                        <option type="column" name="requiredLevel" fields="requiredLevel" link="true" width="50"/>
+
+                        <option type="order" column="skillName" direction="asc"/>
+
+                        <option type="searchable" value="skillName,skillDescription,requiredLevel"/>
+                        <option type="orderable" value="skillName,skillDescription,requiredLevel"/>
+
+                        <option type="correspondingView" value="technologies/operationSkillDetails" />
+                        <option type="correspondingComponent" value="form" />
+                        <option type="correspondingViewInModal" value="true" />
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+
+                        <option type="creatable" value="true" />
+                        <option type="deletable" value="true" />
+                        <option type="fullscreen" value="true" />
+                        <option type="multiselect" value="true" />
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
     </component>
+
     <hooks>
         <beforeRender class="com.qcadoo.mes.technologies.hooks.OperationDetailsHooks"
                       method="onBeforeRender"/>

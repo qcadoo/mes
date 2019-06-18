@@ -24,10 +24,10 @@
     ***************************************************************************
 
 -->
-<model name="parameter" deletable="false"
+<model name="parameter" deletable="false" cacheable="true"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
-	cacheable="true">
+	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="country" plugin="basic" model="country" />
 		<belongsTo name="currency" plugin="basic" model="currency" />
@@ -39,10 +39,12 @@
 		<hasMany name="reportColumnWidths" joinField="parameter"
 			model="reportColumnWidth" cascade="delete" copyable="true" />
 		<boolean name="exportToPdfOnlyVisibleColumns" default="false" />
+		<boolean name="exportToCsvOnlyVisibleColumns" default="false" />
 	</fields>
 
 	<hooks>
 		<onCreate class="com.qcadoo.mes.basic.hooks.ParameterModelHooks"
 			method="setDefaultCurrency" />
 	</hooks>
+
 </model>

@@ -29,7 +29,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifires;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifires;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks;

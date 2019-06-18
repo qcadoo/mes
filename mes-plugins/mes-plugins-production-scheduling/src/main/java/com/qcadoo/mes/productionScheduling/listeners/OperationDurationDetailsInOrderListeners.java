@@ -23,12 +23,25 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -52,17 +65,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
@@ -75,13 +78,8 @@ public class OperationDurationDetailsInOrderListeners {
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
-    public static final int MILLS = 1000;
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ShiftsServiceImpl shiftsService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -94,6 +92,9 @@ public class OperationDurationDetailsInOrderListeners {
 
     @Autowired
     private ProductionSchedulingService productionSchedulingService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
 
     public void showCopyOfTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
@@ -158,12 +159,14 @@ public class OperationDurationDetailsInOrderListeners {
                 viewDefinitionState.getLocale());
 
         // Included in work time
-        Boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
-        Boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
+        boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
+        boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
+
+        operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
                 includeAdditionalTime, productionLine, true);
@@ -188,9 +191,7 @@ public class OperationDurationDetailsInOrderListeners {
             if (startTime == null) {
                 startTimeField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     generatedEndDateField.setFieldValue(null);
@@ -288,13 +289,7 @@ public class OperationDurationDetailsInOrderListeners {
                 continue;
             }
 
-            long milliseconds = offset * MILLS + duration * MILLS;
-
-            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, milliseconds);
-
-            if (dateTo == null) {
-                continue;
-            }
+            Date dateTo = productionSchedulingService.getFinishDate(order, orderStartDate, (long) offset + duration);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);
@@ -320,5 +315,64 @@ public class OperationDurationDetailsInOrderListeners {
         stopTimeField.setFieldValue(generatedEndDateField.getFieldValue());
 
         state.performEvent(view, "save", new String[0]);
+    }
+
+    public void createOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
+            return;
+        }
+
+        Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+
+        if (technology != null) {
+            List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
+            for (Entity technologyOperationComponent : technologyOperationComponents) {
+                createOperationalTasks(order, technologyOperationComponent,
+                        technologyOperationComponent.getBooleanField("isSubcontracting"));
+            }
+
+            orderForm.addMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated",
+                    MessageType.SUCCESS);
+        }
+    }
+
+    private void createOperationalTasks(final Entity order, final Entity technologyOperationComponent,
+                                        final boolean isSubcontracting) {
+        Entity techOperCompTimeCalculation = operationWorkTimeService.createOrGetOperCompTimeCalculation(order,
+                technologyOperationComponent);
+
+        DataDefinition operationTaskDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                OrdersConstants.MODEL_OPERATIONAL_TASK);
+
+        Entity operationalTask = operationTaskDD.create();
+
+        operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
+                .generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
+
+        if (techOperCompTimeCalculation != null) {
+            operationalTask.setField(OperationalTaskFields.START_DATE,
+                    techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM));
+            operationalTask.setField(OperationalTaskFields.FINISH_DATE,
+                    techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
+        }
+
+        operationalTask.setField(OperationalTaskFields.TYPE,
+                OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
+        operationalTask.setField(OperationalTaskFields.ORDER, order);
+
+        if (!isSubcontracting) {
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+        }
+
+        operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+
+        operationalTask.getDataDefinition().save(operationalTask);
     }
 }

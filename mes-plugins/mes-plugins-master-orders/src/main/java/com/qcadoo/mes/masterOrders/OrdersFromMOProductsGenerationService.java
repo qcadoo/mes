@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
@@ -22,6 +21,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -29,12 +29,6 @@ import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -43,11 +37,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class OrdersFromMOProductsGenerationService {
+
+    public static final String IS_SUBCONTRACTED = "isSubcontracted";
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList("registerQuantityInProduct",
             "registerQuantityOutProduct", "registerProductionTime", "registerPiecework", "justOne", "allowToClose",
@@ -56,6 +59,12 @@ public class OrdersFromMOProductsGenerationService {
     public static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
 
     public static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
+
+    public static final String COPY_NOTES_FROM_MASTER_ORDER_POSITION = "copyNotesFromMasterOrderPosition";
+
+    public static final String PPS_IS_AUTOMATIC = "ppsIsAutomatic";
+
+    public static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -86,7 +95,7 @@ public class OrdersFromMOProductsGenerationService {
 
     public GenerationOrderResult generateOrders(List<Entity> masterOrderProducts, boolean generatePPS) {
         GenerationOrderResult result = new GenerationOrderResult(translationService);
-        boolean automaticPps = parameterService.getParameter().getBooleanField("ppsIsAutomatic");
+        boolean automaticPps = parameterService.getParameter().getBooleanField(PPS_IS_AUTOMATIC);
         masterOrderProducts.forEach(masterOrderProduct -> {
             Optional<Entity> dtoEntity = Optional.ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(
                     masterOrderProduct.getId()));
@@ -145,7 +154,7 @@ public class OrdersFromMOProductsGenerationService {
                     }
                 }
 
-                if(Objects.isNull(calculatedOrderStartDate)) {
+                if (Objects.isNull(calculatedOrderStartDate)) {
                     calculatedOrderStartDate = new DateTime().toDate();
                 }
 
@@ -328,32 +337,57 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.ADDRESS, masterOrder.getBelongsToField(MasterOrderFields.ADDRESS));
         order.setField(OrderFields.PRODUCT, product);
         order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, technology);
-        order.setField(OrderFields.PRODUCTION_LINE, getProductionLine(technology));
+        order.setField(OrderFields.PRODUCTION_LINE, orderService.getProductionLine(technology));
+        order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
         if (!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
             order.setField(OrderFields.DEADLINE, masterOrderDeadline);
         }
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField("isSubcontracted", false);
+        order.setField(IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
 
-        order.setField("ignoreMissingComponents", parameter.getBooleanField("ignoreMissingComponents"));
+        order.setField(IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(IGNORE_MISSING_COMPONENTS));
 
-        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
-                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
-                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
-        String orderDescription;
-        if (parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
-            orderDescription = masterOrder.getStringField(MasterOrderFields.DESCRIPTION);
-        } else {
-            orderDescription = orderService.buildOrderDescription(masterOrder, technology, fillOrderDescriptionBasedOnTechnology);
-        }
+        String orderDescription = buildDescription(parameter, masterOrder, masterOrderProduct, technology);
         order.setField(OrderFields.DESCRIPTION, orderDescription);
         return order;
+    }
+
+    public String buildDescription(Entity parameter, Entity masterOrder, Entity masterOrderProduct, Entity technology) {
+        boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
+        boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(COPY_NOTES_FROM_MASTER_ORDER_POSITION);
+        boolean fillOrderDescriptionBasedOnTechnology = parameter
+                .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
+
+        StringBuilder descriptionBuilder = new StringBuilder();
+
+        if (copyDescription && StringUtils.isNoneBlank(masterOrder.getStringField(MasterOrderFields.DESCRIPTION))) {
+            descriptionBuilder.append(masterOrder.getStringField(MasterOrderFields.DESCRIPTION));
+        }
+
+        if (copyNotesFromMasterOrderPosition
+                && StringUtils.isNoneBlank(masterOrderProduct.getStringField(MasterOrderProductFields.CPMMENTS))) {
+            if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                descriptionBuilder.append("\n");
+            }
+            descriptionBuilder.append(masterOrderProduct.getStringField(MasterOrderProductFields.CPMMENTS));
+        }
+
+        if (fillOrderDescriptionBasedOnTechnology && Objects.nonNull(technology)
+                && StringUtils.isNoneBlank(technology.getStringField(TechnologyFields.DESCRIPTION))) {
+            if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                descriptionBuilder.append("\n");
+            }
+            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
+
+        }
+
+        return descriptionBuilder.toString();
     }
 
     private BigDecimal getPlannedQuantityForOrder(final Entity masterOrderProduct) {
@@ -362,9 +396,7 @@ public class OrdersFromMOProductsGenerationService {
         masterOrderQuantity = masterOrderProductDto.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
         cumulatedOrderQuantity = masterOrderProductDto.getDecimalField(CUMULATED_MASTER_ORDER_QUANTITY);
 
-        BigDecimal quantity = masterOrderQuantity.subtract(convertNullToZero(cumulatedOrderQuantity));
-
-        return quantity;
+        return masterOrderQuantity.subtract(convertNullToZero(cumulatedOrderQuantity));
     }
 
     private String generateOrderName(final Entity product, final Entity technology) {
@@ -374,17 +406,6 @@ public class OrdersFromMOProductsGenerationService {
     private String generateOrderNumber(final Entity parameter, final Entity masterOrder) {
         return numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER, 3,
                 masterOrder.getStringField(MasterOrderFields.NUMBER) + "-");
-    }
-
-    public Entity getProductionLine(final Entity technology) {
-        Entity productionLine = null;
-        if (Objects.nonNull(technology)) {
-            productionLine = technology.getBelongsToField("productionLine");
-        }
-        if (Objects.isNull(productionLine)) {
-            productionLine = orderService.getDefaultProductionLine();
-        }
-        return productionLine;
     }
 
     private Entity getTechnology(final Entity masterOrderProduct) {

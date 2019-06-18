@@ -1,0 +1,95 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="productsToIssue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="warehouseIssue" model="warehouseIssue"
+                   required="true"/>
+
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true"/>
+
+        <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
+
+        <belongsTo name="productInComponent" plugin="technologies"
+                   model="operationProductInComponent"/>
+
+        <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
+
+        <decimal name="demandQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="additionalDemandQuantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
+        </decimal>
+
+        <decimal name="conversion" required="true">
+            <validatesRange from="0" exclusively="true"/>
+        </decimal>
+
+        <decimal name="locationsQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="placeOfIssueQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="issueQuantity">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="correction">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <belongsTo name="location" model="location"
+                   plugin="materialFlow" required="true"/>
+
+        <boolean name="issued" default="false"/>
+
+        <hasMany name="reservations" model="reservation" joinField="productsToIssue" copyable="true" cascade="delete" plugin="materialFlowResources" />
+
+        <hasMany name="corrections" model="productToIssueCorrection" joinField="productsToIssue" cascade="delete"/>
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.ProductToIssueValidators" method="validate"/>
+        <onSave class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductToIssueHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductToIssueHooks" method="onDelete"/>
+    </hooks>
+
+</model>

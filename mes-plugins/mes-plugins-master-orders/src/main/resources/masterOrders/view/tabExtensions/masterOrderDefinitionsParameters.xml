@@ -73,13 +73,6 @@
                     <option type="labelWidth" value="50"/>
                 </component>
             </layoutElement>
-
-            <layoutElement column="2" row="2">
-                <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
-                           reference="copyDescription">
-                    <option type="labelWidth" value="50"/>
-                </component>
-            </layoutElement>
         </component>
     </windowTab>
 

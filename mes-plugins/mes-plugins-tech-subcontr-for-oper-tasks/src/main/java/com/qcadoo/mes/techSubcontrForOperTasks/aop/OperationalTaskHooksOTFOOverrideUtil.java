@@ -23,30 +23,29 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasksForOrders.OperationalTasksForOrdersService;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.orders.OperationalTasksService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskHooksOTFOOverrideUtil {
 
     @Autowired
-    private OperationalTasksForOrdersService operationalTasksForOrdersService;
+    private OperationalTasksService operationalTasksService;
 
     public void onSaveForSubcontracted(final DataDefinition operationalTaskDD, final Entity operationalTask) {
-        String typeTask = operationalTask.getStringField(OperationalTaskFields.TYPE_TASK);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
-        if (operationalTasksForOrdersService.isOperationalTaskTypeTaskExecutionOperationInOrder(typeTask)) {
-            Entity order = operationalTask.getBelongsToField(OperationalTaskFieldsOTFO.ORDER);
+        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
 
             Entity technologyOperationComponent = operationalTask
-                    .getBelongsToField(OperationalTaskFieldsOTFO.TECHNOLOGY_OPERATION_COMPONENT);
+                    .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 
             if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
                 operationalTask.setField(OperationalTaskFields.NAME, null);
@@ -57,8 +56,8 @@ public class OperationalTaskHooksOTFOOverrideUtil {
     }
 
     private boolean isSubcontracting(final Entity technologyOperationComponent) {
-        return ((technologyOperationComponent != null) && technologyOperationComponent
-                .getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
+        return ((technologyOperationComponent != null)
+                && technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
     }
 
 }

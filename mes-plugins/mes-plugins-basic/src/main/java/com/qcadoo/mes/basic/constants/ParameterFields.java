@@ -43,4 +43,6 @@ public final class ParameterFields {
 
     public static final String EXPORT_TO_PDF_ONLY_VISIBLE_COLUMNS = "exportToPdfOnlyVisibleColumns";
 
+    public static final String EXPORT_TO_CSV_ONLY_VISIBLE_COLUMNS = "exportToCsvOnlyVisibleColumns";
+
 }

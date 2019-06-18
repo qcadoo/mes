@@ -1,29 +1,5 @@
 package com.qcadoo.mes.technologies.export;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
@@ -43,6 +19,31 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 @Service
 public class TechnologyExportService {
 
@@ -53,6 +54,8 @@ public class TechnologyExportService {
     private static final String NEWLINE = "\n";
 
     private static final String SEMICOLON = ";";
+
+    public static final String EMPTY = "";
 
     @Autowired
     private FileService fileService;
@@ -169,11 +172,16 @@ public class TechnologyExportService {
             EntityTree productStructureTree = productStructureTreeService.generateProductStructureTree(null, technology);
             String technologyNumber = normalizeString(technology.getStringField(TechnologyFields.NUMBER));
             String technologyName = normalizeString(technology.getStringField(TechnologyFields.NAME));
+            String technologyState  = translationService.translate("technologies.technology.state.value."+technology.getStringField(TechnologyFields.STATE),
+                    LocaleContextHolder.getLocale());
+            String isDefaultTechnology = defaultTechnologyToString(technology.getBooleanField(TechnologyFields.MASTER));
             String technologyStandardPerformance = numberService.format(technology
                     .getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
             String technologyStateChange = DateFormat.getDateInstance().format(
                     productStructureTreeService.getLastTechnologyStateChange(technology).getDateField(
                             TechnologyStateChangeFields.DATE_AND_TIME));
+            String technologyAcceptStateChange = getTechnologyAcceptStateChange(technology);
+            String technologyOutdatedStateChange = getTechnologyOutdatedStateChange(technology);
             String technologyProduct = normalizeString(technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(
                     ProductFields.NUMBER));
             for (Entity productNode : productStructureTree) {
@@ -183,9 +191,17 @@ public class TechnologyExportService {
                     bufferedWriter.append(exportedCsvSeparator);
                     bufferedWriter.append(BACKSLASH).append(technologyName).append(BACKSLASH);
                     bufferedWriter.append(exportedCsvSeparator);
+                    bufferedWriter.append(BACKSLASH).append(technologyState).append(BACKSLASH);
+                    bufferedWriter.append(exportedCsvSeparator);
+                    bufferedWriter.append(BACKSLASH).append(isDefaultTechnology).append(BACKSLASH);
+                    bufferedWriter.append(exportedCsvSeparator);
                     bufferedWriter.append(BACKSLASH).append(technologyStandardPerformance).append(BACKSLASH);
                     bufferedWriter.append(exportedCsvSeparator);
                     bufferedWriter.append(BACKSLASH).append(technologyStateChange).append(BACKSLASH);
+                    bufferedWriter.append(exportedCsvSeparator);
+                    bufferedWriter.append(BACKSLASH).append(technologyAcceptStateChange).append(BACKSLASH);
+                    bufferedWriter.append(exportedCsvSeparator);
+                    bufferedWriter.append(BACKSLASH).append(technologyOutdatedStateChange).append(BACKSLASH);
                     bufferedWriter.append(exportedCsvSeparator);
                     bufferedWriter.append(BACKSLASH).append(technologyProduct).append(BACKSLASH);
                     bufferedWriter.append(exportedCsvSeparator);
@@ -211,6 +227,32 @@ public class TechnologyExportService {
         }
     }
 
+    private String getTechnologyOutdatedStateChange(Entity technology) {
+        Entity stateChange = productStructureTreeService.getTechnologyOutdatedStateChange(technology);
+        if(Objects.isNull(stateChange)) {
+            return EMPTY;
+        }
+        return DateFormat.getDateInstance().format(stateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME));
+    }
+
+    private String getTechnologyAcceptStateChange(Entity technology) {
+        Entity stateChange = productStructureTreeService.getTechnologyAcceptStateChange(technology);
+        if(Objects.isNull(stateChange)) {
+            return EMPTY;
+        }
+        return DateFormat.getDateInstance().format(stateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME));
+    }
+
+    private String defaultTechnologyToString(Boolean master) {
+        if(master) {
+            return translationService.translate("technologies.technology.master.yes",
+                    LocaleContextHolder.getLocale());
+        } else {
+            return translationService.translate("technologies.technology.master.no",
+                    LocaleContextHolder.getLocale());
+        }
+    }
+
     private void createHeader(BufferedWriter bufferedWriter) throws IOException {
         bufferedWriter
                 .append(BACKSLASH)
@@ -224,6 +266,16 @@ public class TechnologyExportService {
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
                 .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.technology.state",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
+        bufferedWriter.append(exportedCsvSeparator);
+        bufferedWriter
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate("technologies.exportTechnologies.csv.technology.default",
+                        LocaleContextHolder.getLocale()))).append(BACKSLASH);
+        bufferedWriter.append(exportedCsvSeparator);
+        bufferedWriter
+                .append(BACKSLASH)
                 .append(normalizeString(translationService.translate(
                         "technologies.exportTechnologies.csv.technology.standardPerformance", LocaleContextHolder.getLocale())))
                 .append(BACKSLASH);
@@ -232,6 +284,18 @@ public class TechnologyExportService {
                 .append(BACKSLASH)
                 .append(normalizeString(translationService.translate(
                         "technologies.exportTechnologies.csv.technology.lastStateChangeDate", LocaleContextHolder.getLocale())))
+                .append(BACKSLASH);
+        bufferedWriter.append(exportedCsvSeparator);
+        bufferedWriter
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate(
+                        "technologies.exportTechnologies.csv.technology.technologyAcceptDate", LocaleContextHolder.getLocale())))
+                .append(BACKSLASH);
+        bufferedWriter.append(exportedCsvSeparator);
+        bufferedWriter
+                .append(BACKSLASH)
+                .append(normalizeString(translationService.translate(
+                        "technologies.exportTechnologies.csv.technology.technologyOutdateDate", LocaleContextHolder.getLocale())))
                 .append(BACKSLASH);
         bufferedWriter.append(exportedCsvSeparator);
         bufferedWriter
@@ -280,6 +344,8 @@ public class TechnologyExportService {
 
                 LOG.info("Start uploading file: " + remoteFileName);
                 done = ftpClient.storeFile(remoteFileName, inputStream);
+                LOG.info("FTP reply code: " + ftpClient.getReplyCode());
+                LOG.info("FTP reply message: " + ftpClient.getReplyString());
                 inputStream.close();
                 if (done) {
                     LOG.info("The file is uploaded successfully.");

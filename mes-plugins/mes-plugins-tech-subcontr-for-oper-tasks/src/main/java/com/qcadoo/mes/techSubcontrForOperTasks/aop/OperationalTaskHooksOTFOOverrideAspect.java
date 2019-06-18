@@ -23,17 +23,17 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
+import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.qcadoo.mes.techSubcontracting.constants.TechSubcontractingConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
@@ -43,7 +43,7 @@ public class OperationalTaskHooksOTFOOverrideAspect {
     @Autowired
     private OperationalTaskHooksOTFOOverrideUtil operationalTaskHooksOTFOOverrideUtil;
 
-    @Pointcut("execution(public void com.qcadoo.mes.operationalTasksForOrders.hooks.OperationalTaskHooksOTFO.onSave(..)) "
+    @Pointcut("execution(public void com.qcadoo.mes.orders.hooks.OperationalTaskHooks.onSave(..)) "
             + "&& args(operationalTaskDD, operationalTask)")
     public void onSaveExecution(final DataDefinition operationalTaskDD, final Entity operationalTask) {
     }

@@ -228,22 +228,13 @@
                                     value="#number + ' - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
-                            <!-- TODO replace these listeners with one general event-method (for
-                                example "onSelectedOrderChange"), like for hooks types -->
-
                             <criteriaModifier
                                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.OrderCriteriaModifiersPC"
                                     method="showAcceptedAndInterrupted"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="clearFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="enableOrDisableFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
-                                      method="checkJustOne"/>
+                                      method="onOrderChange"/>
                         </component>
                         <component type="lookup" name="productionLine" field="#{order}.productionLine"
                                    reference="productionLine" defaultEnabled="never">
@@ -269,7 +260,9 @@
 
                             <option type="expression" value="#nodeNumber + '  ' + #operation['name']"/>
                             <option type="fieldCode" value="nodeNumber"/>
-
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                                      method="onTechnologyOperationComponentChange"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.productionCounting.criteriaModifiers.TechnologyOperationComponentCriteriaModifiersPC"
                                     method="restrictTechnologyOperationComponentsToOrderTechnology"/>

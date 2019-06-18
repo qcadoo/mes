@@ -127,8 +127,8 @@ public final class ProductionTrackingListenerService {
         boolean producedNotFilled = checkIfUsedOrWastesQuantitiesWereNotFilled(productionTracking);
 
         if (usedNotFilled && producedNotFilled) {
-            productionTracking.addGlobalError(
-                    "productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
+            productionTracking
+                    .addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
         }
     }
 
@@ -140,21 +140,23 @@ public final class ProductionTrackingListenerService {
                 .add(SearchRestrictions.isNotNull(TrackingOperationProductInComponentFields.USED_QUANTITY))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT)
-                && ((Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0));
+        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT) && ((Long) searchBuilder.setMaxResults(1)
+                .uniqueResult().getField(L_COUNT) <= 0));
     }
 
     public boolean checkIfUsedOrWastesQuantitiesWereNotFilled(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
         final SearchCriteriaBuilder searchBuilder = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
-                .add(SearchRestrictions.or(SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS)
+                .find()
+                .add(SearchRestrictions.or(
+                        SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.USED_QUANTITY),
                         SearchRestrictions.isNotNull(TrackingOperationProductOutComponentFields.WASTES_QUANTITY)))
                 .setProjection(SearchProjections.alias(SearchProjections.rowCount(), L_COUNT)).addOrder(asc(L_COUNT));
 
-        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT)
-                && ((Long) searchBuilder.setMaxResults(1).uniqueResult().getField(L_COUNT) <= 0));
+        return (order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT) && ((Long) searchBuilder.setMaxResults(1)
+                .uniqueResult().getField(L_COUNT) <= 0));
     }
 
     private void checkIfExistsFinalRecord(final Entity productionTracking) {
@@ -195,8 +197,8 @@ public final class ProductionTrackingListenerService {
             return;
         }
 
-        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
-                .build(orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
+        final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
+                orderStateChangeAspect.getChangeEntityDescriber(), orderFromDB, OrderState.COMPLETED.getStringValue());
         orderStateChangeAspect.changeState(orderStateChangeContext);
 
         orderFromDB = order.getDataDefinition().get(orderStateChangeContext.getOwner().getId());
@@ -328,9 +330,8 @@ public final class ProductionTrackingListenerService {
             Integer machineTimie = productionTracking.getIntegerField(ProductionTrackingFields.MACHINE_TIME);
 
             if (machineTimie == null || machineTimie == 0) {
-                productionTracking.addError(
-                        productionTracking.getDataDefinition().getField(ProductionTrackingFields.MACHINE_TIME),
-                        "qcadooView.validate.field.error.missing");
+                productionTracking.addError(productionTracking.getDataDefinition()
+                        .getField(ProductionTrackingFields.MACHINE_TIME), "qcadooView.validate.field.error.missing");
             }
 
             Integer laborTime = productionTracking.getIntegerField(ProductionTrackingFields.LABOR_TIME);

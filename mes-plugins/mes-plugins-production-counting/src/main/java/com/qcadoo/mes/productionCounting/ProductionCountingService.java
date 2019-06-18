@@ -168,24 +168,6 @@ public interface ProductionCountingService {
     boolean checkIfTypeOfProductionRecordingIsEmptyOrBasic(final String typeOfProductionRecording);
 
     /**
-     * Is calculate operation cost mode hourly
-     *
-     * @param calculateOperationCostMode
-     *            calculate operation cost mode
-     * @return boolean
-     */
-    boolean isCalculateOperationCostModeHourly(final String calculateOperationCostMode);
-
-    /**
-     * Is calculate operation cost mode piecework
-     *
-     * @param calculateOperationCostMode
-     *            calculate operation cost mode
-     * @return boolean
-     */
-    boolean isCalculateOperationCostModePiecework(final String calculateOperationCostMode);
-
-    /**
      * Validates order
      *
      * @param productionTrackingReportOrBalanceDD

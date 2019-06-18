@@ -77,6 +77,10 @@
 		</model:model-field>
 
 		<model:model-field plugin="orders" model="order">
+			<model:hasMany name="orderTimeCalculations" model="orderTimeCalculation" plugin="productionScheduling" joinField="order"/>
+		</model:model-field>
+
+		<model:model-field plugin="orders" model="order">
 			<model:integer name="realizationTime" />
 		</model:model-field>
 		<model:model-field plugin="orders" model="order">
@@ -119,6 +123,7 @@
 		<view:view resource="view/operationDurationDetailsInOrder.xml" />
 
 		<view:view-tab resource="view/tabExtensions/parameters.xml" />
+		<view:view-tab resource="view/tabExtensions/scheduleDetails.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml" />
 
@@ -134,6 +139,15 @@
 			component="form" event="redirectToOperationDurationDetailsInOrder"
 			class="com.qcadoo.mes.productionScheduling.listeners.OrderDetailsListenersPS"
 			method="redirectToOperationDurationDetailsInOrder" />
+
+		<view:view-listener plugin="orders" view="scheduleDetails"
+			component="form" event="getOperations"
+			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
+			method="getOperations" />
+		<view:view-listener plugin="orders" view="scheduleDetails"
+			component="form" event="generatePlan"
+			class="com.qcadoo.mes.productionScheduling.listeners.ScheduleDetailsListenersPS"
+			method="generatePlan" />
 	</modules>
 
 	<features>

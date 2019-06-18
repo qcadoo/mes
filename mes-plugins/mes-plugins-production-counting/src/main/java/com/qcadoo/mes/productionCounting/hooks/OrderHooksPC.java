@@ -30,7 +30,9 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -61,6 +63,13 @@ public class OrderHooksPC {
         if (order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
             order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "qcadooView.validate.field.error.missing");
+            return false;
+        }
+        if (!TypeOfProductionRecording.FOR_EACH.getStringValue()
+                .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))
+                && !order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
+            order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
+                    "orders.order.typeOfProductionRecording.error.hasOperationalTasks");
             return false;
         }
         return true;

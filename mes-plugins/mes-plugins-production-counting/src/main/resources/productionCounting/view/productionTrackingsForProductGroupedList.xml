@@ -55,6 +55,23 @@
 
 		<component type="grid" name="productionTrackingsForProductGroupedList"
 				   reference="grid">
+			<script>
+				<![CDATA[
+					var showProductionTrackingsForProductButton = #{window}.getRibbonItem("showProductionTrackings.showProductionTrackingsForProduct");
+
+					var listener = {
+						onChange: function(selectedEntitiesArray) {
+							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+							    showProductionTrackingsForProductButton.disable();
+							} else {
+							 	showProductionTrackingsForProductButton.enable();
+							}
+						}
+					}
+
+					this.addOnChangeListener(listener);
+				]]>
+			</script>
 			<option type="column" name="orderNumber" fields="orderNumber"
 					width="200"/>
 			<option type="column" name="technologyOperationComponentNumber"
@@ -77,11 +94,10 @@
 			<option type="orderable"
 					value="orderNumber,technologyOperationComponentNumber,productNumber,plannedQuantity,usedQuantity,productUnit,typeOfRecord"/>
 
-			<option type="correspondingView" value="productionCounting/productionTrackingDetails"/>
-			<option type="correspondingComponent" value="form"/>
-
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>
+
+			<option type="suppressSelectEvent" value="true" />
 
 			<listener event="showProductionTrackingsForProduct"
 					  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingsForProductGroupedListListeners"
@@ -91,11 +107,5 @@
 		<option type="fixedHeight" value="true"/>
 		<option type="header" value="false"/>
 	</component>
-
-	<hooks>
-		<beforeRender
-				class="com.qcadoo.mes.productionCounting.hooks.ProductionTrackingsForProductGroupedListHooks"
-				method="updateButtonsState"/>
-	</hooks>
 
 </view>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="timeGapsPreview" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:menu="http://schema.qcadoo.org/modules/menu" group="other"
+        version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd">
+
+    <information>
+		<name>MES - Time Gaps Preview</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+		<description>Provides functionality for searching time gaps on production lines.</description>
+		<license>AGPL</license>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>lineChangeoverNormsForOrders</plugin>
+			<version>[1.2.1</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<menu:menu-item name="timeGaps" category="orders"
+                        view="generateTimeGaps" defaultAuthorizationRole="ROLE_TIME_GAPS"/>
+
+        <view:view resource="view/generateTimeGaps.xml" />
+
+		<model:model model="timeGap" resource="model/timeGap.xml" />
+        <model:model model="timeGapsContext" resource="model/timeGapsContext.xml" />
+
+        <!-- Field injections only for constraints' integrity sake.
+        To avoid long duration of related entities deletion I set cascade attribute to 'nullify'.
+        All contexts will be deleted periodically by quartz/cron task (see root-context.xml for details) -->
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany  name="timeGapsContexts" cascade="nullify"
+                            plugin="timeGapsPreview" model="timeGapsContext" joinField="supportedTechnology" />
+        </model:model-field>
+        <model:model-field plugin="technologies" model="technologyGroup">
+            <model:hasMany  name="timeGapsContexts" cascade="nullify"
+                            plugin="timeGapsPreview" model="timeGapsContext" joinField="supportedTechnologyGroup" />
+        </model:model-field>
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany  name="timeGapsContexts" cascade="nullify"
+                            plugin="timeGapsPreview" model="timeGapsContext" joinField="longestDurationLine" />
+        </model:model-field>
+
+	</modules>
+
+	<features>
+		<end-user />
+	</features>
+
+</plugin>

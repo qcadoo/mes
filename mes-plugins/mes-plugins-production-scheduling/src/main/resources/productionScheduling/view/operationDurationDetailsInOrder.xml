@@ -102,6 +102,21 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="operationalTasks">
+                <bigButton name="createOperationalTasks" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('createOperationalTasks', []);
+							}
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="form" name="form" reference="form">
@@ -286,6 +301,8 @@
             <listener event="generateRealizationTime" method="generateRealizationTime"
                       class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners"/>
             <listener event="copyRealizationTime" method="copyRealizationTime"
+                      class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners"/>
+            <listener event="createOperationalTasks" method="createOperationalTasks"
                       class="com.qcadoo.mes.productionScheduling.listeners.OperationDurationDetailsInOrderListeners"/>
         </component>
     </component>

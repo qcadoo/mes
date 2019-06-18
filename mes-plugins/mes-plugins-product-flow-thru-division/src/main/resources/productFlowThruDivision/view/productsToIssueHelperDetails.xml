@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_REQUIREMENTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productsToIssueHelperDetails" modelName="productsToIssueHelper">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <group template="navigation"/>
+            <group name="actions">
+                <bigButton name="createDocuments" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(createDocuments);" state="enabled"/>
+
+                <bigButton name="createDocumentsAndGoBack" icon="generateIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+										#{form}.performEvent('createDocumentsAndGoBack', []);
+
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var goBack = #{goBack}.getValue().content.value;
+
+                                    if (goBack && goBack == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+
+                                    // hide all the addButtons within ADL and make them ignore click event
+                                    $(".awesomeListButton.awesomeListPlusButton").hide().css('opacity', 0).off('click');
+
+                                    // Keydown listener to restore focus on issueQuantity input when issueQuantityAdditionalUnit
+                                    // input got changed asynchronously in the background when switching between inputs using TAB key.
+                                    $('[id$="issueQuantity_input"]').off('keydown.focusFix').on('keydown.focusFix', function (e) {
+                                        if (e.which === 9) {
+                                            var $relatedInput = $('[id$="issueQuantityAdditionalUnit_input"]', $(e.target).closest('tr'));
+                                            var relatedInputOldVal = $relatedInput.val();
+
+                                            var intervalHook = setInterval(function () {
+                                                var relatedInputNewVal = $relatedInput.val();
+                                                if (relatedInputOldVal != relatedInputNewVal) {
+                                                    clearInterval(intervalHook);
+                                                    $(':focus').select();
+                                                }
+                                            }, 100);
+
+                                            setTimeout(function () {
+                                                clearInterval(intervalHook);
+                                            }, 2000);
+                                        }
+                                    });
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="mainLayout" rows="3" columns="4" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="locationFromLabel" reference="locationFromLabel"
+                                   defaultEnabled="never" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+
+                        <component type="lookup" name="locationFrom" reference="locationFrom"
+                                   field="locationFrom" defaultEnabled="never" defaultVisible="false">
+                            <option type="searchable" value="number"/>
+                            <option type="orderable" value="number"/>
+
+                            <option type="expression"
+                                    value="#number"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" width="2">
+                        <component type="input" name="additionalInfo" reference="additionalInfo"
+                                   field="additionalInfo">
+                            <option type="labelWidth" value="20"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement row="2" column="1" width="4">
+                        <component type="awesomeDynamicList" name="issues"
+                                   source="#{form}.issues" reference="issues">
+                            <option type="hasButtons" value="true"/>
+                            <header>
+                                <component type="gridLayout" name="headerGridLayout"
+                                           columns="34" rows="1" fixedRowHeight="false">
+                                    <layoutElement column="1" row="1" width="7">
+                                        <component type="label" name="productLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="8" row="1" width="3">
+                                        <component type="label" name="storageLocationLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="11" row="1" width="3">
+                                        <component type="label" name="locationToLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="14" row="1" width="3">
+                                        <component type="label" name="warehouseIssueLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="17" row="1" width="2">
+                                        <component type="label" name="demandQuantityLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="19" row="1" width="2">
+                                        <component type="label" name="quantityPerUnitLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="21" row="1" width="2">
+                                        <component type="label" name="issueQuantityLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="23" row="1" width="2">
+                                        <component type="label" name="issueQuantityAdditionalUnitLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="25" row="1" width="2">
+                                        <component type="label" name="conversionLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="27" row="1" width="2">
+                                        <component type="label" name="quantityInLocationFromLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="29" row="1" width="2">
+                                        <component type="label" name="quantityInLocationToLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="31" row="1" width="2">
+                                        <component type="label" name="unitLabel"/>
+                                    </layoutElement>
+                                    <layoutElement column="33" row="1" width="2">
+                                        <component type="label" name="additionalUnitLabel"/>
+                                    </layoutElement>
+                                </component>
+                            </header>
+                            <components>
+                                <component type="gridLayout" name="gridLayout"
+                                           columns="34" rows="1" fixedRowHeight="false">
+                                    <layoutElement column="1" row="1" width="7">
+
+                                        <component type="hidden" name="productsToIssueId"
+                                                   field="productsToIssueId" reference="productsToIssueId"
+                                                   persistent="false"/>
+                                        <component type="input" name="additionalDemandQuantity"
+                                                   field="additionalDemandQuantity"
+                                                   reference="additionalDemandQuantity" hasLabel="false"
+                                                   defaultEnabled="never" defaultVisible="false">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                        <component type="lookup" name="product" field="product"
+                                                   reference="product" hasLabel="false">
+                                            <option type="column" name="name" fields="name" link="true"
+                                                    width="200"/>
+                                            <option type="column" name="ean" fields="ean"/>
+                                            <option type="searchable" value="name,ean"/>
+                                            <option type="orderable" value="name,ean"/>
+                                            <option type="expression"
+                                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                            <option type="fieldCode" value="number"/>
+                                            <listener event="onSelectedEntityChange"
+                                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                                                      method="fillUnits"/>
+                                            <listener event="onSelectedEntityChange"
+                                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                                                      method="updateQuantities"/>
+                                        </component>
+                                        <component type="lookup" name="additionalCode" field="additionalCode"
+                                                   reference="additionalCode" defaultEnabled="never"
+                                                   defaultVisible="false">
+                                            <option type="searchable" value="code"/>
+                                            <option type="orderable" value="code"/>
+                                            <option type="expression"
+                                                    value="'&lt;b&gt;' + #code"/>
+                                            <option type="fieldCode" value="code"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="8" row="1" width="3">
+                                        <component type="lookup" name="storageLocation" field="storageLocation"
+                                                   reference="storageLocation" defaultEnabled="never"
+                                                   hasLabel="false">
+                                            <option type="column" fields="location" name="location" link="true"
+                                                    expression="#location['number']"/>
+
+                                            <option type="searchable" value="number,location"/>
+                                            <option type="orderable" value="number,location"/>
+
+                                            <option type="expression" value="#number"/>
+                                            <option type="fieldCode" value="number"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="11" row="1" width="3">
+                                        <component type="lookup" name="location" reference="location"
+                                                   field="location" hasLabel="false" defaultEnabled="never">
+                                            <option type="column" name="name" fields="name" link="true"/>
+
+                                            <option type="searchable" value="name,number"/>
+                                            <option type="orderable" value="name,number"/>
+
+                                            <option type="expression"
+                                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                            <option type="fieldCode" value="number"/>
+
+                                            <criteriaModifier
+                                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
+                                                    method="showWarehousesOnly"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="14" row="1" width="3">
+                                        <component type="lookup" name="warehouseIssue" reference="warehouseIssue"
+                                                   field="warehouseIssue" hasLabel="false" defaultEnabled="never">
+
+                                            <option type="searchable" value="number"/>
+                                            <option type="orderable" value="number"/>
+
+                                            <option type="expression"
+                                                    value="#number"/>
+                                            <option type="fieldCode" value="number"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="17" row="1" width="2">
+                                        <component type="input" name="demandQuantity" field="demandQuantity"
+                                                   reference="demandQuantity" defaultEnabled="never" hasLabel="false">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="19" row="1" width="2">
+                                        <component type="input" name="quantityPerUnit" field="quantityPerUnit"
+                                                   reference="quantityPerUnit" defaultEnabled="never" hasLabel="false">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="21" row="1" width="2">
+                                        <component type="input" name="issueQuantity" field="issueQuantity"
+                                                   reference="issueQuantity" hasLabel="false">
+                                            <option type="alignment" value="right"/>
+
+                                            <listener event="onInputChange"
+                                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                                                      method="quantityChanged"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="23" row="1" width="2">
+                                        <component type="input" name="issueQuantityAdditionalUnit"
+                                                   field="issueQuantityAdditionalUnit"
+                                                   reference="issueQuantityAdditionalUnit" hasLabel="false">
+                                            <option type="alignment" value="right"/>
+
+                                            <listener event="onInputChange"
+                                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                                                      method="additionalQuantityChanged"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="25" row="1" width="2">
+                                        <component type="input" name="conversion" field="conversion"
+                                                   reference="conversion" hasLabel="false"
+                                                   defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="27" row="1" width="2">
+                                        <component type="input" name="locationsQuantity" field="locationsQuantity"
+                                                   reference="locationsQuantity" hasLabel="false"
+                                                   defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="29" row="1" width="2">
+                                        <component type="input" name="locationToQuantity" field="locationToQuantity"
+                                                   reference="locationToQuantity" hasLabel="false"
+                                                   defaultEnabled="never">
+                                            <option type="alignment" value="right"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="31" row="1" width="2">
+                                        <component type="input" name="unit"
+                                                   reference="unit" defaultEnabled="false" hasLabel="false">
+                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                        </component>
+                                    </layoutElement>
+                                    <layoutElement column="33" row="1" width="2">
+                                        <component type="input" name="additionalUnit"
+                                                   reference="additionalUnit" defaultEnabled="false" hasLabel="false">
+                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                        </component>
+                                    </layoutElement>
+                                </component>
+                            </components>
+                            <listener event="onDeleteRow"
+                                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                                      method="onDeleteRow"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement row="3" column="1">
+                        <component type="input" name="productsToIssueIds" reference="productsToIssueIds"
+                                   field="#{form}.productsToIssueIds" defaultVisible="false" defaultEnabled="never"/>
+
+                        <component type="input" name="generated" reference="generated"
+                                   field="#{form}.generated" defaultVisible="false" defaultEnabled="never"/>
+
+                        <component type="checkbox" name="goBack" reference="goBack" defaultVisible="false"
+                                   defaultEnabled="false"/>
+
+                        <component type="input" name="documentId" reference="documentId"
+                                   field="#{form}.documentId" defaultVisible="false" defaultEnabled="never"/>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#locationFrom['number']"/>
+                <listener event="createDocuments"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                          method="createDocuments"/>
+                <listener event="createDocumentsAndGoBack"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueHelperDetailsListeners"
+                          method="createDocumentsAndGoBack"/>
+            </component>
+        </windowTab>
+    </component>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductsToIssueDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

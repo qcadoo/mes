@@ -192,16 +192,6 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-operational-tasks</artifactId>
-            <version>1.5-SNAPSHOT-DEV</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-operational-tasks-for-orders</artifactId>
-            <version>1.5-SNAPSHOT-DEV</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-column-extension</artifactId>
             <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
@@ -271,11 +261,6 @@
             <version>1.2</version>
         </dependency>
         <dependency>
-            <groupId>c3p0</groupId>
-            <artifactId>c3p0</artifactId>
-            <version>0.9.1.2</version>
-        </dependency>
-        <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
             <version>1.2.2</version>
@@ -317,7 +302,117 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-pack-open-source</artifactId>
+            <artifactId>mes-plugins-deliveries-min-state</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-advanced-genealogy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-advanced-genealogy-for-orders</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-supply-negotiations</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-cat-numbers-in-negot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-product-flow-thru-division</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-material-requirement-coverage-for-order</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-negot-for-order-supplies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-negot-for-order-supplies-with-tech-subcontr</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontr-for-negot</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-tech-subcontr-for-order-supplies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-order-supplies</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-orders-for-subproducts-generation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-production-balance-per-shift</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-sub-orders</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-time-gaps-preview</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-product-characteristics</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-technologies-generator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-email-notifications</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.qcadoo.mes</groupId>
+            <artifactId>mes-plugins-deliveries-min-state</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

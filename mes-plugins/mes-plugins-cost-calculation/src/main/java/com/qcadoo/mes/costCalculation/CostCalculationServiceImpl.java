@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode.HOURLY;
-import static com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode.PIECEWORK;
-
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
@@ -38,7 +35,6 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
-import com.qcadoo.mes.costNormsForOperation.constants.CalculateOperationCostMode;
 import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -107,7 +103,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(quantity)) != 0) {
             final BigDecimal totalCostsPerUnit = totalCosts.divide(quantity, numberService.getMathContext());
 
-            entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT, numberService.setScaleWithDefaultMathContext(totalCostsPerUnit, 2));
+            entity.setField(CostCalculationFields.TOTAL_COST_PER_UNIT,
+                    numberService.setScaleWithDefaultMathContext(totalCostsPerUnit, 2));
 
         }
     }
@@ -145,8 +142,10 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         final BigDecimal materialCostMarginValue = materialCosts.multiply(materialCostMargin, numberService.getMathContext())
                 .divide(ONE_HUNDRED, numberService.getMathContext());
 
-        entity.setField(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, numberService.setScaleWithDefaultMathContext(productionCostMarginValue));
-        entity.setField(CostCalculationFields.MATERIAL_COST_MARGIN_VALUE, numberService.setScaleWithDefaultMathContext(materialCostMarginValue));
+        entity.setField(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE,
+                numberService.setScaleWithDefaultMathContext(productionCostMarginValue));
+        entity.setField(CostCalculationFields.MATERIAL_COST_MARGIN_VALUE,
+                numberService.setScaleWithDefaultMathContext(materialCostMarginValue));
 
         calculateTotalOverhead(entity);
     }
@@ -163,31 +162,20 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         final BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext())
                 .add(additionalOverhead, numberService.getMathContext());
 
-        entity.setField(CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE, numberService.setScaleWithDefaultMathContext(additionalOverhead));
+        entity.setField(CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
+                numberService.setScaleWithDefaultMathContext(additionalOverhead));
         entity.setField(CostCalculationFields.TOTAL_OVERHEAD, numberService.setScaleWithDefaultMathContext(totalOverhead));
     }
 
     @Override
     public BigDecimal calculateProductionCost(final Entity entity) {
-        BigDecimal productionCosts = null;
 
-        final CalculateOperationCostMode operationMode = CalculateOperationCostMode.parseString(entity
-                .getStringField(CostCalculationFields.CALCULATE_OPERATION_COSTS_MODE));
+        BigDecimal totalMachine = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS));
+        BigDecimal totalLabor = BigDecimalUtils.convertNullToZero(entity
+                .getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS));
 
-        if (HOURLY.equals(operationMode)) {
-            BigDecimal totalMachine = BigDecimalUtils.convertNullToZero(entity
-                    .getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS));
-            BigDecimal totalLabor = BigDecimalUtils.convertNullToZero(entity
-                    .getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS));
-            productionCosts = totalMachine.add(totalLabor, numberService.getMathContext());
-        } else if (PIECEWORK.equals(operationMode)) {
-            productionCosts = BigDecimalUtils.convertNullToZero(entity
-                    .getDecimalField(CostCalculationFields.TOTAL_PIECEWORK_COSTS));
-        } else {
-            throw new IllegalStateException("Unsupported calculateOperationCostsMode");
-        }
-
-        return productionCosts;
+        return totalMachine.add(totalLabor, numberService.getMathContext());
     }
 
     @Override
@@ -212,7 +200,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 .getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
         final BigDecimal technicalProductionCosts = totalCostsPerUnit.add(registrationPriceOverheadValue,
                 numberService.getMathContext());
-        entity.setField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS, numberService.setScaleWithDefaultMathContext(technicalProductionCosts, 2));
+        entity.setField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS,
+                numberService.setScaleWithDefaultMathContext(technicalProductionCosts, 2));
     }
 
     @Override

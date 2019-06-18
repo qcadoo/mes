@@ -59,8 +59,6 @@ public final class ProductionBalanceFields {
 
     public static final String FILE_NAME = "fileName";
 
-    public static final String CALCULATE_OPERATION_COST_MODE = "calculateOperationCostsMode";
-
     public static final String INCLUDE_TPZ = "includeTPZ";
 
     public static final String INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";

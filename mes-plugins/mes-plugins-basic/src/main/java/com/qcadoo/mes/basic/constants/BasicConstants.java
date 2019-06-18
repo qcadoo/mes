@@ -88,6 +88,10 @@ public final class BasicConstants {
 
     public static final String MODEL_LOG = "log";
 
+    public static final String MODEL_SKILL = "skill";
+
+    public static final String MODEL_STAFF_SKILL = "staffSkill";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";

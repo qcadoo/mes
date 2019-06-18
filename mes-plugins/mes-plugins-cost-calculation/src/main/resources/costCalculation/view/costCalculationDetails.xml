@@ -48,7 +48,7 @@
 										this.enable();
 									}
 								}
-							});	
+							});
 						]]>
                     </script>
                 </bigButton>
@@ -74,30 +74,18 @@
                 <script>
                     <![CDATA[
 							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-	
-							jQuery(document).ready(function() {
-								var json = JSON.parse(context);
-								var orderId = json['window.mainTab.orderId'];
-								var technologyId = json['window.mainTab.technologyId'];
-								
-								if (orderId != null) {
-									#{form}.fireEvent(this, 'requestCopyFieldValues', ['order', orderId]);
-								} else if (technologyId != null) {
-									#{form}.fireEvent(this, 'requestCopyFieldValues', ['technology', technologyId]); 
-								}
-							});
-							
+
 							var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
 							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
 							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
 							var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
 							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
 							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
-							
-							
-							
+
+
+
 							var entityExists = false;
-							
+
 							this.addOnChangeListener({
 								onSetValue: function(value) {
 									if (!value || !value.content) {
@@ -116,7 +104,7 @@
 									updateRibbon();
 								}
 							});
-							
+
 							function updateRibbon() {
 								if (entityExists) {
 									var isGeneratedCheckboxValue = #{generated}.getValue();
@@ -281,9 +269,6 @@
                 <listener event="generateCostCalculation"
                           class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
                           method="generateCostCalculation"/>
-                <listener event="requestCopyFieldValues"
-                          class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
-                          method="copyFieldValues"/>
                 <listener event="printCostCalculation"
                           class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
                           method="printCostCalculationReport"/>
@@ -303,7 +288,7 @@
                                    reference="borderLayoutParameters">
                             <option type="label" value="parameters"/>
                             <component type="gridLayout" name="parameters"
-                                       reference="parameters" columns="1" rows="6">
+                                       reference="parameters" columns="1" rows="5">
                                 <layoutElement column="1" row="1">
                                     <component type="select" name="sourceOfMaterialCosts"
                                                reference="sourceOfMaterialCosts" field="#{form}.sourceOfMaterialCosts">
@@ -327,29 +312,16 @@
                                     <component type="select" name="sourceOfOperationCosts"
                                                reference="sourceOfOperationCosts" field="#{form}.sourceOfOperationCosts"
                                                hasDescription="true">
-                                        <listener event="onSelectedEntityChange"
-                                                  class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
-                                                  method="sourceOfOperationCostsChanged"/>
                                     </component>
                                     <component type="checkbox" name="justCreated"
                                                field="#{form}.justCreated" reference="justCreated"
                                                defaultVisible="false"/>
                                 </layoutElement>
                                 <layoutElement column="1" row="4">
-                                    <component type="select" name="calculateOperationCostsMode"
-                                               reference="calculateOperationCostsMode"
-                                               field="#{form}.calculateOperationCostsMode">
-
-                                        <listener event="onSelectedEntityChange"
-                                                  class="com.qcadoo.mes.costCalculation.listeners.CostCalculationDetailsListeners"
-                                                  method="disableCheckboxIfPieceworkIsSelected"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="5">
                                     <component type="checkbox" name="includeTPZ"
                                                reference="includeTPZ" field="#{form}.includeTPZ"/>
                                 </layoutElement>
-                                <layoutElement column="1" row="6">
+                                <layoutElement column="1" row="5">
                                     <component type="checkbox" name="includeAdditionalTime"
                                                reference="includeAdditionalTime" field="#{form}.includeAdditionalTime"/>
                                 </layoutElement>

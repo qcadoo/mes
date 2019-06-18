@@ -147,9 +147,6 @@
 			values="01technologyOperation,02parameters"
 			required="true" default="01technologyOperation" />
 
-		<enum name="calculateOperationCostsMode" values="01hourly,02piecework"
-			required="true" default="01hourly" />
-
 		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />

@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -48,6 +39,7 @@ import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -77,8 +69,21 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 @Service
 public class OrderDetailsHooks {
+
+    public static final String DONE_IN_PERCENTAGE_UNIT = "doneInPercentageUnit";
 
     private static final String L_FORM = "form";
 
@@ -92,6 +97,16 @@ public class OrderDetailsHooks {
 
     private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Lists.newArrayList("defaultTechnology",
             "technologyPrototype", "predefinedTechnology");
+
+    public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
+
+    public static final String L_DIVISION = "division";
+
+    public static final String L_RANGE = "range";
+
+    public static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
+
+    public static final String L_ONE_DIVISION = "01oneDivision";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -169,14 +184,30 @@ public class OrderDetailsHooks {
 
     public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
             final Entity defaultProductionLine) {
-        if (technology != null && PluginUtils.isEnabled("productFlowThruDivision")
-                && "01oneDivision".equals(technology.getField("range"))
+        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+                && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
             productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             productionLineLookup.requestComponentUpdateState();
         } else if (defaultProductionLine != null) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
+        }
+    }
+
+    public void fillDivision(final LookupComponent divisionLookup, final Entity technology,
+            final Entity defaultProductionLine) {
+        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+                && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
+                && Objects.nonNull(technology.getBelongsToField(L_DIVISION))) {
+            divisionLookup.setFieldValue(technology.getBelongsToField(L_DIVISION).getId());
+            divisionLookup.requestComponentUpdateState();
+        } else if(Objects.nonNull(defaultProductionLine)) {
+            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+            if(divisions.size() == 1) {
+                divisionLookup.setFieldValue(divisions.get(0).getId());
+                divisionLookup.requestComponentUpdateState();
+            }
         }
     }
 
@@ -635,6 +666,8 @@ public class OrderDetailsHooks {
 
         Entity order = orderForm.getEntity();
 
+        FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE);
+        FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE_UNIT);
         FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
         FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
@@ -647,9 +680,21 @@ public class OrderDetailsHooks {
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
-        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.format(remainingAmountOfProductToProduce));
+        if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) == 1) {
+            remainingAmountOfProductToProduce = BigDecimal.ZERO;
+        }
+        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(remainingAmountOfProductToProduce, 0));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
+
+        BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY))
+                .multiply(new BigDecimal(100));
+        doneInPercentageQuantity = doneInPercentageQuantity.divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY),
+                MathContext.DECIMAL64);
+        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
+        doneInPercentage.setEnabled(false);
+        doneInPercentageUnit.setFieldValue("%");
     }
 
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {

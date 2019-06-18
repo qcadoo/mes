@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="supplyNegotiations" group="supplies" version="${qcadoo.plugin.version}"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
+	xmlns:custom="http://schema.qcadoo.org/modules/custom"
+	xsi:schemaLocation="
+       http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/menu
+       http://schema.qcadoo.org/modules/menu.xsd
+	   http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+	<information>
+		<name>MES - Supply negotiations</name>
+		<vendor>
+			<name>Qcadoo Limited</name>
+			<url>http://www.qcadoo.com/</url>
+		</vendor>
+		<description>Help you to organize negotiations with suppliers by generating requests for quotation, comparing offers and managing negotiations rounds.</description>
+		<license>AGPL</license>
+	</information>
+
+	<dependencies>
+		<dependency>
+			<plugin>costNormsForMaterials</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+		<dependency>
+			<plugin>deliveries</plugin>
+			<version>[1.1.7</version>
+		</dependency>
+	</dependencies>
+
+	<modules>
+		<localization:translation path="locales" />
+
+		<model:model model="columnForRequests" resource="model/columnForRequests.xml" />
+		<model:model model="columnForOffers" resource="model/columnForOffers.xml" />
+		<model:model model="requestForQuotation" resource="model/requestForQuotation.xml" />
+		<model:model model="requestForQuotationProduct" resource="model/requestForQuotationProduct.xml" />
+		<model:model model="requestForQuotationStateChange"
+			resource="model/requestForQuotationStateChange.xml" />
+		<model:model model="offer" resource="model/offer.xml" />
+		<model:model model="offerProduct" resource="model/offerProduct.xml" />
+		<model:model model="offerStateChange" resource="model/offerStateChange.xml" />
+		<model:model model="negotiation" resource="model/negotiation.xml" />
+		<model:model model="negotiationProduct" resource="model/negotiationProduct.xml" />
+		<model:model model="negotiationStateChange" resource="model/negotiationStateChange.xml" />
+		<model:model model="parameterColumnForRequests" resource="model/parameterColumnForRequests.xml" />
+		<model:model model="parameterColumnForOffers" resource="model/parameterColumnForOffers.xml" />
+
+		<model:model-field plugin="states" model="message">
+			<model:belongsTo name="requestForQuotationStateChange"
+				plugin="supplyNegotiations" model="requestForQuotationStateChange" />
+		</model:model-field>
+
+		<model:model-field plugin="states" model="message">
+			<model:belongsTo name="offerStateChange" plugin="supplyNegotiations"
+				model="offerStateChange" />
+		</model:model-field>
+
+		<model:model-field plugin="states" model="message">
+			<model:belongsTo name="negotiationStateChange"
+				plugin="supplyNegotiations" model="negotiationStateChange" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="requestForQuotationStateChanges"
+				plugin="supplyNegotiations" model="requestForQuotationStateChange"
+				joinField="shift" cascade="nullify" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="offerStateChanges" plugin="supplyNegotiations"
+				model="offerStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="shift">
+			<model:hasMany name="negotiationStateChanges" plugin="supplyNegotiations"
+				model="negotiationStateChange" joinField="shift" cascade="nullify" />
+		</model:model-field>
+
+		<model:model-field plugin="deliveries" model="orderedProduct">
+			<model:belongsTo name="offer" plugin="supplyNegotiations"
+				model="offer" />
+		</model:model-field>
+		<model:model-field plugin="deliveries" model="deliveredProduct">
+			<model:belongsTo name="offer" plugin="supplyNegotiations"
+				model="offer" />
+		</model:model-field>
+
+		<model:model-field plugin="deliveries" model="deliveredProductMultiPosition">
+			<model:belongsTo name="offer" plugin="supplyNegotiations"
+							 model="offer" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="columnsForRequests" plugin="supplyNegotiations"
+				model="columnForRequests" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="columnsForOffers" plugin="supplyNegotiations"
+				model="columnForOffers" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="hideEmptyColumnsForOffers" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="hideEmptyColumnsForRequests" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="company">
+			<model:manyToMany name="companyNegotiations" joinField="includedCompanies"
+				plugin="supplyNegotiations" model="negotiation" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterColumnsForRequests" plugin="supplyNegotiations"
+				model="parameterColumnForRequests" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:hasMany name="parameterColumnsForOffers" plugin="supplyNegotiations"
+				model="parameterColumnForOffers" joinField="parameter" cascade="delete"
+				copyable="true" />
+		</model:model-field>
+
+		<menu:menu-category name="requirements" />
+
+		<menu:menu-item name="requestsForQuotation" category="requirements"
+			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+		<menu:menu-item name="offer" category="requirements"
+			view="offersList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+		<menu:menu-item name="offersItems" category="requirements"
+			view="offersItems" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+		<menu:menu-item name="negotiation" category="requirements"
+			view="negotiationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+
+		<view:view resource="view/requestForQuotationDetails.xml" />
+		<view:view resource="view/requestForQuotationsList.xml" />
+		<view:view resource="view/requestForQuotationProductDetails.xml" />
+		<view:view resource="view/offerProductDetails.xml" />
+		<view:view resource="view/offerDetails.xml" />
+		<view:view resource="view/offersList.xml" />
+		<view:view resource="view/offersItems.xml" />
+		<view:view resource="view/negotiationsList.xml" />
+		<view:view resource="view/negotiationDetails.xml" />
+		<view:view resource="view/negotiationProductDetails.xml" />
+		<view:view resource="view/parameterColumnForRequestsDetails.xml" />
+		<view:view resource="view/parameterColumnForOffersDetails.xml" />
+
+		<view:view-tab resource="view/tabExtensions/deliveredProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/orderedProductDetails.xml" />
+		<view:view-tab resource="view/tabExtensions/supplyParametersForOffers.xml" />
+		<view:view-tab resource="view/tabExtensions/supplyParametersForRequests.xml" />
+
+		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
+		<view:view-ribbon-group resource="view/ribbonExtensions/deliveryDetails.xml" />
+
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+			component="deliveredProducts">
+			<view:column name="offerNumber" fields="offerNumber"
+						 orderable="true" searchable="true"
+						 width="80"/>
+		</view:view-grid-column>
+
+		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
+							   component="orderedProducts">
+			<view:column name="offerNumber" fields="offerNumber"
+						 orderable="true" searchable="true"
+						 width="80"/>
+		</view:view-grid-column>
+
+		<view:view-grid-column plugin="deliveries" view="supplyItems"
+			component="grid">
+			<view:column name="offerNumber" fields="offerNumber"
+				 orderable="true" searchable="true" />
+		</view:view-grid-column>
+		<view:view-grid-column plugin="deliveries" view="supplyItems"
+			component="grid">
+			<view:column name="negotiationNumber" fields="negotiationNumber"
+				orderable="true" searchable="true" />
+		</view:view-grid-column>
+
+		<view:view-listener plugin="basic" view="companyDetails"
+			component="form" event="redirectToFilteredOffersList"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.CompanyDetailsListenersSN"
+			method="redirectToFilteredOffersList" />
+
+		<view:view-listener plugin="basic" view="companyDetails"
+			component="form" event="redirectToFilteredRequestsList"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.CompanyDetailsListenersSN"
+			method="redirectToFilteredRequestsList" />
+
+		<view:view-listener plugin="deliveries" view="deliveryDetails"
+							component="form" event="fillOfferPrices"
+							class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveryDetailsListenersSN"
+							method="fillPrices" />
+
+		<view:view-listener plugin="deliveries" view="orderedProductDetails"
+			component="product" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
+			method="fillPricePerUnitAndOffer" />
+
+		<view:view-listener plugin="deliveries" view="deliveredProductDetails"
+			component="product" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveredProductDetailsListenersSN"
+			method="fillPricePerUnitAndOffer" />
+
+		<view:view-listener plugin="deliveries" view="orderedProductDetails"
+			component="product" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
+			method="fillPricePerUnitAndOffer" />
+
+		<view:view-listener plugin="deliveries" view="deliveredProductDetails"
+			component="product" event="onSelectedEntityChange"
+			class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveredProductDetailsListenersSN"
+			method="fillPricePerUnitAndOffer" />
+
+		<view:view-hook plugin="basic" view="companyDetails"
+			type="beforeRender" class="com.qcadoo.mes.supplyNegotiations.hooks.CompanyDetailsHooksSN"
+			method="updateRibbonState" />
+
+		<view:view-hook view="deliveryDetails" type="beforeRender"
+						plugin="deliveries"
+						class="com.qcadoo.mes.supplyNegotiations.hooks.DeliveryDetailsHooksSN"
+						method="disabledButtonWhenEmptyOrders" />
+
+		<view:view-hook view="deliveryDetails" type="beforeRender"
+						plugin="deliveries"
+						class="com.qcadoo.mes.supplyNegotiations.hooks.DeliveryDetailsHooksSN"
+						method="addTooltip" />
+
+		<view:view-hook plugin="basic" view="productDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.supplyNegotiations.hooks.ProductDetailsHooksSN"
+			method="disabledFieldAboutCostFromOffer" />
+
+		<view:view-hook plugin="costNormsForMaterials" view="costNormsForMaterialsInOrderDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.supplyNegotiations.hooks.CostNormsForMaterialsInOrderDetailsHooksSN"
+			method="disabledFieldAboutCostFromOffer" />
+
+		<view:view-hook plugin="deliveries" view="orderedProductDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.supplyNegotiations.hooks.OrderedProductDetailsHooksSN"
+			method="fillPricePerUnit" />
+
+		<view:view-hook plugin="deliveries" view="orderedProductDetails"
+			type="beforeRender"
+			class="com.qcadoo.mes.supplyNegotiations.hooks.OrderedProductDetailsHooksSN"
+			method="disabledFieldWhenOfferIsSelected" />
+
+		<custom:custom
+			class="com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsOnStartupService" />
+	</modules>
+
+	<features>
+		<end-user />
+	</features>
+
+</plugin>

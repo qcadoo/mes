@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -46,13 +34,14 @@ import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.OperationalTasksService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
@@ -73,6 +62,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class ProductionTrackingDetailsListeners {
@@ -107,34 +109,28 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("trackingOperationProductInComponents");
+    @Autowired
+    private OperationalTasksService operationalTasksService;
 
-        if (!grid.getSelectedEntitiesIds().isEmpty()) {
-            String url = "/productionCounting/anomalyProductionTrackingDetails.html";
+    public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
+                .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        if (!trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().isEmpty()) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
             Long productionTrackingId = productionTrackingForm.getEntityId();
+
             Map<String, Object> parameters = Maps.newHashMap();
+
             parameters.put("form.productionTrackingId", productionTrackingId);
-            parameters.put("form.selectedTOPICs",
-                    grid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+            parameters.put(
+                    "form.selectedTOPICs",
+                    trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().stream().map(String::valueOf)
+                            .collect(Collectors.joining(",")));
             parameters.put("form.performAndAccept", Boolean.FALSE);
+
+            String url = "/productionCounting/anomalyProductionTrackingDetails.html";
             view.openModal(url, parameters);
-        }
-    }
-
-    public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
-
-        if (!grid.getSelectedEntitiesIds().isEmpty()) {
-            String url = "../page/productionCounting/productionTrackingDetails.html";
-
-            Entity productionTrackingForProductDto = grid.getSelectedEntities().get(0).getDataDefinition()
-                    .get(grid.getSelectedEntities().get(0).getId());
-
-            view.redirectTo(url, false, true,
-                    ImmutableMap.of("form.id", productionTrackingForProductDto
-                            .getIntegerField(ProductionTrackingForProductDtoFields.PRODUCTION_TRACKING_ID)));
         }
     }
 
@@ -143,13 +139,14 @@ public class ProductionTrackingDetailsListeners {
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
         Entity order = productionTrackingForm.getEntity().getBelongsToField(ProductionTrackingFields.ORDER);
+
         Map<String, Object> parameters = Maps.newHashMap();
+
         parameters.put("window.mainTab.order.id", order.getId());
         parameters.put("form.productionTrackingId", productionTrackingId);
 
         String url = "/page/basicProductionCounting/detailedProductionCountingAndProgressList.html";
         view.redirectTo(url, false, true, parameters);
-
     }
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -158,7 +155,9 @@ public class ProductionTrackingDetailsListeners {
                 && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
             Entity productionTracking = productionTrackingForm.getEntity();
+
             productionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
+
             Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
@@ -180,12 +179,14 @@ public class ProductionTrackingDetailsListeners {
 
             List<Long> productIds = productionTrackingDocumentsHelper.findProductsWithInsufficientQuantity(productionTracking,
                     groupedRecordInProducts, recordOutProducts);
+
             if (productIds.isEmpty()) {
                 stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
             } else {
-                String url = "/productionCounting/anomalyProductionTrackingDetails.html";
                 Long productionTrackingId = productionTrackingForm.getEntityId();
+
                 Map<String, Object> parameters = Maps.newHashMap();
+
                 parameters.put("form.productionTrackingId", productionTrackingId);
                 parameters.put(
                         "form.selectedTOPICs",
@@ -195,6 +196,8 @@ public class ProductionTrackingDetailsListeners {
                                         TrackingOperationProductInComponentFields.PRODUCT).getId())).map(ip -> ip.getId())
                                 .map(String::valueOf).collect(Collectors.joining(",")));
                 parameters.put("form.performAndAccept", Boolean.TRUE);
+
+                String url = "/productionCounting/anomalyProductionTrackingDetails.html";
                 view.openModal(url, parameters);
             }
         } else {
@@ -231,6 +234,7 @@ public class ProductionTrackingDetailsListeners {
 
         EntityList trackingOperationProductInComponents = productionRecord
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
         clearWasteUsedDetails(trackingOperationProductInComponents);
         copyPlannedQuantityToUsedQuantity(trackingOperationProductInComponents);
         copyPlannedQuantityToUsedQuantity(productionRecord
@@ -252,6 +256,7 @@ public class ProductionTrackingDetailsListeners {
                         ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
                         recordOperationProductComponent.getId());
             }
+
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(recordOperationProductComponentDto
                     .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));
             recordOperationProductComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
@@ -300,8 +305,10 @@ public class ProductionTrackingDetailsListeners {
 
         Object recordingTypeValue = ((FieldComponent) viewDefinitionState
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING)).getFieldValue();
+
         boolean recordingTypeEqualsCumulated = TypeOfProductionRecording.CUMULATED.getStringValue().equals(recordingTypeValue);
         boolean recordingTypeEqualsForEach = TypeOfProductionRecording.FOR_EACH.getStringValue().equals(recordingTypeValue);
+
         if (recordingTypeEqualsCumulated || recordingTypeEqualsForEach) {
             for (String componentName : Arrays.asList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
                     OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME, OrderFieldsPC.JUST_ONE,
@@ -330,6 +337,23 @@ public class ProductionTrackingDetailsListeners {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
 
         return orderLookup.getEntity();
+    }
+
+    public void onOrderChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        clearFields(view, componentState, args);
+        enableOrDisableFields(view, componentState, args);
+        checkJustOne(view, componentState, args);
+        fillDivisionFieldFromOrder(view);
+    }
+
+    private void fillDivisionFieldFromOrder(final ViewDefinitionState view) {
+        LookupComponent divisionLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.DIVISION);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
+        Entity order = orderLookup.getEntity();
+        if (Objects.nonNull(order) && Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+            divisionLookup.setFieldValue(order.getBelongsToField(OrderFields.TECHNOLOGY).getBelongsToField("division").getId());
+            divisionLookup.requestComponentUpdateState();
+        }
     }
 
     public void checkJustOne(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
@@ -371,6 +395,33 @@ public class ProductionTrackingDetailsListeners {
 
         trackingOperationProductInComponentsGrid.setEntities(Lists.newArrayList());
         trackingOperationProductOutComponentsGrid.setEntities(Lists.newArrayList());
+    }
+
+    public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
+                .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = technologyOperationComponentLookup.getEntity();
+        Entity order = getOrderFromLookup(view);
+
+        Entity operationalTask = operationalTasksService.findOperationalTasks(order, technologyOperationComponent);
+        LookupComponent staffLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.STAFF);
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.WORKSTATION);
+        if (Objects.nonNull(operationalTask)) {
+            if (Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.STAFF))) {
+                staffLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.STAFF).getId());
+            } else {
+                staffLookup.setFieldValue(null);
+            }
+            if (Objects.nonNull(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION))) {
+                workstationLookup.setFieldValue(operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION).getId());
+            } else {
+                workstationLookup.setFieldValue(null);
+            }
+        } else {
+            staffLookup.setFieldValue(null);
+            workstationLookup.setFieldValue(null);
+        }
     }
 
     public void fillShiftAndDivisionField(final ViewDefinitionState view, final ComponentState component, final String[] args) {
@@ -433,7 +484,6 @@ public class ProductionTrackingDetailsListeners {
             Long id = productionTrackingService.correct(productionRecord).getId();
 
             String url = "../page/productionCounting/productionTrackingDetails.html";
-
             view.redirectTo(url, false, true, ImmutableMap.of("form.id", id));
         }
     }

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="changeDatesDetails" modelName="changeDatesHelper">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
+            </group>
+            <group name="actions">
+                <bigButton name="saveBack" icon="saveBackIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(changeDates)"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="order" reference="form">
+
+                <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1">
+                    <layoutElement row="1" column="1">
+                        <component type="borderLayout" name="causeOfPlannedDateFromCorrection">
+                            <component type="gridLayout"
+                                       name="causeOfPlannedDateFromCorrectionGridLayout" columns="1"
+                                       rows="4" reference="causeOfPlannedDateFromCorrectionGridLayout">
+
+                                <layoutElement column="1" row="1">
+                                    <component type="calendar" name="dateFrom"
+                                               field="#{form}.dateFrom" reference="dateFrom">
+                                        <option type="withTimePicker" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="gridLayout"
+                                               name="reasonTypesCorrectionDateFromGridLayout" columns="3"
+                                               rows="1">
+                                        <layoutElement column="1" row="1">
+                                            <component type="label" name="reasonTypesCorrectionDateFromLabel">
+                                                <option type="labelStyle" value="label"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="2" row="1" width="2">
+                                            <component type="awesomeDynamicList" name="reasonTypesCorrectionDateFrom"
+                                                       source="#{form}.reasonTypesCorrectionDateFrom"
+                                                       reference="reasonTypesCorrectionDateFrom">
+                                                <option type="hasBorder" value="false"/>
+                                                <option type="hasButtons" value="true"/>
+
+                                                <components>
+                                                    <component type="gridLayout"
+                                                               name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                               rows="1">
+                                                        <layoutElement column="1" row="1">
+                                                            <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                       field="reasonTypeOfChangingOrderState"
+                                                                       hasLabel="false"/>
+                                                        </layoutElement>
+                                                    </component>
+                                                </components>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="3" height="2">
+                                    <component type="textarea" name="commentReasonTypeCorrectionDateFrom"
+                                               field="#{form}.commentReasonTypeCorrectionDateFrom"
+                                               reference="commentReasonTypeCorrectionDateFrom">
+                                    </component>
+                                </layoutElement>
+                            </component>
+
+                            <option type="label" value="dateFromCorrectionLabel"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement row="1" column="2">
+                        <component type="borderLayout" name="causeOfPlannedDateToCorrection">
+                            <component type="gridLayout"
+                                       name="causeOfPlannedDateToCorrectionGridLayout" columns="1"
+                                       rows="4" reference="causeOfPlannedDateToCorrectionGridLayout">
+
+                                <layoutElement column="1" row="1">
+                                    <component type="calendar" name="dateTo"
+                                               field="#{form}.dateTo" reference="dateTo">
+                                        <option type="withTimePicker" value="true"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="gridLayout"
+                                               name="reasonTypesCorrectionDateToGridLayout" columns="3"
+                                               rows="1">
+                                        <layoutElement column="1" row="1">
+                                            <component type="label" name="reasonTypesCorrectionDateToLabel">
+                                                <option type="labelStyle" value="label"/>
+                                            </component>
+                                        </layoutElement>
+                                        <layoutElement column="2" row="1" width="2">
+                                            <component type="awesomeDynamicList" name="reasonTypesCorrectionDateTo"
+                                                       source="#{form}.reasonTypesCorrectionDateTo"
+                                                       reference="reasonTypesCorrectionDateTo">
+                                                <option type="hasBorder" value="false"/>
+                                                <option type="hasButtons" value="true"/>
+
+                                                <components>
+                                                    <component type="gridLayout"
+                                                               name="reasonTypeOfChangingOrderStateGridLayout" columns="1"
+                                                               rows="1">
+                                                        <layoutElement column="1" row="1">
+                                                            <component type="select" name="reasonTypeOfChangingOrderState"
+                                                                       field="reasonTypeOfChangingOrderState"
+                                                                       hasLabel="false"/>
+                                                        </layoutElement>
+                                                    </component>
+                                                </components>
+                                            </component>
+                                        </layoutElement>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="3" height="2">
+                                    <component type="textarea" name="commentReasonTypeCorrectionDateTo"
+                                               field="#{form}.commentReasonTypeCorrectionDateTo"
+                                               reference="commentReasonTypeCorrectionDateTo">
+                                    </component>
+                                </layoutElement>
+                            </component>
+
+                            <option type="label" value="dateToCorrectionLabel"/>
+                        </component>
+                    </layoutElement>
+
+                </component>
+
+                <option type="header" value="true"/>
+
+                <listener event="changeDates"
+                          class="com.qcadoo.mes.orders.listeners.ChangeDatesDetailsListeners"
+                          method="changeDates"/>
+            </component>
+        </windowTab>
+    </component>
+</view>

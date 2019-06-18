@@ -101,7 +101,6 @@
         <security:role identifier="ROLE_PLANNING_ORDERS"/>
         <security:role identifier="ROLE_PLANNING_MASTER_ORDERS"/>
 
-
         <security:role identifier="ROLE_PLANNING_ON_LINE_VIEW"/>
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
 
@@ -210,6 +209,7 @@
         <security:role identifier="ROLE_TERMINAL_CARTON_LABELS"/>
         <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
         <security:role identifier="ROLE_PALLET_DETAILS_FIX_STATE"/>
+        <security:role identifier="ROLE_PRINTED_LABEL_DETAILS_REPRINT"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
@@ -219,6 +219,10 @@
         <security:role identifier="ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING"/>
 
         <security:role identifier="ROLE_DOCUMENTS_NOTIFICATION"/>
+
+        <security:role identifier="ROLE_PRINTERS"/>
+
+        <security:role identifier="ROLE_SKILLS"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
@@ -266,6 +270,9 @@
         <model:model model="productAttachment" resource="model/productAttachment.xml"/>
         <model:model model="productDto" resource="model/productDto.xml"/>
         <model:model model="attachmentDto" resource="model/attachmentDto.xml"/>
+
+		<model:model model="skill" resource="model/skill.xml"/>
+		<model:model model="staffSkill" resource="model/staffSkill.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -343,9 +350,11 @@
         <menu:menu-item name="logsList" category="administration"
                         view="logsList" defaultAuthorizationRole="ROLE_LOGS"/>
 
-
         <menu:menu-item name="attachmentsList" category="basic"
                         view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
+
+		<menu:menu-item name="skillsList" category="basic"
+						view="skillsList" defaultAuthorizationRole="ROLE_SKILLS"/>
 
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
@@ -402,6 +411,13 @@
 
         <view:view resource="view/exceptionsForLineList.xml"/>
         <view:view resource="view/attachmentsList.xml"/>
+
+		<view:view resource="view/skillsList.xml"/>
+		<view:view resource="view/skillDetails.xml"/>
+
+		<view:view resource="view/staffSkillDetails.xml"/>
+
+		<view:view resource="view/productReplacements.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>

@@ -29,6 +29,7 @@ import static com.qcadoo.mes.basic.constants.CompanyFields.TAX_COUNTRY_CODE;
 import static com.qcadoo.mes.basic.constants.CountryFields.CODE;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,7 @@ public class CompanyHooks {
 
             if (!checkIfTaxForPLIsValid(taxCountryCode, tax)) {
                 company.addError(companyDD.getField(TAX), "basic.company.tax.error.taxIsNotValid");
+
                 return false;
             }
         }
@@ -83,10 +85,10 @@ public class CompanyHooks {
     }
 
     private boolean checkIfTaxCountryCodeIsPL(final Entity taxCountryCode) {
-        if (taxCountryCode == null) {
+        if (Objects.isNull(taxCountryCode)) {
             Entity defaultCountry = getDefaultCountry();
 
-            if (defaultCountry == null) {
+            if (Objects.isNull(defaultCountry)) {
                 return false;
             } else {
                 return (L_PL.equals(defaultCountry.getStringField(CODE)));
@@ -97,7 +99,7 @@ public class CompanyHooks {
     }
 
     private boolean checkIfTaxIsValid(String tax) {
-        if (tax == null) {
+        if (Objects.isNull(tax)) {
             return true;
         } else {
             if (tax.length() == 13) {
@@ -135,16 +137,16 @@ public class CompanyHooks {
     private void setDefaultCountry(final DataDefinition companyDD, final Entity company) {
         Entity country = company.getBelongsToField(COUNTRY);
 
-        if (country == null) {
+        if (Objects.isNull(country)) {
             company.setField(COUNTRY, getDefaultCountry());
         }
     }
 
     private void setDefaultParameters(final DataDefinition companyDD, final Entity company) {
-        if (company.getField(CompanyFields.IS_SUPPLIER) == null) {
+        if (Objects.isNull(company.getField(CompanyFields.IS_SUPPLIER))) {
             company.setField(CompanyFields.IS_SUPPLIER, false);
         }
-        if (company.getField(CompanyFields.IS_RECEIVER) == null) {
+        if (Objects.isNull(company.getField(CompanyFields.IS_RECEIVER))) {
             company.setField(CompanyFields.IS_RECEIVER, false);
         }
     }
@@ -164,9 +166,11 @@ public class CompanyHooks {
     private void updateMainAddress(final Entity address, final Entity company) {
         address.setField(AddressFields.ADDRESS_TYPE, basicService.getMainAddressType());
 
-        if (address.getId() == null) {
-            address.setField(AddressFields.NUMBER, basicService.generateAddressNumber(company));
-        }
+        if (Objects.isNull(address.getId())) {
+			address.setField(AddressFields.NUMBER, basicService.generateAddressNumber(company));
+		} else {
+			address.setField(AddressFields.NUMBER, basicService.updateAddressNumber(address, company));
+		}
 
         address.setField(AddressFields.PHONE, company.getStringField(CompanyFields.PHONE));
         address.setField(AddressFields.EMAIL, company.getStringField(CompanyFields.EMAIL));
@@ -206,10 +210,10 @@ public class CompanyHooks {
 
     public void onCopy(final DataDefinition companyDD, final Entity company) {
         setMainAddress(company);
-        clearSpecyfiedFields(company);
+		clearSpecifiedFields(company);
     }
 
-    private void clearSpecyfiedFields(final Entity company) {
+    private void clearSpecifiedFields(final Entity company) {
         company.setField(CompanyFields.EXTERNAL_NUMBER, null);
     }
 

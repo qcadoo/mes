@@ -27,6 +27,7 @@
 <model name="staff" deletable="true" activable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -48,7 +49,9 @@
         <belongsTo name="shift" model="shift"/>
         <belongsTo name="division" model="division"/>
         <belongsTo name="crew" model="crew"/>
-        <hasMany name="crews" model="crew" joinField="leader" copyable="false" cascade="nullify"/>
+
+        <hasMany name="crews" plugin="basic" model="crew" joinField="leader" copyable="false" cascade="nullify"/>
+        <hasMany name="staffSkills" plugin="basic" model="staffSkill" joinField="staff" cascade="delete" copyable="false"/>
     </fields>
 
     <hooks/>

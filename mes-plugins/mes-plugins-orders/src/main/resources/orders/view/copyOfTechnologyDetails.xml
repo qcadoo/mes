@@ -175,7 +175,7 @@
                             <option type="fieldCode" value="number"/>
 
                             <criteriaModifier
-                                class="com.qcadoo.mes.orders.criteriaModifires.TechnologyCriteriaModifires"
+                                class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifires"
                                 method="showProductForTechnology"/>
                         </component>
                     </layoutElement>

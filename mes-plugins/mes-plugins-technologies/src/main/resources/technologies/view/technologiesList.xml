@@ -39,6 +39,20 @@
                 <smallButton name="checkTechnology" icon="startIcon16.png" state="disabled"
                              action="#{grid}.changeTechnologyState(checkTechnology);"/>
             </group>
+            <group name="action">
+                <bigButton name="changeParameters" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{grid}.performEvent('changeParameters', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="technologies" reference="grid">
@@ -73,6 +87,7 @@
 						getRibbonItem("status.acceptTechnology").disable();
 						getRibbonItem("status.cancelTechnology").disable();
 						getRibbonItem("status.checkTechnology").disable();
+						getRibbonItem("action.changeParameters").disable();
 					}
 
 					function updateRibbon(selectedEntitiesArray) {
@@ -82,6 +97,7 @@
 						var externalMessage = "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}";
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
 						var isSynchronized = isSomeSynchronized(selectedEntitiesArray);
+						var allMaster = isAllMaster(selectedEntitiesArray);
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -109,7 +125,8 @@
 						var acceptState = getRibbonItem("status.acceptTechnology");
 						var cancelState = getRibbonItem("status.cancelTechnology");
 						var checkState = getRibbonItem("status.checkTechnology");
-
+						var changeParameters = getRibbonItem("action.changeParameters");
+                        changeParameters.disable();
 						acceptState.disable();
 						acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 						acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
@@ -165,6 +182,12 @@
 						}else{
 							cancelState.enable();
 						}
+
+						if(state == "02accepted" && allMaster) {
+						    changeParameters.enable();
+						} else {
+						    changeParameters.disable();
+						}
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -188,6 +211,15 @@
 						return false;
 					}
 
+					function isAllMaster(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.master == '0') {
+								return false;
+							}
+						}
+						return true;
+					}
+
 					function isSomeSynchronized(selectedEntitiesArray) {
 						for (var i = 0; i < selectedEntitiesArray.length; i++) {
 							if (selectedEntitiesArray[i].fields.externalSynchronized == '0') {
@@ -201,12 +233,14 @@
 
             <listener event="changeState" class="com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient"
                       method="changeState"/>
+            <listener event="changeParameters" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
+                      method="changeParameters"/>
 
             <option type="column" name="number" fields="number" link="true"
                     width="100"/>
             <option type="column" name="name" fields="name" link="true" width="150"/>
             <option type="column" name="productNumber" fields="productNumber"
-                    width="150"/>
+                    width="100"/>
 			<option type="column" name="productGlobalTypeOfMaterial" fields="productGlobalTypeOfMaterial"
 					width="80"/>
             <option type="column" name="state" fields="state" width="55"/>
@@ -218,11 +252,19 @@
 					width="55"/>
 			<option type="column" name="standardPerformanceTechnology" fields="standardPerformanceTechnology"
 					width="55"/>
+            <option type="column" name="dateAndTime" fields="dateAndTime"
+                    width="60"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber"
+                    width="55"/>
+            <option type="column" name="assortmentName" fields="assortmentName"
+                    width="55"/>
 			<option type="column" name="attachmentsExists" fields="attachmentsExists"
 					width="55"/>
             <option type="order" column="number" direction="desc"/>
-            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology,attachmentsExists"/>
-            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,divisionName,master,standardPerformanceTechnology,attachmentsExists"/>
+            <option type="searchable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
+                divisionName,master,standardPerformanceTechnology,attachmentsExists,dateAndTime,productionLineNumber,assortmentName"/>
+            <option type="orderable" value="name,number,productNumber,state,technologyGroupNumber,productGlobalTypeOfMaterial,
+                divisionName,master,standardPerformanceTechnology,attachmentsExists,dateAndTime,productionLineNumber,assortmentName"/>
             <option type="correspondingView" value="technologies/technologyDetails"/>
             <option type="correspondingComponent" value="form"/>
             <option type="fullscreen" value="true"/>

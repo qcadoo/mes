@@ -23,6 +23,22 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.Validate;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ShiftsServiceImpl;
@@ -48,19 +64,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.ParsePosition;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class OrderTimePredictionListeners {
@@ -104,8 +107,7 @@ public class OrderTimePredictionListeners {
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.DURATION, null);
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, null);
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, null);
-                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME,
-                        null);
+                operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_OPERATION_REALIZATION_TIME, null);
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.LABOR_WORK_TIME, null);
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.MACHINE_WORK_TIME, null);
                 operCompTimeCalculation.setField(OperCompTimeCalculationsFields.OPERATION_OFF_SET, null);
@@ -167,7 +169,7 @@ public class OrderTimePredictionListeners {
             return;
         }
 
-        BigDecimal quantity = null;
+        BigDecimal quantity;
         Object value = plannedQuantityField.getFieldValue();
 
         if (value instanceof BigDecimal) {
@@ -188,7 +190,7 @@ public class OrderTimePredictionListeners {
 
         int scale = quantity.scale();
 
-        if (MAX != null && scale > MAX) {
+        if (scale > MAX) {
             plannedQuantityField.addMessage("qcadooView.validate.field.error.invalidScale.max", MessageType.FAILURE,
                     MAX.toString());
             return;
@@ -196,7 +198,7 @@ public class OrderTimePredictionListeners {
 
         int presicion = quantity.precision() - scale;
 
-        if (MAX != null && presicion > MAX) {
+        if (presicion > MAX) {
             plannedQuantityField.addMessage("qcadooView.validate.field.error.invalidPrecision.max", MessageType.FAILURE,
                     MAX.toString());
             return;
@@ -207,10 +209,9 @@ public class OrderTimePredictionListeners {
             return;
         }
 
-        int maxPathTime = 0;
-
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get((Long) technologyLookup.getFieldValue());
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                .get((Long) technologyLookup.getFieldValue());
         Validate.notNull(technology, "technology is null");
 
         if (technology.getStringField(TechnologyFields.STATE).equals(TechnologyState.DRAFT.getStringValue())
@@ -226,11 +227,12 @@ public class OrderTimePredictionListeners {
         FieldComponent includeAdditionalTimeField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPS.INCLUDE_ADDITIONAL_TIME);
 
-        Boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
-        Boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
+        boolean includeTpz = "1".equals(includeTpzField.getFieldValue());
+        boolean includeAdditionalTime = "1".equals(includeAdditionalTimeField.getFieldValue());
 
-        Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
+        Entity productionLine = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
+                .get((Long) productionLineLookup.getFieldValue());
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
 
@@ -242,7 +244,7 @@ public class OrderTimePredictionListeners {
         laborWorkTimeField.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTimeField.setFieldValue(workTime.getMachineWorkTime());
 
-        maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(
+        int maxPathTime = orderRealizationTimeService.estimateOperationTimeConsumption(
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
                 includeAdditionalTime, productionLine);
 
@@ -256,24 +258,24 @@ public class OrderTimePredictionListeners {
             if (startTime == null) {
                 dateFromField.addMessage("orders.validate.global.error.dateFromIsNull", MessageType.FAILURE);
             } else {
-                Date stopTime = shiftsService.findDateToForOrder(startTime, maxPathTime);
-
-                if (stopTime == null) {
+                if (maxPathTime == 0) {
                     orderForm.addMessage("productionScheduling.timenorms.isZero", MessageType.FAILURE, false);
 
                     dateToField.setFieldValue(null);
                 } else {
+                    Date stopTime = shiftsService.findDateToForProductionLine(startTime, maxPathTime, productionLine);
+
                     dateToField.setFieldValue(orderRealizationTimeService.setDateToField(stopTime));
 
-                    startTime = shiftsService.findDateFromForOrder(stopTime, maxPathTime);
+                    Optional<DateTime> startTimeOptional = shiftsService.getNearestWorkingDate(new DateTime(startTime),
+                            productionLine);
 
-                    scheduleOperationComponents(technology.getId(), startTime);
+                    startTimeOptional.ifPresent(e -> {
+                        scheduleOperationComponents(technology.getId(), startTime, productionLine);
+                        orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
+                    });
 
                     isGenerated = true;
-                }
-
-                if (startTime != null) {
-                    orderForm.addMessage("orders.dateFrom.info.dateFromSetToFirstPossible", MessageType.INFO, false);
                 }
             }
         }
@@ -285,16 +287,16 @@ public class OrderTimePredictionListeners {
 
         orderForm.setEntity(orderForm.getEntity());
 
-        state.performEvent(view, "refresh", new String[0]);
+        state.performEvent(view, "refresh");
 
         if (isGenerated) {
             orderForm.addMessage("productionScheduling.info.calculationGenerated", MessageType.SUCCESS);
         }
     }
 
-    private void scheduleOperationComponents(final Long technologyId, final Date startDate) {
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+    private void scheduleOperationComponents(final Long technologyId, final Date startDate, final Entity productionLine) {
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
 
         if (technology == null) {
             return;
@@ -327,15 +329,9 @@ public class OrderTimePredictionListeners {
                 duration = duration + 1;
             }
 
-            Date dateFrom = shiftsService.findDateToForOrder(startDate, offset);
-            if (dateFrom == null) {
-                continue;
-            }
+            Date dateFrom = shiftsService.findDateToForProductionLine(startDate, offset, productionLine);
 
-            Date dateTo = shiftsService.findDateToForOrder(startDate, offset + duration);
-            if (dateTo == null) {
-                continue;
-            }
+            Date dateTo = shiftsService.findDateToForProductionLine(startDate, offset + duration, productionLine);
 
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_FROM, dateFrom);
             operCompTimeCalculation.setField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO, dateTo);

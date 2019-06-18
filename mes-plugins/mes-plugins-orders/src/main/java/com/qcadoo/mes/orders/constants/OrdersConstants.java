@@ -47,21 +47,23 @@ public final class OrdersConstants {
 
     public static final String MODEL_REASON_TYPE_DEVIATION_EFFECTIVE_END = "reasonTypeDeviationEffectiveEnd";
 
-    public static final String MODEL_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
-
     public static final String MODEL_TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
 
-    public static final String MODEL_ORDER_CATEGORY_COLOR = "orderCategoryColor";
+    public static final String MODEL_SCHEDULE = "schedule";
+
+    public static final String MODEL_SCHEDULE_STATE_CHANGE = "scheduleStateChange";
+
+    public static final String MODEL_SCHEDULE_POSITION = "schedulePosition";
+
+    public static final String MODEL_OPERATIONAL_TASK = "operationalTask";
+
+    public static final String MODEL_OPERATIONAL_TASK_STATE_CHANGE = "operationalTaskStateChange";
+
+    public static final String MODEL_OPERATIONAL_TASK_DTO = "operationalTaskDto";
 
     // VIEW
 
-    public static final String VIEW_ORDER_DETAILS = "orderDetails";
-
-    public static final String VIEW_ORDERS_LIST = "ordersList";
-
     public static final String FIELD_FORM = "form";
-
-    public static final String FIELD_GRID = "grid";
 
     public static String orderDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id

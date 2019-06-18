@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="warehouseIssue" auditable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+
+        <belongsTo name="order" plugin="orders" model="orderDto"/>
+
+        <datetime name="orderStartDate"/>
+        <string name="orderProductionLineNumber"/>
+
+        <belongsTo name="placeOfIssue" model="location"
+                   plugin="materialFlow" required="true"/>
+
+        <belongsTo name="division" plugin="basic"
+                   model="division"/>
+
+        <belongsTo name="workerWhoIssued" model="staff" plugin="basic"/>
+        <belongsTo name="workerWhoCollected" model="staff" plugin="basic"/>
+
+        <datetime name="dateOfIssued" copyable="false"/>
+        <datetime name="dateOfCreation"/>
+        <belongsTo name="technologyOperationComponent" model="technologyOperationComponent" plugin="technologies"/>
+
+        <enum name="collectionProducts"
+              values="01onOrder,02onOperation,03onDivision"
+              default="01onOrder" required="true"/>
+
+        <enum values="01draft,02inProgress,03discard,04completed"
+              name="state" default="01draft"/>
+
+        <enum name="productsToIssueMode" values="01allInputProducts,02onlyMaterials"
+                    default="01allInputProducts"/>
+
+        <hasMany name="warehouseIssueStateChange" joinField="warehouseIssue"
+                 model="warehouseIssueStateChange" cascade="delete"/>
+
+        <hasMany name="issues" joinField="warehouseIssue"
+                 model="issue" cascade="delete" copyable="false"/>
+
+        <hasMany name="productsToIssues" joinField="warehouseIssue"
+                 model="productsToIssue" cascade="delete" copyable="false"/>
+
+        <hasMany name="corrections" model="productToIssueCorrection" joinField="warehouseIssue" cascade="delete"/>
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.WarehouseIssueValidators"
+                       method="checkRequiredFields"/>
+        <onCreate
+                class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
+                method="onCreate"/>
+        <onSave class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
+                method="onSave"/>
+
+        <onCopy class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
+                method="onCopy"/>
+
+    </hooks>
+
+</model>

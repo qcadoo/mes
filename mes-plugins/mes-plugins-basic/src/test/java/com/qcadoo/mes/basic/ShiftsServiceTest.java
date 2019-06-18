@@ -24,14 +24,9 @@
 package com.qcadoo.mes.basic;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.Mock;
@@ -42,9 +37,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchResult;
 
 public class ShiftsServiceTest {
 
@@ -57,11 +49,7 @@ public class ShiftsServiceTest {
     private DataDefinition dataDefinition;
 
     @Mock
-    private Entity entity, shift, exception;
-
-    List<Entity> shifts = new ArrayList<Entity>();
-
-    List<Entity> exceptions;
+    private Entity entity;
 
     @org.junit.Before
     public void init() {
@@ -69,12 +57,6 @@ public class ShiftsServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(shiftsService, "dataDefinitionService", dataDefinitionService);
-    }
-
-    private EntityList mockEntityList(List<Entity> list) {
-        EntityList entityList = mock(EntityList.class);
-        when(entityList.iterator()).thenReturn(list.iterator());
-        return entityList;
     }
 
     @Test
@@ -151,59 +133,6 @@ public class ShiftsServiceTest {
 
         // when
         shiftsService.validateShiftHoursField(dataDefinition, entity);
-        // then
-    }
-
-    @Test
-    public void shouldReturnNullWhenShiftDoesnotExist() throws Exception {
-        // given
-        Date dateTo = mock(Date.class);
-        SearchCriteriaBuilder builder = mock(SearchCriteriaBuilder.class);
-        SearchResult result = mock(SearchResult.class);
-        when(dataDefinitionService.get("basic", "shift")).thenReturn(dataDefinition);
-        when(dataDefinition.find()).thenReturn(builder);
-        when(builder.list()).thenReturn(result);
-        when(result.getTotalNumberOfEntities()).thenReturn(0);
-        // when
-        Date dateToFromMethod = shiftsService.findDateFromForOrder(dateTo, 123L);
-        // then
-        Assert.assertNull(dateToFromMethod);
-    }
-
-    @Test
-    public void shouldReturnDateFrom() throws Exception {
-        // given
-        Date dateTo = mock(Date.class);
-        shifts.add(shift);
-        exceptions = mockEntityList(new ArrayList<Entity>());
-        exceptions.add(exception);
-        String hours = "07:00-15:00";
-        SearchCriteriaBuilder builder = mock(SearchCriteriaBuilder.class);
-        SearchResult result = mock(SearchResult.class);
-        when(dataDefinitionService.get("basic", "shift")).thenReturn(dataDefinition);
-        when(dataDefinition.find()).thenReturn(builder);
-        when(builder.list()).thenReturn(result);
-        when(result.getTotalNumberOfEntities()).thenReturn(1);
-        when(result.getEntities()).thenReturn(shifts);
-
-        when(shift.getField("mondayWorking")).thenReturn(true);
-        when(shift.getStringField("mondayHours")).thenReturn(hours);
-        when(shift.getField("tuesdayWorking")).thenReturn(true);
-        when(shift.getStringField("tuesdayHours")).thenReturn(hours);
-        when(shift.getField("wensdayWorking")).thenReturn(true);
-        when(shift.getStringField("wensdayHours")).thenReturn(hours);
-        when(shift.getField("thursdayWorking")).thenReturn(true);
-        when(shift.getStringField("thursdayHours")).thenReturn(hours);
-        when(shift.getField("fridayWorking")).thenReturn(true);
-        when(shift.getStringField("fridayHours")).thenReturn(hours);
-        when(shift.getField("saturdayWorking")).thenReturn(true);
-        when(shift.getStringField("saturdayHours")).thenReturn(hours);
-        when(shift.getField("sundayWorking")).thenReturn(true);
-        when(shift.getStringField("sundayHours")).thenReturn(hours);
-
-        when(shift.getHasManyField("timetableExceptions")).thenReturn((EntityList) exceptions);
-        // when
-        shiftsService.findDateFromForOrder(dateTo, 123L);
         // then
     }
 }

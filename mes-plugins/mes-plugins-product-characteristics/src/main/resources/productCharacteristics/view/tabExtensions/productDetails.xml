@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="basic"
+	view="productDetails">
+	
+	<windowTab name="characteristicsTab" reference="characteristicsTab">
+		<component type="gridLayout" name="gridLayout" columns="3"
+			rows="5">
+			<layoutElement column="1" row="1">
+				<component type="input" name="size" field="#{form}.size"
+					reference="size">
+					<option type="alignment" value="right" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="3">
+				<component type="lookup" name="downShelve" field="#{form}.downShelve"
+						   reference="downShelve">
+					<option type="column" name="name" fields="name"  />
+					<option type="column" name="company" fields="company"
+							expression="#company['name']"/>
+					<option type="column" name="downShelve" fields="downShelve"  />
+					<option type="column" name="upShelve" fields="upShelve"  />
+					<option type="searchable" value="name,number,company,downShelve,upShelve" />
+					<option type="orderable" value="name,number,company,downShelve,upShelve" />
+
+					<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+
+					<criteriaModifier class="com.qcadoo.mes.productCharacteristics.criteriaModifiers.ShelvesCriteriaModifiers"
+									  method="downShelvesCriteriaModifiers" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="4">
+				<component type="lookup" name="upShelve" field="#{form}.upShelve"
+						   reference="upShelve">
+					<option type="column" name="name" fields="name"  />
+					<option type="column" name="company" fields="company"
+							expression="#company['name']"/>
+					<option type="column" name="downShelve" fields="downShelve"  />
+					<option type="column" name="upShelve" fields="upShelve"  />
+					<option type="searchable" value="name,number,company,downShelve,upShelve" />
+					<option type="orderable" value="name,number,company,downShelve,upShelve" />
+
+					<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+					<criteriaModifier class="com.qcadoo.mes.productCharacteristics.criteriaModifiers.ShelvesCriteriaModifiers"
+									  method="upShelvesCriteriaModifiers" />
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="3">
+				<component type="lookup" name="downForm" field="#{form}.downForm"
+						   reference="downForm">
+					<option type="column" name="name" fields="name"  />
+					<option type="column" name="company" fields="company"
+							expression="#company['name']"/>
+					<option type="column" name="size" fields="size"
+							width="40" />
+					<option type="column" name="unit" fields="unit"
+							width="40" />
+					<option type="column" name="downForm" fields="downForm"  />
+					<option type="column" name="upForm" fields="upForm"  />
+					<option type="searchable" value="name,number,company,unit,size,downForm,upForm" />
+					<option type="orderable" value="name,number,company,unit,size,downForm,upForm" />
+
+					<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+
+					<criteriaModifier class="com.qcadoo.mes.productCharacteristics.criteriaModifiers.FormsCriteriaModifiers"
+									  method="downFormsCriteriaModifiers" />
+
+				</component>
+			</layoutElement>
+			<layoutElement column="2" row="4">
+				<component type="lookup" name="upForm" field="#{form}.upForm"
+						   reference="upForm">
+					<option type="column" name="name" fields="name"  />
+					<option type="column" name="company" fields="company"
+							expression="#company['name']"/>
+					<option type="column" name="size" fields="size"
+							width="40" />
+					<option type="column" name="unit" fields="unit"
+							width="40" />
+					<option type="column" name="downForm" fields="downForm"  />
+					<option type="column" name="upForm" fields="upForm"  />
+					<option type="searchable" value="name,number,company,unit,size,downForm,upForm" />
+					<option type="orderable" value="name,number,company,unit,size,downForm,upForm" />
+
+					<option type="expression"
+							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+					<option type="fieldCode" value="number" />
+
+					<criteriaModifier class="com.qcadoo.mes.productCharacteristics.criteriaModifiers.FormsCriteriaModifiers"
+									  method="upFormsCriteriaModifiers" />
+				</component>
+			</layoutElement>
+			<layoutElement column="1" row="5">
+				<component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
+					reference="showInProductData" defaultVisible="true">
+
+				</component>							
+			</layoutElement>
+		</component>		
+	</windowTab>
+	
+</windowTabExtension>

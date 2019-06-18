@@ -33,7 +33,8 @@
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateValidationAspect" />
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.OrderStateChangeReasonAspect" />
         <aspect name="com.qcadoo.mes.orders.states.aop.listener.FillFieldsOnChangesStatesAspect" />
+        <aspect name="com.qcadoo.mes.orders.states.aop.listener.OperationalTaskOrderStateAspect"/>
 
-        <aspect name="com.qcadoo.mes.orders.aop.ExportToPDFControllerOOverrideAspect" />
+        <aspect name="com.qcadoo.mes.orders.aop.ExportToPdfControllerOOverrideAspect" />
     </aspects>
 </aspectj>

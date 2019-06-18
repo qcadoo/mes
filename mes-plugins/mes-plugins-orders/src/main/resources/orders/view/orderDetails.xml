@@ -239,6 +239,21 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="operationalTasks">
+                <bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showOperationalTasks', []);
+							}
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -520,8 +535,11 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.orders.criteriaModifires.ProductionLineCriteriaModifiersO"
+                                    class="com.qcadoo.mes.orders.criteriaModifiers.ProductionLineCriteriaModifiersO"
                                     method="filterProductionLines"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
+                                      method="onProductionLineChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="5">
@@ -580,9 +598,6 @@
                                            reference="doneQuantity" hasDescription="true">
                                     <option type="labelWidth" value="55"/>
                                     <option type="alignment" value="right"/>
-
-                                    <!-- 							<listener event="onSetValue" method="setProductQuantities" -->
-                                    <!-- 								class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                 </component>
                             </layoutElement>
                             <layoutElement column="7" row="1">
@@ -605,6 +620,18 @@
                         <component type="select" name="orderCategory" field="orderCategory"
                                    reference="orderCategory" hasDescription="true"/>
                     </layoutElement>
+                    <layoutElement column="3" row="2">
+                        <component type="lookup" name="division" field="division"
+                                   reference="division">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="name,number"/>
+                            <option type="orderable" value="name,number"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -618,7 +645,8 @@
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="printOrderReport" method="printOrderReport"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
-
+                <listener event="showOperationalTasks" method="showOperationalTasks"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
 
             </component>
             <component type="input" name="oldTechnologyId" reference="oldTechnologyId" defaultVisible="false"/>
@@ -911,7 +939,7 @@
                        columns="3" rows="3">
                 <layoutElement column="1" row="1" height="3">
                     <component type="gridLayout" name="prodQuantityTablayout"
-                               columns="1" rows="4">
+                               columns="1" rows="5">
                         <layoutElement column="1" row="1">
                             <component type="borderLayout" name="commissionedAmount">
                                 <component type="gridLayout" name="commissionedAmountGridLayout"
@@ -959,9 +987,6 @@
                                                field="#{form}.amountOfProductProduced">
                                         <option type="labelWidth" value="55"/>
                                         <option type="alignment" value="right"/>
-
-                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
-                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="4" row="1">
@@ -973,6 +998,25 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="3">
+                            <component type="gridLayout" name="doneInPercentageGridLayout"
+                                       columns="4" rows="1" reference="doneInPercentageGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="doneInPercentage"
+                                               reference="doneInPercentage" defaultEnabled="false">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="doneInPercentageUnit" reference="doneInPercentageUnit"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4">
                             <component type="gridLayout" name="wastesQuantityGridLayout"
                                        columns="4" rows="1" reference="wastesQuantityGridLayout"
                                        hasBorders="false">
@@ -982,9 +1026,6 @@
                                                field="#{form}.wastesQuantity" defaultEnabled="false">
                                         <option type="labelWidth" value="55"/>
                                         <option type="alignment" value="right"/>
-
-                                        <!-- 										<listener event="onSetValue" method="setDoneQuantity" -->
-                                        <!-- 											class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners" /> -->
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="4" row="1">
@@ -995,7 +1036,7 @@
                                 </layoutElement>
                             </component>
                         </layoutElement>
-                        <layoutElement column="1" row="4">
+                        <layoutElement column="1" row="5">
                             <component type="gridLayout"
                                        name="remainingAmountOfProductToProduceGridLayout" columns="4"
                                        rows="1" reference="remainingAmountOfProductToProduceGridLayout"

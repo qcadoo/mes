@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<plugin plugin="materialRequirementCoverageForOrder" group="other" version="${qcadoo.plugin.version}"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xmlns:custom="http://schema.qcadoo.org/modules/custom"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+       http://schema.qcadoo.org/plugin.xsd
+       http://schema.qcadoo.org/modules/model
+       http://schema.qcadoo.org/modules/model.xsd
+       http://schema.qcadoo.org/modules/view
+       http://schema.qcadoo.org/modules/view.xsd
+       http://schema.qcadoo.org/modules/localization
+       http://schema.qcadoo.org/modules/localization.xsd
+       http://schema.qcadoo.org/modules/custom
+       http://schema.qcadoo.org/modules/custom.xsd">
+
+    <information>
+        <name>MES - Material Requirement Coverage For Order</name>
+        <vendor>
+            <name>Qcadoo Limited</name>
+            <url>http://www.qcadoo.com/</url>
+        </vendor>
+        <description>Material Requirement Coverage For Order</description>
+        <license>AGPL</license>
+    </information>
+
+    <dependencies>
+        <dependency>
+            <plugin>orders</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>productionCounting</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>materialFlowResources</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>deliveries</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>materialRequirements</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>productFlowThruDivision</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+        <dependency>
+            <plugin>orderSupplies</plugin>
+            <version>[1.2.1</version>
+        </dependency>
+    </dependencies>
+
+    <modules>
+
+        <model:model model="coverageForOrder" resource="model/coverageForOrder.xml"/>
+        <model:model model="coverageProduct" resource="model/coverageProduct.xml"/>
+        <model:model model="coverageLocation" resource="model/coverageLocation.xml"/>
+        <model:model model="coverageProductLogging" resource="model/coverageProductLogging.xml"/>
+        <model:model model="columnForCoveragesForOrder" resource="model/columnForCoveragesForOrder.xml"/>
+
+        <view:view resource="view/generateMaterialRequirementCoverageForOrder.xml"/>
+        <view:view resource="view/materialRequirementCoveragesForOrderList.xml"/>
+        <view:view resource="view/materialRequirementCoverageForOrderDetails.xml"/>
+        <view:view resource="view/coverageProductLoggingDetails.xml"/>
+
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+
+        <view:view-listener plugin="orders" view="orderDetails"
+                            component="form" event="redirectToGenerateMRCForOrder"
+                            class="com.qcadoo.mes.materialRequirementCoverageForOrder.listeners.OrderDetailsListenersMRCFO"
+                            method="redirectToGenerateMRCForOrder"/>
+
+        <view:view-hook plugin="orders" view="orderDetails" type="beforeRender"
+                        class="com.qcadoo.mes.materialRequirementCoverageForOrder.hooks.OrderDetailsHooksMRCFO"
+                        method="onBeforeRender"/>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="coverageForOrders" joinField="order" model="coverageForOrder"
+                           plugin="materialRequirementCoverageForOrder"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+
+        <!--
+            COVERAGE FOR ORDER - START
+        -->
+
+        <model:model-field plugin="orderSupplies" model="materialRequirementCoverage">
+            <model:belongsTo name="order" model="order"
+                             plugin="orders"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="materialRequirementCoverage" joinField="order" model="materialRequirementCoverage"
+                           plugin="orderSupplies"
+                           cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orderSupplies" model="coverageProduct">
+            <model:decimal name="planedQuantity">
+                <model:validatesUnscaledValue max="11"/>
+                <model:validatesScale max="5"/>
+            </model:decimal>
+        </model:model-field>
+
+        <view:view-grid-column plugin="orderSupplies"
+                               view="generateMaterialRequirementCoverage" component="coverageProducts">
+            <view:column name="productType" fields="productType"
+                         orderable="false" searchable="true" width="35"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+                               view="materialRequirementCoverageDetails" component="coverageProducts">
+            <view:column name="productType" fields="productType"
+                         orderable="true" searchable="true" width="35"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="orderSupplies"
+                               view="generateMaterialRequirementCoverage" component="coverageProducts">
+            <view:column name="allProductsType" fields="allProductsType"
+                         orderable="true" searchable="true" width="85"/>
+        </view:view-grid-column>
+
+        <view:view-hook plugin="orderSupplies"
+                        view="generateMaterialRequirementCoverage" type="beforeRender"
+                        class="com.qcadoo.mes.materialRequirementCoverageForOrder.hooks.GenerateMaterialRequirementDetailsHooksMRCFO"
+                        method="onBeforeRender"/>
+
+        <!--
+            COVERAGE FOR ORDER - END
+        -->
+
+
+        <localization:translation path="locales"/>
+
+        <custom:custom
+                class="com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderOnStartupService"/>
+    </modules>
+
+    <features>
+        <end-user/>
+    </features>
+</plugin>

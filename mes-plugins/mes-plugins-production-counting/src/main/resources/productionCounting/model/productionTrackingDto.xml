@@ -45,7 +45,6 @@
 
         <string name="companyNumber"/>
 
-
         <decimal name="usedQuantity">
             <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>

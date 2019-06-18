@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
 import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Interval;
 import org.joda.time.LocalTime;
@@ -90,11 +90,11 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private static final String FROM_DATE_FIELD = "fromDate";
 
-    private static final long STEP = DateTimeConstants.MILLIS_PER_WEEK;
+    private static final String SHIFTS = "shifts";
 
-    private static final long MAX_TIMESTAMP = new DateTime(2100, 1, 1, 0, 0, 0, 0).toDate().getTime();
+    private static final int MAX_LOOPS = 1000;
 
-    private static final long MIN_TIMESTAMP = new DateTime(2000, 1, 1, 0, 0, 0, 0).toDate().getTime();
+    private static final int MILLS = 1000;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -134,25 +134,16 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine) {
-        List<Entity> shifts = getAllShifts();
-        return getNearestWorkingDate(dateFrom, productionLine, shifts);
-    }
+        List<Entity> shifts = getShifts(productionLine);
 
-    private List<Entity> getAllShifts() {
-        return getShiftDataDefinition().find().list().getEntities();
+        return getNearestWorkingDate(dateFrom, productionLine, shifts);
     }
 
     private DataDefinition getShiftDataDefinition() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
     }
 
-    @Override
-    public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, List<Entity> shiftsEntities) {
-        return getNearestWorkingDate(dateFrom, null, shiftsEntities);
-    }
-
-    @Override
-    public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine, List<Entity> shiftsEntities) {
+    private Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine, List<Entity> shiftsEntities) {
         List<Shift> shifts = transformEntitiesToShifts(shiftsEntities);
         List<DateTimeRange> finalShiftWorkTimes = Lists.newArrayList();
 
@@ -170,7 +161,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             currentDate = currentDate.plusDays(1);
         }
 
-        DateTime result = finalShiftWorkTimes.stream().min((a, b) -> a.getFrom().compareTo(b.getFrom())).get().getFrom();
+        DateTime result = finalShiftWorkTimes.stream().min(Comparator.comparing(DateTimeRange::getFrom)).get().getFrom();
 
         if (result.compareTo(dateFrom) <= 0) {
             return Optional.of(dateFrom);
@@ -283,7 +274,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     private List<Shift> transformEntitiesToShifts(List<Entity> shiftsEntities) {
         List<Entity> shifts = Lists.newArrayList(shiftsEntities);
-        shifts.sort((p1, p2) -> p1.getId().compareTo(p2.getId()));
+        shifts.sort(Comparator.comparing(Entity::getId));
 
         return shifts.stream().map(Shift::new).collect(Collectors.toList());
     }
@@ -341,77 +332,47 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     @Override
-    public Date findDateToForOrder(final Date dateFrom, final long seconds) {
-        if (dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
-                .getTotalNumberOfEntities() == 0) {
-            return null;
+    public Date findDateToForProductionLine(final Date dateFrom, final long seconds, final Entity productionLine) {
+        if (getShiftDataDefinition().find().list().getTotalNumberOfEntities() == 0) {
+            return Date.from(dateFrom.toInstant().plusSeconds(seconds));
         }
 
-        long start = dateFrom.getTime();
-        long remaining = seconds;
+        DateTime dateFromDT = new DateTime(dateFrom, DateTimeZone.getDefault());
 
-        while (remaining >= 0) {
-            List<ShiftHour> hours = getHoursForAllShifts(new Date(start), new Date(start + STEP));
-
-            for (ShiftHour hour : hours) {
-                long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
-                if (diff >= remaining) {
-                    return new Date(hour.getDateFrom().getTime() + (remaining * 1000));
-                } else {
-                    remaining -= diff;
+        List<Shift> shifts = findAll(productionLine);
+        DateTime dateOfDay = new DateTime(dateFrom);
+        dateOfDay = dateOfDay.minusDays(1);
+        dateOfDay = dateOfDay.toLocalDate().toDateTimeAtStartOfDay();
+        long leftMilliseconds = seconds * MILLS;
+        int loopCount = 0;
+        while (leftMilliseconds > 0L) {
+            if (loopCount > MAX_LOOPS) {
+                return Date.from(dateFrom.toInstant().plusSeconds(seconds));
+            }
+            for (Shift shift : shifts) {
+                for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay)) {
+                    if (dateFrom.after(dateOfDay.toDate())) {
+                        range = range.trimBefore(dateFromDT);
+                    }
+                    if (range != null) {
+                        if (leftMilliseconds > range.durationMillis()) {
+                            leftMilliseconds = leftMilliseconds - range.durationMillis();
+                        } else {
+                            return range.getFrom().plusMillis((int) leftMilliseconds).toDate();
+                        }
+                    }
                 }
             }
-
-            start += STEP;
-
-            if (start > MAX_TIMESTAMP) {
-                return null;
-            }
+            loopCount++;
+            dateOfDay = dateOfDay.plusDays(1);
         }
 
-        return null;
-    }
-
-    @Override
-    public Date findDateFromForOrder(final Date dateTo, final long seconds) {
-        if (dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
-                .getTotalNumberOfEntities() == 0) {
-            return null;
-        }
-
-        long stop = dateTo.getTime();
-        long remaining = seconds;
-
-        while (remaining >= 0) {
-            List<ShiftHour> hours = getHoursForAllShifts(new Date(stop - STEP), new Date(stop));
-
-            for (int i = hours.size() - 1; i >= 0; i--) {
-                ShiftHour hour = hours.get(i);
-
-                long diff = (hour.getDateTo().getTime() - hour.getDateFrom().getTime()) / 1000;
-
-                if (diff >= remaining) {
-                    return new Date(hour.getDateTo().getTime() - (remaining * 1000));
-                } else {
-                    remaining -= diff;
-                }
-            }
-
-            stop -= STEP;
-
-            if (stop < MIN_TIMESTAMP) {
-                return null;
-            }
-        }
-
-        return null;
+        return Date.from(dateFrom.toInstant().plusSeconds(seconds));
     }
 
     @Override
     public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
-        List<Entity> shifts = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find()
-                .list().getEntities();
+        List<Entity> shifts = getShifts();
 
         List<ShiftHour> hours = Lists.newArrayList();
 
@@ -441,12 +402,13 @@ public class ShiftsServiceImpl implements ShiftsService {
         addWorkTimeExceptions(hours, exceptions);
         removeFreeTimeExceptions(hours, exceptions);
 
-        Collections.sort(hours, new ShiftHoursComparator());
+        hours.sort(new ShiftHoursComparator());
 
         return removeHoursOutOfRange(mergeOverlappedHours(hours), dateFrom, dateTo);
     }
 
-    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         updateDayFieldsState(viewDefinitionState);
     }
 
@@ -599,9 +561,11 @@ public class ShiftsServiceImpl implements ShiftsService {
 
             while (current.compareTo(to) <= 0) {
                 for (LocalTime[] dayHour : dayHours) {
-                    hours.add(new ShiftHour(current.withHourOfDay(dayHour[0].getHourOfDay())
-                            .withMinuteOfHour(dayHour[0].getMinuteOfHour()).toDate(), current
-                            .withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour()).toDate()));
+                    hours.add(new ShiftHour(
+                            current.withHourOfDay(dayHour[0].getHourOfDay()).withMinuteOfHour(dayHour[0].getMinuteOfHour())
+                                    .toDate(),
+                            current.withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour())
+                                    .toDate()));
                 }
                 current = current.plusDays(7);
             }
@@ -730,14 +694,31 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public List<Entity> getShiftsWorkingAtDate(final Date date) {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find()
-                .add(SearchRestrictions.eq(getDayOfWeekName(date) + WORKING_LITERAL, true)).list().getEntities();
+        return getShiftDataDefinition().find().add(SearchRestrictions.eq(getDayOfWeekName(date) + WORKING_LITERAL, true)).list()
+                .getEntities();
     }
 
     @Override
     public List<Entity> getShifts() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
-                .getEntities();
+        return getShiftDataDefinition().find().list().getEntities();
+    }
+
+    private List<Entity> getShifts(final Entity productionLine) {
+        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
+        if (shifts.isEmpty()) {
+            shifts = getShifts();
+        }
+        return shifts;
+    }
+
+    @Override
+    public List<Shift> findAll() {
+        return getShifts().stream().map(Shift::new).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Shift> findAll(Entity productionLine) {
+        return getShifts(productionLine).stream().map(Shift::new).collect(Collectors.toList());
     }
 
     /**
@@ -767,7 +748,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
         private final Date dateFrom;
 
-        public ShiftHour(final Date dateFrom, final Date dateTo) {
+        ShiftHour(final Date dateFrom, final Date dateTo) {
             this.dateFrom = new Date(dateFrom.getTime());
             if (dateFrom.after(dateTo)) {
                 Calendar cal = Calendar.getInstance();

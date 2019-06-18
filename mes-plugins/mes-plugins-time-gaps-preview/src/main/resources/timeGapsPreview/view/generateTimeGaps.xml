@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TIME_GAPS" name="generateTimeGaps" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      modelName="timeGapsContext" menuAccessible="true">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="timeGaps">
+                <bigButton name="generate" icon="startIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick : function () {
+                                    #{form}.performEvent('generateTimeGaps', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+            <template name="standardGridTemplate" includeGroups="genericExport"/>
+        </ribbon>
+
+        <windowTab name="main">
+            <component type="form" name="form" reference="form">
+                <listener event="generateTimeGaps" method="generateTimeGaps"
+                          class="com.qcadoo.mes.timeGapsPreview.listeners.GenerateTimeGapsListeners" />
+
+                <component type="gridLayout" name="contextGridLayout"
+                           columns="3" rows="2" hasBorders="false">
+                    <layoutElement column="1" row="1" height="2">
+                        <component type="borderLayout" name="datesBorderLayout">
+                            <component type="gridLayout" name="datesGridLayout"
+                                       columns="1" rows="2" hasBorders="false">
+                                <layoutElement column="1" row="1">
+                                    <component type="calendar" name="fromDate" field="fromDate"
+                                               reference="fromDate">
+                                        <option type="withTimePicker" value="true" />
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="calendar" name="toDate" field="toDate"
+                                               reference="toDate">
+                                        <option type="withTimePicker" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                            <option type="label" value="datesLabel" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" height="2">
+                        <component type="borderLayout" name="technologiesBorderLayout">
+                            <component type="gridLayout" name="technologiesGridLayout"
+                                       columns="1" rows="2" hasBorders="false">
+                                <layoutElement column="1" row="1">
+                                    <component type="lookup" name="supportedTechnology" field="supportedTechnology"
+                                               reference="supportedTechnology">
+                                        <option type="searchable" value="number,name" />
+                                        <option type="orderable" value="number,name" />
+
+                                        <option type="expression" value="#number + ' ' + #name" />
+                                        <option type="fieldCode" value="number" />
+
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.timeGapsPreview.listeners.GenerateTimeGapsListeners"
+                                                  method="clearOtherLineCriteriaLookupComponents" />
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="lookup" name="supportedTechnologyGroup" field="supportedTechnologyGroup"
+                                               reference="supportedTechnologyGroup">
+                                        <option type="searchable" value="number,name" />
+                                        <option type="orderable" value="number,name" />
+
+                                        <option type="expression" value="#number + ' ' + #name" />
+                                        <option type="fieldCode" value="number" />
+
+                                        <listener event="onSelectedEntityChange"
+                                                class="com.qcadoo.mes.timeGapsPreview.listeners.GenerateTimeGapsListeners"
+                                                method="clearOtherLineCriteriaLookupComponents" />
+                                    </component>
+                                </layoutElement>
+                            </component>
+                            <option type="label" value="technologiesLabel" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="1" height="2">
+                        <component type="borderLayout" name="durationFilterBorderLayout">
+                            <component type="gridLayout" name="durationFilterGridLayout"
+                                       columns="1" rows="1" hasBorders="false">
+                                <layoutElement column="1" row="1">
+                                    <component type="time" name="durationFilter" field="durationFilter"
+                                               reference="durationFilter" />
+                                </layoutElement>
+                            </component>
+                            <option type="label" value="durationFilterLabel" />
+                        </component>
+                    </layoutElement>
+                </component>
+            </component>
+        </windowTab>
+
+        <windowTab name="timeGaps">
+            <component type="gridLayout" name="timeGapsGridLayout"
+                       columns="3" rows="1" hasBorders="false">
+                <layoutElement column="1" row="1" width="2">
+                    <component type="borderLayout" name="timeGapsBorderLayout">
+                        <component type="grid" name="grid" source="#{form}.timeGaps"
+                                   reference="grid">
+                            <option type="column" name="productionLineNumber" fields="productionLine"
+                                    expression="#productionLine['number']" />
+                            <option type="column" name="productionLineName" fields="productionLine"
+                                    expression="#productionLine['name']" />
+                            <option type="column" name="fromDate" fields="fromDate" />
+                            <option type="column" name="toDate" fields="toDate" />
+                            <option type="column" name="durationRaw" fields="duration" hidden="true" />
+                            <option type="column" name="duration" fields="duration"
+                                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" />
+
+                            <option type="searchable" value="productionLineNumber,productionLineName,fromDate,toDate" />
+                            <option type="orderable" value="productionLineNumber,productionLineName,fromDate,toDate" />
+
+                            <option type="order" column="durationRaw"
+                                    direction="desc" />
+
+                            <option type="fullscreen" value="true" />
+                            <option type="fixedHeight" value="true"/>
+
+                            <option type="paginable" value="true" />
+                        </component>
+                        <option type="label" value="timeGapsLabel" />
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="3" row="1">
+                    <component type="borderLayout" name="aggregateDurationTimeBorderLayout">
+                        <component type="gridLayout" name="aggregateDurationGridLayout"
+                                   columns="1" rows="3" hasBorders="false">
+                            <layoutElement column="1" row="1">
+                                <component type="time" name="totalDuration" field="#{form}.totalDuration"
+                                           reference="totalDuration" defaultEnabled="never" />
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="time" name="longestDuration" field="#{form}.longestDuration"
+                                           reference="longestDuration" defaultEnabled="never" />
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="lookup" name="longestDurationLine" field="#{form}.longestDurationLine"
+                                           reference="longestDurationLine" defaultEnabled="never">
+                                    <option type="expression" value="#number" />
+                                    <option type="fieldCode" value="number" />
+                                </component>
+                            </layoutElement>
+                        </component>
+                        <option type="label" value="aggregateDurationTimeLabel" />
+                    </component>
+                    <component type="checkbox" name="viewIsInitialized" field="#{form}.viewIsInitialized"
+                               reference="viewIsInitialized" defaultVisible="false" defaultEnabled="never" />
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <option type="header" value="false" />
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.timeGapsPreview.hooks.GenerateTimeGapsViewHooks"
+                      method="onBeforeRender" />
+    </hooks>
+
+</view>

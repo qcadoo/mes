@@ -37,22 +37,24 @@ import com.qcadoo.model.api.Entity;
 //FIXME maku: replace bounded time/date ranges with JodaTime's intervals.
 public interface ShiftsService {
 
+    List<Shift> findAll();
+
+    List<Shift> findAll(final Entity productionLine);
+
+    List<Entity> getShifts();
+
+    List<Entity> getShiftsWorkingAtDate(final Date date);
+
     LocalTime[][] convertDayHoursToInt(final String string);
+
+    Entity getShiftFromDateWithTime(final Date date);
 
     // FIXME maku: ugly coupling - interface uses type defined within one of concrete implementations
     List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
 
-    Date findDateFromForOrder(final Date dateTo, final long seconds);
-
-    Date findDateToForOrder(final Date dateFrom, final long seconds);
+    Date findDateToForProductionLine(final Date dateFrom, final long seconds, Entity productionLine);
 
     List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
-
-    Entity getShiftFromDateWithTime(final Date date);
-
-    List<Entity> getShiftsWorkingAtDate(final Date date);
-
-    List<Entity> getShifts();
 
     /**
      * @deprecated use {@link Shift#worksAt(int)} instead.
@@ -62,10 +64,6 @@ public interface ShiftsService {
 
     String getWeekDayName(final DateTime dateTime);
 
-    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine, final List<Entity> shifts);
-
     Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine);
-
-    Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final List<Entity> shifts);
 
 }

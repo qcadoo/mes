@@ -23,23 +23,22 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.aop;
 
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.operationalTasks.constants.OperationalTaskFields;
-import com.qcadoo.mes.operationalTasksForOrders.constants.OperationalTaskFieldsOTFO;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyInstanceOperCompFieldsTS;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
+import org.springframework.stereotype.Service;
+
 @Service
 public class OperationalTaskDetailsListenersOTFOOverrideUtil {
 
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
-    public void setOperationalTaskNameDescriptionAndProductionLineForSubcontracted(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFieldsOTFO.ORDER);
+    public void setNameDescriptionAndProductionLineForSubcontracted(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(L_TECHNOLOGY_OPERATION_COMPONENT);
         FieldComponent nameField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.NAME);
@@ -62,8 +61,8 @@ public class OperationalTaskDetailsListenersOTFOOverrideUtil {
     }
 
     private boolean isSubcontracting(final Entity technologyOperationComponent) {
-        return ((technologyOperationComponent != null) && technologyOperationComponent
-                .getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
+        return ((technologyOperationComponent != null)
+                && technologyOperationComponent.getBooleanField(TechnologyInstanceOperCompFieldsTS.IS_SUBCONTRACTING));
     }
 
 }

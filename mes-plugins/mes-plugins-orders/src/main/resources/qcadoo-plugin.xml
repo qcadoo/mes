@@ -79,6 +79,29 @@
 
         <model:model model="orderCategoryColor" resource="model/orderCategoryColor.xml"/>
 
+        <model:model model="changeDatesHelper" resource="model/changeDatesHelper.xml"/>
+
+        <model:model model="schedule" resource="model/schedule.xml"/>
+        <model:model model="schedulePosition" resource="model/schedulePosition.xml"/>
+        <model:model model="scheduleStateChange" resource="model/scheduleStateChange.xml"/>
+
+        <model:model model="ordersGenerationHelper" resource="model/ordersGenerationHelper.xml"/>
+        <model:model model="operationalTask" resource="model/operationalTask.xml"/>
+        <model:model model="operationalTaskDto" resource="model/operationalTaskDto.xml"/>
+        <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="workstation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="staff"/>
+        </model:model-field>
+
         <model:dictionary name="orderCategory"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -183,12 +206,25 @@
             <model:boolean name="fillOrderDescriptionBasedOnTechnologyDescription" default="false"/>
         </model:model-field>
 
-
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="lockTechnologyTree" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="flagPercentageOfExecutionWithColor" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="copyNotesFromMasterOrderPosition" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="scheduleStateChanges"
+                           plugin="orders" model="scheduleStateChange"
+                           joinField="shift"/>
         </model:model-field>
 
         <model:model-hook plugin="qcadooModel" model="dictionaryItem">
@@ -200,6 +236,40 @@
         <model:model-field plugin="basic" model="address">
             <model:hasMany name="orders" model="order" plugin="orders" joinField="address"
                            cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:hasMany name="orders" plugin="orders" model="order"
+                             joinField="division" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
+                           joinField="staff" />
+        </model:model-field>
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
+                           joinField="workstation" />
+        </model:model-field>
+        <model:model-field plugin="productionLines" model="productionLine">
+            <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
+                           joinField="productionLine"/>
+        </model:model-field>
+
+        <model:model-enum-value plugin="basic" model="parameter"
+                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+        <model:model-enum-value plugin="orders" model="order"
+                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="operTaskFlagPercentExecutionWithColor" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="operationalTaskStateChanges"
+                           plugin="orders" model="operationalTaskStateChange"
+                           joinField="shift"/>
         </model:model-field>
 
         <model:model-hook plugin="technologies" model="technology">
@@ -222,9 +292,19 @@
         <menu:menu-item name="productionOrdersPlanning" category="orders"
                         view="ordersPlanningList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="schedulesList" category="orders"
+                        view="schedulesList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
+        <menu:menu-item name="operationalTasks" category="orders"
+                        view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersPlanningList.xml"/>
         <view:view resource="view/orderDetails.xml"/>
+
+        <view:view resource="view/schedulesList.xml"/>
+        <view:view resource="view/scheduleDetails.xml"/>
+        <view:view resource="view/schedulePositionDetails.xml"/>
 
         <view:view resource="view/ordersParameters.xml"/>
 
@@ -233,14 +313,26 @@
         <view:view resource="view/orderStateChangeReasonDialog.xml"/>
 
         <view:view resource="view/copyOfTechnologyDetails.xml"/>
+        <view:view resource="view/changeDatesDetails.xml"/>
+
+        <view:view resource="view/ordersGenerationFromProducts.xml"/>
+        <view:view resource="view/operationalTasksList.xml"/>
+        <view:view resource="view/operationalTaskDetails.xml"/>
+        <view:view resource="view/operationalTasksParameters.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:view-listener plugin="basic" view="parameters"
                             component="form" event="redirectToOrdersParameters"
                             class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
                             method="redirectToOrdersParameters"/>
+
+        <view:view-listener plugin="basic" view="parameters"
+                            component="form" event="redirectToOperationalTasksParameters"
+                            class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                            method="redirectToOperationalTasksParameters"/>
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form" event="showOrdersWithProductMain"
@@ -252,13 +344,25 @@
                             class="com.qcadoo.mes.orders.listeners.ProductDetailsListenersO"
                             method="showOrdersWithProductPlanned"/>
 
+        <view:view-listener plugin="basic" view="productsList"
+                            component="grid" event="generateOrders"
+                            class="com.qcadoo.mes.orders.listeners.ProductsListListenersO"
+                            method="generateOrders"/>
+
         <view:view-hook plugin="basic" view="productDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
                         method="updateRibbonState"/>
 
+<<<<<<< HEAD
         <!--<report:report-template name="order"-->
         <!--resource="report/order.jrxml" />-->
+=======
+        <view:view-hook plugin="technologies" view="operationProductOutComponentDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.OPOCDetailsHooksO"
+                        method="toggleSetField"/>
+>>>>>>> dev
 
         <view:resource uri="public/**/*"/>
 

@@ -23,15 +23,17 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.Map;
-
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Map;
+import java.util.Objects;
 
 public class DivisionGroupingContainer extends AbstractGroupingContainer {
 
@@ -48,7 +50,10 @@ public class DivisionGroupingContainer extends AbstractGroupingContainer {
 
     @Override
     public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity division = division(operationComponent);
+        Entity division = order.getBelongsToField(OrderFields.DIVISION);
+        if(Objects.isNull(division)) {
+            division = division(operationComponent);
+        }
         if (division == null) {
             store(nullDivisionTitle, order, operationComponent);
         } else {
