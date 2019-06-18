@@ -31,8 +31,6 @@ public final class OperationProductOutComponentFields {
 
     public static final String OPERATION_COMPONENT = "operationComponent";
 
-    public static final String SET = "set";
-
     public static final String PRODUCT = "product";
 
     public static final String QUANTITY = "quantity";

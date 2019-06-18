@@ -133,27 +133,6 @@
             </component>
         </windowTab>
 
-        <windowTab name="setTab" reference="setTab">
-            <component type="grid" name="setTrackingOperationProductsInComponents"
-                       reference="setTrackingOperationProductsInComponents"
-                       source="#{form}.setTrackingOperationProductsInComponents"
-                       defaultEnabled="true">
-                <option type="column" name="productNumber" fields="product" expression="#product['number']"
-                        width="100"/>
-                <option type="column" name="productName" fields="product" expression="#product['name']" width="100"/>
-                <option type="column" name="quantityFromSets" fields="quantityFromSets" width="50"/>
-                <option type="column" name="givenUnit" fields="trackingOperationProductOutComponent"
-                        expression="#trackingOperationProductOutComponent['givenUnit']" width="50"/>
-                <option type="order" column="quantityFromSets" direction="desc"/>
-                <option type="searchable" value="quantityFromSets,givenUnit,productName,productNumber"/>
-                <option type="orderable" value="quantityFromSets,givenUnit,productName,productNumber"/>
-
-                <option type="creatable" value="false"/>
-                <option type="deletable" value="false"/>
-                <option type="header" value="false"/>
-            </component>
-        </windowTab>
-
     </component>
 
     <hooks>

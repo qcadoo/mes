@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -35,9 +34,6 @@ public class AnomalyProductionTrackingDetailsHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         updateRibbon(view);
@@ -74,10 +70,7 @@ public class AnomalyProductionTrackingDetailsHooks {
                 "anomalyProductionTrackingEntryHelper").create();
         Entity trackingOperationProductInComponent = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(id);
-        if (setTechnologyInComponentsService.isProductASet(trackingOperationProductInComponent
-                .getIntegerField(TrackingOperationProductInComponentDtoFields.PRODUCT_ID).longValue())) {
-            return;
-        }
+
         entry.setField("trackingOperationProductInComponent", trackingOperationProductInComponent);
         entry.setField("productNumber",
                 trackingOperationProductInComponent.getStringField(TrackingOperationProductInComponentDtoFields.PRODUCT_NUMBER));

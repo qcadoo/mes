@@ -37,7 +37,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -63,9 +62,6 @@ public class TrackingOperationProductOutComponentHooks {
     private ParameterService parameterService;
 
     @Autowired
-    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponentsService;
-
-    @Autowired
     private ProductUnitsConversionService productUnitsConversionService;
 
     @Autowired
@@ -73,7 +69,6 @@ public class TrackingOperationProductOutComponentHooks {
 
     public void onSave(final DataDefinition trackingOperationProductOutComponentDD, Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
-        fillSetTrackingOperationProductsInComponents(trackingOperationProductOutComponent);
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {
@@ -88,10 +83,10 @@ public class TrackingOperationProductOutComponentHooks {
                     .getDecimalField(TrackingOperationProductOutComponentFields.WASTES_QUANTITY);
 
             if ((usedQuantity != null) || (wastesQuantity != null)) {
-                Entity trackingOperationProductOutComponentDto = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO)
-                        .get(trackingOperationProductOutComponent.getId());
+                Entity trackingOperationProductOutComponentDto = dataDefinitionService.get(
+                        ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT_DTO).get(
+                        trackingOperationProductOutComponent.getId());
                 BigDecimal plannedQuantity = trackingOperationProductOutComponentDto
                         .getDecimalField(TrackingOperationProductOutComponentDtoFields.PLANNED_QUANTITY);
 
@@ -125,21 +120,20 @@ public class TrackingOperationProductOutComponentHooks {
         boolean enteredFromTerminal = BooleanUtils.isTrue(trackingOperationProductOutComponent
                 .getBooleanField(TrackingOperationProductOutComponentFields.ENTERED_FROM_TERMINAL));
 
-        boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(
-                parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
+        boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(parameterService.getParameter().getBooleanField(
+                ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
 
-        return (parameterService.getParameter().getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
-                && !(enteredFromTerminal && allowToOverrideQuantitiesFromTerminal)
-                && (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)
-                        || (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)
-                                && product.getId().equals(orderProduct.getId()))));
+        return (parameterService.getParameter()
+                .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
+                && !(enteredFromTerminal && allowToOverrideQuantitiesFromTerminal) && (TypeOfProductionRecording.FOR_EACH
+                .getStringValue().equals(typeOfProductionRecording) || (TypeOfProductionRecording.CUMULATED.getStringValue()
+                .equals(typeOfProductionRecording) && product.getId().equals(orderProduct.getId()))));
     }
 
     private void fillQuantities(Entity trackingOperationProductInComponent, final BigDecimal ratio) {
-        Entity trackingOperationProductInComponentDto = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                .get(trackingOperationProductInComponent.getId());
+        Entity trackingOperationProductInComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(
+                trackingOperationProductInComponent.getId());
         BigDecimal plannedQuantity = trackingOperationProductInComponentDto
                 .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
         BigDecimal usedQuantity = plannedQuantity.multiply(ratio, numberService.getMathContext());
@@ -180,25 +174,6 @@ public class TrackingOperationProductOutComponentHooks {
         }
         return productUnitsConversionService.forProduct(product).fromPrimaryUnit().to(givenUnit).convertValue(usedQuantity);
 
-    }
-
-    private void fillSetTrackingOperationProductsInComponents(Entity trackingOperationProductOutComponent) {
-        Entity productionTracking = trackingOperationProductOutComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-
-        BigDecimal givenQuantity = trackingOperationProductOutComponent
-                .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
-
-        trackingOperationProductOutComponent = setTrackingOperationProductsComponentsService
-                .recalculateTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent,
-                        givenQuantity);
-
-        List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent
-                .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-
-        setTrackingOperationProductsInComponents.forEach(setTrackingOperationProductsInComponent -> {
-            setTrackingOperationProductsInComponent.getDataDefinition().save(setTrackingOperationProductsInComponent);
-        });
     }
 
 }

@@ -118,7 +118,6 @@ public class TechnologyOperationComponentHooks {
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
             Entity opoc = opocDD.create();
             opoc.setField(OperationProductOutComponentFields.QUANTITY, 1);
-            opoc.setField(OperationProductOutComponentFields.SET, false);
             if (tree == null || tree.isEmpty()) {
                 opoc.setField(OperationProductOutComponentFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
                 technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
@@ -219,13 +218,6 @@ public class TechnologyOperationComponentHooks {
 
         if (technologyOperationComponent.getId() != null) {
             copyWorkstations(technologyOperationComponentDD, technologyOperationComponent);
-            DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-            List<Entity> opocs = technologyOperationComponent
-                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-            for (Entity opoc : opocs) {
-                clearSet(opocDD, opoc, technologyOperationComponent);
-            }
         }
     }
 
@@ -237,14 +229,6 @@ public class TechnologyOperationComponentHooks {
 
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
                     operation.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS));
-        }
-    }
-
-    private void clearSet(final DataDefinition dataDefinition, final Entity opoc, final Entity toc) {
-        Boolean set = (Boolean) opoc.getField(OperationProductOutComponentFields.SET);
-        if (set == null || (set && toc.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null)) {
-            opoc.setField(OperationProductOutComponentFields.SET, false);
-            dataDefinition.save(opoc);
         }
     }
 

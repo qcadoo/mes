@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionCounting.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
@@ -60,25 +59,18 @@ public class TrackingOperationProductInComponentDetailsHooks {
     private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
 
     @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
 
         FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity trackingOperationProductInComponent = trackingOperationProductInComponentForm
-                .getPersistedEntityWithIncludedFormValues();
 
         toggleEnabledForWastes(view);
-        hideOrShowSetTab(view, trackingOperationProductInComponent);
 
-        Entity trackingOperationProductInComponentDto = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                .get(trackingOperationProductInComponentForm.getEntityId());
+        Entity trackingOperationProductInComponentDto = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(
+                trackingOperationProductInComponentForm.getEntityId());
         FieldComponent plannedQuantity = (FieldComponent) view
                 .getComponentByReference(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
         plannedQuantity.setFieldValue(trackingOperationProductInComponentDto
@@ -109,11 +101,6 @@ public class TrackingOperationProductInComponentDetailsHooks {
             usedQuantity.setEnabled(true);
             givenQuantity.setEnabled(true);
         }
-    }
-
-    private void hideOrShowSetTab(final ViewDefinitionState view, final Entity trackingOperationProductInComponent) {
-        view.getComponentByReference(L_SET_TAB).setVisible(
-                setTechnologyInComponentsService.isSet(trackingOperationProductInComponent));
     }
 
 }

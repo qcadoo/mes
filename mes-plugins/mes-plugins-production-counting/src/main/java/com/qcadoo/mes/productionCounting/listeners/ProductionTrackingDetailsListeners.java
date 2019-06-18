@@ -38,7 +38,6 @@ import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -108,9 +107,6 @@ public class ProductionTrackingDetailsListeners {
     private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
 
     @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -155,7 +151,6 @@ public class ProductionTrackingDetailsListeners {
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
-
         if (maybeForm.isPresent()
                 && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
             FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -176,8 +171,6 @@ public class ProductionTrackingDetailsListeners {
 
             List<Entity> recordInProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-            recordInProducts = recordInProducts.stream().filter(rp -> !setTechnologyInComponentsService.isSet(rp))
-                    .collect(Collectors.toList());
             Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
                     recordInProducts, technology);
 

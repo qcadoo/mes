@@ -58,9 +58,6 @@
         </decimal>
 
         <dictionary name="givenUnit" dictionary="units"/>
-        <hasMany name="setTrackingOperationProductsInComponents"
-                 joinField="trackingOperationProductOutComponent" model="setTrackingOperationProductInComponents"
-                 cascade="delete"/>
 
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
               default="01component" />

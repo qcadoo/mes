@@ -23,13 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -48,18 +43,13 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.SetTechnologyInComponentsService;
-import com.qcadoo.mes.productionCounting.SetTrackingOperationProductsComponentsService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
@@ -82,12 +72,6 @@ public class ProductionTrackingHooks {
 
     @Autowired
     private ParameterService parameterService;
-
-    @Autowired
-    private SetTrackingOperationProductsComponentsService setTrackingOperationProductsComponents;
-
-    @Autowired
-    private SetTechnologyInComponentsService setTechnologyInComponentsService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -122,8 +106,6 @@ public class ProductionTrackingHooks {
         generateNumberIfNeeded(productionTracking);
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
-        generateSetTrackingOperationProductsComponents(productionTracking);
-        generateSetTechnologyInComponents(productionTracking);
 
         if (productionTracking.getId() == null) {
 
@@ -304,88 +286,4 @@ public class ProductionTrackingHooks {
         return jdbcTemplate.queryForObject("select generate_productiontracking_number()", Maps.newHashMap(), String.class);
     }
 
-    private void generateSetTrackingOperationProductsComponents(Entity productionTracking) {
-        if (mustRebuildSetTrackingOperationProductsComponents(productionTracking)) {
-            EntityList trackingOperationProductOutComponents = productionTracking
-                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-            for (Entity trackingOperationProductOutComponent : trackingOperationProductOutComponents) {
-                BigDecimal usedQuantity = trackingOperationProductOutComponent
-                        .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
-
-                List<Entity> setTrackingOperationProductsInComponents = trackingOperationProductOutComponent
-                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-                List<Long> ids = setTrackingOperationProductsInComponents.stream().map(entity -> entity.getId())
-                        .collect(Collectors.toList());
-                if (!ids.isEmpty()) {
-                    Map<String, Object> parameters = new HashMap<String, Object>() {
-
-                        {
-                            put("ids", ids);
-                        }
-                    };
-                    jdbcTemplate.update(
-                            "DELETE FROM productioncounting_settrackingoperationproductincomponents WHERE id IN (:ids)",
-                            new MapSqlParameterSource(parameters));
-                }
-                trackingOperationProductOutComponent = setTrackingOperationProductsComponents
-                        .fillTrackingOperationProductOutComponent(productionTracking, trackingOperationProductOutComponent,
-                                usedQuantity);
-
-                setTrackingOperationProductsInComponents = trackingOperationProductOutComponent
-                        .getHasManyField(TrackingOperationProductOutComponentFields.SET_TRACKING_OPERATION_PRODUCTS_IN_COMPONENTS);
-                setTrackingOperationProductsInComponents.stream().forEach(entity -> {
-                    entity.getDataDefinition().save(entity);
-                });
-            }
-        }
-    }
-
-    private void generateSetTechnologyInComponents(Entity productionTracking) {
-        if (mustRebuildSetTrackingOperationProductsComponents(productionTracking)) {
-            EntityList trackingOperationProductInComponents = productionTracking
-                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-            for (Entity trackingOperationProductInComponent : trackingOperationProductInComponents) {
-                if (setTechnologyInComponentsService.isSet(trackingOperationProductInComponent)) {
-                    BigDecimal usedQuantity = trackingOperationProductInComponent
-                            .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
-
-                    List<Entity> setTechnologyInComponents = trackingOperationProductInComponent
-                            .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-                    List<Long> ids = setTechnologyInComponents.stream().map(entity -> entity.getId())
-                            .collect(Collectors.toList());
-                    if (!ids.isEmpty()) {
-                        Map<String, Object> parameters = new HashMap<String, Object>() {
-
-                            {
-                                put("ids", ids);
-                            }
-                        };
-                        jdbcTemplate.update("DELETE FROM productioncounting_settechnologyincomponents WHERE id IN (:ids)",
-                                new MapSqlParameterSource(parameters));
-                    }
-
-                    trackingOperationProductInComponent = setTechnologyInComponentsService
-                            .fillTrackingOperationProductOutComponent(trackingOperationProductInComponent, productionTracking,
-                                    usedQuantity);
-
-                    setTechnologyInComponents = trackingOperationProductInComponent
-                            .getHasManyField(TrackingOperationProductInComponentFields.SET_TECHNOLOGY_IN_COMPONENTS);
-                    setTechnologyInComponents.stream().forEach(entity -> {
-                        entity.getDataDefinition().save(entity);
-                    });
-                }
-            }
-        }
-    }
-
-    private boolean mustRebuildSetTrackingOperationProductsComponents(Entity productionTracking) {
-        if (productionTracking.getId() == null) {
-            return true;
-        }
-
-        Long previousOrderId = productionTracking.getDataDefinition().get(productionTracking.getId())
-                .getBelongsToField(ProductionTrackingFields.ORDER).getId();
-
-        return !previousOrderId.equals(productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getId());
-    }
 }

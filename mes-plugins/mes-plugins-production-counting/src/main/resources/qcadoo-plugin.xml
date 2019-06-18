@@ -101,13 +101,6 @@
                      resource="model/trackingOperationProductInComponentDto.xml"/>
         <model:model model="trackingOperationProductOutComponentDto"
                      resource="model/trackingOperationProductOutComponentDto.xml"/>
-        <model:model model="setTrackingOperationProductInComponents"
-                     resource="model/setTrackingOperationProductInComponents.xml"/>
-        <model:model model="setTechnologyInComponents"
-                     resource="model/setTechnologyInComponents.xml"/>
-
-        <model:model model="productionCountingQuantitySetComponent"
-                     resource="model/productionCountingQuantitySetComponent.xml"/>
 
         <model:model model="performanceAnalysisDto" resource="model/performanceAnalysisDto.xml"/>
         <model:model model="performanceAnalysisDetailDto" resource="model/performanceAnalysisDetailDto.xml"/>
@@ -364,10 +357,6 @@
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="autoCloseOrder"/>
         </model:model-field>
-        <model:model-field model="productionCountingQuantity" plugin="basicProductionCounting">
-            <model:hasMany name="productionCountingQuantitySetComponents" model="productionCountingQuantitySetComponent"
-                           joinField="productionCountingQuantity" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
 
         <model:model-field plugin="productionCounting" model="anomalyReason">
             <model:manyToMany name="anomalies" plugin="productionCounting" model="anomaly" joinField="anomalyReasons"/>
@@ -393,16 +382,6 @@
         <model:model-hook model="technology" plugin="technologies">
             <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.TechnologyHookPC"
                             method="onCreate"/>
-        </model:model-hook>
-
-        <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
-            <model:onCreate class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
-                            method="onCreate"/>
-        </model:model-hook>
-
-        <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
-            <model:onSave class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityHooksPC"
-                          method="onSave"/>
         </model:model-hook>
 
         <model:model-hook model="productionCountingQuantity" plugin="basicProductionCounting">
@@ -480,8 +459,6 @@
         <view:view resource="view/productionTrackingsForProductList.xml"/>
         <view:view resource="view/productionTrackingsForProductGroupedList.xml"/>
 
-        <view:view resource="view/productionCountingQuantitySetDetails.xml"/>
-
         <view:view resource="view/performanceAnalysisList.xml"/>
         <view:view resource="view/performanceAnalysisDetails.xml"/>
 
@@ -504,7 +481,6 @@
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologyDetails.xml"/>
-        <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 
@@ -540,11 +516,6 @@
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
-        <view:view-hook plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.productionCounting.hooks.ProductionCountingQuantityAdvancedDetailsPC"
-                        method="beforeRender"/>
-
 
         <view:view-hook plugin="basic" view="parameters" type="beforeRender"
                         class="com.qcadoo.mes.productionCounting.hooks.ParameterPBDetailsViewHooks"
