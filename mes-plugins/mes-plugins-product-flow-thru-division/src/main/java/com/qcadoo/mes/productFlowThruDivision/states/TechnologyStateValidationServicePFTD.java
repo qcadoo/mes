@@ -31,18 +31,17 @@ import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyStateValidationServicePFTD {
@@ -63,37 +62,6 @@ public class TechnologyStateValidationServicePFTD {
         if (technology != null && !stateChangeContext.getStatus().equals(StateChangeStatus.FAILURE)) {
             checkIfForOneDivisionLocationIsSet(technology, stateChangeContext);
             checkIfLocationInOperationIsSet(technology, stateChangeContext);
-            checkProductionFlowIsWithinProcess(technology, stateChangeContext);
-        }
-    }
-
-    private void checkProductionFlowIsWithinProcess(Entity technology, StateChangeContext stateChangeContext) {
-
-        EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
-        String productionFlow = technology.getStringField(TechnologyFieldsPFTD.PRODUCTION_FLOW);
-        if (mainProduct.getBooleanField(OperationProductOutComponentFields.SET)) {
-            if (productionFlow != null && !productionFlow.equals("02withinTheProcess")) {
-                stateChangeContext.addValidationError("technologies.technology.error.productionFlow");
-                return;
-            }
-            for (Entity toc : tree) {
-                List<Entity> opics = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-                if (opics.stream()
-                        .anyMatch(opic -> opic.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW) != null
-                                && !opic.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW)
-                                        .equals("02withinTheProcess"))) {
-                    stateChangeContext.addValidationError("technologies.technology.error.productionFlow.intermediate");
-                    return;
-                }
-                List<Entity> opocs = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-                if (opocs.stream()
-                        .anyMatch(opoc -> opoc.getStringField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW) != null
-                                && !opoc.getStringField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW)
-                                        .equals("02withinTheProcess"))) {
-                    stateChangeContext.addValidationError("technologies.technology.error.productionFlow.intermediate");
-                }
-            }
         }
     }
 
