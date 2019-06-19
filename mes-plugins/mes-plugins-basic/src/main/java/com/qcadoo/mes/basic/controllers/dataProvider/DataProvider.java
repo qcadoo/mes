@@ -1,7 +1,16 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.model.api.DictionaryService;
+
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,16 +21,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.model.api.DictionaryService;
 
 @Service
 public class DataProvider {
@@ -75,7 +74,8 @@ public class DataProvider {
     private int countQueryResults(final String preparedQuery, final String query, final Map<String, Object> paramMap) {
         String countQuery = "SELECT count(*) AS cnt FROM (" + preparedQuery.replace(";", "") + ") sq;";
 
-        paramMap.put("query", "%" + query + "%");
+        String ilikeQuery = buildConditionParameterForIlike(query);
+        paramMap.put("query", ilikeQuery);
 
         return jdbcTemplate.queryForObject(countQuery, paramMap, Integer.class);
     }
@@ -125,7 +125,8 @@ public class DataProvider {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("query", "%" + query + "%");
+        String ilikeQuery = buildConditionParameterForIlike(query);
+        parameters.put("query", ilikeQuery);
 
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
@@ -150,8 +151,8 @@ public class DataProvider {
         String _query = prepareAdditionalCodeQueryWithLimit(MAX_RESULTS);
 
         Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("query", "%" + query + "%");
+        String ilikeQuery = buildConditionParameterForIlike(query);
+        parameters.put("query", ilikeQuery);
         parameters.put("productnumber", productnumber);
 
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
@@ -176,7 +177,8 @@ public class DataProvider {
 
         Map<String, Object> parameters = Maps.newHashMap();
 
-        parameters.put("query", "%" + query + "%");
+        String ilikeQuery = buildConditionParameterForIlike(query);
+        parameters.put("query", ilikeQuery);
 
         SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
 
@@ -205,6 +207,13 @@ public class DataProvider {
 
             return type;
         }).collect(Collectors.toList());
+    }
+
+    private String buildConditionParameterForIlike(String query) {
+        String ilikeQuery = "%" + query + "%";
+        ilikeQuery = ilikeQuery.replace("*", "%");
+        ilikeQuery = ilikeQuery.replace("%%", "%");
+        return ilikeQuery;
     }
 
 }
