@@ -22,7 +22,6 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
-import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
@@ -298,8 +297,6 @@ public class ScheduleDetailsListeners {
         Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE)
                 .get(scheduleId);
         return schedule.getHasManyField(ScheduleFields.POSITIONS).find()
-                .createAlias(SchedulePositionFields.WORKSTATION, SchedulePositionFields.WORKSTATION, JoinType.INNER)
-                .addOrder(SearchOrders.asc(SchedulePositionFields.WORKSTATION + "." + WorkstationFields.NUMBER))
                 .addOrder(SearchOrders.asc(SchedulePositionFields.START_TIME)).list().getEntities();
 
     }
