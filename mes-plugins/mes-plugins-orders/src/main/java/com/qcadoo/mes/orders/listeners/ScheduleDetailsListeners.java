@@ -209,7 +209,7 @@ public class ScheduleDetailsListeners {
             }
             List<Entity> workers = getWorkers(position);
             Map<Long, Date> operationWorkersFinishDates = Maps.newHashMap();
-            getWorkersNewFinishDate(workersFinishDates, scheduleStartTime, position, workers, operationWorkersFinishDates);
+            getWorkersFinishDate(workersFinishDates, scheduleStartTime, position, workers, operationWorkersFinishDates);
             if (workstationLastWorkers.get(workstation.getId()) == null) {
                 workstationLastWorkers.put(workstation.getId(), getOperationalTasksLastWorkerForWorkstation(workstation));
             }
@@ -266,12 +266,12 @@ public class ScheduleDetailsListeners {
         return staffScb.list().getEntities();
     }
 
-    private void getWorkersNewFinishDate(Map<Long, Date> workersFinishDates, Date scheduleStartTime, Entity position,
+    private void getWorkersFinishDate(Map<Long, Date> workersFinishDates, Date scheduleStartTime, Entity position,
             List<Entity> workers, Map<Long, Date> operationWorkersFinishDates) {
         for (Entity worker : workers) {
             Date finishDate = workersFinishDates.get(worker.getId());
             if (finishDate == null) {
-                Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorker(scheduleStartTime, worker);
+                Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorker(worker);
                 if (operationalTasksMaxFinishDate != null) {
                     finishDate = operationalTasksMaxFinishDate;
                     workersFinishDates.put(worker.getId(), finishDate);
@@ -281,14 +281,14 @@ public class ScheduleDetailsListeners {
                 finishDate = scheduleStartTime;
             }
             if (finishDate.compareTo(position.getDateField(SchedulePositionFields.START_TIME)) <= 0) {
-                operationWorkersFinishDates.put(worker.getId(), position.getDateField(SchedulePositionFields.END_TIME));
+                operationWorkersFinishDates.put(worker.getId(), finishDate);
             }
         }
     }
 
     private void updatePositionWorker(Map<Long, Date> workersFinishDates, Map<Long, Long> workstationLastWorkers, Entity position,
             Entity workstation, Entry<Long, Date> firstEntry) {
-        workersFinishDates.put(firstEntry.getKey(), firstEntry.getValue());
+        workersFinishDates.put(firstEntry.getKey(), position.getDateField(SchedulePositionFields.END_TIME));
         workstationLastWorkers.put(workstation.getId(), firstEntry.getKey());
         position.setField(SchedulePositionFields.STAFF, firstEntry.getKey());
     }
@@ -301,11 +301,11 @@ public class ScheduleDetailsListeners {
 
     }
 
-    private Date getOperationalTasksMaxFinishDateForWorker(Date scheduleStartTime, Entity worker) {
+    private Date getOperationalTasksMaxFinishDateForWorker(Entity worker) {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.STAFF, worker))
-                .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
+                .add(SearchRestrictions.ne(STATE, REJECTED))
                 .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
                 .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
         return operationalTasksMaxFinishDateEntity.getDateField(FINISH_DATE);
