@@ -51,8 +51,7 @@
         </decimal>
         <decimal name="usedQuantity" persistent="false"/>
         <decimal name="producedQuantity" persistent="false"/>
-        <enum name="set"
-              values="01set,02intermediate" />
+
         <boolean name="flowFilled" persistent="false" default="false"/>
 
     </fields>

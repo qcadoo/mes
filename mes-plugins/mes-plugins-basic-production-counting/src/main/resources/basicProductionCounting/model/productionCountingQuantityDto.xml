@@ -55,8 +55,6 @@
         <decimal name="usedQuantity"/>
 
         <decimal name="producedQuantity"/>
-
-        <enum name="set" values="01set,02intermediate" />
     </fields>
 
     <masterModel plugin="basicProductionCounting" model="productionCountingQuantity"/>
