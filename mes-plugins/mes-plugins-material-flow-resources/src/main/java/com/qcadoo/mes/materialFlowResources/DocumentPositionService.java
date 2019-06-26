@@ -1,5 +1,18 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,19 +28,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 
 @Repository
 public class DocumentPositionService {
@@ -441,7 +441,7 @@ public class DocumentPositionService {
         } else {
             Map<String, Object> paramMap = Maps.newHashMap();
 
-            paramMap.put("query", '%' + q + '%');
+            paramMap.put("query", q);
             paramMap.put("product", product);
             paramMap.put("conversion", conversion);
             paramMap.put("context", document);
@@ -464,14 +464,15 @@ public class DocumentPositionService {
 
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
 
-        String query = '%' + q + '%';
-
-        List<AbstractDTO> entities = getResources(document, query, product, conversion, useAdditionalCode, additionalCode);
+        String ilikeValue = "%" + q + "%";
+        ilikeValue = ilikeValue.replace("*", "%");
+        ilikeValue = ilikeValue.replace("%%", "%");
+        List<AbstractDTO> entities = getResources(document, ilikeValue, product, conversion, useAdditionalCode, additionalCode);
 
         if (entities.isEmpty() && useAdditionalCode) {
             useAdditionalCode = false;
 
-            entities = getResources(document, query, product, conversion, false, additionalCode);
+            entities = getResources(document, ilikeValue, product, conversion, false, additionalCode);
         }
 
         Map<String, Object> paramMap = Maps.newHashMap();
@@ -486,7 +487,7 @@ public class DocumentPositionService {
 
         String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode);
 
-        return dataProvider.getDataResponse(query, preparedQuery, entities, paramMap, shouldCheckMaxResults);
+        return dataProvider.getDataResponse(ilikeValue, preparedQuery, entities, paramMap, shouldCheckMaxResults);
     }
 
     public ResourceDTO getResourceByNumber(final String resource) {
