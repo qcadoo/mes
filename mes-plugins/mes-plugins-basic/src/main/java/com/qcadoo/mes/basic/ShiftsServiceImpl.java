@@ -134,17 +134,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine) {
-        List<Entity> shifts = getShifts(productionLine);
-
-        return getNearestWorkingDate(dateFrom, productionLine, shifts);
-    }
-
-    private DataDefinition getShiftDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
-    }
-
-    private Optional<DateTime> getNearestWorkingDate(DateTime dateFrom, Entity productionLine, List<Entity> shiftsEntities) {
-        List<Shift> shifts = transformEntitiesToShifts(shiftsEntities);
+        List<Shift> shifts = findAll(productionLine);
         List<DateTimeRange> finalShiftWorkTimes = Lists.newArrayList();
 
         DateTime currentDate = dateFrom.minusDays(1);
@@ -270,13 +260,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
 
         return Optional.of(interval);
-    }
-
-    private List<Shift> transformEntitiesToShifts(List<Entity> shiftsEntities) {
-        List<Entity> shifts = Lists.newArrayList(shiftsEntities);
-        shifts.sort(Comparator.comparing(Entity::getId));
-
-        return shifts.stream().map(Shift::new).collect(Collectors.toList());
     }
 
     public boolean validateShiftTimetableException(final DataDefinition dataDefinition, final Entity entity) {
@@ -703,14 +686,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         return getShiftDataDefinition().find().list().getEntities();
     }
 
-    private List<Entity> getShifts(final Entity productionLine) {
-        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
-        if (shifts.isEmpty()) {
-            shifts = getShifts();
-        }
-        return shifts;
-    }
-
     @Override
     public List<Shift> findAll() {
         return getShifts().stream().map(Shift::new).collect(Collectors.toList());
@@ -718,7 +693,15 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public List<Shift> findAll(Entity productionLine) {
-        return getShifts(productionLine).stream().map(Shift::new).collect(Collectors.toList());
+        List<Entity> shifts = productionLine.getHasManyField(SHIFTS);
+        if (shifts.isEmpty()) {
+            shifts = getShifts();
+        }
+        return shifts.stream().sorted(Comparator.comparing(Entity::getId)).map(Shift::new).collect(Collectors.toList());
+    }
+
+    private DataDefinition getShiftDataDefinition() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
     }
 
     /**

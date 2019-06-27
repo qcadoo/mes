@@ -1,5 +1,7 @@
 package com.qcadoo.mes.basic;
 
+import com.google.common.base.Preconditions;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Preconditions;
 
 @Service
 public class LookupUtils {
@@ -71,7 +71,7 @@ public class LookupUtils {
                                 items.add(String.format("lower(%s) = lower(:%s)", field.getName(), field.getName()));
 
                             } else {
-                                items.add(String.format("lower(%s) like lower(:%s)", field.getName(), field.getName()));
+                                items.add(String.format("%s ilike :%s", field.getName(), field.getName()));
                             }
                         }
                     }
@@ -104,10 +104,14 @@ public class LookupUtils {
                             SearchAttribute.SEARCH_TYPE searchType = field.isAnnotationPresent(SearchAttribute.class) ? field.getAnnotation(SearchAttribute.class).searchType() : SearchAttribute.SEARCH_TYPE.LIKE;
 
                             if (searchType == SearchAttribute.SEARCH_TYPE.EXACT_MATCH) {
+
                                 parameters.put(field.getName(), value);
 
                             } else {
-                                parameters.put(field.getName(), "%" + value + "%");
+                                String ilikeValue = "%" + value + "%";
+                                ilikeValue = ilikeValue.replace("*", "%");
+                                ilikeValue = ilikeValue.replace("%%", "%");
+                                parameters.put(field.getName(), ilikeValue);
                             }
 
                         } else {

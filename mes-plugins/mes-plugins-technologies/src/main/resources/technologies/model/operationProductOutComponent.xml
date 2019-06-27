@@ -37,16 +37,11 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <boolean name="set" default="false" required="true"/>
     </fields>
     <hooks>
         <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
                        method="invalidateIfBelongsToAcceptedTechnology"/>
         <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
                        method="invalidateIfAllreadyInTheSameOperation"/>
-        <onSave class="com.qcadoo.mes.technologies.hooks.OPOCHooks"
-                method="onSave"/>
-        <onCreate class="com.qcadoo.mes.technologies.hooks.OPOCHooks"
-                  method="onCreate"/>
     </hooks>
 </model>

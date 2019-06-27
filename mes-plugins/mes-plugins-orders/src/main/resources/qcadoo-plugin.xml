@@ -207,10 +207,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="createSetElementsOnAccept" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="lockTechnologyTree" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
@@ -357,11 +353,6 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
                         method="updateRibbonState"/>
-
-        <view:view-hook plugin="technologies" view="operationProductOutComponentDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.orders.hooks.OPOCDetailsHooksO"
-                        method="toggleSetField"/>
 
         <view:resource uri="public/**/*"/>
 

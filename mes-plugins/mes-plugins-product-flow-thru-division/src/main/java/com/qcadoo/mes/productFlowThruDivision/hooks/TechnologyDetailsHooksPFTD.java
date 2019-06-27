@@ -40,16 +40,22 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyDetailsHooksPFTD {
@@ -142,8 +148,8 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference("rangeTechnologyOperationComponent");
         GridComponent workstations = (GridComponent) view.getComponentByReference("workstations");
 
-        rangeTechnologyOperationComponent.setEnabled(enable);
-        workstations.setEnabled(enable);
+        rangeTechnologyOperationComponent.setEnabled(true);
+        workstations.setEnabled(true);
 
         rangeTechnologyOperationComponent.setEditable(editable);
         workstations.setEditable(editable);

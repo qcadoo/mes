@@ -239,12 +239,17 @@
                         <component type="lookup" name="coverageOrdersLookup" reference="coverageOrdersLookup"
                                    field="#{form}.coverageOrders" defaultVisible="false" persistent="false"
                                    hasLabel="false">
+
+                            <option type="column" name="name" fields="name"/>
+                            <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"/>
+                            <option type="column" name="division" fields="division" expression="#division['number']"/>
+
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
                             <option type="multiselect" value="true"/>
 
-                            <option type="searchable" value="number"/>
-                            <option type="orderable" value="number"/>
+                            <option type="searchable" value="number,name,productionLine,division"/>
+                            <option type="orderable" value="number,name,productionLine,division"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.orderSupplies.criteriaModifiers.OrdersCriteriaModifiersOS"
                                     method="hideFinishedAndDeclinedOrders"/>

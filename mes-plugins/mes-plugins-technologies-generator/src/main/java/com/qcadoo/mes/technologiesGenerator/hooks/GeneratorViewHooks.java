@@ -33,11 +33,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class GeneratorViewHooks {
@@ -72,6 +73,7 @@ public class GeneratorViewHooks {
         boolean generationInProgress = contextEntity.getBooleanField(GeneratorContextFields.GENERATION_IN_PROGRSS);
         generatorView.setGenerationEnabled(!isAlreadyGenerated);
         generatorView.setRefreshRibbonButtonEnabled(isAlreadyGenerated);
+        generatorView.setRefreshAndApplyCustomizedRibbonButtonEnabled(isAlreadyGenerated);
         Entity context = generatorView.getFormEntity();
         if (context.getId() != null) {
             List<Entity> products = context.getHasManyField(GeneratorContextFields.PRODUCTS);
@@ -82,6 +84,7 @@ public class GeneratorViewHooks {
             } else {
                 generatorView.setGenerationGroupButtonEnabled(!generationInProgress, true, "generateTechnologies");
                 generatorView.setGenerationGroupButtonEnabled(!generationInProgress, true, "refresh");
+                generatorView.setGenerationGroupButtonEnabled(!generationInProgress, true, "refreshAndApplyCustomized");
                 generatorView.setGenerationGroupButtonEnabled(!generationInProgress, true, "customize");
                 generatorView.setActionsGroupButtonEnabled(!generationInProgress, true, "save");
                 generatorView.setActionsGroupButtonEnabled(!generationInProgress, true, "delete");

@@ -23,23 +23,13 @@
  */
 package com.qcadoo.mes.technologiesGenerator.tree;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.domain.OperationId;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
-import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
 import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.mes.technologiesGenerator.GeneratorSettings;
 import com.qcadoo.mes.technologiesGenerator.constants.GeneratorContextFields;
@@ -48,11 +38,27 @@ import com.qcadoo.mes.technologiesGenerator.constants.TechnologiesGeneratorConst
 import com.qcadoo.mes.technologiesGenerator.dataProvider.GeneratorContextDataProvider;
 import com.qcadoo.mes.technologiesGenerator.dataProvider.TechnologyStructureTreeDataProvider;
 import com.qcadoo.mes.technologiesGenerator.domain.ContextId;
+import com.qcadoo.mes.technologiesGenerator.domain.OperationProductKey;
 import com.qcadoo.mes.technologiesGenerator.domain.ProductInfo;
 import com.qcadoo.mes.technologiesGenerator.domain.TechnologyStructureNode;
+import com.qcadoo.mes.technologiesGenerator.domain.TechnologyStructureNodeType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TreeGenerator {
@@ -72,9 +78,9 @@ public class TreeGenerator {
     private GeneratorContextDataProvider generatorContextDataProvider;
 
     @Transactional
-    public Either<String, ContextId> generate(final Entity context, final GeneratorSettings settings) {
+    public Either<String, ContextId> generate(final Entity context, final GeneratorSettings settings, boolean applyCustomized) {
         try {
-            return performGeneration(context, settings);
+            return performGeneration(context, settings, applyCustomized);
         } catch (Exception e) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("A terrible error occurred during technologies structure generation", e);
@@ -83,15 +89,56 @@ public class TreeGenerator {
         }
     }
 
-    private Either<String, ContextId> performGeneration(final Entity context, final GeneratorSettings settings) {
+    private Either<String, ContextId> performGeneration(final Entity context, final GeneratorSettings settings,
+            boolean applyCustomized) {
         Entity technology = context.getBelongsToField(GeneratorContextFields.TECHNOLOGY);
         TechnologyId technologyId = new TechnologyId(technology.getId());
         ContextId contextId = new ContextId(context.getId());
+        Map<OperationProductKey, Long> customizedOperationProductTechnologies = getCustomizedTechnologies(context,
+                applyCustomized);
         Either<String, TechnologyStructureNode> mRoot = tryBuildStructure(settings, technologyId, contextId);
         Either<String, Entity> generationResults = mRoot.flatMap(root -> regenerateNodes(context, root).flatMap(
                 x -> markContextAsGenerated(contextId)));
+        if (applyCustomized) {
+            updateNodesToCustomized(context, customizedOperationProductTechnologies);
+        }
         logResults(generationResults);
         return generationResults.map(Entity::getId).map(ContextId::new);
+    }
+
+    private void updateNodesToCustomized(Entity context, Map<OperationProductKey, Long> customizedOperationProductTechnologies) {
+        customizedOperationProductTechnologies.forEach((opk, tech) -> {
+            Entity node = getGeneratorTreeNodeDD().find()
+                    .createAlias(GeneratorTreeNodeFields.PRODUCT, GeneratorTreeNodeFields.PRODUCT, JoinType.LEFT)
+                    .add(SearchRestrictions.belongsTo(GeneratorTreeNodeFields.GENERATOR_CONTEXT, context))
+                    .add(SearchRestrictions.eq(GeneratorTreeNodeFields.PRODUCT + ".id", opk.getProductId()))
+                    .add(SearchRestrictions.eq(GeneratorTreeNodeFields.OPERATION + ".id", opk.getOperationId())).setMaxResults(1)
+                    .uniqueResult();
+            if (Objects.nonNull(node)) {
+                node.setField(GeneratorTreeNodeFields.PRODUCT_TECHNOLOGY, tech);
+                node.setField(GeneratorTreeNodeFields.ENTITY_TYPE,
+                        TechnologyStructureNodeType.CUSTOMIZED_COMPONENT.getStringValue());
+                node.getDataDefinition().save(node);
+            }
+        });
+    }
+
+    private Map<OperationProductKey, Long> getCustomizedTechnologies(final Entity context, boolean applyCustomized) {
+        Map<OperationProductKey, Long> map = Maps.newHashMap();
+        if (!applyCustomized) {
+            return map;
+        }
+        List<Entity> nodes = getGeneratorTreeNodeDD()
+                .find()
+                .add(SearchRestrictions.belongsTo(GeneratorTreeNodeFields.GENERATOR_CONTEXT, context))
+                .add(SearchRestrictions.eq(GeneratorTreeNodeFields.ENTITY_TYPE,
+                        TechnologyStructureNodeType.CUSTOMIZED_COMPONENT.getStringValue())).list().getEntities();
+        nodes.forEach(node -> {
+            OperationProductKey operationProductKey = new OperationProductKey(node.getBelongsToField(
+                    GeneratorTreeNodeFields.OPERATION).getId(), node.getBelongsToField(GeneratorTreeNodeFields.PRODUCT).getId());
+            map.put(operationProductKey, node.getBelongsToField(GeneratorTreeNodeFields.PRODUCT_TECHNOLOGY).getId());
+        });
+        return map;
     }
 
     private Either<String, TechnologyStructureNode> tryBuildStructure(final GeneratorSettings settings,
@@ -137,7 +184,7 @@ public class TreeGenerator {
         setBelongsToField(entity, GeneratorTreeNodeFields.GENERATOR_CONTEXT, generatorContext);
         setUpOperationField(entity, productInfo);
         setUpDivisionField(entity, productInfo);
-        setUpTechnologyGeneratorAndPerformance(entity,productInfo);
+        setUpTechnologyGeneratorAndPerformance(entity, productInfo);
 
         entity.setField(GeneratorTreeNodeFields.QUANTITY, productInfo.getQuantity());
         entity.setField(GeneratorTreeNodeFields.ENTITY_TYPE, node.getType().getStringValue());
@@ -204,12 +251,14 @@ public class TreeGenerator {
     private void setUpTechnologyGeneratorAndPerformance(final Entity entity, final ProductInfo productInfo) {
         TechnologyOperationId tocId = productInfo.getTocId();
         if (tocId != null) {
-            Entity tech = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(tocId.get()).getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+            Entity tech = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .get(tocId.get()).getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             if (tech != null) {
                 setBelongsToField(entity, GeneratorTreeNodeFields.TECHNOLOGY_GROUP,
                         tech.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP));
-                entity.setField(GeneratorTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY,tech.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
+                entity.setField(GeneratorTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY,
+                        tech.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY));
             }
         }
     }

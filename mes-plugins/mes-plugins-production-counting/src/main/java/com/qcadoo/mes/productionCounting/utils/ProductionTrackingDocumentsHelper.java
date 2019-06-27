@@ -1,17 +1,30 @@
 package com.qcadoo.mes.productionCounting.utils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.collect.*;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -24,17 +37,6 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingDocumentsHelper {
@@ -63,31 +65,6 @@ public class ProductionTrackingDocumentsHelper {
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             List<Entity> recordOutProducts = new ArrayList<>();
             recordOutProducts.addAll(groupedRecordOutProducts.get(warehouseId));
-
-            for (Entity recordOutProduct : recordOutProducts) {
-                List<Entity> setEntities = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo("trackingOperationProductOutComponent", recordOutProduct)).list()
-                        .getEntities();
-
-                if (!setEntities.isEmpty()) {
-                    for (Entity setProduct : setEntities) {
-                        Entity newRecordProduct = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT).create();
-                        Entity product = setProduct.getBelongsToField("product");
-                        BigDecimal quantity = setProduct.getDecimalField("quantityFromSets");
-                        newRecordProduct.setField(TrackingOperationProductOutComponentFields.PRODUCT, product);
-                        newRecordProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY, quantity);
-                        newRecordProduct.setField(TrackingOperationProductOutComponentFields.GIVEN_UNIT,
-                                product.getStringField(ProductFields.UNIT));
-                        newRecordProduct.setField(TrackingOperationProductOutComponentFields.USED_QUANTITY, quantity);
-                        groupedRecordOutProducts.put(warehouseId, newRecordProduct);
-                    }
-
-                    productsToRemove.put(warehouseId, recordOutProduct);
-                }
-            }
         }
 
         for (Map.Entry<Long, Entity> entry : productsToRemove.entrySet()) {
@@ -102,30 +79,6 @@ public class ProductionTrackingDocumentsHelper {
             List<Entity> recordInProducts = new ArrayList<>();
             recordInProducts.addAll(groupedRecordInProducts.get(warehouseId));
 
-            for (Entity recordInProduct : recordInProducts) {
-                List<Entity> setEntities = dataDefinitionService
-                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_SET_TECHNOLOGY_IN_COMPONENTS).find()
-                        .add(SearchRestrictions.belongsTo("trackingOperationProductInComponent", recordInProduct)).list()
-                        .getEntities();
-
-                if (!setEntities.isEmpty()) {
-                    for (Entity setProduct : setEntities) {
-                        Entity newRecordProduct = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).create();
-                        Entity product = setProduct.getBelongsToField("product");
-                        BigDecimal quantity = setProduct.getDecimalField("quantityFromSets");
-                        newRecordProduct.setField(TrackingOperationProductInComponentFields.PRODUCT, product);
-                        newRecordProduct.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, quantity);
-                        newRecordProduct.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT,
-                                product.getStringField(ProductFields.UNIT));
-                        newRecordProduct.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, quantity);
-                        groupedRecordInProducts.put(warehouseId, newRecordProduct);
-                    }
-
-                    productsToRemove.put(warehouseId, recordInProduct);
-                }
-            }
         }
 
         for (Map.Entry<Long, Entity> entry : productsToRemove.entrySet()) {
@@ -312,17 +265,20 @@ public class ProductionTrackingDocumentsHelper {
             for (Entity productNotInStock : productsNotInStock.get(warehouseFrom).keySet()) {
                 boolean productInTrackingOperationProductOut = false;
                 for (Entity recordOutProduct : recordOutProducts) {
-                    if (productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId().equals(
-                            recordOutProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())) {
-                        if (Objects.isNull(
-                                recordOutProduct.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY))) {
-                            ids.add(productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
+                    if (productNotInStock
+                            .getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                            .getId()
+                            .equals(recordOutProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())) {
+                        if (Objects.isNull(recordOutProduct
+                                .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY))) {
+                            ids.add(productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                                    .getId());
                         } else if (productNotInStock.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)
                                 .compareTo(
                                         recordOutProduct.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)
                                                 .add(productsNotInStock.get(warehouseFrom).get(productNotInStock))) > 0) {
-                            ids.add(productNotInStock.getBelongsToField(
-                                    TrackingOperationProductInComponentFields.PRODUCT).getId());
+                            ids.add(productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                                    .getId());
                         }
                         productInTrackingOperationProductOut = true;
                         break;
@@ -346,8 +302,8 @@ public class ProductionTrackingDocumentsHelper {
             Entity warehouseFrom = locationDD.get(warehouseId);
             Map<Long, BigDecimal> stockMap = getStock(groupedRecordInProducts, warehouseId, warehouseFrom);
             for (Entity recordInProduct : groupedRecordInProducts.get(warehouseId)) {
-                BigDecimal productStock = stockMap.get(
-                        recordInProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
+                BigDecimal productStock = stockMap.get(recordInProduct.getBelongsToField(
+                        TrackingOperationProductInComponentFields.PRODUCT).getId());
                 if (Objects.isNull(productStock)) {
                     productsNotInStockQuantities.put(recordInProduct, BigDecimal.ZERO);
                 } else if (productStock.compareTo(recordInProduct

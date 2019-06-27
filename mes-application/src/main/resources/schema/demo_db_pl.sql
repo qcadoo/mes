@@ -7091,82 +7091,6 @@ ALTER SEQUENCE arch_productioncounting_productiontrackingstatechange_id_seq OWNE
 
 
 --
--- Name: arch_productioncounting_settechnologyincomponents; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_productioncounting_settechnologyincomponents (
-    id bigint NOT NULL,
-    trackingoperationproductincomponent_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5),
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE arch_productioncounting_settechnologyincomponents_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE arch_productioncounting_settechnologyincomponents_id_seq OWNED BY arch_productioncounting_settechnologyincomponents.id;
-
-
---
--- Name: productioncounting_settrackingoperationproductincomponents; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productioncounting_settrackingoperationproductincomponents (
-    id bigint NOT NULL,
-    trackingoperationproductoutcomponent_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5)
-);
-
-
---
--- Name: productioncounting_settrackingoperationproductincomponents_id_s; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productioncounting_settrackingoperationproductincomponents_id_s
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productioncounting_settrackingoperationproductincomponents_id_s; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productioncounting_settrackingoperationproductincomponents_id_s OWNED BY productioncounting_settrackingoperationproductincomponents.id;
-
-
---
--- Name: arch_productioncounting_settrackingoperationproductincomponents; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_productioncounting_settrackingoperationproductincomponents (
-    id bigint DEFAULT nextval('productioncounting_settrackingoperationproductincomponents_id_s'::regclass) NOT NULL,
-    trackingoperationproductoutcomponent_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5),
-    archived boolean DEFAULT false
-);
-
-
---
 -- Name: arch_productioncounting_staffworktime; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8847,7 +8771,6 @@ CREATE TABLE basic_parameter (
     ordersgenerationnotcompletedates boolean DEFAULT false,
     canchangeprodlineforacceptedorders boolean DEFAULT false,
     generateeachonseparatepage boolean,
-    createsetelementsonaccept boolean DEFAULT false,
     includewagegroups boolean DEFAULT false,
     ordersgeneratedbycoverage boolean DEFAULT false,
     automaticallygenerateordersforcomponents boolean DEFAULT false,
@@ -9577,8 +9500,7 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     productsinputlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
-    entityversion bigint DEFAULT 0,
-    set character varying(255)
+    entityversion bigint DEFAULT 0
 );
 
 
@@ -9808,6 +9730,21 @@ CREATE VIEW basicproductioncounting_producedquantity_helper AS
 
 
 --
+-- Name: basicproductioncounting_producedquantity_withdraft; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW basicproductioncounting_producedquantity_withdraft AS
+ SELECT sum(topoc.usedquantity) AS producedquantity,
+    pt.order_id,
+    topoc.product_id,
+    pt.technologyoperationcomponent_id
+   FROM (productioncounting_trackingoperationproductoutcomponent topoc
+     JOIN productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
+  WHERE (((pt.state)::text = '02accepted'::text) OR ((pt.state)::text = '01draft'::text))
+  GROUP BY pt.order_id, topoc.product_id, pt.technologyoperationcomponent_id;
+
+
+--
 -- Name: basicproductioncounting_productioncountingoperationrun; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -9917,8 +9854,7 @@ CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
     pcq.typeofmaterial,
     pcq.plannedquantity,
     NULL::numeric AS usedquantity,
-    NULL::numeric AS producedquantity,
-    pcq.set
+    NULL::numeric AS producedquantity
    FROM ((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
@@ -9939,8 +9875,7 @@ UNION
     pcq.typeofmaterial,
     pcq.plannedquantity,
     COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
-    COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity,
-    pcq.set
+    COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity
    FROM ((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
@@ -17096,8 +17031,7 @@ CREATE TABLE technologies_operationproductoutcomponent (
     productsshiftinglocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     automaticmove boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    set boolean DEFAULT false
+    entityversion bigint DEFAULT 0
 );
 
 
@@ -20424,39 +20358,6 @@ ALTER SEQUENCE productioncounting_productionbalance_id_seq OWNED BY productionco
 
 
 --
--- Name: productioncounting_productioncountingquantitysetcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productioncounting_productioncountingquantitysetcomponent (
-    id bigint NOT NULL,
-    productioncountingquantity_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5),
-    plannedquantityfromproduct numeric(12,5),
-    outquantity numeric(12,5)
-);
-
-
---
--- Name: productioncounting_productioncountingquantitysetcomponent_id_se; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productioncounting_productioncountingquantitysetcomponent_id_se
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productioncounting_productioncountingquantitysetcomponent_id_se; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productioncounting_productioncountingquantitysetcomponent_id_se OWNED BY productioncounting_productioncountingquantitysetcomponent.id;
-
-
---
 -- Name: productioncounting_productiontracking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -20871,37 +20772,6 @@ CREATE SEQUENCE productioncounting_productiontrackingstatechange_id_seq
 --
 
 ALTER SEQUENCE productioncounting_productiontrackingstatechange_id_seq OWNED BY productioncounting_productiontrackingstatechange.id;
-
-
---
--- Name: productioncounting_settechnologyincomponents; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productioncounting_settechnologyincomponents (
-    id bigint NOT NULL,
-    trackingoperationproductincomponent_id bigint,
-    product_id bigint,
-    quantityfromsets numeric(12,5)
-);
-
-
---
--- Name: productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productioncounting_settechnologyincomponents_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productioncounting_settechnologyincomponents_id_seq OWNED BY productioncounting_settechnologyincomponents.id;
 
 
 --
@@ -25234,13 +25104,6 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange ALTER COL
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_settechnologyincomponents_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_productioncounting_staffworktime ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_staffworktime_id_seq'::regclass);
 
 
@@ -26998,13 +26861,6 @@ ALTER TABLE ONLY productioncounting_productionbalance ALTER COLUMN id SET DEFAUL
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent ALTER COLUMN id SET DEFAULT nextval('productioncounting_productioncountingquantitysetcomponent_id_se'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY productioncounting_productiontracking ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontracking_id_seq'::regclass);
 
 
@@ -27020,20 +26876,6 @@ ALTER TABLE ONLY productioncounting_productiontrackingreport ALTER COLUMN id SET
 --
 
 ALTER TABLE ONLY productioncounting_productiontrackingstatechange ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontrackingstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settechnologyincomponents ALTER COLUMN id SET DEFAULT nextval('productioncounting_settechnologyincomponents_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents ALTER COLUMN id SET DEFAULT nextval('productioncounting_settrackingoperationproductincomponents_id_s'::regclass);
 
 
 --
@@ -29209,29 +29051,6 @@ SELECT pg_catalog.setval('arch_productioncounting_productiontrackingstatechange_
 
 
 --
--- Data for Name: arch_productioncounting_settechnologyincomponents; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY arch_productioncounting_settechnologyincomponents (id, trackingoperationproductincomponent_id, product_id, quantityfromsets, archived) FROM stdin;
-\.
-
-
---
--- Name: arch_productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('arch_productioncounting_settechnologyincomponents_id_seq', 1, false);
-
-
---
--- Data for Name: arch_productioncounting_settrackingoperationproductincomponents; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY arch_productioncounting_settrackingoperationproductincomponents (id, trackingoperationproductoutcomponent_id, product_id, quantityfromsets, archived) FROM stdin;
-\.
-
-
---
 -- Data for Name: arch_productioncounting_staffworktime; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -30291,8 +30110,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, createsetelementsonaccept, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	f	50	3000	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f
 \.
 
 
@@ -30638,7 +30457,7 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingoperationrun
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, set) FROM stdin;
+COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion) FROM stdin;
 \.
 
 
@@ -34506,21 +34325,6 @@ SELECT pg_catalog.setval('productioncounting_productionbalance_id_seq', 1, false
 
 
 --
--- Data for Name: productioncounting_productioncountingquantitysetcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productioncounting_productioncountingquantitysetcomponent (id, productioncountingquantity_id, product_id, quantityfromsets, plannedquantityfromproduct, outquantity) FROM stdin;
-\.
-
-
---
--- Name: productioncounting_productioncountingquantitysetcomponent_id_se; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productioncounting_productioncountingquantitysetcomponent_id_se', 1, false);
-
-
---
 -- Data for Name: productioncounting_productiontracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34598,36 +34402,6 @@ COPY productioncounting_productiontrackingstatechange (id, dateandtime, sourcest
 --
 
 SELECT pg_catalog.setval('productioncounting_productiontrackingstatechange_id_seq', 1, false);
-
-
---
--- Data for Name: productioncounting_settechnologyincomponents; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productioncounting_settechnologyincomponents (id, trackingoperationproductincomponent_id, product_id, quantityfromsets) FROM stdin;
-\.
-
-
---
--- Name: productioncounting_settechnologyincomponents_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productioncounting_settechnologyincomponents_id_seq', 1, false);
-
-
---
--- Data for Name: productioncounting_settrackingoperationproductincomponents; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productioncounting_settrackingoperationproductincomponents (id, trackingoperationproductoutcomponent_id, product_id, quantityfromsets) FROM stdin;
-\.
-
-
---
--- Name: productioncounting_settrackingoperationproductincomponents_id_s; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productioncounting_settrackingoperationproductincomponents_id_s', 1, false);
 
 
 --
@@ -36343,7 +36117,7 @@ SELECT pg_catalog.setval('technologies_operationproductincomponentdto_id_seq', 1
 -- Data for Name: technologies_operationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operationproductoutcomponent (id, operationcomponent_id, product_id, quantity, productsinputlocation_id, isdivisioninputlocation, isdivisioninputlocationmodified, flowtypeoutcomponent, productsflowlocation_id, productsshiftinglocation_id, productionflow, automaticmove, entityversion, set) FROM stdin;
+COPY technologies_operationproductoutcomponent (id, operationcomponent_id, product_id, quantity, productsinputlocation_id, isdivisioninputlocation, isdivisioninputlocationmodified, flowtypeoutcomponent, productsflowlocation_id, productsshiftinglocation_id, productionflow, automaticmove, entityversion) FROM stdin;
 \.
 
 
@@ -37750,22 +37524,6 @@ ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
 
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange
     ADD CONSTRAINT arch_productioncounting_productiontrackingstatechange_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
-    ADD CONSTRAINT arch_productioncounting_settechnologyincomponents_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_productioncounting_settrackingoperationproductincompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT arch_productioncounting_settrackingoperationproductincompo_pkey PRIMARY KEY (id);
 
 
 --
@@ -40241,14 +39999,6 @@ ALTER TABLE ONLY productioncounting_productiontrackingreport
 
 
 --
--- Name: productioncounting_productioncountingquantitysetcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT productioncounting_productioncountingquantitysetcomponent_pkey PRIMARY KEY (id);
-
-
---
 -- Name: productioncounting_productionrecord_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -40278,22 +40028,6 @@ ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
 
 ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponent
     ADD CONSTRAINT productioncounting_recordoperationproductoutcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: productioncounting_settechnologyincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settechnologyincomponents
-    ADD CONSTRAINT productioncounting_settechnologyincomponents_pkey PRIMARY KEY (id);
-
-
---
--- Name: productioncounting_settrackingoperationproductincomponents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT productioncounting_settrackingoperationproductincomponents_pkey PRIMARY KEY (id);
 
 
 --
@@ -49890,24 +49624,8 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 -- Name: productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT productioncountingquantitysc_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: productioncountingquantitysc_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_productioncounting_productioncountingquantitysetcomponent
     ADD CONSTRAINT productioncountingquantitysc_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: productioncountingquantitysc_productioncountingquantity_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productioncountingquantitysetcomponent
-    ADD CONSTRAINT productioncountingquantitysc_productioncountingquantity_fkey FOREIGN KEY (productioncountingquantity_id) REFERENCES basicproductioncounting_productioncountingquantity(id) DEFERRABLE;
 
 
 --
@@ -51468,70 +51186,6 @@ ALTER TABLE ONLY integrationbartender_sendtoprint
 
 ALTER TABLE ONLY arch_integrationbartender_sendtoprint
     ADD CONSTRAINT sendtoprint_printlabelshelper_fkey FOREIGN KEY (printlabelshelper_id) REFERENCES arch_integrationbartender_printlabelshelper(id) DEFERRABLE;
-
-
---
--- Name: settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settechnologyincomponents
-    ADD CONSTRAINT settechnologyic_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: settechnologyic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
-    ADD CONSTRAINT settechnologyic_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settechnologyincomponents
-    ADD CONSTRAINT settechnologyic_trackingoperationproductic_fkey FOREIGN KEY (trackingoperationproductincomponent_id) REFERENCES productioncounting_trackingoperationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: settechnologyic_trackingoperationproductic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settechnologyincomponents
-    ADD CONSTRAINT settechnologyic_trackingoperationproductic_fkey FOREIGN KEY (trackingoperationproductincomponent_id) REFERENCES arch_productioncounting_trackingoperationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT settrackingoperationproductic_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: settrackingoperationproductic_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT settrackingoperationproductic_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT settrackingoperationproductic_trackingoperationproductoc_fkey FOREIGN KEY (trackingoperationproductoutcomponent_id) REFERENCES productioncounting_trackingoperationproductoutcomponent(id) DEFERRABLE;
-
-
---
--- Name: settrackingoperationproductic_trackingoperationproductoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_settrackingoperationproductincomponents
-    ADD CONSTRAINT settrackingoperationproductic_trackingoperationproductoc_fkey FOREIGN KEY (trackingoperationproductoutcomponent_id) REFERENCES arch_productioncounting_trackingoperationproductoutcomponent(id) DEFERRABLE;
 
 
 --

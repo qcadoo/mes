@@ -79,13 +79,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        <component type="checkbox" name="createSetElementsOnAccept"
-                                   field="#{form}.createSetElementsOnAccept"
-                                   reference="createSetElementsOnAccept">
-                            <option type="labelWidth" value="40"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="4">
                         <component type="gridLayout" name="orderValuesDescriptionGridLayout" columns="1" rows="1">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="fillOrderDescriptionBasedOnTechnologyDescription"
@@ -96,7 +89,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="4">
                         <component type="borderLayout" name="orderValuesLockBorderLayout">
                             <component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
                                 <layoutElement column="1" row="1">

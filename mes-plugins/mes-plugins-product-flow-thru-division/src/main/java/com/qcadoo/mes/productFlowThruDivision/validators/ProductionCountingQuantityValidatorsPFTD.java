@@ -30,11 +30,9 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -68,25 +66,6 @@ public class ProductionCountingQuantityValidatorsPFTD {
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
             if (!productionCountingQuantity.isValid()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public boolean validateProductionFlowForSet(final DataDefinition dataDefinition, final Entity productionCountingQuantity) {
-        String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
-        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)) {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-            Entity mainProduct = technologyService.getMainOutputProductComponent(tree.getRoot());
-            String productionFlow = productionCountingQuantity
-                    .getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW);
-            if (mainProduct.getBooleanField(OperationProductOutComponentFields.SET) && productionFlow != null
-                    && !productionFlow.equals("02withinTheProcess")) {
-                productionCountingQuantity.addError(dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW),
-                        "technologies.technology.error.productionFlow");
                 return false;
             }
         }

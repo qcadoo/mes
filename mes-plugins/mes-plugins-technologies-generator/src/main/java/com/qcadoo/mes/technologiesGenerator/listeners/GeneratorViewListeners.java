@@ -38,12 +38,13 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class GeneratorViewListeners {
@@ -84,29 +85,34 @@ public class GeneratorViewListeners {
 
     public void generateTree(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
         GeneratorView generatorView = GeneratorView.from(view);
-        Either<String, ContextId> generationResults = generate(generatorView);
+        Either<String, ContextId> generationResults = generate(generatorView, false);
         if (generationResults.isRight()) {
             generatorView.showStructureTreeTab();
         }
     }
 
     public void refreshTree(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
-        generate(GeneratorView.from(view));
+        generate(GeneratorView.from(view), false);
     }
 
-    private Either<String, ContextId> generate(final GeneratorView generatorView) {
+    public void refreshAndApplyCustomized(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
+        generate(GeneratorView.from(view), true);
+    }
+
+    private Either<String, ContextId> generate(final GeneratorView generatorView, boolean applyCustomized) {
         Entity context = generatorView.getFormEntity();
 
         Entity savedContext = context.getDataDefinition().save(context);
         if (savedContext.isValid()) {
-            return performGeneration(generatorView, savedContext);
+            return performGeneration(generatorView, savedContext, applyCustomized);
         }
         generatorView.setFormEntity(savedContext);
         return Either.left("Context has validation errors");
     }
 
-    private Either<String, ContextId> performGeneration(final GeneratorView generatorView, final Entity savedContext) {
-        Either<String, ContextId> generationRes = treeGenerator.generate(savedContext, GeneratorSettings.from(savedContext, parameterService.getParameter()));
+    private Either<String, ContextId> performGeneration(final GeneratorView generatorView, final Entity savedContext,
+            boolean applyCustomized) {
+        Either<String, ContextId> generationRes = treeGenerator.generate(savedContext, GeneratorSettings.from(savedContext, parameterService.getParameter()), applyCustomized);
         if (generationRes.isRight()) {
             Entity updatedContext = savedContext.getDataDefinition().get(savedContext.getId());
             generatorView.setFormEntity(updatedContext);

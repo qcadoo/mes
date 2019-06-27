@@ -60,11 +60,6 @@ public final class ProductionCountingConstants {
     public static final String MODEL_ANOMALY_EXPLANATION = "anomalyExplanation";
 
     // VIEW
-    public static final String MODEL_SET_TRACKING_OPERATION_PRODUCT_IN_COMPONENTS = "setTrackingOperationProductInComponents";
-
-    public static final String MODEL_SET_TECHNOLOGY_IN_COMPONENTS = "setTechnologyInComponents";
-
-    public static final String MODEL_PRODUCTION_COUNTING_QUANTITY_SET_COMPONENT = "productionCountingQuantitySetComponent";
 
     public static String productionTrackingDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_PRODUCTION_TRACKING + "Details.html?context=%7B%22form.id%22%3A%22"
