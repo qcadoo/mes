@@ -58,6 +58,8 @@
 			reference="availabilityComponentForm">
 			<component type="gridLayout" name="gridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1" >
+					<component type="input" name="terminal" reference="terminal"
+							   defaultVisible="false" defaultEnabled="false"/>
 					<component type="grid" name="availabilityComponentList"
 						reference="grid" source="#{order}.materialAvailability">
 						<option type="column" name="productNumber" fields="product"

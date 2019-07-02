@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+
+import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderWithMaterialAvailabilityListHooks {
@@ -42,10 +43,14 @@ public class OrderWithMaterialAvailabilityListHooks {
 
     private static final String L_SHOW_AVAILABILITY = "showAvailability";
 
+    private static final String FROM_TERMINAL = "window.mainTab.availabilityComponentForm.gridLayout.terminal";
+
     public void toggleShowAvailabilityButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
         RibbonActionItem showAvailability = (RibbonActionItem) materialAvailability.getItemByName(L_SHOW_AVAILABILITY);
+        JSONObject obj = view.getJsonContext();
+
 
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
@@ -55,6 +60,10 @@ public class OrderWithMaterialAvailabilityListHooks {
             showAvailability.setEnabled(true);
         }
         showAvailability.setMessage("orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecord");
+        if(obj.has(FROM_TERMINAL)) {
+            showAvailability.setEnabled(false);
+            showAvailability.setMessage(null);
+        }
         showAvailability.requestUpdate(true);
     }
 }
