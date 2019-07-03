@@ -1,22 +1,5 @@
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-import static java.util.Map.Entry.comparingByValue;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -45,6 +28,22 @@ import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static java.util.Map.Entry.comparingByValue;
 
 @Service
 public class ScheduleDetailsListeners {
@@ -179,18 +178,10 @@ public class ScheduleDetailsListeners {
         Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE)
                 .get(scheduleId);
         if (ScheduleSortOrder.DESCENDING.getStringValue().equals(schedule.getStringField(ScheduleFields.SORT_ORDER))) {
-            return schedule.getHasManyField(ScheduleFields.POSITIONS).find()
-                    .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
-                    .addOrder(SearchOrders.desc(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT + "."
-                            + TechnologyOperationComponentFields.NODE_NUMBER))
+            return schedule.getHasManyField(ScheduleFields.POSITIONS).find().addOrder(SearchOrders.asc("id"))
                     .addOrder(SearchOrders.desc(SchedulePositionFields.MACHINE_WORK_TIME)).list().getEntities();
         } else {
-            return schedule.getHasManyField(ScheduleFields.POSITIONS).find()
-                    .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT,
-                            SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
-                    .addOrder(SearchOrders.desc(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT + "."
-                            + TechnologyOperationComponentFields.NODE_NUMBER))
+            return schedule.getHasManyField(ScheduleFields.POSITIONS).find().addOrder(SearchOrders.asc("id"))
                     .addOrder(SearchOrders.asc(SchedulePositionFields.MACHINE_WORK_TIME)).list().getEntities();
         }
     }
