@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductionLinesService;
@@ -46,6 +36,18 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
@@ -328,7 +330,8 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public OperationWorkTime estimateTotalWorkTimeForOrder(final Entity order, final Map<Long, BigDecimal> operationRuns,
             final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine, final boolean saved) {
         List<Entity> operationComponents = order.getBelongsToField(L_TECHNOLOGY).getHasManyField(
-                TechnologyFields.OPERATION_COMPONENTS);
+                TechnologyFields.OPERATION_COMPONENTS).stream().sorted(Comparator.comparing(Entity::getId).reversed()).collect(
+                Collectors.toList());
         Map<Long, Integer> workstations = getWorkstationsMapFromOrder(order);
 
         return estimateTotalWorkTime(order, operationComponents, operationRuns, includeTpz, includeAdditionalTime, workstations,
