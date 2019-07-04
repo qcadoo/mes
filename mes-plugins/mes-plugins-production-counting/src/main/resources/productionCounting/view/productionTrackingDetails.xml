@@ -108,6 +108,22 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="replacements" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
+                <bigButton name="useReplacement" icon="copyIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('useReplacement', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="anomalies" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
                 <bigButton name="addToAnomaliesList" icon="newIcon24.png"
                            state="disabled">
@@ -484,6 +500,10 @@
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="addToAnomaliesList"/>
 
+                <listener event="useReplacement"
+                          class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                          method="useReplacement"/>
+
             </component>
         </windowTab>
 
@@ -548,21 +568,29 @@
                         <script>
                             <![CDATA[
 							    var addToAnomaliesListBtn = #{window}.getRibbonItemOrNull("anomalies.addToAnomaliesList");
-                                    if (addToAnomaliesListBtn ) {
+							    var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
                                         var listener = {
                                             onChange: function(selectedEntitiesArray) {
-                                             var state = #{state}.getValue().content.value;
-								                if (state != "01draft") {
-								                    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
-								                } else if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-                                                    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                if (addToAnomaliesListBtn) {
+                                                    var state = #{state}.getValue().content.value;
+								                    if (state != "01draft") {
+								                        addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+								                    } else if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                                        addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                    } else {
+                                                        addToAnomaliesListBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                    }
+                                                }
+                                                if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
+                                                    useReplacementBtn.enable();
                                                 } else {
-                                                    addToAnomaliesListBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                                    useReplacementBtn.disable();
                                                 }
                                             }
-                                        }
+
+                                         }
                                     this.addOnChangeListener(listener);
-                                    }
+
 							]]>
                         </script>
                         <option type="column" name="number" fields="productNumber"
@@ -575,6 +603,8 @@
                                 width="100"/>
                         <option type="column" name="unit" fields="productUnit"
                                 link="false" width="50"/>
+                        <option type="column" name="replacement" fields="replacement"
+                                link="false" width="50"/>
 
                         <option type="correspondingView"
                                 value="productionCounting/trackingOperationProductInComponentDetails"/>
@@ -583,8 +613,8 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit"/>
-                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit"/>
+                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit,replacement"/>
+                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit,replacement"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>

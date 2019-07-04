@@ -114,6 +114,27 @@ public class ProductionTrackingDetailsListeners {
     @Autowired
     private OperationalTasksService operationalTasksService;
 
+    public void useReplacement(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
+                .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
+        if (!trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().isEmpty()
+                && trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().size() == 1) {
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            Long productionTrackingId = productionTrackingForm.getEntityId();
+            Entity inProductTracking = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).get(
+                    trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().stream().findFirst().get());
+
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.productionTracking", productionTrackingId);
+            parameters.put("form.basicProduct", inProductTracking.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
+
+            String url = "/productionCounting/useReplacement.html";
+            view.openModal(url, parameters);
+        }
+    }
+
     public void addToAnomaliesList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
