@@ -68,9 +68,9 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class DocumentDetailsListeners {
 
-    private static final String L_FORM = "form";
+	private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
-    private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
+    private static final String L_FORM = "form";
 
     public static final String L_NUMBER = " number = ";
 
@@ -113,8 +113,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -134,10 +134,11 @@ public class DocumentDetailsListeners {
                 documentDb = documentDb.getDataDefinition().save(documentDb);
 
                 try {
-                    dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
-                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName", documentDb
-                                    .getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")), componentState
-                            .getLocale());
+                    dispositionOrderPdfService.generateDocument(
+                            fileService.updateReportFileName(documentDb, DocumentFields.GENERATION_DATE,
+                                    "materialFlowResources.dispositionOrder.fileName",
+                                    documentDb.getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")),
+                            componentState.getLocale());
                 } catch (Exception e) {
                     LOG.error("Error when generate disposition order", e);
 
@@ -161,8 +162,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
-                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
+                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -201,12 +202,14 @@ public class DocumentDetailsListeners {
             }
 
             setAcceptationInProgress(documentFromDB, true);
+
             try {
                 createResourcesForDocuments(view, documentForm, documentDD, documentFromDB);
-
             } catch (Exception e) {
                 documentForm.addMessage("materialFlow.error.document.acceptError", MessageType.FAILURE);
+
                 LOG.error("Error in createResourcesForDocuments ", e);
+
                 throw new IllegalStateException(e.getMessage(), e);
             } finally {
                 setAcceptationInProgress(documentFromDB, false);
@@ -235,7 +238,9 @@ public class DocumentDetailsListeners {
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         String message = String.format("DOCUMENT SET ACCEPTATION IN PROGRESS = %b  id = %d number = %s", acceptationInProgress,
                 document.getId(), document.getStringField(DocumentFields.NUMBER));
+
         LOG.info(message);
+
         jdbcTemplate.update(sql, namedParameters);
     }
 
@@ -244,7 +249,9 @@ public class DocumentDetailsListeners {
             final DataDefinition documentDD, Entity document) {
         String message = String.format("DOCUMENT ACCEPT STARTED: id = %d number = %s", document.getId(),
                 document.getStringField(DocumentFields.NUMBER));
+
         LOG.info(message);
+
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.ACCEPTATION_IN_PROGRESS, false);
 
@@ -258,6 +265,7 @@ public class DocumentDetailsListeners {
             documentForm.setEntity(document);
 
             LOG.info(failedMessage);
+
             return;
         }
 
@@ -271,8 +279,8 @@ public class DocumentDetailsListeners {
                 String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                         .getStringField(ProductFields.NUMBER);
 
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                        false, resourceNumber, productNumber);
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
+                        resourceNumber, productNumber);
             }
         } else {
             document.setNotValid();
@@ -297,6 +305,7 @@ public class DocumentDetailsListeners {
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
+
             LOG.info(successMessage);
         }
 
