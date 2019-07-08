@@ -582,9 +582,9 @@
                                                     }
                                                 }
                                                 if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
-                                                    useReplacementBtn.enable();
+                                                    useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
                                                 } else {
-                                                    useReplacementBtn.disable();
+                                                    useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
                                                 }
                                             }
 
