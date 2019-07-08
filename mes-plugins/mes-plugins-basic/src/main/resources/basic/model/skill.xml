@@ -42,7 +42,10 @@
         <hasMany name="staffSkills" plugin="basic" model="staffSkill" joinField="skill" cascade="delete" copyable="false"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.SkillHooks"
+                       method="onValidate"/>
+    </hooks>
 
     <identifier expression="#name"/>
 </model>
