@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -85,6 +86,9 @@ public class CostCalculationDetailsListeners {
     @Autowired
     private CostCalculationDetailsHooks costCalculationDetailsHooks;
 
+    @Autowired
+    private ProductStructureTreeService productStructureTreeService;
+
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", new String[0]);
 
@@ -94,7 +98,8 @@ public class CostCalculationDetailsListeners {
 
         Entity costCalculation = getEntityFromForm(view);
         attachBelongsToFields(costCalculation);
-
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGY);
+        productStructureTreeService.generateProductStructureTree(null, technologyLookup.getEntity());
         costCalculation = costCalculationService.calculateTotalCost(costCalculation);
 
         costCalculationService.calculateSellPriceOverhead(costCalculation);
