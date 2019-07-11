@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -44,6 +38,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskDetailsListeners {
@@ -160,7 +160,6 @@ public class OperationalTaskDetailsListeners {
         Entity order = orderLookup.getEntity();
 
         technologyOperationComponentLookup.setFieldValue(null);
-        technologyOperationComponentLookup.requestComponentUpdateState();
 
         if (Objects.isNull(order)) {
             productionLineLookup.setFieldValue(null);
