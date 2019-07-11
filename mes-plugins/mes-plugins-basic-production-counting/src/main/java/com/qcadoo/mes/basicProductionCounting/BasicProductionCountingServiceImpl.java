@@ -23,26 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-import static com.qcadoo.model.api.search.SearchProjections.sum;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -80,6 +60,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -627,7 +626,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         return rowStyles;
     }
 
-    private void fillFlow(final List<Entity> productionCountingQuantities, final Entity order) {
+    @Override
+    public void fillFlow(final List<Entity> productionCountingQuantities, final Entity order) {
         List<Entity> opocs = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)
                 .find(outComponentHQL).setLong("techId", order.getBelongsToField(OrderFields.TECHNOLOGY).getId()).list()

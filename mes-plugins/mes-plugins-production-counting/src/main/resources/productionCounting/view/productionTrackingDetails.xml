@@ -605,6 +605,8 @@
                                 link="false" width="50"/>
                         <option type="column" name="replacement" fields="replacement"
                                 link="false" width="50"/>
+                        <option type="column" name="productReplacementNumber" fields="productReplacementNumber"
+                                link="false" width="100"/>
 
                         <option type="correspondingView"
                                 value="productionCounting/trackingOperationProductInComponentDetails"/>
@@ -613,8 +615,8 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit,replacement"/>
-                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit,replacement"/>
+                        <option type="searchable" value="number,name,plannedQuantity,usedQuantity,unit,replacement,productReplacementNumber"/>
+                        <option type="orderable" value="number,name,plannedQuantity,usedQuantity,unit,replacement,productReplacementNumber"/>
 
                         <option type="creatable" value="false"/>
                         <option type="deletable" value="false"/>

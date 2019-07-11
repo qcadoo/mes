@@ -49,4 +49,14 @@ public final class ProductionCountingQuantityFields {
 
     public static final String FLOW_FILLED = "flowFilled";
 
+    public static final String COMPONENTS_LOCATION = "componentsLocation";
+
+    public static final String COMPONENTS_OUTPUT_LOCATION = "componentsOutputLocation";
+
+    public static final String PRODUCTS_INPUT_LOCATION = "productsInputLocation";
+
+    public static final String PRODUCTS_FLOW_LOCATION = "productsFlowLocation";
+
+    public static final String PRODUCTION_FLOW = "productionFlow";
+
 }

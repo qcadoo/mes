@@ -49,4 +49,6 @@ public final class TrackingOperationProductInComponentFields {
 
     public static final String WASTE_USED_QUANTITY = "wasteUsedQuantity";
 
+    public static final String REPLACEMENT_TO = "replacementTo";
+
 }
