@@ -30,15 +30,11 @@ import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -274,20 +270,5 @@ public class OperationalTasksDetailsHooks {
         nameField.requestComponentUpdateState();
         descriptionField.requestComponentUpdateState();
     }
-
-    public Entity getOperationProductOutComponent(final Entity technologyOperationComponent) {
-        return getOperationProductOutComponentDD().find().add(SearchRestrictions
-                .belongsTo(OperationProductOutComponentFields.OPERATION_COMPONENT, technologyOperationComponent)).setMaxResults(1)
-                .uniqueResult();
-    }
-
-    private DataDefinition getOperationalTaskDD() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
-    }
-
-    private DataDefinition getOperationProductOutComponentDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-    }
-
+    
 }
