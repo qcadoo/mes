@@ -46,7 +46,7 @@
                         ]]>
                     </script>
                 </bigButton>
-                <bigButton name="refresh" icon="updateIcon24.png"
+<!--                <bigButton name="refresh" icon="updateIcon24.png"
                            state="disabled">
                     <script>
                         <![CDATA[
@@ -57,8 +57,8 @@
                             });
                         ]]>
                     </script>
-                </bigButton>
-                <bigButton name="refreshAndApplyCustomized" icon="updateIcon24.png"
+                </bigButton>-->
+                <bigButton name="refresh" icon="updateIcon24.png"
                            state="disabled">
                     <script>
                         <![CDATA[

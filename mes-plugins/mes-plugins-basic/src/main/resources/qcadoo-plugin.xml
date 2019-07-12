@@ -417,6 +417,8 @@
 
 		<view:view resource="view/staffSkillDetails.xml"/>
 
+		<view:view resource="view/skillStaffDetails.xml"/>
+
 		<view:view resource="view/productReplacements.xml"/>
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>

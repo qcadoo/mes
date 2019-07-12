@@ -37,4 +37,6 @@ public final class SkillFields {
 
     public static final String STAFF_SKILLS = "staffSkills";
 
+    public static final String OPERATION_SKILLS = "operationSkills";
+
 }

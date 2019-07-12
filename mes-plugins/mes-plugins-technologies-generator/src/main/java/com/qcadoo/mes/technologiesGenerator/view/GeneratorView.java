@@ -166,11 +166,4 @@ public class GeneratorView {
         }
         window.requestRibbonRender();
     }
-
-    public void setRefreshAndApplyCustomizedRibbonButtonEnabled(boolean enabled) {
-        RibbonActionItem generateRibbonItem = getRibbonItemByName("refreshAndApplyCustomized");
-        generateRibbonItem.setEnabled(enabled);
-        generateRibbonItem.requestUpdate(true);
-        window.requestRibbonRender();
-    }
 }

@@ -24,28 +24,19 @@
     ***************************************************************************
 
 -->
-<model name="skill" activable="true"
+<model name="trackingInProductReplacementHelper"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-
     <fields>
-        <string name="name" required="true" unique="true">
-            <validatesLength max="1024"/>
-        </string>
-        <string name="description">
-            <validatesLength max="2048"/>
-        </string>
-        <integer name="maximumLevel" required="true">
-            <validatesRange from="0" exclusively="true"/>
-        </integer>
 
-        <hasMany name="staffSkills" plugin="basic" model="staffSkill" joinField="skill" cascade="delete" copyable="false"/>
+        <belongsTo name="productionTracking" model="productionTracking"/>
+        <belongsTo name="product" model="product" plugin="basic" required="true" />
+        <belongsTo name="basicProduct" model="product" plugin="basic" required="true" />
+        <decimal name="quantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
     </fields>
-
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.basic.hooks.SkillHooks"
-                       method="onValidate"/>
-    </hooks>
-
-    <identifier expression="#name"/>
+    <hooks/>
 </model>

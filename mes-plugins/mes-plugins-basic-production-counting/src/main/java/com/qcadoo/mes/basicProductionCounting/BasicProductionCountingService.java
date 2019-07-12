@@ -196,4 +196,6 @@ public interface BasicProductionCountingService {
      * @return
      */
     Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm);
+
+    void fillFlow(List<Entity> productionCountingQuantities, Entity order);
 }

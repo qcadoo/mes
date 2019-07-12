@@ -45,6 +45,13 @@
         <decimal name="plannedQuantity"/>
 
         <decimal name="usedQuantity"/>
+
+        <boolean name="replacement"/>
+
+        <integer name="productReplacementId"/>
+
+        <string name="productReplacementNumber"/>
+
     </fields>
 
     <masterModel plugin="productionCounting" model="trackingOperationProductInComponent"/>

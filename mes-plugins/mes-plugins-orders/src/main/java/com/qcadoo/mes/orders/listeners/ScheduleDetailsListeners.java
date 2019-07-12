@@ -1,5 +1,23 @@
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static java.util.Map.Entry.comparingByValue;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -29,22 +47,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-import static java.util.Map.Entry.comparingByValue;
-
 @Service
 public class ScheduleDetailsListeners {
 
@@ -53,6 +55,8 @@ public class ScheduleDetailsListeners {
     private static final String REJECTED = "04rejected";
 
     private static final String STATE = "state";
+    
+    private static final String SCHEDULE_ID = "scheduleId";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -63,14 +67,19 @@ public class ScheduleDetailsListeners {
     @Autowired
     private ShiftsService shiftsService;
 
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
+
     @Transactional
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
         Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
         Set<Long> ordersToAvoid = Sets.newHashSet();
-        List<Entity> positions = sortPositionsForWorkstations(schedule.getId());
+        List<Long> positionsIds = sortPositionsForWorkstations(schedule.getId());
         Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
-        for (Entity position : positions) {
+        for (Long positionId : positionsIds) {
+            Entity position = dataDefinitionService
+                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).get(positionId);
             if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
                 continue;
             }
@@ -174,16 +183,21 @@ public class ScheduleDetailsListeners {
         position.getDataDefinition().save(position);
     }
 
-    private List<Entity> sortPositionsForWorkstations(Long scheduleId) {
+    private List<Long> sortPositionsForWorkstations(Long scheduleId) {
         Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE)
                 .get(scheduleId);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(SCHEDULE_ID, scheduleId);
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT sp.id FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
+        query.append("ON sp.technologyoperationcomponent_id = toc.id WHERE sp.schedule_id = :scheduleId ORDER BY ");
+        query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
         if (ScheduleSortOrder.DESCENDING.getStringValue().equals(schedule.getStringField(ScheduleFields.SORT_ORDER))) {
-            return schedule.getHasManyField(ScheduleFields.POSITIONS).find().addOrder(SearchOrders.asc("id"))
-                    .addOrder(SearchOrders.desc(SchedulePositionFields.MACHINE_WORK_TIME)).list().getEntities();
+            query.append("sp.machineworktime desc");
         } else {
-            return schedule.getHasManyField(ScheduleFields.POSITIONS).find().addOrder(SearchOrders.asc("id"))
-                    .addOrder(SearchOrders.asc(SchedulePositionFields.MACHINE_WORK_TIME)).list().getEntities();
+            query.append("sp.machineworktime asc");
         }
+        return jdbcTemplate.queryForList(query.toString(), parameters, Long.class);
     }
 
     @Transactional

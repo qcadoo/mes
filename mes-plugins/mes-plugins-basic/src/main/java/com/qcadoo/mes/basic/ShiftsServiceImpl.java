@@ -23,6 +23,23 @@
  */
 package com.qcadoo.mes.basic;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ShiftFields;
+import com.qcadoo.mes.basic.constants.TimetableExceptionType;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Collection;
@@ -43,23 +60,6 @@ import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.commons.dateTime.TimeRange;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ShiftFields;
-import com.qcadoo.mes.basic.constants.TimetableExceptionType;
-import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.basic.util.DateTimeRange;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -130,6 +130,29 @@ public class ShiftsServiceImpl implements ShiftsService {
         c.setTime(dateTime.toDate());
 
         return DAY_OF_WEEK.get(c.get(Calendar.DAY_OF_WEEK));
+    }
+
+    @Override
+    public Optional<Shift> getShiftForNearestWorkingDate(DateTime nearestWorkingDate, Entity productionLine) {
+        List<Shift> shifts = findAll(productionLine);
+        List<DateTimeRange> finalShiftWorkTimes = Lists.newArrayList();
+        DateTime currentDate = nearestWorkingDate.minusDays(1);
+
+        if (shifts.stream().noneMatch(shift -> checkShiftWorkingAfterDate(nearestWorkingDate, productionLine, shift))) {
+            return Optional.empty();
+        }
+
+        while (finalShiftWorkTimes.isEmpty()) {
+            for (Shift shift : shifts) {
+                getNearestWorkingDateForShift(shift, productionLine, nearestWorkingDate, currentDate, finalShiftWorkTimes);
+                if(!finalShiftWorkTimes.isEmpty()){
+                    return Optional.of(shift);
+                }
+            }
+
+            currentDate = currentDate.plusDays(1);
+        }
+        return Optional.empty();
     }
 
     @Override

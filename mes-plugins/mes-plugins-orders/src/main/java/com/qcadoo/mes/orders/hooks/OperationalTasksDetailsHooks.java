@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
@@ -39,15 +30,11 @@ import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -57,6 +44,15 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTasksDetailsHooks {
@@ -95,7 +91,6 @@ public class OperationalTasksDetailsHooks {
         setTechnology(view);
         setQuantities(view);
 
-        setTechnologyOperationComponent(view);
         disableFieldsWhenOrderTypeIsSelected(view);
         disableButtons(view);
     }
@@ -250,42 +245,6 @@ public class OperationalTasksDetailsHooks {
         }
     }
 
-    private void setTechnologyOperationComponent(final ViewDefinitionState view) {
-        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
-        LookupComponent technologyOperationComponentLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-        Long operationalTaskId = operationalTaskForm.getEntityId();
-
-        if (Objects.isNull(operationalTaskId)) {
-            return;
-        }
-
-        String type = (String) typeField.getFieldValue();
-
-        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
-            if (!Objects.isNull(orderLookup.getEntity()) && Objects.isNull(technologyOperationComponentLookup.getEntity())) {
-                Entity operationalTask = getOperationalTaskDD().get(operationalTaskId);
-
-                if (!Objects.isNull(operationalTask)) {
-                    Entity technologyOperationComponent = operationalTask
-                            .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-
-                    if (!Objects.isNull(technologyOperationComponent)) {
-                        technologyOperationComponentLookup.setFieldValue(technologyOperationComponent.getId());
-                        technologyOperationComponentLookup.requestComponentUpdateState();
-                    }
-                }
-            }
-        } else {
-            technologyOperationComponentLookup.setFieldValue(null);
-            technologyOperationComponentLookup.requestComponentUpdateState();
-        }
-    }
-
     public void setNameAndDescription(final ViewDefinitionState view) {
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -311,20 +270,5 @@ public class OperationalTasksDetailsHooks {
         nameField.requestComponentUpdateState();
         descriptionField.requestComponentUpdateState();
     }
-
-    public Entity getOperationProductOutComponent(final Entity technologyOperationComponent) {
-        return getOperationProductOutComponentDD().find().add(SearchRestrictions
-                .belongsTo(OperationProductOutComponentFields.OPERATION_COMPONENT, technologyOperationComponent)).setMaxResults(1)
-                .uniqueResult();
-    }
-
-    private DataDefinition getOperationalTaskDD() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK);
-    }
-
-    private DataDefinition getOperationProductOutComponentDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-    }
-
+    
 }
