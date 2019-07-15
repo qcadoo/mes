@@ -100,6 +100,7 @@ public class UseReplacementListeners {
         }
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PLANNED_QUANTITY, BigDecimal.ZERO);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCT, entity.getBelongsToField(PRODUCT).getId());
+        productionCountingQuantity.setField(ProductionCountingQuantityFields.REPLACEMENT_TO, baseProduct.getId());
         productionCountingQuantity.setField("role", ProductionCountingQuantityRole.USED.getStringValue());
         productionCountingQuantity
                 .setField("typeOfMaterial", ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue());
