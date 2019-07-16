@@ -40,7 +40,7 @@
                            rows="3" fixedRowHeight="false" hasBorders="false">
                     <layoutElement column="1" row="1" width="2">
                         <component type="lookup" name="staff" field="staff"
-                                   reference="skill">
+                                   reference="staff">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="surname" fields="surname" link="true"/>
 
@@ -50,6 +50,9 @@
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
 
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
+                                    method="filterBySkill"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">
