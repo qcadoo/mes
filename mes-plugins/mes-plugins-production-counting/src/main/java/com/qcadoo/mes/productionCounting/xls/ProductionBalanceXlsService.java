@@ -1,5 +1,19 @@
 package com.qcadoo.mes.productionCounting.xls;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
+import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
+import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
+import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.report.api.xls.XlsDocumentService;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -17,20 +31,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
-import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
-import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.report.api.xls.XlsDocumentService;
 
 @Service
 public class ProductionBalanceXlsService extends XlsDocumentService {
@@ -159,40 +159,44 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.productName", locale),
                 3, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer,
+                row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.replacementTo", locale),
+                4, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.plannedQuantity", locale),
-                4, CellStyle.ALIGN_LEFT);
+                5, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer,
                 row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.usedQuantity", locale),
-                5, CellStyle.ALIGN_LEFT);
+                6, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
                         "productionCounting.productionBalance.report.xls.sheet.materialCosts.quantitativeDeviation", locale),
-                6, CellStyle.ALIGN_LEFT);
+                7, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.unit", locale),
-                7, CellStyle.ALIGN_LEFT);
+                8, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer,
                 row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.plannedCost", locale),
-                8, CellStyle.ALIGN_LEFT);
+                9, CellStyle.ALIGN_LEFT);
         createHeaderCell(
                 stylesContainer, row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.realCost", locale),
-                9, CellStyle.ALIGN_LEFT);
+                10, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer,
                 row, translationService
                         .translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.valueDeviation", locale),
-                10, CellStyle.ALIGN_LEFT);
+                11, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate(
                         "productionCounting.productionBalance.report.xls.sheet.materialCosts.usedWasteQuantity", locale),
-                11, CellStyle.ALIGN_LEFT);
+                12, CellStyle.ALIGN_LEFT);
         createHeaderCell(stylesContainer, row,
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.materialCosts.unit", locale),
-                12, CellStyle.ALIGN_LEFT);
+                13, CellStyle.ALIGN_LEFT);
 
         int rowCounter = 0;
         for (MaterialCost materialCost : materialCosts) {
@@ -201,18 +205,19 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             createRegularCell(stylesContainer, row, 1, materialCost.getOperationNumber());
             createRegularCell(stylesContainer, row, 2, materialCost.getProductNumber());
             createRegularCell(stylesContainer, row, 3, materialCost.getProductName());
-            createNumericCell(stylesContainer, row, 4, materialCost.getPlannedQuantity(), false);
-            createNumericCell(stylesContainer, row, 5, materialCost.getUsedQuantity(), true);
-            createNumericCell(stylesContainer, row, 6, materialCost.getQuantitativeDeviation(), false);
-            createRegularCell(stylesContainer, row, 7, materialCost.getProductUnit());
-            createNumericCell(stylesContainer, row, 8, materialCost.getPlannedCost(), false);
-            createNumericCell(stylesContainer, row, 9, materialCost.getRealCost(), true);
-            createNumericCell(stylesContainer, row, 10, materialCost.getValueDeviation(), false);
-            createNumericCell(stylesContainer, row, 11, materialCost.getUsedWasteQuantity(), false);
-            createRegularCell(stylesContainer, row, 12, materialCost.getUsedWasteUnit());
+            createRegularCell(stylesContainer, row, 4, materialCost.getReplacementTo());
+            createNumericCell(stylesContainer, row, 5, materialCost.getPlannedQuantity(), false);
+            createNumericCell(stylesContainer, row, 6, materialCost.getUsedQuantity(), true);
+            createNumericCell(stylesContainer, row, 7, materialCost.getQuantitativeDeviation(), false);
+            createRegularCell(stylesContainer, row, 8, materialCost.getProductUnit());
+            createNumericCell(stylesContainer, row, 9, materialCost.getPlannedCost(), false);
+            createNumericCell(stylesContainer, row, 10, materialCost.getRealCost(), true);
+            createNumericCell(stylesContainer, row, 11, materialCost.getValueDeviation(), false);
+            createNumericCell(stylesContainer, row, 12, materialCost.getUsedWasteQuantity(), false);
+            createRegularCell(stylesContainer, row, 13, materialCost.getUsedWasteUnit());
             rowCounter++;
         }
-        for (int i = 0; i <= 12; i++) {
+        for (int i = 0; i <= 13; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }
