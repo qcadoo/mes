@@ -1,16 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -39,6 +28,17 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderMaterialAvailability {
@@ -297,6 +297,10 @@ public class OrderMaterialAvailability {
             final Entity order, final BigDecimal value, final Entity location) {
         Entity materialAvailability = orderMaterialAvailabilityDD.create();
 
+        List<Entity> replacements = product.getDataDefinition().get(product.getId()).getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS);
+        if(!replacements.isEmpty()){
+            materialAvailability.setField(MaterialAvailabilityFields.REPLACEMENT, true);
+        }
         materialAvailability.setField(MaterialAvailabilityFields.ORDER, order);
         materialAvailability.setField(MaterialAvailabilityFields.PRODUCT, product);
         materialAvailability.setField(MaterialAvailabilityFields.UNIT, product.getField(ProductFields.UNIT));

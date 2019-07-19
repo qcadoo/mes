@@ -26,7 +26,7 @@
 -->
 <view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="materialAvailabilityList" modelName="product"
+	name="materialReplacementsAvailabilityList" modelName="product"
 	modelPlugin="basic" menuAccessible="true">
 
 	<component type="window" name="window" reference="window">
@@ -45,12 +45,18 @@
 				<layoutElement column="1" row="1" >
 					<component type="grid" name="availabilityComponentList"
 						reference="grid" source="#{product}.materialAvailability">
+						<option type="column" name="productNumber" fields="product"
+								expression="#product.get('number')" width="150" />
+						<option type="column" name="productName" fields="product"
+								expression="#product.get('name')" width="300" />
 						<option type="column" name="warehouse" fields="location" expression="#location['number']"/>
 						<option type="column" name="availableQuantity" fields="availableQuantity" />
                         <option type="column" name="unit" fields="unit" />
 
-						<option type="order" column="warehouse" direction="asc" />
-						
+						<option type="order" column="productNumber" direction="asc" />
+						<option type="footerRow" value="true"/>
+						<option type="columnsToSummary" value="availableQuantity"/>
+
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
 						<option type="fixedHeight" value="true" />
@@ -65,7 +71,7 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.productFlowThruDivision.hooks.MaterialAvailabilityListHooks"
-			method="fillInAvailableQuantity" />
+			method="fillInReplacementsAvailableQuantity" />
 	</hooks>
 	
 </view>

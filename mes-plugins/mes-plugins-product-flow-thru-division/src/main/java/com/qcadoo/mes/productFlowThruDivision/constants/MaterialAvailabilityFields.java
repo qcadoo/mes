@@ -42,4 +42,6 @@ public final class MaterialAvailabilityFields {
     public static final String AVAILABILITY = "availability";
 
     public static final String LOCATION = "location";
+
+    public static final String REPLACEMENT = "replacement";
 }
