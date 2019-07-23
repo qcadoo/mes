@@ -52,7 +52,7 @@ public class TrackingOperationProductInComponentHooks {
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER,
                             productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)))
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT,
-                            productionTracking.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)));
+                            trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)));
             if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT))) {
                 scb = scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                         productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)));
