@@ -43,6 +43,8 @@
 			reference="availabilityComponentForm">
 			<component type="gridLayout" name="gridLayout" columns="1" rows="1">
 				<layoutElement column="1" row="1" >
+					<component type="input" name="locationsIds" reference="locationsIds"
+							   defaultVisible="false" defaultEnabled="false"/>
 					<component type="grid" name="availabilityComponentList"
 						reference="grid" source="#{product}.materialAvailability">
 						<option type="column" name="productNumber" fields="product"

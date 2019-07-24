@@ -1,0 +1,99 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo Framework
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="coverageProductDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+
+        <boolean name="replacement" default="false"/>
+
+        <boolean name="fromSelectedOrder" default="false"/>
+
+        <string name="productNumber"/>
+
+        <string name="productName">
+            <validatesLength max="1024"/>
+        </string>
+
+        <string name="productUnit"/>
+        <string name="productParent"/>
+        <string name="companyName"/>
+
+        <belongsTo name="materialRequirementCoverage" model="materialRequirementCoverage" persistent="false"/>
+
+        <integer name="materialRequirementCoverageId"/>
+
+        <integer name="productId"/>
+
+        <integer name="companyId"/>
+
+        <datetime name="lackFromDate"/>
+
+        <decimal name="demandQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="coveredQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="reserveMissingQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="deliveredQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="locationsQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="produceQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="negotiatedQuantity">
+            <validatesUnscaledValue max="11"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <enum name="state" values="01covered,02delay,03lack"/>
+
+        <hasMany name="coverageProductLoggings" joinField="coverageProduct"
+                 model="coverageProductLogging" cascade="delete" copyable="true"/>
+
+        <enum name="productType" values="01component,02intermediate"/>
+
+        <enum name="allProductsType" values="01component,02intermediate,01component_02intermediate"/>
+
+    </fields>
+
+    <hooks/>
+    <masterModel plugin="orderSupplies" model="coverageProduct"/>
+
+</model>

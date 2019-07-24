@@ -58,6 +58,8 @@
                  model="coverageLocation" cascade="delete" copyable="true"/>
         <hasMany name="coverageProducts" joinField="materialRequirementCoverage"
                  model="coverageProduct" cascade="delete" copyable="true"/>
+        <hasMany name="coverageProductsDto" joinField="materialRequirementCoverage" model="coverageProductDto"
+                 cascade="nullify" copyable="false" persistent="false" />
 
         <manyToMany name="coverageOrders" joinField="materialRequirementCoverages" model="order"
                     cascade="nullify" plugin="orders"/>

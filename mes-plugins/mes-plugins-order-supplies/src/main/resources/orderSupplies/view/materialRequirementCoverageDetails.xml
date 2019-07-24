@@ -262,8 +262,8 @@
 
         </windowTab>
         <windowTab name="coverageProductsTab">
-            <component type="grid" name="coverageProducts" source="#{form}.coverageProducts"
-                       reference="coverageProducts">
+            <component type="grid" name="coverageProducts" useDto="true" source="#{form}.coverageProductsDto"
+                       model="coverageProductDto" reference="coverageProducts">
                 <option type="column" name="productNumber" fields="productNumber"
                         width="50" link="true"/>
                 <option type="column" name="productName" fields="productName"

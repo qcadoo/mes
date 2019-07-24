@@ -1,5 +1,16 @@
 package com.qcadoo.mes.orderSupplies.rowStyleResolvers;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
+import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.constants.RowStyle;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -7,17 +18,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.constants.RowStyle;
 
 @Service
 public class MaterialRequirementCoverageRowStyleResolver {
@@ -28,21 +28,21 @@ public class MaterialRequirementCoverageRowStyleResolver {
     public Set<String> fillRowStyles(final Entity coverageProduct) {
         final Set<String> rowStyles = Sets.newHashSet();
 
-        Entity materialRequirementCoverage = coverageProduct
-                .getBelongsToField(CoverageProductFields.MATERIAL_REQUIREMENT_COVERAGE);
+        Entity materialRequirementCoverage = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
+                OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE).get(
+                coverageProduct.getIntegerField("materialRequirementCoverageId").longValue());
         Date coverageToDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.COVERAGE_TO_DATE);
         boolean includeDraftDeliveries = materialRequirementCoverage
                 .getBooleanField(MaterialRequirementCoverageFields.INCLUDE_DRAFT_DELIVERIES);
 
-        String style = determineRowStyle(coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT), coverageToDate,
-                includeDraftDeliveries);
+        String style = determineRowStyle(coverageProduct.getIntegerField("productId").longValue(), coverageToDate, includeDraftDeliveries);
         if (style != null) {
             rowStyles.add(style);
         }
         return rowStyles;
     }
 
-    private String determineRowStyle(final Entity product, final Date coverageToDate, final boolean includeDraftDeliveries) {
+    private String determineRowStyle(final Long productId, final Date coverageToDate, final boolean includeDraftDeliveries) {
         StringBuilder query = new StringBuilder();
         query.append("select delivery.state as state ");
         query.append("from #deliveries_delivery delivery ");
@@ -65,14 +65,14 @@ public class MaterialRequirementCoverageRowStyleResolver {
 
         long deliveredCount = dataDefinitionService
                 .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
-                .find(queryForDelivered.toString()).setLong("productId", product.getId()).setDate("deliveryDate", coverageToDate)
+                .find(queryForDelivered.toString()).setLong("productId", productId).setDate("deliveryDate", coverageToDate)
                 .setMaxResults(1).uniqueResult().getLongField("cnt");
         if (deliveredCount > 0) {
             return RowStyle.YELLOW_BACKGROUND;
         }
         List<Entity> orderedDeliveries = dataDefinitionService
                 .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).find(query.toString())
-                .setLong("productId", product.getId()).setDate("deliveryDate", coverageToDate).setParameterList("states", states)
+                .setLong("productId", productId).setDate("deliveryDate", coverageToDate).setParameterList("states", states)
                 .list().getEntities();
         if (orderedDeliveries.isEmpty()) {
             return null;
