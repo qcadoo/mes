@@ -9501,7 +9501,8 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     productsinputlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    replacementto_id bigint
 );
 
 
@@ -9856,10 +9857,12 @@ CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
     pcq.typeofmaterial,
     pcq.plannedquantity,
     NULL::numeric AS usedquantity,
-    NULL::numeric AS producedquantity
-   FROM ((((basicproductioncounting_productioncountingquantity pcq
+    NULL::numeric AS producedquantity,
+    replacementto.number AS replacementto
+   FROM (((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
+     LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
   WHERE ((o.typeofproductionrecording)::text = '02cumulated'::text)
@@ -9877,12 +9880,14 @@ UNION
     pcq.typeofmaterial,
     pcq.plannedquantity,
     COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
-    COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity
-   FROM ((((((basicproductioncounting_productioncountingquantity pcq
+    COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity,
+    replacementto.number AS replacementto
+   FROM (((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN basicproductioncounting_usedquantity_helper uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id) AND (uqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
      LEFT JOIN basicproductioncounting_producedquantity_helper pqh ON (((pqh.order_id = pcq.order_id) AND (pqh.product_id = pcq.product_id) AND (pqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
   WHERE ((o.typeofproductionrecording)::text = '03forEach'::text);
@@ -17451,7 +17456,7 @@ CREATE VIEW orders_orderplanninglistdto AS
     ordersorder.description,
     product.name AS productname,
     ''::character varying(255) AS annotation,
-    ceil(((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / ordersorder.plannedquantity)) AS doneinpercentage,
+    ceil(((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / NULLIF(ordersorder.plannedquantity, (0)::numeric))) AS doneinpercentage,
         CASE
             WHEN ( SELECT basic_parameter.flagpercentageofexecutionwithcolor
                FROM basic_parameter
@@ -17459,8 +17464,8 @@ CREATE VIEW orders_orderplanninglistdto AS
             ELSE (0)::numeric
         END AS flagpercentageofexecutionwithcolor,
         CASE
-            WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / ordersorder.plannedquantity) >= (100)::numeric) THEN 'green-cell'::character varying(255)
-            WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / ordersorder.plannedquantity) = (0)::numeric) THEN 'red-cell'::character varying(255)
+            WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / NULLIF(ordersorder.plannedquantity, (0)::numeric)) >= (100)::numeric) THEN 'green-cell'::character varying(255)
+            WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / NULLIF(ordersorder.plannedquantity, (0)::numeric)) = (0)::numeric) THEN 'red-cell'::character varying(255)
             ELSE 'yellow-cell'::character varying(255)
         END AS percentageofexecutioncellcolor
    FROM ((((((orders_order ordersorder
@@ -18304,6 +18309,60 @@ CREATE TABLE ordersupplies_coverageproduct (
     allproductstype character varying(255),
     company_id bigint
 );
+
+
+--
+-- Name: ordersupplies_coverageproductdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW ordersupplies_coverageproductdto AS
+ SELECT coverageproduct.id,
+    (coverageproduct.materialrequirementcoverage_id)::integer AS materialrequirementcoverageid,
+    (coverageproduct.product_id)::integer AS productid,
+    coverageproduct.lackfromdate,
+    coverageproduct.demandquantity,
+    coverageproduct.coveredquantity,
+    coverageproduct.reservemissingquantity,
+    coverageproduct.deliveredquantity,
+    coverageproduct.locationsquantity,
+    coverageproduct.state,
+    coverageproduct.negotiatedquantity,
+    coverageproduct.issubcontracted,
+    coverageproduct.ispurchased,
+    coverageproduct.productnumber,
+    coverageproduct.productname,
+    _parent.name AS productparent,
+    coverageproduct.productunit,
+    coverageproduct.producttype,
+    coverageproduct.planedquantity,
+    coverageproduct.producequantity,
+    coverageproduct.fromselectedorder,
+    coverageproduct.entityversion,
+    coverageproduct.allproductstype,
+    (coverageproduct.company_id)::integer AS companyid,
+    _company.name AS companyname,
+        CASE
+            WHEN (( SELECT count(*) AS count
+               FROM basic_substitutecomponent
+              WHERE (basic_substitutecomponent.baseproduct_id = _product.id)) > 0) THEN true
+            ELSE false
+        END AS replacement
+   FROM (((ordersupplies_coverageproduct coverageproduct
+     JOIN basic_product _product ON ((_product.id = coverageproduct.product_id)))
+     LEFT JOIN basic_product _parent ON ((_parent.id = _product.parent_id)))
+     LEFT JOIN basic_company _company ON ((_company.id = coverageproduct.company_id)));
+
+
+--
+-- Name: ordersupplies_coverageproductdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE ordersupplies_coverageproductdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -19165,7 +19224,8 @@ CREATE TABLE productflowthrudivision_materialavailability (
     unit character varying(255),
     entityversion bigint DEFAULT 0,
     location_id bigint,
-    availability character varying
+    availability character varying,
+    replacement boolean DEFAULT false
 );
 
 
@@ -30518,7 +30578,7 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingoperationrun
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion) FROM stdin;
+COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id) FROM stdin;
 \.
 
 
@@ -33732,6 +33792,13 @@ SELECT pg_catalog.setval('ordersupplies_coverageproduct_id_seq', 1, false);
 
 
 --
+-- Name: ordersupplies_coverageproductdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('ordersupplies_coverageproductdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: ordersupplies_coverageproductgenerated; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34071,7 +34138,7 @@ SELECT pg_catalog.setval('productflowthrudivision_issuedto_id_seq', 1, false);
 -- Data for Name: productflowthrudivision_materialavailability; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productflowthrudivision_materialavailability (id, order_id, product_id, availablequantity, requiredquantity, unit, entityversion, location_id, availability) FROM stdin;
+COPY productflowthrudivision_materialavailability (id, order_id, product_id, availablequantity, requiredquantity, unit, entityversion, location_id, availability, replacement) FROM stdin;
 \.
 
 
@@ -49686,6 +49753,14 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: productioncountingquantity_replacementto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
+    ADD CONSTRAINT productioncountingquantity_replacementto_fkey FOREIGN KEY (replacementto_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
