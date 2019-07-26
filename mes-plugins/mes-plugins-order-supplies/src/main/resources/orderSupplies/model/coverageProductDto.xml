@@ -84,9 +84,6 @@
 
         <enum name="state" values="01covered,02delay,03lack"/>
 
-        <hasMany name="coverageProductLoggings" joinField="coverageProduct"
-                 model="coverageProductLogging" cascade="delete" copyable="true"/>
-
         <enum name="productType" values="01component,02intermediate"/>
 
         <enum name="allProductsType" values="01component,02intermediate,01component_02intermediate"/>
