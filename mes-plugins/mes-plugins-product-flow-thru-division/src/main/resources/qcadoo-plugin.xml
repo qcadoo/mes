@@ -659,6 +659,7 @@
 
         <view:view resource="view/orderWithMaterialAvailabilityList.xml"/>
         <view:view resource="view/materialAvailabilityList.xml"/>
+        <view:view resource="view/materialReplacementsAvailabilityList.xml"/>
 
         <view:view-listener plugin="costNormsForMaterials" view="costNormsForMaterialsInOrderList"
                             component="form" event="calculateRealProductionCost"

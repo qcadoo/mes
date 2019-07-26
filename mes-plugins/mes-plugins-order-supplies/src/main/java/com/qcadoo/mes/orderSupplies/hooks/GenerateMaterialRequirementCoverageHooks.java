@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.orderSupplies.hooks;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -63,6 +51,18 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.RowStyle;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class GenerateMaterialRequirementCoverageHooks {
 
@@ -87,6 +87,14 @@ public class GenerateMaterialRequirementCoverageHooks {
     private static final String L_GENERATE_MATERIAL_REQUIREMENT_COVERAGE = "generateMaterialRequirementCoverage";
 
     private static final String L_ADD_MULTI = "addMulti";
+
+    public static final String L_MATERIAL_AVAILABILITY = "materialAvailability";
+
+    public static final String L_COVERAGE_PRODUCTS = "coverageProducts";
+
+    public static final String L_SHOW_REPLACEMENTS_AVAILABILITY = "showReplacementsAvailability";
+
+    public static final String L_REPLACEMENT = "replacement";
 
     @Autowired
     private OrderSuppliesService orderSuppliesService;
@@ -192,6 +200,7 @@ public class GenerateMaterialRequirementCoverageHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(L_COVERAGE);
         RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_REPORTS);
+        RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
 
         RibbonActionItem generateMaterialRequirementCoverage = (RibbonActionItem) coverage
                 .getItemByName(L_GENERATE_MATERIAL_REQUIREMENT_COVERAGE);
@@ -201,7 +210,10 @@ public class GenerateMaterialRequirementCoverageHooks {
                 .getItemByName(L_SAVE_MATERIAL_REQUIREMENT_COVERAGE);
         RibbonActionItem showMaterialRequirementCoverages = (RibbonActionItem) reports
                 .getItemByName(L_SHOW_MATERIAL_REQUIREMENT_COVERAGES);
-
+        RibbonActionItem showReplacementsAvailability = (RibbonActionItem) materialAvailability
+                .getItemByName(L_SHOW_REPLACEMENTS_AVAILABILITY);
+        showReplacementsAvailability
+                .setMessage("orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecordWithReplacements");
         boolean areSaved = checkIfThereAreSavedMaterialRequirementCoverages();
 
         updateButtonState(generateMaterialRequirementCoverage, !saved);
@@ -209,6 +221,20 @@ public class GenerateMaterialRequirementCoverageHooks {
         updateButtonState(saveMaterialRequirementCoverage, generated && !saved);
         updateButtonState(showMaterialRequirementCoverages, areSaved);
 
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_COVERAGE_PRODUCTS);
+        if (generated && grid.getSelectedEntitiesIds().size() == 1
+                && isReplacement(grid.getSelectedEntitiesIds().stream().findFirst().get())) {
+            showReplacementsAvailability.setEnabled(true);
+        } else {
+            showReplacementsAvailability.setEnabled(false);
+        }
+        showReplacementsAvailability.requestUpdate(true);
+    }
+
+    private boolean isReplacement(Long coverageProductId) {
+        Entity pc = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
+                OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT_DTO).get(coverageProductId);
+        return pc.getBooleanField(L_REPLACEMENT);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {

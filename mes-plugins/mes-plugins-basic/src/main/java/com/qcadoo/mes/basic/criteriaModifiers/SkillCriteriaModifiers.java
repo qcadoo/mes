@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
@@ -38,6 +35,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class SkillCriteriaModifiers {
 
@@ -48,6 +48,8 @@ public class SkillCriteriaModifiers {
     private static final String L_THIS_ID = "this.id";
 
     private static final String L_STAFF_ID = "staffId";
+
+    private static final String L_SKILL_ID = "skillId";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -66,8 +68,26 @@ public class SkillCriteriaModifiers {
         }
     }
 
+    public void filterBySkill(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_SKILL_ID)) {
+            SearchCriteriaBuilder subCriteria = getSkillDD().findWithAlias(BasicConstants.MODEL_SKILL)
+                    .add(SearchRestrictions.idEq(filterValueHolder.getLong(L_SKILL_ID)))
+                    .createAlias(StaffFields.STAFF_SKILLS, StaffFields.STAFF_SKILLS, JoinType.INNER)
+                    .createAlias(StaffFields.STAFF_SKILLS + L_DOT + StaffSkillsFields.STAFF, StaffSkillsFields.STAFF,
+                            JoinType.INNER)
+                    .add(SearchRestrictions.eqField(StaffSkillsFields.STAFF + L_DOT + L_ID, L_THIS_ID))
+                    .setProjection(SearchProjections.id());
+
+            scb.add(SearchSubqueries.notExists(subCriteria));
+        }
+    }
+
     private DataDefinition getStaffDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF);
+    }
+
+    private DataDefinition getSkillDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SKILL);
     }
 
 }

@@ -1,13 +1,5 @@
 package com.qcadoo.mes.productionCounting.xls;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-
 import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
@@ -20,6 +12,14 @@ import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
 import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
 import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 @Repository
 class ProductionBalanceRepository {
@@ -72,21 +72,25 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         appendCumulatedPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);
+        query.append("replacementto.number AS replacementTo, ");
         query.append("NULL AS operationNumber ");
         appendMaterialCostsFromClause(query, entity);
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit) ");
+        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = topic.replacementto_id ");
+        query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit, replacementto.number) ");
         query.append("UNION ");
         appendForEachPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);
+        query.append("replacementto.number AS replacementTo, ");
         query.append("op.number AS operationNumber ");
         appendMaterialCostsFromClause(query, entity);
         query.append("JOIN technologies_operation op ON q.operation_id = op.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON toc.operation_id = op.id AND o.technology_id = toc.technology_id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit) ");
+        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = topic.replacementto_id ");
+        query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit, replacementto.number) ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),

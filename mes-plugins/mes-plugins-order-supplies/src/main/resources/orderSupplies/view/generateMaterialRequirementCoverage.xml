@@ -55,6 +55,10 @@
                 <bigButton name="createDelivery" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(createDelivery);"/>
             </group>
+            <group name="materialAvailability">
+                <bigButton name="showReplacementsAvailability" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(showReplacementsAvailability);"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -228,7 +232,11 @@
                 <listener event="createDelivery"
                           class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
                           method="createDelivery"/>
+                <listener event="showReplacementsAvailability"
+                          class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
+                          method="showReplacementsAvailability"/>
             </component>
+
         </windowTab>
         <windowTab name="inDataTab">
             <component type="gridLayout" name="inDataTabGridLayout"
@@ -295,8 +303,9 @@
 
 
         <windowTab name="coverageProductsTab">
-            <component type="grid" name="coverageProducts" source="#{form}.coverageProducts"
-                       reference="coverageProducts">
+            <component type="grid" name="coverageProducts" useDto="true" source="#{form}.coverageProductsDto"
+                       model="coverageProductDto" reference="coverageProducts">
+
                 <script>
                     <![CDATA[
 					var createRequestForQuotation = #{window}.getRibbonItem("deliveries.createRequestForQuotation");
@@ -321,8 +330,8 @@
                         width="50" link="true"/>
                 <option type="column" name="productName" fields="productName"
                         width="75" link="true"/>
-                <option type="column" name="productParent" fields="product"
-                        width="75" expression="#product['parent']?.get('name')"/>
+                <option type="column" name="productParent" fields="productParent"
+                        width="75" />
                 <option type="column" name="state" fields="state" width="40"/>
                 <option type="column" name="lackFromDate" fields="lackFromDate"
                         width="35"/>
@@ -332,8 +341,8 @@
                         width="35"/>
                 <option type="column" name="reserveMissingQuantity" fields="reserveMissingQuantity"
                         width="35"/>
-                <option type="column" name="company" fields="company"
-                        width="75" expression="#company['name']"/>
+                <option type="column" name="companyName" fields="companyName"
+                        width="75"/>
                 <option type="column" name="productUnit" fields="productUnit"
                         width="30"/>
                 <option type="column" name="locationsQuantity" fields="locationsQuantity"
@@ -342,12 +351,14 @@
                         width="35"/>
                 <option type="column" name="produceQuantity" fields="produceQuantity"
                         width="35"/>
+                <option type="column" name="replacement" fields="replacement"
+                        width="35"/>
                 <option type="order" column="state" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
+                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
                 <option type="orderable"
-                        value="productNumber,productName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
+                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
 
                 <option type="correspondingView" value="orderSupplies/coverageProductLoggingDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -358,6 +369,11 @@
                 <rowStyleResolver
                         class="com.qcadoo.mes.orderSupplies.rowStyleResolvers.MaterialRequirementCoverageRowStyleResolver"
                         method="fillRowStyles"/>
+
+                <listener event="onSelectedEntityChange"
+                          class="com.qcadoo.mes.orderSupplies.listeners.CoverageProductsListeners"
+                          method="onRowSelect"/>
+
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
                 <option type="fixedHeight" value="true"/>

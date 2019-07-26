@@ -14,6 +14,8 @@ public class MaterialCost {
 
     private String productName;
 
+    private String replacementTo;
+
     private BigDecimal plannedQuantity;
 
     private BigDecimal usedQuantity;
@@ -142,5 +144,13 @@ public class MaterialCost {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public String getReplacementTo() {
+        return replacementTo;
+    }
+
+    public void setReplacementTo(String replacementTo) {
+        this.replacementTo = replacementTo;
     }
 }

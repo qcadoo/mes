@@ -270,5 +270,5 @@ public class OperationalTasksDetailsHooks {
         nameField.requestComponentUpdateState();
         descriptionField.requestComponentUpdateState();
     }
-    
+
 }

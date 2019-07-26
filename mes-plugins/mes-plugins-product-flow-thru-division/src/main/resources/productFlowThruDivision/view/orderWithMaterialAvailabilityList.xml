@@ -47,6 +47,19 @@
 						]]>
 					</script>
 				</bigButton>
+				<bigButton name="showReplacementsAvailability" icon="generateIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showReplacementsAvailability', []);
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
 			</group>
 		</ribbon>
 		
@@ -71,11 +84,12 @@
 						<option type="column" name="requiredQuantity" fields="requiredQuantity" />
                         <option type="column" name="unit" fields="product" expression="#product['unit']"/>
                         <option type="column" name="warehouse" fields="location" expression="#location['number']"/>
+						<option type="column" name="replacement" fields="replacement" />
 
 						<option type="order" column="productNumber" direction="asc" />
 						
-						<option type="searchable" value="productName,productNumber,warehouse,availability,availableQuantity,requiredQuantity" />
-						<option type="orderable" value="productName,productNumber,availability,availableQuantity,requiredQuantity" />
+						<option type="searchable" value="productName,productNumber,warehouse,availability,availableQuantity,requiredQuantity,replacement" />
+						<option type="orderable" value="productName,productNumber,availability,availableQuantity,requiredQuantity,replacement" />
 						
 						<option type="fullscreen" value="true" />
 						<option type="multiselect" value="true" />
@@ -84,6 +98,9 @@
 						<listener event="showAvailability"
 								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
 								  method="showAvailability"/>
+						<listener event="showReplacementsAvailability"
+								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
+								  method="showReplacementsAvailability"/>
 					</component>
 				</layoutElement>
 			</component>

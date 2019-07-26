@@ -23,30 +23,12 @@
  */
 package com.qcadoo.mes.orderSupplies.listeners;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.CURRENCY;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -54,6 +36,7 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
+import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductGeneratedFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductSelectedFields;
@@ -78,6 +61,27 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.CURRENCY;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
 
 @Service
 public class GenerateMaterialRequirementCoverageListeners {
@@ -276,6 +280,36 @@ public class GenerateMaterialRequirementCoverageListeners {
         orderSuppliesService.checkIfBelongsToFamilyIsProductsFamily(view, MaterialRequirementCoverageFields.BELONGS_TO_FAMILY);
     }
 
+    public void showReplacementsAvailability(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
+        Entity materialRequirement = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
+                OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE).get(materialRequirementCoverageId);
+        GridComponent grid = (GridComponent) view.getComponentByReference("coverageProducts");
+        Long cpId = grid.getSelectedEntitiesIds().stream().findFirst().get();
+
+        Entity cp = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
+                OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT).get(cpId);
+        Entity product = cp.getBelongsToField(CoverageProductFields.PRODUCT);
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("product.id", product.getId());
+            json.put(
+                    "locationsIds",
+                    Lists.newArrayList(materialRequirement.getHasManyField(MaterialRequirementCoverageFields.COVERAGE_LOCATIONS)
+                            .stream().map(cl -> cl.getBelongsToField(CoverageLocationFields.LOCATION).getId())
+                            .collect(Collectors.toList())));
+        } catch (JSONException e) {
+            throw new IllegalStateException(e);
+        }
+
+        String url = "/page/productFlowThruDivision/materialReplacementsAvailabilityList.html?context=" + json.toString();
+        view.redirectTo(url, false, true);
+
+    }
+
     /**
      * Deleting coverageProductSelected
      */
@@ -347,18 +381,18 @@ public class GenerateMaterialRequirementCoverageListeners {
 
         Entity parameter = parameterService.getParameter();
         Entity currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
-        Map<Optional<Entity>, List<Entity>> groupedCoverageProducts = grid.getSelectedEntities().stream()
-                .collect(Collectors.groupingBy(e -> Optional.ofNullable(e.getBelongsToField(CoverageProductFields.COMPANY))));
+        Map<Optional<Integer>, List<Entity>> groupedCoverageProducts = grid.getSelectedEntities().stream()
+                .collect(Collectors.groupingBy(e -> Optional.ofNullable(e.getIntegerField("companyId"))));
 
         StringBuilder deliveryNumbers = new StringBuilder();
 
-        for (Map.Entry<Optional<Entity>, List<Entity>> entry : groupedCoverageProducts.entrySet()) {
+        for (Map.Entry<Optional<Integer>, List<Entity>> entry : groupedCoverageProducts.entrySet()) {
             String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
                     DeliveriesConstants.MODEL_DELIVERY);
 
             Entity delivery = deliveriesService.getDeliveryDD().create();
             delivery.setField(NUMBER, number);
-            entry.getKey().ifPresent(supplier -> delivery.setField(SUPPLIER, supplier));
+            entry.getKey().ifPresent(supplier -> delivery.setField(SUPPLIER, supplier.longValue()));
             delivery.setField(CURRENCY, currency);
             delivery.setField(EXTERNAL_SYNCHRONIZED, true);
 
@@ -368,7 +402,7 @@ public class GenerateMaterialRequirementCoverageListeners {
 
             entry.getValue().forEach(
                     coverageProduct -> {
-                        Entity product = coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT);
+                        Integer product = coverageProduct.getIntegerField("productId");
                         BigDecimal reserveMissingQuantity = coverageProduct
                                 .getDecimalField(CoverageProductFields.RESERVE_MISSING_QUANTITY);
 
@@ -377,7 +411,7 @@ public class GenerateMaterialRequirementCoverageListeners {
 
                         Entity orderedProduct = orderedProductDataDefinition.create();
                         orderedProduct.setField("delivery", saved);
-                        orderedProduct.setField("product", product);
+                        orderedProduct.setField("product", product.longValue());
                         orderedProduct.setField("orderedQuantity", reserveMissingQuantity.min(BigDecimal.ZERO).abs());
 
                         orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
@@ -391,7 +425,9 @@ public class GenerateMaterialRequirementCoverageListeners {
                 deliveryNumbers.toString());
     }
 
-    private BigDecimal getConversion(Entity product) {
+    private BigDecimal getConversion(Integer productId) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                productId.longValue());
         String unit = product.getStringField(ProductFields.UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
         if (additionalUnit == null) {
@@ -406,5 +442,4 @@ public class GenerateMaterialRequirementCoverageListeners {
             return BigDecimal.ZERO;
         }
     }
-
 }

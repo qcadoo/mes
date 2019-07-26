@@ -37,6 +37,8 @@ public final class OrderSuppliesConstants {
 
     public static final String MODEL_COVERAGE_PRODUCT = "coverageProduct";
 
+    public static final String MODEL_COVERAGE_PRODUCT_DTO= "coverageProductDto";
+
     public static final String MODEL_COVERAGE_PRODUCT_LOGGING = "coverageProductLogging";
 
     public static final String MODEL_COVERAGE_LOCATION = "coverageLocation";

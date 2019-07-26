@@ -59,4 +59,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String PRODUCTION_FLOW = "productionFlow";
 
+    public static final String REPLACEMENT_TO = "replacementTo";
+
 }

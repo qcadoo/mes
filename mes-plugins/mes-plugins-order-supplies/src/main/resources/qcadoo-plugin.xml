@@ -114,6 +114,7 @@
         <model:model model="coverageLocation" resource="model/coverageLocation.xml"/>
         <model:model model="coverageRegister" resource="model/coverageRegister.xml"/>
         <model:model model="coverageOrderState" resource="model/coverageOrderState.xml"/>
+        <model:model model="coverageProductDto" resource="model/coverageProductDto.xml"/>
 
         <model:model-field plugin="basic" model="parameter">
             <model:integer name="defaultCoverageFromDays"/>

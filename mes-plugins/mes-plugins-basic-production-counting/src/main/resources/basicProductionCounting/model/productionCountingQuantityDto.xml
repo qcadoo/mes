@@ -38,6 +38,8 @@
 
         <string name="productName"/>
 
+        <string name="replacementTo"/>
+
         <string name="productUnit"/>
 
         <string name="nodeNumber"/>

@@ -68,6 +68,9 @@
     </fields>
 
     <hooks>
+        <onSave
+                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentHooks"
+                method="onSave"/>
         <validatesWith class="com.qcadoo.mes.productionCounting.validators.TrackingOperationProductComponentHooks"
                        method="validatesWith"/>
     </hooks>

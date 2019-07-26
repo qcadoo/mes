@@ -23,12 +23,8 @@
  */
 package com.qcadoo.mes.productionCounting.hooks.helpers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
@@ -41,6 +37,12 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationComponentBuilder {
@@ -82,8 +84,19 @@ public class TrackingOperationComponentBuilder {
         }
 
         Entity product = operationProductComponentHolder.getProduct();
+        Entity operationProductComponent = fromProduct(product, role, typeOfMaterial);
 
-        return fromProduct(product, role, typeOfMaterial);
+        Long productionCountingQuantityId = operationProductComponentHolder.getProductionCountingQuantityId();
+        if (Objects.nonNull(productionCountingQuantityId)
+                && (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName))) {
+            Entity productionCountingQuantity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).get(productionCountingQuantityId);
+            Entity replacement = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.REPLACEMENT_TO);
+            if (Objects.nonNull(replacement)) {
+                operationProductComponent.setField(TrackingOperationProductInComponentFields.REPLACEMENT_TO, replacement.getId());
+            }
+        }
+        return operationProductComponent;
     }
 
     public Entity fromOperationProductComponent(final Entity operationProductComponent) {
