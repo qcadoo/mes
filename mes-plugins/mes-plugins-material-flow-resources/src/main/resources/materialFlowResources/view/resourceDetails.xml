@@ -41,7 +41,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="resourceForm" reference="form">
                 <component type="gridLayout" name="resourceGridLayout"
-                           hasBorders="false" columns="11" rows="7">
+                           hasBorders="false" columns="11" rows="8">
 
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" field="number"
@@ -95,6 +95,18 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="5">
+                        <component type="input" name="availableQuantity" field="availableQuantity"
+                                   reference="availableQuantity" defaultEnabled="false">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="5" width="1">
+                        <component type="input" name="availableQuantityUNIT" reference="availableQuantityUNIT"
+                                   defaultEnabled="false" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6" width="5">
                         <component type="input" name="quantity" field="quantity"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
@@ -103,13 +115,13 @@
                                       method="onQuantityChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="5" width="1">
+                    <layoutElement column="6" row="6" width="1">
                         <component type="input" name="quantityUNIT" reference="quantityUNIT"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="5">
+                    <layoutElement column="1" row="7" width="5">
                         <component type="input" name="quantityInAdditionalUnit" field="quantityInAdditionalUnit"
                                    reference="quantityInAdditionalUnit">
                             <option type="alignment" value="right"/>
@@ -118,19 +130,19 @@
                                       method="onQuantityInAdditionalUnitChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="6" width="1">
+                    <layoutElement column="6" row="7" width="1">
                         <component type="input" name="givenUnit" reference="givenUnit"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7" width="5">
+                    <layoutElement column="1" row="8" width="5">
                         <component type="input" name="price" field="price"
                                    reference="price" defaultEnabled="true">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="7" width="1">
+                    <layoutElement column="6" row="8" width="1">
                         <component type="input" name="priceCurrency" reference="priceCurrency"
                                    defaultEnabled="false" hasLabel="false">
                             <option type="textRepresentationOnDisabled" value="true"/>

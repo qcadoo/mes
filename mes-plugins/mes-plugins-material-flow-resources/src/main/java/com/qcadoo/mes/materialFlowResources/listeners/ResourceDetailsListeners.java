@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -39,6 +34,11 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ResourceDetailsListeners {
@@ -64,10 +64,14 @@ public class ResourceDetailsListeners {
                 view.getLocale());
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
-            if (price.isRight()) {
+            Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+            BigDecimal correctQuantity = quantity.getRight().get();
+            BigDecimal availableQuantity = BigDecimalUtils.convertNullToZero(resource
+                    .getDecimalField(ResourceFields.AVAILABLE_QUANTITY));
+            if (correctQuantity.compareTo(availableQuantity) == -1) {
+                quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanAvailable", MessageType.FAILURE);
+            } else if (price.isRight()) {
                 if (conversion.isRight() && conversion.getRight().isPresent()) {
-                    Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
-                    BigDecimal correctQuantity = quantity.getRight().get();
                     BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
                     if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
                         if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
