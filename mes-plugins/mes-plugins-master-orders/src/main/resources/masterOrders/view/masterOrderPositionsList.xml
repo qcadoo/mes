@@ -111,6 +111,8 @@
             <option type="column" name="producedOrderQuantity" fields="producedOrderQuantity" width="45"
                     classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
                     classesNames="green-cell"/>
+            <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
+            <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
             <option type="column" name="leftToRelease" fields="leftToRelease" width="45"/>
             <option type="column" name="unit" fields="unit"
                     width="35"/>
@@ -118,15 +120,15 @@
 
             <option type="order" column="number" direction="desc"/>
             <option type="searchable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
             <option type="orderable"
-                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
+                    value="masterOrderDefinitionNumber,number,name,deadline,companyName,description,companyPayer,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderStatus,productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,unit,assortmentName,state"/>
 
             <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
             <option type="correspondingComponent" value="form"/>
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
-                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease"/>
+                    value="masterOrderQuantity,cumulatedMasterOrderQuantity,producedOrderQuantity,leftToRelease,quantityRemainingToOrder,quantityTakenFromWarehouse"/>
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 

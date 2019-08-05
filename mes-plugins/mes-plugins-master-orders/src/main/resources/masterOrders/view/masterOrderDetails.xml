@@ -395,7 +395,8 @@
 
                 <option type="column" name="leftToRelease"
                         fields="leftToRelease" width="60"/>
-
+                <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
+                <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
                 <option type="column" name="producedOrderQuantity"
                         fields="producedOrderQuantity" width="60"
                         classesCondition="rowObject['producedOrderQuantity'] >= rowObject['masterOrderQuantity']"
@@ -410,9 +411,9 @@
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
                 <option type="orderable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
@@ -426,7 +427,7 @@
 
                 <option type="footerRow" value="true"/>
                 <option type="columnsToSummary"
-                        value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease"/>
+                        value="masterOrderQuantity,cumulatedOrderQuantity,producedOrderQuantity,leftToRelease,quantityRemainingToOrder,quantityTakenFromWarehouse"/>
                 <listener event="onSelectedEntityChange"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
                           method="onProductsChange"/>

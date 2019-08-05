@@ -23,17 +23,21 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -66,9 +70,19 @@ public class MasterOrderProductHooks {
                                     .equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.TECHNOLOGY).getId()))
                     .collect(Collectors.toList());
             if (!entities.isEmpty()) {
-                masterOrderProduct
-                        .addGlobalMessage("masterOrders.masterOrderProduct.info.needToChangeTechnologyForExistingProductionOrders", false, false);
+                masterOrderProduct.addGlobalMessage(
+                        "masterOrders.masterOrderProduct.info.needToChangeTechnologyForExistingProductionOrders", false, false);
             }
+        }
+
+        masterOrderProduct.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, BigDecimalUtils
+                .convertNullToZero(masterOrderProduct.getDecimalField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE)));
+        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
+        if (MasterOrderState.NEW.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
+                && masterOrderProduct.getDecimalField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE).compareTo(
+                        BigDecimal.ZERO) > 0) {
+            masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.IN_EXECUTION.getStringValue());
+            masterOrder = masterOrder.getDataDefinition().save(masterOrder);
         }
     }
 

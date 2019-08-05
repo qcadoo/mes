@@ -48,6 +48,9 @@
         <decimal name="cumulatedMasterOrderQuantity"/>
         <decimal name="leftToRelease"/>
         <decimal name="producedOrderQuantity"/>
+        <decimal name="quantityTakenFromWarehouse"/>
+        <decimal name="quantityRemainingToOrder"/>
+        <decimal name="quantityRemainingToOrderWithoutStock"/>
         <string name="unit"/>
         <string name="assortmentName"/>
 

@@ -221,6 +221,20 @@
             <model:boolean name="copyNotesFromMasterOrderPosition" default="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="realizationFromStock" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="alwaysOrderItemsWithPersonalization" default="false"/>
+        </model:model-field>
+        <model:model-field plugin="basic" model="parameter">
+            <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow" cascade="nullify"/>
+        </model:model-field>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:belongsTo name="realizationLocation" model="parameter"
+                             plugin="basic"/>
+        </model:model-field>
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="scheduleStateChanges"
                            plugin="orders" model="scheduleStateChange"
@@ -231,6 +245,17 @@
             <model:validatesWith
                     class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"
                     method="validatesWith"/>
+        </model:model-hook>
+
+        <model:model-hook plugin="basic" model="parameter">
+            <model:validatesWith
+                    class="com.qcadoo.mes.orders.hooks.ParametersHooksO"
+                    method="validatesWith"/>
+        </model:model-hook>
+        <model:model-hook plugin="basic" model="parameter">
+            <model:onSave
+                    class="com.qcadoo.mes.orders.hooks.ParametersHooksO"
+                    method="onSave"/>
         </model:model-hook>
 
         <model:model-field plugin="basic" model="address">
@@ -353,6 +378,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ProductDetailsViewHooksO"
                         method="updateRibbonState"/>
+
+        <view:view-hook plugin="orders" view="ordersParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.ParametersHooksO"
+                        method="onOrdersParameterBeforeRender"/>
 
         <view:resource uri="public/**/*"/>
 

@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.GridComponent;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -32,16 +45,14 @@ import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHE
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-
 @Service
 public class ParametersHooksO {
+
+    private static final String L_REALIZATION_FROM_STOCK = "realizationFromStock";
+
+    private static final String L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION = "alwaysOrderItemsWithPersonalization";
+
+    private static final String L_REALIZATION_LOCATIONS = "realizationLocations";
 
     @Autowired
     private OrderService orderService;
@@ -50,6 +61,57 @@ public class ParametersHooksO {
     private SecurityService securityService;
 
     private static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
+
+    public void onSave(final DataDefinition parameterDD, final Entity parameter) {
+        if (!parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)) {
+            parameter.setField(ParameterFieldsO.REALIZATION_LOCATIONS, Lists.newArrayList());
+        }
+    }
+
+    public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {
+        boolean isValid = true;
+        if (parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)
+                && parameter.getHasManyField(ParameterFieldsO.REALIZATION_LOCATIONS).isEmpty()) {
+            parameter.addGlobalError("orders.ordersParameters.window.mainTab.ordersParameters.realizationLocations.error.empty",
+                    Boolean.FALSE);
+            isValid = false;
+        }
+        return isValid;
+    }
+
+    public void onOrdersParameterBeforeRender(final ViewDefinitionState view) {
+        CheckBoxComponent realizationFromStockComponent = (CheckBoxComponent) view
+                .getComponentByReference(L_REALIZATION_FROM_STOCK);
+        CheckBoxComponent alwaysOrderItemsWithPersonalizationComponent = (CheckBoxComponent) view
+                .getComponentByReference(L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION);
+        GridComponent realizationLocationsGrid = (GridComponent) view.getComponentByReference(L_REALIZATION_LOCATIONS);
+        if (realizationFromStockComponent.isChecked()) {
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(true);
+            realizationLocationsGrid.setEditable(true);
+        } else {
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(false);
+            realizationLocationsGrid.setEditable(false);
+        }
+        alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+    }
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        showTimeFields(view);
+        hideTabs(view);
+        CheckBoxComponent realizationFromStockComponent = (CheckBoxComponent) view
+                .getComponentByReference(L_REALIZATION_FROM_STOCK);
+        CheckBoxComponent alwaysOrderItemsWithPersonalizationComponent = (CheckBoxComponent) view
+                .getComponentByReference(L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION);
+        GridComponent realizationLocationsGrid = (GridComponent) view.getComponentByReference(L_REALIZATION_LOCATIONS);
+        if (realizationFromStockComponent.isChecked()) {
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(true);
+            realizationLocationsGrid.setEditable(true);
+        } else {
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(false);
+            realizationLocationsGrid.setEditable(false);
+        }
+        alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+    }
 
     public void showTimeFields(final ViewDefinitionState view) {
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM, DELAYED_EFFECTIVE_DATE_FROM_TIME);

@@ -65,4 +65,9 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String MASTER_ORDER_PRODUCT_ID = "masterOrderProductId";
 
+    public static final String QUANTITY_REMAINING_TO_ORDER = "quantityRemainingToOrder";
+
+    public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
+
+    public static final String QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK = "quantityRemainingToOrderWithoutStock";
 }

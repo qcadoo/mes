@@ -87,10 +87,10 @@ public class MasterOrderDetailsListeners {
 
         String status = args[0];
 
-        if(status.equals(MasterOrderState.COMPLETED.getStringValue())) {
+        if (status.equals(MasterOrderState.COMPLETED.getStringValue())) {
             masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
             masterOrderDB.getDataDefinition().save(masterOrderDB);
-        } else if(status.equals(MasterOrderState.DECLINED.getStringValue())){
+        } else if (status.equals(MasterOrderState.DECLINED.getStringValue())) {
             masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.DECLINED.getStringValue());
             masterOrderDB.getDataDefinition().save(masterOrderDB);
         }
@@ -131,7 +131,6 @@ public class MasterOrderDetailsListeners {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
-
         ordersGenerationService.generateOrders(masterOrderProducts, true).showMessage(view);
     }
 
@@ -174,7 +173,7 @@ public class MasterOrderDetailsListeners {
         Optional<Entity> dtoEntity = Optional.ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(
                 masterOrderProduct.getId()));
         if (dtoEntity.isPresent()) {
-           return dtoEntity.get();
+            return dtoEntity.get();
         } else {
             return masterOrderProduct;
         }

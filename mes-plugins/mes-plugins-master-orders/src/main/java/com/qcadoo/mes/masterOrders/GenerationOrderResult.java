@@ -1,11 +1,11 @@
 package com.qcadoo.mes.masterOrders;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.List;
 
 public class GenerationOrderResult {
 
@@ -19,6 +19,8 @@ public class GenerationOrderResult {
 
     private List<String> generatedOrderNumbers = Lists.newArrayList();
 
+    private List<String> realizationFromStock = Lists.newArrayList();
+
     private List<String> ordersWithoutPps = Lists.newArrayList();
 
     private List<String> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
@@ -31,6 +33,10 @@ public class GenerationOrderResult {
 
     public void addGeneratedOrderNumber(String number) {
         generatedOrderNumbers.add(number);
+    }
+
+    public void addRealizationFromStock(String number) {
+        realizationFromStock.add(number);
     }
 
     public void addOrderWithoutPps(String number) {
@@ -49,6 +55,11 @@ public class GenerationOrderResult {
         if (!generatedOrderNumbers.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
                     false, String.join(", ", generatedOrderNumbers));
+        }
+
+        if (!realizationFromStock.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers", ComponentState.MessageType.INFO,
+                    false, String.join(", ", realizationFromStock));
         }
 
         if (!ordersWithoutPps.isEmpty()) {
@@ -81,5 +92,13 @@ public class GenerationOrderResult {
             view.addMessage("masterOrders.masterOrder.generationOrder.productsWithoutAcceptedTechnologies",
                     ComponentState.MessageType.INFO, false, String.join(", ", productsWithoutAcceptedTechnologies));
         }
+    }
+
+    public List<String> getRealizationFromStock() {
+        return realizationFromStock;
+    }
+
+    public void setRealizationFromStock(List<String> realizationFromStock) {
+        this.realizationFromStock = realizationFromStock;
     }
 }
