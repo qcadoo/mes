@@ -72,25 +72,23 @@ class ProductionBalanceRepository {
         StringBuilder query = new StringBuilder();
         appendCumulatedPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);
-        query.append("replacementto.number AS replacementTo, ");
+        query.append("q.replacementTo AS replacementTo, ");
         query.append("NULL AS operationNumber ");
         appendMaterialCostsFromClause(query, entity);
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = topic.replacementto_id ");
-        query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit, replacementto.number) ");
+        query.append("GROUP BY o.id, o.number, p.number, p.name, p.unit, topic.wasteunit, q.replacementTo) ");
         query.append("UNION ");
         appendForEachPlannedQuantities(query);
         appendMaterialCostsSelectionClause(query, entity);
-        query.append("replacementto.number AS replacementTo, ");
+        query.append("q.replacementTo AS replacementTo, ");
         query.append("op.number AS operationNumber ");
         appendMaterialCostsFromClause(query, entity);
         query.append("JOIN technologies_operation op ON q.operation_id = op.id ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON toc.operation_id = op.id AND o.technology_id = toc.technology_id ");
         query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.order_id = o.id AND pt.technologyoperationcomponent_id = toc.id AND pt.state = '02accepted' ");
         query.append("LEFT JOIN productioncounting_trackingoperationproductincomponent topic ON topic.productiontracking_id = pt.id AND topic.product_id = p.id ");
-        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = topic.replacementto_id ");
-        query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit, replacementto.number) ");
+        query.append("GROUP BY o.id, o.number, op.number, p.number, p.name, p.unit, topic.wasteunit, q.replacementTo) ");
         query.append("ORDER BY orderNumber, operationNumber, productNumber ");
 
         return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
@@ -103,9 +101,11 @@ class ProductionBalanceRepository {
         query.append("toc.operation_id AS operationId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
-        query.append("0 AS childsQuantity ");
+        query.append("0 AS childsQuantity, ");
+        query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = pcq.replacementto_id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
         query.append("JOIN technologies_technologyoperationcomponent toc ON pcq.technologyoperationcomponent_id = toc.id ");
@@ -113,7 +113,7 @@ class ProductionBalanceRepository {
         query.append("AND o.typeofproductionrecording = '03forEach' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND (t.id IS NULL ");
         query.append("OR t.id IS NOT NULL) ");
-        query.append("GROUP BY o.id, toc.operation_id, p.id) ");
+        query.append("GROUP BY o.id, toc.operation_id, p.id, replacementto.number) ");
     }
 
     private void appendCumulatedPlannedQuantities(StringBuilder query) {
@@ -121,30 +121,34 @@ class ProductionBalanceRepository {
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
-        query.append("0 AS childsQuantity ");
+        query.append("0 AS childsQuantity, ");
+        query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = pcq.replacementto_id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NULL ");
-        query.append("GROUP BY o.id, p.id ");
+        query.append("GROUP BY o.id, replacementto.number, p.id ");
         query.append("UNION ");
         query.append("SELECT ");
         query.append("o.id AS orderId, ");
         query.append("p.id AS productId, ");
         query.append("COALESCE(SUM(pcq.plannedquantity), 0) AS plannedQuantity, ");
-        query.append("COALESCE(SUM(och.plannedquantity), 0) AS childsQuantity ");
+        query.append("COALESCE(SUM(och.plannedquantity), 0) AS childsQuantity, ");
+        query.append("replacementto.number AS replacementTo ");
         query.append("FROM orders_order o ");
         query.append("JOIN basicproductioncounting_productioncountingquantity pcq ON pcq.order_id = o.id ");
+        query.append("LEFT JOIN basic_product replacementto ON replacementto.id = pcq.replacementto_id ");
         query.append("JOIN basic_product p ON pcq.product_id = p.id ");
         query.append("LEFT JOIN technologies_technology t ON t.product_id = p.id AND t.master = TRUE ");
         query.append("LEFT JOIN orders_order och ON och.product_id = p.id AND och.parent_id = o.id ");
         appendWhereClause(query);
         query.append("AND o.typeofproductionrecording = '02cumulated' ");
         query.append("AND pcq.role = '01used' AND pcq.typeofmaterial = '01component' AND t.id IS NOT NULL ");
-        query.append("GROUP BY o.id, p.id HAVING COALESCE(SUM(pcq.plannedquantity), 0) - COALESCE(SUM(och.plannedquantity), 0) > 0) ");
+        query.append("GROUP BY o.id, replacementto.number, p.id HAVING COALESCE(SUM(pcq.plannedquantity), 0) - COALESCE(SUM(och.plannedquantity), 0) > 0) ");
     }
 
     private void appendMaterialCostsSelectionClause(StringBuilder query, Entity entity) {
