@@ -31,14 +31,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import java.math.BigDecimal;
-
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -56,7 +56,8 @@ public class MasterOrderProductDetailsHooksTest {
 
     @Mock
     private FieldComponent cumulatedOrderQuantityUnitField, masterOrderQuantityUnitField, producedOrderQuantityUnitField,
-            leftToRelease, leftToReleaseUnit, comments, masterOrderPositionStatus;
+            leftToRelease, leftToReleaseUnit, comments, masterOrderPositionStatus, quantityRemainingToOrderUnit,
+            quantityTakenFromWarehouseUnit, quantityRemainingToOrder, quantityTakenFromWarehouse;
 
     @Mock
     private LookupComponent productField;
@@ -77,6 +78,10 @@ public class MasterOrderProductDetailsHooksTest {
         given(view.getComponentByReference("cumulatedOrderQuantityUnit")).willReturn(cumulatedOrderQuantityUnitField);
         given(view.getComponentByReference("masterOrderQuantityUnit")).willReturn(masterOrderQuantityUnitField);
         given(view.getComponentByReference("producedOrderQuantityUnit")).willReturn(producedOrderQuantityUnitField);
+        given(view.getComponentByReference("quantityRemainingToOrderUnit")).willReturn(quantityRemainingToOrderUnit);
+        given(view.getComponentByReference("quantityTakenFromWarehouseUnit")).willReturn(quantityTakenFromWarehouseUnit);
+        given(view.getComponentByReference("quantityRemainingToOrder")).willReturn(quantityRemainingToOrder);
+        given(view.getComponentByReference("quantityTakenFromWarehouse")).willReturn(quantityTakenFromWarehouse);
         given(view.getComponentByReference("leftToReleaseUnit")).willReturn(leftToReleaseUnit);
         given(view.getComponentByReference("leftToRelease")).willReturn(leftToRelease);
         given(view.getComponentByReference("comments")).willReturn(comments);
@@ -143,7 +148,6 @@ public class MasterOrderProductDetailsHooksTest {
         BigDecimal masterOrderQuantity = BigDecimal.ONE;
 
         given(masterOrderProduct.isValid()).willReturn(true);
-
 
         given(masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY)).willReturn(
                 cumulatedOrderQuantity);

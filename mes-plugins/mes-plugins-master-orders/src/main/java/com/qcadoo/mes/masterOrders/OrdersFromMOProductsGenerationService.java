@@ -125,7 +125,7 @@ public class OrdersFromMOProductsGenerationService {
         if (PluginUtils.isEnabled("integrationBaseLinker")) {
             createDocuments();
         }
-        
+
         Entity parameter = parameterService.getParameter();
 
         boolean realizationFromStock = parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK);
