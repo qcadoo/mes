@@ -25,10 +25,14 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.service.ResourceCorrectionService;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -43,8 +47,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class ResourceDetailsListeners {
 
+    public static final String L_PRODUCT_ID = "product_id";
+
+    public static final String L_LOCATION_ID = "location_id";
+
+    public static final String L_QUANTITY = "availableQuantity";
+
     @Autowired
     private ResourceCorrectionService resourceCorrectionService;
+
+    @Autowired
+    private NumberService numberService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     private static final String L_FORM = "form";
 
@@ -65,10 +81,24 @@ public class ResourceDetailsListeners {
 
         if (quantity.isRight() && quantity.getRight().isPresent()) {
             Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
+            Entity resourceDb = resource.getDataDefinition().get(resource.getId());
             BigDecimal correctQuantity = quantity.getRight().get();
-            BigDecimal availableQuantity = BigDecimalUtils.convertNullToZero(resource
-                    .getDecimalField(ResourceFields.AVAILABLE_QUANTITY));
-            if (correctQuantity.compareTo(availableQuantity) == -1) {
+
+            BigDecimal beforeQuantity = resourceDb.getDecimalField(ResourceFields.QUANTITY);
+            BigDecimal difference = correctQuantity.subtract(beforeQuantity, numberService.getMathContext());
+
+            Entity resourceStockDto = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                            MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO).find()
+                    .add(SearchRestrictions.eq(L_PRODUCT_ID, resourceDb.getBelongsToField(ResourceFields.PRODUCT).getId().intValue()))
+                    .add(SearchRestrictions.eq(L_LOCATION_ID, resourceDb.getBelongsToField(ResourceFields.LOCATION).getId().intValue()))
+                    .setMaxResults(1).uniqueResult();
+
+            BigDecimal afterCorrectQuantity = resourceStockDto.getDecimalField(L_QUANTITY).add(difference,
+                    numberService.getMathContext());
+
+
+            if (afterCorrectQuantity.compareTo(BigDecimal.ZERO) < 0) {
                 quantityInput.addMessage("materialFlow.error.correction.quantityLesserThanAvailable", MessageType.FAILURE);
             } else if (price.isRight()) {
                 if (conversion.isRight() && conversion.getRight().isPresent()) {

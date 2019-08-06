@@ -281,7 +281,7 @@ public class MaterialFlowService {
         FieldComponent unitField = null;
         String unit = product.getStringField(UNIT);
 
-        for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT", "availableQuantityUNIT")) {
+        for (String referenceName : Sets.newHashSet("quantityUNIT", "shouldBeUNIT", "foundUNIT")) {
             unitField = (FieldComponent) view.getComponentByReference(referenceName);
             if (unitField == null) {
                 continue;
