@@ -152,7 +152,8 @@ public class OrdersFromMOProductsGenerationService {
 
         }
 
-        if (realizationFromStock && stockQuantity.compareTo(quantityRemainingToOrder) >= 0) {
+        if (realizationFromStock && stockQuantity.compareTo(quantityRemainingToOrder) >= 0
+                && quantityRemainingToOrder.compareTo(BigDecimal.ZERO) > 0) {
             masterOrderProduct.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, quantityRemainingToOrder);
             masterOrderProduct.getDataDefinition().save(masterOrderProduct);
             result.addRealizationFromStock(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getStringField(
