@@ -132,6 +132,7 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
         ordersGenerationService.generateOrders(masterOrderProducts, true).showMessage(view);
+        state.performEvent(view, "reset", new String[0]);
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
