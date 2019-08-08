@@ -147,7 +147,9 @@ public class OrdersFromMOProductsGenerationService {
             for (Entity location : locations) {
                 Map<Long, BigDecimal> productQuantity = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
                         Lists.newArrayList(product), location);
-                stockQuantity = stockQuantity.add(productQuantity.get(product.getId()), numberService.getMathContext());
+                if(productQuantity.containsKey(product.getId())) {
+                    stockQuantity = stockQuantity.add(productQuantity.get(product.getId()), numberService.getMathContext());
+                }
             }
 
         }
